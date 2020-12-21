@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 6}](src/sec6.src.md), Next: [Section 8[(src/sec8.src.md)# Build system
+Up: [Readme.md](src/Readme.md),  Prev: [Section 6](src/sec6.src.md), Next: [Section 8](src/sec8.src.md)
+# Build system
 
 ## What do we need to think about building?
 
@@ -418,4 +419,4 @@ I think meson and ninja is the best choice for the present.
 We divided a file into some categorized files and used a build tool.
 This method is used by many developers.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 6}](src/sec6.src.md), Next: [Section 8[(src/sec8.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 6](src/sec6.src.md), Next: [Section 8](src/sec8.src.md)

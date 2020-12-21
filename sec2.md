@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 1}](src/sec1.src.md), Next: [Section 3[(src/sec3.src.md)# Widgets (1)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 1](src/sec1.src.md), Next: [Section 3](src/sec3.src.md)
+# Widgets (1)
 
 ## GtkLabel, GtkButton and Gtkbox
 
@@ -306,4 +307,4 @@ Then, these two buttons are appended to the box.
 The handler corresponds to `btn1` changes its label.
 The handler corresponds to `btn2` destroys the top-level window and the application quits.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 1}](src/sec1.src.md), Next: [Section 3[(src/sec3.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 1](src/sec1.src.md), Next: [Section 3](src/sec3.src.md)

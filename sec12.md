@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 11}](src/sec11.src.md), Next: [Section 13[(src/sec13.src.md)# tfeapplication.c
+Up: [Readme.md](src/Readme.md),  Prev: [Section 11](src/sec11.src.md), Next: [Section 13](src/sec13.src.md)
+# tfeapplication.c
 
 `tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
 It does following things.
@@ -266,4 +267,4 @@ Therefore, it gets the top level window and call `gtk_window_destroy`.
 
 This file is just modified the source file names.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 11}](src/sec11.src.md), Next: [Section 13[(src/sec13.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 11](src/sec11.src.md), Next: [Section 13](src/sec13.src.md)

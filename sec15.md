@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 14}](src/sec14.src.md), Next: [Section 16[(src/sec16.src.md)# Stateful action
+Up: [Readme.md](src/Readme.md),  Prev: [Section 14](src/sec14.src.md), Next: [Section 16](src/sec16.src.md)
+# Stateful action
 
 Some actions have states.
 The values of states can be boolean or string.
@@ -366,4 +367,4 @@ Other GtkLabel have no effect from this.
 The provider is added to GdkDisplay.
 - 90: Show the window.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 14}](src/sec14.src.md), Next: [Section 16[(src/sec16.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 14](src/sec14.src.md), Next: [Section 16](src/sec16.src.md)

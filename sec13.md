@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 12}](src/sec12.src.md), Next: [Section 14[(src/sec14.src.md)# tfe5 source files
+Up: [Readme.md](src/Readme.md),  Prev: [Section 12](src/sec12.src.md), Next: [Section 14](src/sec14.src.md)
+# tfe5 source files
 
 The followings are the source files of tfe5.
 
@@ -616,4 +617,4 @@ The followings are the source files of tfe5.
        29    47   545 tfe5/tfetextview.h
        64   105  2266 tfe5/tfe.ui
       574  1482 17411 合計
-Up: [Readme.md](src/Readme.md),  Prev: [Section 12}](src/sec12.src.md), Next: [Section 14[(src/sec14.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 12](src/sec12.src.md), Next: [Section 14](src/sec14.src.md)

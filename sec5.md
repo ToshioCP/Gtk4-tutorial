@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 4}](src/sec4.src.md), Next: [Section 6[(src/sec6.src.md)# Define Child object
+Up: [Readme.md](src/Readme.md),  Prev: [Section 4](src/sec4.src.md), Next: [Section 6](src/sec6.src.md)
+# Define Child object
 
 ## Very simple editor
 
@@ -344,4 +345,4 @@ Now we got a very simple editor.
 It's not smart.
 We need more features like open, save, saveas, change font and so on.
 We will add them in the next section and after.
-Up: [Readme.md](src/Readme.md),  Prev: [Section 4}](src/sec4.src.md), Next: [Section 6[(src/sec6.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 4](src/sec4.src.md), Next: [Section 6](src/sec6.src.md)

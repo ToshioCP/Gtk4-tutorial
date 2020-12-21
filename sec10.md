@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 9}](src/sec9.src.md), Next: [Section 11[(src/sec11.src.md)# Functions in TfeTextView
+Up: [Readme.md](src/Readme.md),  Prev: [Section 9](src/sec9.src.md), Next: [Section 11](src/sec11.src.md)
+# Functions in TfeTextView
 
 In this section I will explain each function in TfeTextView object.
 
@@ -342,4 +343,4 @@ Otherwise, if the caller free the GFile object, `tv->file` is no more guaranteed
 ## Source file of tfetextview.c
 
 All the source files are listed in [Section 13](ch13.html).
-Up: [Readme.md](src/Readme.md),  Prev: [Section 9}](src/sec9.src.md), Next: [Section 11[(src/sec11.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 9](src/sec9.src.md), Next: [Section 11](src/sec11.src.md)

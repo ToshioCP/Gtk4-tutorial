@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Next: [Section 2}](src/sec2.src.md)# GtkApplication and GtkApplicationWindow
+Up: [Readme.md](src/Readme.md),  Next: [Section 2](src/sec2.src.md)
+# GtkApplication and GtkApplicationWindow
 
 ## GtkApplication
 
@@ -281,4 +282,4 @@ Compile it and run `a.out`, then you will see a bigger window with its title "pr
 
 ![Screenshot of the window](screenshot_pr4.png)
 
-Up: [Readme.md](src/Readme.md),  Next: [Section 2}](src/sec2.src.md)
+Up: [Readme.md](src/Readme.md),  Next: [Section 2](src/sec2.src.md)

@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 13}](src/sec13.src.md), Next: [Section 15[(src/sec15.src.md)# Menu and action
+Up: [Readme.md](src/Readme.md),  Prev: [Section 13](src/sec13.src.md), Next: [Section 15](src/sec15.src.md)
+# Menu and action
 
 ## Menu
 
@@ -212,4 +213,4 @@ The structure of the menu is shown in the diagram below.
 
 ![Screenshot of menu1](menu1_screenshot.png)
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 13}](src/sec13.src.md), Next: [Section 15[(src/sec15.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 13](src/sec13.src.md), Next: [Section 15](src/sec15.src.md)

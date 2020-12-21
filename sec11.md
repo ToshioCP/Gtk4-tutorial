@@ -1,4 +1,5 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 10}](src/sec10.src.md), Next: [Section 12[(src/sec12.src.md)# Functions with GtkNotebook
+Up: [Readme.md](src/Readme.md),  Prev: [Section 10](src/sec10.src.md), Next: [Section 12](src/sec12.src.md)
+# Functions with GtkNotebook
 
 GtkNotebook is a very important object in the text file editor `tfe`.
 It connects the application and TfeTextView objects.
@@ -201,4 +202,4 @@ Otherwise (this is the case file is NULL), assign untitled string to `filename`.
 - 16-17: Free `filename and unref `file`.
 
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 10}](src/sec10.src.md), Next: [Section 12[(src/sec12.src.md)
+Up: [Readme.md](src/Readme.md),  Prev: [Section 10](src/sec10.src.md), Next: [Section 12](src/sec12.src.md)
