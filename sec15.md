@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 14](src/sec14.src.md), Next: [Section 16](src/sec16.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
 # Stateful action
 
 Some actions have states.
@@ -367,4 +367,4 @@ Other GtkLabel have no effect from this.
 The provider is added to GdkDisplay.
 - 90: Show the window.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 14](src/sec14.src.md), Next: [Section 16](src/sec16.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)

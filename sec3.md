@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 2](src/sec2.src.md), Next: [Section 4](src/sec4.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)
 # Widgets (2)
 
 ## GtkTextView, GtkTextbuffer and GtkScrolledWindow
@@ -162,4 +162,4 @@ Now compile and run it.
 This time the window doesn't extend even if you type a lot of characters.
 It just scrolls.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 2](src/sec2.src.md), Next: [Section 4](src/sec4.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)

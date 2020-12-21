@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 7](src/sec7.src.md), Next: [Section 9](src/sec9.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)
 # Instance and class
 
 This section and the following four sections are descriptions about next version of the text file editor (tfe).
@@ -424,4 +424,4 @@ And `gobject` is a pointer to TfeTextView object which is casted as a GObject in
 After that, `dh3` calls `dh2`, and `dh2` calls `dh1`.
 Finally all the references are released.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 7](src/sec7.src.md), Next: [Section 9](src/sec9.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)

@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 8](src/sec8.src.md), Next: [Section 10](src/sec10.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)
 # Signals
 
 ## Signals
@@ -160,4 +160,4 @@ The following is extract from `tfetexties.c`.
 - "open-response" signal has one parameter.
 The fourth parameter is the parameter.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 8](src/sec8.src.md), Next: [Section 10](src/sec10.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)

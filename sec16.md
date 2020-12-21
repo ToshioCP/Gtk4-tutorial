@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 15](src/sec15.src.md), Next: [Section 17](src/sec17.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)
 # Ui file for menu and action entries
 
 ## Ui file for menu
@@ -334,4 +334,4 @@ meson.build
      8 sourcefiles=files('menu3.c')
      9 
     10 executable('menu3', sourcefiles, resources, dependencies: gtkdep)
-Up: [Readme.md](src/Readme.md),  Prev: [Section 15](src/sec15.src.md), Next: [Section 17](src/sec17.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)

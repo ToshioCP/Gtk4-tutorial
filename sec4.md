@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 3](src/sec3.src.md), Next: [Section 5](src/sec5.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](sec5.md)
 # Widgets (3)
 
 ## Open signal
@@ -302,4 +302,4 @@ The numbers at the left of the following items are line numbers in the source co
 - 46: free the memory pointed by `filename`
 - 53-56: If at least one file was read, then the number of GtkNotebookPage is greater than zero. If it's true, then show the window. If it's false, then destroy the window.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 3](src/sec3.src.md), Next: [Section 5](src/sec5.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](sec5.md)

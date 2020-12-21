@@ -24,13 +24,13 @@ task md: mdfilenames
   file srcfiles[i].to_md => (srcfiles[i].c_files << srcfiles[i].path) do
     src2md srcfiles[i].path, srcfiles[i].to_md
     if srcfiles.size == 1
-      nav = "Up: [Readme.md](#{srcfiles[i].dirname}/Readme.md)\n"
+      nav = "Up: [Readme.md](Readme.md)\n"
     elsif i == 0
-      nav = "Up: [Readme.md](#{srcfiles[i].dirname}/Readme.md),  Next: [Section 2](#{srcfiles[1].path})\n"
+      nav = "Up: [Readme.md](Readme.md),  Next: [Section 2](#{srcfiles[1].to_md})\n"
     elsif i == srcfiles.size - 1
-      nav = "Up: [Readme.md](#{srcfiles[i].dirname}/Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].path})\n"
+      nav = "Up: [Readme.md](Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md})\n"
     else
-      nav = "Up: [Readme.md](#{srcfiles[i].dirname}/Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].path}), Next: [Section #{i+2}](#{srcfiles[i+1].path})\n"
+      nav = "Up: [Readme.md](Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md}), Next: [Section #{i+2}](#{srcfiles[i+1].to_md})\n"
     end
     buf = IO.readlines srcfiles[i].to_md
     buf.insert(0, nav, "")

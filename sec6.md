@@ -1,4 +1,4 @@
-Up: [Readme.md](src/Readme.md),  Prev: [Section 5](src/sec5.src.md), Next: [Section 7](src/sec7.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
 # Ui file and GtkBuiler
 
 ## New, open and save button
@@ -448,4 +448,4 @@ Modify tfe3.c and save it as tfe3_r.c
 Then, compile and run it.
 The window appears and it is the same as the screenshot at the beginning of this page.
 
-Up: [Readme.md](src/Readme.md),  Prev: [Section 5](src/sec5.src.md), Next: [Section 7](src/sec7.src.md)
+Up: [Readme.md](Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
