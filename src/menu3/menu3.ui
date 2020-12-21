@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menubar">
+    <submenu>
+      <attribute name="label">File</attribute>
+      <section>
+        <item>
+          <attribute name="label">New</attribute>
+          <attribute name="action">win.new</attribute>
+        </item>
+        <item>
+          <attribute name="label">Open</attribute>
+          <attribute name="action">win.open</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label">Save</attribute>
+          <attribute name="action">win.save</attribute>
+        </item>
+        <item>
+          <attribute name="label">Save As…</attribute>
+          <attribute name="action">win.saveas</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label">Close</attribute>
+          <attribute name="action">win.close</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label">Quit</attribute>
+          <attribute name="action">app.quit</attribute>
+        </item>
+      </section>
+    </submenu>
+    <submenu>
+      <attribute name="label">Edit</attribute>
+      <section>
+        <item>
+          <attribute name="label">Cut</attribute>
+          <attribute name="action">win.cut</attribute>
+        </item>
+        <item>
+          <attribute name="label">Copy</attribute>
+          <attribute name="action">win.copy</attribute>
+        </item>
+        <item>
+          <attribute name="label">Paste</attribute>
+          <attribute name="action">win.paste</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label">Select All</attribute>
+          <attribute name="action">win.selectall</attribute>
+        </item>
+      </section>
+    </submenu>
+    <submenu>
+      <attribute name="label">View</attribute>
+      <section>
+        <item>
+          <attribute name="label">Full Screen</attribute>
+          <attribute name="action">win.fullscreen</attribute>
+        </item>
+      </section>
+    </submenu>
+  </menu>
+</interface>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/menu3">
+    <file>menu3.ui</file>
+  </gresource>
+</gresources>

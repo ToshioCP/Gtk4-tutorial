@@ -1,0 +1,25 @@
+require 'rake/clean'
+
+targetfile = "tfe"
+srcfiles = FileList["tfe.c", "tfetextview.c", "resources.c"]
+rscfile = srcfiles[2]
+objfiles = srcfiles.gsub(/.c$/, '.o')
+
+CLEAN.include(targetfile, objfiles, rscfile)
+
+task default: targetfile
+
+file targetfile => objfiles do |t|
+  sh "gcc -o #{t.name} #{t.prerequisites.join(' ')} `pkg-config --libs gtk4`"
+end
+
+objfiles.each do |obj|
+  src = obj.gsub(/.o$/,'.c')
+  file obj => src do |t|
+    sh "gcc -c -o #{t.name} `pkg-config --cflags gtk4` #{t.source} "
+  end
+end
+
+file rscfile => ["tfe.gresource.xml", "tfe.ui"] do |t|
+  sh "glib-compile-resources #{t.prerequisites[0]} --target=#{t.name} --generate-source"
+end
