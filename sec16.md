@@ -58,7 +58,7 @@ So, we usually prefer the former ui file style.
 The following is a screenshot of the sample program in this section.
 Its name is `menu3`.
 
-![menu3](menu3.png)
+![menu3](image/menu3.png)
 
 The following is the ui file of the menu in `menu3`.
 

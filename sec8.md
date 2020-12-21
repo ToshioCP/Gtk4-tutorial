@@ -92,7 +92,7 @@ This is very important.
 It guarantees a child widget to derive all the features from ancestors.
 The structure of `TfeTextView` is like the following diagram.
 
-![The structure of the instance TfeTextView](TfeTextView.png)
+![The structure of the instance TfeTextView](image/TfeTextView.png)
 
 
 ## Generate TfeTextView instance
@@ -349,7 +349,7 @@ Override is rewriting ancestors' class methods in the child class.)
 TfeTextViewClass includes its ancsestors' class in it.
 It is illustrated in the following diagram.
 
-![The structure of TfeTextView Class](TfeTextViewClass.png)
+![The structure of TfeTextView Class](image/TfeTextViewClass.png)
 
 ## Destruction of TfeTextView
 
@@ -365,7 +365,7 @@ At this moment, no object refers C and the reference count of C is zero.
 This means C is no longer useful.
 Then C destructs itself and finally the memories allocated to C is freed.
 
-![Reference count of B](refcount.png)
+![Reference count of B](image/refcount.png)
 
 The idea above is based on an assumption that an object refered by nothing has reference count of zero.
 When the reference count drops to zero, the object starts its destruction process.
@@ -409,7 +409,7 @@ Look at the following diagram.
 There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass.
 Each class has its own dispose handler -- `dh1`, `dh2`, `dh3` and `tfe_text_view_dispose`.
 
-![dispose handers](dispose_handler.png)
+![dispose handers](image/dispose_handler.png)
 
 Now, look at the `tfe_text_view_dispose` program above.
 It first releases the reference to GFile object pointed by `tv->file`.

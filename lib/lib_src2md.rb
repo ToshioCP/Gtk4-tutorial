@@ -62,7 +62,7 @@ def src2md srcmd, md
         n += 1
       end
     else
-      md_buf << line
+      md_buf << line.gsub(/(!\[[^\]]*\])\(..\/([^\)]*)\)/, "\\1(\\2)")
     end
   end
   IO.write(md,md_buf.join)

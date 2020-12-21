@@ -48,7 +48,7 @@ Then compile and run it.
 
 A window with a message "Hello." appears.
 
-![Screenshot of the label](screenshot_lb1.png)
+![Screenshot of the label](image/screenshot_lb1.png)
 
 There's only a little change between `pr4.c` and `lb1.c`.
 Diff is a good program to know the difference between two files.
@@ -144,7 +144,7 @@ So, if `btn` is clicked, the function `on_click` is invoked.
 Name the program `lb2.c` and save it. 
 Now compile and run it.
 
-![Screenshot of the label](screenshot_lb2.png)
+![Screenshot of the label](image/screenshot_lb2.png)
  
 A window with the button appears.
 Click the button (it is a large button, you can click everywhere inside the window), then a string "Clicked." appears on the shell terminal.
@@ -225,7 +225,7 @@ The following procedure shows the way to add two buttons in a window.
 
 After this, the Widgets are connected as following diagram.
 
-![Parent-child relationship](box.png)
+![Parent-child relationship](image/box.png)
 
 Now, code it.
 
@@ -302,7 +302,7 @@ The next function fills a box with children, giving them equal space.
 After that, two buttons `btn1` and `btn2` are generated and the signal handlers are set.
 Then, these two buttons are appended to the box.
 
-![Screenshot of the box](screenshot_lb4.png)
+![Screenshot of the box](image/screenshot_lb4.png)
 
 The handler corresponds to `btn1` changes its label.
 The handler corresponds to `btn2` destroys the top-level window and the application quits.

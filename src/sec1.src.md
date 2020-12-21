@@ -162,7 +162,7 @@ And GtkWidget is a base object from which all the GUI objects derive.
 
 GtkWindow includes GtkWidget at the top of its object.
 
-![GtkWindow and GtkWidget](window_widget.png)
+![GtkWindow and GtkWidget](../image/window_widget.png)
 
 The function `gtk_window_new` is defined as follows.
 
@@ -213,7 +213,7 @@ Save the program as `pr3.c` and compile and run it.
 
 A small window appears.
 
-![Screenshot of the window](screenshot_pr3.png)
+![Screenshot of the window](../image/screenshot_pr3.png)
 
 Click on the close button then the window disappears and the program finishes.
 
@@ -234,5 +234,5 @@ So you don't need to call `gtk_window_set_application` any more.
 The program sets the title and the default size of the window.
 Compile it and run `a.out`, then you will see a bigger window with its title "pr4".
 
-![Screenshot of the window](screenshot_pr4.png)
+![Screenshot of the window](../image/screenshot_pr4.png)
 

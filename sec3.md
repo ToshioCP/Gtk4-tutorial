@@ -69,7 +69,7 @@ In line 30, `tv` is set to `win` as a child.
 
 Now compile and run it.
 
-![GtkTextView](screenshot_tfv1.png)
+![GtkTextView](image/screenshot_tfv1.png)
 
 There's an I-beam pointer in the window.
 You can add or delete any character on GtkTextview.

@@ -9,7 +9,7 @@ It is better to make "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
 Signals and handlers will be explained later.
 
-![Screenshot of the file editor](screenshot_tfe2.png)
+![Screenshot of the file editor](../image/screenshot_tfe2.png)
 
 The screenshot above shows the layout.
 The function `on_open` in the source code `tfe2.c` is as follows.

@@ -196,7 +196,7 @@ It is the string "s" given at the generation time.
 The following code includes stateful actions above.
 This program has menus like this:
 
-![menu2](menu2.png)
+![menu2](../image/menu2.png)
 
 - Fullscreen menu toggles the size of the window between maximum and non-maximum.
 If the window is maximum size, which is called full screen, then a check mark is put before "fullscreen" label.

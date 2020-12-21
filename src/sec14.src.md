@@ -5,7 +5,7 @@
 Users often use menus to tell the command to the computer.
 It is like this:
 
-![Menu](menu.png)
+![Menu](../image/menu.png)
 
 Now let's analyze the menu above.
 There are two types of object.
@@ -18,7 +18,7 @@ They are called "menu".
 Menu is an ordered list of items.
 They are similar to arrays.
 
-![Menu structure](menu_structure.png)
+![Menu structure](../image/menu_structure.png)
 
 - Menubar is a menu which has three items, which are "File", "Edit" and "View".
 - The menu item labeled "Edit" has a link to the submenu which has two items.
@@ -162,7 +162,7 @@ The structure of the menu is shown in the diagram below.
 - 30: Set GtkApplicationWindow to show the menubar.
 - 31: Show the window.
 
-![menu and action](menu1.png)
+![menu and action](../image/menu1.png)
 
-![Screenshot of menu1](menu1_screenshot.png)
+![Screenshot of menu1](../image/menu1_screenshot.png)
 
