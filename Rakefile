@@ -40,9 +40,9 @@ task md: mdfilenames
 end
 
 task :md do
-  buf = [ "# Gtk4 TUtorial for beginners\n", "\n" ]
+  buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   buf << "This tutorial is under development and unstable.\n"
-  buf << "You should be careful because there might exists bugs, errors or mistakes.\n"
+  buf << "You should be careful because there exists bugs, errors or mistakes.\n"
   buf << "\n"
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }

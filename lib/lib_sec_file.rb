@@ -59,6 +59,8 @@ class Sec_file < String
       nil
     end
   end
+# Note: is_i? indicates the number is integer mathematically. For example, 2.0 is an integer.
+# It doesn't mean the class of the number is Integer.
   def is_i?
     self.num == self.num.floor
   end
@@ -68,12 +70,15 @@ class Sec_file < String
       n = n.to_f if n =~ /^\d+\.\d+/
     end
     if n.instance_of?(Integer) || n.instance_of?(Float)
+      n = n.to_i if n == n.floor
       old = self
       new = self.gsub(/\d+(\.\d+)?(\.(src\.md|md|html|tex)$)/, "#{n}\\2")
-      File.rename old, new
-      self.replace new
-      @name = File.basename self
-      @dirname = File.dirname self
+      if old != new
+        File.rename old, new
+        self.replace new
+        @name = File.basename self
+        @dirname = File.dirname self
+      end
     end
   end
 end
