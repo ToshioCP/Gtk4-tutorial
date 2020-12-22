@@ -5,11 +5,11 @@ Up: [Readme.md](Readme.md),  Next: [Section 2](sec2.md)
 
 ### Tutorial document
 
-The tutorial is about gtk4 libraries.
+This tutorial is about gtk4 libraries.
 It is originally used on linux with C compiler, but now it is used more widely, on windows and macOS, with Vala, python and so on.
 However, this tutorial describes only C programs on linux.
 
-You need:
+If you want to try the examples in the tutorial, you need:
 
 - PC with linux distribution like ubuntu, debian and so on.
 - Gcc
@@ -40,13 +40,13 @@ You can install it as a package of your ditribution or use gem command.
 
 Copyright (C) 2020  ToshioCP (Toshio Sekiya)
 
-Gtk tutorial repository containes the tutorial document and softwares such as converters, generators and controlers.
-All of them make up the 'Gtk tutorial' package.
-This package is simply called 'Gtk tutorial' in the following description.
+Gtk4 tutorial repository containes the tutorial document and softwares such as converters, generators and controlers.
+All of them make up the 'Gtk4 tutorial' package.
+This package is simply called 'Gtk4 tutorial' in the following description.
 'Gtk4 tutorial' is free; you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-'Gtk tutorial' is distributed in the hope that it will be useful,
+'Gtk4 tutorial' is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) for more details.
 
