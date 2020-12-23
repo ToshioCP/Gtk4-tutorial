@@ -74,7 +74,7 @@ So, I will explain it to you first.
 Signal is emitted when something happens.
 For example, a window is generated, a window is destroyed and so on.
 The signal "activate" is emitted when the application is activated.
-If the signal is connected to a function, which is called signal handler or simply handler, then the function invokes when the signal emits.
+If the signal is connected to a function, which is called signal handler or simply handler, then the function is invoked when the signal emits.
 The flow is like this:
 
 1. Something happens.
@@ -89,7 +89,7 @@ GObject is the top object in the hierarchy of all the objects.
     GObject -- GApplication -- GtkApplication
     <---parent                      --->child
 
-A child object derives signals, functions, properties and so on from its parent object.
+A child object inherits signals, functions, properties and so on from its parent object.
 So, Gtkapplication also has the "activate" signal.
 
 Now we can solve the problem in `pr1.c`.

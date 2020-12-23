@@ -16,7 +16,8 @@ If you want to try the examples in the tutorial, you need:
 You need to install gtk4 to your computer.
 Refer to [gtk4 gitlab repository](https://gitlab.gnome.org/GNOME/gtk).
 However, it might make some trouble like, for example, your pc doesn't recognize usb port.
-You should uninstall it after learning gtk4 programing.
+Therefore, I strongly recommend you not to install gtk4 to the computer you usually use.
+Instead, Install it to another computer only used to try gtk4.
 
 ### Software
 

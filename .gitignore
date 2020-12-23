@@ -5,3 +5,6 @@ makehtml.rb
 pickoutfunc.rb
 src/img.rb
 src/toi.rb
+
+# backup file
+*~
