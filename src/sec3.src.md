@@ -4,12 +4,12 @@
 
 ### GtkLabel
 
-We made an window and show it on the screen in the previous chapter.
+We made an window and show it on the screen in the previous section.
 Now we go on to the next topic, widgets in the window.
 The simplest widget is GtkLabel.
 It is a widget with a string in it.
 
-@@@ lb1.c
+@@@ misc/lb1.c
 
 Save this program to a file `lb1.c`.
 Then compile and run it.
@@ -25,7 +25,7 @@ There's only a little change between `pr4.c` and `lb1.c`.
 Diff is a good program to know the difference between two files.
 
 $$$
-diff misc/pr4.c lb1.c
+cd misc; diff pr4.c lb1.c
 $$$
 
 This tells us:
@@ -57,13 +57,14 @@ In this subsection, we will make a button with a label.
 When a button is clicked on, it emits a "clicked" signal.
 The following program shows how to catch the signal and do something.
 
-@@@ lb2.c
+@@@ misc/lb2.c
 
 Look at the line 17 to 19.
 First, generate a GtkButton widget `btn` with a label "Click me".
 Then, set it to the window `win` as a child.
-Finally, connect a "clicked" signal of the button to a handler (function) `on_click`.
-So, if `btn` is clicked, the function `on_click` is invoked.
+Finally, connect a "clicked" signal of the button to a handler (function) `click_cb`.
+So, if `btn` is clicked, the function `click_cb` is invoked.
+The suffix cb means "call back".
 
 Name the program `lb2.c` and save it. 
 Now compile and run it.
@@ -79,12 +80,12 @@ However, using g_print is out of harmony with GTK which is a GUI library.
 So, we will change the handler.
 The following code is `lb3.c`.
 
-@@@ lb3.c on_clicked on_activate
+@@@ misc/lb3.c click_cb on_activate
 
 And the difference between `lb2.c` and `lb3.c` is as follows.
 
 $$$
-diff lb2.c lb3.c
+cd misc; diff lb2.c lb3.c
 $$$
 
 The change is:
@@ -118,7 +119,7 @@ After this, the Widgets are connected as following diagram.
 
 Now, code it.
 
-@@@ lb4.c
+@@@ misc/lb4.c
 
 Look at the function `on_activate`.
 
@@ -128,7 +129,7 @@ After the generation of GtkApplicationWindow, GtkBox is generated.
     gtk_box_set_homogeneous (GTK_BOX (box), TRUE);
 
 The first argument arranges children vertically.
-The second argument is sizes between children.
+The second argument is the size between children.
 The next function fills a box with children, giving them equal space.
 
 After that, two buttons `btn1` and `btn2` are generated and the signal handlers are set.

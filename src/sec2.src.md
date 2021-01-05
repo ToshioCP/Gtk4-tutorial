@@ -20,18 +20,18 @@ The following is the C code representing the scenario above.
 
 @@@ misc/pr1.c
 
-The first line says that this program includes the GTK header libraries.
+The first line says that this program includes the header files of the Gtk libraries.
 The function `main` above is a startup function in C language.
 The variable `app` is defined as a pointer to GtkApplication, which is actually a structure in which information about the application is stored.
-The function `gtk_application_new` generates a GtkApplication and sets its pointer to `app`.
+The function `gtk_application_new` generates a GtkApplication object and sets its pointer to `app`.
 The meaning of the arguments will be explained later.
-The function `g_application_run` invokes the GtkApplication pointed by `app`.
+The function `g_application_run` invokes the GtkApplication object pointed by `app`.
 (We often say that the function invokes `app`.
 Actually, `app` is not an object but an pointer to the object.
 However, it is simple and short, and probably no confusion occurs.)
 
 To compile this, the following command needs to be run.
-The string pr1.c is the filename of the C source code.
+The string pr1.c is the filename of the C source code above.
 
     $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
 
@@ -45,7 +45,7 @@ Let's run it.
 
 Oh, just an error message.
 But this error message means that the GtkApplication object ran without a doubt.
-Now, think about the message in the next section.
+Now, think about the message in the next subsection.
 
 ### signal
 
@@ -53,9 +53,9 @@ The message tells us that:
 
 1. The application GtkApplication doesn't implement `g_application_activate()`.
 2. And it has no handlers connected to the activate signal.
-3. You need to solve at least one of this.
+3. You need to solve at least one of these.
 
-These two cause of the error are related to signals.
+These two causes of the error are related to signals.
 So, I will explain it to you first.
 
 Signal is emitted when something happens.
@@ -101,8 +101,9 @@ The handler function is described in that subsection.
 In addition, `g_signal_connect` is described in GObject API reference.
 API reference is very important.
 You should see and understand it to write GTK applications.
+They are located in ['GNOME Developer Center'](https://developer.gnome.org/).
 
-Let's compile the source file `pr2.c` above and run it.
+Let's compile the source file above (`pr2.c`) and run it.
 
     $ gcc `pkg-config --cflags gtk4` pr2.c `pkg-config --libs gtk4`
     $ ./a.out
@@ -112,14 +113,14 @@ Let's compile the source file `pr2.c` above and run it.
 OK, well done.
 However, you may have noticed that it's painful to type such a long line to compile.
 It is a good idea to use shell script to solve this problem.
-Make a text file which contains the following text. 
+Make a text file which contains the following line. 
 
     gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 
-Then, save it in $HOME/bin, which is usually /home/(username)/bin.
+Then, save it under the directory $HOME/bin, which is usually /home/(username)/bin.
 (If your user name is James, then the directory is /home/james/bin).
 And turn on the execute bit of the file.
-Suppose the filename is comp, then the procedure is as follows.
+Suppose the filename is `comp`, then the procedure is as follows.
 
     $ chmod 755 $HOME/bin/comp
     $ ls -log $HOME/bin
@@ -193,7 +194,7 @@ You need to cast `win` to GtkWindow and `app` to GtkApplication.
 `GTK_WINDOW` and `GTK_APPLICATION` macro is appropriate for that.
 
 GtkApplication continues to run until the related window is destroyed.
-If you didn't connect GtkWindow and GtkApplication, GtkApplication shutdowns soon.
+If you didn't connect GtkWindow and GtkApplication, GtkApplication shutdowns immediately.
 Because no window is connected to GtkApplication, it doesn't need to wait anything.
 As it shutdowns the generated window is also destroyed.
 
@@ -235,4 +236,3 @@ The program sets the title and the default size of the window.
 Compile it and run `a.out`, then you will see a bigger window with its title "pr4".
 
 ![Screenshot of the window](../image/screenshot_pr4.png)
-

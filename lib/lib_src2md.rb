@@ -33,7 +33,7 @@ def src2md srcmd, md
         c_functions.each do |c_function|
           from = c_file_buf.find_index { |line| line =~ /^#{c_function} *\(/ }
           if ! from
-            warn "ERROR!!! --- Didn't find #{func} in #{filename}. ---"
+            warn "ERROR!!! --- Didn't find #{c_function} in #{filename}. ---"
             break
           end
           to = from

@@ -616,5 +616,5 @@ The followings are the source files of tfe5.
       218   622  7454 tfe5/tfetextview.c
        29    47   545 tfe5/tfetextview.h
        64   105  2266 tfe5/tfe.ui
-      574  1482 17411 合計
+      574  1482 17411 total
 Up: [Readme.md](Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)

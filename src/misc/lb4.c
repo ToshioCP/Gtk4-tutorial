@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
 static void
-on_clicked1 (GtkButton *btn, gpointer user_data) {
+click1_cb (GtkButton *btn, gpointer user_data) {
   const gchar *s;
 
   s = gtk_button_get_label (btn);
@@ -12,7 +12,7 @@ on_clicked1 (GtkButton *btn, gpointer user_data) {
 }
 
 static void
-on_clicked2 (GtkButton *btn, gpointer user_data) {
+click2_cb (GtkButton *btn, gpointer user_data) {
   GtkWindow *win = GTK_WINDOW (user_data);
   gtk_window_destroy (win);
 }
@@ -33,10 +33,10 @@ on_activate (GApplication *app, gpointer user_data) {
   gtk_window_set_child (GTK_WINDOW (win), box);
 
   btn1 = gtk_button_new_with_label ("Hello.");
-  g_signal_connect (btn1, "clicked", G_CALLBACK (on_clicked1), NULL);
+  g_signal_connect (btn1, "clicked", G_CALLBACK (click1_cb), NULL);
 
   btn2 = gtk_button_new_with_label ("Quit");
-  g_signal_connect (btn2, "clicked", G_CALLBACK (on_clicked2), win);
+  g_signal_connect (btn2, "clicked", G_CALLBACK (click2_cb), win);
 
   gtk_box_append (GTK_BOX (box), btn1);
   gtk_box_append (GTK_BOX (box), btn2);
@@ -55,4 +55,3 @@ main (int argc, char **argv) {
   g_object_unref (app);
   return stat;
 }
-
