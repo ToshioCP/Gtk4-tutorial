@@ -343,9 +343,9 @@ Only functions `on_open` are shown as follows.
     47     gtk_window_destroy (GTK_WINDOW (win));
     48 }
 
-The source code of `tfe3.c` is stored in [src/tfe](src/tfe) directory.
+The source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
 If you want to see it, click the link above.
-In the same way, you can get the source files below in the directory [src/tfe](src/tfe).
+In the same way, you can get the source files below in the directory [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe).
 
 ### Using ui string
 

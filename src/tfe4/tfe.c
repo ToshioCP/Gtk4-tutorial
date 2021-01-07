@@ -28,7 +28,7 @@ on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer 
   g_object_unref (build);
   for (i = 0; i < n_files; i++) {
     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
-      scr = gtk_scrolled_window_new (NULL, NULL);
+      scr = gtk_scrolled_window_new ();
       tv = tfe_text_view_new ();
       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);

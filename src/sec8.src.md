@@ -1,6 +1,6 @@
 # Build system
 
-## What do we need to think about building?
+## What do we need to think about to manage big source files?
 
 We've managed to compile a small editor so far.
 But Some bad signs are beginning to appear.
@@ -9,6 +9,8 @@ But Some bad signs are beginning to appear.
 We need to sort it out.
 - There are two compilers, `gcc` and `glib-compile-resources`.
 We want to control them by one building tool. 
+
+These ideas are useful to manage big source files.
 
 ## Divide a C source file into two parts.
 
@@ -21,7 +23,7 @@ It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
 
 Now we have three source files, `tfetextview.c`, `tfe.c` and `tfe3.ui`.
 The `3` of `tfe3.ui` is like a version number.
-Managing version with filenames is one possible idea but it may make bothersome complicated problem.
+Managing version with filenames is one possible idea but it may make bothersome problem.
 You need to rewrite filename in each version and it affects to contents of sourcefiles that refer to filenames.
 So, we should take `3` away from the filename.
 
@@ -33,6 +35,8 @@ Those public information is usually written in header files.
 It has `.h` suffix like `tfetextview.h`
 And header files are included by C source files.
 For example, `tfetextview.h` is included by `tfe.c`.
+
+All the source files are listed below.
 
 `tfetextview.h`
 
@@ -81,7 +85,7 @@ The sample of Malefile above consists of three elements, `sample.o`, `sample.c` 
 
 - `sample.o` is called target.
 - `sample.c` is prerequisite.
-- `gcc -0 sample.o sample.c` is recipe.
+- `gcc -o sample.o sample.c` is recipe.
 Recipes follow tab characters, not spaces.
 (It is very important. Use tab not space, or make won't work as you expected).
 
@@ -96,7 +100,7 @@ The Makefile for `tfe` is as follows.
 
 @@@ tfe4/Makefile
 
-Only you need is to type `make`.
+You only need to type `make`.
 
     $ make
     gcc -c -o tfe.o `pkg-config --cflags gtk4` tfe.c
@@ -107,8 +111,8 @@ Only you need is to type `make`.
 
 I used only very basic rules to write this Makefile.
 There are many more convenient methods to make it more compact.
-But it needs long story to explain.
-So I want to finish the explanation about make.
+But it will be long to explain it.
+So I want to finish explaining make and move on to the next topic.
 
 ## Rake
 
@@ -136,7 +140,7 @@ The variable `t` is a task object.
   - t.name is a target name
   - t.prerequisites is an array of prerequisits.
   - t.source is the first element of prerequisites.
-- sh is a method to give the following string to shell as an argument and execute.
+- sh is a method to give the following string to shell as an argument and execute the shell.
 - 16-21: Loop by each element of the array of objfiles. Each object depends on corresponding source file.
 - 23-25: resouce file depends on xml file and ui file.
 
@@ -177,13 +181,13 @@ Now run meson and ninja.
     $ meson _build
     $ ninja -C _build
 
-Then, the executable file `tfe` has been generated under the directory `_build`.
+Then, the executable file `tfe` is generated under the directory `_build`.
 
     $ _build/tfe tfe.c tfetextview.c
 
 Then the window appears.
 
-I show you three build tools.
+I've shown you three build tools.
 I think meson and ninja is the best choice for the present.
 
 We divided a file into some categorized files and used a build tool.

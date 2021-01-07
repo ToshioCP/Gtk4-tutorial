@@ -29,6 +29,6 @@ tfe_text_view_get_file (TfeTextView *tv) {
 
 GtkWidget *
 tfe_text_view_new (void) {
-  return gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
 }
 
