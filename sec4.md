@@ -23,7 +23,7 @@ See a sample program `tfv1.c` below.
     12 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
     13 "One day, he went into a mountain and found a shining bamboo."
     14 "\"What a mysterious bamboo it is!,\" he said."
-    15 "He cuts it, then there was a small cute baby girl in it."
+    15 "He cut it, then there was a small cute baby girl in it."
     16 "The girl was shining faintly."
     17 "He thought this baby girl is a gift from Heaven and took her home.\n"
     18 "His wife was surprized at his tale."
@@ -76,7 +76,7 @@ You can add or delete any character on GtkTextview.
 And your change is kept in GtkTextBuffer.
 If you add more characters than the limit of the window, the height of the window extends.
 If the height gets bigger than the height of the display screen, you won't be able to control the size of the window back to the original size.
-It's a problem.
+It's a problem and it shows that there exists a bug in the program.
 You can solve it by putting GtkScrolledWindow between GtkApplicationWindow and GtkTextView.
 
 ### GtkScrolledWindow
@@ -84,12 +84,12 @@ You can solve it by putting GtkScrolledWindow between GtkApplicationWindow and G
 What we need to do is:
 
 - Generate GtkScrolledWindow and set it as a child of GtkApplicationWindow.
-- Set GtkTextVies as a child of GtkScrolledWindow.
+- Set GtkTextView as a child of GtkScrolledWindow.
 
 Modify `tfv1.c` and save it as `tfv2.c`.
 The difference between these two files is very little.
 
-    $ diff tfv1.c tfv2.c
+    $ cd tfv; diff tfv1.c tfv2.c
     5a6
     >   GtkWidget *scr;
     24a26,28
@@ -122,7 +122,7 @@ Though you can modify the source file by this diff output, It's good for you to 
     13 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
     14 "One day, he went into a mountain and found a shining bamboo."
     15 "\"What a mysterious bamboo it is!,\" he said."
-    16 "He cuts it, then there was a small cute baby girl in it."
+    16 "He cut it, then there was a small cute baby girl in it."
     17 "The girl was shining faintly."
     18 "He thought this baby girl is a gift from Heaven and took her home.\n"
     19 "His wife was surprized at his tale."

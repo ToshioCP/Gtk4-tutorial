@@ -37,7 +37,7 @@ on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer 
   } else {
     filename = g_file_get_path (files[0]);
     g_print ("No such file: %s.\n", filename);
-    gtk_window_destroy (GTK_WINDOW (win));    
+    gtk_window_destroy (GTK_WINDOW (win));
   }
 }
 

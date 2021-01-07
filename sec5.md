@@ -127,7 +127,7 @@ The program is as follows.
     37   } else {
     38     filename = g_file_get_path (files[0]);
     39     g_print ("No such file: %s.\n", filename);
-    40     gtk_window_destroy (GTK_WINDOW (win));    
+    40     gtk_window_destroy (GTK_WINDOW (win));
     41   }
     42 }
     43 

@@ -3,7 +3,6 @@
 static void
 on_activate (GApplication *app, gpointer user_data) {
   GtkWidget *win;
-  GtkWidget *scr;
   GtkWidget *tv;
   GtkTextBuffer *tb;
   gchar *text;
@@ -13,7 +12,7 @@ on_activate (GApplication *app, gpointer user_data) {
 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
 "One day, he went into a mountain and found a shining bamboo."
 "\"What a mysterious bamboo it is!,\" he said."
-"He cuts it, then there was a small cute baby girl in it."
+"He cut it, then there was a small cute baby girl in it."
 "The girl was shining faintly."
 "He thought this baby girl is a gift from Heaven and took her home.\n"
 "His wife was surprized at his tale."
@@ -23,15 +22,12 @@ on_activate (GApplication *app, gpointer user_data) {
   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
 
-  scr = gtk_scrolled_window_new ();
-  gtk_window_set_child (GTK_WINDOW (win), scr);
-
   tv = gtk_text_view_new ();
   tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
   gtk_text_buffer_set_text (tb, text, -1);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
 
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+  gtk_window_set_child (GTK_WINDOW (win), tv);
 
   gtk_widget_show (win);
 }
@@ -41,7 +37,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_FLAGS_NONE);
   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
