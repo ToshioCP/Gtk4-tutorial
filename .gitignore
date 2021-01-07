@@ -6,6 +6,10 @@ pickoutfunc.rb
 src/img.rb
 src/toi.rb
 src/misc/a.out
+src/tfv/a.out
+src/tfe/a.out
+src/tfe/hello.txt
+src/tfe/resources.c
 
 # backup file
 *~

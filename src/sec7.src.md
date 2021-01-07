@@ -14,28 +14,28 @@ Signals and handlers will be explained later.
 The screenshot above shows the layout.
 The function `on_open` in the source code `tfe2.c` is as follows.
 
-@@@ tfe2.c on_open
+@@@ tfe/tfe2.c on_open
 
 The point is how to build the window.
 
-- 26-28: Generate GtkApplicationWindow and set its title and default size.
-- 30-31: Generate GtkBox `boxv`.
+- 25-27: Generate GtkApplicationWindow and set its title and default size.
+- 29-30: Generate GtkBox `boxv`.
 It is a vertical box and a child of GtkApplicationWindow.
 It has two children.
 The first child is a horizontal box includes buttons.
 The second child is GtkNotebook.
-- 33-34: Generate GtkBox `boxh` and append it to 'boxv' as a first child.
-- 36-41: Generate three dummy labels.
+- 32-33: Generate GtkBox `boxh` and append it to 'boxv' as a first child.
+- 35-40: Generate three dummy labels.
 The labels `dmy1` and `dmy3` has a character width of ten.
 The other label `dmy2` is set hexpand property TRUE.
 This makes the label expands horizontally as long as possible.
-- 42-45: Generate four buttons.
-- 47-53: Append these GtkLabel and GtkButton to `boxh`.
-- 55-58: Generate GtkNotebook and set hexpand and vexpand properties TRUE.
+- 41-44: Generate four buttons.
+- 46-52: Append these GtkLabel and GtkButton to `boxh`.
+- 54-57: Generate GtkNotebook and set hexpand and vexpand properties TRUE.
 This makes it expands horizontally and vertically as big as possible.
 It is appended to `boxv` as the second child.
 
-The number of lines is 33(=58-26+1) to build the widgets.
+The number of lines is 33(=57-25+1) to build the widgets.
 And we needed many variables (boxv, boxh, dmy1 ...).
 Most of them aren't necessary except building the widgets.
 Are there any good solution to reduce these work?
@@ -48,7 +48,7 @@ It reduces the cumbersom work.
 
 First, let's look at the ui file `tfe3.ui` that defines a structure of the widgets.
 
-@@@ tfe3.ui
+@@@ tfe/tfe3.ui
 
 This is coded with XML structure.
 Constructs begin with `<` and end with `>` is called tags.
@@ -64,7 +64,7 @@ And the three properties of the window are defined.
 - 6: child tag means a child of the object above.
 For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
 
-Compare this ui file and the lines 26-58 in the source code of `on_open`.
+Compare this ui file and the lines 25-57 in the source code of `on_open` function.
 Those two decribe the same structure of widgets.
 
 ## GtkBuilder
@@ -85,17 +85,21 @@ We only need `win` and `nb` for the program after this, so we don't need to take
 This reduces lines in the C source file.
 
 $$$
-diff tfe2.c tfe3.c
+cd tfe; diff tfe2.c tfe3.c
 $$$
 
-`65,104c61,65` means 40 (=104-65+1) lines change to 5 (=65-61+1) lines.
-Therefore 35 lines are reduced.
+`60,103c61,65` means 42 (=103-60+1) lines change to 5 (=65-61+1) lines.
+Therefore 37 lines are reduced.
 Using ui file not only shortens C source files, but also makes the widgets' structure clear.
 
 Now I'll show you the C source code `tfe3.c`.
 Only functions `on_open` are shown as follows.
 
-@@@ tfe3.c on_open
+@@@ tfe/tfe3.c on_open
+
+The source code of `tfe3.c` is stored in <src/tfe> directory.
+If you want to see it, click the link above.
+In the same way, you can get the source files below in the directory <src/tfe>.
 
 ### Using ui string
 
@@ -139,7 +143,7 @@ And after compilation, it bundles them up into one Gresource object.
 An xml file is necessary for the resource compiler `glib-compile-resources`.
 It describes resource files.
 
-@@@ tfe3.gresource.xml
+@@@ tfe/tfe3.gresource.xml
 
 - 2: gresources tag can include mulitple gresources (gresource tags).
 However, this xml has only one gresource.
@@ -149,7 +153,7 @@ And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix
 If you want to add more files, then insert them between line 4 and 5.
 
 Save this xml text to `tfe3.gresource.xml`.
-The gresource compiler `glib-compile-resources` shows its ussage with the argument `--help`.
+The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
 
 $$$
 LANG=C glib-compile-resources --help

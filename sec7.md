@@ -39,90 +39,89 @@ The function `on_open` in the source code `tfe2.c` is as follows.
     22   GtkWidget *btns; /* button for save */
     23   GtkWidget *btnc; /* button for close */
     24 
-    25 
-    26   win = gtk_application_window_new (GTK_APPLICATION (app));
-    27   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-    28   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-    29 
-    30   boxv = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    31   gtk_window_set_child (GTK_WINDOW (win), boxv);
-    32 
-    33   boxh = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-    34   gtk_box_append (GTK_BOX (boxv), boxh);
-    35 
-    36   dmy1 = gtk_label_new(NULL); /* dummy label for left space */
-    37   gtk_label_set_width_chars (GTK_LABEL (dmy1), 10);
-    38   dmy2 = gtk_label_new(NULL); /* dummy label for center space */
-    39   gtk_widget_set_hexpand (dmy2, TRUE);
-    40   dmy3 = gtk_label_new(NULL); /* dummy label for right space */
-    41   gtk_label_set_width_chars (GTK_LABEL (dmy3), 10);
-    42   btnn = gtk_button_new_with_label ("New");
-    43   btno = gtk_button_new_with_label ("Open");
-    44   btns = gtk_button_new_with_label ("Save");
-    45   btnc = gtk_button_new_with_label ("Close");
-    46 
-    47   gtk_box_append (GTK_BOX (boxh), dmy1);
-    48   gtk_box_append (GTK_BOX (boxh), btnn);
-    49   gtk_box_append (GTK_BOX (boxh), btno);
-    50   gtk_box_append (GTK_BOX (boxh), dmy2);
-    51   gtk_box_append (GTK_BOX (boxh), btns);
-    52   gtk_box_append (GTK_BOX (boxh), btnc);
-    53   gtk_box_append (GTK_BOX (boxh), dmy3);
-    54 
-    55   nb = gtk_notebook_new ();
-    56   gtk_widget_set_hexpand (nb, TRUE);
-    57   gtk_widget_set_vexpand (nb, TRUE);
-    58   gtk_box_append (GTK_BOX (boxv), nb);
-    59 
-    60   for (i = 0; i < n_files; i++) {
-    61     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
-    62       scr = gtk_scrolled_window_new ();
-    63       tv = tfe_text_view_new ();
-    64       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-    65       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-    66       gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-    67 
-    68       tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
-    69       gtk_text_buffer_set_text (tb, contents, length);
-    70       g_free (contents);
-    71       filename = g_file_get_basename (files[i]);
-    72       lab = gtk_label_new (filename);
-    73       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
-    74       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
-    75       g_object_set (nbp, "tab-expand", TRUE, NULL);
-    76       g_free (filename);
-    77     } else {
-    78       filename = g_file_get_path (files[i]);
-    79       g_print ("No such file: %s.\n", filename);
-    80       g_free (filename);
-    81     }
-    82   }
-    83   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-    84     gtk_widget_show (win);
-    85   } else
-    86     gtk_window_destroy (GTK_WINDOW (win));
-    87 }
+    25   win = gtk_application_window_new (GTK_APPLICATION (app));
+    26   gtk_window_set_title (GTK_WINDOW (win), "file editor");
+    27   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+    28 
+    29   boxv = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    30   gtk_window_set_child (GTK_WINDOW (win), boxv);
+    31 
+    32   boxh = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    33   gtk_box_append (GTK_BOX (boxv), boxh);
+    34 
+    35   dmy1 = gtk_label_new(NULL); /* dummy label for left space */
+    36   gtk_label_set_width_chars (GTK_LABEL (dmy1), 10);
+    37   dmy2 = gtk_label_new(NULL); /* dummy label for center space */
+    38   gtk_widget_set_hexpand (dmy2, TRUE);
+    39   dmy3 = gtk_label_new(NULL); /* dummy label for right space */
+    40   gtk_label_set_width_chars (GTK_LABEL (dmy3), 10);
+    41   btnn = gtk_button_new_with_label ("New");
+    42   btno = gtk_button_new_with_label ("Open");
+    43   btns = gtk_button_new_with_label ("Save");
+    44   btnc = gtk_button_new_with_label ("Close");
+    45 
+    46   gtk_box_append (GTK_BOX (boxh), dmy1);
+    47   gtk_box_append (GTK_BOX (boxh), btnn);
+    48   gtk_box_append (GTK_BOX (boxh), btno);
+    49   gtk_box_append (GTK_BOX (boxh), dmy2);
+    50   gtk_box_append (GTK_BOX (boxh), btns);
+    51   gtk_box_append (GTK_BOX (boxh), btnc);
+    52   gtk_box_append (GTK_BOX (boxh), dmy3);
+    53 
+    54   nb = gtk_notebook_new ();
+    55   gtk_widget_set_hexpand (nb, TRUE);
+    56   gtk_widget_set_vexpand (nb, TRUE);
+    57   gtk_box_append (GTK_BOX (boxv), nb);
+    58 
+    59   for (i = 0; i < n_files; i++) {
+    60     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
+    61       scr = gtk_scrolled_window_new ();
+    62       tv = tfe_text_view_new ();
+    63       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+    64       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+    65       gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+    66 
+    67       tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
+    68       gtk_text_buffer_set_text (tb, contents, length);
+    69       g_free (contents);
+    70       filename = g_file_get_basename (files[i]);
+    71       lab = gtk_label_new (filename);
+    72       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
+    73       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
+    74       g_object_set (nbp, "tab-expand", TRUE, NULL);
+    75       g_free (filename);
+    76     } else {
+    77       filename = g_file_get_path (files[i]);
+    78       g_print ("No such file: %s.\n", filename);
+    79       g_free (filename);
+    80     }
+    81   }
+    82   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
+    83     gtk_widget_show (win);
+    84   } else
+    85     gtk_window_destroy (GTK_WINDOW (win));
+    86 }
 
 The point is how to build the window.
 
-- 26-28: Generate GtkApplicationWindow and set its title and default size.
-- 30-31: Generate GtkBox `boxv`.
+- 25-27: Generate GtkApplicationWindow and set its title and default size.
+- 29-30: Generate GtkBox `boxv`.
 It is a vertical box and a child of GtkApplicationWindow.
 It has two children.
 The first child is a horizontal box includes buttons.
 The second child is GtkNotebook.
-- 33-34: Generate GtkBox `boxh` and append it to 'boxv' as a first child.
-- 36-41: Generate three dummy labels.
+- 32-33: Generate GtkBox `boxh` and append it to 'boxv' as a first child.
+- 35-40: Generate three dummy labels.
 The labels `dmy1` and `dmy3` has a character width of ten.
 The other label `dmy2` is set hexpand property TRUE.
 This makes the label expands horizontally as long as possible.
-- 42-45: Generate four buttons.
-- 47-53: Append these GtkLabel and GtkButton to `boxh`.
-- 55-58: Generate GtkNotebook and set hexpand and vexpand properties TRUE.
+- 41-44: Generate four buttons.
+- 46-52: Append these GtkLabel and GtkButton to `boxh`.
+- 54-57: Generate GtkNotebook and set hexpand and vexpand properties TRUE.
 This makes it expands horizontally and vertically as big as possible.
 It is appended to `boxv` as the second child.
 
-The number of lines is 33(=58-26+1) to build the widgets.
+The number of lines is 33(=57-25+1) to build the widgets.
 And we needed many variables (boxv, boxh, dmy1 ...).
 Most of them aren't necessary except building the widgets.
 Are there any good solution to reduce these work?
@@ -209,7 +208,7 @@ And the three properties of the window are defined.
 - 6: child tag means a child of the object above.
 For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
 
-Compare this ui file and the lines 26-58 in the source code of `on_open`.
+Compare this ui file and the lines 25-57 in the source code of `on_open` function.
 Those two decribe the same structure of widgets.
 
 ## GtkBuilder
@@ -229,10 +228,10 @@ All the widgets are connected based on the parent-children relationship describe
 We only need `win` and `nb` for the program after this, so we don't need to take out any other widgets.
 This reduces lines in the C source file.
 
-    $ diff tfe2.c tfe3.c
+    $ cd tfe; diff tfe2.c tfe3.c
     58a59
     >   GtkBuilder *build;
-    60,104c61,65
+    60,103c61,65
     <   GtkWidget *boxv;
     <   GtkWidget *boxh;
     <   GtkWidget *dmy1;
@@ -242,7 +241,6 @@ This reduces lines in the C source file.
     <   GtkWidget *btno; /* button for open */
     <   GtkWidget *btns; /* button for save */
     <   GtkWidget *btnc; /* button for close */
-    < 
     < 
     <   win = gtk_application_window_new (GTK_APPLICATION (app));
     <   gtk_window_set_title (GTK_WINDOW (win), "file editor");
@@ -284,13 +282,13 @@ This reduces lines in the C source file.
     >   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
     >   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
     >   g_object_unref(build);
-    139c100
+    138c100
     <   app = gtk_application_new ("com.github.ToshioCP.tfe2", G_APPLICATION_HANDLES_OPEN);
     ---
     >   app = gtk_application_new ("com.github.ToshioCP.tfe3", G_APPLICATION_HANDLES_OPEN);
 
-`65,104c61,65` means 40 (=104-65+1) lines change to 5 (=65-61+1) lines.
-Therefore 35 lines are reduced.
+`60,103c61,65` means 42 (=103-60+1) lines change to 5 (=65-61+1) lines.
+Therefore 37 lines are reduced.
 Using ui file not only shortens C source files, but also makes the widgets' structure clear.
 
 Now I'll show you the C source code `tfe3.c`.
@@ -344,6 +342,10 @@ Only functions `on_open` are shown as follows.
     46   } else
     47     gtk_window_destroy (GTK_WINDOW (win));
     48 }
+
+The source code of `tfe3.c` is stored in <src/tfe> directory.
+If you want to see it, click the link above.
+In the same way, you can get the source files below in the directory <src/tfe>.
 
 ### Using ui string
 
@@ -402,7 +404,7 @@ And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix
 If you want to add more files, then insert them between line 4 and 5.
 
 Save this xml text to `tfe3.gresource.xml`.
-The gresource compiler `glib-compile-resources` shows its ussage with the argument `--help`.
+The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
 
     $ LANG=C glib-compile-resources --help
     Usage:
