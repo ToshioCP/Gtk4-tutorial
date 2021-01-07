@@ -33,7 +33,7 @@ tfe_text_view_get_file (TfeTextView *tv) {
 
 GtkWidget *
 tfe_text_view_new (void) {
-  return gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
 }
 
 /* ---------- end of the definition of TfeTextView ---------- */
@@ -46,9 +46,9 @@ before_close (GtkWindow *win, GtkWidget *nb) {
   GtkTextBuffer *tb;
   GtkTextIter start_iter;
   GtkTextIter end_iter;
-  gchar *contents; /* gchar is the same as char ... typedef char gchar;*/
-  guint n;
-  guint i;
+  char *contents;
+  unsigned int n;
+  unsigned int i;
 
   n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
   for (i = 0; i < n; ++i) {

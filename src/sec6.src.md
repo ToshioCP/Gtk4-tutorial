@@ -33,15 +33,15 @@ It is a small program so far.
 However, if you continue developing it, then its size grows bigger and bigger.
 Generally speaking, the bigger the program size, the more difficult to maintain global variables.
 
-Making child widget object is a good idea in terms of maintenance.
+Making child object is a good idea in terms of maintenance.
 However, one thing you need to be careful is the difference between "child object" and "child widget".
 What we are thinking about now is "child object".
 A child object includes its parent object.
-And a child widget object derives everything from the parent widget object.
+And a child object derives everything from the parent object.
  
 ![Child widget of GtkTwxtView](../image/child.png)
 
-We will define TfeTextView as a child widget object of GtkTextView.
+We will define TfeTextView as a child object of GtkTextView.
 It has everything that GtkTextView has.
 For example, TfeTextView has GtkTextbuffer correspods to GtkTextView inside TfeTextView.
 And important thing is that TfeTextView can have a memory to keep a pointer to GFile.
@@ -52,7 +52,7 @@ So, I will just show you the way how to write the code and avoid the theoretical
 ## How to define a child widget of GtkTextView
 
 
-Let's define TfeTextView widget object which is a child object of GtkTextView.
+Let's define TfeTextView object which is a child object of GtkTextView.
 First, look at the program below.
 
     #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
@@ -86,7 +86,7 @@ First, look at the program below.
 
     GtkWidget *
     tfe_text_view_new (void) {
-      return gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
+      return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
     }
 
 If you are curious about the background theory of this program, It's very good for you.
@@ -107,7 +107,7 @@ TfeTextView (camel case), tfe\_text\_view (this is used to write functions) and 
 The name is always (prefix)\_TYPE\_(object) and the letters are upper case.
 And the replacement text is always (prefix)\_(object)\_get\_type () and the letters are lower case.
 - Next, use G\_DECLARE\_FINAL\_TYPE macro.
-The arguments are the child object name in camel case, lower case with underscore, prefix, object and parent object name.
+The arguments are the child object name in camel case, lower case with underscore, prefix (upper case), object (upper case with underscore) and parent object name (camel case).
 - Declare the structure \_TfeTextView.
 The underscore is necessary.
 The first member is the parent object.
@@ -130,9 +130,10 @@ Its name is (prefix)\_(object)\_new.
 If the parent object function needs parameters, this function also need them.
 You sometimes might want to add some parameters.
 It's your choice.
-Use gtk\_widget\_new function to generate the child widget.
+Use g\_object\_new function to generate the child widget.
 The arguments are  (prefix)\_TYPE\_(object), a list to initialize properties and NULL.
 In this code no property needs to be initialized.
+And the return value must be casted to GtkWidget.
 
 This program is not perfect.
 It has some problem.
@@ -141,26 +142,26 @@ It will be modified later.
 
 ## Close-request signal
 
-As a first step, `tfe1.c` writes files just before the window closes.
+After editing a file, `tfe1.c` writes files just before the window closes.
 GtkWindow emits "close-request" signal before it closes.
 We connect the signal and the handler `before_close`.
 A handler is a C function.
-When a function is connected to a certain signal, we call the function handler.
-Then, the function `before_close` is invoked when the signal "close-request" is emittd.
+When a function is connected to a certain signal, we call it handler.
+The function `before_close` is invoked when the signal "close-request" is emittd.
 
     g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
 
 The argument win is GtkApplicationWindow, in which the signal "close-request" is defined, and before\_close is the handler.
-`G_CALLBACK` cast is necessary before the handler.
+`G_CALLBACK` cast is necessary for the handler.
 The program of before\_close is as follows.
 
-@@@ tfe1.c before_close
+@@@ tfe/tfe1.c before_close
 
 The numbers on the left of items are line numbers in the source code.
 
 - 13: Get the number of pages `nb` has.
 - 14-23: For loop with regard to the index to each pages.
-- 15-17: Get GtkScrolledWindow, TfeTextView and a pointer to GFile. The pointer was stored when `on_open` handler ran. It will be shown later.
+- 15-17: Get GtkScrolledWindow, TfeTextView and a pointer to GFile. The pointer was stored when `on_open` handler had run. It will be shown later.
 - 18-20: Get GtkTextBuffer and contents. start\_iter and end\_iter is iterators of the buffer. I don't want to explain them now because it would take a lot of time. Just remember these lines for the present.
 - 21: Write the file.
 
@@ -168,7 +169,7 @@ The numbers on the left of items are line numbers in the source code.
 
 Now I will show you all the source code of `tfe1`.c.
 
-@@@ tfe1.c
+@@@ tfe/tfe1.c
 
 - 102: set the pointer to GFile into TfeTextView.
 `files[i]` is a pointer to GFile structure.
@@ -185,3 +186,4 @@ Now we got a very simple editor.
 It's not smart.
 We need more features like open, save, saveas, change font and so on.
 We will add them in the next section and after.
+

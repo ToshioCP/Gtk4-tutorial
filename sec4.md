@@ -72,7 +72,7 @@ Now compile and run it.
 ![GtkTextView](image/screenshot_tfv1.png)
 
 There's an I-beam pointer in the window.
-You can add or delete any character on GtkTextview.
+You can add or delete any characters on GtkTextview.
 And your change is kept in GtkTextBuffer.
 If you add more characters than the limit of the window, the height of the window extends.
 If the height gets bigger than the height of the display screen, you won't be able to control the size of the window back to the original size.

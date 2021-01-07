@@ -65,10 +65,10 @@ The handler of open signal is called as follows.
 The parameters are as follows:
 
 - application --- the application (usually GtkApplication)
-- files --- an array of GFiles. [array length=n_files] [element-type GFile]
-- n_files --- the length of files
+- files --- an array of GFiles. [array length=n\_files] [element-type GFile]
+- n\_files --- the length of files
 - hint --- a hint provided by the calling instance (usually it can be ignored)
-- user_data --- user data set when the signal handler was connected.
+- user\_data --- user data set when the signal handler was connected.
 
 The way how to read a file using GFiles will be described in the next section.
 
@@ -109,7 +109,7 @@ The application quits immediately because no window is generated.
 
 The point is the handler `on_open`.
 
-- It generates GtkApplicationWindow, GtkScrolledWindow, GtkTextView and GtkTextBuffer and connect them.
+- It generates GtkApplicationWindow, GtkScrolledWindow, GtkTextView and GtkTextBuffer and connects them.
 - Set wrap mode to `GTK_WRAP_WORD_CHAR` in GtktextView.
 - Set non-editable to GtkTextView because the program isn't an editor but only a viewer.
 - Read the file and set it to GtkTextBuffer (this will be explained in detail later).
@@ -136,7 +136,7 @@ It returns `TRUE` if the file's contents were successfully loaded. `FALSE` if th
 
 If the function succeeds, set the contents into GtkTextBuffer, free the buffer memories pointed by `contents`, set the filename to the title of the window,
 free the memories pointed by `filename` and show the window.
-If it fails, it outputs an error message and destroy the window.
+If it fails, it outputs an error message and destroys the window.
 
 ## GtkNotebook
 
@@ -162,7 +162,7 @@ The numbers at the left of the following items are line numbers in the source co
 - 11-13: Variables `nb`, `lab` and `nbp` are defined and point GtkNotebook, GtkLabel and GtkNotebookPage respectively.
 - 23: The window's title is set to "file viewer".
 - 25: The size of the window is set to maximum because a big window is appropriate for file viewers.
-- 27-28 GtkNotebook is generated and set it as a child of GtkApplicationWindow.
+- 27-28 GtkNotebook is generated and set it as a child of the GtkApplicationWindow.
 - 30-52 For-loop. Each loop corresponds to an argument. And files[i] is GFile object with respect to the i-th argument.
 - 32-37 GtkScrollledWindow, GtkTextView and GtkTextBuffer are generated and GtkTextView is connected to GtkScrolledWindow as a child.
  They corresponds to each file, so they are generated inside the for-loop.
