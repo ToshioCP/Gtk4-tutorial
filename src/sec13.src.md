@@ -85,7 +85,7 @@ You can get the context by `gtk_widget_get_style_context`.
 
 GtkCssProvider is an object which parses CSS in order to style widgets.
 
-To apply your CSS to wodgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext.
+To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext.
 However, instead, you can add it to GdkDisplay of the window (usually top level window).
 
 Look at the source file of `startup` handler again.
@@ -141,13 +141,13 @@ These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
 `open_clicked`, `new_clicked` and `save_clicked` just call corresponding notebook page functions.
 `close_clicked` is a bit complicated.
 
-- 22-25: If there's only one page, closing the last page is considered that it also close the top level window and quit the application.
-Therefore, it gets the top level window and call `gtk_window_destroy`.
+- 22-25: If there's only one page, we need to close the top level window and quit the application.
+First, get the top level window and call `gtk_window_destroy`.
 - 26-28: Otherwise, it removes the current page.
 
 ## meson.build
 
 @@@ tfe5/meson.build
 
-This file is just modified the source file names.
+In this file, just the source file names are modified.
 
