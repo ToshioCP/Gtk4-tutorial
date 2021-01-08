@@ -96,20 +96,23 @@ open_dialog_response(GtkWidget *dialog, gint response, TfeTextView *tv) {
   } else {
     gtk_text_buffer_set_text (tb, contents, length);
     g_free (contents);
+    if (G_IS_FILE (tv->file))
+      g_object_unref (tv->file);
     tv->file = file;
-/*  gtk_text_buffer_set_modified (tb, FALSE);*/
+    gtk_text_buffer_set_modified (tb, FALSE);
     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
   }
   gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 void
-tfe_text_view_open (TfeTextView *tv) {
+tfe_text_view_open (TfeTextView *tv, GtkWidget *win) {
   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+  g_return_if_fail (GTK_IS_WINDOW (win));
 
   GtkWidget *dialog;
 
-  dialog = gtk_file_chooser_dialog_new ("Open file", NULL, GTK_FILE_CHOOSER_ACTION_OPEN,
+  dialog = gtk_file_chooser_dialog_new ("Open file", GTK_WINDOW (win), GTK_FILE_CHOOSER_ACTION_OPEN,
                                         "Cancel", GTK_RESPONSE_CANCEL,
                                         "Open", GTK_RESPONSE_ACCEPT,
                                         NULL);

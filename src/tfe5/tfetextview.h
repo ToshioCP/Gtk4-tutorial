@@ -13,7 +13,7 @@ GFile *
 tfe_text_view_get_file (TfeTextView *tv);
 
 void
-tfe_text_view_open (TfeTextView *tv);
+tfe_text_view_open (TfeTextView *tv, GtkWidget *win);
 
 void
 tfe_text_view_save (TfeTextView *tv);

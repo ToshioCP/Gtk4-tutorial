@@ -30,7 +30,7 @@ Every C source files, which are `tfeapplication.c`, `tfenotebook.c` and `tfetext
     13 tfe_text_view_get_file (TfeTextView *tv);
     14 
     15 void
-    16 tfe_text_view_open (TfeTextView *tv);
+    16 tfe_text_view_open (TfeTextView *tv, GtkWidget *win);
     17 
     18 void
     19 tfe_text_view_save (TfeTextView *tv);
@@ -207,29 +207,30 @@ The error is managed only in the object and no information is notified to the ca
     69   gtk_widget_show (dialog);
     70 }
 
-- 17-53: `Tfe_text_view_save` function.
-- 19: If `tv` is not a pointer to TfeTextView, then it logs an error message and immediately returns.
+- 18-55: `Tfe_text_view_save` function.
+- 20: If `tv` is not a pointer to TfeTextView, then it logs an error message and immediately returns.
 This function is similar to `g_return_val_if_fail` function, but no value is returned because `tfe_text_view_save` doesn't return a value.
-- 28-29: If the buffer hasn't modified, then it doesn't need to save it.
+- 30-31: If the buffer hasn't modified, then it doesn't need to save it.
 So the function returns.
-- 30-31: If `tv->file` is NULL, no file has given yet.
-It calls `tfe_text_view_save`, which lets the user to choose a file to save.
-- 33-35: Save the buffer to the file.
-If it succeeds, assigns FALSE to `tv->changed`.
-- 38-50: If file writing fails, it assigns NULL to `tv->file`.
+- 32-33: If `tv->file` is NULL, no file has given yet.
+It calls `tfe_text_view_saveas`, which lets the user to choose a file to save.
+- 35-36: Get the contents of the GtkTextBuffer and set its pointer to `contents`.
+- 37-38: Save the content to the file.
+If it succeeds, reset the modified bit in the GtkTextBuffer.
+- 39-53: If file writing fails, it assigns NULL to `tv->file`.
 Emits "change-file" signal.
-Shows the error message dialog (45-49).
+Shows the error message dialog (47-51).
 Because the handler is `gtk_window_destroy`, the dialog disappears when user clicks on the button in the dialog.
-- 55-68: `tfe_text_view_saveas` function.
+- 57-70: `tfe_text_view_saveas` function.
 It shows GtkFileChooserDialog and lets the user choose a file and give it to the signal handler.
-- 62: Generate GtkFileChooserDialog.
+- 64-67: Generate GtkFileChooserDialog.
 The title is "Save file".
 Transient parent of the dialog is `win`, which is the top level window.
 The action is save mode.
 The buttons are Cancel and Save.
-- 63: connect the "response" signal of the dialog and `saveas_dialog_response` handler.
-- 1-15: `saveas_dialog_response` signal handler.
-- 5-13: If the response is `GTK_RESPONSE_ACCEPT`, which is set to the argument when the user has clicked on Save button, then gets a pointer to the GFile object, set it to `tv->file`, assign TRUE to `tv->changed`, emits "change-file" signal then call `tfe_text_view_save` to save the buffer to the file.
+- 68: connect the "response" signal of the dialog and `saveas_dialog_response` handler.
+- 1-16: `saveas_dialog_response` signal handler.
+- 6-14: If the response is `GTK_RESPONSE_ACCEPT`, which is set to the argument when the user has clicked on Save button, then gets a pointer to the GFile object, set it to `tv->file`, turn on the modified bit of the GtkTextBuffer, emits "change-file" signal then call `tfe_text_view_save` to save the buffer to the file.
 
 ![Saveas process](image/saveas.png)
 
@@ -237,20 +238,24 @@ When you use GtkFileChooserDialog, you need to divide the program into two parts
 They are a function which generates GtkFileChooserDialog and the signal handler.
 The function just generates and shows the dialog.
 The rest is done by the handler.
-It gets Gfile from GtkFileChooserDialog, save the buffer to the file and do some things necessary.
+It gets Gfile from GtkFileChooserDialog, save the buffer to the file by calling `tfe_text_view_save`.
 
 ## Open function
 
-Open function shows GtkFileChooserDialog to the user and let him/her choose a file.
+Open function shows GtkFileChooserDialog to the user and let them choose a file.
 Then read the file and set it to GtkTextBuffer.
 
-    void tfe_text_view_open (TfeTextView *tv)
+    void tfe_text_view_open (TfeTextView *tv, GtkWidget *win);
 
 TfeTextView object `tv` has to be generated in advance.
-And it should be empty and `tv->file` is NULL.
-If it is not empty, `tfe_text_view_open` doesn't treat it as an error.
+This function is usually called just after `tv` has been generated.
+And its buffer is empty, `tv->file` is NULL and `tv` has not set to the widget hierarchy.
+Even if the buffer is not empty, `tfe_text_view_open` doesn't treat it as an error.
 If you want to revert the buffer, calling this function is apropreate.
 Otherwise probably bad things will happen.
+
+GtkWidget `win` is expected to be the top level window of the application.
+It will be used as a transient parent window for the argument to the function `gtk_file_chooser_dialog_new`.
 
      1 static void
      2 open_dialog_response(GtkWidget *dialog, gint response, TfeTextView *tv) {
@@ -278,43 +283,46 @@ Otherwise probably bad things will happen.
     24   } else {
     25     gtk_text_buffer_set_text (tb, contents, length);
     26     g_free (contents);
-    27     tv->file = file;
-    28 /*  gtk_text_buffer_set_modified (tb, FALSE);*/
-    29     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
-    30   }
-    31   gtk_window_destroy (GTK_WINDOW (dialog));
-    32 }
-    33 
-    34 void
-    35 tfe_text_view_open (TfeTextView *tv) {
-    36   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
-    37 
-    38   GtkWidget *dialog;
-    39 
-    40   dialog = gtk_file_chooser_dialog_new ("Open file", NULL, GTK_FILE_CHOOSER_ACTION_OPEN,
-    41                                         "Cancel", GTK_RESPONSE_CANCEL,
-    42                                         "Open", GTK_RESPONSE_ACCEPT,
-    43                                         NULL);
-    44   g_signal_connect (dialog, "response", G_CALLBACK (open_dialog_response), tv);
-    45   gtk_widget_show (dialog);
-    46 }
+    27     if (G_IS_FILE (tv->file))
+    28       g_object_unref (tv->file);
+    29     tv->file = file;
+    30     gtk_text_buffer_set_modified (tb, FALSE);
+    31     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
+    32   }
+    33   gtk_window_destroy (GTK_WINDOW (dialog));
+    34 }
+    35 
+    36 void
+    37 tfe_text_view_open (TfeTextView *tv, GtkWidget *win) {
+    38   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+    39   g_return_if_fail (GTK_IS_WINDOW (win));
+    40 
+    41   GtkWidget *dialog;
+    42 
+    43   dialog = gtk_file_chooser_dialog_new ("Open file", GTK_WINDOW (win), GTK_FILE_CHOOSER_ACTION_OPEN,
+    44                                         "Cancel", GTK_RESPONSE_CANCEL,
+    45                                         "Open", GTK_RESPONSE_ACCEPT,
+    46                                         NULL);
+    47   g_signal_connect (dialog, "response", G_CALLBACK (open_dialog_response), tv);
+    48   gtk_widget_show (dialog);
+    49 }
 
-- 33-45: `tfe_text_view_open` function.
-- 39: Generate GtkFileChooserDialog.
+- 36-49: `tfe_text_view_open` function.
+- 43: Generate GtkFileChooserDialog.
 The title is "Open file".
-No transient parent window.
+Ttransient parent window is the top window of the application, which is given by the caller.
 The action is open mode.
 The buttons are Cancel and Open.
-- 43: connect the "reponse" signal of the dialog and `open_dialog_response` signal handler.
-- 44: Show the dialog.
-- 1-31: `open_dialog_response` signal handler.
-- 9-10: If the response from GtkFileChooserDialog is not `GTK_RESPONSE_ACCEPT`, which means the user has clicked on the "Cancel" button or close button, then it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_CANCEL`.
-- 11-12: Get a pointer to Gfile by `gtk_file_chooser_get_file`.
+- 47: connect the "reponse" signal of the dialog and `open_dialog_response` signal handler.
+- 48: Show the dialog.
+- 1-34: `open_dialog_response` signal handler.
+- 10-11: If the response from GtkFileChooserDialog is not `GTK_RESPONSE_ACCEPT`, which means the user has clicked on the "Cancel" button or close button, then it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_CANCEL`.
+- 12-13: Get a pointer to Gfile by `gtk_file_chooser_get_file`.
 If it is not GFile, maybe an error occured.
 Then it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
-- 13-22: If an error occurs when it has read the file, then it decreases the reference count of Gfile, shows a message dialog to report the error to the user and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
-- 24-28: If the file has successfully read, then the text is set to GtkTextBuffer, free the temporary buffer pointed by `contents`, set file to `tv->file` (no duplication or unref is not necessary) and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_SUCCESS`.
-- 30: close GtkFileCooserDialog.
+- 14-23: If an error occurs when it read the file, then it decreases the reference count of Gfile, shows a message dialog to report the error to the user and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
+- 24-32: If the file has successfully read, then the text is set to GtkTextBuffer, free the temporary buffer pointed by `contents`, set file to `tv->file` (no duplication or unref is not necessary) and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_SUCCESS`.
+- 33: close GtkFileCooserDialog.
 
 Now let's think about the whole process between the other object (caller) and TfeTextView.
 It is shown in the following diagram and you would think that it is really complicated.
@@ -349,4 +357,5 @@ Otherwise, if the caller free the GFile object, `tv->file` is no more guaranteed
 ## Source file of tfetextview.c
 
 All the source files are listed in [Section 13](ch13.html).
+
 Up: [Readme.md](Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)

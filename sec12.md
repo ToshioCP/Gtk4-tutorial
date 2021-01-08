@@ -117,27 +117,29 @@ If it returns NULL, then do nothing and return because of an error.
      3   GFile *file;
      4   char *filename;
      5 
-     6   if (response != TFE_OPEN_RESPONSE_SUCCESS)
-     7     g_object_unref (tv);
-     8   else if (! G_IS_FILE (file = tfe_text_view_get_file (tv)))
-     9     g_object_unref (tv);
-    10   else {
-    11     filename = g_file_get_basename (file);
-    12     g_object_unref (file);
-    13     notebook_page_build (nb, GTK_WIDGET (tv), filename);
-    14   }
-    15 }
-    16 
-    17 void
-    18 notebook_page_open (GtkNotebook *nb) {
-    19   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-    20 
-    21   GtkWidget *tv;
+     6   if (response != TFE_OPEN_RESPONSE_SUCCESS) {
+     7     g_object_ref_sink (tv);
+     8     g_object_unref (tv);
+     9   }else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
+    10     g_object_ref_sink (tv);
+    11     g_object_unref (tv);
+    12   }else {
+    13     filename = g_file_get_basename (file);
+    14     g_object_unref (file);
+    15     notebook_page_build (nb, GTK_WIDGET (tv), filename);
+    16   }
+    17 }
+    18 
+    19 void
+    20 notebook_page_open (GtkNotebook *nb) {
+    21   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
     22 
-    23   tv = tfe_text_view_new ();
-    24   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
-    25   tfe_text_view_open (TFE_TEXT_VIEW (tv));
-    26 }
+    23   GtkWidget *tv;
+    24 
+    25   tv = tfe_text_view_new ();
+    26   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
+    27   tfe_text_view_open (TFE_TEXT_VIEW (tv), gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW));
+    28 }
 
 - 18-27: `notebook_page_open` function.
 - 24: Generate TfeTextView object.

@@ -64,11 +64,13 @@ open_response (TfeTextView *tv, gint response, GtkNotebook *nb) {
   GFile *file;
   char *filename;
 
-  if (response != TFE_OPEN_RESPONSE_SUCCESS)
+  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
+    g_object_ref_sink (tv);
     g_object_unref (tv);
-  else if (! G_IS_FILE (file = tfe_text_view_get_file (tv)))
+  }else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
+    g_object_ref_sink (tv);
     g_object_unref (tv);
-  else {
+  }else {
     filename = g_file_get_basename (file);
     g_object_unref (file);
     notebook_page_build (nb, GTK_WIDGET (tv), filename);
@@ -83,7 +85,7 @@ notebook_page_open (GtkNotebook *nb) {
 
   tv = tfe_text_view_new ();
   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
-  tfe_text_view_open (TFE_TEXT_VIEW (tv));
+  tfe_text_view_open (TFE_TEXT_VIEW (tv), gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW));
 }
 
 void
