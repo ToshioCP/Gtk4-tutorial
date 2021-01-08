@@ -29,7 +29,7 @@ This is done usually when the class is initialized.
 3. When it is emmitted, the connected handler is invoked.
 
 Step one and three are done in the object on which the signal is emitted.
-Step two is done outside the objects.
+Step two is usually done outside the objects.
 
 ## Signal registration
 
@@ -85,7 +85,7 @@ Signal registration codes are written in the class initialization function.
 - 6-15: Register "change-file"signal.
 `g_signal_newv` function is used.
 This signal has no default handler (object method handler).
-I think you usually don't need to set a default handler in final type object.
+You usually don't need to set a default handler in final type object.
 If you need it, put the closure of the handler in line 9.
 - The return value of `g_signal_newv` is the signal id.
 The type of signal id is guint, which is the same as unsigned int.
@@ -122,14 +122,14 @@ The parameter is defined in `tfetextview.h` because it is public.
     };
 
 - `TFE_OPEN_RESPONSE_SUCCESS` is set when `tfe_text_view_open` successfully has opend a file and loaded it.
-- `TFE_OPEN_RESPONSE_CANCEL` is set when the user canceled to open a file.
-- `TFE_OPEN_RESPONSE_ERROR` is set when error occured.
+- `TFE_OPEN_RESPONSE_CANCEL` is set when the user has canceled to open a file.
+- `TFE_OPEN_RESPONSE_ERROR` is set when error has occured.
  
 ## Signal connection
 
 A signal and a handler are connected by the function `g_signal_connect`.
-There some similar functions like `g_signal_connect_after`, `g_signal_connect_swapped` and so on.
-But I think `g_signal_connect` is the most common function.
+There are some similar functions like `g_signal_connect_after`, `g_signal_connect_swapped` and so on.
+However, `g_signal_connect` is the most common function.
 The signals "change-file" is connected to a callback function `file_changed` outside of TfeTextView object.
 In the same way, the signals "open-response" is connected to a callback function `open_response` outside of TfeTextView object.
 The functions `file_changed` and `open_response` will be explained later.
