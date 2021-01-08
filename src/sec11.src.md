@@ -179,5 +179,5 @@ Otherwise, if the caller free the GFile object, `tv->file` is no more guaranteed
 
 ## Source file of tfetextview.c
 
-All the source files are listed in [Section 13](ch13.html).
+All the source files are listed in [Section 13](https://github.com/ToshioCP/Gtk4-tutorial/blob/main/sec13.md).
 
