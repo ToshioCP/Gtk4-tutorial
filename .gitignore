@@ -10,6 +10,8 @@ src/tfv/a.out
 src/tfe/a.out
 src/tfe/hello.txt
 src/tfe/resources.c
+src/tfe5/_build
+src/tfe5/hello.txt
 
 # backup file
 *~

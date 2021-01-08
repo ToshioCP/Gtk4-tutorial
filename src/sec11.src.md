@@ -44,10 +44,10 @@ Each function is defined as follows.
 
 @@@ tfe5/tfetextview.c tfe_text_view_new_with_file tfe_text_view_new
 
-- 18-21: `tfe_text_view_new`.
-Just returns the value from the function `gtk_widget_new`.
+- 21-24: `tfe_text_view_new`.
+Just returns the value from the function `g_object_new` but casted to the pointer to GtkWidget.
 Initialization is done in `tfe_text_view_init` which is called in the process of `gtk_widget_new` function.
-- 1-16: `tfe_text_view_new_with_file`
+- 1-19: `tfe_text_view_new_with_file`
 - 3: `g_return_val_if_fail` is described in [Glib API reference](https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-return-val-if-fail).
 It tests whether the argument `file` is a pointer to GFile.
 If it's true, then the program goes on to the next line.
@@ -57,9 +57,10 @@ This function is used to check the programmer's error.
 If an error occurs, the solution is usually to change the (caller) program and fix the bug.
 You need to distinguish programmer's errors and runtime errors.
 You shouldn't use this function to find runtime errors.
-- 9-10: If an error occurs when reading the file, then return NULL.
-- 11-15: Generate TfeTextView and set the pointer to it to `tv`.
-Set the contents read from the file to GtkTextBuffer `tv->tb`.
+- 10-11: If an error occurs when reading the file, then return NULL.
+- 13-18: Generate TfeTextView and set the pointer to it to `tv`.
+The pointer to GtkTextBuffer is set to `tb`
+Set the contents read from the file to GtkTextBuffer `tb`.
 Free the memories pointed by `contents`.
 Duplicate `file` and set it to `tv->file`.
 Return `tv`.
