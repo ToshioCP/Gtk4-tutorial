@@ -34,7 +34,7 @@ class Sec_file < String
           files << @dirname+"/"+$1
         end
       end
-    files
+      files
     end
   end
   def to_srcmd

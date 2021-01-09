@@ -1,7 +1,6 @@
 # .gitignore
 
 insertfunc.rb
-makehtml.rb
 pickoutfunc.rb
 src/img.rb
 src/toi.rb
@@ -14,6 +13,8 @@ src/tfe5/_build
 src/tfe5/hello.txt
 src/menu/a.out
 
+html/*
+latex/*
 
 # backup file
 *~
