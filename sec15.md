@@ -181,7 +181,7 @@ It is the fourth parameter in the `g_signal_connect` (line 17) that has connecte
 It is stateless.
 The first argument of `g_simple_action_new` is a name of the action and the second argument is a parameter.
 If you don't need the parameter, set it `NULL`.
-THerefore, `act_quit` has a name "quit" and no parameter.
+Therefore, `act_quit` has a name "quit" and no parameter.
 - 16: Add the action to GtkApplication `app`.
 GtkApplication implements an interface GActionMap and GActionGroup.
 And GtkApplication can have a group of actions and actions are added by the function `g_action_map_add_action`.

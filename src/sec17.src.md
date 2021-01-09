@@ -80,12 +80,11 @@ If you do it before setting, bad thing will happen -- your computer might freeze
 
 ## Action entry
 
-The coding for building actions and signal handlers is always the same.
-Therefore, it can be automated.
-You can implement them easily with GActionEntry `g_action_map_add_action_entries`.
+The coding for building actions and signal handlers is bothersome work as well.
+Therefore, it should be automated.
+You can implement them easily with GActionEntry structure and `g_action_map_add_action_entries` function.
 
-GActionEntry is a strutcure.
-It contains action name, signal handlers, parameter and state.
+GActionEntry contains action name, signal handlers, parameter and state.
 
     typedef struct _GActionEntry GActionEntry;
 
@@ -119,6 +118,8 @@ The code above does:
 - Connect the action and the "activate" signal handler `quit_activate`
 - Add the action to the action map `app`.
 
+The same goes for the other actions.
+
     const GActionEntry win_entries[] = {
       { "fullscreen", NULL, NULL, "false", fullscreen_changed },
       { "color", color_activated, "s", "red", NULL }
@@ -127,12 +128,12 @@ The code above does:
 
 The code above does:
 
-- Build the "fullscreen" action and "color" action.
+- Build a "fullscreen" action and "color" action.
 - Connect the "fullscreen" action and the "change-state" signal handler `fullscreen_changed`
 - Its initial state is set to FALSE.
 - Connect the "color" action and the "activate" signal handler `color_activate`
 - Its parameter type is string and the initial value is "red".
-- Add the action to the action map `win`.
+- Add the actions to the action map `win`.
 
 ## Example code
 
@@ -143,3 +144,4 @@ The C source code of `menu3` and `meson.build` is as follows.
 meson.build
 
 @@@ menu3/meson.build
+
