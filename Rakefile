@@ -3,7 +3,6 @@ require 'rake/clean'
 require_relative 'lib/lib_sec_file.rb'
 require_relative 'lib/lib_src2md.rb'
 
-
 srcfiles = []
 FileList['src/*.src.md'].each do |file|
   srcfiles << Sec_file.new(file)
@@ -14,6 +13,12 @@ srcfiles.renum
 mdfilenames = srcfiles.map {|srcfile| srcfile.to_md}
 htmlfilenames = srcfiles.map {|srcfile| "html/"+srcfile.to_html}
 texfilenames = srcfiles.map {|srcfile| "latex/"+srcfile.to_tex}
+
+["html", "latex"].each do |d|
+  if ! Dir.exist?(d)
+    Dir.mkdir(d)
+  end
+end
 
 CLEAN.append(*mdfilenames)
 CLEAN << "Readme.md"
@@ -72,6 +77,26 @@ You should be careful because there exists bugs, errors or mistakes.
 <ul>
 EOS
 
+# Preamble for latex files.
+
+main = <<'EOS'
+\documentclass[a4paper]{article}
+\include{helper.tex}
+\title{Gtk4 tutorial for beginners}
+\author{Toshio Sekiya}
+\begin{document}
+\maketitle
+\tableofcontents
+EOS
+
+helper = <<'EOS'
+\usepackage[pdftex]{graphicx}
+\usepackage[colorlinks=true,linkcolor=black]{hyperref}
+\usepackage[margin=2.4cm]{geometry}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+EOS
+
 # tasks
 
 task default: :md
@@ -93,7 +118,7 @@ end
 
 0.upto(srcfiles.size - 1) do |i|
   file srcfiles[i].to_md => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, srcfiles[i].to_md
+    src2md srcfiles[i].path, srcfiles[i].to_md, -1
     if srcfiles.size == 1
       nav = "Up: [Readme.md](Readme.md)\n"
     elsif i == 0
@@ -116,7 +141,7 @@ file "html/index.html" do
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
-    file_index = file_index + "<li> <a href=\"#{srcfiles[i].to_html}\">#{h}</a> </li>\n"
+    file_index += "<li> <a href=\"#{srcfiles[i].to_html}\">#{h}</a> </li>\n"
   end
   file_index += ("</ul>\n" + tail)
   IO.write("html/index.html",file_index)
@@ -124,7 +149,12 @@ end
 
 0.upto(srcfiles.size - 1) do |i|
   file "html/"+srcfiles[i].to_html => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "html/"+srcfiles[i].to_md
+    src2md srcfiles[i].path, "html/"+srcfiles[i].to_md, -1
+    buf = IO.readlines "html/"+srcfiles[i].to_md
+    buf.each do |line|
+      line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
+    end
+    IO.write "html/"+srcfiles[i].to_md, buf.join
     sh "pandoc -o html/#{srcfiles[i].to_html} html/#{srcfiles[i].to_md}"
     File.delete("html/#{srcfiles[i].to_md}")
     if srcfiles.size == 1
@@ -147,7 +177,41 @@ end
   end
 end
 
+task pdf: "latex" do
+  sh "cd latex; pdflatex main.tex"
+  sh "cd latex; pdflatex main.tex"
+  sh "mv latex/main.pdf latex/gtk4_tutorial.pdf"
+end
+
+task latex: texfilenames+["latex/main.tex"]
+
+file "latex/main.tex" do
+  0.upto(srcfiles.size-1) do |i|
+    main += "  \\input{#{srcfiles[i].to_tex}}\n"
+  end
+  main += "\\end{document}\n"
+  IO.write("latex/main.tex", main)
+  IO.write("latex/helper.tex", helper)
+end
+
+0.upto(srcfiles.size - 1) do |i|
+  file "latex/"+srcfiles[i].to_tex => (srcfiles[i].c_files << srcfiles[i].path) do
+    src2md srcfiles[i].path, "latex/"+srcfiles[i].to_md, 80
+    sh "pandoc -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
+    File.delete("latex/#{srcfiles[i].to_md}")
+  end
+end
+
 task :clean
 task :cleanhtml do
-  sh "rm html/*"
+  if Dir.exist?("html") && (! Dir.empty?("html"))
+    sh "rm html/*"
+  end
 end
+task :cleanlatex do
+  if Dir.exist?("latex") && (! Dir.empty?("latex"))
+    sh "rm latex/*"
+  end
+end
+task cleanall: [:clean, :cleanhtml, :cleanlatex]
+

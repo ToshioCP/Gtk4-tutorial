@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)
+
 # Build system
 
 ## What do we need to think about to manage big source files?
@@ -422,5 +423,6 @@ I think meson and ninja is the best choice for the present.
 
 We divided a file into some categorized files and used a build tool.
 This method is used by many developers.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)

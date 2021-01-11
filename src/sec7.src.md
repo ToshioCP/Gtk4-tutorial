@@ -9,7 +9,7 @@ It is better to make "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
 Signals and handlers will be explained later.
 
-![Screenshot of the file editor](../image/screenshot_tfe2.png)
+![Screenshot of the file editor](../image/screenshot_tfe2.png){width=9.3cm height=6.825cm}
 
 The screenshot above shows the layout.
 The function `on_open` in the source code `tfe2.c` is as follows.
@@ -97,9 +97,9 @@ Only functions `on_open` are shown as follows.
 
 @@@ tfe/tfe3.c on_open
 
-The source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
+The source code of `tfe3.c` is stored in [src/tfe](tfe) directory.
 If you want to see it, click the link above.
-In the same way, you can get the source files below in the directory [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe).
+In the same way, you can get the source files below in the directory [src/tfe](tfe).
 
 ### Using ui string
 

@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](sec5.md)
+
 # Widgets (2)
 
 ## GtkTextView, GtkTextbuffer and GtkScrolledWindow
@@ -161,5 +162,6 @@ Though you can modify the source file by this diff output, It's good for you to 
 Now compile and run it.
 This time the window doesn't extend even if you type a lot of characters.
 It just scrolls.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](sec5.md)

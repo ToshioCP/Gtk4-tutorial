@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)
+
 # tfe5 source files
 
 The followings are the source files of tfe5.
@@ -219,7 +220,7 @@ The followings are the source files of tfe5.
     116 }
     117 
 
-### tfenotebook.h
+## tfenotebook.h
 
      1 void
      2 notebook_page_save(GtkNotebook *nb);
@@ -608,7 +609,7 @@ The followings are the source files of tfe5.
 
 ## Total number of lines, words and charcters
 
-    $ wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfe5/tfetextview.c tfe5/tfetextview.h tfe5/tfe.ui
+    $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfe5/tfetextview.c tfe5/tfetextview.h tfe5/tfe.ui
        10    17   279 tfe5/meson.build
       117   348  3576 tfe5/tfeapplication.c
         6     9   153 tfe5/tfe.gresource.xml
@@ -618,5 +619,6 @@ The followings are the source files of tfe5.
       218   635  7769 tfe5/tfetextview.c
        29    49   561 tfe5/tfetextview.h
        64   105  2266 tfe5/tfe.ui
-      576  1507 17864 合計
+      576  1507 17864 total
+
 Up: [Readme.md](Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)

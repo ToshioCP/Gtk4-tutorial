@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)
+
 # Widgets (1)
 
 ## GtkLabel, GtkButton and Gtkbox
@@ -312,5 +313,6 @@ Then, these two buttons are appended to the box.
 
 The handler corresponds to `btn1` changes its label.
 The handler corresponds to `btn2` destroys the top-level window and the application quits.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)

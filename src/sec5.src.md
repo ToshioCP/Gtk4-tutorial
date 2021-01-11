@@ -95,7 +95,7 @@ Then compile and run it.
     $ comp tfv3
     $ ./a.out tfv3.c
 
-![File viewer](../image/screenshot_tfv3.png)
+![File viewer](../image/screenshot_tfv3.png){width=6.3cm height=5.325cm}
 
 Now I want to explain the program `tfv3.c`.
 First, the function `main` changes in only two lines.
@@ -142,7 +142,7 @@ If it fails, it outputs an error message and destroys the window.
 
 GtkNotebook is a container widget that contains multiple children with tabs in it.
 
-![GtkNotebook](../image/screenshot_gtk_notebook.png)
+![GtkNotebook](../image/screenshot_gtk_notebook.png){width=13.2cm height=5.325cm}
 
 Look at the screenshots above.
 The left one is a window at the startup.

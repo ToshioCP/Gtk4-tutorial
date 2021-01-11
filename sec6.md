@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
+
 # Define Child object
 
 ## Very simple editor
@@ -346,5 +347,6 @@ Now we got a very simple editor.
 It's not smart.
 We need more features like open, save, saveas, change font and so on.
 We will add them in the next section and after.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)

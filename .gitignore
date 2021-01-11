@@ -3,6 +3,7 @@
 insertfunc.rb
 pickoutfunc.rb
 src/img.rb
+src/imgsize.rb
 src/toi.rb
 src/misc/a.out
 src/tfv/a.out

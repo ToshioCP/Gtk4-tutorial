@@ -108,7 +108,7 @@ The buttons are Cancel and Save.
 - 1-16: `saveas_dialog_response` signal handler.
 - 6-14: If the response is `GTK_RESPONSE_ACCEPT`, which is set to the argument when the user has clicked on Save button, then gets a pointer to the GFile object, set it to `tv->file`, turn on the modified bit of the GtkTextBuffer, emits "change-file" signal then call `tfe_text_view_save` to save the buffer to the file.
 
-![Saveas process](../image/saveas.png)
+![Saveas process](../image/saveas.png){width=10.7cm height=5.16cm}
 
 When you use GtkFileChooserDialog, you need to divide the program into two parts.
 They are a function which generates GtkFileChooserDialog and the signal handler.
@@ -159,7 +159,7 @@ In Gtk3, `gtk_dialog_run` function is available.
 It simplifies the process.
 However, in Gtk4, `gtk_dialog_run`is unavailable any more.
 
-![Caller and TfeTextView](../image/open.png)
+![Caller and TfeTextView](../image/open.png){width=12.405cm height=9.225cm}
 
 1. A caller get a pointer `tv` to TfeTextView by calling `tfe_text_view_new`.
 2. The caller connects the handler (left bottom in the diagram) and the signal "open-response".
@@ -179,5 +179,5 @@ Otherwise, if the caller free the GFile object, `tv->file` is no more guaranteed
 
 ## Source file of tfetextview.c
 
-All the source files are listed in [Section 13](https://github.com/ToshioCP/Gtk4-tutorial/blob/main/sec13.md).
+All the source files are listed in [Section 14](sec14.src.md).
 

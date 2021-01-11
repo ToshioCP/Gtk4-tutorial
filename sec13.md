@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
+
 # tfeapplication.c
 
 `tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
@@ -266,5 +267,6 @@ First, get the top level window and call `gtk_window_destroy`.
     10 executable('tfe', sourcefiles, resources, dependencies: gtkdep)
 
 In this file, just the source file names are modified.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)

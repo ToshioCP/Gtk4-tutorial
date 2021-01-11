@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)
+
 # GtkApplication and GtkApplicationWindow
 
 ## GtkApplication
@@ -282,4 +283,5 @@ The program sets the title and the default size of the window.
 Compile it and run `a.out`, then you will see a bigger window with its title "pr4".
 
 ![Screenshot of the window](image/screenshot_pr4.png)
+
 Up: [Readme.md](Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)

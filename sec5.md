@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
+
 # Widgets (3)
 
 ## Open signal
@@ -301,5 +302,6 @@ The numbers at the left of the following items are line numbers in the source co
 - 45: GtkNotebookPage has a property "tab-expand". If it is set to TRUE then the tab expand horizontally as long as possible. If FALSE, then the width of the tab is determined by the size of the label. `g_object_set` is a general function to set properties in any objects.
 - 46: free the memory pointed by `filename`
 - 53-56: If at least one file was read, then the number of GtkNotebookPage is greater than zero. If it's true, then show the window. If it's false, then destroy the window.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)

@@ -39,7 +39,7 @@ What we are thinking about now is "child object".
 A child object includes its parent object.
 And a child object derives everything from the parent object.
  
-![Child widget of GtkTwxtView](../image/child.png)
+![Child widget of GtkTwxtView](../image/child.png){width=9.675cm height=4.89cm}
 
 We will define TfeTextView as a child object of GtkTextView.
 It has everything that GtkTextView has.

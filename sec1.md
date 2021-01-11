@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Next: [Section 2](sec2.md)
+
 # Prerequisite and Licence
 
 ## Prerequisite
@@ -50,5 +51,6 @@ as published by the Free Software Foundation; either version 3 of the License, o
 'Gtk4 tutorial' is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) for more details.
+
 
 Up: [Readme.md](Readme.md),  Next: [Section 2](sec2.md)

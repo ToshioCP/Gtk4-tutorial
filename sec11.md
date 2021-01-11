@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)
+
 # Functions in TfeTextView
 
 In this section I will explain each function in TfeTextView object.
@@ -356,6 +357,7 @@ Otherwise, if the caller free the GFile object, `tv->file` is no more guaranteed
 
 ## Source file of tfetextview.c
 
-All the source files are listed in [Section 13](https://github.com/ToshioCP/Gtk4-tutorial/blob/main/sec13.md).
+All the source files are listed in [Section 14](sec14.md).
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)

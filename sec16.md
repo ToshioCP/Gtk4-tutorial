@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)
+
 # Stateful action
 
 Some actions have states.
@@ -367,5 +368,6 @@ The style is applied to GtkLabel which has a name "lb".
 Other GtkLabel have no effect from this.
 The provider is added to GdkDisplay.
 - 90: Show the window.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)

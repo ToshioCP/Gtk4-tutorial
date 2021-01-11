@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 11](sec11.md), Next: [Section 13](sec13.md)
+
 # Functions with GtkNotebook
 
 GtkNotebook is a very important object in the text file editor `tfe`.
@@ -26,7 +27,15 @@ The GFile `file` is copied and set in the TfeTextView object.
 - 4-5: `notebook_page_open` shows a file chooser dialog. Then, user chooses a file and the file is set into GtkTextBuffer.
 - 1-2: `notebook_page_save` saves the contents in GtkTextBuffer into the file, which has been set in the TfeTextView.
 
-You probably find that the functions above are higher level functions of `tfe_text_view_new`, `tfe_text_view_new_with_file`, `tef_text_view_open` and `tfe_text_view_save` respectively.
+You probably find that the functions above are higher level functions of
+
+- `tfe_text_view_new`
+- `tfe_text_view_new_with_file`
+- `tef_text_view_open`
+- `tfe_text_view_save`
+
+ respectively.
+
 There are two layers.
 One of them is `tfe_text_view ...`, which is the lower level layer.
 The other is `note_book ...`, which is the higher level layer.
@@ -206,6 +215,7 @@ This handler changes the label of GtkNotebookPage.
 Otherwise (file is NULL), assign untitled string to `filename`.
 - 14-15: Generate a label with the filename and set it into GtkNotebookPage.
 - 16-17: Free `filename` and unref `file`.
+
 
 
 Up: [Readme.md](Readme.md),  Prev: [Section 11](sec11.md), Next: [Section 13](sec13.md)

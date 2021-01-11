@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)
+
 # Instance and class
 
 This section and the following four sections are explanations about the next version of the text file editor (tfe).
@@ -415,5 +416,6 @@ And `gobject` is a pointer to TfeTextView instance which is casted as a GObject 
 `dh3` releases all the references to objects in the GtkTextView part (it is actually the private area pointed by `prev`) in TfeTextView instance.
 After that, `dh3` calls `dh2`, and `dh2` calls `dh1`.
 Finally all the references are released.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)

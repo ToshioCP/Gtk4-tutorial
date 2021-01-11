@@ -1,4 +1,5 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 9](sec9.md), Next: [Section 11](sec11.md)
+
 # Signals
 
 ## Signals
@@ -159,5 +160,6 @@ The following is extract from `tfetexties.c`.
 - "change-file" signal doesn't have parameter, so no fourth parameter.
 - "open-response" signal has one parameter.
 The fourth parameter is the parameter.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 9](sec9.md), Next: [Section 11](sec11.md)
