@@ -49,12 +49,15 @@ class Sec_file < String
   def to_tex
     @name.gsub(/\.(src\.md|md|html|tex)$/, ".tex")
   end
-  def num
-    @name.match(/\d+(\.\d+)?/)[0].to_f
+  def num # the return value is String
+    @name.match(/\d+(\.\d+)?/)[0]
+  end
+  def to_f
+    self.num.to_f
   end
   def <=> other
     if other.instance_of?(Sec_file)
-      self.num <=> other.num
+      self.to_f <=> other.to_f
     else
       nil
     end
@@ -62,7 +65,7 @@ class Sec_file < String
 # Note: is_i? indicates the number is integer mathematically. For example, 2.0 is an integer.
 # It doesn't mean the class of the number is Integer.
   def is_i?
-    self.num == self.num.floor
+    self.to_f == self.to_f.floor
   end
   def renum n
     if n.instance_of?(String)
@@ -99,10 +102,10 @@ class Sec_files < Array
   def renum
     self.sort!
     tbl = []
-    n = 1.0
+    n = 1
     self.each do |sec_file|
-      tbl << [ sec_file.num, n, sec_file.num == n ? true : false ]
-      n += 1.0
+      tbl << [ sec_file.num, n, sec_file.to_f == n ? true : false ]
+      n += 1
     end
     while any_diff?(tbl)
       unless try_renum(tbl)
@@ -128,17 +131,25 @@ private
       if tbl[i][2] == false
         n = tbl[i][1] # number to substitute
         found = false
-        tbl.each do |t|
-          if t[0] == n
+        self.each do |sec_file|
+          if sec_file != self[i] && sec_file.to_f == n
             found = true
             break
           end
         end
         unless found # OK to replace
           self[i].renum n
-          tbl[i][0] = n.to_f
           tbl[i][2] = true
+#         tbl[0] (old number (String) is kept in the array 'tbl')
           changed = true
+          self.each do |sec_file|
+            buf = IO.readlines sec_file
+            buf.each do |line|
+              line.gsub!(/((S|s)ection *)#{tbl[0]}/, "\\1#{n}")
+　　　　　　　　　　　.gsub!(/((S|s)ec *)#{tbl[0]}/, "\\1#{n}")
+            end
+            IO.write sec_file buf.join
+          end
         end
       end
     end

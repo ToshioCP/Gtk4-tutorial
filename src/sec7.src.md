@@ -97,9 +97,9 @@ Only functions `on_open` are shown as follows.
 
 @@@ tfe/tfe3.c on_open
 
-The source code of `tfe3.c` is stored in [src/tfe](tfe) directory.
+The source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
 If you want to see it, click the link above.
-In the same way, you can get the source files below in the directory [src/tfe](tfe).
+In the same way, you can get the source files below in the directory [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe).
 
 ### Using ui string
 

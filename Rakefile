@@ -23,6 +23,26 @@ end
 CLEAN.append(*mdfilenames)
 CLEAN << "Readme.md"
 
+# Abstract
+abstract=<<'EOS'
+This tutorial illustrates how to write C programs with Gtk4 library.
+It focuses on beginners so the contents are limited to basic things such as widgets, GObject, signal, menus and build system.
+Please refer [Gnome API reference](https://developer.gnome.org/) for further topics.
+
+This tutorial is under development and unstable.
+Even though the  examples written in C language have been tested on gtk4 version 4.0,
+there might exist bugs.
+If you find any bugs, errors or mistakes in the tutorial and C examples,
+please let me know.
+You can post it to [github issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
+EOS
+
+abstract_html_array = abstract.gsub(/\[([^\]]*)\]\(([^\)]*)\)/,"<a href=\"\\2\">\\1</a>").split("\n\n")
+abstract_html_array.map! { |s| s.gsub(/[^\n]\z/,"\n").gsub(/\A/,"<p>\n").gsub(/\z/,"</p>\n") } 
+abstract_html = abstract_html_array.join
+
+abstract_latex = abstract.gsub(/\[([^\]]*)\]\(([^\)]*)\)/, "\\href{\\2}{\\1}")
+
 # Headers or a tail which is necessary for html files.
 header=<<'EOS'
 <!doctype html>
@@ -71,11 +91,12 @@ file_index =<<'EOS'
 <body>
 <h1>Gtk4 Tutorial for beginners</h1>
 <p>
-This tutorial is under development and unstable.
-You should be careful because there exists bugs, errors or mistakes.
+@@@ abstract
 </p>
 <ul>
 EOS
+
+file_index.gsub!(/@@@ abstract\n/, abstract_html)
 
 # Preamble for latex files.
 
@@ -87,7 +108,12 @@ main = <<'EOS'
 \begin{document}
 \maketitle
 \tableofcontents
+\begin{abstract}
+@@@ abstract
+\end{abstract}
 EOS
+
+main.gsub!(/@@@ abstract\n/, abstract_latex)
 
 helper = <<'EOS'
 \usepackage[pdftex]{graphicx}
@@ -96,17 +122,16 @@ helper = <<'EOS'
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 EOS
-
 # tasks
 
 task default: :md
+task all: [:md, :html, :pdf]
 
 task md: mdfilenames+["Readme.md"]
 
 file "Readme.md" do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
-  buf << "This tutorial is under development and unstable.\n"
-  buf << "You should be careful because there exists bugs, errors or mistakes.\n"
+  buf << abstract
   buf << "\n"
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }

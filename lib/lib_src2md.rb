@@ -131,7 +131,7 @@ def src2md srcmd, md, width
     elsif type == "latex"
       line.gsub!(/(^|[^!])\[([^\]]*)\]\((?~http)\)/,"\\1\\2") # remove link
     else # type == "markdown" or "html"
-      line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1")
+      line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1") # remove size option from link to image files.
     end
     md_buf << line
   end
