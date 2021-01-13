@@ -67,7 +67,7 @@ class Sec_file < String
   def is_i?
     self.to_f == self.to_f.floor
   end
-  def renum n
+  def renum! n
     if n.instance_of?(String)
       n = n.to_i if n =~ /^\d+$/
       n = n.to_f if n =~ /^\d+\.\d+/
@@ -99,7 +99,7 @@ class Sec_files < Array
       raise "#{sec_files} is not an array."
     end
   end
-  def renum
+  def renum!
     self.sort!
     tbl = []
     n = 1
@@ -138,7 +138,7 @@ private
           end
         end
         unless found # OK to replace
-          self[i].renum n
+          self[i].renum! n
           tbl[i][2] = true
 #         tbl[0] (old number (String) is kept in the array 'tbl')
           changed = true

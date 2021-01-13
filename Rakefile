@@ -8,7 +8,7 @@ FileList['src/*.src.md'].each do |file|
   srcfiles << Sec_file.new(file)
 end
 srcfiles = Sec_files.new srcfiles
-srcfiles.renum
+srcfiles.renum!
 
 mdfilenames = srcfiles.map {|srcfile| srcfile.to_md}
 htmlfilenames = srcfiles.map {|srcfile| "html/"+srcfile.to_html}
@@ -129,7 +129,7 @@ task all: [:md, :html, :pdf]
 
 task md: mdfilenames+["Readme.md"]
 
-file "Readme.md" do
+file "Readme.md" => mdfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   buf << abstract
   buf << "\n"
