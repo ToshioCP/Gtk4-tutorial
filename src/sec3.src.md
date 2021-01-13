@@ -1,142 +1,238 @@
-# Widgets (1)
+# GtkApplication and GtkApplicationWindow
 
-## GtkLabel, GtkButton and Gtkbox
+## GtkApplication
 
-### GtkLabel
+### GtkApplication and g\_application\_run
 
-We made an window and show it on the screen in the previous section.
-Now we go on to the next topic, widgets in the window.
-The simplest widget is GtkLabel.
-It is a widget with a string in it.
+Usually people write a programming code to make an application.
+What are appications?
+Applications are software that runs using libraries, which includes OS, frameworks and so on.
+In Gtk4 programming, GtkApplication is an object that runs on GTK libraries.
 
-@@@ misc/lb1.c
+The basic way how to write GtkApplication is as follows.
 
-Save this program to a file `lb1.c`.
-Then compile and run it.
+- Generate a GtkApplication object
+- Run it
 
-    $ comp lb1
+That's all.
+Very simple.
+The following is the C code representing the scenario above.
+
+@@@ misc/pr1.c
+
+The first line says that this program includes the header files of the Gtk libraries.
+The function `main` above is a startup function in C language.
+The variable `app` is defined as a pointer to GtkApplication, which is actually a structure in which information about the application is stored.
+The function `gtk_application_new` generates a GtkApplication object and sets its pointer to `app`.
+The meaning of the arguments will be explained later.
+The function `g_application_run` invokes the GtkApplication object pointed by `app`.
+(We often say that the function invokes `app`.
+Actually, `app` is not an object but an pointer to the object.
+However, it is simple and short, and probably no confusion occurs.)
+
+To compile this, the following command needs to be run.
+The string pr1.c is the filename of the C source code above.
+
+    $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
+
+The C compiler gcc generates an executable file `a.out`.
+Let's run it.
+
     $ ./a.out
 
-A window with a message "Hello." appears.
+    (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement g_application_activate() and has no handlers connected to the "activate" signal.  It should do one of these.
+    $ 
 
-![Screenshot of the label](../image/screenshot_lb1.png){width=6.3cm height=5.325cm}
+Oh, just an error message.
+But this error message means that the GtkApplication object ran without a doubt.
+Now, think about the message in the next subsection.
 
-There's only a little change between `pr4.c` and `lb1.c`.
-Diff is a good program to know the difference between two files.
+### signal
 
-$$$
-cd misc; diff pr4.c lb1.c
-$$$
+The message tells us that:
 
-This tells us:
+1. The application GtkApplication doesn't implement `g_application_activate()`.
+2. And it has no handlers connected to the activate signal.
+3. You need to solve at least one of these.
 
-- The definition of a variable lab is added.
-- The title of the window is changed.
-- A label is generated and connected to the window.
+These two causes of the error are related to signals.
+So, I will explain it to you first.
 
-The function `gtk_window_set_child (GTK_WINDOW (win), lab)` makes the label `lab` a child widget of the window `win`.
-Be careful.
-A child widget is different from a child object.
-Objects have parent-child relationship and Widgets also have parent-child relationship.
-But these two relationships are totally different.
-Don't be confused.
-In the program `lb1.c`, `lab` is a child widget of `win`.
-Child widgets are always located inside its parent widget in the screen.
-See the window appeared on the screen.
-The window includes the label.
+Signal is emitted when something happens.
+For example, a window is generated, a window is destroyed and so on.
+The signal "activate" is emitted when the application is activated.
+If the signal is connected to a function, which is called signal handler or simply handler, then the function is invoked when the signal emits.
+The flow is like this:
 
-The window `win` dosen't have any parents.
-We call such a window top-level window.
-One application can have two or more top-level windows.
+1. Something happens.
+2. If it's related to a certain signal, then the signal is emitted.
+3. If the signal is connected to a handler in advance, then the handler is invoked.
 
-### GtkButton
+Signals are defined in objects.
+For example, "activate" signal belongs to GApplication object, which is a parent object of GtkApplication object.
+GApplication object is a child object of GObject object.
+GObject is the top object in the hierarchy of all the objects.
 
-Next widget is GtkButton.
-It has a label or icon on it.
-In this subsection, we will make a button with a label.
-When a button is clicked on, it emits a "clicked" signal.
-The following program shows how to catch the signal and do something.
+    GObject -- GApplication -- GtkApplication
+    <---parent                      --->child
 
-@@@ misc/lb2.c
+A child object inherits signals, functions, properties and so on from its parent object.
+So, Gtkapplication also has the "activate" signal.
 
-Look at the line 17 to 19.
-First, generate a GtkButton widget `btn` with a label "Click me".
-Then, set it to the window `win` as a child.
-Finally, connect a "clicked" signal of the button to a handler (function) `click_cb`.
-So, if `btn` is clicked, the function `click_cb` is invoked.
-The suffix cb means "call back".
+Now we can solve the problem in `pr1.c`.
+We need to connect the activate signal to a handler.
+We use a function `g_signal_connect` which connects a signal to a handler.
 
-Name the program `lb2.c` and save it. 
-Now compile and run it.
+@@@ misc/pr2.c
 
-![Screenshot of the label](../image/screenshot_lb2.png){width=11.205cm height=6.945cm}
- 
-A window with the button appears.
-Click the button (it is a large button, you can click everywhere inside the window), then a string "Clicked." appears on the shell terminal.
-It shows the handler was invoked by clicking the button.
+First, we define the handler `on_activate` which simply displays a message.
+In the function `main`, we add `g_signal_connect` before `g_application_run`.
+The function `g_signal_connect` has four arguments.
 
-It's fairly good for us to make sure that the clicked signal was caught and the handler was invoked.
-However, using g_print is out of harmony with GTK which is a GUI library.
-So, we will change the handler.
-The following code is `lb3.c`.
+1. An object to which the signal belongs.
+2. The name of the signal.
+3. A handler function (also called callback), which needs to be casted by `G_CALLBACK`.
+4. Data to pass to the handler. If no data is necessary, NULL should be given.
 
-@@@ misc/lb3.c click_cb on_activate
+You can find the description of each signal in API reference.
+For example, "activate" signal is in GApplication subsection in GIO API reference.
+The handler function is described in that subsection.
 
-And the difference between `lb2.c` and `lb3.c` is as follows.
+In addition, `g_signal_connect` is described in GObject API reference.
+API reference is very important.
+You should see and understand it to write GTK applications.
+They are located in ['GNOME Developer Center'](https://developer.gnome.org/).
 
-$$$
-cd misc; diff lb2.c lb3.c
-$$$
+Let's compile the source file above (`pr2.c`) and run it.
 
-The change is:
+    $ gcc `pkg-config --cflags gtk4` pr2.c `pkg-config --libs gtk4`
+    $ ./a.out
+    GtkApplication is activated.
+    $ 
 
-- The function `g_print` in `lb2.c` was deleted and two lines above are inserted instead.
-- The label of `btn` is changed from "Click me" to "Quit".
-- The fourth argument of `g_signal_connect` is changed from `NULL` to `win`. 
+OK, well done.
+However, you may have noticed that it's painful to type such a long line to compile.
+It is a good idea to use shell script to solve this problem.
+Make a text file which contains the following line. 
 
-Most important is the fourth argument of `g_signal_connect`.
-It is described as "data to pass to handler" in the definition of g\_signal\_connect in GObject API reference.
-Therefore, `win` which is a pointer to GtkApplicationWindow is passed to the handler as a second parameter user_data.
-Then, the handler cast it to a pointer to GtkWindow and call `gtk_window_destroy` and destroy the top window.
-Then, the application quits.
+    gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 
-### GtkBox
+Then, save it under the directory $HOME/bin, which is usually /home/(username)/bin.
+(If your user name is James, then the directory is /home/james/bin).
+And turn on the execute bit of the file.
+Suppose the filename is `comp`, then the procedure is as follows.
 
-GtkWindow and GtkApplicationWindow can have only one child.
-If you want to add two or more widgets inside a window, you need a container widget.
-GtkBox is one of the containers.
-It arranges two or more child widgets into a single row or column.
-The following procedure shows the way to add two buttons in a window.
+    $ chmod 755 $HOME/bin/comp
+    $ ls -log $HOME/bin
+        ...  ...  ...
+    -rwxr-xr-x 1   62 May 23 08:21 comp
+        ...  ...  ...
 
-- Generate GtkApplicationWindow.
-- Generate GtkBox and set it a child of GtkApplicationWindow.
-- Generate GtkButton and append it to GtkBox.
-- Generate another GtkButton and append it to GtkBox.
+If this is the first time that you make a $HOME/bin directory and save a file in it, then you need to logout and login again.
 
-After this, the Widgets are connected as following diagram.
+    $ comp pr2
+    $ ./a.out
+    GtkApplication is activated.
+    $ 
 
-![Parent-child relationship](../image/box.png){width=7.725cm height=2.055cm}
+## GtkWindow and GtkApplicationWindow
 
-Now, code it.
+### GtkWindow
 
-@@@ misc/lb4.c
+A message "GtkApplication is activated." was printed out in the previous subsection.
+It was good in terms of a test of GtkApplication.
+However, it is insufficient because GTK is a framework for graphical user interface (GUI).
+Now we go ahead with adding a window into this program.
+What we need to do is:
 
-Look at the function `on_activate`.
+1. Generate a GtkWindow.
+2. Connect it to GtkApplication.
+3. Show the window.
 
-After the generation of GtkApplicationWindow, GtkBox is generated.
+Now rewrite the function `on_activate`.
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    gtk_box_set_homogeneous (GTK_BOX (box), TRUE);
+#### Generate a GtkWindow
 
-The first argument arranges children vertically.
-The second argument is the size between children.
-The next function fills a box with children, giving them equal space.
+@@@ misc/pr3.c on_activate
 
-After that, two buttons `btn1` and `btn2` are generated and the signal handlers are set.
-Then, these two buttons are appended to the box.
+Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multiline text, containers and so on.
+And GtkWidget is a base object from which all the GUI objects derive.
 
-![Screenshot of the box](../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
+    parent <-----> child
+    GtkWidget -- GtkWindow
 
-The handler corresponds to `btn1` changes its label.
-The handler corresponds to `btn2` destroys the top-level window and the application quits.
+GtkWindow includes GtkWidget at the top of its object.
 
+![GtkWindow and GtkWidget](../image/window_widget.png){width=9.0cm height=6.0cm}
+
+The function `gtk_window_new` is defined as follows.
+
+    GtkWidget *
+    gtk_window_new (void);
+
+By this definition, it returns a pointer to GtkWidget, not GtkWindow.
+It actually generates a new GtkWindow object (not GtkWidget) but returns a pointer to GtkWidget.
+However,the pointer points the GtkWidget and at the same time it also points GtkWindow that contains GtkWidget in it.
+
+If you want to use `win` as a pointer to the GtkWindow, you need to cast it.
+
+    (GtkWindow *) win
+
+Or you can use `GTK_WINDOW` macro that performs a similar function.
+
+    GTK_WINDOW (win)
+
+This is a recommended way.
+
+#### Connect it to GtkApplication.
+
+The function `gtk_window_set_application` is used to connect GtkWidow to GtkApplication.
+
+      gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+
+You need to cast `win` to GtkWindow and `app` to GtkApplication.
+`GTK_WINDOW` and `GTK_APPLICATION` macro is appropriate for that.
+
+GtkApplication continues to run until the related window is destroyed.
+If you didn't connect GtkWindow and GtkApplication, GtkApplication shutdowns immediately.
+Because no window is connected to GtkApplication, it doesn't need to wait anything.
+As it shutdowns the generated window is also destroyed.
+
+#### Show the window.
+
+The function `gtk_widget_show` is used to show the window.
+
+Gtk4 changed the default widget visibility to on, so every widget doesn't need this function to show itself.
+But, there's an exception.
+Top window (this term will be explained later) isn't visible when it is generated.
+So you need to use the function above and show the window.
+
+Save the program as `pr3.c` and compile and run it.
+
+    $ comp pr3
+    $ ./a.out
+
+A small window appears.
+
+![Screenshot of the window](../image/screenshot_pr3.png){width=3.3cm height=3.825cm}
+
+Click on the close button then the window disappears and the program finishes.
+
+### GtkApplicationWindow
+
+GtkApplicationWindow is a child object of GtkWindow.
+It has some extra functionality for better integration with GtkApplication.
+It is recommended to use it instead of GtkWindow when you use GtkApplication.
+
+Now rewrite the program and use GtkAppliction Window.
+
+@@@ misc/pr4.c on_activate
+
+When you generate GtkApplicationWindow, you need to give GtkApplication object as an argument.
+Then it automatically connect these two objects.
+So you don't need to call `gtk_window_set_application` any more.
+
+The program sets the title and the default size of the window.
+Compile it and run `a.out`, then you will see a bigger window with its title "pr4".
+
+![Screenshot of the window](../image/screenshot_pr4.png){width=6.3cm height=5.325cm}

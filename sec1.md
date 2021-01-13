@@ -8,7 +8,7 @@ Up: [Readme.md](Readme.md),  Next: [Section 2](sec2.md)
 
 This tutorial is about gtk4 libraries.
 It is originally used on linux with C compiler, but now it is used more widely, on windows and macOS, with Vala, python and so on.
-However, this tutorial describes only C programs on linux.
+However, this tutorial describes only _C programs on linux_.
 
 If you want to try the examples in the tutorial, you need:
 
@@ -17,9 +17,15 @@ If you want to try the examples in the tutorial, you need:
 - Gtk4. Gtk included linux distributions is version three at present.
 You need to install gtk4 to your computer.
 Refer to [gtk4 gitlab repository](https://gitlab.gnome.org/GNOME/gtk).
-However, it might make some trouble like, for example, your pc doesn't recognize usb port.
-Therefore, I strongly recommend you not to install gtk4 to the computer you usually use.
-Instead, Install it to another computer only used to try gtk4.
+However, it might make some trouble like, for example, your pc doesn't recognize usb port
+if you install them to `/usr/local`.
+Therefore, I strongly recommend you not to install gtk4 to `/usr/local` on the computer you usually use.
+Instead,
+
+- Install it to another computer only used to try gtk4.
+- Install it to your home directory, for example `$HOME/local`, in order to separte gtk4 from your system.
+
+The second choice will be explained in [Section 3](sec3.md).
 
 ### Software
 

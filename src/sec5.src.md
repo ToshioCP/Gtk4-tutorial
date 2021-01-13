@@ -1,178 +1,57 @@
-# Widgets (3)
+# Widgets (2)
 
-## Open signal
+## GtkTextView, GtkTextbuffer and GtkScrolledWindow
 
-### G\_APPLICATION\_HANDLES\_OPEN flag
+### GtkTextView and GtkTextBuffer
 
-GtkTextView, GtkTextBuffer and GtkScrolledWindow have given us a minimum editor in the previous section.
-Next, we will add a read function to this program and remake it into a file viewer.
-There are many way to implement the function.
-However, because this is a tutorial for beginners, we take the simplest way.
+GtkTextview is a widget for multiline text editing.
+GtkTextBuffer is a text buffer which is connected to GtkTextView.
+See a sample program `tfv1.c` below.
 
-When the program starts, we give a filename as an argument.
+@@@ tfv/tfv1.c
 
-    $ ./a.out filename
+Look at line 25.
+GtkTextView is generated and its pointer is assigned to `tv`.
+When GtkTextView is generated, the connected GtkTextBuffer is also generated automatically.
+In the next line, the pointer to the buffer is got and assigned to `tb`.
+Then, the text from line 10 to 20 is assigned to the buffer.
 
-Then it opens the file and set it into GtkTextBuffer.
+GtkTextView has a wrap mode.
+When `GTK_WRAP_WORD_CHAR` is set, text wraps in between words, or if that is not enough, also between graphemes.
 
-At the beginning of the implementation, we need to know how GtkApplication (or GApplication) recognizes arguments.
-It is described in the GIO API reference.
+In line 30, `tv` is set to `win` as a child.
 
-When GtkApplication is generated, a flag (its type is GApplicationFlags) is given as an argument.
+Now compile and run it.
 
-    GtkApplication *
-    gtk_application_new (const gchar *application_id, GApplicationFlags flags);
+![GtkTextView](../image/screenshot_tfv1.png){width=6.3cm height=5.325cm}
 
-This flag is described in the GApplication section in GIO API reference.
+There's an I-beam pointer in the window.
+You can add or delete any characters on GtkTextview.
+And your change is kept in GtkTextBuffer.
+If you add more characters than the limit of the window, the height of the window extends.
+If the height gets bigger than the height of the display screen, you won't be able to control the size of the window back to the original size.
+It's a problem and it shows that there exists a bug in the program.
+You can solve it by putting GtkScrolledWindow between GtkApplicationWindow and GtkTextView.
 
-    GApplicationFlags' Members
+### GtkScrolledWindow
 
-    G_APPLICATION_FLAGS_NONE  Default. (No argument allowed)
-      ... ... ...
-    G_APPLICATION_HANDLES_OPEN  This application handles opening files (in the primary instance).
-      ... ... ...
+What we need to do is:
 
-There are ten flags.
-But we only need two of them so far.
-We've already used `G_APPLICATION_FLAGS_NONE`.
-It is the simplest option.
-No argument is allowed.
-If you give arguments and run the application, then error occurs.
+- Generate GtkScrolledWindow and set it as a child of GtkApplicationWindow.
+- Set GtkTextView as a child of GtkScrolledWindow.
 
-`G_APPLICATION_HANDLES_OPEN` is the second simplest option.
-It allows arguments but only files.
-The application assumes all the arguments are filenames.
+Modify `tfv1.c` and save it as `tfv2.c`.
+The difference between these two files is very little.
 
-Now we use this flag when generating GtkApplication.
+$$$
+cd tfv; diff tfv1.c tfv2.c
+$$$
 
-    app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
+Though you can modify the source file by this diff output, It's good for you to show `tfv2.c`.
 
-### open signal
+@@@ tfv/tfv2.c
 
-When the application starts, two signals are possible.
-
-- activate signal --- This signal is emitted when there's no argument.
-- open signal --- This signal is emitted when there is at least one argument.
-
-The handler of open signal is called as follows.
-
-    void user_function (GApplication *application,
-                       gpointer      files,
-                       gint          n_files,
-                       gchar        *hint,
-                       gpointer      user_data)
-
-The parameters are as follows:
-
-- application --- the application (usually GtkApplication)
-- files --- an array of GFiles. [array length=n\_files] [element-type GFile]
-- n\_files --- the length of files
-- hint --- a hint provided by the calling instance (usually it can be ignored)
-- user\_data --- user data set when the signal handler was connected.
-
-The way how to read a file using GFiles will be described in the next section.
-
-## Coding a file viewer
-
-### What is a file viewer?
-
-A file viewer is a program that shows a text file given as an argument.
-It works as follows.
-
-- If it is given arguments, it recognizes the first argument as a filename and open it.
-- If opening the file succeeds, read and set it to GtkTextBuffer and show the window.
-- If it fails to open the file, show an error message and quit.
-- If there's no argument, show an error message and quit.
-- If there are two or more arguments, the second one and after are ignored.
-
-The program is as follows.
-
-@@@ tfv/tfv3.c
-
-Save it as `tfv3.c`.
-Then compile and run it.
-
-    $ comp tfv3
-    $ ./a.out tfv3.c
-
-![File viewer](../image/screenshot_tfv3.png){width=6.3cm height=5.325cm}
-
-Now I want to explain the program `tfv3.c`.
-First, the function `main` changes in only two lines.
-
-- `G_APPLICATION_FLAGS_NONE` is replaced with `G_APPLICATION_HANDLES_OPEN`.
-- `g_signal_connect (app, "open", G_CALLBACK (on_open), NULL)` is added.
-
-Next, the handler `on_activate` is now very simple.
-Just output the error message.
-The application quits immediately because no window is generated.
-
-The point is the handler `on_open`.
-
-- It generates GtkApplicationWindow, GtkScrolledWindow, GtkTextView and GtkTextBuffer and connects them.
-- Set wrap mode to `GTK_WRAP_WORD_CHAR` in GtktextView.
-- Set non-editable to GtkTextView because the program isn't an editor but only a viewer.
-- Read the file and set it to GtkTextBuffer (this will be explained in detail later).
-- If the file is not opened then output an error message and destroy the window. It makes the application quit.
-
-The file reading part of the program is shown again below.
-
-    if (g_file_load_contents(files[0], NULL, &contents, &length, NULL, NULL)) {
-      gtk_text_buffer_set_text(tb, contents, length);
-      g_free(contents);
-      filename = g_file_get_basename(files[0]);
-      gtk_window_set_title (GTK_WINDOW (win), filename);
-      g_free(filename);
-      gtk_widget_show (win);
-    } else {
-      filename = g_file_get_path(files[0]);
-      g_print ("No such file: %s.\n", filename);
-      gtk_window_destroy (GTK_WINDOW (win));
-    }
-
-The function `g_file_load_contents` loads the file contents into a buffer, which is automatically allocated, and set the pointer to the buffer into `contents`.
-And the length of the buffer is set to `length`.
-It returns `TRUE` if the file's contents were successfully loaded. `FALSE` if there were errors.
-
-If the function succeeds, set the contents into GtkTextBuffer, free the buffer memories pointed by `contents`, set the filename to the title of the window,
-free the memories pointed by `filename` and show the window.
-If it fails, it outputs an error message and destroys the window.
-
-## GtkNotebook
-
-GtkNotebook is a container widget that contains multiple children with tabs in it.
-
-![GtkNotebook](../image/screenshot_gtk_notebook.png){width=13.2cm height=5.325cm}
-
-Look at the screenshots above.
-The left one is a window at the startup.
-It shows the file `pr1.c`.
-The filename is in the left tab.
-After clicking on the right tab, then the contents of `tfv1.c` appears.
-It is shown in the right screenshot.
-
-GtkNotebook widget is between GtkApplicationWindow and GtkScrolledWindow.
-Now I want to show you the program `tfv4.c`.
-
-@@@ tfv/tfv4.c
-
-Most of the change is in the function `on_open`.
-The numbers at the left of the following items are line numbers in the source code.
-
-- 11-13: Variables `nb`, `lab` and `nbp` are defined and point GtkNotebook, GtkLabel and GtkNotebookPage respectively.
-- 23: The window's title is set to "file viewer".
-- 25: The size of the window is set to maximum because a big window is appropriate for file viewers.
-- 27-28 GtkNotebook is generated and set it as a child of the GtkApplicationWindow.
-- 30-52 For-loop. Each loop corresponds to an argument. And files[i] is GFile object with respect to the i-th argument.
-- 32-37 GtkScrollledWindow, GtkTextView and GtkTextBuffer are generated and GtkTextView is connected to GtkScrolledWindow as a child.
- They corresponds to each file, so they are generated inside the for-loop.
-- 39-42 Set the contents of the file into GtkTextBuffer and free the memory pointed by `contents`. Get the filename and generate GtkLabel with the filename.
-- 43: Append GtkScrolledWindow and GtkLabel to GtkNotebook. The appended objects are children of automatically generated GtkNotebookPage object. Therefore, the structure is like this:
-
-        GtkNotebook -- GtkNotebookPage -- (GtkScrolledWindow and GtkLabel)
-
-- 44: Get GtkNotebookPage object and set its pointer to `nbp`.
-- 45: GtkNotebookPage has a property "tab-expand". If it is set to TRUE then the tab expand horizontally as long as possible. If FALSE, then the width of the tab is determined by the size of the label. `g_object_set` is a general function to set properties in any objects.
-- 46: free the memory pointed by `filename`
-- 53-56: If at least one file was read, then the number of GtkNotebookPage is greater than zero. If it's true, then show the window. If it's false, then destroy the window.
+Now compile and run it.
+This time the window doesn't extend even if you type a lot of characters.
+It just scrolls.
 

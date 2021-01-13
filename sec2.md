@@ -1,287 +1,173 @@
 Up: [Readme.md](Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)
 
-# GtkApplication and GtkApplicationWindow
-
-## GtkApplication
-
-### GtkApplication and g\_application\_run
-
-Usually people write a programming code to make an application.
-What are appications?
-Applications are software that runs using libraries, which includes OS, frameworks and so on.
-In Gtk4 programming, GtkApplication is an object that runs on GTK libraries.
-
-The basic way how to write GtkApplication is as follows.
-
-- Generate a GtkApplication object
-- Run it
-
-That's all.
-Very simple.
-The following is the C code representing the scenario above.
-
-     1 #include <gtk/gtk.h>
-     2 
-     3 int
-     4 main (int argc, char **argv) {
-     5   GtkApplication *app;
-     6   int stat;
-     7 
-     8   app = gtk_application_new ("com.github.ToshioCP.pr1", G_APPLICATION_FLAGS_NONE);
-     9   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    10   g_object_unref (app);
-    11   return stat;
-    12 }
-    13 
-
-The first line says that this program includes the header files of the Gtk libraries.
-The function `main` above is a startup function in C language.
-The variable `app` is defined as a pointer to GtkApplication, which is actually a structure in which information about the application is stored.
-The function `gtk_application_new` generates a GtkApplication object and sets its pointer to `app`.
-The meaning of the arguments will be explained later.
-The function `g_application_run` invokes the GtkApplication object pointed by `app`.
-(We often say that the function invokes `app`.
-Actually, `app` is not an object but an pointer to the object.
-However, it is simple and short, and probably no confusion occurs.)
-
-To compile this, the following command needs to be run.
-The string pr1.c is the filename of the C source code above.
-
-    $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
-
-The C compiler gcc generates an executable file `a.out`.
-Let's run it.
-
-    $ ./a.out
-
-    (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement g_application_activate() and has no handlers connected to the "activate" signal.  It should do one of these.
-    $ 
-
-Oh, just an error message.
-But this error message means that the GtkApplication object ran without a doubt.
-Now, think about the message in the next subsection.
-
-### signal
-
-The message tells us that:
-
-1. The application GtkApplication doesn't implement `g_application_activate()`.
-2. And it has no handlers connected to the activate signal.
-3. You need to solve at least one of these.
-
-These two causes of the error are related to signals.
-So, I will explain it to you first.
-
-Signal is emitted when something happens.
-For example, a window is generated, a window is destroyed and so on.
-The signal "activate" is emitted when the application is activated.
-If the signal is connected to a function, which is called signal handler or simply handler, then the function is invoked when the signal emits.
-The flow is like this:
-
-1. Something happens.
-2. If it's related to a certain signal, then the signal is emitted.
-3. If the signal is connected to a handler in advance, then the handler is invoked.
-
-Signals are defined in objects.
-For example, "activate" signal belongs to GApplication object, which is a parent object of GtkApplication object.
-GApplication object is a child object of GObject object.
-GObject is the top object in the hierarchy of all the objects.
-
-    GObject -- GApplication -- GtkApplication
-    <---parent                      --->child
-
-A child object inherits signals, functions, properties and so on from its parent object.
-So, Gtkapplication also has the "activate" signal.
-
-Now we can solve the problem in `pr1.c`.
-We need to connect the activate signal to a handler.
-We use a function `g_signal_connect` which connects a signal to a handler.
-
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 on_activate (GApplication *app, gpointer *user_data) {
-     5   g_print ("GtkApplication is activated.\n");
-     6 }
-     7 
-     8 int
-     9 main (int argc, char **argv) {
-    10   GtkApplication *app;
-    11   int stat;
-    12 
-    13   app = gtk_application_new ("com.github.ToshioCP.pr2", G_APPLICATION_FLAGS_NONE);
-    14   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    15   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    16   g_object_unref (app);
-    17   return stat;
-    18 }
-    19 
-
-First, we define the handler `on_activate` which simply displays a message.
-In the function `main`, we add `g_signal_connect` before `g_application_run`.
-The function `g_signal_connect` has four arguments.
+# Installation of gtk4 to linux distributions
 
-1. An object to which the signal belongs.
-2. The name of the signal.
-3. A handler function (also called callback), which needs to be casted by `G_CALLBACK`.
-4. Data to pass to the handler. If no data is necessary, NULL should be given.
+This section describes how to install gtk4 into linux distributions.
+However, I only have an experience to install it to ubuntu 20.10.
+Probably you need more than the explanation below.
 
-You can find the description of each signal in API reference.
-For example, "activate" signal is in GApplication subsection in GIO API reference.
-The handler function is described in that subsection.
+This tutorial including this section is without any warranty.
+If you install gtk4 to your computer, do it at your own risk.
 
-In addition, `g_signal_connect` is described in GObject API reference.
-API reference is very important.
-You should see and understand it to write GTK applications.
-They are located in ['GNOME Developer Center'](https://developer.gnome.org/).
+## Prerequisite
 
-Let's compile the source file above (`pr2.c`) and run it.
+- Ubuntu 20.10. Maybe other versions of late years or other distribution might be OK.
+- Packages for development such as gcc, meson, ninja, git, wget and so on.
+- Dev packages necessary for each software below.
 
-    $ gcc `pkg-config --cflags gtk4` pr2.c `pkg-config --libs gtk4`
-    $ ./a.out
-    GtkApplication is activated.
-    $ 
+## Installation target
 
-OK, well done.
-However, you may have noticed that it's painful to type such a long line to compile.
-It is a good idea to use shell script to solve this problem.
-Make a text file which contains the following line. 
+I installed gtk4 under the directory `$HOME/local`.
+This is a private user area.
 
-    gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
+Don't install it to `/usr/local` which is the default.
+It is used by ubuntu applications, which are not build on gtk4.
+Therefore, the risk is high and probably bad things will happen.
+Actually I did it and I needed to reinstall ubuntu.
 
-Then, save it under the directory $HOME/bin, which is usually /home/(username)/bin.
-(If your user name is James, then the directory is /home/james/bin).
-And turn on the execute bit of the file.
-Suppose the filename is `comp`, then the procedure is as follows.
+## Glib installation
 
-    $ chmod 755 $HOME/bin/comp
-    $ ls -log $HOME/bin
-        ...  ...  ...
-    -rwxr-xr-x 1   62 May 23 08:21 comp
-        ...  ...  ...
+Ubuntu includes glib but its version is not high enough to build gtk4.
+Glib 2.66.0 or higher is required.
+At present (Jan/2021), its latest version is 2.67.2.
+I installed 2.67.1 which was the latest version at that time.
+Download glib source files from the repository, then decompress and extract files.
 
-If this is the first time that you make a $HOME/bin directory and save a file in it, then you need to logout and login again.
+    $ wget https://download.gnome.org/sources/glib/2.67/glib-2.67.1.tar.xz
+    $ tar -Jxf glib-2.67.1.tar.xz
 
-    $ comp pr2
-    $ ./a.out
-    GtkApplication is activated.
-    $ 
+Some packages are required to build glib.
+You can find them if you run meson.
 
-## GtkWindow and GtkApplicationWindow
+    $ meson --prefix $HOME/local _build
 
-### GtkWindow
+Use apt-get and install the prerequisites.
+For example,
 
-A message "GtkApplication is activated." was printed out in the previous subsection.
-It was good in terms of a test of GtkApplication.
-However, it is insufficient because GTK is a framework for graphical user interface (GUI).
-Now we go ahead with adding a window into this program.
-What we need to do is:
+    $ sudo apt-get install -y  libpcre2-dev libffi-dev
 
-1. Generate a GtkWindow.
-2. Connect it to GtkApplication.
-3. Show the window.
+After that, compile glib.
 
-Now rewrite the function `on_activate`.
+    $ rm -rf _build
+    $ meson --prefix $HOME/local _build
+    $ ninja -C _build
+    $ ninja -C _build install
 
-#### Generate a GtkWindow
+Set sevral environment variables so that the glib libraries installed can be used by build tools.
+Make a text file below and save it as `env.sh`
 
-    1 static void
-    2 on_activate (GApplication *app, gpointer user_data) {
-    3   GtkWidget *win;
-    4 
-    5   win = gtk_window_new ();
-    6   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-    7   gtk_widget_show (win);
-    8 }
+    # compiler
+    CPPFLAGS="-I$HOME/local/include"
+    LDFLAGS="-L$HOME/local/lib"
+    PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig:$HOME/local/lib/x86_64-linux-gnu/pkgconfig"
+    export CPPFLAGS LDFLAGS PKG_CONFIG_PATH
+    # linker
+    LD_LIBRARY_PATH="$HOME/local/lib/x86_64-linux-gnu/"
+    PATH="$HOME/local/bin:$PATH"
+    export LD_LIBRARY_PATH PATH
 
-Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multiline text, containers and so on.
-And GtkWidget is a base object from which all the GUI objects derive.
+Then, use . (dot) or source command to include these commands to the current bash.
 
-    parent <-----> child
-    GtkWidget -- GtkWindow
+    $ . env.sh
 
-GtkWindow includes GtkWidget at the top of its object.
+or
 
-![GtkWindow and GtkWidget](image/window_widget.png)
+    $ source env.sh
 
-The function `gtk_window_new` is defined as follows.
+This command carries out the commands in `env.sh` and changes the environment variables above in the corrent shell.
 
-    GtkWidget *
-    gtk_window_new (void);
+## Pango installation
 
-By this definition, it returns a pointer to GtkWidget, not GtkWindow.
-It actually generates a new GtkWindow object (not GtkWidget) but returns a pointer to GtkWidget.
-However,the pointer points the GtkWidget and at the same time it also points GtkWindow that contains GtkWidget in it.
+Download and untar.
 
-If you want to use `win` as a pointer to the GtkWindow, you need to cast it.
+    $ wget https://download.gnome.org/sources/pango/1.48/pango-1.48.0.tar.xz
+    $ tar -Jxf pango-1.48.0.tar.xz
 
-    (GtkWindow *) win
+Try meson and check the required packages.
+Install all the prerequisites.
+Then, compile and install pango.
 
-Or you can use `GTK_WINDOW` macro that performs a similar function.
+    $ meson --prefix $HOME/local _build
+    $ ninja -C _build
+    $ ninja -C _build install
 
-    GTK_WINDOW (win)
+It installs Pnago-1.0.gir under `$HOME/local/share/gir-1.0`.
+If you installed pango without --prefix option, then it would be located at `/usr/local/share/gir-1.0`.
+This directory (/usr/local/share) is used by applications.
+They find the directory by the environment variable `XDG_DATA_DIRS`.
+It is a text file which keep the list of 'share' directoryes like `/usr/share`, `usr/local/share` and so on.
+Now `$HOME/local/share` needs to be added to `XDG_DATA_DIRS`, or error will occur in the later compilation.
 
-This is a recommended way.
+    $ export XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS
 
-#### Connect it to GtkApplication.
+## Gdk-pixbuf and gtk-doc installation
 
-The function `gtk_window_set_application` is used to connect GtkWidow to GtkApplication.
+Download and untar.
 
-      gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+    $ wget https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.2.tar.xz
+    $ tar -Jxf gdk-pixbuf-2.42.2.tar.xz
+    $ wget https://download.gnome.org/sources/gtk-doc/1.33/gtk-doc-1.33.1.tar.xz
+    $ tar -Jxf gtk-doc-1.33.1.tar.xz
 
-You need to cast `win` to GtkWindow and `app` to GtkApplication.
-`GTK_WINDOW` and `GTK_APPLICATION` macro is appropriate for that.
+Same as before, install prerequisite packages, then compile and install them.
 
-GtkApplication continues to run until the related window is destroyed.
-If you didn't connect GtkWindow and GtkApplication, GtkApplication shutdowns immediately.
-Because no window is connected to GtkApplication, it doesn't need to wait anything.
-As it shutdowns the generated window is also destroyed.
+The installation of gtk-doc put `gtk-doc.pc` under `$HOME/local/share/pkgconfig`.
+This file is used by pkg-config, which is one of the build tools.
+The directory needs to be added to the environment variable `PKG_CONFIG_PATH`
 
-#### Show the window.
+    $ export PKG_CONFIG_PATH="$HOME/local/share/pkgconfig:$PKG_CONFIG_PATH"
 
-The function `gtk_widget_show` is used to show the window.
+## Gtk4 installation
 
-Gtk4 changed the default widget visibility to on, so every widget doesn't need this function to show itself.
-But, there's an exception.
-Top window (this term will be explained later) isn't visible when it is generated.
-So you need to use the function above and show the window.
+If you want the latest development version of gtk4, use git and clone the repository.
 
-Save the program as `pr3.c` and compile and run it.
+    $ git clone https://gitlab.gnome.org/GNOME/gtk.git
 
-    $ comp pr3
-    $ ./a.out
+If you want a stable version of gtk4, then download it from [Gnome source website](https://download.gnome.org/sources/gtk/4.0/).
 
-A small window appears.
+Compile and install it.
 
-![Screenshot of the window](image/screenshot_pr3.png)
+    $ meson --prefix $HOME/local _build
+    $ ninja -C _build
+    $ ninja -C _build install
 
-Click on the close button then the window disappears and the program finishes.
+## Modify env.sh
 
-### GtkApplicationWindow
+Because environment variables disappear when you log out, you need to add them again.
+Modify `env.sh`.
 
-GtkApplicationWindow is a child object of GtkWindow.
-It has some extra functionality for better integration with GtkApplication.
-It is recommended to use it instead of GtkWindow when you use GtkApplication.
+    # compiler
+    CPPFLAGS="-I$HOME/local/include"
+    LDFLAGS="-L$HOME/local/lib"
+    PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig:$HOME/local/lib/x86_64-linux-gnu/pkgconfig:$HOME/local/share/pkgconfig"
+    export CPPFLAGS LDFLAGS PKG_CONFIG_PATH
+    # linker
+    LD_LIBRARY_PATH="$HOME/local/lib/x86_64-linux-gnu/"
+    PATH="$HOME/local/bin:$PATH"
+    export LD_LIBRARY_PATH PATH
+    # gir
+    XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS
+    export XDG_DATA_DIRS
 
-Now rewrite the program and use GtkAppliction Window.
+Include this file by . (dot) command before using gtk4 libraries.
 
-    1 static void
-    2 on_activate (GApplication *app, gpointer user_data) {
-    3   GtkWidget *win;
-    4 
-    5   win = gtk_application_window_new (GTK_APPLICATION (app));
-    6   gtk_window_set_title (GTK_WINDOW (win), "pr4");
-    7   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    8   gtk_widget_show (win);
-    9 }
+You may think you can add them in your `.profile`.
+I think the environment variables above are necessary only when you compile gtk4 applications.
+And it's not necessary except the case above and it might cause some bad things.
+Therefore, I recommend you not to write them to your `.profile`.
 
-When you generate GtkApplicationWindow, you need to give GtkApplication object as an argument.
-Then it automatically connect these two objects.
-So you don't need to call `gtk_window_set_application` any more.
+## Compiling gtk4 applications
 
-The program sets the title and the default size of the window.
-Compile it and run `a.out`, then you will see a bigger window with its title "pr4".
+Before you compile gtk4 applications, define environment variables above.
 
-![Screenshot of the window](image/screenshot_pr4.png)
+    $ . env.sh
+
+After that you can compile them without anything.
+For example, to compile `sample.c`, type the following.
+
+    $ gcc `pkg-config --cflags gtk4` sample.c `pkg-config --libs gtk4`
+
+To know how to compile gtk4 applications, refer to the following sections.
+
 
 Up: [Readme.md](Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)

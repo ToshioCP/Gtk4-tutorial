@@ -1,195 +1,178 @@
-# Build system
+# Ui file and GtkBuiler
 
-## What do we need to think about to manage big source files?
+## New, open and save button
 
-We've managed to compile a small editor so far.
-But Some bad signs are beginning to appear.
+We made the simplest editor in the previous section.
+It reads the files in `on_open` funciton at start-up and writes it at closing window.
+It works but is not good.
+It is better to make "New", "Open", "Save" and "Close" buttons.
+This section describes how to put those buttons into the window.
+Signals and handlers will be explained later.
 
-- We have only one C source file and put everything into it.
-We need to sort it out.
-- There are two compilers, `gcc` and `glib-compile-resources`.
-We want to control them by one building tool. 
+![Screenshot of the file editor](../image/screenshot_tfe2.png){width=9.3cm height=6.825cm}
 
-These ideas are useful to manage big source files.
+The screenshot above shows the layout.
+The function `on_open` in the source code `tfe2.c` is as follows.
 
-## Divide a C source file into two parts.
+@@@ tfe/tfe2.c on_open
 
-When you divide C source file into several parts, each file should contain only one thing.
-For example, our source has two things, the definition of TfeTextView and functions related to GtkApplication and GtkApplicationWindow.
-It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
+The point is how to build the window.
 
-- `tfetextview.c` includes the definition and functions of TfeTextView.
-- `tfe.c` includes functions like `main`, `on_activate`, `on_open` and so on, which relate to GtkApplication and GtkApplicationWindow
+- 25-27: Generate GtkApplicationWindow and set its title and default size.
+- 29-30: Generate GtkBox `boxv`.
+It is a vertical box and a child of GtkApplicationWindow.
+It has two children.
+The first child is a horizontal box includes buttons.
+The second child is GtkNotebook.
+- 32-33: Generate GtkBox `boxh` and append it to 'boxv' as a first child.
+- 35-40: Generate three dummy labels.
+The labels `dmy1` and `dmy3` has a character width of ten.
+The other label `dmy2` is set hexpand property TRUE.
+This makes the label expands horizontally as long as possible.
+- 41-44: Generate four buttons.
+- 46-52: Append these GtkLabel and GtkButton to `boxh`.
+- 54-57: Generate GtkNotebook and set hexpand and vexpand properties TRUE.
+This makes it expands horizontally and vertically as big as possible.
+It is appended to `boxv` as the second child.
 
-Now we have three source files, `tfetextview.c`, `tfe.c` and `tfe3.ui`.
-The `3` of `tfe3.ui` is like a version number.
-Managing version with filenames is one possible idea but it may make bothersome problem.
-You need to rewrite filename in each version and it affects to contents of sourcefiles that refer to filenames.
-So, we should take `3` away from the filename.
+The number of lines is 33(=57-25+1) to build the widgets.
+And we needed many variables (boxv, boxh, dmy1 ...).
+Most of them aren't necessary except building the widgets.
+Are there any good solution to reduce these work?
 
-In `tfe.c` the function `tfe_text_view_new` is invoked to generate TfeTextView.
-But it is defined in `tfetextview.c`, not `tfe.c`.
-The lack of the declaration (not definition) of `tfe_text_view_new` makes error when `tfe.c` is compiled.
-The declaration is necessary in `tfe.c`.
-Those public information is usually written in header files.
-It has `.h` suffix like `tfetextview.h`
-And header files are included by C source files.
-For example, `tfetextview.h` is included by `tfe.c`.
+Gtk provides GtkBuilder.
+It reads ui data and builds a window.
+It reduces the cumbersom work.
 
-All the source files are listed below.
+## Ui file
 
-`tfetextview.h`
+First, let's look at the ui file `tfe3.ui` that defines a structure of the widgets.
 
-@@@ tfe4/tfetextview.h
+@@@ tfe/tfe3.ui
 
-`tfetextview.c`
+This is coded with XML structure.
+Constructs begin with `<` and end with `>` is called tags.
+And it is divided into two parts, start tag and end tag.
+For example, `<interface>` is a start tag and `</interface>` is an end tag.
+Ui file begins and ends with interface tags.
+Some tags, for example, object tags can have a class and id attributes inside the start tag.
 
-@@@ tfe4/tfetextview.c
+- 2-5: An object with `GtkApplicationWindow` class and `win` id is defined.
+This is the top level window.
+And the three properties of the window are defined.
+`title` property is "file editor", `default-width` property is 400 and `default-height` property is 300.
+- 6: child tag means a child of the object above.
+For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
 
-`tfe.c`
+Compare this ui file and the lines 25-57 in the source code of `on_open` function.
+Those two decribe the same structure of widgets.
 
-@@@ tfe4/tfe.c
+## GtkBuilder
 
-`tfe.ui`
+GtkBuilder builds widgets based on the ui file.
 
-@@@ tfe4/tfe.ui
+    GtkBuilder *build;
 
-`tfe.gresource.xml`
+    build = gtk_builder_new_from_file ("tfe3.ui");
+    win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+    nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
 
-@@@ tfe4/tfe.gresource.xml
+The function `gtk_builder_new_from_file` reads the file given as an argument, build the widgets, generate GtkBuilder object and set pointers to the widgets in it.
+The function `gtk_builder_get_object (build, "win")` returns the pointer to the widget `win`, which is the id in the ui file.
+All the widgets are connected based on the parent-children relationship described in the ui file.
+We only need `win` and `nb` for the program after this, so we don't need to take out any other widgets.
+This reduces lines in the C source file.
 
-## Make
+$$$
+cd tfe; diff tfe2.c tfe3.c
+$$$
 
-Dividing a file makes it easy to maintain source files.
-But now we are faced with a new problem.
-The building step increases.
+`60,103c61,65` means 42 (=103-60+1) lines change to 5 (=65-61+1) lines.
+Therefore 37 lines are reduced.
+Using ui file not only shortens C source files, but also makes the widgets' structure clear.
 
-- Compile the ui file `tfe.ui` into `resources.c`.
-- Compile `tfe.c` into `tfe.o` (object file).
-- Compile `tfetextview.c` into `tfetextview.o`.
-- Compile `resources.c` into `resources.o`.
-- Link all the object files into application `tfe`.
+Now I'll show you the C source code `tfe3.c`.
+Only functions `on_open` are shown as follows.
 
-Now build tool is necessary to manage it.
-Make is one of the build tools.
-It was originally created in 1976.
-So it is an old and widely used program.
+@@@ tfe/tfe3.c on_open
 
-Make analyzes Makefile and executes compilers.
-All instructions are written in Makefile.
+The source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
+If you want to see it, click the link above.
+In the same way, you can get the source files below in the directory [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe).
 
-    sample.o: sample.c
-        gcc -o sample.o sample.c
+### Using ui string
 
-The sample of Malefile above consists of three elements, `sample.o`, `sample.c` and `gcc -0 sample.o sample.c`.
+GtkBuilder can build widgets using string.
+Use the function gtk\_builder\_new\_from\_string instead of gtk\_builder\_new\_from\_file.
 
-- `sample.o` is called target.
-- `sample.c` is prerequisite.
-- `gcc -o sample.o sample.c` is recipe.
-Recipes follow tab characters, not spaces.
-(It is very important. Use tab not space, or make won't work as you expected).
+    char *uistring;
 
-The rule is:
+    uistring =
+    "<interface>"
+      "<object class="GtkApplicationWindow" id="win">"
+        "<property name=\"title\">file editor</property>"
+        "<property name=\"default-width\">600</property>"
+        "<property name=\"default-height\">400</property>"
+        "<child>"
+          "<object class=\"GtkBox\" id=\"boxv\">"
+            "<property name="orientation">GTK_ORIENTATION_VERTICAL</property>"
+    ... ... ...
+    ... ... ...
+    "</interface>";
 
-If a prerequisite modified later than a target, then make executes the recipe.
+    build = gtk_builder_new_from_stringfile (uistring);
 
-In the example above, if `sample.c` is modified after the generation of `sample.o`, then make executes gcc and compile `sample.c` into `sample.o`.
-If the modification time of `sample.c` is older then the generation of `sample.o`, then no compiling is necesarry, so make does nothing.
+This method has an advantage and disadvantage.
+The advantage is that the ui string is written in the source code.
+So ui file is not necessary on runtime.
+The disadvantage is that writing C string is a bit bothersome because of the double quotes.
+If you want to use this method, you should write a script that transforms ui file into C-string.
 
-The Makefile for `tfe` is as follows.
+- add backslash before each double quote.
+- add double quote at the left and right.
 
-@@@ tfe4/Makefile
+### Using Gresource
 
-You only need to type `make`.
+Using Gresource is similar to using string.
+But Gresource is compressed binary data, not text data.
+And there's a compiler that compiles ui file into Gresource.
+It can compile not only text files but also binary files such as images, sounds and so on.
+And after compilation, it bundles them up into one Gresource object.
 
-    $ make
-    gcc -c -o tfe.o `pkg-config --cflags gtk4` tfe.c
-    gcc -c -o tfetextview.o `pkg-config --cflags gtk4` tfetextview.c
-    glib-compile-resources tfe.gresource.xml --target=resources.c --generate-source
-    gcc -c -o resources.o `pkg-config --cflags gtk4` resources.c
-    gcc -o tfe tfe.o tfetextview.o resources.o `pkg-config --libs gtk4`
+An xml file is necessary for the resource compiler `glib-compile-resources`.
+It describes resource files.
 
-I used only very basic rules to write this Makefile.
-There are many more convenient methods to make it more compact.
-But it will be long to explain it.
-So I want to finish explaining make and move on to the next topic.
+@@@ tfe/tfe3.gresource.xml
 
-## Rake
+- 2: gresources tag can include mulitple gresources (gresource tags).
+However, this xml has only one gresource.
+- 3: The gresource has a prefix `/com/github/ToshioCP/tfe3`.
+- 4: The gresource has tfe3.ui.
+And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix. 
+If you want to add more files, then insert them between line 4 and 5.
 
-Rake is a similar program to make.
-It is written in Ruby code.
-If you don't use Ruby, you don't need to read this subsection.
-However, Ruby is really sophisticated and recommendable script language.
+Save this xml text to `tfe3.gresource.xml`.
+The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
 
-- Rakefile controls the behavior of `rake`.
-- You can write any ruby code in Rakefile.
+$$$
+LANG=C glib-compile-resources --help
+$$$
 
-Rake has task and file task, which is similar to target, prerequisite and recipe in make.
+Now run the compiler.
 
-@@@ tfe4/Rakefile
+    $ glib-compile-resources tfe3.gresource.xml --target=resources.c --generate-source
 
-What `Rakefile` describes is almost same as `Makefile` in the previous subsection. 
+Then a C source file `resources.c` is generated.
+Modify tfe3.c and save it as tfe3_r.c
 
-- 3-6: define target file, source file and so on.
-- 1, 8: Load clean library. And define CLEAN file list.
-The files included by CLEAN will be removed when `rake clean` is typed on the command line.
-- 10: default target depends on targetfile.
-default is the final goal of tasks.
-- 12-14: targetfile depends on objfiles.
-The variable `t` is a task object.
-  - t.name is a target name
-  - t.prerequisites is an array of prerequisits.
-  - t.source is the first element of prerequisites.
-- sh is a method to give the following string to shell as an argument and execute the shell.
-- 16-21: Loop by each element of the array of objfiles. Each object depends on corresponding source file.
-- 23-25: resouce file depends on xml file and ui file.
+    # include "resources.c"
+    ... ... ...
+    ... ... ...
+    build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe3/tfe3.ui");
+    ... ... ...
+    ... ... ...
 
-Rakefile might seem to be difficult for beginners.
-But, you can use any ruby syntax in Rakefile, so it is really flexible.
-If you practice Ruby and Rakefile, it will be highly productive tools.
-
-## Meson and ninja
-
-Meson is one of the most popular building tool despite the developing version.
-And ninja is similar to make but much faster than make.
-Several years ago, most of the C developers used autotools and make.
-But now the situation has changed.
-Many developers are using meson and ninja now.
-
-To use meson, you first need to write `meson.build` file.
-
-@@@ tfe4/meson.build
-
-- 1: The function `project` defines things about the project.
-The first parameter is the name of the project and the second is the programing language.
-- 2: `dependency` function defines a dependency that is taken by `pkg-config`.
-We put `gtk4` as an argument.
-- 5: `import` function inports a module.
-In line 5, gnome module is imported and assignd to the variable `gnome`.
-gnome module provides helper tools to build GTK programs.
-- 6: `.compile_resources` is a method of gnome module and compile files to resources under the instruction of xml file.
-In line 6, the resource filename is `resources`, which means `resources.c` and `resources.h`, and xml file is `tfe.gresource.xml`.
-This method generates C source file by default.
-- 8: define source files.
-- 10: executable function generates a target file by building source files.
-The first parameter is the filename of the target. The following parameters are source files.
-The last parameter has a option `dependencies`.
-In line 10 it is `gtkdep` which is defined in line 3.
-
-Now run meson and ninja.
-
-    $ meson _build
-    $ ninja -C _build
-
-Then, the executable file `tfe` is generated under the directory `_build`.
-
-    $ _build/tfe tfe.c tfetextview.c
-
-Then the window appears.
-
-I've shown you three build tools.
-I think meson and ninja is the best choice for the present.
-
-We divided a file into some categorized files and used a build tool.
-This method is used by many developers.
+Then, compile and run it.
+The window appears and it is the same as the screenshot at the beginning of this page.
 

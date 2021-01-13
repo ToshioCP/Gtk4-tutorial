@@ -143,12 +143,12 @@ private
 #         tbl[0] (old number (String) is kept in the array 'tbl')
           changed = true
           self.each do |sec_file|
+            buf_n = []
             buf = IO.readlines sec_file
             buf.each do |line|
-              line.gsub!(/((S|s)ection *)#{tbl[0]}/, "\\1#{n}")
-　　　　　　　　　　　.gsub!(/((S|s)ec *)#{tbl[0]}/, "\\1#{n}")
+              buf_n << line.gsub(/((S|s)ection *)#{tbl[i][0]}/, "\\1#{n}").gsub(/((S|s)ec *)#{tbl[i][0]}/, "\\1#{n}")
             end
-            IO.write sec_file buf.join
+            IO.write sec_file, buf_n.join
           end
         end
       end
