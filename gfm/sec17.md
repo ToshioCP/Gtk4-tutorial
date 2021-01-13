@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 16](sec16.md), Next: [Section 18](sec18.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 16](sec16.md), Next: [Section 18](sec18.md)
 
 # Stateful action
 
@@ -206,7 +206,7 @@ It is the string "s" given at the generation time.
 The following code includes stateful actions above.
 This program has menus like this:
 
-![menu2](image/menu2.png)
+![menu2](../image/menu2.png)
 
 - Fullscreen menu toggles the size of the window between maximum and non-maximum.
 If the window is maximum size, which is called full screen, then a check mark is put before "fullscreen" label.
@@ -370,4 +370,4 @@ The provider is added to GdkDisplay.
 - 90: Show the window.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 16](sec16.md), Next: [Section 18](sec18.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 16](sec16.md), Next: [Section 18](sec18.md)

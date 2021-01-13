@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
 
 # Widgets (3)
 
@@ -152,7 +152,7 @@ Then compile and run it.
     $ comp tfv3
     $ ./a.out tfv3.c
 
-![File viewer](image/screenshot_tfv3.png)
+![File viewer](../image/screenshot_tfv3.png)
 
 Now I want to explain the program `tfv3.c`.
 First, the function `main` changes in only two lines.
@@ -199,7 +199,7 @@ If it fails, it outputs an error message and destroys the window.
 
 GtkNotebook is a container widget that contains multiple children with tabs in it.
 
-![GtkNotebook](image/screenshot_gtk_notebook.png)
+![GtkNotebook](../image/screenshot_gtk_notebook.png)
 
 Look at the screenshots above.
 The left one is a window at the startup.
@@ -304,4 +304,4 @@ The numbers at the left of the following items are line numbers in the source co
 - 53-56: If at least one file was read, then the number of GtkNotebookPage is greater than zero. If it's true, then show the window. If it's false, then destroy the window.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)

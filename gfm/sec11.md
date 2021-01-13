@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)
 
 # Signals
 
@@ -162,4 +162,4 @@ The following is extract from `tfetexties.c`.
 The fourth parameter is the parameter.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)

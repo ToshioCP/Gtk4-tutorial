@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
 
 # Functions with GtkNotebook
 
@@ -218,4 +218,4 @@ Otherwise (file is NULL), assign untitled string to `filename`.
 
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)

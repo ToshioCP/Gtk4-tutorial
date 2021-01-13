@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)
 
 # tfeapplication.c
 
@@ -269,4 +269,4 @@ First, get the top level window and call `gtk_window_destroy`.
 In this file, just the source file names are modified.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)

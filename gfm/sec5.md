@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
 
 # Widgets (2)
 
@@ -70,7 +70,7 @@ In line 30, `tv` is set to `win` as a child.
 
 Now compile and run it.
 
-![GtkTextView](image/screenshot_tfv1.png)
+![GtkTextView](../image/screenshot_tfv1.png)
 
 There's an I-beam pointer in the window.
 You can add or delete any characters on GtkTextview.
@@ -164,4 +164,4 @@ This time the window doesn't extend even if you type a lot of characters.
 It just scrolls.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)

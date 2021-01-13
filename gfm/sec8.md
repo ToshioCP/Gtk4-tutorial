@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)
 
 # Ui file and GtkBuiler
 
@@ -11,7 +11,7 @@ It is better to make "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
 Signals and handlers will be explained later.
 
-![Screenshot of the file editor](image/screenshot_tfe2.png)
+![Screenshot of the file editor](../image/screenshot_tfe2.png)
 
 The screenshot above shows the layout.
 The function `on_open` in the source code `tfe2.c` is as follows.
@@ -452,4 +452,4 @@ Then, compile and run it.
 The window appears and it is the same as the screenshot at the beginning of this page.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](sec9.md)

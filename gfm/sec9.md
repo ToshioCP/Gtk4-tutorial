@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)
 
 # Build system
 
@@ -425,4 +425,4 @@ We divided a file into some categorized files and used a build tool.
 This method is used by many developers.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)

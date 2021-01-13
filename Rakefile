@@ -10,11 +10,11 @@ end
 srcfiles = Sec_files.new srcfiles
 srcfiles.renum!
 
-mdfilenames = srcfiles.map {|srcfile| srcfile.to_md}
-htmlfilenames = srcfiles.map {|srcfile| "html/"+srcfile.to_html}
-texfilenames = srcfiles.map {|srcfile| "latex/"+srcfile.to_tex}
+mdfilenames = srcfiles.map {|srcfile| "gfm/#{srcfile.to_md}"}
+htmlfilenames = srcfiles.map {|srcfile| "html/#{srcfile.to_html}"}
+texfilenames = srcfiles.map {|srcfile| "latex/#{srcfile.to_tex}"}
 
-["html", "latex"].each do |d|
+["gfm", "html", "latex"].each do |d|
   if ! Dir.exist?(d)
     Dir.mkdir(d)
   end
@@ -127,7 +127,7 @@ EOS
 task default: :md
 task all: [:md, :html, :pdf]
 
-task md: mdfilenames+["Readme.md"]
+task md: ["Readme.md"]
 
 file "Readme.md" => mdfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
@@ -136,27 +136,27 @@ file "Readme.md" => mdfilenames do
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
-    buf << "- [#{h}](#{srcfiles[i].to_md})\n"
+    buf << "- [#{h}](gfm/#{srcfiles[i].to_md})\n"
   end
   File.write("Readme.md", buf.join)
 end
 
 0.upto(srcfiles.size - 1) do |i|
-  file srcfiles[i].to_md => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, srcfiles[i].to_md, -1
+  file "gfm/#{srcfiles[i].to_md}" => (srcfiles[i].c_files << srcfiles[i].path) do
+    src2md srcfiles[i].path, "gfm/#{srcfiles[i].to_md}", -1
     if srcfiles.size == 1
-      nav = "Up: [Readme.md](Readme.md)\n"
+      nav = "Up: [Readme.md](../Readme.md)\n"
     elsif i == 0
-      nav = "Up: [Readme.md](Readme.md),  Next: [Section 2](#{srcfiles[1].to_md})\n"
+      nav = "Up: [Readme.md](../Readme.md),  Next: [Section 2](#{srcfiles[1].to_md})\n"
     elsif i == srcfiles.size - 1
-      nav = "Up: [Readme.md](Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md})\n"
+      nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md})\n"
     else
-      nav = "Up: [Readme.md](Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md}), Next: [Section #{i+2}](#{srcfiles[i+1].to_md})\n"
+      nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md}), Next: [Section #{i+2}](#{srcfiles[i+1].to_md})\n"
     end
-    buf = IO.readlines srcfiles[i].to_md
+    buf = IO.readlines "gfm/#{srcfiles[i].to_md}"
     buf.insert(0, nav, "\n")
     buf.append("\n", nav)
-    IO.write srcfiles[i].to_md, buf.join
+    IO.write "gfm/#{srcfiles[i].to_md}", buf.join
   end
 end
 
@@ -173,8 +173,8 @@ file "html/index.html" do
 end
 
 0.upto(srcfiles.size - 1) do |i|
-  file "html/"+srcfiles[i].to_html => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "html/"+srcfiles[i].to_md, -1
+  file "html/#{srcfiles[i].to_html}" => (srcfiles[i].c_files << srcfiles[i].path) do
+    src2md srcfiles[i].path, "html/#{srcfiles[i].to_html}", -1
     buf = IO.readlines "html/"+srcfiles[i].to_md
     buf.each do |line|
       line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
@@ -220,8 +220,8 @@ file "latex/main.tex" do
 end
 
 0.upto(srcfiles.size - 1) do |i|
-  file "latex/"+srcfiles[i].to_tex => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "latex/"+srcfiles[i].to_md, 80
+  file "latex/#{srcfiles[i].to_tex}" => (srcfiles[i].c_files << srcfiles[i].path) do
+    src2md srcfiles[i].path, "latex/#{srcfiles[i].to_tex}", 80
     sh "pandoc -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
     File.delete("latex/#{srcfiles[i].to_md}")
   end

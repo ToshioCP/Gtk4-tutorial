@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 6](sec6.md), Next: [Section 8](sec8.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 6](sec6.md), Next: [Section 8](sec8.md)
 
 # Define Child object
 
@@ -41,7 +41,7 @@ What we are thinking about now is "child object".
 A child object includes its parent object.
 And a child object derives everything from the parent object.
  
-![Child widget of GtkTwxtView](image/child.png)
+![Child widget of GtkTwxtView](../image/child.png)
 
 We will define TfeTextView as a child object of GtkTextView.
 It has everything that GtkTextView has.
@@ -349,4 +349,4 @@ We need more features like open, save, saveas, change font and so on.
 We will add them in the next section and after.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 6](sec6.md), Next: [Section 8](sec8.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 6](sec6.md), Next: [Section 8](sec8.md)

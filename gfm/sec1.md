@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Next: [Section 2](sec2.md)
+Up: [Readme.md](../Readme.md),  Next: [Section 2](sec2.md)
 
 # Prerequisite and Licence
 
@@ -59,4 +59,4 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY o
 See the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) for more details.
 
 
-Up: [Readme.md](Readme.md),  Next: [Section 2](sec2.md)
+Up: [Readme.md](../Readme.md),  Next: [Section 2](sec2.md)

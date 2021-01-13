@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)
 
 # Installation of gtk4 to linux distributions
 
@@ -170,4 +170,4 @@ For example, to compile `sample.c`, type the following.
 To know how to compile gtk4 applications, refer to the following sections.
 
 
-Up: [Readme.md](Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)

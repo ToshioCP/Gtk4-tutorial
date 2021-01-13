@@ -1,4 +1,4 @@
-Up: [Readme.md](Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
 
 # tfe5 source files
 
@@ -621,4 +621,4 @@ The followings are the source files of tfe5.
        64   105  2266 tfe5/tfe.ui
       576  1507 17864 total
 
-Up: [Readme.md](Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
