@@ -85,7 +85,7 @@ Now, convert sample.src.md to a markdown file sample.md.
 
 Compare sample.src.md and sample.md.
 The contents of sample.c is substituted for the line `@@@ sample.c`.
-In addition for spaces are added at the top of each line of sample.c.
+In addition four spaces are added at the top of each line of sample.c.
 
 These two commands have two advantages.
 
@@ -104,11 +104,11 @@ They are `src`, `image`, `html`, `latex` and `lib`.
 Two directories `html` and `latex` are the destination directores for html and latex files respectively.
 It is possible that these two directory don't exist before the conversion.
 
--src: This directory contains src.md files and C-related source files.
--image: This directory contains image files like png or jpg.
--html: This directory is empty at first. A ruby script will convert src.md files to html files and store them in this directory.
--latex: This directory is empty at first. A ruby script will convert src.md files to latexl files and store them in this directory.
--lib: This directory includes ruby library files.
+- src: This directory contains src.md files and C-related source files.
+- image: This directory contains image files like png or jpg.
+- html: This directory is empty at first. A ruby script will convert src.md files to html files and store them in this directory.
+- latex: This directory is empty at first. A ruby script will convert src.md files to latexl files and store them in this directory.
+- lib: This directory includes ruby library files.
  
 ## Src and top directories
 
@@ -207,7 +207,7 @@ Type `rake html` to generate html files.
     $ rake html
 
 First, it generates pandoc's markdown files under `html` directory.
-Then, pandoc converts then to html files.
+Then, pandoc converts them to html files.
 The description of the width and height of image files is removed.
 
 `index.html` is the top html file.
@@ -229,7 +229,7 @@ Type `rake latex` to generate latex files.
     $ rake latex
 
 First, it generates pandoc's markdown files under `latex` directory.
-Then, pandoc converts then to latex files.
+Then, pandoc converts them to latex files.
 Links to files or directories are removed because latex doesn't support them.
 However, links to full URL are kept.
 
