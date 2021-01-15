@@ -22,7 +22,7 @@ It connects the command line given by the user and GTK application.
 
 ## statup signal handler
 
-"startup" signal is emitted just after the application is generated.
+Startup signal is emitted just after the application is generated.
 What the signal handler needs to do is initialization of the application.
 
 - Build the widgets using ui file.
@@ -133,6 +133,40 @@ They just generate a new GtkNotebookPage.
 - 32: Show the window.
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
+
+## Primary instance
+
+Only one GApplication instance can be run at a time per session.
+The session is a bit diffcult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login.
+When you use your PC, you probably login first, then your desktop appears until you log off.
+This is the session.
+
+However, linux is multi process OS and you can run two or more instances of the same application.
+Isn't it a contradiction?
+
+When first instance is launched, then it register itself with its application ID (for example, `com.github.ToshioCP.tfe`).
+Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
+I wrote "startup signal is emitted just after the application is generated" in the prior subsection.
+More precisely, it is emitted just after registration.
+
+If another instance which has the same application ID is invoked after that, it also tries to register itself.
+Because this is the second instance, the registration of the ID has already done, so it fails.
+Because of the failure startup signal isn't emitted.
+After that, activate or open signal is emitted in the primary instance, not the second instance.
+The primary instance receives the signal and its handler is invoked.
+On the other hand, the second instance doesn't receive the signal and it immediately quits.
+
+Try to run two instances in a row.
+
+    $ ./_build/tfe &
+    [1] 84453
+    $ ./build/tfe tfeapplication.c
+    $
+
+First, the primary instance opens a window.
+Then, after the second instance is run, a new notebook page with the contents of `tfeapplication.c` appears in the primary instance's window.
+This is because the open signal is emitted in the primary instance.
+The second instance immediately quits so shell prompt soon appears.
 
 ## a series of handlers correspond to the button signals
 

@@ -65,6 +65,8 @@ Make a text file below and save it as `env.sh`
     LD_LIBRARY_PATH="$HOME/local/lib/x86_64-linux-gnu/"
     PATH="$HOME/local/bin:$PATH"
     export LD_LIBRARY_PATH PATH
+    # gsetting
+    export GSETTINGS_SCHEMA_DIR=$HOME/local/share/glib-2.0/schemas
 
 Then, use . (dot) or source command to include these commands to the current bash.
 
@@ -148,6 +150,10 @@ Modify `env.sh`.
     # gir
     XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS
     export XDG_DATA_DIRS
+    # gsetting
+    export GSETTINGS_SCHEMA_DIR=$HOME/local/share/glib-2.0/schemas
+    # girepository-1.0
+    export GI_TYPELIB_PATH=$HOME/local/lib/x86_64-linux-gnu/girepository-1.0
 
 Include this file by . (dot) command before using gtk4 libraries.
 
