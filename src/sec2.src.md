@@ -131,6 +131,8 @@ Compile and install it.
     $ ninja -C _build
     $ ninja -C _build install
 
+If you want to know more information, refer to [Gtk4 reference manual](https://gnome.pages.gitlab.gnome.org/gtk/gtk/gtk-building.html).
+
 ## Modify env.sh
 
 Because environment variables disappear when you log out, you need to add them again.

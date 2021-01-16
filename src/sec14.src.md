@@ -147,7 +147,7 @@ Isn't it a contradiction?
 When first instance is launched, then it register itself with its application ID (for example, `com.github.ToshioCP.tfe`).
 Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
 I wrote "startup signal is emitted just after the application is generated" in the prior subsection.
-More precisely, it is emitted just after registration.
+More precisely, it is emitted just after the registration.
 
 If another instance which has the same application ID is invoked after that, it also tries to register itself.
 Because this is the second instance, the registration of the ID has already done, so it fails.
@@ -185,3 +185,19 @@ First, get the top level window and call `gtk_window_destroy`.
 
 In this file, just the source file names are modified.
 
+## source files
+
+The [source files](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe5) of the text editor `tfe` will be shown in the next section.
+
+You can download the files.
+There are two options.
+
+- Use git and clone.
+- Run your browser and open the [top page](https://github.com/ToshioCP/Gtk4-tutorial). Then click on "Code" button and click "Download ZIP" in the popup menu.
+After that, unzip the archive file.
+
+If you use git, run the terminal and type the following.
+
+    git clone https://github.com/ToshioCP/Gtk4-tutorial.git
+
+The source files are under `/src/tfe5` directory.
