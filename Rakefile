@@ -90,9 +90,7 @@ file_index =<<'EOS'
 </head>
 <body>
 <h1>Gtk4 Tutorial for beginners</h1>
-<p>
 @@@ abstract
-</p>
 <ul>
 EOS
 
@@ -183,7 +181,7 @@ file "Readme.md" => mdfilenames do
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
-    buf << "- [#{h}](gfm/#{srcfiles[i].to_md})\n"
+    buf << "1. [#{h}](gfm/#{srcfiles[i].to_md})\n"
   end
   File.write("Readme.md", buf.join)
 end
