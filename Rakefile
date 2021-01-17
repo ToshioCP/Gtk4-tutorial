@@ -101,16 +101,62 @@ file_index.gsub!(/@@@ abstract\n/, abstract_html)
 # Preamble for latex files.
 
 main = <<'EOS'
-\documentclass[a4paper]{article}
+%\documentclass[a4paper]{article}
+\documentclass[a4paper]{book}
 \include{helper.tex}
-\title{Gtk4 tutorial for beginners}
-\author{Toshio Sekiya}
+%\title{Gtk4 tutorial for beginners}
+%\author{Toshio Sekiya}
 \begin{document}
-\maketitle
+%\maketitle
+\frontmatter
+\begin{titlepage}
+
+\begin{center}
+\begin{tikzpicture}
+  \node at (0,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (70pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (140pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (210pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (280pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (350pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+\end{tikzpicture}
+\end{center}
+
+\vspace{4cm}
+\begin{center}
+{\Huge Gtk4 tutorial for beginners}
+\end{center}
+\vspace{1cm}
+\begin{center}
+{\huge Toshio Sekiya}
+\end{center}
+%\vspace{6.5cm}
+%\begin{center}
+%{\Large Organization}
+%\end{center}
+%\begin{center}
+%{\Large Department}
+%\end{center}
+%\vspace{3cm}
+\vspace{10cm}
+
+\begin{center}
+\begin{tikzpicture}
+  \node at (0,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (70pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (140pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (210pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (280pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+  \node at (350pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
+\end{tikzpicture}
+\end{center}
+
+\end{titlepage}
 \tableofcontents
-\begin{abstract}
+\mainmatter
+%\begin{abstract}
 @@@ abstract
-\end{abstract}
+%\end{abstract}
 EOS
 
 main.gsub!(/@@@ abstract\n/, abstract_latex)
@@ -119,6 +165,7 @@ helper = <<'EOS'
 \usepackage[pdftex]{graphicx}
 \usepackage[colorlinks=true,linkcolor=black]{hyperref}
 \usepackage[margin=2.4cm]{geometry}
+\usepackage{tikz}
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 EOS
@@ -174,7 +221,7 @@ end
 
 0.upto(srcfiles.size - 1) do |i|
   file "html/#{srcfiles[i].to_html}" => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "html/#{srcfiles[i].to_html}", -1
+    src2md srcfiles[i].path, "html/#{srcfiles[i].to_md}", -1
     buf = IO.readlines "html/"+srcfiles[i].to_md
     buf.each do |line|
       line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
@@ -221,8 +268,8 @@ end
 
 0.upto(srcfiles.size - 1) do |i|
   file "latex/#{srcfiles[i].to_tex}" => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "latex/#{srcfiles[i].to_tex}", 80
-    sh "pandoc -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
+    src2md srcfiles[i].path, "latex/#{srcfiles[i].to_md}", 80
+    sh "pandoc -o latex/#{srcfiles[i].to_tex} --top-level-division=chapter latex/#{srcfiles[i].to_md}"
     File.delete("latex/#{srcfiles[i].to_md}")
   end
 end

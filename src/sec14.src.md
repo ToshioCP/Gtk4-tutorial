@@ -198,6 +198,6 @@ After that, unzip the archive file.
 
 If you use git, run the terminal and type the following.
 
-    git clone https://github.com/ToshioCP/Gtk4-tutorial.git
+    $ git clone https://github.com/ToshioCP/Gtk4-tutorial.git
 
 The source files are under `/src/tfe5` directory.
