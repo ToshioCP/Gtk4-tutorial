@@ -35,6 +35,8 @@ there might exist bugs.
 If you find any bugs, errors or mistakes in the tutorial and C examples,
 please let me know.
 You can post it to [github issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
+The latest version of the tutorial is located at [Gtk4-tutorial githup repository](https://github.com/ToshioCP/Gtk4-tutorial).
+You can read it without download.
 EOS
 
 abstract_html_array = abstract.gsub(/\[([^\]]*)\]\(([^\)]*)\)/,"<a href=\"\\2\">\\1</a>").split("\n\n")
@@ -99,13 +101,9 @@ file_index.gsub!(/@@@ abstract\n/, abstract_html)
 # Preamble for latex files.
 
 main = <<'EOS'
-%\documentclass[a4paper]{article}
 \documentclass[a4paper]{book}
 \include{helper.tex}
-%\title{Gtk4 tutorial for beginners}
-%\author{Toshio Sekiya}
 \begin{document}
-%\maketitle
 \frontmatter
 \begin{titlepage}
 
@@ -150,11 +148,9 @@ main = <<'EOS'
 \end{center}
 
 \end{titlepage}
+@@@ abstract
 \tableofcontents
 \mainmatter
-%\begin{abstract}
-@@@ abstract
-%\end{abstract}
 EOS
 
 main.gsub!(/@@@ abstract\n/, abstract_latex)

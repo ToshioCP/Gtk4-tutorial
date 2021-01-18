@@ -10,6 +10,8 @@ there might exist bugs.
 If you find any bugs, errors or mistakes in the tutorial and C examples,
 please let me know.
 You can post it to [github issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
+The latest version of the tutorial is located at [Gtk4-tutorial githup repository](https://github.com/ToshioCP/Gtk4-tutorial).
+You can read it without download.
 
 1. [Prerequisite and Licence](gfm/sec1.md)
 1. [Installation of gtk4 to linux distributions](gfm/sec2.md)
