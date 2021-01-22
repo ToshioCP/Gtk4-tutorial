@@ -201,9 +201,9 @@ end
   end
 end
 
-task html: htmlfilenames+["html/index.html"]
+task html: ["html/index.html"]
 
-file "html/index.html" do
+file "html/index.html" => htmlfilenames do
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
@@ -249,9 +249,9 @@ task pdf: "latex" do
   sh "mv latex/main.pdf latex/gtk4_tutorial.pdf"
 end
 
-task latex: texfilenames+["latex/main.tex"]
+task latex: ["latex/main.tex"]
 
-file "latex/main.tex" do
+file "latex/main.tex" => texfilenames do
   0.upto(srcfiles.size-1) do |i|
     main += "  \\input{#{srcfiles[i].to_tex}}\n"
   end

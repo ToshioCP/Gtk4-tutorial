@@ -6,6 +6,8 @@ src/img.rb
 src/imgsize.rb
 src/toi.rb
 src/misc/a.out
+src/misc/cairo2.c
+src/misc/cairo2.pdf
 src/tfv/a.out
 src/tfe/a.out
 src/tfe/hello.txt

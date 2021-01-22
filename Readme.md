@@ -31,3 +31,4 @@ You can read it without download.
 1. [Menu and action](gfm/sec16.md)
 1. [Stateful action](gfm/sec17.md)
 1. [Ui file for menu and action entries](gfm/sec18.md)
+1. [GtkDrawingArea and Cairo](gfm/sec19.md)
