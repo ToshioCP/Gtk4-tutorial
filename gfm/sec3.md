@@ -127,8 +127,8 @@ The function `g_signal_connect` has four arguments.
 4. Data to pass to the handler. If no data is necessary, NULL should be given.
 
 You can find the description of each signal in API reference.
-For example, "activate" signal is in GApplication subsection in GIO API reference.
-The handler function is described in that subsection.
+For example, "activate" signal is in GApplication section in GIO API reference.
+The handler function is described in that section.
 
 In addition, `g_signal_connect` is described in GObject API reference.
 API reference is very important.

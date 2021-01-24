@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/color">
+    <file>color.ui</file>
+  </gresource>
+</gresources>

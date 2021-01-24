@@ -142,7 +142,7 @@ def change_rel_link line, src_dir, basedir
   p_basedir = Pathname.new basedir
   left = ""
   right = line
-  while right =~ /(!?\[[^\]]*\])\((.*)\)/
+  while right =~ /(!?\[[^\]]*\])\(([^\)]*)\)/
     left = $`
     right = $'
     name = $1

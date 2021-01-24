@@ -26,7 +26,7 @@ We can draw shapes and images with different colors on surfaces.
 - cairo context manages the transference from source to destination through mask with its functions.
 For example, `cairo_stroke` is a function to draw a path to the destination by the transference.
 - transformation is applied before the transfer completes.
-The transformation is called affine, which is a mathematicsterminology, and represented by matrix multiplication and vector addition.
+The transformation is called affine, which is a mathematics terminology, and represented by matrix multiplication and vector addition.
 Scaling, rotation, reflection, shearing and translation are examples of affine transformation.
 In this section, we don't use it.
 That means we only use identity transformation.

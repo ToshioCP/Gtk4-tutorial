@@ -3,7 +3,7 @@
 This section and the following four sections are explanations about the next version of the text file editor (tfe).
 It is tfe5.
 It has many changes from the prior version.
-All the sources are listed after the five sections.
+All the sources are listed in [Section 15](sec15.src.md).
 
 ## Encapsulation
 

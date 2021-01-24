@@ -15,6 +15,7 @@ src/tfe/resources.c
 src/tfe5/_build
 src/tfe5/hello.txt
 src/menu/a.out
+src/color/_build
 
 html/*
 latex/*

@@ -5,7 +5,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 9](sec9.md), Next: [Section 11](s
 This section and the following four sections are explanations about the next version of the text file editor (tfe).
 It is tfe5.
 It has many changes from the prior version.
-All the sources are listed after the five sections.
+All the sources are listed in [Section 15](sec15.md).
 
 ## Encapsulation
 

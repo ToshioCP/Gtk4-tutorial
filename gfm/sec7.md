@@ -49,7 +49,7 @@ For example, TfeTextView has GtkTextbuffer correspods to GtkTextView inside TfeT
 And important thing is that TfeTextView can have a memory to keep a pointer to GFile.
 
 However, to understand the general theory about gobjects is very hard especially for beginners.
-So, I will just show you the way how to write the code and avoid the theoretical side in the next section.
+So, I will just show you the way how to write the code and avoid the theoretical side in the next subsection.
 
 ## How to define a child widget of GtkTextView
 
