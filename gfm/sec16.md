@@ -119,53 +119,55 @@ So, if the action is activated, the handler will be invoked.
 
 The following is a simple example of menus and actions.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
-     5 {
-     6   g_application_quit (G_APPLICATION(app));
-     7 }
-     8 
-     9 static void
-    10 on_activate (GApplication *app, gpointer user_data) {
-    11   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
-    12   gtk_window_set_title (GTK_WINDOW (win), "menu1");
-    13   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    14 
-    15   GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
-    16   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
-    17   g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
-    18 
-    19   GMenu *menubar = g_menu_new ();
-    20   GMenuItem *menu_item_menu = g_menu_item_new ("Menu", NULL);
-    21   GMenu *menu = g_menu_new ();
-    22   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
-    23   g_menu_append_item (menu, menu_item_quit);
-    24   g_object_unref (menu_item_quit);
-    25   g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));
-    26   g_menu_append_item (menubar, menu_item_menu);
-    27   g_object_unref (menu_item_menu);
-    28 
-    29   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
-    30   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
-    31   gtk_window_present (GTK_WINDOW (win));
-    32 /*  gtk_widget_show (win); is also OKay instead of gtk_window_present. */
-    33 }
-    34 
-    35 int
-    36 main (int argc, char **argv) {
-    37   GtkApplication *app;
-    38   int stat;
-    39 
-    40   app = gtk_application_new ("com.github.ToshioCP.menu1", G_APPLICATION_FLAGS_NONE);
-    41   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    42 
-    43   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    44   g_object_unref (app);
-    45   return stat;
-    46 }
-    47 
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+ 5 {
+ 6   g_application_quit (G_APPLICATION(app));
+ 7 }
+ 8 
+ 9 static void
+10 on_activate (GApplication *app, gpointer user_data) {
+11   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+12   gtk_window_set_title (GTK_WINDOW (win), "menu1");
+13   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+14 
+15   GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
+16   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
+17   g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
+18 
+19   GMenu *menubar = g_menu_new ();
+20   GMenuItem *menu_item_menu = g_menu_item_new ("Menu", NULL);
+21   GMenu *menu = g_menu_new ();
+22   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
+23   g_menu_append_item (menu, menu_item_quit);
+24   g_object_unref (menu_item_quit);
+25   g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));
+26   g_menu_append_item (menubar, menu_item_menu);
+27   g_object_unref (menu_item_menu);
+28 
+29   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
+30   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
+31   gtk_window_present (GTK_WINDOW (win));
+32 /*  gtk_widget_show (win); is also OKay instead of gtk_window_present. */
+33 }
+34 
+35 int
+36 main (int argc, char **argv) {
+37   GtkApplication *app;
+38   int stat;
+39 
+40   app = gtk_application_new ("com.github.ToshioCP.menu1", G_APPLICATION_FLAGS_NONE);
+41   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+42 
+43   stat =g_application_run (G_APPLICATION (app), argc, argv);
+44   g_object_unref (app);
+45   return stat;
+46 }
+47 
+~~~
 
 - 3-7: `quit_activated` is a handler of an action `act_quit`.
 Handlers of actions have three parameters.

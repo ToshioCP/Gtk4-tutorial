@@ -45,16 +45,28 @@ require 'pathname'
 
 # ---- Folding verbatim lines ----
 # When C sourcefiles or subshell output are included, the lines are folded to fit in 'width'.
-# Before they are folded, four space characters are prepended to the line.
-# Therefore, 'width' must be at least five.
+# Width must be positive integer.
 # Otherwise the lines are not folded.
+
+# This script uses "fenced code blocks" for verbatim lines.
+# It is available in GFM and pandoc's markdown but not in original markdown.
+# Two characters backtick (`) and tilde (~) are possible for fences.
+# This script uses tilde because info string cannot contain any backticks for the backtick code fence.
+# Info string follows opening fence and it is usually a language name.
+# ~~~C
+# int main (int argc, char **argv) {
+# ........
+# ~~~
+# Then the contents are highlighted based on C language syntax.
+# This script find the language by the suffix of the file name.
+# .c => C, .h => C, .rb => ruby, Rakefile, => ruby, .xml => xml, .ui => xml, .y => bison, .lex => lex, .build => meson, .md => markdown
+# Makefile => makefile
 
 def src2md srcmd, md, width
   src_buf = IO.readlines srcmd
   src_dir = File.dirname srcmd
   md_dir = File.dirname md
-# type is 'the type of the target', which is one of "markdown", "html" and "latex".
-  type = md_dir == "." ? "markdown" : md_dir
+  type = File.basename md_dir # gfm, html or latex
 
   md_buf = []
   comflag = false
@@ -65,14 +77,16 @@ def src2md srcmd, md, width
       else
         md_buf << "    $ "+line
         `cd #{src_dir}; #{line.chomp}`.each_line do |l|
-          md_buf << l.gsub(/^/,"    ")
+          fold(l, width).each_line do |l2|
+            md_buf << l2.gsub(/^/,"    ")
+          end
         end
       end
     elsif line == "$$$\n"
       comflag = true
-    elsif line =~ /^@@@\s+(\S+)\s*(.*)\s*$/
+    elsif line =~ /^@@@\s+(\S+)\s*(.*)$/
       c_file = $1
-      c_functions = $2.split(" ")
+      c_functions = $2.strip.split(" ")
       if c_file =~ /^\// # absolute path
         c_file_buf = IO.readlines(c_file)
       else #relative path
@@ -108,38 +122,33 @@ def src2md srcmd, md, width
           end
         end
       end
+      md_buf << "~~~#{lang(c_file)}\n"
       ln_width = tmp_buf.size.to_s.length
       n = 1
       tmp_buf.each do |l|
-        l = sprintf("    %#{ln_width}d %s", n, l)
-        md_buf << l
+        l = sprintf("%#{ln_width}d %s", n, l)
+        fold(l, width).each_line do |l2|
+          md_buf << l2
+        end
         n += 1
       end
+      md_buf << "~~~\n"
     else
-      md_buf << change_rel_link(line, src_dir, File.dirname(md))
-    end
-  end
-  tmp_buf = md_buf
-  md_buf = []
-  tmp_buf.each do |line|
-    if line =~ /^    / && width.instance_of?(Integer) && width >= 5
-      indent = line =~ /^( *\d+ +)/ ? " "*$1.length : "    " 
-      while line.instance_of?(String) && line.length > width
-        md_buf << line[0, width]+"\n"
-        line = line[width .. -1].gsub(/^/,indent)
+      line = change_rel_link(line, src_dir, md_dir)
+      if type == "latex" # remove relative link
+        line.gsub!(/(^|[^!])\[([^\]]*)\]\((?~http)\)/,"\\1\\2")
+      else # type == "gfm" or "html", then remove size option from link to image files.
+        line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1")
       end
-    elsif type == "latex"
-      line.gsub!(/(^|[^!])\[([^\]]*)\]\((?~http)\)/,"\\1\\2") # remove link
-    else # type == "markdown" or "html"
-      line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1") # remove size option from link to image files.
+      md_buf << line
     end
-    md_buf << line
   end
   IO.write(md,md_buf.join)
 end
 
-def change_rel_link line, src_dir, basedir
-  p_basedir = Pathname.new basedir
+# Change the base of relative links from org_dir to new_dir
+def change_rel_link line, org_dir, new_dir
+  p_new_dir = Pathname.new new_dir
   left = ""
   right = line
   while right =~ /(!?\[[^\]]*\])\(([^\)]*)\)/
@@ -150,11 +159,42 @@ def change_rel_link line, src_dir, basedir
     if name =~ /\[(S|s)ection (\d+)\]/
       link = "sec#{$2}.md"
     elsif ! (link =~ /^(http|\/)/)
-      p_link = Pathname.new "#{src_dir}/#{link}"
-      link = p_link.relative_path_from(p_basedir).to_s
+      p_link = Pathname.new "#{org_dir}/#{link}"
+      link = p_link.relative_path_from(p_new_dir).to_s
     end
     left += "#{name}(#{link})"
   end
   left + right
 end
 
+def fold line, width
+  if width <=0
+    return line
+  end
+  tmp = []
+  while line.length > width
+    tmp << line[0, width]+"\n"
+    line = line[width .. -1]
+  end
+  tmp << line
+  tmp.join
+end
+
+def lang file
+  tbl = {".c" => "C", ".h" => "C", ".rb" => "ruby", ".xml" => "xml", ".ui" => "xml",
+         ".y" => "bison", ".lex" => "lex", ".build" => "meson", ".md" => "markdown" }
+  name = File.basename file
+  if name == "Makefile"
+    return "makefile"
+  elsif name == "Rakefile"
+    return "ruby"
+  else
+    suffix = File.extname name
+    tbl.each do |key, val|
+      if suffix == key
+        return val
+      end
+    end
+  end
+  return ""
+end

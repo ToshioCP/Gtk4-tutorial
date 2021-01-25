@@ -4,7 +4,7 @@ Now, we will make a new application which has GtkDrawingArea and TfeTextView in 
 Its name is "color".
 If you write a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
 
-![color](../image/color.png)
+![color](../image/color.png){width=7.0cm height=5.13cm}
 
 The following colors are available.
 

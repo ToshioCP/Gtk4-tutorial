@@ -11,22 +11,26 @@ The same goes for menus.
 The ui file for menus has interface, menu tags.
 The file starts and ends with interface tag.
 
-    <interface>
-      <menu id="menubar">
-      </menu>
-    </interface>
+~~~xml
+<interface>
+  <menu id="menubar">
+  </menu>
+</interface>
+~~~
 
 `menu` tag corresponds to GMenu object.
 `id` attribute defines the name of the object.
 It will be refered by GtkBuilder.
 
-    <submenu>
-      <attribute name="label">File</attribute>
-        <item>
-          <attribute name="label">New</attribute>
-          <attribute name="action">win.new</attribute>
-        </item>
-    </submenu>
+~~~xml
+<submenu>
+  <attribute name="label">File</attribute>
+    <item>
+      <attribute name="label">New</attribute>
+      <attribute name="action">win.new</attribute>
+    </item>
+</submenu>
+~~~
 
 `item` tag corresponds to item in GMenu which has the same structure as GMenuItem.
 The item above has a label attribute.
@@ -38,15 +42,17 @@ The GMenuItem has a link to GMenu.
 
 The ui file above can be described as follows.
 
-    <item>
-      <attribute name="label">File</attribute>
-        <link name="submenu">
-          <item>
-            <attribute name="label">New</attribute>
-            <attribute name="action">win.new</attribute>
-          </item>
-        </link>
-    </item>
+~~~xml
+<item>
+  <attribute name="label">File</attribute>
+    <link name="submenu">
+      <item>
+        <attribute name="label">New</attribute>
+        <attribute name="action">win.new</attribute>
+      </item>
+    </link>
+</item>
+~~~
 
 `link` tag expresses the link to submenu.
 And at the same time it also expresses the submenu itself.
@@ -69,11 +75,13 @@ The ui file is converted to the resource by the resouce compiler `glib-compile-r
 
 GtkBuilder builds menus from the resource.
 
-    GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
-    GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
+~~~C
+GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
+GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
 
-    gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
-    g_object_unref (builder);
+gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
+g_object_unref (builder);
+~~~
 
 It is important that `builder` is unreferred after the GMenuModel `menubar` is set to the application.
 If you do it before setting, bad thing will happen -- your computer might freeze.
@@ -86,31 +94,42 @@ You can implement them easily with GActionEntry structure and `g_action_map_add_
 
 GActionEntry contains action name, signal handlers, parameter and state.
 
-    typedef struct _GActionEntry GActionEntry;
+~~~C
+typedef struct _GActionEntry GActionEntry;
 
-    struct _GActionEntry
-    {
-      const gchar *name; /* action name */
-      void (* activate) (GSimpleAction *action, GVariant *parameter, gpointer user_data); /* activate handler */
-      const gchar *parameter_type; /* the type of the parameter given as a single GVariant type string */
-      const gchar *state; /* initial state given in GVariant text format */
-      void (* change_state) (GSimpleAction *action, GVariant *value, gpointer user_data); /* change-state handler */
-      /*< private >*/
-      gsize padding[3];
-    };
-
+struct _GActionEntry
+{
+  /* action name */
+  const gchar *name;
+  /* activate handler */
+  void (* activate) (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+  /* the type of the parameter given as a single GVariant type string */
+  const gchar *parameter_type;
+  /* initial state given in GVariant text format */
+  const gchar *state;
+  /* change-state handler */
+  void (* change_state) (GSimpleAction *action, GVariant *value, gpointer user_data);
+  /*< private >*/
+  gsize padding[3];
+};
+~~~
 For example, the actions in the previous section are:
 
-    { "fullscreen", NULL, NULL, "false", fullscreen_changed }
-    { "color", color_activated, "s", "red", NULL }
-    { "quit", quit_activated, NULL, NULL, NULL },
+~~~C
+{ "fullscreen", NULL, NULL, "false", fullscreen_changed }
+{ "color", color_activated, "s", "red", NULL }
+{ "quit", quit_activated, NULL, NULL, NULL },
+~~~
 
 And `g_action_map_add_action_entries` does all the process instead of the functions you have needed.
 
-    const GActionEntry app_entries[] = {
-      { "quit", quit_activated, NULL, NULL, NULL }
-    };
-    g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
+~~~C
+const GActionEntry app_entries[] = {
+  { "quit", quit_activated, NULL, NULL, NULL }
+};
+g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
+                                 G_N_ELEMENTS (app_entries), app);
+~~~
 
 The code above does:
 
@@ -120,12 +139,14 @@ The code above does:
 
 The same goes for the other actions.
 
-    const GActionEntry win_entries[] = {
-      { "fullscreen", NULL, NULL, "false", fullscreen_changed },
-      { "color", color_activated, "s", "red", NULL }
-    };
-    g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
-
+~~~C
+const GActionEntry win_entries[] = {
+  { "fullscreen", NULL, NULL, "false", fullscreen_changed },
+  { "color", color_activated, "s", "red", NULL }
+};
+g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries,
+                                 G_N_ELEMENTS (win_entries), win);
+~~~
 The code above does:
 
 - Build a "fullscreen" action and "color" action.

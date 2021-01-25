@@ -143,7 +143,8 @@ Modify `env.sh`.
     # compiler
     CPPFLAGS="-I$HOME/local/include"
     LDFLAGS="-L$HOME/local/lib"
-    PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig:$HOME/local/lib/x86_64-linux-gnu/pkgconfig:$HOME/local/share/pkgconfig"
+    PKG_CONFIG_PATH="$HOME/local/lib/pkgconfig:$HOME/local/lib/x86_64-linux-gnu/pkgconfig:
+    $HOME/local/share/pkgconfig"
     export CPPFLAGS LDFLAGS PKG_CONFIG_PATH
     # linker
     LD_LIBRARY_PATH="$HOME/local/lib/x86_64-linux-gnu/"

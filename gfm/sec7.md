@@ -57,39 +57,41 @@ So, I will just show you the way how to write the code and avoid the theoretical
 Let's define TfeTextView object which is a child object of GtkTextView.
 First, look at the program below.
 
-    #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
-    G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
+~~~C
+#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
+G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
 
-    struct _TfeTextView
-    {
-      GtkTextView parent;
-      GFile *file;
-    };
+struct _TfeTextView
+{
+  GtkTextView parent;
+  GFile *file;
+};
 
-    G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
-    static void
-    tfe_text_view_init (TfeTextView *tv) {
-    }
+static void
+tfe_text_view_init (TfeTextView *tv) {
+}
 
-    static void
-    tfe_text_view_class_init (TfeTextViewClass *class) {
-    }
+static void
+tfe_text_view_class_init (TfeTextViewClass *class) {
+}
 
-    void
-    tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
-      tv -> file = f;
-    }
+void
+tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
+  tv -> file = f;
+}
 
-    GFile *
-    tfe_text_view_get_file (TfeTextView *tv) {
-      return tv -> file;
-    }
+GFile *
+tfe_text_view_get_file (TfeTextView *tv) {
+  return tv -> file;
+}
 
-    GtkWidget *
-    tfe_text_view_new (void) {
-      return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
-    }
+GtkWidget *
+tfe_text_view_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
+}
+~~~
 
 If you are curious about the background theory of this program, It's very good for you.
 Because to know the theory is very important for you to program GTK applications.
@@ -157,31 +159,33 @@ The argument win is GtkApplicationWindow, in which the signal "close-request" is
 `G_CALLBACK` cast is necessary for the handler.
 The program of before\_close is as follows.
 
-     1 static gboolean
-     2 before_close (GtkWindow *win, GtkWidget *nb) {
-     3   GtkWidget *scr;
-     4   GtkWidget *tv;
-     5   GFile *file;
-     6   GtkTextBuffer *tb;
-     7   GtkTextIter start_iter;
-     8   GtkTextIter end_iter;
-     9   char *contents;
-    10   unsigned int n;
-    11   unsigned int i;
-    12 
-    13   n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
-    14   for (i = 0; i < n; ++i) {
-    15     scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);
-    16     tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-    17     file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
-    18     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-    19     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
-    20     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-    21     if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL))
-    22       g_print ("ERROR : Can't save %s.", g_file_get_path (file));
-    23   }
-    24   return FALSE;
-    25 }
+~~~C
+ 1 static gboolean
+ 2 before_close (GtkWindow *win, GtkWidget *nb) {
+ 3   GtkWidget *scr;
+ 4   GtkWidget *tv;
+ 5   GFile *file;
+ 6   GtkTextBuffer *tb;
+ 7   GtkTextIter start_iter;
+ 8   GtkTextIter end_iter;
+ 9   char *contents;
+10   unsigned int n;
+11   unsigned int i;
+12 
+13   n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
+14   for (i = 0; i < n; ++i) {
+15     scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);
+16     tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+17     file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
+18     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+19     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+20     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+21     if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL))
+22       g_print ("ERROR : Can't save %s.", g_file_get_path (file));
+23   }
+24   return FALSE;
+25 }
+~~~
 
 The numbers on the left of items are line numbers in the source code.
 
@@ -195,142 +199,144 @@ The numbers on the left of items are line numbers in the source code.
 
 Now I will show you all the source code of `tfe1`.c.
 
-      1 #include <gtk/gtk.h>
-      2 
-      3 /* Define TfeTextView Widget which is the child object of GtkTextView */
-      4 
-      5 #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
-      6 G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
-      7 
-      8 struct _TfeTextView
-      9 {
-     10   GtkTextView parent;
-     11   GFile *file;
-     12 };
-     13 
-     14 G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
-     15 
-     16 static void
-     17 tfe_text_view_init (TfeTextView *tv) {
-     18 }
-     19 
-     20 static void
-     21 tfe_text_view_class_init (TfeTextViewClass *class) {
-     22 }
-     23 
-     24 void
-     25 tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
-     26   tv -> file = f;
-     27 }
-     28 
-     29 GFile *
-     30 tfe_text_view_get_file (TfeTextView *tv) {
-     31   return tv -> file;
-     32 }
-     33 
-     34 GtkWidget *
-     35 tfe_text_view_new (void) {
-     36   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
-     37 }
-     38 
-     39 /* ---------- end of the definition of TfeTextView ---------- */
-     40 
-     41 static gboolean
-     42 before_close (GtkWindow *win, GtkWidget *nb) {
-     43   GtkWidget *scr;
-     44   GtkWidget *tv;
-     45   GFile *file;
-     46   GtkTextBuffer *tb;
-     47   GtkTextIter start_iter;
-     48   GtkTextIter end_iter;
-     49   char *contents;
-     50   unsigned int n;
-     51   unsigned int i;
-     52 
-     53   n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
-     54   for (i = 0; i < n; ++i) {
-     55     scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);
-     56     tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-     57     file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
-     58     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-     59     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
-     60     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-     61     if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL))
-     62       g_print ("ERROR : Can't save %s.", g_file_get_path (file));
-     63   }
-     64   return FALSE;
-     65 }
-     66 
-     67 static void
-     68 on_activate (GApplication *app, gpointer user_data) {
-     69   g_print ("You need a filename argument.\n");
-     70 }
-     71 
-     72 static void
-     73 on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
-     74   GtkWidget *win;
-     75   GtkWidget *nb;
-     76   GtkWidget *lab;
-     77   GtkNotebookPage *nbp;
-     78   GtkWidget *scr;
-     79   GtkWidget *tv;
-     80   GtkTextBuffer *tb;
-     81   char *contents;
-     82   gsize length;
-     83   char *filename;
-     84   int i;
-     85 
-     86   win = gtk_application_window_new (GTK_APPLICATION (app));
-     87   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-     88   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-     89   gtk_window_maximize (GTK_WINDOW (win));
-     90 
-     91   nb = gtk_notebook_new ();
-     92   gtk_window_set_child (GTK_WINDOW (win), nb);
-     93 
-     94   for (i = 0; i < n_files; i++) {
-     95     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
-     96       scr = gtk_scrolled_window_new ();
-     97       tv = tfe_text_view_new ();
-     98       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-     99       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-    100       gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-    101 
-    102       tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
-    103       gtk_text_buffer_set_text (tb, contents, length);
-    104       g_free (contents);
-    105       filename = g_file_get_basename (files[i]);
-    106       lab = gtk_label_new (filename);
-    107       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
-    108       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
-    109       g_object_set (nbp, "tab-expand", TRUE, NULL);
-    110       g_free (filename);
-    111     } else {
-    112       filename = g_file_get_path (files[i]);
-    113       g_print ("No such file: %s.\n", filename);
-    114       g_free (filename);
-    115     }
-    116   }
-    117   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-    118     g_signal_connect (win, "close-request", G_CALLBACK (before_close), nb);
-    119     gtk_widget_show (win);
-    120   } else
-    121     gtk_window_destroy (GTK_WINDOW (win));
-    122 }
-    123 
-    124 int
-    125 main (int argc, char **argv) {
-    126   GtkApplication *app;
-    127   int stat;
-    128 
-    129   app = gtk_application_new ("com.github.ToshioCP.tfe1", G_APPLICATION_HANDLES_OPEN);
-    130   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    131   g_signal_connect (app, "open", G_CALLBACK (on_open), NULL);
-    132   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    133   g_object_unref (app);
-    134   return stat;
-    135 }
-    136 
+~~~C
+  1 #include <gtk/gtk.h>
+  2 
+  3 /* Define TfeTextView Widget which is the child object of GtkTextView */
+  4 
+  5 #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
+  6 G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
+  7 
+  8 struct _TfeTextView
+  9 {
+ 10   GtkTextView parent;
+ 11   GFile *file;
+ 12 };
+ 13 
+ 14 G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+ 15 
+ 16 static void
+ 17 tfe_text_view_init (TfeTextView *tv) {
+ 18 }
+ 19 
+ 20 static void
+ 21 tfe_text_view_class_init (TfeTextViewClass *class) {
+ 22 }
+ 23 
+ 24 void
+ 25 tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
+ 26   tv -> file = f;
+ 27 }
+ 28 
+ 29 GFile *
+ 30 tfe_text_view_get_file (TfeTextView *tv) {
+ 31   return tv -> file;
+ 32 }
+ 33 
+ 34 GtkWidget *
+ 35 tfe_text_view_new (void) {
+ 36   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
+ 37 }
+ 38 
+ 39 /* ---------- end of the definition of TfeTextView ---------- */
+ 40 
+ 41 static gboolean
+ 42 before_close (GtkWindow *win, GtkWidget *nb) {
+ 43   GtkWidget *scr;
+ 44   GtkWidget *tv;
+ 45   GFile *file;
+ 46   GtkTextBuffer *tb;
+ 47   GtkTextIter start_iter;
+ 48   GtkTextIter end_iter;
+ 49   char *contents;
+ 50   unsigned int n;
+ 51   unsigned int i;
+ 52 
+ 53   n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
+ 54   for (i = 0; i < n; ++i) {
+ 55     scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);
+ 56     tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+ 57     file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
+ 58     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+ 59     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+ 60     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+ 61     if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL))
+ 62       g_print ("ERROR : Can't save %s.", g_file_get_path (file));
+ 63   }
+ 64   return FALSE;
+ 65 }
+ 66 
+ 67 static void
+ 68 on_activate (GApplication *app, gpointer user_data) {
+ 69   g_print ("You need a filename argument.\n");
+ 70 }
+ 71 
+ 72 static void
+ 73 on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+ 74   GtkWidget *win;
+ 75   GtkWidget *nb;
+ 76   GtkWidget *lab;
+ 77   GtkNotebookPage *nbp;
+ 78   GtkWidget *scr;
+ 79   GtkWidget *tv;
+ 80   GtkTextBuffer *tb;
+ 81   char *contents;
+ 82   gsize length;
+ 83   char *filename;
+ 84   int i;
+ 85 
+ 86   win = gtk_application_window_new (GTK_APPLICATION (app));
+ 87   gtk_window_set_title (GTK_WINDOW (win), "file editor");
+ 88   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+ 89   gtk_window_maximize (GTK_WINDOW (win));
+ 90 
+ 91   nb = gtk_notebook_new ();
+ 92   gtk_window_set_child (GTK_WINDOW (win), nb);
+ 93 
+ 94   for (i = 0; i < n_files; i++) {
+ 95     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
+ 96       scr = gtk_scrolled_window_new ();
+ 97       tv = tfe_text_view_new ();
+ 98       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+ 99       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+100       gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+101 
+102       tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
+103       gtk_text_buffer_set_text (tb, contents, length);
+104       g_free (contents);
+105       filename = g_file_get_basename (files[i]);
+106       lab = gtk_label_new (filename);
+107       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
+108       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
+109       g_object_set (nbp, "tab-expand", TRUE, NULL);
+110       g_free (filename);
+111     } else {
+112       filename = g_file_get_path (files[i]);
+113       g_print ("No such file: %s.\n", filename);
+114       g_free (filename);
+115     }
+116   }
+117   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
+118     g_signal_connect (win, "close-request", G_CALLBACK (before_close), nb);
+119     gtk_widget_show (win);
+120   } else
+121     gtk_window_destroy (GTK_WINDOW (win));
+122 }
+123 
+124 int
+125 main (int argc, char **argv) {
+126   GtkApplication *app;
+127   int stat;
+128 
+129   app = gtk_application_new ("com.github.ToshioCP.tfe1", G_APPLICATION_HANDLES_OPEN);
+130   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+131   g_signal_connect (app, "open", G_CALLBACK (on_open), NULL);
+132   stat =g_application_run (G_APPLICATION (app), argc, argv);
+133   g_object_unref (app);
+134   return stat;
+135 }
+136 
+~~~
 
 - 102: set the pointer to GFile into TfeTextView.
 `files[i]` is a pointer to GFile structure.

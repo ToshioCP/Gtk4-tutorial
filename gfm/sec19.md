@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 18](sec18.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 18](sec18.md), Next: [Section 20](sec20.md)
 
 # GtkDrawingArea and Cairo
 
@@ -46,37 +46,39 @@ This will be a destnation.
 
 Here's a simple example code that draws a small square and save it as a png file.
 
-     1 #include <cairo.h>
-     2 
-     3 int
-     4 main (int argc, char **argv)
-     5 {
-     6   cairo_surface_t *surface;
-     7   cairo_t *cr;
-     8   int width = 100;
-     9   int height = 100;
-    10 
-    11   /* Generate surface and cairo */
-    12   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
-    13   cr = cairo_create (surface);
-    14 
-    15   /* Drawing starts here. */
-    16   /* Paint the background white */
-    17   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-    18   cairo_paint (cr);
-    19   /* Draw a black rectangle */
-    20   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    21   cairo_set_line_width (cr, 2.0);
-    22   cairo_rectangle (cr, width/2.0 - 20.0, height/2.0 - 20.0, 40.0, 40.0);
-    23   cairo_stroke (cr);
-    24 
-    25   /* Write the surface to a png file and clean up cairo and surface. */
-    26   cairo_surface_write_to_png (surface, "rectangle.png");
-    27   cairo_destroy (cr);
-    28   cairo_surface_destroy (surface);
-    29 
-    30   return 0;
-    31 }
+~~~C
+ 1 #include <cairo.h>
+ 2 
+ 3 int
+ 4 main (int argc, char **argv)
+ 5 {
+ 6   cairo_surface_t *surface;
+ 7   cairo_t *cr;
+ 8   int width = 100;
+ 9   int height = 100;
+10 
+11   /* Generate surface and cairo */
+12   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+13   cr = cairo_create (surface);
+14 
+15   /* Drawing starts here. */
+16   /* Paint the background white */
+17   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+18   cairo_paint (cr);
+19   /* Draw a black rectangle */
+20   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+21   cairo_set_line_width (cr, 2.0);
+22   cairo_rectangle (cr, width/2.0 - 20.0, height/2.0 - 20.0, 40.0, 40.0);
+23   cairo_stroke (cr);
+24 
+25   /* Write the surface to a png file and clean up cairo and surface. */
+26   cairo_surface_write_to_png (surface, "rectangle.png");
+27   cairo_destroy (cr);
+28   cairo_surface_destroy (surface);
+29 
+30   return 0;
+31 }
+~~~
 
 - 1: Include the header file of cairo.
 - 12: `cairo_image_surface_create` creates an image surface.
@@ -117,45 +119,47 @@ If you aren't familiar with cairo, it is strongly recommended to read the [tutor
 
 The following is a very simple example.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 draw_function (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
-     5   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* whilte */
-     6   cairo_paint (cr);
-     7   cairo_set_line_width (cr, 2.0);
-     8   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
-     9   cairo_rectangle (cr, width/2.0 - 20.0, height/2.0 - 20.0, 40.0, 40.0);
-    10   cairo_stroke (cr);
-    11 }
-    12 
-    13 static void
-    14 on_activate (GApplication *app, gpointer user_data) {
-    15   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
-    16   GtkWidget *area = gtk_drawing_area_new ();
-    17 
-    18   gtk_window_set_title (GTK_WINDOW (win), "da1");
-    19   /* Set initial size of width and height */
-    20   gtk_drawing_area_set_content_width (GTK_DRAWING_AREA (area), 100);
-    21   gtk_drawing_area_set_content_height (GTK_DRAWING_AREA (area), 100);
-    22   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (area), draw_function, NULL, NULL);
-    23   gtk_window_set_child (GTK_WINDOW (win), area);
-    24 
-    25   gtk_widget_show (win);
-    26 }
-    27 
-    28 int
-    29 main (int argc, char **argv) {
-    30   GtkApplication *app;
-    31   int stat;
-    32 
-    33   app = gtk_application_new ("com.github.ToshioCP.da1", G_APPLICATION_FLAGS_NONE);
-    34   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    35   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    36   g_object_unref (app);
-    37   return stat;
-    38 }
-    39 
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 draw_function (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
+ 5   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* whilte */
+ 6   cairo_paint (cr);
+ 7   cairo_set_line_width (cr, 2.0);
+ 8   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+ 9   cairo_rectangle (cr, width/2.0 - 20.0, height/2.0 - 20.0, 40.0, 40.0);
+10   cairo_stroke (cr);
+11 }
+12 
+13 static void
+14 on_activate (GApplication *app, gpointer user_data) {
+15   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+16   GtkWidget *area = gtk_drawing_area_new ();
+17 
+18   gtk_window_set_title (GTK_WINDOW (win), "da1");
+19   /* Set initial size of width and height */
+20   gtk_drawing_area_set_content_width (GTK_DRAWING_AREA (area), 100);
+21   gtk_drawing_area_set_content_height (GTK_DRAWING_AREA (area), 100);
+22   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (area), draw_function, NULL, NULL);
+23   gtk_window_set_child (GTK_WINDOW (win), area);
+24 
+25   gtk_widget_show (win);
+26 }
+27 
+28 int
+29 main (int argc, char **argv) {
+30   GtkApplication *app;
+31   int stat;
+32 
+33   app = gtk_application_new ("com.github.ToshioCP.da1", G_APPLICATION_FLAGS_NONE);
+34   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+35   stat =g_application_run (G_APPLICATION (app), argc, argv);
+36   g_object_unref (app);
+37   return stat;
+38 }
+39 
+~~~
 
 The function `main` is almost same as before.
 The two functions `on_activate` and `draw_function` is important in this example.
@@ -194,4 +198,4 @@ The square always appears at the center of the window because the drawing functi
 ![Square in the window](../image/da1.png)
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 18](sec18.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 18](sec18.md), Next: [Section 20](sec20.md)

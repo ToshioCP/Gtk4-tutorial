@@ -21,7 +21,8 @@ The signal handler will be described after the explanation of this code.
     static void
     on_activate (GApplication *app, gpointer user_data) {
       ... ... ...
-      GSimpleAction *act_fullscreen = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
+      GSimpleAction *act_fullscreen = g_simple_action_new_stateful ("fullscreen",
+                                      NULL, g_variant_new_boolean (FALSE));
       GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
       g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
       ... ... ...
@@ -116,7 +117,8 @@ Those colors are given to the signal handler as a parameter.
     static void
     on_activate (GApplication *app, gpointer user_data) {
       ... ... ...
-      GSimpleAction *act_color = g_simple_action_new_stateful ("color", g_variant_type_new("s"), g_variant_new_string ("red"));
+      GSimpleAction *act_color = g_simple_action_new_stateful ("color",
+                         g_variant_type_new("s"), g_variant_new_string ("red"));
       GMenuItem *menu_item_red = g_menu_item_new ("Red", "win.color::red");
       GMenuItem *menu_item_green = g_menu_item_new ("Green", "win.color::green");
       GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "win.color::blue");
@@ -150,7 +152,8 @@ The following is the "activate" signal handler.
 
     static void
     color_activated(GSimpleAction *action, GVariant *parameter, gpointer win) {
-      gchar *color = g_strdup_printf ("label#lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
+      gchar *color = g_strdup_printf ("label#lb {background-color: %s;}",
+                                       g_variant_get_string (parameter, NULL));
       gtk_css_provider_load_from_data (provider, color, -1);
       g_free (color);
       g_action_change_state (G_ACTION (action), parameter);
@@ -187,14 +190,16 @@ When GVariantType is generated, the type is expressed by the string.
 The following program is a simple example.
 It finally output the string "s".
 
-    1 #include <glib.h>
-    2 
-    3 int
-    4 main (int argc, char **argv) {
-    5   GVariantType *vtype = g_variant_type_new ("s");
-    6   const gchar *type_string = g_variant_type_peek_string (vtype);
-    7   g_print ("%s\n",type_string);
-    8 }
+~~~C
+1 #include <glib.h>
+2 
+3 int
+4 main (int argc, char **argv) {
+5   GVariantType *vtype = g_variant_type_new ("s");
+6   const gchar *type_string = g_variant_type_peek_string (vtype);
+7   g_print ("%s\n",type_string);
+8 }
+~~~
 
 - `g_variant_tpe_new` generates GVariantType.
 It uses a type string "s" which means string.
@@ -217,111 +222,113 @@ And the radio button of the selected menu turns on.
 
 The code is as follows.
 
-      1 #include <gtk/gtk.h>
-      2 
-      3 static GtkCssProvider *provider;
-      4 
-      5 static void
-      6 fullscreen_changed(GSimpleAction *action, GVariant *value, gpointer win) {
-      7   if (g_variant_get_boolean (value))
-      8     gtk_window_maximize (GTK_WINDOW (win));
-      9   else
-     10     gtk_window_unmaximize (GTK_WINDOW (win));
-     11   g_simple_action_set_state (action, value);
-     12 }
-     13 
-     14 static void
-     15 color_activated(GSimpleAction *action, GVariant *parameter, gpointer win) {
-     16   gchar *color = g_strdup_printf ("label#lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
-     17   gtk_css_provider_load_from_data (provider, color, -1);
-     18   g_free (color);
-     19   g_action_change_state (G_ACTION (action), parameter);
-     20 }
-     21 
-     22 static void
-     23 quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
-     24 {
-     25   g_application_quit (G_APPLICATION(app));
-     26 }
-     27 
-     28 static void
-     29 on_activate (GApplication *app, gpointer user_data) {
-     30   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
-     31   gtk_window_set_title (GTK_WINDOW (win), "menu2");
-     32   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-     33 
-     34   GtkWidget *lb = gtk_label_new (NULL);
-     35   gtk_widget_set_name (lb, "lb"); /* the name is used by CSS Selector */
-     36   gtk_window_set_child (GTK_WINDOW (win), lb);
-     37 
-     38   GSimpleAction *act_fullscreen
-     39     = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
-     40   GSimpleAction *act_color
-     41     = g_simple_action_new_stateful ("color", g_variant_type_new("s"), g_variant_new_string ("red"));
-     42   GSimpleAction *act_quit
-     43     = g_simple_action_new ("quit", NULL);
-     44 
-     45   GMenu *menubar = g_menu_new ();
-     46   GMenu *menu = g_menu_new ();
-     47   GMenu *section1 = g_menu_new ();
-     48   GMenu *section2 = g_menu_new ();
-     49   GMenu *section3 = g_menu_new ();
-     50   GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
-     51   GMenuItem *menu_item_red = g_menu_item_new ("Red", "win.color::red");
-     52   GMenuItem *menu_item_green = g_menu_item_new ("Green", "win.color::green");
-     53   GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "win.color::blue");
-     54   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
-     55 
-     56   g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
-     57   g_signal_connect (act_color, "activate", G_CALLBACK (color_activated), win);
-     58   g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
-     59   g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_fullscreen));
-     60   g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_color));
-     61   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
-     62 
-     63   g_menu_append_item (section1, menu_item_fullscreen);
-     64   g_menu_append_item (section2, menu_item_red);
-     65   g_menu_append_item (section2, menu_item_green);
-     66   g_menu_append_item (section2, menu_item_blue);
-     67   g_menu_append_item (section3, menu_item_quit);
-     68   g_object_unref (menu_item_red);
-     69   g_object_unref (menu_item_green);
-     70   g_object_unref (menu_item_blue);
-     71   g_object_unref (menu_item_fullscreen);
-     72   g_object_unref (menu_item_quit);
-     73 
-     74   g_menu_append_section (menu, NULL, G_MENU_MODEL (section1));
-     75   g_menu_append_section (menu, "Color", G_MENU_MODEL (section2));
-     76   g_menu_append_section (menu, NULL, G_MENU_MODEL (section3));
-     77   g_menu_append_submenu (menubar, "Menu", G_MENU_MODEL (menu));
-     78 
-     79   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
-     80   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
-     81 
-     82 /*  GtkCssProvider *provider = gtk_css_provider_new ();*/
-     83   provider = gtk_css_provider_new ();
-     84   GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (win));
-     85   gtk_css_provider_load_from_data (provider, "label#lb {background-color: red;}", -1);
-     86   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-     87                                               GTK_STYLE_PROVIDER_PRIORITY_USER);
-     88 
-     89 /*  gtk_widget_show (win);*/
-     90   gtk_window_present (GTK_WINDOW (win));
-     91 }
-     92 
-     93 int
-     94 main (int argc, char **argv) {
-     95   GtkApplication *app;
-     96   int stat;
-     97 
-     98   app = gtk_application_new ("com.github.ToshioCP.menu2", G_APPLICATION_FLAGS_NONE);
-     99   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    100 
-    101   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    102   g_object_unref (app);
-    103   return stat;
-    104 }
-    105 
+~~~C
+  1 #include <gtk/gtk.h>
+  2 
+  3 static GtkCssProvider *provider;
+  4 
+  5 static void
+  6 fullscreen_changed(GSimpleAction *action, GVariant *value, gpointer win) {
+  7   if (g_variant_get_boolean (value))
+  8     gtk_window_maximize (GTK_WINDOW (win));
+  9   else
+ 10     gtk_window_unmaximize (GTK_WINDOW (win));
+ 11   g_simple_action_set_state (action, value);
+ 12 }
+ 13 
+ 14 static void
+ 15 color_activated(GSimpleAction *action, GVariant *parameter, gpointer win) {
+ 16   gchar *color = g_strdup_printf ("label#lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
+ 17   gtk_css_provider_load_from_data (provider, color, -1);
+ 18   g_free (color);
+ 19   g_action_change_state (G_ACTION (action), parameter);
+ 20 }
+ 21 
+ 22 static void
+ 23 quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+ 24 {
+ 25   g_application_quit (G_APPLICATION(app));
+ 26 }
+ 27 
+ 28 static void
+ 29 on_activate (GApplication *app, gpointer user_data) {
+ 30   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+ 31   gtk_window_set_title (GTK_WINDOW (win), "menu2");
+ 32   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+ 33 
+ 34   GtkWidget *lb = gtk_label_new (NULL);
+ 35   gtk_widget_set_name (lb, "lb"); /* the name is used by CSS Selector */
+ 36   gtk_window_set_child (GTK_WINDOW (win), lb);
+ 37 
+ 38   GSimpleAction *act_fullscreen
+ 39     = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
+ 40   GSimpleAction *act_color
+ 41     = g_simple_action_new_stateful ("color", g_variant_type_new("s"), g_variant_new_string ("red"));
+ 42   GSimpleAction *act_quit
+ 43     = g_simple_action_new ("quit", NULL);
+ 44 
+ 45   GMenu *menubar = g_menu_new ();
+ 46   GMenu *menu = g_menu_new ();
+ 47   GMenu *section1 = g_menu_new ();
+ 48   GMenu *section2 = g_menu_new ();
+ 49   GMenu *section3 = g_menu_new ();
+ 50   GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
+ 51   GMenuItem *menu_item_red = g_menu_item_new ("Red", "win.color::red");
+ 52   GMenuItem *menu_item_green = g_menu_item_new ("Green", "win.color::green");
+ 53   GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "win.color::blue");
+ 54   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
+ 55 
+ 56   g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
+ 57   g_signal_connect (act_color, "activate", G_CALLBACK (color_activated), win);
+ 58   g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
+ 59   g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_fullscreen));
+ 60   g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_color));
+ 61   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
+ 62 
+ 63   g_menu_append_item (section1, menu_item_fullscreen);
+ 64   g_menu_append_item (section2, menu_item_red);
+ 65   g_menu_append_item (section2, menu_item_green);
+ 66   g_menu_append_item (section2, menu_item_blue);
+ 67   g_menu_append_item (section3, menu_item_quit);
+ 68   g_object_unref (menu_item_red);
+ 69   g_object_unref (menu_item_green);
+ 70   g_object_unref (menu_item_blue);
+ 71   g_object_unref (menu_item_fullscreen);
+ 72   g_object_unref (menu_item_quit);
+ 73 
+ 74   g_menu_append_section (menu, NULL, G_MENU_MODEL (section1));
+ 75   g_menu_append_section (menu, "Color", G_MENU_MODEL (section2));
+ 76   g_menu_append_section (menu, NULL, G_MENU_MODEL (section3));
+ 77   g_menu_append_submenu (menubar, "Menu", G_MENU_MODEL (menu));
+ 78 
+ 79   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
+ 80   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
+ 81 
+ 82 /*  GtkCssProvider *provider = gtk_css_provider_new ();*/
+ 83   provider = gtk_css_provider_new ();
+ 84   GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (win));
+ 85   gtk_css_provider_load_from_data (provider, "label#lb {background-color: red;}", -1);
+ 86   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
+ 87                                               GTK_STYLE_PROVIDER_PRIORITY_USER);
+ 88 
+ 89 /*  gtk_widget_show (win);*/
+ 90   gtk_window_present (GTK_WINDOW (win));
+ 91 }
+ 92 
+ 93 int
+ 94 main (int argc, char **argv) {
+ 95   GtkApplication *app;
+ 96   int stat;
+ 97 
+ 98   app = gtk_application_new ("com.github.ToshioCP.menu2", G_APPLICATION_FLAGS_NONE);
+ 99   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+100 
+101   stat =g_application_run (G_APPLICATION (app), argc, argv);
+102   g_object_unref (app);
+103   return stat;
+104 }
+105 
+~~~
 
 - 5-26: Signal handlers.
 They have been explained in this section.

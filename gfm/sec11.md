@@ -55,33 +55,35 @@ If you need to register two or more signals, static array is usually used.
 
 Signal registration codes are written in the class initialization function.
 
-     1 static void
-     2 tfe_text_view_class_init (TfeTextViewClass *class) {
-     3   GObjectClass *object_class = G_OBJECT_CLASS (class);
-     4 
-     5   object_class->dispose = tfe_text_view_dispose;
-     6   tfe_text_view_signals[CHANGE_FILE] = g_signal_newv ("change-file",
-     7                                  G_TYPE_FROM_CLASS (class),
-     8                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-     9                                  NULL /* closure */,
-    10                                  NULL /* accumulator */,
-    11                                  NULL /* accumulator data */,
-    12                                  NULL /* C marshaller */,
-    13                                  G_TYPE_NONE /* return_type */,
-    14                                  0     /* n_params */,
-    15                                  NULL  /* param_types */);
-    16   GType param_types[] = {G_TYPE_INT}; 
-    17   tfe_text_view_signals[OPEN_RESPONSE] = g_signal_newv ("open-response",
-    18                                  G_TYPE_FROM_CLASS (class),
-    19                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-    20                                  NULL /* closure */,
-    21                                  NULL /* accumulator */,
-    22                                  NULL /* accumulator data */,
-    23                                  NULL /* C marshaller */,
-    24                                  G_TYPE_NONE /* return_type */,
-    25                                  1     /* n_params */,
-    26                                  param_types);
-    27 }
+~~~C
+ 1 static void
+ 2 tfe_text_view_class_init (TfeTextViewClass *class) {
+ 3   GObjectClass *object_class = G_OBJECT_CLASS (class);
+ 4 
+ 5   object_class->dispose = tfe_text_view_dispose;
+ 6   tfe_text_view_signals[CHANGE_FILE] = g_signal_newv ("change-file",
+ 7                                  G_TYPE_FROM_CLASS (class),
+ 8                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+ 9                                  NULL /* closure */,
+10                                  NULL /* accumulator */,
+11                                  NULL /* accumulator data */,
+12                                  NULL /* C marshaller */,
+13                                  G_TYPE_NONE /* return_type */,
+14                                  0     /* n_params */,
+15                                  NULL  /* param_types */);
+16   GType param_types[] = {G_TYPE_INT}; 
+17   tfe_text_view_signals[OPEN_RESPONSE] = g_signal_newv ("open-response",
+18                                  G_TYPE_FROM_CLASS (class),
+19                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+20                                  NULL /* closure */,
+21                                  NULL /* accumulator */,
+22                                  NULL /* accumulator data */,
+23                                  NULL /* C marshaller */,
+24                                  G_TYPE_NONE /* return_type */,
+25                                  1     /* n_params */,
+26                                  param_types);
+27 }
+~~~
 
 - 6-15: Register "change-file"signal.
 `g_signal_newv` function is used.

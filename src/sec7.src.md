@@ -55,39 +55,41 @@ So, I will just show you the way how to write the code and avoid the theoretical
 Let's define TfeTextView object which is a child object of GtkTextView.
 First, look at the program below.
 
-    #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
-    G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
+~~~C
+#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
+G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
 
-    struct _TfeTextView
-    {
-      GtkTextView parent;
-      GFile *file;
-    };
+struct _TfeTextView
+{
+  GtkTextView parent;
+  GFile *file;
+};
 
-    G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
-    static void
-    tfe_text_view_init (TfeTextView *tv) {
-    }
+static void
+tfe_text_view_init (TfeTextView *tv) {
+}
 
-    static void
-    tfe_text_view_class_init (TfeTextViewClass *class) {
-    }
+static void
+tfe_text_view_class_init (TfeTextViewClass *class) {
+}
 
-    void
-    tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
-      tv -> file = f;
-    }
+void
+tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
+  tv -> file = f;
+}
 
-    GFile *
-    tfe_text_view_get_file (TfeTextView *tv) {
-      return tv -> file;
-    }
+GFile *
+tfe_text_view_get_file (TfeTextView *tv) {
+  return tv -> file;
+}
 
-    GtkWidget *
-    tfe_text_view_new (void) {
-      return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
-    }
+GtkWidget *
+tfe_text_view_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
+}
+~~~
 
 If you are curious about the background theory of this program, It's very good for you.
 Because to know the theory is very important for you to program GTK applications.

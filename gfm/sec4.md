@@ -11,35 +11,37 @@ Now we go on to the next topic, widgets in the window.
 The simplest widget is GtkLabel.
 It is a widget with a string in it.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 on_activate (GApplication *app, gpointer user_data) {
-     5   GtkWidget *win;
-     6   GtkWidget *lab;
-     7 
-     8   win = gtk_application_window_new (GTK_APPLICATION (app));
-     9   gtk_window_set_title (GTK_WINDOW (win), "lb1");
-    10   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    11 
-    12   lab = gtk_label_new ("Hello.");
-    13   gtk_window_set_child (GTK_WINDOW (win), lab);
-    14 
-    15   gtk_widget_show (win);
-    16 }
-    17 
-    18 int
-    19 main (int argc, char **argv) {
-    20   GtkApplication *app;
-    21   int stat;
-    22 
-    23   app = gtk_application_new ("com.github.ToshioCP.lb1", G_APPLICATION_FLAGS_NONE);
-    24   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    25   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    26   g_object_unref (app);
-    27   return stat;
-    28 }
-    29 
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 on_activate (GApplication *app, gpointer user_data) {
+ 5   GtkWidget *win;
+ 6   GtkWidget *lab;
+ 7 
+ 8   win = gtk_application_window_new (GTK_APPLICATION (app));
+ 9   gtk_window_set_title (GTK_WINDOW (win), "lb1");
+10   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+11 
+12   lab = gtk_label_new ("Hello.");
+13   gtk_window_set_child (GTK_WINDOW (win), lab);
+14 
+15   gtk_widget_show (win);
+16 }
+17 
+18 int
+19 main (int argc, char **argv) {
+20   GtkApplication *app;
+21   int stat;
+22 
+23   app = gtk_application_new ("com.github.ToshioCP.lb1", G_APPLICATION_FLAGS_NONE);
+24   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+25   stat =g_application_run (G_APPLICATION (app), argc, argv);
+26   g_object_unref (app);
+27   return stat;
+28 }
+29 
+~~~
 
 Save this program to a file `lb1.c`.
 Then compile and run it.
@@ -100,41 +102,43 @@ In this subsection, we will make a button with a label.
 When a button is clicked on, it emits a "clicked" signal.
 The following program shows how to catch the signal and do something.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 click_cb (GtkButton *btn, gpointer user_data) {
-     5   g_print ("Clicked.\n");
-     6 }
-     7 
-     8 static void
-     9 on_activate (GApplication *app, gpointer user_data) {
-    10   GtkWidget *win;
-    11   GtkWidget *btn;
-    12 
-    13   win = gtk_application_window_new (GTK_APPLICATION (app));
-    14   gtk_window_set_title (GTK_WINDOW (win), "lb2");
-    15   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    16 
-    17   btn = gtk_button_new_with_label ("Click me");
-    18   gtk_window_set_child (GTK_WINDOW (win), btn);
-    19   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), NULL);
-    20 
-    21   gtk_widget_show (win);
-    22 }
-    23 
-    24 int
-    25 main (int argc, char **argv) {
-    26   GtkApplication *app;
-    27   int stat;
-    28 
-    29   app = gtk_application_new ("com.github.ToshioCP.lb2", G_APPLICATION_FLAGS_NONE);
-    30   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    31   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    32   g_object_unref (app);
-    33   return stat;
-    34 }
-    35 
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 click_cb (GtkButton *btn, gpointer user_data) {
+ 5   g_print ("Clicked.\n");
+ 6 }
+ 7 
+ 8 static void
+ 9 on_activate (GApplication *app, gpointer user_data) {
+10   GtkWidget *win;
+11   GtkWidget *btn;
+12 
+13   win = gtk_application_window_new (GTK_APPLICATION (app));
+14   gtk_window_set_title (GTK_WINDOW (win), "lb2");
+15   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+16 
+17   btn = gtk_button_new_with_label ("Click me");
+18   gtk_window_set_child (GTK_WINDOW (win), btn);
+19   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), NULL);
+20 
+21   gtk_widget_show (win);
+22 }
+23 
+24 int
+25 main (int argc, char **argv) {
+26   GtkApplication *app;
+27   int stat;
+28 
+29   app = gtk_application_new ("com.github.ToshioCP.lb2", G_APPLICATION_FLAGS_NONE);
+30   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+31   stat =g_application_run (G_APPLICATION (app), argc, argv);
+32   g_object_unref (app);
+33   return stat;
+34 }
+35 
+~~~
 
 Look at the line 17 to 19.
 First, generate a GtkButton widget `btn` with a label "Click me".
@@ -157,27 +161,29 @@ However, using g_print is out of harmony with GTK which is a GUI library.
 So, we will change the handler.
 The following code is `lb3.c`.
 
-     1 static void
-     2 click_cb (GtkButton *btn, gpointer user_data) {
-     3   GtkWindow *win = GTK_WINDOW (user_data);
-     4   gtk_window_destroy (win);
-     5 }
-     6 
-     7 static void
-     8 on_activate (GApplication *app, gpointer user_data) {
-     9   GtkWidget *win;
-    10   GtkWidget *btn;
-    11 
-    12   win = gtk_application_window_new (GTK_APPLICATION (app));
-    13   gtk_window_set_title (GTK_WINDOW (win), "lb3");
-    14   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    15 
-    16   btn = gtk_button_new_with_label ("Quit");
-    17   gtk_window_set_child (GTK_WINDOW (win), btn);
-    18   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), win);
-    19 
-    20   gtk_widget_show (win);
-    21 }
+~~~C
+ 1 static void
+ 2 click_cb (GtkButton *btn, gpointer user_data) {
+ 3   GtkWindow *win = GTK_WINDOW (user_data);
+ 4   gtk_window_destroy (win);
+ 5 }
+ 6 
+ 7 static void
+ 8 on_activate (GApplication *app, gpointer user_data) {
+ 9   GtkWidget *win;
+10   GtkWidget *btn;
+11 
+12   win = gtk_application_window_new (GTK_APPLICATION (app));
+13   gtk_window_set_title (GTK_WINDOW (win), "lb3");
+14   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+15 
+16   btn = gtk_button_new_with_label ("Quit");
+17   gtk_window_set_child (GTK_WINDOW (win), btn);
+18   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), win);
+19 
+20   gtk_widget_show (win);
+21 }
+~~~
 
 And the difference between `lb2.c` and `lb3.c` is as follows.
 
@@ -237,63 +243,65 @@ After this, the Widgets are connected as following diagram.
 
 Now, code it.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 click1_cb (GtkButton *btn, gpointer user_data) {
-     5   const gchar *s;
-     6 
-     7   s = gtk_button_get_label (btn);
-     8   if (g_strcmp0 (s, "Hello.") == 0)
-     9     gtk_button_set_label (btn, "Good-bye.");
-    10   else
-    11     gtk_button_set_label (btn, "Hello.");
-    12 }
-    13 
-    14 static void
-    15 click2_cb (GtkButton *btn, gpointer user_data) {
-    16   GtkWindow *win = GTK_WINDOW (user_data);
-    17   gtk_window_destroy (win);
-    18 }
-    19 
-    20 static void
-    21 on_activate (GApplication *app, gpointer user_data) {
-    22   GtkWidget *win;
-    23   GtkWidget *box;
-    24   GtkWidget *btn1;
-    25   GtkWidget *btn2;
-    26 
-    27   win = gtk_application_window_new (GTK_APPLICATION (app));
-    28   gtk_window_set_title (GTK_WINDOW (win), "lb4");
-    29   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    30 
-    31   box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-    32   gtk_box_set_homogeneous (GTK_BOX (box), TRUE);
-    33   gtk_window_set_child (GTK_WINDOW (win), box);
-    34 
-    35   btn1 = gtk_button_new_with_label ("Hello.");
-    36   g_signal_connect (btn1, "clicked", G_CALLBACK (click1_cb), NULL);
-    37 
-    38   btn2 = gtk_button_new_with_label ("Quit");
-    39   g_signal_connect (btn2, "clicked", G_CALLBACK (click2_cb), win);
-    40 
-    41   gtk_box_append (GTK_BOX (box), btn1);
-    42   gtk_box_append (GTK_BOX (box), btn2);
-    43 
-    44   gtk_widget_show (win);
-    45 }
-    46 
-    47 int
-    48 main (int argc, char **argv) {
-    49   GtkApplication *app;
-    50   int stat;
-    51 
-    52   app = gtk_application_new ("com.github.ToshioCP.lb4", G_APPLICATION_FLAGS_NONE);
-    53   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    54   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    55   g_object_unref (app);
-    56   return stat;
-    57 }
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 click1_cb (GtkButton *btn, gpointer user_data) {
+ 5   const gchar *s;
+ 6 
+ 7   s = gtk_button_get_label (btn);
+ 8   if (g_strcmp0 (s, "Hello.") == 0)
+ 9     gtk_button_set_label (btn, "Good-bye.");
+10   else
+11     gtk_button_set_label (btn, "Hello.");
+12 }
+13 
+14 static void
+15 click2_cb (GtkButton *btn, gpointer user_data) {
+16   GtkWindow *win = GTK_WINDOW (user_data);
+17   gtk_window_destroy (win);
+18 }
+19 
+20 static void
+21 on_activate (GApplication *app, gpointer user_data) {
+22   GtkWidget *win;
+23   GtkWidget *box;
+24   GtkWidget *btn1;
+25   GtkWidget *btn2;
+26 
+27   win = gtk_application_window_new (GTK_APPLICATION (app));
+28   gtk_window_set_title (GTK_WINDOW (win), "lb4");
+29   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+30 
+31   box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+32   gtk_box_set_homogeneous (GTK_BOX (box), TRUE);
+33   gtk_window_set_child (GTK_WINDOW (win), box);
+34 
+35   btn1 = gtk_button_new_with_label ("Hello.");
+36   g_signal_connect (btn1, "clicked", G_CALLBACK (click1_cb), NULL);
+37 
+38   btn2 = gtk_button_new_with_label ("Quit");
+39   g_signal_connect (btn2, "clicked", G_CALLBACK (click2_cb), win);
+40 
+41   gtk_box_append (GTK_BOX (box), btn1);
+42   gtk_box_append (GTK_BOX (box), btn2);
+43 
+44   gtk_widget_show (win);
+45 }
+46 
+47 int
+48 main (int argc, char **argv) {
+49   GtkApplication *app;
+50   int stat;
+51 
+52   app = gtk_application_new ("com.github.ToshioCP.lb4", G_APPLICATION_FLAGS_NONE);
+53   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+54   stat =g_application_run (G_APPLICATION (app), argc, argv);
+55   g_object_unref (app);
+56   return stat;
+57 }
+~~~
 
 Look at the function `on_activate`.
 

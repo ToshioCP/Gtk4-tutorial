@@ -1,4 +1,4 @@
-# Ui file and GtkBuiler
+# Ui file and GtkBuilder
 
 ## New, open and save button
 
@@ -71,12 +71,14 @@ Those two decribe the same structure of widgets.
 
 GtkBuilder builds widgets based on the ui file.
 
-    GtkBuilder *build;
+~~~C
+GtkBuilder *build;
 
-    build = gtk_builder_new_from_file ("tfe3.ui");
-    win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-    nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+build = gtk_builder_new_from_file ("tfe3.ui");
+win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+~~~
 
 The function `gtk_builder_new_from_file` reads the file given as an argument, build the widgets, generate GtkBuilder object and set pointers to the widgets in it.
 The function `gtk_builder_get_object (build, "win")` returns the pointer to the widget `win`, which is the id in the ui file.
@@ -106,22 +108,24 @@ In the same way, you can get the source files below in the directory [src/tfe](h
 GtkBuilder can build widgets using string.
 Use the function gtk\_builder\_new\_from\_string instead of gtk\_builder\_new\_from\_file.
 
-    char *uistring;
+~~~C
+char *uistring;
 
-    uistring =
-    "<interface>"
-      "<object class="GtkApplicationWindow" id="win">"
-        "<property name=\"title\">file editor</property>"
-        "<property name=\"default-width\">600</property>"
-        "<property name=\"default-height\">400</property>"
-        "<child>"
-          "<object class=\"GtkBox\" id=\"boxv\">"
-            "<property name="orientation">GTK_ORIENTATION_VERTICAL</property>"
-    ... ... ...
-    ... ... ...
-    "</interface>";
+uistring =
+"<interface>"
+  "<object class="GtkApplicationWindow" id="win">"
+    "<property name=\"title\">file editor</property>"
+    "<property name=\"default-width\">600</property>"
+    "<property name=\"default-height\">400</property>"
+    "<child>"
+      "<object class=\"GtkBox\" id=\"boxv\">"
+        "<property name="orientation">GTK_ORIENTATION_VERTICAL</property>"
+... ... ...
+... ... ...
+"</interface>";
 
-    build = gtk_builder_new_from_stringfile (uistring);
+build = gtk_builder_new_from_stringfile (uistring);
+~~~
 
 This method has an advantage and disadvantage.
 The advantage is that the ui string is written in the source code.
@@ -166,12 +170,14 @@ Now run the compiler.
 Then a C source file `resources.c` is generated.
 Modify tfe3.c and save it as tfe3_r.c
 
-    # include "resources.c"
-    ... ... ...
-    ... ... ...
-    build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe3/tfe3.ui");
-    ... ... ...
-    ... ... ...
+~~~C
+#include "resources.c"
+... ... ...
+... ... ...
+build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe3/tfe3.ui");
+... ... ...
+... ... ...
+~~~
 
 Then, compile and run it.
 The window appears and it is the same as the screenshot at the beginning of this page.

@@ -20,19 +20,21 @@ That's all.
 Very simple.
 The following is the C code representing the scenario above.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 int
-     4 main (int argc, char **argv) {
-     5   GtkApplication *app;
-     6   int stat;
-     7 
-     8   app = gtk_application_new ("com.github.ToshioCP.pr1", G_APPLICATION_FLAGS_NONE);
-     9   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    10   g_object_unref (app);
-    11   return stat;
-    12 }
-    13 
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 int
+ 4 main (int argc, char **argv) {
+ 5   GtkApplication *app;
+ 6   int stat;
+ 7 
+ 8   app = gtk_application_new ("com.github.ToshioCP.pr1", G_APPLICATION_FLAGS_NONE);
+ 9   stat =g_application_run (G_APPLICATION (app), argc, argv);
+10   g_object_unref (app);
+11   return stat;
+12 }
+13 
+~~~
 
 The first line says that this program includes the header files of the Gtk libraries.
 The function `main` above is a startup function in C language.
@@ -54,7 +56,9 @@ Let's run it.
 
     $ ./a.out
 
-    (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement g_application_activate() and has no handlers connected to the "activate" signal.  It should do one of these.
+    (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
+    g_application_activate() and has no handlers connected to the "activate" signal.
+    It should do one of these.
     $ 
 
 Oh, just an error message.
@@ -97,25 +101,27 @@ Now we can solve the problem in `pr1.c`.
 We need to connect the activate signal to a handler.
 We use a function `g_signal_connect` which connects a signal to a handler.
 
-     1 #include <gtk/gtk.h>
-     2 
-     3 static void
-     4 on_activate (GApplication *app, gpointer *user_data) {
-     5   g_print ("GtkApplication is activated.\n");
-     6 }
-     7 
-     8 int
-     9 main (int argc, char **argv) {
-    10   GtkApplication *app;
-    11   int stat;
-    12 
-    13   app = gtk_application_new ("com.github.ToshioCP.pr2", G_APPLICATION_FLAGS_NONE);
-    14   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-    15   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    16   g_object_unref (app);
-    17   return stat;
-    18 }
-    19 
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 on_activate (GApplication *app, gpointer *user_data) {
+ 5   g_print ("GtkApplication is activated.\n");
+ 6 }
+ 7 
+ 8 int
+ 9 main (int argc, char **argv) {
+10   GtkApplication *app;
+11   int stat;
+12 
+13   app = gtk_application_new ("com.github.ToshioCP.pr2", G_APPLICATION_FLAGS_NONE);
+14   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+15   stat =g_application_run (G_APPLICATION (app), argc, argv);
+16   g_object_unref (app);
+17   return stat;
+18 }
+19 
+~~~
 
 First, we define the handler `on_activate` which simply displays a message.
 In the function `main`, we add `g_signal_connect` before `g_application_run`.
@@ -185,14 +191,16 @@ Now rewrite the function `on_activate`.
 
 #### Generate a GtkWindow
 
-    1 static void
-    2 on_activate (GApplication *app, gpointer user_data) {
-    3   GtkWidget *win;
-    4 
-    5   win = gtk_window_new ();
-    6   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-    7   gtk_widget_show (win);
-    8 }
+~~~C
+1 static void
+2 on_activate (GApplication *app, gpointer user_data) {
+3   GtkWidget *win;
+4 
+5   win = gtk_window_new ();
+6   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+7   gtk_widget_show (win);
+8 }
+~~~
 
 Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multiline text, containers and so on.
 And GtkWidget is a base object from which all the GUI objects derive.
@@ -265,15 +273,17 @@ It is recommended to use it instead of GtkWindow when you use GtkApplication.
 
 Now rewrite the program and use GtkAppliction Window.
 
-    1 static void
-    2 on_activate (GApplication *app, gpointer user_data) {
-    3   GtkWidget *win;
-    4 
-    5   win = gtk_application_window_new (GTK_APPLICATION (app));
-    6   gtk_window_set_title (GTK_WINDOW (win), "pr4");
-    7   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-    8   gtk_widget_show (win);
-    9 }
+~~~C
+1 static void
+2 on_activate (GApplication *app, gpointer user_data) {
+3   GtkWidget *win;
+4 
+5   win = gtk_application_window_new (GTK_APPLICATION (app));
+6   gtk_window_set_title (GTK_WINDOW (win), "pr4");
+7   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+8   gtk_widget_show (win);
+9 }
+~~~
 
 When you generate GtkApplicationWindow, you need to give GtkApplication object as an argument.
 Then it automatically connect these two objects.

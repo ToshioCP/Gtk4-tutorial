@@ -40,7 +40,9 @@ Let's run it.
 
     $ ./a.out
 
-    (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement g_application_activate() and has no handlers connected to the "activate" signal.  It should do one of these.
+    (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
+    g_application_activate() and has no handlers connected to the "activate" signal.
+    It should do one of these.
     $ 
 
 Oh, just an error message.

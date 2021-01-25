@@ -15,21 +15,23 @@ It does following things.
 Th function `main` is the first invoked function in C language.
 It connects the command line given by the user and GTK application.
 
-     1 int
-     2 main (int argc, char **argv) {
-     3   GtkApplication *app;
-     4   int stat;
-     5 
-     6   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
-     7 
-     8   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-     9   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
-    10   g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
-    11 
-    12   stat =g_application_run (G_APPLICATION (app), argc, argv);
-    13   g_object_unref (app);
-    14   return stat;
-    15 }
+~~~C
+ 1 int
+ 2 main (int argc, char **argv) {
+ 3   GtkApplication *app;
+ 4   int stat;
+ 5 
+ 6   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
+ 7 
+ 8   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
+ 9   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+10   g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
+11 
+12   stat =g_application_run (G_APPLICATION (app), argc, argv);
+13   g_object_unref (app);
+14   return stat;
+15 }
+~~~
 
 - 6: Generate GtkApplication object.
 - 8-10: Connect "startup", "activate" and "open signals to their handlers.
@@ -47,38 +49,40 @@ What the signal handler needs to do is initialization of the application.
 
 The handler is as follows.
 
-     1 static void
-     2 tfe_startup (GApplication *application) {
-     3   GtkApplication *app = GTK_APPLICATION (application);
-     4   GtkApplicationWindow *win;
-     5   GtkNotebook *nb;
-     6   GtkBuilder *build;
-     7   GtkButton *btno;
-     8   GtkButton *btnn;
-     9   GtkButton *btns;
-    10   GtkButton *btnc;
-    11 
-    12   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
-    13   win = GTK_APPLICATION_WINDOW (gtk_builder_get_object (build, "win"));
-    14   nb = GTK_NOTEBOOK (gtk_builder_get_object (build, "nb"));
-    15   gtk_window_set_application (GTK_WINDOW (win), app);
-    16   btno = GTK_BUTTON (gtk_builder_get_object (build, "btno"));
-    17   btnn = GTK_BUTTON (gtk_builder_get_object (build, "btnn"));
-    18   btns = GTK_BUTTON (gtk_builder_get_object (build, "btns"));
-    19   btnc = GTK_BUTTON (gtk_builder_get_object (build, "btnc"));
-    20   g_signal_connect (btno, "clicked", G_CALLBACK (open_clicked), nb);
-    21   g_signal_connect (btnn, "clicked", G_CALLBACK (new_clicked), nb);
-    22   g_signal_connect (btns, "clicked", G_CALLBACK (save_clicked), nb);
-    23   g_signal_connect (btnc, "clicked", G_CALLBACK (close_clicked), nb);
-    24   g_object_unref(build);
-    25 
-    26 GdkDisplay *display;
-    27 
-    28   display = gtk_widget_get_display (GTK_WIDGET (win));
-    29   GtkCssProvider *provider = gtk_css_provider_new ();
-    30   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-    31   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    32 }
+~~~C
+ 1 static void
+ 2 tfe_startup (GApplication *application) {
+ 3   GtkApplication *app = GTK_APPLICATION (application);
+ 4   GtkApplicationWindow *win;
+ 5   GtkNotebook *nb;
+ 6   GtkBuilder *build;
+ 7   GtkButton *btno;
+ 8   GtkButton *btnn;
+ 9   GtkButton *btns;
+10   GtkButton *btnc;
+11 
+12   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
+13   win = GTK_APPLICATION_WINDOW (gtk_builder_get_object (build, "win"));
+14   nb = GTK_NOTEBOOK (gtk_builder_get_object (build, "nb"));
+15   gtk_window_set_application (GTK_WINDOW (win), app);
+16   btno = GTK_BUTTON (gtk_builder_get_object (build, "btno"));
+17   btnn = GTK_BUTTON (gtk_builder_get_object (build, "btnn"));
+18   btns = GTK_BUTTON (gtk_builder_get_object (build, "btns"));
+19   btnc = GTK_BUTTON (gtk_builder_get_object (build, "btnc"));
+20   g_signal_connect (btno, "clicked", G_CALLBACK (open_clicked), nb);
+21   g_signal_connect (btnn, "clicked", G_CALLBACK (new_clicked), nb);
+22   g_signal_connect (btns, "clicked", G_CALLBACK (save_clicked), nb);
+23   g_signal_connect (btnc, "clicked", G_CALLBACK (close_clicked), nb);
+24   g_object_unref(build);
+25 
+26 GdkDisplay *display;
+27 
+28   display = gtk_widget_get_display (GTK_WIDGET (win));
+29   GtkCssProvider *provider = gtk_css_provider_new ();
+30   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
+31   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+32 }
+~~~
 
 - 12-15: Build widgets using ui file (resource).
 Connect the top window and the application using `gtk_window_set_application`.
@@ -168,39 +172,41 @@ CSS set to the context takes precedence over the one set to the display.
 The handler of "activate" and "open" signal are `tfe_activate` and `tfe_open` respectively.
 They just generate a new GtkNotebookPage.
 
-     1 static void
-     2 tfe_activate (GApplication *application) {
-     3   GtkApplication *app = GTK_APPLICATION (application);
-     4   GtkWidget *win;
-     5   GtkWidget *boxv;
-     6   GtkNotebook *nb;
-     7 
-     8   win = GTK_WIDGET (gtk_application_get_active_window (app));
-     9   boxv = gtk_window_get_child (GTK_WINDOW (win));
-    10   nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
-    11 
-    12   notebook_page_new (nb);
-    13   gtk_widget_show (GTK_WIDGET (win));
-    14 }
-    15 
-    16 static void
-    17 tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
-    18   GtkApplication *app = GTK_APPLICATION (application);
-    19   GtkWidget *win;
-    20   GtkWidget *boxv;
-    21   GtkNotebook *nb;
-    22   int i;
-    23 
-    24   win = GTK_WIDGET (gtk_application_get_active_window (app));
-    25   boxv = gtk_window_get_child (GTK_WINDOW (win));
-    26   nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
-    27 
-    28   for (i = 0; i < n_files; i++)
-    29     notebook_page_new_with_file (nb, files[i]);
-    30   if (gtk_notebook_get_n_pages (nb) == 0)
-    31     notebook_page_new (nb);
-    32   gtk_widget_show (win);
-    33 }
+~~~C
+ 1 static void
+ 2 tfe_activate (GApplication *application) {
+ 3   GtkApplication *app = GTK_APPLICATION (application);
+ 4   GtkWidget *win;
+ 5   GtkWidget *boxv;
+ 6   GtkNotebook *nb;
+ 7 
+ 8   win = GTK_WIDGET (gtk_application_get_active_window (app));
+ 9   boxv = gtk_window_get_child (GTK_WINDOW (win));
+10   nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+11 
+12   notebook_page_new (nb);
+13   gtk_widget_show (GTK_WIDGET (win));
+14 }
+15 
+16 static void
+17 tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+18   GtkApplication *app = GTK_APPLICATION (application);
+19   GtkWidget *win;
+20   GtkWidget *boxv;
+21   GtkNotebook *nb;
+22   int i;
+23 
+24   win = GTK_WIDGET (gtk_application_get_active_window (app));
+25   boxv = gtk_window_get_child (GTK_WINDOW (win));
+26   nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+27 
+28   for (i = 0; i < n_files; i++)
+29     notebook_page_new_with_file (nb, files[i]);
+30   if (gtk_notebook_get_n_pages (nb) == 0)
+31     notebook_page_new (nb);
+32   gtk_widget_show (win);
+33 }
+~~~
 
 - 1-14: `tfe_activate`.
 - 8-10: Get GtkNotebook object.
@@ -249,36 +255,38 @@ The second instance immediately quits so shell prompt soon appears.
 
 ## a series of handlers correspond to the button signals
 
-     1 static void
-     2 open_clicked (GtkWidget *btno, GtkNotebook *nb) {
-     3   notebook_page_open (nb);
-     4 }
-     5 
-     6 static void
-     7 new_clicked (GtkWidget *btnn, GtkNotebook *nb) {
-     8   notebook_page_new (nb);
-     9 }
-    10 
-    11 static void
-    12 save_clicked (GtkWidget *btns, GtkNotebook *nb) {
-    13   notebook_page_save (nb);
-    14 }
-    15 
-    16 static void
-    17 close_clicked (GtkWidget *btnc, GtkNotebook *nb) {
-    18   GtkWidget *win;
-    19   GtkWidget *boxv;
-    20   gint i;
-    21 
-    22   if (gtk_notebook_get_n_pages (nb) == 1) {
-    23     boxv = gtk_widget_get_parent (GTK_WIDGET (nb));
-    24     win = gtk_widget_get_parent (boxv);
-    25     gtk_window_destroy (GTK_WINDOW (win));
-    26   } else {
-    27     i = gtk_notebook_get_current_page (nb);
-    28     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
-    29   }
-    30 }
+~~~C
+ 1 static void
+ 2 open_clicked (GtkWidget *btno, GtkNotebook *nb) {
+ 3   notebook_page_open (nb);
+ 4 }
+ 5 
+ 6 static void
+ 7 new_clicked (GtkWidget *btnn, GtkNotebook *nb) {
+ 8   notebook_page_new (nb);
+ 9 }
+10 
+11 static void
+12 save_clicked (GtkWidget *btns, GtkNotebook *nb) {
+13   notebook_page_save (nb);
+14 }
+15 
+16 static void
+17 close_clicked (GtkWidget *btnc, GtkNotebook *nb) {
+18   GtkWidget *win;
+19   GtkWidget *boxv;
+20   gint i;
+21 
+22   if (gtk_notebook_get_n_pages (nb) == 1) {
+23     boxv = gtk_widget_get_parent (GTK_WIDGET (nb));
+24     win = gtk_widget_get_parent (boxv);
+25     gtk_window_destroy (GTK_WINDOW (win));
+26   } else {
+27     i = gtk_notebook_get_current_page (nb);
+28     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
+29   }
+30 }
+~~~
 
 `open_clicked`, `new_clicked` and `save_clicked` just call corresponding notebook page functions.
 `close_clicked` is a bit complicated.
@@ -289,16 +297,18 @@ First, get the top level window and call `gtk_window_destroy`.
 
 ## meson.build
 
-     1 project('tfe', 'c')
-     2 
-     3 gtkdep = dependency('gtk4')
-     4 
-     5 gnome=import('gnome')
-     6 resources = gnome.compile_resources('resources','tfe.gresource.xml')
-     7 
-     8 sourcefiles=files('tfeapplication.c', 'tfenotebook.c', 'tfetextview.c')
-     9 
-    10 executable('tfe', sourcefiles, resources, dependencies: gtkdep)
+~~~meson
+ 1 project('tfe', 'c')
+ 2 
+ 3 gtkdep = dependency('gtk4')
+ 4 
+ 5 gnome=import('gnome')
+ 6 resources = gnome.compile_resources('resources','tfe.gresource.xml')
+ 7 
+ 8 sourcefiles=files('tfeapplication.c', 'tfenotebook.c', 'tfetextview.c')
+ 9 
+10 executable('tfe', sourcefiles, resources, dependencies: gtkdep)
+~~~
 
 In this file, just the source file names are modified.
 

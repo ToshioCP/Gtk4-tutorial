@@ -30,7 +30,7 @@ In this section, we don't use it.
 That means we only use identity transformation.
 Therefore, the coordinate in source and mask is the same as the coordinate in destination.
 
-![Stroke a rectangle](../image/cairo.png)
+![Stroke a rectangle](../image/cairo.png){width=9.0cm height=6.0cm}
 
 The instruction is as follows:
 

@@ -20,7 +20,7 @@ You can read it without download.
 1. [Widgets (2)](gfm/sec5.md)
 1. [Widgets (3)](gfm/sec6.md)
 1. [Define Child object](gfm/sec7.md)
-1. [Ui file and GtkBuiler](gfm/sec8.md)
+1. [Ui file and GtkBuilder](gfm/sec8.md)
 1. [Build system](gfm/sec9.md)
 1. [Instance and class](gfm/sec10.md)
 1. [Signals](gfm/sec11.md)

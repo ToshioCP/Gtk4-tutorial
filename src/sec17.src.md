@@ -19,7 +19,8 @@ The signal handler will be described after the explanation of this code.
     static void
     on_activate (GApplication *app, gpointer user_data) {
       ... ... ...
-      GSimpleAction *act_fullscreen = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
+      GSimpleAction *act_fullscreen = g_simple_action_new_stateful ("fullscreen",
+                                      NULL, g_variant_new_boolean (FALSE));
       GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
       g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
       ... ... ...
@@ -114,7 +115,8 @@ Those colors are given to the signal handler as a parameter.
     static void
     on_activate (GApplication *app, gpointer user_data) {
       ... ... ...
-      GSimpleAction *act_color = g_simple_action_new_stateful ("color", g_variant_type_new("s"), g_variant_new_string ("red"));
+      GSimpleAction *act_color = g_simple_action_new_stateful ("color",
+                         g_variant_type_new("s"), g_variant_new_string ("red"));
       GMenuItem *menu_item_red = g_menu_item_new ("Red", "win.color::red");
       GMenuItem *menu_item_green = g_menu_item_new ("Green", "win.color::green");
       GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "win.color::blue");
@@ -148,7 +150,8 @@ The following is the "activate" signal handler.
 
     static void
     color_activated(GSimpleAction *action, GVariant *parameter, gpointer win) {
-      gchar *color = g_strdup_printf ("label#lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
+      gchar *color = g_strdup_printf ("label#lb {background-color: %s;}",
+                                       g_variant_get_string (parameter, NULL));
       gtk_css_provider_load_from_data (provider, color, -1);
       g_free (color);
       g_action_change_state (G_ACTION (action), parameter);
