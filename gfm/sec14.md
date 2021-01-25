@@ -107,19 +107,25 @@ It implies that CSS can also be apllied to GTK windowing system.
 
 The syntax of CSS is as follws.
 
-    selector { color: yellow; padding-top: 10px; ...}
+~~~css
+selector { color: yellow; padding-top: 10px; ...}
+~~~
 
 Every widget has CSS node.
 For example GtkTextView has `textview` node.
 If you want to set style to GtkTextView, set "textview" to the selector.
 
-    textview {color: yeallow; ...}
+~~~css
+textview {color: yeallow; ...}
+~~~
 
 Class, ID and some other things can be applied to the selector like Web CSS. Refer GTK4 API reference for further information.
 
 In line 30, the CSS is a string.
 
-    textview {padding: 10px; font-family: monospace; font-size: 12pt;}
+~~~css
+textview {padding: 10px; font-family: monospace; font-size: 12pt;}
+~~~
 
 - padding is a space between the border and contents.
 This space makes the text easier to read.
@@ -149,21 +155,23 @@ Look at the source file of `startup` handler again.
 It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
 To do so, rewrite `tfe_text_view_new`.
 
-    GtkWidget *
-    tfe_text_view_new (void) {
-      GtkWidget *tv;
+~~~C
+GtkWidget *
+tfe_text_view_new (void) {
+  GtkWidget *tv;
 
-      tv = gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
+  tv = gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
 
-      GtkStyleContext *context;
+  GtkStyleContext *context;
 
-      context = gtk_widget_get_style_context (GTK_WIDGET (tv));
-      GtkCssProvider *provider = gtk_css_provider_new ();
-      gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-      gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  context = gtk_widget_get_style_context (GTK_WIDGET (tv));
+  GtkCssProvider *provider = gtk_css_provider_new ();
+  gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
+  gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
-      return tv;
-    }
+  return tv;
+}
+~~~
 
 CSS set to the context takes precedence over the one set to the display.
 

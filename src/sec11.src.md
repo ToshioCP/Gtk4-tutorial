@@ -43,13 +43,15 @@ This signal is emitted instead of the return value of the function.
 Static variable is used to store the signal ID.
 If you need to register two or more signals, static array is usually used.
 
-    enum {
-      CHANGE_FILE,
-      OPEN_RESPONSE,
-      NUMBER_OF_SIGNALS
-    };
+~~~C
+enum {
+  CHANGE_FILE,
+   OPEN_RESPONSE,
+  NUMBER_OF_SIGNALS
+};
 
-    static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
+static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
+~~~
 
 Signal registration codes are written in the class initialization function.
 
@@ -75,8 +77,10 @@ Such fundamental types are described in [GObject API reference](https://develope
 
 The handlers are as follows.
 
-    void change_file_handler (TfeTextView *tv, gpointer user_data);
-    void open_response_handler (TfeTextView *tv, guint parameter, gpointer user_data);
+~~~C
+void change_file_handler (TfeTextView *tv, gpointer user_data);
+void open_response_handler (TfeTextView *tv, guint parameter, gpointer user_data);
+~~~
 
 - Because "change-file" signal doesn't have parameter, the handler's parameter is TfeTextView object and user data.
 - Because "open-response" signal has one parameter, the handler's parameter is TfeTextView object, the parameter and user data.
@@ -86,13 +90,15 @@ The handlers are as follows.
 
 The parameter is defined in `tfetextview.h` because it is public.
 
-    /* "open-response" signal response */
-    enum
-    {
-      TFE_OPEN_RESPONSE_SUCCESS,
-      TFE_OPEN_RESPONSE_CANCEL,
-      TFE_OPEN_RESPONSE_ERROR
-    };
+~~~C
+/* "open-response" signal response */
+enum
+{
+  TFE_OPEN_RESPONSE_SUCCESS,
+  TFE_OPEN_RESPONSE_CANCEL,
+  TFE_OPEN_RESPONSE_ERROR
+};
+~~~
 
 - `TFE_OPEN_RESPONSE_SUCCESS` is set when `tfe_text_view_open` successfully has opend a file and loaded it.
 - `TFE_OPEN_RESPONSE_CANCEL` is set when the user has canceled to open a file.
@@ -107,9 +113,11 @@ The signals "change-file" is connected to a callback function `file_changed` out
 In the same way, the signals "open-response" is connected to a callback function `open_response` outside of TfeTextView object.
 The functions `file_changed` and `open_response` will be explained later.
 
-    g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed), nb);
+~~~C
+g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed), nb);
 
-    g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
+g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
+~~~
 
 ## Signal emission
 
@@ -120,10 +128,12 @@ The relationship between the signal and object (type) is made up when the signal
 `g_signal_emit` is used to emit the signal.
 The following is extract from `tfetexties.c`.
 
-    g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-    g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
-    g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
-    g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
+~~~C
+g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
+g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
+g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
+~~~
 
 - The first argument is the object on which the signal is emitted.
 - The second argument is the signal id.

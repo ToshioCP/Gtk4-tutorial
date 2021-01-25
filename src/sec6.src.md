@@ -20,17 +20,21 @@ It is described in the GIO API reference.
 
 When GtkApplication is generated, a flag (its type is GApplicationFlags) is given as an argument.
 
-    GtkApplication *
-    gtk_application_new (const gchar *application_id, GApplicationFlags flags);
+~~~C
+GtkApplication *
+gtk_application_new (const gchar *application_id, GApplicationFlags flags);
+~~~
 
 This flag is described in the GApplication section in GIO API reference.
 
-    GApplicationFlags' Members
+~~~C
+GApplicationFlags' Members
 
-    G_APPLICATION_FLAGS_NONE  Default. (No argument allowed)
-      ... ... ...
-    G_APPLICATION_HANDLES_OPEN  This application handles opening files (in the primary instance).
-      ... ... ...
+G_APPLICATION_FLAGS_NONE  Default. (No argument allowed)
+  ... ... ...
+G_APPLICATION_HANDLES_OPEN  This application handles opening files (in the primary instance).
+  ... ... ...
+~~~
 
 There are ten flags.
 But we only need two of them so far.
@@ -45,7 +49,9 @@ The application assumes all the arguments are filenames.
 
 Now we use this flag when generating GtkApplication.
 
-    app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
+~~~C
+app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
+~~~
 
 ### open signal
 
@@ -56,11 +62,13 @@ When the application starts, two signals are possible.
 
 The handler of open signal is called as follows.
 
-    void user_function (GApplication *application,
-                       gpointer      files,
-                       gint          n_files,
-                       gchar        *hint,
-                       gpointer      user_data)
+~~~C
+void user_function (GApplication *application,
+                   gpointer      files,
+                   gint          n_files,
+                   gchar        *hint,
+                   gpointer      user_data)
+~~~
 
 The parameters are as follows:
 
@@ -117,18 +125,20 @@ The point is the handler `on_open`.
 
 The file reading part of the program is shown again below.
 
-    if (g_file_load_contents(files[0], NULL, &contents, &length, NULL, NULL)) {
-      gtk_text_buffer_set_text(tb, contents, length);
-      g_free(contents);
-      filename = g_file_get_basename(files[0]);
-      gtk_window_set_title (GTK_WINDOW (win), filename);
-      g_free(filename);
-      gtk_widget_show (win);
-    } else {
-      filename = g_file_get_path(files[0]);
-      g_print ("No such file: %s.\n", filename);
-      gtk_window_destroy (GTK_WINDOW (win));
-    }
+~~~C
+if (g_file_load_contents(files[0], NULL, &contents, &length, NULL, NULL)) {
+  gtk_text_buffer_set_text(tb, contents, length);
+  g_free(contents);
+  filename = g_file_get_basename(files[0]);
+  gtk_window_set_title (GTK_WINDOW (win), filename);
+  g_free(filename);
+  gtk_widget_show (win);
+} else {
+  filename = g_file_get_path(files[0]);
+  g_print ("No such file: %s.\n", filename);
+  gtk_window_destroy (GTK_WINDOW (win));
+}
+~~~
 
 The function `g_file_load_contents` loads the file contents into a buffer, which is automatically allocated, and set the pointer to the buffer into `contents`.
 And the length of the buffer is set to `length`.

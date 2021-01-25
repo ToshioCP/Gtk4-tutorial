@@ -78,8 +78,10 @@ So it is an old and widely used program.
 Make analyzes Makefile and executes compilers.
 All instructions are written in Makefile.
 
-    sample.o: sample.c
-        gcc -o sample.o sample.c
+~~~Makefile
+sample.o: sample.c
+    gcc -o sample.o sample.c
+~~~
 
 The sample of Malefile above consists of three elements, `sample.o`, `sample.c` and `gcc -0 sample.o sample.c`.
 

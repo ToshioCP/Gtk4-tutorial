@@ -24,7 +24,9 @@ Using global variables is easy to implement.
 Define a sufficient size array of pointers to GFile.
 For example,
 
-    GFile *f[20];
+~~~C
+GFile *f[20];
+~~~
 
 And `f[i]` corresponds to i-th GtkNotebookPage.
 However, there are two problems.
@@ -153,7 +155,9 @@ A handler is a C function.
 When a function is connected to a certain signal, we call it handler.
 The function `before_close` is invoked when the signal "close-request" is emittd.
 
-    g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
+~~~C
+g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
+~~~
 
 The argument win is GtkApplicationWindow, in which the signal "close-request" is defined, and before\_close is the handler.
 `G_CALLBACK` cast is necessary for the handler.

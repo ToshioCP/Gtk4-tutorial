@@ -169,8 +169,10 @@ GtkWindow includes GtkWidget at the top of its object.
 
 The function `gtk_window_new` is defined as follows.
 
-    GtkWidget *
-    gtk_window_new (void);
+~~~C
+GtkWidget *
+gtk_window_new (void);
+~~~
 
 By this definition, it returns a pointer to GtkWidget, not GtkWindow.
 It actually generates a new GtkWindow object (not GtkWidget) but returns a pointer to GtkWidget.
@@ -178,11 +180,15 @@ However,the pointer points the GtkWidget and at the same time it also points Gtk
 
 If you want to use `win` as a pointer to the GtkWindow, you need to cast it.
 
-    (GtkWindow *) win
+~~~C
+(GtkWindow *) win
+~~~
 
 Or you can use `GTK_WINDOW` macro that performs a similar function.
 
-    GTK_WINDOW (win)
+~~~C
+GTK_WINDOW (win)
+~~~
 
 This is a recommended way.
 
@@ -190,7 +196,9 @@ This is a recommended way.
 
 The function `gtk_window_set_application` is used to connect GtkWidow to GtkApplication.
 
-      gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+~~~C
+gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+~~~
 
 You need to cast `win` to GtkWindow and `app` to GtkApplication.
 `GTK_WINDOW` and `GTK_APPLICATION` macro is appropriate for that.
