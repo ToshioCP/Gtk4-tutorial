@@ -18,6 +18,9 @@ If you install gtk4 to your computer, do it at your own risk.
 I installed gtk4 under the directory `$HOME/local`.
 This is a private user area.
 
+If you want to install it in the system area, `/opt/gtk4` is one of good choices.
+[Gtk4 API Reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/gtk-building.html) gives an installation example to `/opt/gtk4`.
+
 Don't install it to `/usr/local` which is the default.
 It is used by ubuntu applications, which are not build on gtk4.
 Therefore, the risk is high and probably bad things will happen.
