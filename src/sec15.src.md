@@ -24,12 +24,12 @@ Choose a file in the list and click on `Open` button.
 Then the file is read and a new Notebook Page appears.
 - Edit the file and click on `Save` button, then the text is saved to the original file.
 - Click `Close`, then the Notebook Page disappears.
-- Click `Close` again, then the `Untitle` Notebook Page disappears and at the same time the appication quits.
+- Click `Close` again, then the `Untitled` Notebook Page disappears and at the same time the application quits.
 
 This is a very simple editor.
 It is a good practice for you to add more features.
 
-## meson.buld
+## meson.build
 
 @@@ tfe5/meson.build
 

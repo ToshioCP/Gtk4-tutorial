@@ -51,7 +51,7 @@ After that, compile glib.
     $ ninja -C _build
     $ ninja -C _build install
 
-Set sevral environment variables so that the glib libraries installed can be used by build tools.
+Set several environment variables so that the glib libraries installed can be used by build tools.
 Make a text file below and save it as `env.sh`
 
     # compiler
@@ -92,7 +92,7 @@ Then, compile and install pango.
     $ ninja -C _build install
 
 It installs Pnago-1.0.gir under `$HOME/local/share/gir-1.0`.
-If you installed pango without --prefix option, then it would be located at `/usr/local/share/gir-1.0`.
+If you installed pango without `--prefix` option, then it would be located at `/usr/local/share/gir-1.0`.
 This directory (/usr/local/share) is used by applications.
 They find the directory by the environment variable `XDG_DATA_DIRS`.
 It is a text file which keep the list of 'share' directoryes like `/usr/share`, `usr/local/share` and so on.
