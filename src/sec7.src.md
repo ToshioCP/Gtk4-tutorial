@@ -140,7 +140,7 @@ In this code no property needs to be initialized.
 And the return value must be casted to GtkWidget.
 
 This program is not perfect.
-It has some problemd.
+It has some problems.
 But I don't discuss them now.
 It will be modified later.
 
