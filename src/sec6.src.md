@@ -6,8 +6,8 @@
 
 GtkTextView, GtkTextBuffer and GtkScrolledWindow have given us a minimum editor in the previous section.
 Next, we will add a read function to this program and remake it into a file viewer.
-There are many way to implement the function.
-However, because this is a tutorial for beginners, we take the simplest way.
+There are many ways to implement the function.
+However, because this is a tutorial for beginners, we'll take the easiest one.
 
 When the program starts, we give a filename as an argument.
 
@@ -74,7 +74,7 @@ The parameters are as follows:
 
 - application --- the application (usually GtkApplication)
 - files --- an array of GFiles. [array length=n\_files] [element-type GFile]
-- n\_files --- the length of files
+- n\_files --- the number of files
 - hint --- a hint provided by the calling instance (usually it can be ignored)
 - user\_data --- user data set when the signal handler was connected.
 

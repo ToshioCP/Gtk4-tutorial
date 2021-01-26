@@ -3,7 +3,7 @@
 ## New, open and save button
 
 We made the simplest editor in the previous section.
-It reads the files in `on_open` funciton at start-up and writes it at closing window.
+It reads the files in `on_open` function at start-up and writes it when closing the window.
 It works but is not good.
 It is better to make "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
@@ -51,8 +51,7 @@ First, let's look at the ui file `tfe3.ui` that defines a structure of the widge
 @@@ tfe/tfe3.ui
 
 This is coded with XML structure.
-Constructs begin with `<` and end with `>` is called tags.
-And it is divided into two parts, start tag and end tag.
+Constructs beginning with `<` and ending with `>` are called tags, and are divided into two parts, start tag and end tag.
 For example, `<interface>` is a start tag and `</interface>` is an end tag.
 Ui file begins and ends with interface tags.
 Some tags, for example, object tags can have a class and id attributes inside the start tag.

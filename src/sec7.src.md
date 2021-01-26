@@ -41,11 +41,11 @@ What we are thinking about now is "child object".
 A child object includes its parent object.
 And a child object derives everything from the parent object.
  
-![Child widget of GtkTwxtView](../image/child.png){width=9.675cm height=4.89cm}
+![Child widget of GtkTextView](../image/child.png){width=9.675cm height=4.89cm}
 
 We will define TfeTextView as a child object of GtkTextView.
 It has everything that GtkTextView has.
-For example, TfeTextView has GtkTextbuffer correspods to GtkTextView inside TfeTextView.
+For example, TfeTextView has GtkTextbuffer corresponds to GtkTextView inside TfeTextView.
 And important thing is that TfeTextView can have a memory to keep a pointer to GFile.
 
 However, to understand the general theory about gobjects is very hard especially for beginners.
@@ -94,7 +94,7 @@ tfe_text_view_new (void) {
 ~~~
 
 If you are curious about the background theory of this program, It's very good for you.
-Because to know the theory is very important for you to program GTK applications.
+Because knowing the theory is very important for you to program GTK applications.
 Look at GObject API reference.
 All you need is described in it.
 However, it's a tough journey especially for beginners.
@@ -140,8 +140,8 @@ In this code no property needs to be initialized.
 And the return value must be casted to GtkWidget.
 
 This program is not perfect.
-It has some problem.
-But I don't discuss it now.
+It has some problemd.
+But I don't discuss them now.
 It will be modified later.
 
 ## Close-request signal
@@ -151,7 +151,7 @@ GtkWindow emits "close-request" signal before it closes.
 We connect the signal and the handler `before_close`.
 A handler is a C function.
 When a function is connected to a certain signal, we call it handler.
-The function `before_close` is invoked when the signal "close-request" is emittd.
+The function `before_close` is invoked when the signal "close-request" is emitted.
 
 ~~~C
 g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
