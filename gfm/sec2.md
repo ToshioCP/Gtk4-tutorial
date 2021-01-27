@@ -20,6 +20,9 @@ If you install gtk4 to your computer, do it at your own risk.
 I installed gtk4 under the directory `$HOME/local`.
 This is a private user area.
 
+If you want to install it in the system area, `/opt/gtk4` is one of good choices.
+[Gtk4 API Reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/gtk-building.html) gives an installation example to `/opt/gtk4`.
+
 Don't install it to `/usr/local` which is the default.
 It is used by ubuntu applications, which are not build on gtk4.
 Therefore, the risk is high and probably bad things will happen.
@@ -53,7 +56,7 @@ After that, compile glib.
     $ ninja -C _build
     $ ninja -C _build install
 
-Set sevral environment variables so that the glib libraries installed can be used by build tools.
+Set several environment variables so that the glib libraries installed can be used by build tools.
 Make a text file below and save it as `env.sh`
 
     # compiler
@@ -94,7 +97,7 @@ Then, compile and install pango.
     $ ninja -C _build install
 
 It installs Pnago-1.0.gir under `$HOME/local/share/gir-1.0`.
-If you installed pango without --prefix option, then it would be located at `/usr/local/share/gir-1.0`.
+If you installed pango without `--prefix` option, then it would be located at `/usr/local/share/gir-1.0`.
 This directory (/usr/local/share) is used by applications.
 They find the directory by the environment variable `XDG_DATA_DIRS`.
 It is a text file which keep the list of 'share' directoryes like `/usr/share`, `usr/local/share` and so on.

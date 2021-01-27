@@ -239,7 +239,7 @@ This is a recommended way.
 
 #### Connect it to GtkApplication.
 
-The function `gtk_window_set_application` is used to connect GtkWidow to GtkApplication.
+The function `gtk_window_set_application` is used to connect GtkWindow to GtkApplication.
 
 ~~~C
 gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));

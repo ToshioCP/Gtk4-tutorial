@@ -6,7 +6,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](se
 
 ### GtkLabel
 
-We made an window and show it on the screen in the previous section.
+We made a window and show it on the screen in the previous section.
 Now we go on to the next topic, widgets in the window.
 The simplest widget is GtkLabel.
 It is a widget with a string in it.
@@ -90,7 +90,7 @@ Child widgets are always located inside its parent widget in the screen.
 See the window appeared on the screen.
 The window includes the label.
 
-The window `win` dosen't have any parents.
+The window `win` doesn't have any parents.
 We call such a window top-level window.
 One application can have two or more top-level windows.
 

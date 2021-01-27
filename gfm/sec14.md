@@ -38,7 +38,7 @@ It connects the command line given by the user and GTK application.
 - 12: Run the application.
 - 13-14: release the reference to the application and return the status.
 
-## statup signal handler
+## startup signal handler
 
 Startup signal is emitted just after the application is generated.
 What the signal handler needs to do is initialization of the application.
@@ -98,7 +98,7 @@ CSS will be explained in the next subsection.
 
 ## CSS in GTK
 
-CSS is an abbretiation of Cascading Style Sheet.
+CSS is an abbreviation of Cascading Style Sheet.
 It is originally used with HTML to describe the presentation semantics of a document.
 You might have found that the widgets in GTK is simialr to the window in a browser.
 It implies that CSS can also be apllied to GTK windowing system.
@@ -116,7 +116,7 @@ For example GtkTextView has `textview` node.
 If you want to set style to GtkTextView, set "textview" to the selector.
 
 ~~~css
-textview {color: yeallow; ...}
+textview {color: yellow; ...}
 ~~~
 
 Class, ID and some other things can be applied to the selector like Web CSS. Refer GTK4 API reference for further information.

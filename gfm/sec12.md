@@ -79,7 +79,7 @@ Parameter:
 Return value:
 
 - A pointer to the generated TfeTextView object but it is casted to a pointer to GtkWidget.
-If an error occures during the genration process, NULL is returned.
+If an error occurs during the generation process, NULL is returned.
 
 Each function is defined as follows.
 
@@ -148,7 +148,7 @@ void tfe_text_view_saveas (TfeTextView *tv)
 
 `saveas` function uses GtkFileChooserDialog and lets the user to give a new file to the program. Then, the function changes `tv->file` and save the contents to the specified new file.
 
-If an error occures, it is shown to the user through the message dialog.
+If an error occurs, it is shown to the user through the message dialog.
 The error is managed only in the object and no information is notified to the caller.
 
 ~~~C
