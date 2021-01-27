@@ -156,7 +156,8 @@ The type of the object is the second argument of `g_signal_newv`.
 The relationship between the signal and object (type) is made up when the signal is generated.
 
 `g_signal_emit` is used to emit the signal.
-The following is extract from `tfetexties.c`.
+The following lines are extracted from `tfetextview.c`.
+Each line is quoted from a different line.
 
 ~~~C
 g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
