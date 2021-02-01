@@ -1,0 +1,22 @@
+dp tree (s) {
+  if (s<5) {
+    rt
+  }
+  pd
+  fd s
+  tr 40
+  tree (s*0.7)
+  tr -80
+  tree (s*0.7)
+  tr -140
+  pu
+  fd s
+  tr 180
+}
+
+bc (0.9,0.9,0.9)
+tr 180
+pu
+fd 80
+tr 180
+tree (80)

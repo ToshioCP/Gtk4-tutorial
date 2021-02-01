@@ -1,0 +1,18 @@
+dp tree2 (n, s) {
+  n = n - 1
+  if (n < 0) {
+    rt
+  }
+  pd
+  fd s
+  tr 20
+  tree2 (n, s*0.7)
+  tr -40
+  tree2 (n, s*0.7)
+  tr -160
+  pu
+  fd s
+  tr 180
+}
+
+tree2 (6, 100)

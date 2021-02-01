@@ -1,0 +1,23 @@
+dp SquareKoch (s) {
+  if (s<10) {
+    fd s
+    rt
+  }
+  SquareKoch (s/2)
+  tr -90
+  SquareKoch (s/2)
+  tr 90
+  SquareKoch (s/2)
+  tr 90
+  SquareKoch (s/2)
+  tr -90
+  SquareKoch (s/2)
+ }
+
+bc (0.9,0.9,0.9)
+tr -90
+pu
+fd 180
+tr 180
+pd
+SquareKoch (80)
