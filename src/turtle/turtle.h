@@ -8,6 +8,6 @@
 /* However it makes the program slow. */
 /* If you don't want to see such information, remove the line. */
 /* #define debug 1 */
-#define debug 1
+
 extern cairo_surface_t *surface;
 
