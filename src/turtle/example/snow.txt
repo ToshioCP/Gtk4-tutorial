@@ -1,0 +1,35 @@
+dp Koch (s) {
+  if (s<10) {
+    fd s
+    rt
+  }
+  Koch (s/3)
+  tr -60
+  Koch (s/3)
+  tr 120
+  Koch (s/3)
+  tr -60
+  Koch (s/3)
+ }
+
+bc (0.9,0.9,0.9)
+fc (0.2 ,0.5, 1)
+pw 3
+tr -90
+pu
+fd 190
+tr 120
+pd
+Koch (200)
+tr 60
+Koch (200)
+tr 60
+Koch (200)
+tr 60
+Koch (200)
+tr 60
+Koch (200)
+tr 60
+Koch (200)
+tr 60
+

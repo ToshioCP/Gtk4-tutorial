@@ -1,0 +1,82 @@
+dp hex (side) {
+  fd side
+  tr 360/6
+  fd side
+  tr 360/6
+  fd side
+  tr 360/6
+  fd side
+  tr 360/6
+  fd side
+  tr 360/6
+  fd side
+  tr 360/6
+}
+
+z=0.9
+m=200
+dp z () {
+  if (z>1) {
+    z = z/10
+    z ()
+  }
+}
+
+dp nx () {
+  r = z
+  z = z*m
+  z ()
+  g = z
+  z = z*m
+  z()
+  b = z
+}
+
+
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11
+nx()
+fc (r, g, b)
+hex (100)
+tr 360/11

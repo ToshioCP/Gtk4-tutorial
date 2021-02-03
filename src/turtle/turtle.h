@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 
-#include "tfetextview.h"
+#include "../tfetextview/tfetextview.h"
 #include "turtle_lex.h"
 #include "turtle_parser.h"
 
