@@ -59,14 +59,15 @@ It is a good practice for you to add more features.
 
 ## tfetextview.h
 
-@@@ tfe5/tfetextview.h
+@@@ tfetextview/tfetextview.h
 
 ## tfetextview.c
 
-@@@ tfe5/tfetextview.c
+@@@ tfetextview/tfetextview.c
 
-## Total number of lines, words and charcters
+## Total number of lines, words and characters
 
 $$$
-LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfe5/tfetextview.c tfe5/tfetextview.h tfe5/tfe.ui
+LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
 $$$
+

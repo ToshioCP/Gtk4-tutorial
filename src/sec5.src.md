@@ -4,7 +4,7 @@
 
 ### GtkTextView and GtkTextBuffer
 
-GtkTextview is a widget for multiline text editing.
+GtkTextview is a widget for multi-line text editing.
 GtkTextBuffer is a text buffer which is connected to GtkTextView.
 See a sample program `tfv1.c` below.
 
@@ -17,9 +17,9 @@ In the next line, the pointer to the buffer is got and assigned to `tb`.
 Then, the text from line 10 to 20 is assigned to the buffer.
 
 GtkTextView has a wrap mode.
-When `GTK_WRAP_WORD_CHAR` is set, text wraps in between words, or if that is not enough, also between graphemes.
+When it is set to `GTK_WRAP_WORD_CHAR`, text wraps in between words, or if that is not enough, also between graphemes.
 
-In line 30, `tv` is set to `win` as a child.
+In line 30, `tv` is added to `win` as a child.
 
 Now compile and run it.
 
@@ -37,8 +37,8 @@ You can solve it by putting GtkScrolledWindow between GtkApplicationWindow and G
 
 What we need to do is:
 
-- Generate GtkScrolledWindow and set it as a child of GtkApplicationWindow.
-- Set GtkTextView as a child of GtkScrolledWindow.
+- Generate GtkScrolledWindow and insert it to GtkApplicationWindow as a child.
+- insert GtkTextView to GtkScrolledWindow as a child.
 
 Modify `tfv1.c` and save it as `tfv2.c`.
 The difference between these two files is very little.

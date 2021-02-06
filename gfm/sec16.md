@@ -33,7 +33,7 @@ Menus can build a complicated structure thanks to the links of menu items.
 
 ## GMenuModel, GMenu and GMenuItem
 
-GMenuModel is an abstact object which represents a menu.
+GMenuModel is an abstract object which represents a menu.
 GMenu is a simple implementation of GMenuModel and a child object of GMenuModel.
 
     GObjct -- GMenuModel -- GMenu
@@ -51,7 +51,7 @@ GMenuItem and Gmenu (or GMenuModel) don't have a parent-child relationship.
 Usually, GMenuItem has attributes.
 One of the attributes is label.
 For example, there is a menu item which has "Edit" label in the first diagram in this section.
-"Cut", "Copy", "Paste" and "Select All" are also the lables of menu items.
+"Cut", "Copy", "Paste" and "Select All" are also the labels of menu items.
 Other attributes will be explained later.
 
 Some menu items have a link to another GMenu.
@@ -179,18 +179,18 @@ You don' t need to care about it.
 It is the fourth parameter in the `g_signal_connect` (line 17) that has connected the action and the handler.
 - 6: A function `g_application_quit` immediately quits the application.
 - 9-33: `on_activate` is a handler of "activate" signal on GtkApplication.
-- 11-13: Generate a GtkApplicationWindow and set a pointer to it to `win`. And set the title and default size.
-- 15: Generate GSimpleAction `act_quit`.
+- 11-13: Generates a GtkApplicationWindow and assigns a pointer to it to `win`. And sets the title and default size.
+- 15: Generates GSimpleAction `act_quit`.
 It is stateless.
 The first argument of `g_simple_action_new` is a name of the action and the second argument is a parameter.
-If you don't need the parameter, set it `NULL`.
+If you don't need the parameter, pass `NULL`.
 Therefore, `act_quit` has a name "quit" and no parameter.
-- 16: Add the action to GtkApplication `app`.
+- 16: Adds the action to GtkApplication `app`.
 GtkApplication implements an interface GActionMap and GActionGroup.
 And GtkApplication can have a group of actions and actions are added by the function `g_action_map_add_action`.
 This function is described in GMenuModel section in GIO API reference.
-- 17: Connect "activate" signal of the action and the handler `quit_activated`.
-- 19-22: Generate GMenu and GMenuItem.
+- 17: Connects "activate" signal of the action and the handler `quit_activated`.
+- 19-22: Generates GMenu and GMenuItem.
 `menubar` and `menu` are GMenu.
 `menu_item_menu` and `menu_item_quit` are GMenuItem.
 `menu_item_menu` has a label "Menu" and no action.
@@ -198,19 +198,19 @@ This function is described in GMenuModel section in GIO API reference.
 The second argument "app.quit" is a combination of "app" and "quit".
 "app" is a prefix and it means that the action belongs to GtkApplication. "quit" is the name of the action.
 Therefore, it points the action which belongs to GtkApplication and has the name "quit" -- it is `act_quit`.
-- 23-24: Append `act_quit` to `menu`.
+- 23-24: Appends `act_quit` to `menu`.
 As I mentioned before, all the attribute and link values are copied and used to form a new item within `menu`.
 Therefore after the appending, `menu` has a copy of `act_quit` in itself and `act_quit` is no longer needed.
 It is freed by `g_object_unref`.
-- 25: Set a submenu link to `menu_item_menu`.
+- 25: Sets a submenu link to `menu_item_menu`.
 And the link points the GMenu `menu`.
-- 26-27: Append `menu_item_menu` to `menubar`.
-Then free `menu_item_menu`.
+- 26-27: Appends `menu_item_menu` to `menubar`.
+Then frees `menu_item_menu`.
 GMenu and GMenuItem are connected and finally a menu is made up.
 The structure of the menu is shown in the diagram below.
-- 29: The menu is set to GtkApplication.
-- 30: Set GtkApplicationWindow to show the menubar.
-- 31: Show the window.
+- 29: The menu is inserted to GtkApplication.
+- 30: Sets GtkApplicationWindow to show the menubar.
+- 31: Shows the window.
 
 ![menu and action](../image/menu1.png)
 

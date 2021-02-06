@@ -141,9 +141,9 @@ The following program shows how to catch the signal and do something.
 ~~~
 
 Look at the line 17 to 19.
-First, generate a GtkButton widget `btn` with a label "Click me".
-Then, set it to the window `win` as a child.
-Finally, connect a "clicked" signal of the button to a handler (function) `click_cb`.
+First, it generates a GtkButton widget `btn` with a label "Click me".
+Then, adds the button to the window `win` as a child.
+Finally, connects a "clicked" signal of the button to a handler (function) `click_cb`.
 So, if `btn` is clicked, the function `click_cb` is invoked.
 The suffix cb means "call back".
 
@@ -233,7 +233,7 @@ It arranges two or more child widgets into a single row or column.
 The following procedure shows the way to add two buttons in a window.
 
 - Generate GtkApplicationWindow.
-- Generate GtkBox and set it a child of GtkApplicationWindow.
+- Generate GtkBox and add it to GtkApplicationWindow as a child.
 - Generate GtkButton and append it to GtkBox.
 - Generate another GtkButton and append it to GtkBox.
 

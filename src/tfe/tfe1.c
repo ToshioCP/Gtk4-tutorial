@@ -66,7 +66,7 @@ before_close (GtkWindow *win, GtkWidget *nb) {
 
 static void
 on_activate (GApplication *app, gpointer user_data) {
-  g_print ("You need a filename argument.\n");
+  g_print ("You need to give filenames as arguments.\n");
 }
 
 static void

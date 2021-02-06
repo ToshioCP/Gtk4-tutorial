@@ -20,7 +20,7 @@ The file starts and ends with interface tag.
 
 `menu` tag corresponds to GMenu object.
 `id` attribute defines the name of the object.
-It will be refered by GtkBuilder.
+It will be referred by GtkBuilder.
 
 ~~~xml
 <submenu>
@@ -69,7 +69,7 @@ The following is the ui file of the menu in `menu3`.
 
 @@@ menu3/menu3.ui
 
-The ui file is converted to the resource by the resouce compiler `glib-compile-resouces` with xml file below.
+The ui file is converted to the resource by the resource compiler `glib-compile-resouces` with xml file below.
 
 @@@ menu3/menu3.gresource.xml
 
@@ -83,7 +83,7 @@ gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
 g_object_unref (builder);
 ~~~
 
-It is important that `builder` is unreferred after the GMenuModel `menubar` is set to the application.
+It is important that `builder` is unreferred after the GMenuModel `menubar` is inserted to the application.
 If you do it before setting, bad thing will happen -- your computer might freeze.
 
 ## Action entry
@@ -133,9 +133,9 @@ g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
 
 The code above does:
 
-- Build the "quit" action
-- Connect the action and the "activate" signal handler `quit_activate`
-- Add the action to the action map `app`.
+- Builds the "quit" action
+- Connects the action and the "activate" signal handler `quit_activate`
+- Adds the action to the action map `app`.
 
 The same goes for the other actions.
 
@@ -149,12 +149,12 @@ g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries,
 ~~~
 The code above does:
 
-- Build a "fullscreen" action and "color" action.
-- Connect the "fullscreen" action and the "change-state" signal handler `fullscreen_changed`
+- Builds a "fullscreen" action and "color" action.
+- Connects the "fullscreen" action and the "change-state" signal handler `fullscreen_changed`
 - Its initial state is set to FALSE.
-- Connect the "color" action and the "activate" signal handler `color_activate`
+- Connects the "color" action and the "activate" signal handler `color_activate`
 - Its parameter type is string and the initial value is "red".
-- Add the actions to the action map `win`.
+- Adds the actions to the action map `win`.
 
 ## Example code
 

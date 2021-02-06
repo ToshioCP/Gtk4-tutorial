@@ -4,13 +4,13 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 8](sec8.md), Next: [Section 10](s
 
 ## What do we need to think about to manage big source files?
 
-We've managed to compile a small editor so far.
+We've compiled a small editor so far.
 But Some bad signs are beginning to appear.
 
-- We have only one C source file and put everything into it.
+- We've had only one C source file and put everything into it.
 We need to sort it out.
 - There are two compilers, `gcc` and `glib-compile-resources`.
-We want to control them by one building tool. 
+We should control them by one building tool. 
 
 These ideas are useful to manage big source files.
 
@@ -26,7 +26,7 @@ It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
 Now we have three source files, `tfetextview.c`, `tfe.c` and `tfe3.ui`.
 The `3` of `tfe3.ui` is like a version number.
 Managing version with filenames is one possible idea but it may make bothersome problem.
-You need to rewrite filename in each version and it affects to contents of sourcefiles that refer to filenames.
+You need to rewrite filename in each version and it affects to contents of source files that refer to filenames.
 So, we should take `3` away from the filename.
 
 In `tfe.c` the function `tfe_text_view_new` is invoked to generate TfeTextView.
@@ -254,16 +254,16 @@ Dividing a file makes it easy to maintain source files.
 But now we are faced with a new problem.
 The building step increases.
 
-- Compile the ui file `tfe.ui` into `resources.c`.
-- Compile `tfe.c` into `tfe.o` (object file).
-- Compile `tfetextview.c` into `tfetextview.o`.
-- Compile `resources.c` into `resources.o`.
-- Link all the object files into application `tfe`.
+- Compiling the ui file `tfe.ui` into `resources.c`.
+- Compiling `tfe.c` into `tfe.o` (object file).
+- Compiling `tfetextview.c` into `tfetextview.o`.
+- Compiling `resources.c` into `resources.o`.
+- Linking all the object files into application `tfe`.
 
 Now build tool is necessary to manage it.
 Make is one of the build tools.
-It was originally created in 1976.
-So it is an old and widely used program.
+It was created in 1976.
+It is an old and widely used program.
 
 Make analyzes Makefile and executes compilers.
 All instructions are written in Makefile.
@@ -286,7 +286,7 @@ The rule is:
 If a prerequisite modified later than a target, then make executes the recipe.
 
 In the example above, if `sample.c` is modified after the generation of `sample.o`, then make executes gcc and compile `sample.c` into `sample.o`.
-If the modification time of `sample.c` is older then the generation of `sample.o`, then no compiling is necesarry, so make does nothing.
+If the modification time of `sample.c` is older then the generation of `sample.o`, then no compiling is necessary, so make does nothing.
 
 The Makefile for `tfe` is as follows.
 
@@ -368,19 +368,19 @@ Rake has task and file task, which is similar to target, prerequisite and recipe
 
 What `Rakefile` describes is almost same as `Makefile` in the previous subsection. 
 
-- 3-6: define target file, source file and so on.
-- 1, 8: Load clean library. And define CLEAN file list.
+- 3-6: Defines target file, source file and so on.
+- 1, 8: Loads clean library. And defines CLEAN file list.
 The files included by CLEAN will be removed when `rake clean` is typed on the command line.
-- 10: default target depends on targetfile.
-default is the final goal of tasks.
-- 12-14: targetfile depends on objfiles.
+- 10: Default target depends on targetfile.
+Default is the final goal of tasks.
+- 12-14: Targetfile depends on objfiles.
 The variable `t` is a task object.
   - t.name is a target name
-  - t.prerequisites is an array of prerequisits.
+  - t.prerequisites is an array of prerequisites.
   - t.source is the first element of prerequisites.
 - sh is a method to give the following string to shell as an argument and execute the shell.
-- 16-21: Loop by each element of the array of objfiles. Each object depends on corresponding source file.
-- 23-25: resouce file depends on xml file and ui file.
+- 16-21: There's a loop by each element of the array of objfiles. Each object depends on corresponding source file.
+- 23-25: Resource file depends on xml file and ui file.
 
 Rakefile might seem to be difficult for beginners.
 But, you can use any ruby syntax in Rakefile, so it is really flexible.
@@ -410,17 +410,17 @@ To use meson, you first need to write `meson.build` file.
 ~~~
 
 - 1: The function `project` defines things about the project.
-The first parameter is the name of the project and the second is the programing language.
+The first parameter is the name of the project and the second is the programming language.
 - 2: `dependency` function defines a dependency that is taken by `pkg-config`.
 We put `gtk4` as an argument.
-- 5: `import` function inports a module.
-In line 5, gnome module is imported and assignd to the variable `gnome`.
+- 5: `import` function imports a module.
+In line 5, gnome module is imported and assigned to the variable `gnome`.
 gnome module provides helper tools to build GTK programs.
 - 6: `.compile_resources` is a method of gnome module and compile files to resources under the instruction of xml file.
 In line 6, the resource filename is `resources`, which means `resources.c` and `resources.h`, and xml file is `tfe.gresource.xml`.
 This method generates C source file by default.
-- 8: define source files.
-- 10: executable function generates a target file by building source files.
+- 8: Defines source files.
+- 10: Executable function generates a target file by building source files.
 The first parameter is the filename of the target. The following parameters are source files.
 The last parameter has a option `dependencies`.
 In line 10 it is `gtkdep` which is defined in line 3.
@@ -435,6 +435,8 @@ Then, the executable file `tfe` is generated under the directory `_build`.
     $ _build/tfe tfe.c tfetextview.c
 
 Then the window appears.
+And two notebook pages are in the window.
+One notebook is `tfe.c` and the other is `tfetextview.c`.
 
 I've shown you three build tools.
 I think meson and ninja is the best choice for the present.

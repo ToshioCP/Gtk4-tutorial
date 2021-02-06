@@ -3,7 +3,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 1](sec1.md), Next: [Section 3](se
 # Installation of gtk4 to linux distributions
 
 This section describes how to install gtk4 into linux distributions.
-However, I only have an experience to install it to ubuntu 20.10.
+However, I only have an experience to install it to Ubuntu 20.10.
 Probably you need more than the explanation below.
 
 This tutorial including this section is without any warranty.
@@ -24,9 +24,9 @@ If you want to install it in the system area, `/opt/gtk4` is one of good choices
 [Gtk4 API Reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/gtk-building.html) gives an installation example to `/opt/gtk4`.
 
 Don't install it to `/usr/local` which is the default.
-It is used by ubuntu applications, which are not build on gtk4.
+It is used by Ubuntu applications, which are not build on gtk4.
 Therefore, the risk is high and probably bad things will happen.
-Actually I did it and I needed to reinstall ubuntu.
+Actually I did it and I needed to reinstall Ubuntu.
 
 ## Glib installation
 
@@ -79,7 +79,7 @@ or
 
     $ source env.sh
 
-This command carries out the commands in `env.sh` and changes the environment variables above in the corrent shell.
+This command carries out the commands in `env.sh` and changes the environment variables above in the current shell.
 
 ## Pango installation
 
@@ -100,7 +100,7 @@ It installs Pnago-1.0.gir under `$HOME/local/share/gir-1.0`.
 If you installed pango without `--prefix` option, then it would be located at `/usr/local/share/gir-1.0`.
 This directory (/usr/local/share) is used by applications.
 They find the directory by the environment variable `XDG_DATA_DIRS`.
-It is a text file which keep the list of 'share' directoryes like `/usr/share`, `usr/local/share` and so on.
+It is a text file which keep the list of 'share' directories like `/usr/share`, `usr/local/share` and so on.
 Now `$HOME/local/share` needs to be added to `XDG_DATA_DIRS`, or error will occur in the later compilation.
 
     $ export XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS

@@ -50,6 +50,7 @@ notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
   gint i;
   scr = gtk_scrolled_window_new ();
 
+  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
   lab = gtk_label_new (filename);
   i = gtk_notebook_append_page (nb, scr, lab);

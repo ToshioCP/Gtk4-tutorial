@@ -16,7 +16,7 @@ We just add two things to the file viewer.
 A couple of ways are possible to get memories to keep GFile.
 
 - Use global variables.
-- make a child widget object and extend the memories allocated to the widget.
+- make a child object so that it can extend the memories for the GFile object.
 
 Using global variables is easy to implement.
 Define a sufficient size array of pointers to GFile.
@@ -48,11 +48,10 @@ It has everything that GtkTextView has.
 For example, TfeTextView has GtkTextbuffer corresponds to GtkTextView inside TfeTextView.
 And important thing is that TfeTextView can have a memory to keep a pointer to GFile.
 
-However, to understand the general theory about gobjects is very hard especially for beginners.
+However, to understand the general theory about Gobject is very hard especially for beginners.
 So, I will just show you the way how to write the code and avoid the theoretical side in the next subsection.
 
 ## How to define a child widget of GtkTextView
-
 
 Let's define TfeTextView object which is a child object of GtkTextView.
 First, look at the program below.
@@ -95,7 +94,7 @@ tfe_text_view_new (void) {
 
 If you are curious about the background theory of this program, It's very good for you.
 Because knowing the theory is very important for you to program GTK applications.
-Look at GObject API reference.
+Look at [GObject API reference](https://developer.gnome.org/gobject/stable/).
 All you need is described in it.
 However, it's a tough journey especially for beginners.
 For now, you don't need to know such difficult theory.
@@ -125,7 +124,7 @@ Usually you don't need to do anything.
 - Define class init function (tfe\_text\_view\_class\_init).
 You don't need to do anything in this widget.
 - Write function codes you want to add (tfe\_text\_view\_set\_file and tfe\_text\_view\_get\_file).
-`tv` is a pointer to TfeTextView object instance which is a C-struture declared with the tag \_TfeTextView.
+`tv` is a pointer to TfeTextView object instance which is a C-structure declared with the tag \_TfeTextView.
 So, the structure has a member `file` as a pointer to GFile.
 `tv->file = f` is an assignment of `f` to a member `file` of the structure pointed by `tv`. 
 This is an example how to use the extended memory in a child widget.
@@ -146,7 +145,14 @@ It will be modified later.
 
 ## Close-request signal
 
-After editing a file, `tfe1.c` writes files just before the window closes.
+Imagine that you use this editor.
+First, you run the editor with arguments.
+The arguments are filenames.
+The editor reads the files and shows its window with the text of files in it.
+Then you edit the text.
+After you finish editing, you exit the editor.
+The editor updates files just before the window closes.
+
 GtkWindow emits "close-request" signal before it closes.
 We connect the signal and the handler `before_close`.
 A handler is a C function.
@@ -157,19 +163,22 @@ The function `before_close` is invoked when the signal "close-request" is emitte
 g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
 ~~~
 
-The argument win is GtkApplicationWindow, in which the signal "close-request" is defined, and before\_close is the handler.
+The argument `win` is GtkApplicationWindow, in which the signal "close-request" is defined, and `before_close` is the handler.
 `G_CALLBACK` cast is necessary for the handler.
-The program of before\_close is as follows.
+The program of `before_close` is as follows.
 
 @@@ tfe/tfe1.c before_close
 
 The numbers on the left of items are line numbers in the source code.
 
-- 13: Get the number of pages `nb` has.
+- 13: Gets the number of pages `nb` has.
 - 14-23: For loop with regard to the index to each pages.
-- 15-17: Get GtkScrolledWindow, TfeTextView and a pointer to GFile. The pointer was stored when `on_open` handler had run. It will be shown later.
-- 18-20: Get GtkTextBuffer and contents. start\_iter and end\_iter is iterators of the buffer. I don't want to explain them now because it would take a lot of time. Just remember these lines for the present.
-- 21: Write the file.
+- 15-17: Gets GtkScrolledWindow, TfeTextView and a pointer to GFile.
+The pointer was stored when `on_open` handler had run. It will be shown later.
+- 18-20: Gets GtkTextBuffer and contents. `start_iter` and `end_iter` are iterators of the buffer.
+I don't want to explain them now because it would take a lot of time.
+Just remember these lines for the present.
+- 21: Writes the file.
 
 ## Source code of tfe1.c
 
@@ -177,11 +186,11 @@ Now I will show you all the source code of `tfe1`.c.
 
 @@@ tfe/tfe1.c
 
-- 102: set the pointer to GFile into TfeTextView.
+- 102: Sets the pointer to GFile into TfeTextView.
 `files[i]` is a pointer to GFile structure.
 It will be freed by the system. So you need to copy it.
-`g_file_dup` duplicate the given GFile structure.
-- 118: connect "close-request" signal and `before_close` handler.
+`g_file_dup` duplicates the given GFile structure.
+- 118: Connects "close-request" signal and `before_close` handler.
 The fourth argument is called user data and it is given to the signal handler.
 So, `nb` is given to `before_close` as the second argument.
 

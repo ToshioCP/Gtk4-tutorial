@@ -5,7 +5,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 7](sec7.md), Next: [Section 9](se
 ## New, open and save button
 
 We made the simplest editor in the previous section.
-It reads the files in `on_open` function at start-up and writes it when closing the window.
+It reads the files in `on_open` function at start-up and writes them when closing the window.
 It works but is not good.
 It is better to make "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
@@ -107,21 +107,21 @@ The function `on_open` in the source code `tfe2.c` is as follows.
 
 The point is how to build the window.
 
-- 25-27: Generate GtkApplicationWindow and set its title and default size.
-- 29-30: Generate GtkBox `boxv`.
+- 25-27: Generates GtkApplicationWindow and sets the title and default size.
+- 29-30: Generates GtkBox `boxv`.
 It is a vertical box and a child of GtkApplicationWindow.
 It has two children.
 The first child is a horizontal box includes buttons.
 The second child is GtkNotebook.
-- 32-33: Generate GtkBox `boxh` and append it to 'boxv' as a first child.
-- 35-40: Generate three dummy labels.
+- 32-33: Generates GtkBox `boxh` and appends it to 'boxv' as a first child.
+- 35-40: Generates three dummy labels.
 The labels `dmy1` and `dmy3` has a character width of ten.
-The other label `dmy2` is set hexpand property TRUE.
+The other label `dmy2` has hexpand property which is set to be TRUE.
 This makes the label expands horizontally as long as possible.
-- 41-44: Generate four buttons.
-- 46-52: Append these GtkLabel and GtkButton to `boxh`.
-- 54-57: Generate GtkNotebook and set hexpand and vexpand properties TRUE.
-This makes it expands horizontally and vertically as big as possible.
+- 41-44: Generates four buttons.
+- 46-52: Appends these GtkLabel and GtkButton to `boxh`.
+- 54-57: Generates GtkNotebook and sets hexpand and vexpand properties TRUE.
+This makes it expand horizontally and vertically as big as possible.
 It is appended to `boxv` as the second child.
 
 The number of lines is 33(=57-25+1) to build the widgets.
@@ -131,7 +131,7 @@ Are there any good solution to reduce these work?
 
 Gtk provides GtkBuilder.
 It reads ui data and builds a window.
-It reduces the cumbersom work.
+It reduces the cumbersome work.
 
 ## Ui file
 
@@ -200,7 +200,8 @@ First, let's look at the ui file `tfe3.ui` that defines a structure of the widge
 ~~~
 
 This is coded with XML structure.
-Constructs beginning with `<` and ending with `>` are called tags, and are divided into two parts, start tag and end tag.
+Constructs beginning with `<` and ending with `>` are called tags.
+And there are two types of tags, start tag and end tag.
 For example, `<interface>` is a start tag and `</interface>` is an end tag.
 Ui file begins and ends with interface tags.
 Some tags, for example, object tags can have a class and id attributes inside the start tag.
@@ -213,7 +214,7 @@ And the three properties of the window are defined.
 For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
 
 Compare this ui file and the lines 25-57 in the source code of `on_open` function.
-Those two decribe the same structure of widgets.
+Those two describe the same structure of widgets.
 
 ## GtkBuilder
 
@@ -228,7 +229,8 @@ gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
 nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
 ~~~
 
-The function `gtk_builder_new_from_file` reads the file given as an argument, build the widgets, generate GtkBuilder object and set pointers to the widgets in it.
+The function `gtk_builder_new_from_file` reads the file given as an argument.
+Then, it builds the widgets and pointers to them, creates GtkBuilder object and put the pointers in it.
 The function `gtk_builder_get_object (build, "win")` returns the pointer to the widget `win`, which is the id in the ui file.
 All the widgets are connected based on the parent-children relationship described in the ui file.
 We only need `win` and `nb` for the program after this, so we don't need to take out any other widgets.
@@ -297,8 +299,7 @@ This reduces lines in the C source file.
 Therefore 37 lines are reduced.
 Using ui file not only shortens C source files, but also makes the widgets' structure clear.
 
-Now I'll show you the C source code `tfe3.c`.
-Only functions `on_open` are shown as follows.
+Now I'll show you `on_open` function in the C source code `tfe3.c`.
 
 ~~~C
  1 static void
@@ -351,9 +352,9 @@ Only functions `on_open` are shown as follows.
 48 }
 ~~~
 
-The source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
+The whole source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
 If you want to see it, click the link above.
-In the same way, you can get the source files below in the directory [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe).
+You can also get the source files below.
 
 ### Using ui string
 
@@ -385,8 +386,8 @@ So ui file is not necessary on runtime.
 The disadvantage is that writing C string is a bit bothersome because of the double quotes.
 If you want to use this method, you should write a script that transforms ui file into C-string.
 
-- add backslash before each double quote.
-- add double quote at the left and right.
+- Add backslash before each double quote.
+- Add double quote at the left and right.
 
 ### Using Gresource
 
@@ -408,10 +409,10 @@ It describes resource files.
 6 </gresources>
 ~~~
 
-- 2: gresources tag can include mulitple gresources (gresource tags).
+- 2: `gresources` tag can include multiple gresources (gresource tags).
 However, this xml has only one gresource.
 - 3: The gresource has a prefix `/com/github/ToshioCP/tfe3`.
-- 4: The gresource has tfe3.ui.
+- 4: The gresource has `tfe3.ui`.
 And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix. 
 If you want to add more files, then insert them between line 4 and 5.
 
@@ -450,7 +451,7 @@ Now run the compiler.
     $ glib-compile-resources tfe3.gresource.xml --target=resources.c --generate-source
 
 Then a C source file `resources.c` is generated.
-Modify tfe3.c and save it as tfe3_r.c
+Modify `tfe3.c` and save it as `tfe3_r.c`.
 
 ~~~C
 #include "resources.c"

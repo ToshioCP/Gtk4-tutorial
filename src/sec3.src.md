@@ -5,7 +5,7 @@
 ### GtkApplication and g\_application\_run
 
 Usually people write a programming code to make an application.
-What are appications?
+What are applications?
 Applications are software that runs using libraries, which includes OS, frameworks and so on.
 In Gtk4 programming, GtkApplication is an object that runs on GTK libraries.
 
@@ -157,7 +157,7 @@ Now rewrite the function `on_activate`.
 
 @@@ misc/pr3.c on_activate
 
-Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multiline text, containers and so on.
+Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multi-line text, containers and so on.
 And GtkWidget is a base object from which all the GUI objects derive.
 
     parent <-----> child

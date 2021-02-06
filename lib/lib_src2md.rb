@@ -152,7 +152,7 @@ def change_rel_link line, org_dir, new_dir
   left = ""
   right = line
   while right =~ /(!?\[[^\]]*\])\(([^\)]*)\)/
-    left = $`
+    left += $`
     right = $'
     name = $1
     link = $2
@@ -168,7 +168,7 @@ def change_rel_link line, org_dir, new_dir
 end
 
 def fold line, width
-  if width <=0
+  if width <= 0
     return line
   end
   tmp = []

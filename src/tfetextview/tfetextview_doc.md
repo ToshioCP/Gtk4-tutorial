@@ -3,12 +3,12 @@
 TfeTextView -- Child widget of GtkTextView. It holds GFile the contents of GtkTextBuffer correponds to.
 
 ## Functions
-- GFile *[tfe_text_view_get_file ()](#tfe_text_view_get_file-)
-- void [tfe_text_view_open ()](#tfe_text_view_open-)
-- void [tfe_text_view_save ()](#tfe_text_view_save-)
-- void [tfe_text_view_saveas ()](#tfe_text_view_saveas-)
-- GtkWidget *[tfe_text_view_new_with_file ()](#tfe_text_view_new_with_file-)
-- GtkWidget *[tfe_text_view_new ()](#tfe_text_view_new-)
+- GFile *[tfe_text_view_get_file ()](#tfe_text_view_get_file)
+- void [tfe_text_view_open ()](#tfe_text_view_open)
+- void [tfe_text_view_save ()](#tfe_text_view_save)
+- void [tfe_text_view_saveas ()](#tfe_text_view_saveas)
+- GtkWidget *[tfe_text_view_new_with_file ()](#tfe_text_view_new_with_file)
+- GtkWidget *[tfe_text_view_new ()](#tfe_text_view_new)
 
 ## Signals
 
@@ -44,7 +44,7 @@ File manipulation functions have been added to this object.
 
 ## Functions
 
-### tfe_text_view_get_file ()
+### tfe_text_view_get_file()
 
 ~~~
 GFile *
@@ -57,7 +57,7 @@ Parameters
 
 - tv: a TfeTextView
 
-### tfe_text_view_open ()
+### tfe_text_view_open()
 
 ~~~
 void
@@ -76,7 +76,7 @@ parameters
 - tv: a TfeTextView
 - win: the top level window of the TfeTextView
 
-### tfe_text_view_save ()
+### tfe_text_view_save()
 
 ~~~
 void
@@ -91,7 +91,7 @@ Parameters
 
 - tv: a TfeTextView
 
-### tfe_text_view_saveas ()
+### tfe_text_view_saveas()
 
 ~~~
 void
@@ -105,7 +105,7 @@ Parameters
 
 - tv: a TfeTextView
 
-### tfe_text_view_new_with_file ()
+### tfe_text_view_new_with_file()
 
 ~~~
 GtkWidget *
@@ -124,7 +124,7 @@ Returns
 
 - a new TfeTextView.
 
-### tfe_text_view_new ()
+### tfe_text_view_new()
 
 ~~~
 GtkWidget *

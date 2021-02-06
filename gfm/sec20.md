@@ -127,7 +127,7 @@ It has "name" attribute which is a signal name and "handler" attribute which is 
 Options "-WI, --export-dynamic" CFLAG is necessary when you compile the application.
 You can achieve this by adding "export_dynamic: true" argument to executable function in `meson.build`.
 And be careful that the handler must be defined without 'static' class.
-- 54-76: Put GtkScrolledWindow and GtkDrawingArea into GtkBox.
+- 54-76: Puts GtkScrolledWindow and GtkDrawingArea into GtkBox.
 GtkBox has "homogeneous property with TRUE value, so the two children have the same width in the box.
 TfeTextView is a child of GtkScrolledWindow.
 
@@ -149,17 +149,13 @@ First two files are almost same as before.
 The only difference is the header file in tfettextview.c.
 
     $ diff tfe5/tfetextview.c color/tfetextview.c
-    1c1
-    < #include "tfe.h"
-    ---
-    > #include "color.h"
 
 Color.h just includes tfetextview.h.
 
 ~~~C
 1 #include <gtk/gtk.h>
 2 
-3 #include "tfetextview.h"
+3 #include "../tfetextview/tfetextview.h"
 ~~~
 
 # Colorapplication.c
@@ -167,10 +163,10 @@ Color.h just includes tfetextview.h.
 This is the main file.
 It deals with:
 
-- Build widgets by GtkBuilder.
-- Set drawing function to GtkDrawingArea.
-And connect a handler to "resize" signal on GtkDrawingArea.
-- Implement each call back functions.
+- Building widgets by GtkBuilder.
+- Seting a drawing function of GtkDrawingArea.
+And connecting a handler to "resize" signal on GtkDrawingArea.
+- Implementing each call back functions.
 Particularly, `Run` signal handler is the point in this program.
 
 The following is `colorapplication.c`.
@@ -304,18 +300,18 @@ The following is `colorapplication.c`.
 The application ID is "com.github.ToshioCP.color".
 `G_APPLICATION_FLAGS_NONE` is specified so no open signal handler is necessary.
 - 86-106: Startup handler.
-- 91-96: Build widgets.
+- 91-96: Builds widgets.
 The pointers of the top window, TfeTextView and GtkDrawingArea objects are stored to static variables `win`, `tv` and `da` respectively.
 This is because these objects are often used in handlers.
 They never be rewritten so they're thread safe.
-- 97: connect "resize" signal and the handler.
-- 98: set the drawing function.
-- 81-84: Activate handler, which just show the widgets.
+- 97: connects "resize" signal and the handler.
+- 98: sets the drawing function.
+- 81-84: Activates handler, which just shows the widgets.
 - 73-79: The drawing function.
-It just copy `surface` to destination.
+It just copies `surface` to destination.
 - 65-71: Resize handler.
-Re-create the surface to fit the width and height of the drawing area and paint by calling the function `run`.
-- 58-63: Close handler.
+Re-creates the surface to fit the width and height of the drawing area and paints by calling the function `run`.
+- 58-63: Closes the handler.
 It destroys `surface` if it exists.
 Then it destroys the top window and quits the application.
 - 48-56: Open and save handler.
@@ -328,9 +324,9 @@ It is important to know that the drawing function is called when it is necessary
 For example, when another window is moved and uncovers part of the widget, or when the window containing it is resized.
 But repaint of `surface` is not automatically notified to gtk.
 Therefore, you need to call `gtk_widget_queue_draw` to redraw the widget.
-- 9-40: Run function paint the surface.
+- 9-40: Run function paints the surface.
 First, it gets the contents of GtkTextBuffer.
-Then compare it to "red", "green" and so on.
+Then it compares it to "red", "green" and so on.
 If it matches the color, then the surface is painted the color.
 If it matches "light" or "dark", then the color of the surface is lightened or darkened respectively.
 Alpha channel is used.
@@ -348,7 +344,7 @@ An argument "export_dynamic: true" is added to executable function.
  5 gnome=import('gnome')
  6 resources = gnome.compile_resources('resources','color.gresource.xml')
  7 
- 8 sourcefiles=files('colorapplication.c', 'tfetextview.c')
+ 8 sourcefiles=files('colorapplication.c', '../tfetextview/tfetextview.c')
  9 
 10 executable('color', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true)
 ~~~

@@ -33,19 +33,19 @@ It connects the command line given by the user and GTK application.
 15 }
 ~~~
 
-- 6: Generate GtkApplication object.
-- 8-10: Connect "startup", "activate" and "open signals to their handlers.
-- 12: Run the application.
-- 13-14: release the reference to the application and return the status.
+- 6: Generates GtkApplication object.
+- 8-10: Connects "startup", "activate" and "open signals to their handlers.
+- 12: Runs the application.
+- 13-14: releases the reference to the application and returns the status.
 
 ## startup signal handler
 
 Startup signal is emitted just after the application is generated.
 What the signal handler needs to do is initialization of the application.
 
-- Build the widgets using ui file.
-- Connect button signals and their handlers.
-- Set CSS.
+- Builds the widgets using ui file.
+- Connects button signals and their handlers.
+- Sets CSS.
 
 The handler is as follows.
 
@@ -84,11 +84,11 @@ The handler is as follows.
 32 }
 ~~~
 
-- 12-15: Build widgets using ui file (resource).
-Connect the top window and the application using `gtk_window_set_application`.
-- 16-23: Get buttons and connect their signals and handlers.
-- 24: Release the reference to GtkBuilder.
-- 26-31: Set CSS.
+- 12-15: Builds widgets using ui file (resource).
+Connects the top window and the application using `gtk_window_set_application`.
+- 16-23: Gets buttons and connects their signals and handlers.
+- 24: Releases the reference to GtkBuilder.
+- 26-31: Sets CSS.
 CSS in GTK is similar to CSS in HTML.
 You can set margin, border, padding, color, font and so on with CSS.
 In this program CSS is in line 30.
@@ -100,12 +100,12 @@ CSS will be explained in the next subsection.
 
 CSS is an abbreviation of Cascading Style Sheet.
 It is originally used with HTML to describe the presentation semantics of a document.
-You might have found that the widgets in GTK is simialr to the window in a browser.
-It implies that CSS can also be apllied to GTK windowing system.
+You might have found that the widgets in GTK is similar to the window in a browser.
+It implies that CSS can also be applied to GTK windowing system.
 
 ### CSS nodes, selectors
 
-The syntax of CSS is as follws.
+The syntax of CSS is as follows.
 
 ~~~css
 selector { color: yellow; padding-top: 10px; ...}
@@ -113,7 +113,7 @@ selector { color: yellow; padding-top: 10px; ...}
 
 Every widget has CSS node.
 For example GtkTextView has `textview` node.
-If you want to set style to GtkTextView, set "textview" to the selector.
+If you want to set style to GtkTextView, substitute "textview" for the selector.
 
 ~~~css
 textview {color: yellow; ...}
@@ -148,9 +148,9 @@ However, instead, you can add it to GdkDisplay of the window (usually top level 
 Look at the source file of `startup` handler again.
 
 - 28: The display is obtained by `gtk_widget_get_display`.
-- 29: Generate GtkCssProvider.
-- 30: Set the CSS into the provider.
-- 31: Add the provider to the display.
+- 29: Generates GtkCssProvider.
+- 30: Puts the CSS into the provider.
+- 31: Adds the provider to the display.
 
 It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
 To do so, rewrite `tfe_text_view_new`.
@@ -173,7 +173,7 @@ tfe_text_view_new (void) {
 }
 ~~~
 
-CSS set to the context takes precedence over the one set to the display.
+CSS in the context takes precedence over CSS in the display.
 
 ## activate and open handler
 
@@ -217,20 +217,20 @@ They just generate a new GtkNotebookPage.
 ~~~
 
 - 1-14: `tfe_activate`.
-- 8-10: Get GtkNotebook object.
-- 12-13: Generate a new GtkNotebookPage and show the window.
+- 8-10: Gets GtkNotebook object.
+- 12-13: Generates a new GtkNotebookPage and show the window.
 - 16-33: `tfe_open`.
-- 24-26: Get GtkNotebook object.
-- 28-29: Generate GtkNotebookPage with files.
-- 30-31: If opening and reading file failed and no GtkNotebookPage has generated, then generate a empty page.
-- 32: Show the window.
+- 24-26: Gets GtkNotebook object.
+- 28-29: Generates GtkNotebookPage with files.
+- 30-31: If opening and reading file failed and no GtkNotebookPage has generated, then it generates a empty page.
+- 32: Shows the window.
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
 
 ## Primary instance
 
 Only one GApplication instance can be run at a time per session.
-The session is a bit diffcult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login.
+The session is a bit difficult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login.
 When you use your PC, you probably login first, then your desktop appears until you log off.
 This is the session.
 
@@ -313,7 +313,7 @@ First, get the top level window and call `gtk_window_destroy`.
  5 gnome=import('gnome')
  6 resources = gnome.compile_resources('resources','tfe.gresource.xml')
  7 
- 8 sourcefiles=files('tfeapplication.c', 'tfenotebook.c', 'tfetextview.c')
+ 8 sourcefiles=files('tfeapplication.c', 'tfenotebook.c', '../tfetextview/tfetextview.c')
  9 
 10 executable('tfe', sourcefiles, resources, dependencies: gtkdep)
 ~~~

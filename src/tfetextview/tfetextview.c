@@ -1,3 +1,4 @@
+#include <string.h>
 #include "tfetextview.h"
 
 struct _TfeTextView
@@ -28,11 +29,7 @@ tfe_text_view_dispose (GObject *gobject) {
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
-  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-
   tv->file = NULL;
-  gtk_text_buffer_set_modified (tb, FALSE);
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
 }
 
 static void
@@ -129,6 +126,8 @@ saveas_dialog_response (GtkWidget *dialog, gint response, TfeTextView *tv) {
   if (response == GTK_RESPONSE_ACCEPT) {
     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
     if (G_IS_FILE(file)) {
+      if (G_IS_FILE (tv->file))
+        g_object_unref (tv->file);
       tv->file = file;
       gtk_text_buffer_set_modified (tb, TRUE);
       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
@@ -151,7 +150,7 @@ tfe_text_view_save (TfeTextView *tv) {
   GError *err = NULL;
 
   if (! gtk_text_buffer_get_modified (tb))
-    return; /* no necessary to save it */
+    return; /* no need to save it */
   else if (tv->file == NULL)
     tfe_text_view_saveas (tv);
   else {
@@ -160,13 +159,12 @@ tfe_text_view_save (TfeTextView *tv) {
     if (g_file_replace_contents (tv->file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err))
       gtk_text_buffer_set_modified (tb, FALSE);
     else {
-/* It is possible that tv->file is broken. */
+/* It is possible that tv->file is broken or you don't have permission to write. */
 /* It is a good idea to set tv->file to NULL. */
       if (G_IS_FILE (tv->file))
         g_object_unref (tv->file);
       tv->file =NULL;
       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-      gtk_text_buffer_set_modified (tb, TRUE);
       message_dialog = gtk_message_dialog_new (GTK_WINDOW (win), GTK_DIALOG_MODAL,
                                                GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
                                               "%s.\n", err->message);
@@ -185,8 +183,8 @@ tfe_text_view_saveas (TfeTextView *tv) {
   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
 
   dialog = gtk_file_chooser_dialog_new ("Save file", GTK_WINDOW (win), GTK_FILE_CHOOSER_ACTION_SAVE,
-                                      "_Cancel", GTK_RESPONSE_CANCEL,
-                                      "_Save", GTK_RESPONSE_ACCEPT,
+                                      "Cancel", GTK_RESPONSE_CANCEL,
+                                      "Save", GTK_RESPONSE_ACCEPT,
                                       NULL);
   g_signal_connect (dialog, "response", G_CALLBACK (saveas_dialog_response), tv);
   gtk_widget_show (dialog);
