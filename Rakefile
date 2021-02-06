@@ -2,9 +2,11 @@ require 'rake/clean'
 
 require_relative 'lib/lib_sec_file.rb'
 require_relative 'lib/lib_src2md.rb'
+require_relative 'lib/lib_gen_main_tex.rb'
+require_relative 'lib/lib_add_head_tail_html.rb'
 
 srcfiles = []
-FileList['src/*.src.md'].each do |file|
+FileList['src/sec*.src.md'].each do |file|
   srcfiles << Sec_file.new(file)
 end
 srcfiles = Sec_files.new srcfiles
@@ -12,7 +14,8 @@ srcfiles.renum!
 
 mdfilenames = srcfiles.map {|srcfile| "gfm/#{srcfile.to_md}"}
 htmlfilenames = srcfiles.map {|srcfile| "html/#{srcfile.to_html}"}
-texfilenames = srcfiles.map {|srcfile| "latex/#{srcfile.to_tex}"}
+texpathnames = srcfiles.map {|srcfile| "latex/#{srcfile.to_tex}"}
+texfilenames = srcfiles.map {|srcfile| srcfile.to_tex}
 
 ["gfm", "html", "latex"].each do |d|
   if ! Dir.exist?(d)
@@ -23,239 +26,6 @@ end
 CLEAN.append(*mdfilenames)
 CLEAN << "Readme.md"
 
-# Abstract
-abstract=<<'EOS'
-This tutorial illustrates how to write C programs with Gtk4 library.
-It focuses on beginners so the contents are limited to basic things such as widgets, GObject, signal, menus and build system.
-Please refer [Gnome API reference](https://developer.gnome.org/) for further topics.
-
-This tutorial is under development and unstable.
-Even though the  examples written in C language have been tested on gtk4 version 4.0,
-there might exist bugs.
-If you find any bugs, errors or mistakes in the tutorial and C examples,
-please let me know.
-You can post it to [github issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
-The latest version of the tutorial is located at [Gtk4-tutorial githup repository](https://github.com/ToshioCP/Gtk4-tutorial).
-You can read it without download.
-EOS
-
-abstract_html_array = abstract.gsub(/\[([^\]]*)\]\(([^\)]*)\)/,"<a href=\"\\2\">\\1</a>").split("\n\n")
-abstract_html_array.map! { |s| s.gsub(/[^\n]\z/,"\n").gsub(/\A/,"<p>\n").gsub(/\z/,"</p>\n") } 
-abstract_html = abstract_html_array.join
-
-abstract_latex = abstract.gsub(/\[([^\]]*)\]\(([^\)]*)\)/, "\\href{\\2}{\\1}")
-
-# Headers or a tail which is necessary for html files.
-header=<<'EOS'
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-<style type="text/css">
-<!--
-    body {width: 1080px; margin: 0 auto; font-size: large;}
-    h2 {padding: 10px; background-color: #d0f0d0; }
-    pre { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
--->
-</style>
-
-    <title>gtk4 tutorial</title>
-</head>
-<body>
-EOS
-
-tail=<<'EOS'
-</body>
-</html>
-EOS
-
-file_index =<<'EOS'
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-<style type="text/css">
-<!--
-    body {width: 1080px; margin: 0px auto; font-size: large;}
-    h1 {padding: 10px 20px 10px 20px; background-color: #e0f0f0}
-    li {margin: 10px 0px 10px 0px; font-size: x-large; list-style: decimal}
--->
-</style>
-
-    <title>gtk4 tutorial</title>
-</head>
-<body>
-<h1>Gtk4 Tutorial for beginners</h1>
-@@@ abstract
-<ul>
-EOS
-
-file_index.gsub!(/@@@ abstract\n/, abstract_html)
-
-# Preamble for latex files.
-
-main = <<'EOS'
-\documentclass[a4paper]{book}
-\include{helper.tex}
-\begin{document}
-\frontmatter
-\begin{titlepage}
-
-\begin{center}
-\begin{tikzpicture}
-  \node at (0,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (70pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (140pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (210pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (280pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (350pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-\end{tikzpicture}
-\end{center}
-
-\vspace{4cm}
-\begin{center}
-{\Huge Gtk4 tutorial for beginners}
-\end{center}
-\vspace{1cm}
-\begin{center}
-{\huge Toshio Sekiya}
-\end{center}
-%\vspace{6.5cm}
-%\begin{center}
-%{\Large Organization}
-%\end{center}
-%\begin{center}
-%{\Large Department}
-%\end{center}
-%\vspace{3cm}
-\vspace{10cm}
-
-\begin{center}
-\begin{tikzpicture}
-  \node at (0,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (70pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (140pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (210pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (280pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-  \node at (350pt,0) {\includegraphics[width=100pt]{../image/gecko.png}};
-\end{tikzpicture}
-\end{center}
-
-\end{titlepage}
-@@@ abstract
-\tableofcontents
-\mainmatter
-EOS
-
-main.gsub!(/@@@ abstract\n/, abstract_latex)
-
-helper = <<'EOS'
-\usepackage{tikz}
-\usepackage[margin=2.4cm]{geometry}
-% -------------------------------------------------------------
-% Following codes are extracted from the preamble generated by:
-% $ pandoc -s -o sample.tex sample.md
-% -------------------------------------------------------------
-\usepackage{lmodern}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-  \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-% Use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\newenvironment{Shaded}{}{}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\usepackage{graphicx}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-
-\author{}
-\date{}
-EOS
 # tasks
 
 task default: :md
@@ -265,7 +35,13 @@ task md: ["Readme.md"]
 
 file "Readme.md" => mdfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
-  buf << abstract
+  src2md "src/abstract.src.md", "gfm/abstract.md", -1
+  File.open("gfm/abstract.md") do |file|
+    file.readlines.each do |line|
+      buf << line
+    end
+  end
+  File.delete("gfm/abstract.md")
   buf << "\n"
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
@@ -297,42 +73,53 @@ end
 task html: ["html/index.html"]
 
 file "html/index.html" => htmlfilenames do
+  buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
+  src2md "src/abstract.src.md", "html/abstract.md", -1
+  File.open("html/abstract.md") do |file|
+    file.readlines.each do |line|
+      buf << line
+    end
+  end
+  File.delete("html/abstract.md")
+  buf << "\n"
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
-    file_index += "<li> <a href=\"#{srcfiles[i].to_html}\">#{h}</a> </li>\n"
+    buf << "1. [#{h}](#{srcfiles[i].to_html})\n"
   end
-  file_index += ("</ul>\n" + tail)
-  IO.write("html/index.html",file_index)
+  buf.each do |line|
+    line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
+  end
+  File.write("html/index.md", buf.join)
+  sh "pandoc -o html/index.html html/index.md"
+  File.delete "html/index.md"
+  add_head_tail_html "html/index.html"
 end
 
 0.upto(srcfiles.size - 1) do |i|
-  file "html/#{srcfiles[i].to_html}" => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "html/#{srcfiles[i].to_md}", -1
-    buf = IO.readlines "html/"+srcfiles[i].to_md
+  html_md = "html/#{srcfiles[i].to_md}"
+  html_html = "html/#{srcfiles[i].to_html}"
+  file html_html => (srcfiles[i].c_files << srcfiles[i].path) do
+    src2md srcfiles[i].path, html_md, -1
+    if srcfiles.size == 1
+      nav = "Up: [index.html](index.html)\n"
+    elsif i == 0
+      nav = "Up: [index.html](index.html),  Next: [Section 2](#{srcfiles[1].to_html})\n"
+    elsif i == srcfiles.size - 1
+      nav = "Up: [index.html](index.html),  Prev: [Section #{i}](#{srcfiles[i-1].to_html})\n"
+    else
+      nav = "Up: [index.html](index.html),  Prev: [Section #{i}](#{srcfiles[i-1].to_html}), Next: [Section #{i+2}](#{srcfiles[i+1].to_html})\n"
+    end
+    buf = IO.readlines html_md
+    buf.insert(0, nav, "\n")
+    buf.append("\n", nav)
     buf.each do |line|
       line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
     end
-    IO.write "html/"+srcfiles[i].to_md, buf.join
-    sh "pandoc -o html/#{srcfiles[i].to_html} html/#{srcfiles[i].to_md}"
-    File.delete("html/#{srcfiles[i].to_md}")
-    if srcfiles.size == 1
-      nav = "Up: <a href=\"index.html\">index.html</a>\n"
-    elsif i == 0
-      nav = "Up: <a href=\"index.html\">index.html</a>,  "
-      nav += "Next: <a href=\"sec2.html\">Section 2</a>\n"
-    elsif i == srcfiles.size - 1
-      nav = "Up: <a href=\"index.html\">index.html</a>,  "
-      nav += "Prev: <a href=\"#{srcfiles[i-1].to_html}\">Section #{i}</a>\n"
-    else
-      nav = "Up: <a href=\"index.html\">index.html</a>,  "
-      nav += "Prev: <a href=\"#{srcfiles[i-1].to_html}\">Section #{i}</a>, "
-      nav += "Next: <a href=\"#{srcfiles[i+1].to_html}\">Section #{i+2}</a>\n"
-    end
-    buf = IO.readlines "html/"+srcfiles[i].to_html
-    buf.insert(0, header, nav, "\n")
-    buf.append("\n", nav, "\n", tail)
-    IO.write "html/"+srcfiles[i].to_html, buf.join
+    IO.write html_md, buf.join
+    sh "pandoc -o #{html_html} #{html_md}"
+    File.delete(html_md)
+    add_head_tail_html html_html
   end
 end
 
@@ -344,19 +131,20 @@ end
 
 task latex: ["latex/main.tex"]
 
-file "latex/main.tex" => texfilenames do
-  0.upto(srcfiles.size-1) do |i|
-    main += "  \\input{#{srcfiles[i].to_tex}}\n"
-  end
-  main += "\\end{document}\n"
-  IO.write("latex/main.tex", main)
-  IO.write("latex/helper.tex", helper)
+file "latex/main.tex" => ["latex/abstract.tex"] + texpathnames do
+  gen_main_tex "latex", texfilenames
+end
+
+file "latex/abstract.tex" => "src/abstract.src.md" do
+  src2md "src/abstract.src.md", "latex/abstract.md", 86
+  sh "pandoc -o latex/abstract.tex latex/abstract.md"
+  File.delete("latex/abstract.md")
 end
 
 0.upto(srcfiles.size - 1) do |i|
   file "latex/#{srcfiles[i].to_tex}" => (srcfiles[i].c_files << srcfiles[i].path) do
     src2md srcfiles[i].path, "latex/#{srcfiles[i].to_md}", 86
-    sh "pandoc -o latex/#{srcfiles[i].to_tex} --top-level-division=chapter latex/#{srcfiles[i].to_md}"
+    sh "pandoc -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
     File.delete("latex/#{srcfiles[i].to_md}")
   end
 end

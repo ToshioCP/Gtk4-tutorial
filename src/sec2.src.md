@@ -7,7 +7,7 @@ Probably you need more than the explanation below.
 This tutorial including this section is without any warranty.
 If you install gtk4 to your computer, do it at your own risk.
 
-## Prerequisite
+## Prerequisites for gtk4 installation
 
 - Ubuntu 20.10. Maybe other versions of late years or other distribution might be OK.
 - Packages for development such as gcc, meson, ninja, git, wget and so on.

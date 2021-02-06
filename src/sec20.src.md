@@ -25,7 +25,7 @@ I want to show it to you in the later section by making a turtle graphics langua
 
 In this section, we focus on how to bind the two objects.
 
-# Color.ui and color.gresource.xml
+## Color.ui and color.gresource.xml
 
 First, We need to make the ui file of the widgets.
 The image in the previous subsection gives us the structure of the widgets.
@@ -52,20 +52,14 @@ Just substitute "color" for "tfe".
 
 @@@ color/color.gresource.xml
 
-# Tfetextview.h, tfetextview.c and color.h
+## Tfetextview.h, tfetextview.c and color.h
 
-First two files are almost same as before.
-The only difference is the header file in tfettextview.c.
-
-$$$
-diff tfe5/tfetextview.c color/tfetextview.c
-$$$
-
+First two files are the same as before.
 Color.h just includes tfetextview.h.
 
 @@@ color/color.h
 
-# Colorapplication.c
+## Colorapplication.c
 
 This is the main file.
 It deals with:
@@ -115,14 +109,14 @@ If it matches the color, then the surface is painted the color.
 If it matches "light" or "dark", then the color of the surface is lightened or darkened respectively.
 Alpha channel is used.
 
-# Meson.build
+## Meson.build
 
 This file is almost same as before.
 An argument "export_dynamic: true" is added to executable function.
 
 @@@ color/meson.build
 
-# Compile and execute it
+## Compile and execute it
 
 First you need to export some variables (refer to [Section 2](sec2.src.md)).
 
