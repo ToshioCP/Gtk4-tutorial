@@ -92,21 +92,23 @@ What we need to do is:
 Modify `tfv1.c` and save it as `tfv2.c`.
 The difference between these two files is very little.
 
-    $ cd tfv; diff tfv1.c tfv2.c
-    5a6
-    >   GtkWidget *scr;
-    24a26,28
-    >   scr = gtk_scrolled_window_new ();
-    >   gtk_window_set_child (GTK_WINDOW (win), scr);
-    > 
-    30c34
-    <   gtk_window_set_child (GTK_WINDOW (win), tv);
-    ---
-    >   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-    40c44
-    <   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_FLAGS_NONE);
-    ---
-    >   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
+~~~
+$ cd tfv; diff tfv1.c tfv2.c
+5a6
+>   GtkWidget *scr;
+24a26,28
+>   scr = gtk_scrolled_window_new ();
+>   gtk_window_set_child (GTK_WINDOW (win), scr);
+> 
+30c34
+<   gtk_window_set_child (GTK_WINDOW (win), tv);
+---
+>   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+40c44
+<   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_FLAGS_NONE);
+---
+>   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
+~~~
 
 Though you can modify the source file by this diff output, It's good for you to show `tfv2.c`.
 

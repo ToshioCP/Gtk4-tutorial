@@ -17,6 +17,7 @@ src/tfe5/hello.txt
 src/menu/a.out
 src/color/_build
 src/turtle/_build
+src/temp
 
 html/*
 latex/*

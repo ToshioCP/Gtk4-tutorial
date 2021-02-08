@@ -6,7 +6,9 @@ A set of functions related to GtkNotebook are declared in `tfenotebook.h`.
 The word "tfenotebook" is used only in filenames.
 There's no "TfeNotebook" object.
 
-@@@ tfe5/tfenotebook.h
+@@@include
+tfe5/tfenotebook.h
+@@@
 
 This header file describes the public functions in `tfenotebook.c`.
 
@@ -33,7 +35,9 @@ Now let's look at each program of the functions.
 
 ## notebook\_page\_new
 
-@@@ tfe5/tfenotebook.c get_untitled notebook_page_build notebook_page_new
+@@@include
+tfe5/tfenotebook.c get_untitled notebook_page_build notebook_page_new
+@@@
 
 - 28-38: `notebook_page_new` function.
 - 30: `g_return_if_fail` is used to check the argument.
@@ -60,7 +64,9 @@ In that case, use g\_object\_set to set the property.
 
 ## notebook\_page\_new\_with\_file
 
-@@@ tfe5/tfenotebook.c notebook_page_new_with_file
+@@@include
+tfe5/tfenotebook.c notebook_page_new_with_file
+@@@
 
 - 9-10: Calls `tfe_text_view_new_with_file`.
 If the function returns NULL, then it does nothing and returns.
@@ -69,7 +75,9 @@ The return value NULL means that an error has happened.
 
 ## notebook\_page\_open
 
-@@@ tfe5/tfenotebook.c open_response notebook_page_open
+@@@include
+tfe5/tfenotebook.c open_response notebook_page_open
+@@@
 
 - 19-28: `notebook_page_open` function.
 - 25: Generates TfeTextView object.
@@ -91,7 +99,9 @@ Gets the filename, builds the contents of the page.
 
 ## notebook\_page\_save
 
-@@@ tfe5/tfenotebook.c notebook_page_save
+@@@include
+tfe5/tfenotebook.c notebook_page_save
+@@@
 
 - 7-9: Get TfeTextView belongs to the current notebook page.
 - 10: Call `tfe_text_view_save`.
@@ -102,7 +112,9 @@ The function `file_changed` is a handler connected to "change-file" signal.
 If the file in TfeTextView is changed, it emits this signal.
 This handler changes the label of GtkNotebookPage.
 
-@@@ tfe5/tfenotebook.c file_changed
+@@@include
+tfe5/tfenotebook.c file_changed
+@@@
 
 - 8: Gets GFile from TfeTextView.
 - 9: Gets GkScrolledWindow which is the parent widget of `tv`.

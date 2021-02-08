@@ -56,22 +56,24 @@ A window with a message "Hello." appears.
 There's only a little change between `pr4.c` and `lb1.c`.
 Diff is a good program to know the difference between two files.
 
-    $ cd misc; diff pr4.c lb1.c
-    5a6
-    >   GtkWidget *lab;
-    8c9
-    <   gtk_window_set_title (GTK_WINDOW (win), "pr4");
-    ---
-    >   gtk_window_set_title (GTK_WINDOW (win), "lb1");
-    9a11,14
-    > 
-    >   lab = gtk_label_new ("Hello.");
-    >   gtk_window_set_child (GTK_WINDOW (win), lab);
-    > 
-    18c23
-    <   app = gtk_application_new ("com.github.ToshioCP.pr4", G_APPLICATION_FLAGS_NONE);
-    ---
-    >   app = gtk_application_new ("com.github.ToshioCP.lb1", G_APPLICATION_FLAGS_NONE);
+~~~
+$ cd misc; diff pr4.c lb1.c
+5a6
+>   GtkWidget *lab;
+8c9
+<   gtk_window_set_title (GTK_WINDOW (win), "pr4");
+---
+>   gtk_window_set_title (GTK_WINDOW (win), "lb1");
+9a11,14
+> 
+>   lab = gtk_label_new ("Hello.");
+>   gtk_window_set_child (GTK_WINDOW (win), lab);
+> 
+18c23
+<   app = gtk_application_new ("com.github.ToshioCP.pr4", G_APPLICATION_FLAGS_NONE);
+---
+>   app = gtk_application_new ("com.github.ToshioCP.lb1", G_APPLICATION_FLAGS_NONE);
+~~~
 
 This tells us:
 
@@ -187,30 +189,32 @@ The following code is `lb3.c`.
 
 And the difference between `lb2.c` and `lb3.c` is as follows.
 
-    $ cd misc; diff lb2.c lb3.c
-    5c5,6
-    <   g_print ("Clicked.\n");
-    ---
-    >   GtkWindow *win = GTK_WINDOW (user_data);
-    >   gtk_window_destroy (win);
-    14c15
-    <   gtk_window_set_title (GTK_WINDOW (win), "lb2");
-    ---
-    >   gtk_window_set_title (GTK_WINDOW (win), "lb3");
-    17c18
-    <   btn = gtk_button_new_with_label ("Click me");
-    ---
-    >   btn = gtk_button_new_with_label ("Quit");
-    19c20
-    <   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), NULL);
-    ---
-    >   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), win);
-    29c30
-    <   app = gtk_application_new ("com.github.ToshioCP.lb2", G_APPLICATION_FLAGS_NONE);
-    ---
-    >   app = gtk_application_new ("com.github.ToshioCP.lb3", G_APPLICATION_FLAGS_NONE);
-    35d35
-    < 
+~~~
+$ cd misc; diff lb2.c lb3.c
+5c5,6
+<   g_print ("Clicked.\n");
+---
+>   GtkWindow *win = GTK_WINDOW (user_data);
+>   gtk_window_destroy (win);
+14c15
+<   gtk_window_set_title (GTK_WINDOW (win), "lb2");
+---
+>   gtk_window_set_title (GTK_WINDOW (win), "lb3");
+17c18
+<   btn = gtk_button_new_with_label ("Click me");
+---
+>   btn = gtk_button_new_with_label ("Quit");
+19c20
+<   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), NULL);
+---
+>   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), win);
+29c30
+<   app = gtk_application_new ("com.github.ToshioCP.lb2", G_APPLICATION_FLAGS_NONE);
+---
+>   app = gtk_application_new ("com.github.ToshioCP.lb3", G_APPLICATION_FLAGS_NONE);
+35d35
+< 
+~~~
 
 The change is:
 

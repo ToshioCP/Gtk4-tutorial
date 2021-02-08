@@ -21,7 +21,7 @@ This file is written in markdown language, of which the file has `.md` suffix.
 There are several kinds of markdown language.
 `Readme.md` uses 'github flavored markdown', which is often shortened as GFM.
 Markdown files in the top directory also written in GFM.
-If you are not familiar with it, refer the website [github flavoer markdown spec](https://github.github.com/gfm/).
+If you are not familiar with it, refer the website [github flavor markdown spec](https://github.github.com/gfm/).
 
 ## Pandoc's markdown
 
@@ -31,84 +31,148 @@ This type of markdown is used to generate html and latex files in this tutorial.
 
 ## Src.md file
 
-Src.md is similar to markdown but it has two commands which isn't included in markdown syntax.
-They are @@@ command and $$$ command.
+Src.md is similar to markdown but it has a command which isn't included in markdown syntax.
+It is @@@ command.
+The command starts at a line begins with "@@@" and ends at a line begins with "@@@".
+For example, 
 
-    @@@ C_source_file [function_list]
+~~~
+@@@include
+tfeapplication.c
+@@@
+~~~
 
-This command includes the C source file, but if a function list is given, only the functions in the C source file are included.
-If no function list is given, the command can include any text files even it is not C source file.
+There are three types of @@@ command.
 
-    $$$
-    shell command
-    ... ...
-    $$$
+### @@@include
 
-This command executes the shell command and substitutes the strings in the standard output for the lines between $$$ inclusive.
+This type of @@@ command starts with a line begins "@@@include".
 
-These two commands are carried out by scripts src2md.rb, which is described in the next subsection.
+~~~
+@@@include
+tfeapplication.c
+@@@
+~~~
+
+This command replaces itself with the text read from the C source file.
+If a function list follows the filename, only the functions in the C source file are read.
+If no function list is given, the command can read any text files even it is not C source file.
+
+~~~
+@@@include
+tfeapplication.c main startup
+@@@
+~~~
+
+~~~
+@@@include
+lib_src2md.rb
+@@@
+~~~
+
+The inserted text becomes fence code block.
+
+    ~~~C
+    int
+    main (int argc, char **argv) {
+      ... ...
+    }
+    ~~~
+
+The string ("C" in the example above) follows the first fence is called info string.
+Info string is usually a language like C, ruby, xml and so on.
+This string is decided with the filename extension.
+
+A line number is inserted at the top of each line in the code block.
+If you don't want to insert it, give "-N" option to @@@include command.
+
+Options:
+
+- "-n": Inserts a line number at the top of each line (default).
+- "-N": No line number is inserted.
+
+This command have two advantages.
+
+1. Less typing.
+2. You don't need to modify your src.md file, even if the C source file is modified.
+
+### @@@shell
+
+This type of @@@ command starts with a line begins "@@@shell".
+
+~~~
+@@@shell
+shell command
+ ... ...
+@@@
+~~~
+
+This command replaces itself with:
+
+- the shell command
+- the standard output from the shell command
+
+For example,
+
+~~~
+@@@shell
+wc Rakefile
+@@@
+~~~
+
+This is converted to:
+
+~~~
+$ wc Rakefile
+164  475 4971 Rakefile
+~~~
+
+### @@@if series
+
+This type of @@@ command starts with a line begins "@@@if", "@@@elif", "@@@else" or "@@@end".
+This command is similar to "#if", "#elif", #else" and "#end" directives in C preprocessor.
+For example,
+
+~~~
+@@@if gfm
+Refer to  [tfetextview API reference](tfetextview/tfetextview_doc.md)
+@@@elif html
+Refer to  [tfetextview API reference](tfetextview_doc.html)
+@@@elif latex
+Refer to tfetextview API reference in appendix.
+@@@end
+~~~
+
+Conditions follow "@@@if" or "@@@elif".
+They are "gfm", "html" or "latex" so far.
+Other words or expressions may be available in the future version.
 
 ## Conversion
 
-A ruby script src2md converts src.md file to md file.
+The @@@ commands are carried out by scripts src2md.rb.
+In addition, some conversion is made by srd2md.rb.
 
-    ruby src2md.rb src.md_file md_file
-
-This script recognizes and carrys out the commands described in the previous subsection.
-For example, it is assumed that there are two files sample.src.md and sample.c, which have contents as follows.
-
-    $ cat sample.src.md
-    The following is the contents of the file 'sample.c'.
-
-    @@@ sample.c
-
-    $ cat sample.c
-    #include <stdio.h>
-
-    int
-    main(int argc, char **argv) {
-        printf("Hello world.\n");
-    }
-
-Now, convert sample.src.md to a markdown file sample.md.
-
-    $ ruby src2md.rb sample.src.md sample.md
-    $ cat sample.md
-    The following is the contents of the file 'sample.c'.
-
-        #include <stdio.h>
-
-        int
-        main(int argc, char **argv) {
-            printf("Hello world.\n");
-        }
-
-Compare sample.src.md and sample.md.
-The contents of sample.c is substituted for the line `@@@ sample.c`.
-In addition four spaces are added at the top of each line of sample.c.
-
-These two commands have two advantages.
-
-1. Less typing.
-2. You don't need to modify your src.md file, even if the C sourcefile, which is included by @@@ command, is modified.
-In the same way, any upgrade of the shell commands described between $$$ commands doesn't affect the src.md file.
+- Relative links are changed according to the change of base directory.
+- Size option in image link is left out when the destination is GFM or html.
+- Relative link is left out when the destination is latex.
+- Lines in fence code block are folded when the destination is latex.
 
 There's a method `src2md` in the `lib/lib_src2md.rb` script.
 This method converts src.md file into md file.
-This method is also used in other ruby scripts like Rakefile.
+This method is used in `srd2md.rb` and `Rakefile`.
 
 ## Directory structure
 
 There are six directories under `gtk4_tutorial` directory.
 They are `gfm`, `src`, `image`, `html`, `latex` and `lib`.
-Three directories `gfm`, `html` and `latex` are the destination directores for GFM, html and latex files respectively.
+Three directories `gfm`, `html` and `latex` are the destination directories for GFM, html and latex files respectively.
 It is possible that these three directories don't exist before the conversion.
 
 - src: This directory contains src.md files and C-related source files.
 - image: This directory contains image files like png or jpg.
 - gfm: This directory is empty at first. A ruby script will convert src.md files to GFM files and store them in this directory.
 - html: This directory is empty at first. A ruby script will convert src.md files to html files and store them in this directory.
-- latex: This directory is empty at first. A ruby script will convert src.md files to latexl files and store them in this directory.
+- latex: This directory is empty at first. A ruby script will convert src.md files to latex files and store them in this directory.
 - lib: This directory includes ruby library files.
  
 ## Src and top directories
@@ -126,8 +190,9 @@ Rake carries out the conversion according to the instruction written in Rakefile
 
 ## The name of files in src directory
 
-Each file in src directory is a section of the whole document.
-The name of the files are "sec", number of the section and ".src.md" suffix.
+Each file in src directory is an abstract or section of the whole document.
+The name of the abstract file is "abstract.src.md".
+The name of the section files are "sec", number of the section and ".src.md" suffix.
 For example, "sec1.src.md", "sec5.src.md" or "sec12.src.md".
 They are the files correspond to section 1, section 5 and section 12 respectively.
 
@@ -184,7 +249,7 @@ For example,
 
     ![sample image](../image/sample_image.png){width=10cm height=6cm}
 
-The size between left brace abd right brace is used in latex file and it is not fit to GFM syntax.
+The size between left brace and right brace is used in latex file and it is not fit to GFM syntax.
 So the size is removed in the conversion above.
 
 If a src.md file has relative URL link, it will be changed by conversion.
@@ -250,5 +315,4 @@ You can customize `main.tex` and `helper.tex`, which describes preamble, by modi
 You can generate pdf file by typing `rake pdf`.
 
     $ rake pdf
-
 

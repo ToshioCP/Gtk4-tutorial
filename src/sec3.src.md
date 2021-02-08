@@ -18,7 +18,9 @@ That's all.
 Very simple.
 The following is the C code representing the scenario above.
 
-@@@ misc/pr1.c
+@@@include
+misc/pr1.c
+@@@
 
 The first line says that this program includes the header files of the Gtk libraries.
 The function `main` above is a startup function in C language.
@@ -85,7 +87,9 @@ Now we can solve the problem in `pr1.c`.
 We need to connect the activate signal to a handler.
 We use a function `g_signal_connect` which connects a signal to a handler.
 
-@@@ misc/pr2.c
+@@@include
+misc/pr2.c
+@@@
 
 First, we define the handler `on_activate` which simply displays a message.
 In the function `main`, we add `g_signal_connect` before `g_application_run`.
@@ -155,7 +159,9 @@ Now rewrite the function `on_activate`.
 
 #### Generate a GtkWindow
 
-@@@ misc/pr3.c on_activate
+@@@include
+misc/pr3.c on_activate
+@@@
 
 Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multi-line text, containers and so on.
 And GtkWidget is a base object from which all the GUI objects derive.
@@ -236,7 +242,9 @@ It is recommended to use it instead of GtkWindow when you use GtkApplication.
 
 Now rewrite the program and use GtkAppliction Window.
 
-@@@ misc/pr4.c on_activate
+@@@include
+misc/pr4.c on_activate
+@@@
 
 When you generate GtkApplicationWindow, you need to give GtkApplication object as an argument.
 Then it automatically connect these two objects.

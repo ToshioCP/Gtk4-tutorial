@@ -117,7 +117,9 @@ So, if the action is activated, the handler will be invoked.
 
 The following is a simple example of menus and actions.
 
-@@@ menu/menu1.c
+@@@include
+menu/menu1.c
+@@@
 
 - 3-7: `quit_activated` is a handler of an action `act_quit`.
 Handlers of actions have three parameters.

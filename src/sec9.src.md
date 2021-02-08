@@ -40,23 +40,33 @@ All the source files are listed below.
 
 `tfetextview.h`
 
-@@@ tfe4/tfetextview.h
+@@@include
+tfe4/tfetextview.h
+@@@
 
 `tfetextview.c`
 
-@@@ tfe4/tfetextview.c
+@@@include
+tfe4/tfetextview.c
+@@@
 
 `tfe.c`
 
-@@@ tfe4/tfe.c
+@@@include
+tfe4/tfe.c
+@@@
 
 `tfe.ui`
 
-@@@ tfe4/tfe.ui
+@@@include
+tfe4/tfe.ui
+@@@
 
 `tfe.gresource.xml`
 
-@@@ tfe4/tfe.gresource.xml
+@@@include
+tfe4/tfe.gresource.xml
+@@@
 
 ## Make
 
@@ -100,7 +110,9 @@ If the modification time of `sample.c` is older then the generation of `sample.o
 
 The Makefile for `tfe` is as follows.
 
-@@@ tfe4/Makefile
+@@@include
+tfe4/Makefile
+@@@
 
 You only need to type `make`.
 
@@ -128,7 +140,9 @@ However, Ruby is really sophisticated and recommendable script language.
 
 Rake has task and file task, which is similar to target, prerequisite and recipe in make.
 
-@@@ tfe4/Rakefile
+@@@include
+tfe4/Rakefile
+@@@
 
 What `Rakefile` describes is almost same as `Makefile` in the previous subsection. 
 
@@ -160,7 +174,9 @@ Many developers are using meson and ninja now.
 
 To use meson, you first need to write `meson.build` file.
 
-@@@ tfe4/meson.build
+@@@include
+tfe4/meson.build
+@@@
 
 - 1: The function `project` defines things about the project.
 The first parameter is the name of the project and the second is the programming language.

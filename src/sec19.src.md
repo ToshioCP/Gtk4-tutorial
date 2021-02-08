@@ -44,7 +44,9 @@ This will be a destination.
 
 Here's a simple example code that draws a small square and save it as a png file.
 
-@@@ misc/cairo.c
+@@@include
+misc/cairo.c
+@@@
 
 - 1: Includes the header file of cairo.
 - 12: `cairo_image_surface_create` creates an image surface.
@@ -85,7 +87,9 @@ If you aren't familiar with cairo, it is strongly recommended to read the [tutor
 
 The following is a very simple example.
 
-@@@ misc/da1.c
+@@@include
+misc/da1.c
+@@@
 
 The function `main` is almost same as before.
 The two functions `on_activate` and `draw_function` is important in this example.

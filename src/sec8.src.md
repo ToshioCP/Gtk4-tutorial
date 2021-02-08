@@ -14,7 +14,9 @@ Signals and handlers will be explained later.
 The screenshot above shows the layout.
 The function `on_open` in the source code `tfe2.c` is as follows.
 
-@@@ tfe/tfe2.c on_open
+@@@include
+tfe/tfe2.c on_open
+@@@
 
 The point is how to build the window.
 
@@ -48,7 +50,9 @@ It reduces the cumbersome work.
 
 First, let's look at the ui file `tfe3.ui` that defines a structure of the widgets.
 
-@@@ tfe/tfe3.ui
+@@@include
+tfe/tfe3.ui
+@@@
 
 This is coded with XML structure.
 Constructs beginning with `<` and ending with `>` are called tags.
@@ -87,9 +91,9 @@ All the widgets are connected based on the parent-children relationship describe
 We only need `win` and `nb` for the program after this, so we don't need to take out any other widgets.
 This reduces lines in the C source file.
 
-$$$
+@@@shell
 cd tfe; diff tfe2.c tfe3.c
-$$$
+@@@
 
 `60,103c61,65` means 42 (=103-60+1) lines change to 5 (=65-61+1) lines.
 Therefore 37 lines are reduced.
@@ -97,7 +101,9 @@ Using ui file not only shortens C source files, but also makes the widgets' stru
 
 Now I'll show you `on_open` function in the C source code `tfe3.c`.
 
-@@@ tfe/tfe3.c on_open
+@@@include
+tfe/tfe3.c on_open
+@@@
 
 The whole source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
 If you want to see it, click the link above.
@@ -147,7 +153,9 @@ And after compilation, it bundles them up into one Gresource object.
 An xml file is necessary for the resource compiler `glib-compile-resources`.
 It describes resource files.
 
-@@@ tfe/tfe3.gresource.xml
+@@@include
+tfe/tfe3.gresource.xml
+@@@
 
 - 2: `gresources` tag can include multiple gresources (gresource tags).
 However, this xml has only one gresource.
@@ -159,9 +167,9 @@ If you want to add more files, then insert them between line 4 and 5.
 Save this xml text to `tfe3.gresource.xml`.
 The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
 
-$$$
+@@@shell
 LANG=C glib-compile-resources --help
-$$$
+@@@
 
 Now run the compiler.
 

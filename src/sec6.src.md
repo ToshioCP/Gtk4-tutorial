@@ -95,7 +95,9 @@ It works as follows.
 
 The program is as follows.
 
-@@@ tfv/tfv3.c
+@@@include
+tfv/tfv3.c
+@@@
 
 Save it as `tfv3.c`.
 Then compile and run it.
@@ -164,7 +166,9 @@ It is shown in the right screenshot.
 GtkNotebook widget is between GtkApplicationWindow and GtkScrolledWindow.
 Now I want to show you the program `tfv4.c`.
 
-@@@ tfv/tfv4.c
+@@@include
+tfv/tfv4.c
+@@@
 
 Most of the change is in the function `on_open`.
 The numbers at the left of the following items are line numbers in the source code.

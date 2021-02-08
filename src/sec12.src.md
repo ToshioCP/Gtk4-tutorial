@@ -7,11 +7,15 @@ In this section I will explain functions in TfeTextView object.
 `tfe.h` is a top header file and it includes `gtk.h` and all the header files.
 C source files `tfeapplication.c` and `tfenotebook.c` include `tfe.h` at the beginning.
 
-@@@ tfe5/tfe.h
+@@@include
+tfe5/tfe.h
+@@@
 
 `../tfetextview/tfetextview.h` is a header file which describes the public functions in `tfetextview.c`.
 
-@@@ tfetextview//tfetextview.h
+@@@include
+tfetextview//tfetextview.h
+@@@
 
 - 1,2,35: Thanks to these three lines, the following lines are included only once. 
 - 4: Includes gtk4 header files.
@@ -39,7 +43,9 @@ If an error occurs during the generation process, NULL is returned.
 
 Each function is defined as follows.
 
-@@@ tfetextview/tfetextview.c tfe_text_view_new_with_file tfe_text_view_new
+@@@include
+tfetextview/tfetextview.c tfe_text_view_new_with_file tfe_text_view_new
+@@@
 
 - 21-24: `tfe_text_view_new` function.
 Just returns the value from the function `g_object_new` but casts it to the pointer to GtkWidget.
@@ -85,7 +91,9 @@ Then, the function changes `tv->file` and save the contents to the specified fil
 If an error occurs, it is shown to the user through the message dialog.
 The error is managed only in the TfeTextView instance and no information is notified to the caller.
 
-@@@ tfetextview/tfetextview.c saveas_dialog_response tfe_text_view_save tfe_text_view_saveas
+@@@include
+tfetextview/tfetextview.c saveas_dialog_response tfe_text_view_save tfe_text_view_saveas
+@@@
 
 - 20-56: `Tfe_text_view_save` function.
 - 22: If `tv` is not a pointer to TfeTextView, then it logs an error message and immediately returns.
@@ -148,7 +156,9 @@ However, even if the buffer is not empty, `tfe_text_view_open` doesn't treat it 
 If you want to revert the buffer, calling this function is appropriate.
 Otherwise probably bad things will happen.
 
-@@@ tfetextview/tfetextview.c open_dialog_response tfe_text_view_open
+@@@include
+tfetextview/tfetextview.c open_dialog_response tfe_text_view_open
+@@@
 
 - 37-50: `tfe_text_view_open` function.
 - 44-47: Generates GtkFileChooserDialog.
@@ -188,7 +198,9 @@ However, in Gtk4, `gtk_dialog_run`is unavailable any more.
 
 `gtk_text_view_get_file` is a simple function show as follows.
 
-@@@ tfetextview/tfetextview.c tfe_text_view_get_file
+@@@include
+tfetextview/tfetextview.c tfe_text_view_get_file
+@@@
 
 The important thing is to duplicate `tv->file`.
 Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.

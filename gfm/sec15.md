@@ -660,17 +660,19 @@ It is a good practice for you to add more features.
 
 ## Total number of lines, words and characters
 
-    $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
-       10    17   294 tfe5/meson.build
-      117   348  3576 tfe5/tfeapplication.c
-        6     9   153 tfe5/tfe.gresource.xml
-        4     6    87 tfe5/tfe.h
-      117   325  3064 tfe5/tfenotebook.c
-       12    17   196 tfe5/tfenotebook.h
-      217   637  7725 tfetextview/tfetextview.c
-       35    60   701 tfetextview/tfetextview.h
-       64   105  2266 tfe5/tfe.ui
-      582  1524 18062 total
+~~~
+$ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
+   10    17   294 tfe5/meson.build
+  117   348  3576 tfe5/tfeapplication.c
+    6     9   153 tfe5/tfe.gresource.xml
+    4     6    87 tfe5/tfe.h
+  117   325  3064 tfe5/tfenotebook.c
+   12    17   196 tfe5/tfenotebook.h
+  217   637  7725 tfetextview/tfetextview.c
+   35    60   701 tfetextview/tfetextview.h
+   64   105  2266 tfe5/tfe.ui
+  582  1524 18062 total
+~~~
 
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)

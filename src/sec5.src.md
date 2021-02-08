@@ -8,7 +8,9 @@ GtkTextview is a widget for multi-line text editing.
 GtkTextBuffer is a text buffer which is connected to GtkTextView.
 See a sample program `tfv1.c` below.
 
-@@@ tfv/tfv1.c
+@@@include
+tfv/tfv1.c
+@@@
 
 Look at line 25.
 GtkTextView is generated and its pointer is assigned to `tv`.
@@ -43,13 +45,15 @@ What we need to do is:
 Modify `tfv1.c` and save it as `tfv2.c`.
 The difference between these two files is very little.
 
-$$$
+@@@shell
 cd tfv; diff tfv1.c tfv2.c
-$$$
+@@@
 
 Though you can modify the source file by this diff output, It's good for you to show `tfv2.c`.
 
-@@@ tfv/tfv2.c
+@@@include
+tfv/tfv2.c
+@@@
 
 Now compile and run it.
 This time the window doesn't extend even if you type a lot of characters.

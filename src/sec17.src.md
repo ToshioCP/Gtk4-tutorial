@@ -204,7 +204,9 @@ When GVariantType is generated, the type is expressed by the string.
 The following program is a simple example.
 It finally output the string "s".
 
-@@@ menu/gvarianttype_test.c
+@@@include
+menu/gvarianttype_test.c
+@@@
 
 - `g_variant_tpe_new` generates GVariantType.
 It uses a type string "s" which means string.
@@ -227,7 +229,9 @@ And the radio button of the selected menu turns on.
 
 The code is as follows.
 
-@@@ menu/menu2.c
+@@@include
+menu/menu2.c
+@@@
 
 - 5-26: Signal handlers.
 They have been explained in this section.

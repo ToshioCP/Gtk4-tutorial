@@ -167,7 +167,9 @@ The argument `win` is GtkApplicationWindow, in which the signal "close-request" 
 `G_CALLBACK` cast is necessary for the handler.
 The program of `before_close` is as follows.
 
-@@@ tfe/tfe1.c before_close
+@@@include
+tfe/tfe1.c before_close
+@@@
 
 The numbers on the left of items are line numbers in the source code.
 
@@ -184,7 +186,9 @@ Just remember these lines for the present.
 
 Now I will show you all the source code of `tfe1`.c.
 
-@@@ tfe/tfe1.c
+@@@include
+tfe/tfe1.c
+@@@
 
 - 102: Sets the pointer to GFile into TfeTextView.
 `files[i]` is a pointer to GFile structure.

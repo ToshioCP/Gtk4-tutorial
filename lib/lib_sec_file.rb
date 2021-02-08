@@ -1,44 +1,45 @@
 class Sec_file < String
   def initialize path
-    if path.instance_of?(String) && File.exist?(path)
-      @name = File.basename path
-      @dirname = File.dirname path
-      unless @name =~ /^sec\d+(\.\d+)?\.(src\.md|md|html|tex)$/
-        raise "Sec_file class initialization error: #{path} is not Sec_file object name."
-      end
-      super(path)
-    else
-      raise  "Sec_file class initialization error: file #{path} is not exist."
+    unless path.instance_of?(String)
+      raise  "Sec_file class initialization error: The argument is not String type."
     end
-  end
-  def type
-    @name.match(/\.(src\.md|md|html|tex)$/)[1]
+    unless File.exist?(path)
+      raise  "Sec_file class initialization error: File #{path} is not exist."
+    end
+    unless path =~ /sec\d+(\.\d+)?\.src\.md$/
+      raise  "Sec_file class initialization error: The argment \"#{path}\" doesn't have secXX.src.md form. XX are digits."
+    end
+    @name = File.basename path
+    @dirname = File.dirname path
+    super(path)
   end
   def path
     self
   end
-  def name
+  def basename
     @name
   end
   def dirname
     @dirname
   end
   def c_files
-    if self.type != "src.md"
-      return []
-    else
-      buf = IO.readlines(self)
-      files = []
-      buf.each do |line|
-        if line =~ /^@@@ (\S+)/
-          files << @dirname+"/"+$1
+    buf = IO.readlines(self)
+    files = []
+    in_include = false
+    buf.each do |line|
+      if in_include
+        if line == "@@@\n"
+          in_include = false
+        else
+          files << @dirname+"/"+line.match(/^ *(\S*)/)[1]
         end
+      elsif line == "@@@include\n"
+        in_include = true
+      else
+        # lines out of @@@include command is thrown away.
       end
-      files
     end
-  end
-  def to_srcmd
-    @name.gsub(/\.(src\.md|md|html|tex)$/, ".src.md")
+    files
   end
   def to_md
     @name.gsub(/\.(src\.md|md|html|tex)$/, ".md")
@@ -75,12 +76,12 @@ class Sec_file < String
     if n.instance_of?(Integer) || n.instance_of?(Float)
       n = n.to_i if n == n.floor
       old = self
-      new = self.gsub(/\d+(\.\d+)?(\.(src\.md|md|html|tex)$)/, "#{n}\\2")
+      new = self.gsub(/\d+(\.\d+)?\.src\.md$/, "#{n}.src.md")
       if old != new
         File.rename old, new
         self.replace new
-        @name = File.basename self
-        @dirname = File.dirname self
+        @name = File.basename new
+        @dirname = File.dirname new
       end
     end
   end
@@ -119,35 +120,22 @@ class Sec_files < Array
 
 private
   def any_diff? tbl
-    diff = false
-    tbl.each do |t|
-      diff = true if t[2] == false
-    end
-    diff
+    tbl.find_index { |row| row[2] == false }
   end
   def try_renum tbl
     changed = false
     (self.size - 1).downto 0 do |i|
       if tbl[i][2] == false
         n = tbl[i][1] # number to substitute
-        found = false
-        self.each do |sec_file|
-          if sec_file != self[i] && sec_file.to_f == n
-            found = true
-            break
-          end
-        end
+        found = self.find_index { |sec_file| sec_file != self && sec_file.to_f == n }
         unless found # OK to replace
           self[i].renum! n
           tbl[i][2] = true
 #         tbl[0] (old number (String) is kept in the array 'tbl')
           changed = true
           self.each do |sec_file|
-            buf_n = []
             buf = IO.readlines sec_file
-            buf.each do |line|
-              buf_n << line.gsub(/((S|s)ection *)#{tbl[i][0]}/, "\\1#{n}").gsub(/((S|s)ec *)#{tbl[i][0]}/, "\\1#{n}")
-            end
+            buf_n = buf.map { |line| line.gsub(/((S|s)ection *)#{tbl[i][0]}/, "\\1#{n}").gsub(/((S|s)ec *)#{tbl[i][0]}/, "\\1#{n}") }
             IO.write sec_file, buf_n.join
           end
         end

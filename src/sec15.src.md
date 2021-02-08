@@ -31,43 +31,61 @@ It is a good practice for you to add more features.
 
 ## meson.build
 
-@@@ tfe5/meson.build
+@@@include
+tfe5/meson.build
+@@@
 
 ## tfe.gresource.xml
 
-@@@ tfe5/tfe.gresource.xml
+@@@include
+tfe5/tfe.gresource.xml
+@@@
 
 ## tfe.ui
 
-@@@ tfe5/tfe.ui
+@@@include
+tfe5/tfe.ui
+@@@
 
 ## tfe.h
 
-@@@ tfe5/tfe.h
+@@@include
+tfe5/tfe.h
+@@@
 
 ## tfeapplication.c
 
-@@@ tfe5/tfeapplication.c
+@@@include
+tfe5/tfeapplication.c
+@@@
 
 ## tfenotebook.h
 
-@@@ tfe5/tfenotebook.h
+@@@include
+tfe5/tfenotebook.h
+@@@
 
 ## tfenotebook.c
 
-@@@ tfe5/tfenotebook.c
+@@@include
+tfe5/tfenotebook.c
+@@@
 
 ## tfetextview.h
 
-@@@ tfetextview/tfetextview.h
+@@@include
+tfetextview/tfetextview.h
+@@@
 
 ## tfetextview.c
 
-@@@ tfetextview/tfetextview.c
+@@@include
+tfetextview/tfetextview.c
+@@@
 
 ## Total number of lines, words and characters
 
-$$$
+@@@shell
 LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
-$$$
+@@@
 

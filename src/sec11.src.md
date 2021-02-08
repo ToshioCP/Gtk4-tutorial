@@ -55,7 +55,9 @@ static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
 
 Signal registration codes are written in the class initialization function.
 
-@@@ tfetextview/tfetextview.c tfe_text_view_class_init
+@@@include
+tfetextview/tfetextview.c tfe_text_view_class_init
+@@@
 
 - 6-15: Registers "change-file" signal.
 `g_signal_newv` function is used.

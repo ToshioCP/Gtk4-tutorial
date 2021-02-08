@@ -67,11 +67,15 @@ Its name is `menu3`.
 
 The following is the ui file of the menu in `menu3`.
 
-@@@ menu3/menu3.ui
+@@@include
+menu3/menu3.ui
+@@@
 
 The ui file is converted to the resource by the resource compiler `glib-compile-resouces` with xml file below.
 
-@@@ menu3/menu3.gresource.xml
+@@@include
+menu3/menu3.gresource.xml
+@@@
 
 GtkBuilder builds menus from the resource.
 
@@ -160,9 +164,13 @@ The code above does:
 
 The C source code of `menu3` and `meson.build` is as follows.
 
-@@@ menu3/menu3.c
+@@@include
+menu3/menu3.c
+@@@
 
 meson.build
 
-@@@ menu3/meson.build
+@@@include
+menu3/meson.build
+@@@
 

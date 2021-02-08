@@ -13,7 +13,9 @@ It does following things.
 Th function `main` is the first invoked function in C language.
 It connects the command line given by the user and GTK application.
 
-@@@ tfe5/tfeapplication.c main
+@@@include
+tfe5/tfeapplication.c main
+@@@
 
 - 6: Generates GtkApplication object.
 - 8-10: Connects "startup", "activate" and "open signals to their handlers.
@@ -31,7 +33,9 @@ What the signal handler needs to do is initialization of the application.
 
 The handler is as follows.
 
-@@@ tfe5/tfeapplication.c tfe_startup
+@@@include
+tfe5/tfeapplication.c tfe_startup
+@@@
 
 - 12-15: Builds widgets using ui file (resource).
 Connects the top window and the application using `gtk_window_set_application`.
@@ -129,7 +133,9 @@ CSS in the context takes precedence over CSS in the display.
 The handler of "activate" and "open" signal are `tfe_activate` and `tfe_open` respectively.
 They just generate a new GtkNotebookPage.
 
-@@@ tfe5/tfeapplication.c tfe_activate tfe_open
+@@@include
+tfe5/tfeapplication.c tfe_activate tfe_open
+@@@
 
 - 1-14: `tfe_activate`.
 - 8-10: Gets GtkNotebook object.
@@ -178,7 +184,9 @@ The second instance immediately quits so shell prompt soon appears.
 
 ## a series of handlers correspond to the button signals
 
-@@@ tfe5/tfeapplication.c open_clicked new_clicked save_clicked close_clicked
+@@@include
+tfe5/tfeapplication.c open_clicked new_clicked save_clicked close_clicked
+@@@
 
 `open_clicked`, `new_clicked` and `save_clicked` just call corresponding notebook page functions.
 `close_clicked` is a bit complicated.
@@ -189,7 +197,9 @@ First, get the top level window and call `gtk_window_destroy`.
 
 ## meson.build
 
-@@@ tfe5/meson.build
+@@@include
+tfe5/meson.build
+@@@
 
 In this file, just the source file names are modified.
 

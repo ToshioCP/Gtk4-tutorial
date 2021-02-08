@@ -32,7 +32,9 @@ The image in the previous subsection gives us the structure of the widgets.
 Title bar, four buttons in the tool bar and two widgets textview and drawing area.
 The ui file is as follows.
 
-@@@ color/color.ui
+@@@include
+color/color.ui
+@@@
 
 - 9-53: This part describes the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
 This is similar to the toolbar of tfe text editor in [Section 8](sec8.src.md).
@@ -50,14 +52,18 @@ TfeTextView is a child of GtkScrolledWindow.
 The xml file for the resource compiler is almost same as before.
 Just substitute "color" for "tfe".
 
-@@@ color/color.gresource.xml
+@@@include
+color/color.gresource.xml
+@@@
 
 ## Tfetextview.h, tfetextview.c and color.h
 
 First two files are the same as before.
 Color.h just includes tfetextview.h.
 
-@@@ color/color.h
+@@@include
+color/color.h
+@@@
 
 ## Colorapplication.c
 
@@ -72,7 +78,9 @@ Particularly, `Run` signal handler is the point in this program.
 
 The following is `colorapplication.c`.
 
-@@@ color/colorapplication.c
+@@@include
+color/colorapplication.c
+@@@
 
 - 108-121: The function `main` is almost same as before but there are some differences.
 The application ID is "com.github.ToshioCP.color".
@@ -114,7 +122,9 @@ Alpha channel is used.
 This file is almost same as before.
 An argument "export_dynamic: true" is added to executable function.
 
-@@@ color/meson.build
+@@@include
+color/meson.build
+@@@
 
 ## Compile and execute it
 

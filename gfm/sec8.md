@@ -236,64 +236,66 @@ All the widgets are connected based on the parent-children relationship describe
 We only need `win` and `nb` for the program after this, so we don't need to take out any other widgets.
 This reduces lines in the C source file.
 
-    $ cd tfe; diff tfe2.c tfe3.c
-    58a59
-    >   GtkBuilder *build;
-    60,103c61,65
-    <   GtkWidget *boxv;
-    <   GtkWidget *boxh;
-    <   GtkWidget *dmy1;
-    <   GtkWidget *dmy2;
-    <   GtkWidget *dmy3;
-    <   GtkWidget *btnn; /* button for new */
-    <   GtkWidget *btno; /* button for open */
-    <   GtkWidget *btns; /* button for save */
-    <   GtkWidget *btnc; /* button for close */
-    < 
-    <   win = gtk_application_window_new (GTK_APPLICATION (app));
-    <   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-    <   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-    < 
-    <   boxv = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    <   gtk_window_set_child (GTK_WINDOW (win), boxv);
-    < 
-    <   boxh = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-    <   gtk_box_append (GTK_BOX (boxv), boxh);
-    < 
-    <   dmy1 = gtk_label_new(NULL); /* dummy label for left space */
-    <   gtk_label_set_width_chars (GTK_LABEL (dmy1), 10);
-    <   dmy2 = gtk_label_new(NULL); /* dummy label for center space */
-    <   gtk_widget_set_hexpand (dmy2, TRUE);
-    <   dmy3 = gtk_label_new(NULL); /* dummy label for right space */
-    <   gtk_label_set_width_chars (GTK_LABEL (dmy3), 10);
-    <   btnn = gtk_button_new_with_label ("New");
-    <   btno = gtk_button_new_with_label ("Open");
-    <   btns = gtk_button_new_with_label ("Save");
-    <   btnc = gtk_button_new_with_label ("Close");
-    < 
-    <   gtk_box_append (GTK_BOX (boxh), dmy1);
-    <   gtk_box_append (GTK_BOX (boxh), btnn);
-    <   gtk_box_append (GTK_BOX (boxh), btno);
-    <   gtk_box_append (GTK_BOX (boxh), dmy2);
-    <   gtk_box_append (GTK_BOX (boxh), btns);
-    <   gtk_box_append (GTK_BOX (boxh), btnc);
-    <   gtk_box_append (GTK_BOX (boxh), dmy3);
-    < 
-    <   nb = gtk_notebook_new ();
-    <   gtk_widget_set_hexpand (nb, TRUE);
-    <   gtk_widget_set_vexpand (nb, TRUE);
-    <   gtk_box_append (GTK_BOX (boxv), nb);
-    < 
-    ---
-    >   build = gtk_builder_new_from_file ("tfe3.ui");
-    >   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-    >   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-    >   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
-    >   g_object_unref(build);
-    138c100
-    <   app = gtk_application_new ("com.github.ToshioCP.tfe2", G_APPLICATION_HANDLES_OPEN);
-    ---
-    >   app = gtk_application_new ("com.github.ToshioCP.tfe3", G_APPLICATION_HANDLES_OPEN);
+~~~
+$ cd tfe; diff tfe2.c tfe3.c
+58a59
+>   GtkBuilder *build;
+60,103c61,65
+<   GtkWidget *boxv;
+<   GtkWidget *boxh;
+<   GtkWidget *dmy1;
+<   GtkWidget *dmy2;
+<   GtkWidget *dmy3;
+<   GtkWidget *btnn; /* button for new */
+<   GtkWidget *btno; /* button for open */
+<   GtkWidget *btns; /* button for save */
+<   GtkWidget *btnc; /* button for close */
+< 
+<   win = gtk_application_window_new (GTK_APPLICATION (app));
+<   gtk_window_set_title (GTK_WINDOW (win), "file editor");
+<   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+< 
+<   boxv = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+<   gtk_window_set_child (GTK_WINDOW (win), boxv);
+< 
+<   boxh = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+<   gtk_box_append (GTK_BOX (boxv), boxh);
+< 
+<   dmy1 = gtk_label_new(NULL); /* dummy label for left space */
+<   gtk_label_set_width_chars (GTK_LABEL (dmy1), 10);
+<   dmy2 = gtk_label_new(NULL); /* dummy label for center space */
+<   gtk_widget_set_hexpand (dmy2, TRUE);
+<   dmy3 = gtk_label_new(NULL); /* dummy label for right space */
+<   gtk_label_set_width_chars (GTK_LABEL (dmy3), 10);
+<   btnn = gtk_button_new_with_label ("New");
+<   btno = gtk_button_new_with_label ("Open");
+<   btns = gtk_button_new_with_label ("Save");
+<   btnc = gtk_button_new_with_label ("Close");
+< 
+<   gtk_box_append (GTK_BOX (boxh), dmy1);
+<   gtk_box_append (GTK_BOX (boxh), btnn);
+<   gtk_box_append (GTK_BOX (boxh), btno);
+<   gtk_box_append (GTK_BOX (boxh), dmy2);
+<   gtk_box_append (GTK_BOX (boxh), btns);
+<   gtk_box_append (GTK_BOX (boxh), btnc);
+<   gtk_box_append (GTK_BOX (boxh), dmy3);
+< 
+<   nb = gtk_notebook_new ();
+<   gtk_widget_set_hexpand (nb, TRUE);
+<   gtk_widget_set_vexpand (nb, TRUE);
+<   gtk_box_append (GTK_BOX (boxv), nb);
+< 
+---
+>   build = gtk_builder_new_from_file ("tfe3.ui");
+>   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+>   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+>   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+>   g_object_unref(build);
+138c100
+<   app = gtk_application_new ("com.github.ToshioCP.tfe2", G_APPLICATION_HANDLES_OPEN);
+---
+>   app = gtk_application_new ("com.github.ToshioCP.tfe3", G_APPLICATION_HANDLES_OPEN);
+~~~
 
 `60,103c61,65` means 42 (=103-60+1) lines change to 5 (=65-61+1) lines.
 Therefore 37 lines are reduced.
@@ -419,32 +421,34 @@ If you want to add more files, then insert them between line 4 and 5.
 Save this xml text to `tfe3.gresource.xml`.
 The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
 
-    $ LANG=C glib-compile-resources --help
-    Usage:
-      glib-compile-resources [OPTION?] FILE
-    
-    Compile a resource specification into a resource file.
-    Resource specification files have the extension .gresource.xml,
-    and the resource file have the extension called .gresource.
-    
-    Help Options:
-      -h, --help                   Show help options
-    
-    Application Options:
-      --version                    Show program version and exit
-      --target=FILE                Name of the output file
-      --sourcedir=DIRECTORY        The directories to load files referenced in FILE from (default: current directory)
-      --generate                   Generate output in the format selected for by the target filename extension
-      --generate-header            Generate source header
-      --generate-source            Generate source code used to link in the resource file into your code
-      --generate-dependencies      Generate dependency list
-      --dependency-file=FILE       Name of the dependency file to generate
-      --generate-phony-targets     Include phony targets in the generated dependency file
-      --manual-register            Don?t automatically create and register resource
-      --internal                   Don?t export functions; declare them G_GNUC_INTERNAL
-      --external-data              Don?t embed resource data in the C file; assume it's linked externally instead
-      --c-name                     C identifier name used for the generated source code
-    
+~~~
+$ LANG=C glib-compile-resources --help
+Usage:
+  glib-compile-resources [OPTION?] FILE
+
+Compile a resource specification into a resource file.
+Resource specification files have the extension .gresource.xml,
+and the resource file have the extension called .gresource.
+
+Help Options:
+  -h, --help                   Show help options
+
+Application Options:
+  --version                    Show program version and exit
+  --target=FILE                Name of the output file
+  --sourcedir=DIRECTORY        The directories to load files referenced in FILE from (default: current directory)
+  --generate                   Generate output in the format selected for by the target filename extension
+  --generate-header            Generate source header
+  --generate-source            Generate source code used to link in the resource file into your code
+  --generate-dependencies      Generate dependency list
+  --dependency-file=FILE       Name of the dependency file to generate
+  --generate-phony-targets     Include phony targets in the generated dependency file
+  --manual-register            Don?t automatically create and register resource
+  --internal                   Don?t export functions; declare them G_GNUC_INTERNAL
+  --external-data              Don?t embed resource data in the C file; assume it's linked externally instead
+  --c-name                     C identifier name used for the generated source code
+
+~~~
 
 Now run the compiler.
 

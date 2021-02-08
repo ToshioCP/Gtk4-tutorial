@@ -9,7 +9,9 @@ Now we go on to the next topic, widgets in the window.
 The simplest widget is GtkLabel.
 It is a widget with a string in it.
 
-@@@ misc/lb1.c
+@@@include
+misc/lb1.c
+@@@
 
 Save this program to a file `lb1.c`.
 Then compile and run it.
@@ -24,9 +26,9 @@ A window with a message "Hello." appears.
 There's only a little change between `pr4.c` and `lb1.c`.
 Diff is a good program to know the difference between two files.
 
-$$$
+@@@shell
 cd misc; diff pr4.c lb1.c
-$$$
+@@@
 
 This tells us:
 
@@ -57,7 +59,9 @@ In this subsection, we will make a button with a label.
 When a button is clicked on, it emits a "clicked" signal.
 The following program shows how to catch the signal and do something.
 
-@@@ misc/lb2.c
+@@@include
+misc/lb2.c
+@@@
 
 Look at the line 17 to 19.
 First, it generates a GtkButton widget `btn` with a label "Click me".
@@ -80,13 +84,15 @@ However, using g_print is out of harmony with GTK which is a GUI library.
 So, we will change the handler.
 The following code is `lb3.c`.
 
-@@@ misc/lb3.c click_cb on_activate
+@@@include
+misc/lb3.c click_cb on_activate
+@@@
 
 And the difference between `lb2.c` and `lb3.c` is as follows.
 
-$$$
+@@@shell
 cd misc; diff lb2.c lb3.c
-$$$
+@@@
 
 The change is:
 
@@ -119,7 +125,9 @@ After this, the Widgets are connected as following diagram.
 
 Now, code it.
 
-@@@ misc/lb4.c
+@@@include
+misc/lb4.c
+@@@
 
 Look at the function `on_activate`.
 
