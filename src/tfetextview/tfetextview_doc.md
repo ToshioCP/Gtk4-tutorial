@@ -1,4 +1,4 @@
-# TfeTextView
+# TfeTextView API reference
 
 TfeTextView -- Child widget of GtkTextView. It holds GFile the contents of GtkTextBuffer correponds to.
 

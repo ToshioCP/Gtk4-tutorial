@@ -391,7 +391,10 @@ However, in Gtk4, `gtk_dialog_run`is unavailable any more.
 The important thing is to duplicate `tv->file`.
 Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.
 
-## Source file of tfetextview.c
+## API document and source file of tfetextview.c
+
+Refer [API document of TfeTextView](../src/tfetextview/tfetextview_doc.md).
+It is under the directory `src/tfetextview`.
 
 All the source files are listed in [Section 15](sec15.md).
 You can find them under [src/tfe5](../src/tfe5) and [src/tfetextview](../tfetextview) directories.

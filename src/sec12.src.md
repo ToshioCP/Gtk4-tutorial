@@ -205,7 +205,18 @@ tfetextview/tfetextview.c tfe_text_view_get_file
 The important thing is to duplicate `tv->file`.
 Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.
 
-## Source file of tfetextview.c
+## API document and source file of tfetextview.c
+
+@@@if gfm
+Refer [API document of TfeTextView](tfetextview/tfetextview_doc.md).
+It is under the directory `src/tfetextview`.
+@@@elif html
+Refer [API document of TfeTextView](../html/tfetextview_doc.html).
+Its original markdown file is under the directory `src/tfetextview`.
+@@@elif latex
+Refer API document of TfeTextView in the appendix.
+Its original markdown file is under the directory `src/tfetextview`.
+@@@end
 
 All the source files are listed in [Section 15](sec15.src.md).
 You can find them under [src/tfe5](tfe5) and [src/tfetextview](../tfetextview) directories.

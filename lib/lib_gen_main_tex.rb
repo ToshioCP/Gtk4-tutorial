@@ -1,7 +1,7 @@
 # lib_gen_main_tex.rb
 #  -- Library ruby script to generate main.tex.
 
-def gen_main_tex directory, texfilenames
+def gen_main_tex directory, texfilenames, appendixfilenames
   #  parameter: directory: the destination directory to put generated files.
   #             texfilenames: an array of latex files. Each of them is "secXX.tex" where XX is digits.   
 
@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 ~~~
 EOS
 
-  File.open("sample.md", "w") { |f| f.print sample_md }
+  File.write "sample.md", sample_md
   if (! system("pandoc", "-s", "-o", "sample.tex", "sample.md"))
     raise ("pandoc retuns error status #{$?}.\n")
   end
@@ -30,21 +30,19 @@ EOS
   sample_tex.gsub!(/\\documentclass\[[^\]]*\]{[^}]*}/,"")
   sample_tex.gsub!(/\\usepackage\[[^\]]*\]{geometry}/,"")
   sample_tex.gsub!(/\\usepackage\[[^\]]*\]{graphicx}/,"")
+  sample_tex.gsub!(/\\setcounter{secnumdepth}{-\\maxdimen} % remove section numbering/,"")
   sample_tex.gsub!(/\\author{[^}]*}/,"")
   sample_tex.gsub!(/\\date{[^}]*}/,"")
   preamble = []
-  in_preamble = true
   sample_tex.each_line do |l|
-    if in_preamble
-      if l =~ /\\begin{document}/
-        in_preamble = false
-      elsif l != "\n"
-        preamble << l
-      end
+    if l =~ /\\begin{document}/
+      break
+    elsif l != "\n"
+      preamble << l
     end
   end
-  preamble << "\\usepackage[margin=2.4cm]{geometry}"
-  preamble << "\\usepackage{graphicx}"
+  preamble << "\\usepackage[margin=2.4cm]{geometry}\n"
+  preamble << "\\usepackage{graphicx}\n"
   File.write("#{directory}/helper.tex",preamble.join)
   File.delete("sample.md")
   File.delete("sample.tex")
@@ -68,6 +66,11 @@ main = <<'EOS'
 EOS
 
   texfilenames.each do |filename|
+    main += "  \\input{#{filename}}\n"
+  end
+  main += "\\newpage\n"
+  main += "\\appendix\n"
+  appendixfilenames.each do |filename|
     main += "  \\input{#{filename}}\n"
   end
   main += "\\end{document}\n"

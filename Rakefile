@@ -72,7 +72,7 @@ end
 
 task html: ["html/index.html"]
 
-file "html/index.html" => htmlfilenames do
+file "html/index.html" => htmlfilenames+["html/tfetextview_doc.html"] do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   src2md "src/abstract.src.md", "html/abstract.md", -1
   File.open("html/abstract.md") do |file|
@@ -94,6 +94,11 @@ file "html/index.html" => htmlfilenames do
   sh "pandoc -o html/index.html html/index.md"
   File.delete "html/index.md"
   add_head_tail_html "html/index.html"
+end
+
+file "html/tfetextview_doc.html" => "src/tfetextview/tfetextview_doc.md" do
+  sh "pandoc -o html/tfetextview_doc.html src/tfetextview/tfetextview_doc.md"
+  add_head_tail_html "html/tfetextview_doc.html"
 end
 
 0.upto(srcfiles.size - 1) do |i|
@@ -131,14 +136,18 @@ end
 
 task latex: ["latex/main.tex"]
 
-file "latex/main.tex" => ["latex/abstract.tex"] + texpathnames do
-  gen_main_tex "latex", texfilenames
+file "latex/main.tex" => ["latex/abstract.tex", "latex/tfetextview_doc.tex"] + texpathnames do
+  gen_main_tex "latex", texfilenames, ["tfetextview_doc.tex"]
 end
 
 file "latex/abstract.tex" => "src/abstract.src.md" do
   src2md "src/abstract.src.md", "latex/abstract.md", 86
   sh "pandoc -o latex/abstract.tex latex/abstract.md"
   File.delete("latex/abstract.md")
+end
+
+file "latex/tfetextview_doc.tex" => "src/tfetextview/tfetextview_doc.md" do
+  sh "pandoc -o latex/tfetextview_doc.tex src/tfetextview/tfetextview_doc.md"
 end
 
 0.upto(srcfiles.size - 1) do |i|

@@ -149,17 +149,23 @@ Other words or expressions may be available in the future version.
 
 ## Conversion
 
-The @@@ commands are carried out by scripts src2md.rb.
-In addition, some conversion is made by srd2md.rb.
+The @@@ commands are carried out by `src2md.rb`.
+In addition, some conversion is made by `src2md.rb`.
 
 - Relative links are changed according to the change of base directory.
-- Size option in image link is left out when the destination is GFM or html.
-- Relative link is left out when the destination is latex.
+- Size option in image link is removed when the destination is GFM or html.
+- Relative link is removed when the destination is latex.
 - Lines in fence code block are folded when the destination is latex.
 
-There's a method `src2md` in the `lib/lib_src2md.rb` script.
+There's a method `src2md` in the `lib/lib_src2md.rb`.
 This method converts src.md file into md file.
-This method is used in `srd2md.rb` and `Rakefile`.
+The script `src2md.rb` just invokes this method.
+In the same way, the method is called in the action in `Rakefile`.
+
+The code analyzing @@@if series command in the method is rather complicated.
+It is based on the state diagram below.
+
+![state diagram](../image/state_diagram.png)
 
 ## Directory structure
 
