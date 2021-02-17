@@ -776,12 +776,12 @@ Run the calculator and change the mode, then check the schema again.
 $ gnome-calculator
 ~~~
 
-![gnome-calculator basic mode](../image/gnome_calculator_basic){width=5.34cm height=5.97cm}
+![gnome-calculator basic mode](../image/gnome_calculator_basic.png){width=5.34cm height=5.97cm}
 
 
 Then, change the mode to advanced and quit.
 
-![gnome-calculator advanced mode](../image/gnome_calculator_advanced){width=10.74cm height=7.14cm}
+![gnome-calculator advanced mode](../image/gnome_calculator_advanced.png){width=10.74cm height=7.14cm}
 
 Run gsettongs and check whether the value of `button-mode` changes.
 
