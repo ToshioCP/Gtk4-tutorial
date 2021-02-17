@@ -138,65 +138,65 @@ It reduces the cumbersome work.
 First, let's look at the ui file `tfe3.ui` that defines a structure of the widgets.
 
 ~~~xml
- 1 <interface>
- 2   <object class="GtkApplicationWindow" id="win">
- 3     <property name="title">file editor</property>
- 4     <property name="default-width">600</property>
- 5     <property name="default-height">400</property>
- 6     <child>
- 7       <object class="GtkBox" id="boxv">
- 8         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
- 9         <child>
-10           <object class="GtkBox" id="boxh">
-11           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-12             <child>
-13               <object class="GtkLabel" id="dmy1">
-14               <property name="width-chars">10</property>
-15               </object>
-16             </child>
-17             <child>
-18               <object class="GtkButton" id="btnn">
-19               <property name="label">New</property>
-20               </object>
-21             </child>
-22             <child>
-23               <object class="GtkButton" id="btno">
-24               <property name="label">Open</property>
-25               </object>
-26             </child>
-27             <child>
-28               <object class="GtkLabel" id="dmy2">
-29               <property name="hexpand">TRUE</property>
-30               </object>
-31             </child>
-32             <child>
-33               <object class="GtkButton" id="btns">
-34               <property name="label">Save</property>
-35               </object>
-36             </child>
-37             <child>
-38               <object class="GtkButton" id="btnc">
-39               <property name="label">Close</property>
-40               </object>
-41             </child>
-42             <child>
-43               <object class="GtkLabel" id="dmy3">
-44               <property name="width-chars">10</property>
-45               </object>
-46             </child>
-47           </object>
-48         </child>
-49         <child>
-50           <object class="GtkNotebook" id="nb">
-51             <property name="hexpand">TRUE</property>
-52             <property name="vexpand">TRUE</property>
-53           </object>
-54         </child>
-55       </object>
-56     </child>
-57   </object>
-58 </interface>
-59 
+ 1 <?xml version="1.0" encoding="UTF-8"?>
+ 2 <interface>
+ 3   <object class="GtkApplicationWindow" id="win">
+ 4     <property name="title">file editor</property>
+ 5     <property name="default-width">600</property>
+ 6     <property name="default-height">400</property>
+ 7     <child>
+ 8       <object class="GtkBox" id="boxv">
+ 9         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+10         <child>
+11           <object class="GtkBox" id="boxh">
+12             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+13             <child>
+14               <object class="GtkLabel" id="dmy1">
+15                 <property name="width-chars">10</property>
+16               </object>
+17             </child>
+18             <child>
+19               <object class="GtkButton" id="btnn">
+20                 <property name="label">New</property>
+21               </object>
+22             </child>
+23             <child>
+24               <object class="GtkButton" id="btno">
+25                 <property name="label">Open</property>
+26               </object>
+27             </child>
+28             <child>
+29               <object class="GtkLabel" id="dmy2">
+30                 <property name="hexpand">TRUE</property>
+31               </object>
+32             </child>
+33             <child>
+34               <object class="GtkButton" id="btns">
+35                 <property name="label">Save</property>
+36               </object>
+37             </child>
+38             <child>
+39               <object class="GtkButton" id="btnc">
+40                 <property name="label">Close</property>
+41               </object>
+42             </child>
+43             <child>
+44               <object class="GtkLabel" id="dmy3">
+45                 <property name="width-chars">10</property>
+46               </object>
+47             </child>
+48           </object>
+49         </child>
+50         <child>
+51           <object class="GtkNotebook" id="nb">
+52             <property name="hexpand">TRUE</property>
+53             <property name="vexpand">TRUE</property>
+54           </object>
+55         </child>
+56       </object>
+57     </child>
+58   </object>
+59 </interface>
 ~~~
 
 This is coded with XML structure.
@@ -204,17 +204,34 @@ Constructs beginning with `<` and ending with `>` are called tags.
 And there are two types of tags, start tag and end tag.
 For example, `<interface>` is a start tag and `</interface>` is an end tag.
 Ui file begins and ends with interface tags.
-Some tags, for example, object tags can have a class and id attributes inside the start tag.
+Some tags, for example, object tags can have a class and id attributes in the start tag.
 
-- 2-5: An object with `GtkApplicationWindow` class and `win` id is defined.
+- 1: The first line is XML declaration.
+It specifies that the version of XML is 1.0 and the encoding is UTF-8.
+Even if the line is left out, GtkBuilder builds objects from the ui file.
+But ui files must use UTF-8 encoding, or GtkBuilder can't recognize it and fatal error occurs.
+- 3-6: An object with `GtkApplicationWindow` class and `win` id is defined.
 This is the top level window.
 And the three properties of the window are defined.
 `title` property is "file editor", `default-width` property is 400 and `default-height` property is 300.
-- 6: child tag means a child of the object above.
+- 7: child tag means a child of the object above.
 For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
 
 Compare this ui file and the lines 25-57 in the source code of `on_open` function.
 Those two describe the same structure of widgets.
+
+You can check the ui file with `gtk4-builder-tool`.
+
+- `gtk4-builder-tool validate <ui file name>` validates the ui file.
+If the ui file includes some syntactical error, `gtk4-builder-tool` prints the error.
+- `gtk4-builder-tool simplify <ui file name>` simplifies the ui file and prints the result.
+If `--replace` option is given, it replaces the ui file with the simplified one.
+If the ui file specifies a value of property but it is default, then it will be removed.
+Anf some values are simplified.
+For example, "TRUE"and "FALSE" becomes "1" and "0" respectively.
+However, "TRUE" or "FALSE" is better for maintenance.
+
+It is a good idea to check your ui file before compiling.
 
 ## GtkBuilder
 

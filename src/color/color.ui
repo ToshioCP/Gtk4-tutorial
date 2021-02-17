@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <object class="GtkApplicationWindow" id="win">
     <property name="title">color changer</property>
@@ -8,68 +9,67 @@
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <child>
           <object class="GtkBox" id="boxh1">
-          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="dmy1">
-              <property name="width-chars">10</property>
+                <property name="width-chars">10</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btnr">
-              <property name="label">Run</property>
-              <signal name="clicked" handler="run_cb"></signal>
-
+                <property name="label">Run</property>
+                <signal name="clicked" handler="run_cb"></signal>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btno">
-              <property name="label">Open</property>
-              <signal name="clicked" handler="open_cb"></signal>
+                <property name="label">Open</property>
+                <signal name="clicked" handler="open_cb"></signal>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="dmy2">
-              <property name="hexpand">TRUE</property>
+                <property name="hexpand">TRUE</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btns">
-              <property name="label">Save</property>
-              <signal name="clicked" handler="save_cb"></signal>
+                <property name="label">Save</property>
+                <signal name="clicked" handler="save_cb"></signal>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btnc">
-              <property name="label">Close</property>
-              <signal name="clicked" handler="close_cb"></signal>
+                <property name="label">Close</property>
+                <signal name="clicked" handler="close_cb"></signal>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="dmy3">
-              <property name="width-chars">10</property>
+                <property name="width-chars">10</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkBox" id="boxh2">
-          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-          <property name="homogeneous">TRUE</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="homogeneous">TRUE</property>
             <child>
               <object class="GtkScrolledWindow" id="scr">
-              <property name="hexpand">TRUE</property>
-              <property name="vexpand">TRUE</property>
-              <child>
-                <object class="TfeTextView" id="tv">
-                <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>
-                </object>
-              </child>
+                <property name="hexpand">TRUE</property>
+                <property name="vexpand">TRUE</property>
+                <child>
+                  <object class="TfeTextView" id="tv">
+                    <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="GtkDrawingArea" id="da">
-              <property name="hexpand">TRUE</property>
-              <property name="vexpand">TRUE</property>
+                <property name="hexpand">TRUE</property>
+                <property name="vexpand">TRUE</property>
               </object>
             </child>
           </object>
@@ -78,4 +78,3 @@
     </child>
   </object>
 </interface>
-

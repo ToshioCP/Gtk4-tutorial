@@ -3,12 +3,12 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15]
 # tfeapplication.c
 
 `tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
-It does following things.
+It does:
 
 - Application support, mainly handling command line arguments.
-- Build widgets using ui file.
-- Connect button signals and their handlers.
-- Manage CSS.
+- Builds widgets using ui file.
+- Connects button signals and their handlers.
+- Manages CSS.
 
 ## main
 
@@ -53,9 +53,9 @@ The handler is as follows.
  1 static void
  2 tfe_startup (GApplication *application) {
  3   GtkApplication *app = GTK_APPLICATION (application);
- 4   GtkApplicationWindow *win;
- 5   GtkNotebook *nb;
- 6   GtkBuilder *build;
+ 4   GtkBuilder *build;
+ 5   GtkApplicationWindow *win;
+ 6   GtkNotebook *nb;
  7   GtkButton *btno;
  8   GtkButton *btnn;
  9   GtkButton *btns;
@@ -69,10 +69,10 @@ The handler is as follows.
 17   btnn = GTK_BUTTON (gtk_builder_get_object (build, "btnn"));
 18   btns = GTK_BUTTON (gtk_builder_get_object (build, "btns"));
 19   btnc = GTK_BUTTON (gtk_builder_get_object (build, "btnc"));
-20   g_signal_connect (btno, "clicked", G_CALLBACK (open_clicked), nb);
-21   g_signal_connect (btnn, "clicked", G_CALLBACK (new_clicked), nb);
-22   g_signal_connect (btns, "clicked", G_CALLBACK (save_clicked), nb);
-23   g_signal_connect (btnc, "clicked", G_CALLBACK (close_clicked), nb);
+20   g_signal_connect_swapped (btno, "clicked", G_CALLBACK (open_cb), nb);
+21   g_signal_connect_swapped (btnn, "clicked", G_CALLBACK (new_cb), nb);
+22   g_signal_connect_swapped (btns, "clicked", G_CALLBACK (save_cb), nb);
+23   g_signal_connect_swapped (btnc, "clicked", G_CALLBACK (close_cb), nb);
 24   g_object_unref(build);
 25 
 26 GdkDisplay *display;
@@ -119,7 +119,8 @@ If you want to set style to GtkTextView, substitute "textview" for the selector.
 textview {color: yellow; ...}
 ~~~
 
-Class, ID and some other things can be applied to the selector like Web CSS. Refer GTK4 API reference for further information.
+Class, ID and some other things can be applied to the selector like Web CSS.
+Refer [GTK4 API reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/theming.html) for further information.
 
 In line 30, the CSS is a string.
 
@@ -128,11 +129,10 @@ textview {padding: 10px; font-family: monospace; font-size: 12pt;}
 ~~~
 
 - padding is a space between the border and contents.
-This space makes the text easier to read.
+This space makes the textview easier to read.
 - font-family is a name of font.
 "monospace" is one of the generic family font keywords.
 - font-size is set to 12pt.
-It is a bit large, but easy on the eyes especially for elderly people.
 
 ### GtkStyleContext, GtkCSSProvider and GdkDisplay
 
@@ -154,6 +154,8 @@ Look at the source file of `startup` handler again.
 
 It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
 To do so, rewrite `tfe_text_view_new`.
+First, get the GtkStyleContext object of a TfeTextView object.
+Then adds the CSS provider to the context.
 
 ~~~C
 GtkWidget *
@@ -184,46 +186,36 @@ They just generate a new GtkNotebookPage.
  1 static void
  2 tfe_activate (GApplication *application) {
  3   GtkApplication *app = GTK_APPLICATION (application);
- 4   GtkWidget *win;
- 5   GtkWidget *boxv;
- 6   GtkNotebook *nb;
+ 4   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
+ 5   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
+ 6   GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
  7 
- 8   win = GTK_WIDGET (gtk_application_get_active_window (app));
- 9   boxv = gtk_window_get_child (GTK_WINDOW (win));
-10   nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+ 8   notebook_page_new (nb);
+ 9   gtk_widget_show (GTK_WIDGET (win));
+10 }
 11 
-12   notebook_page_new (nb);
-13   gtk_widget_show (GTK_WIDGET (win));
-14 }
-15 
-16 static void
-17 tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
-18   GtkApplication *app = GTK_APPLICATION (application);
-19   GtkWidget *win;
-20   GtkWidget *boxv;
-21   GtkNotebook *nb;
-22   int i;
-23 
-24   win = GTK_WIDGET (gtk_application_get_active_window (app));
-25   boxv = gtk_window_get_child (GTK_WINDOW (win));
-26   nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
-27 
-28   for (i = 0; i < n_files; i++)
-29     notebook_page_new_with_file (nb, files[i]);
-30   if (gtk_notebook_get_n_pages (nb) == 0)
-31     notebook_page_new (nb);
-32   gtk_widget_show (win);
-33 }
+12 static void
+13 tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+14   GtkApplication *app = GTK_APPLICATION (application);
+15   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
+16   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
+17   GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+18   int i;
+19 
+20   for (i = 0; i < n_files; i++)
+21     notebook_page_new_with_file (nb, files[i]);
+22   if (gtk_notebook_get_n_pages (nb) == 0)
+23     notebook_page_new (nb);
+24   gtk_widget_show (win);
+25 }
 ~~~
 
-- 1-14: `tfe_activate`.
-- 8-10: Gets GtkNotebook object.
-- 12-13: Generates a new GtkNotebookPage and show the window.
-- 16-33: `tfe_open`.
-- 24-26: Gets GtkNotebook object.
-- 28-29: Generates GtkNotebookPage with files.
-- 30-31: If opening and reading file failed and no GtkNotebookPage has generated, then it generates a empty page.
-- 32: Shows the window.
+- 1-11: `tfe_activate`.
+- 8-10: Generates a new page and shows the window.
+- 12-25: `tfe_open`.
+- 20-21: Generates notebook pages with files.
+- 22-23: If no page has generated, maybe because of read error, then it generates a empty page.
+- 24: Shows the window.
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
 
@@ -265,43 +257,27 @@ The second instance immediately quits so shell prompt soon appears.
 
 ~~~C
  1 static void
- 2 open_clicked (GtkWidget *btno, GtkNotebook *nb) {
+ 2 open_cb (GtkNotebook *nb) {
  3   notebook_page_open (nb);
  4 }
  5 
  6 static void
- 7 new_clicked (GtkWidget *btnn, GtkNotebook *nb) {
+ 7 new_cb (GtkNotebook *nb) {
  8   notebook_page_new (nb);
  9 }
 10 
 11 static void
-12 save_clicked (GtkWidget *btns, GtkNotebook *nb) {
+12 save_cb (GtkNotebook *nb) {
 13   notebook_page_save (nb);
 14 }
 15 
 16 static void
-17 close_clicked (GtkWidget *btnc, GtkNotebook *nb) {
-18   GtkWidget *win;
-19   GtkWidget *boxv;
-20   gint i;
-21 
-22   if (gtk_notebook_get_n_pages (nb) == 1) {
-23     boxv = gtk_widget_get_parent (GTK_WIDGET (nb));
-24     win = gtk_widget_get_parent (boxv);
-25     gtk_window_destroy (GTK_WINDOW (win));
-26   } else {
-27     i = gtk_notebook_get_current_page (nb);
-28     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
-29   }
-30 }
+17 close_cb (GtkNotebook *nb) {
+18   notebook_page_close (GTK_NOTEBOOK (nb));
+19 }
 ~~~
 
-`open_clicked`, `new_clicked` and `save_clicked` just call corresponding notebook page functions.
-`close_clicked` is a bit complicated.
-
-- 22-25: If there's only one page, we need to close the top level window and quit the application.
-First, get the top level window and call `gtk_window_destroy`.
-- 26-28: Otherwise, it removes the current page.
+`open_cb`, `new_cb`, `save_cb` and `close_cb` just call corresponding notebook page functions.
 
 ## meson.build
 
@@ -318,13 +294,13 @@ First, get the top level window and call `gtk_window_destroy`.
 10 executable('tfe', sourcefiles, resources, dependencies: gtkdep)
 ~~~
 
-In this file, just the source file names are modified.
+In this file, just the source file names are modified from the prior version.
 
 ## source files
 
 The [source files](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe5) of the text editor `tfe` will be shown in the next section.
 
-You can download the files.
+You can also download the files from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 There are two options.
 
 - Use git and clone.
@@ -335,6 +311,6 @@ If you use git, run the terminal and type the following.
 
     $ git clone https://github.com/ToshioCP/Gtk4-tutorial.git
 
-The source files are under `/src/tfe5` directory.
+The source files are under [`/src/tfe5`](../src/tfe5) directory.
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <object class="GtkApplicationWindow" id="win">
     <property name="title">file editor</property>
@@ -8,40 +9,40 @@
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <child>
           <object class="GtkBox" id="boxh">
-          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="dmy1">
-              <property name="width-chars">10</property>
+                <property name="width-chars">10</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btnn">
-              <property name="label">New</property>
+                <property name="label">New</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btno">
-              <property name="label">Open</property>
+                <property name="label">Open</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="dmy2">
-              <property name="hexpand">TRUE</property>
+                <property name="hexpand">TRUE</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btns">
-              <property name="label">Save</property>
+                <property name="label">Save</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btnc">
-              <property name="label">Close</property>
+                <property name="label">Close</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="dmy3">
-              <property name="width-chars">10</property>
+                <property name="width-chars">10</property>
               </object>
             </child>
           </object>
@@ -56,4 +57,3 @@
     </child>
   </object>
 </interface>
-

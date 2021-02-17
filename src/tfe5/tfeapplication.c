@@ -1,46 +1,31 @@
 #include "tfe.h"
 
 static void
-open_clicked (GtkWidget *btno, GtkNotebook *nb) {
+open_cb (GtkNotebook *nb) {
   notebook_page_open (nb);
 }
 
 static void
-new_clicked (GtkWidget *btnn, GtkNotebook *nb) {
+new_cb (GtkNotebook *nb) {
   notebook_page_new (nb);
 }
 
 static void
-save_clicked (GtkWidget *btns, GtkNotebook *nb) {
+save_cb (GtkNotebook *nb) {
   notebook_page_save (nb);
 }
 
 static void
-close_clicked (GtkWidget *btnc, GtkNotebook *nb) {
-  GtkWidget *win;
-  GtkWidget *boxv;
-  gint i;
-
-  if (gtk_notebook_get_n_pages (nb) == 1) {
-    boxv = gtk_widget_get_parent (GTK_WIDGET (nb));
-    win = gtk_widget_get_parent (boxv);
-    gtk_window_destroy (GTK_WINDOW (win));
-  } else {
-    i = gtk_notebook_get_current_page (nb);
-    gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
-  }
+close_cb (GtkNotebook *nb) {
+  notebook_page_close (GTK_NOTEBOOK (nb));
 }
 
 static void
 tfe_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
-  GtkWidget *win;
-  GtkWidget *boxv;
-  GtkNotebook *nb;
-
-  win = GTK_WIDGET (gtk_application_get_active_window (app));
-  boxv = gtk_window_get_child (GTK_WINDOW (win));
-  nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
+  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
+  GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
 
   notebook_page_new (nb);
   gtk_widget_show (GTK_WIDGET (win));
@@ -49,14 +34,10 @@ tfe_activate (GApplication *application) {
 static void
 tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
   GtkApplication *app = GTK_APPLICATION (application);
-  GtkWidget *win;
-  GtkWidget *boxv;
-  GtkNotebook *nb;
+  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
+  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
+  GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
   int i;
-
-  win = GTK_WIDGET (gtk_application_get_active_window (app));
-  boxv = gtk_window_get_child (GTK_WINDOW (win));
-  nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
 
   for (i = 0; i < n_files; i++)
     notebook_page_new_with_file (nb, files[i]);
@@ -65,13 +46,12 @@ tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *
   gtk_widget_show (win);
 }
 
-
 static void
 tfe_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
+  GtkBuilder *build;
   GtkApplicationWindow *win;
   GtkNotebook *nb;
-  GtkBuilder *build;
   GtkButton *btno;
   GtkButton *btnn;
   GtkButton *btns;
@@ -85,10 +65,10 @@ tfe_startup (GApplication *application) {
   btnn = GTK_BUTTON (gtk_builder_get_object (build, "btnn"));
   btns = GTK_BUTTON (gtk_builder_get_object (build, "btns"));
   btnc = GTK_BUTTON (gtk_builder_get_object (build, "btnc"));
-  g_signal_connect (btno, "clicked", G_CALLBACK (open_clicked), nb);
-  g_signal_connect (btnn, "clicked", G_CALLBACK (new_clicked), nb);
-  g_signal_connect (btns, "clicked", G_CALLBACK (save_clicked), nb);
-  g_signal_connect (btnc, "clicked", G_CALLBACK (close_clicked), nb);
+  g_signal_connect_swapped (btno, "clicked", G_CALLBACK (open_cb), nb);
+  g_signal_connect_swapped (btnn, "clicked", G_CALLBACK (new_cb), nb);
+  g_signal_connect_swapped (btns, "clicked", G_CALLBACK (save_cb), nb);
+  g_signal_connect_swapped (btnc, "clicked", G_CALLBACK (close_cb), nb);
   g_object_unref(build);
 
 GdkDisplay *display;

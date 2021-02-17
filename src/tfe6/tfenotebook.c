@@ -23,12 +23,15 @@ get_current_textview (GtkNotebook *nb) {
 }
 
 static void
-file_changed_cb (TfeTextView *tv, GtkNotebook *nb) {
+file_changed_cb (TfeTextView *tv) {
+  GtkWidget *nb =  gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_NOTEBOOK);
   GtkWidget *scr;
   GtkWidget *label;
   GFile *file;
   char *filename;
 
+  if (! GTK_IS_NOTEBOOK (nb)) /* tv not connected to nb yet */
+    return;
   file = tfe_text_view_get_file (tv);
   scr = gtk_widget_get_parent (GTK_WIDGET (tv));
   if (G_IS_FILE (file)) {
@@ -37,7 +40,62 @@ file_changed_cb (TfeTextView *tv, GtkNotebook *nb) {
   } else
     filename = get_untitled ();
   label = gtk_label_new (filename);
-  gtk_notebook_set_tab_label (nb, scr, label);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
+}
+
+static void
+modified_changed_cb (GtkTextBuffer *tb, gpointer user_data) {
+  TfeTextView *tv = TFE_TEXT_VIEW (user_data);
+  GtkWidget *scr = gtk_widget_get_parent (GTK_WIDGET (tv));
+  GtkWidget *nb =  gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_NOTEBOOK);
+  GtkWidget *label;
+  const char *filename;
+  char *text;
+
+  if (! GTK_IS_NOTEBOOK (nb)) /* tv not connected to nb yet */
+    return;
+  else if (gtk_text_buffer_get_modified (tb)) {
+    filename = gtk_notebook_get_tab_label_text (GTK_NOTEBOOK (nb), scr);
+    text = g_strdup_printf ("*%s", filename);
+    label = gtk_label_new (text);
+    gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
+  } else
+    file_changed_cb (tv);
+}
+
+gboolean
+has_saved (GtkNotebook *nb) {
+  g_return_val_if_fail (GTK_IS_NOTEBOOK (nb), false);
+
+  TfeTextView *tv;
+  GtkTextBuffer *tb;
+
+  tv = get_current_textview (nb);
+  tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  if (gtk_text_buffer_get_modified (tb))
+    return false;
+  else
+    return true;
+}
+
+gboolean
+has_saved_all (GtkNotebook *nb) {
+  g_return_val_if_fail (GTK_IS_NOTEBOOK (nb), false);
+
+  int i, n;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkTextBuffer *tb;
+
+  n = gtk_notebook_get_n_pages (nb);
+  for (i = 0; i < n; ++i) {
+    scr = gtk_notebook_get_nth_page (nb, i);
+    tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+    tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+    if (gtk_text_buffer_get_modified (tb))
+      return false;
+  }
+  return true;
 }
 
 void
@@ -51,6 +109,16 @@ notebook_page_save (GtkNotebook *nb) {
 }
 
 void
+notebook_page_saveas (GtkNotebook *nb) {
+  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+
+  TfeTextView *tv;
+
+  tv = get_current_textview (nb);
+  tfe_text_view_saveas (TFE_TEXT_VIEW (tv));
+}
+
+void
 notebook_page_close (GtkNotebook *nb) {
   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
 
@@ -59,7 +127,7 @@ notebook_page_close (GtkNotebook *nb) {
 
   if (gtk_notebook_get_n_pages (nb) == 1) {
     win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
-    gtk_window_destroy(GTK_WINDOW (win));
+    tfe_application_quit (GTK_WINDOW (win));
   } else {
     i = gtk_notebook_get_current_page (nb);
     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
@@ -69,6 +137,7 @@ notebook_page_close (GtkNotebook *nb) {
 static void
 notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
   GtkWidget *scr = gtk_scrolled_window_new ();
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
   GtkNotebookPage *nbp;
   GtkWidget *lab;
   int i;
@@ -80,7 +149,8 @@ notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
   nbp = gtk_notebook_get_page (nb, scr);
   g_object_set (nbp, "tab-expand", TRUE, NULL);
   gtk_notebook_set_current_page (nb, i);
-  g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
+  g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), NULL);
+  g_signal_connect (tb, "modified-changed", G_CALLBACK (modified_changed_cb), tv);
 }
 
 static void

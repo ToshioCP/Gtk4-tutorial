@@ -162,9 +162,11 @@ Modify `env.sh`.
 Include this file by . (dot) command before using gtk4 libraries.
 
 You may think you can add them in your `.profile`.
-I think the environment variables above are necessary only when you compile gtk4 applications.
-And it's not necessary except the case above and it might cause some bad things.
-Therefore, I recommend you not to write them to your `.profile`.
+But it's a wrong decision.
+Never write them to your `.profile`.
+The environment variables above are necessary only when you compile and run gtk4 applications.
+Otherwise it's not necessary.
+If you changed the environment variables above and run gtk3 applications, it probably causes serious damage.
 
 ## Compiling gtk4 applications
 

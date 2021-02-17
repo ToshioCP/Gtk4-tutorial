@@ -173,69 +173,7 @@ All the source files are listed below.
 70 
 ~~~
 
-`tfe.ui`
-
-~~~xml
- 1 <interface>
- 2   <object class="GtkApplicationWindow" id="win">
- 3     <property name="title">file editor</property>
- 4     <property name="default-width">600</property>
- 5     <property name="default-height">400</property>
- 6     <child>
- 7       <object class="GtkBox" id="boxv">
- 8         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
- 9         <child>
-10           <object class="GtkBox" id="boxh">
-11           <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-12             <child>
-13               <object class="GtkLabel" id="dmy1">
-14               <property name="width-chars">10</property>
-15               </object>
-16             </child>
-17             <child>
-18               <object class="GtkButton" id="btnn">
-19               <property name="label">New</property>
-20               </object>
-21             </child>
-22             <child>
-23               <object class="GtkButton" id="btno">
-24               <property name="label">Open</property>
-25               </object>
-26             </child>
-27             <child>
-28               <object class="GtkLabel" id="dmy2">
-29               <property name="hexpand">TRUE</property>
-30               </object>
-31             </child>
-32             <child>
-33               <object class="GtkButton" id="btns">
-34               <property name="label">Save</property>
-35               </object>
-36             </child>
-37             <child>
-38               <object class="GtkButton" id="btnc">
-39               <property name="label">Close</property>
-40               </object>
-41             </child>
-42             <child>
-43               <object class="GtkLabel" id="dmy3">
-44               <property name="width-chars">10</property>
-45               </object>
-46             </child>
-47           </object>
-48         </child>
-49         <child>
-50           <object class="GtkNotebook" id="nb">
-51             <property name="hexpand">TRUE</property>
-52             <property name="vexpand">TRUE</property>
-53           </object>
-54         </child>
-55       </object>
-56     </child>
-57   </object>
-58 </interface>
-59 
-~~~
+The ui file `tfe.ui` is the same as `tfe3.ui` in the previous section.
 
 `tfe.gresource.xml`
 

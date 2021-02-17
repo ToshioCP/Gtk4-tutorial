@@ -56,7 +56,7 @@ Some menu items have a link to another GMenu.
 There are two types of links, submenu and section.
 
 GMenuItem can be inserted, appended or prepended to GMenu.
-When it is inserted, all of the attribute and link values of the item are copied and used to form a new item within the menu.
+When it is inserted, all of the attributes and link values of the item are copied and used to form a new item within the menu.
 The GMenuItem itself is not really inserted.
 Therefore, after the insertion, GMenuItem is useless and it should be freed.
 The same goes for appending or prepending.

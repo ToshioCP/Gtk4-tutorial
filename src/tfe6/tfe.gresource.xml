@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/tfe">
+    <file>tfe.ui</file>
+    <file>menu.ui</file>
+  </gresource>
+</gresources>

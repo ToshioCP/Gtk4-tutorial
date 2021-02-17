@@ -59,17 +59,34 @@ Constructs beginning with `<` and ending with `>` are called tags.
 And there are two types of tags, start tag and end tag.
 For example, `<interface>` is a start tag and `</interface>` is an end tag.
 Ui file begins and ends with interface tags.
-Some tags, for example, object tags can have a class and id attributes inside the start tag.
+Some tags, for example, object tags can have a class and id attributes in the start tag.
 
-- 2-5: An object with `GtkApplicationWindow` class and `win` id is defined.
+- 1: The first line is XML declaration.
+It specifies that the version of XML is 1.0 and the encoding is UTF-8.
+Even if the line is left out, GtkBuilder builds objects from the ui file.
+But ui files must use UTF-8 encoding, or GtkBuilder can't recognize it and fatal error occurs.
+- 3-6: An object with `GtkApplicationWindow` class and `win` id is defined.
 This is the top level window.
 And the three properties of the window are defined.
 `title` property is "file editor", `default-width` property is 400 and `default-height` property is 300.
-- 6: child tag means a child of the object above.
+- 7: child tag means a child of the object above.
 For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
 
 Compare this ui file and the lines 25-57 in the source code of `on_open` function.
 Those two describe the same structure of widgets.
+
+You can check the ui file with `gtk4-builder-tool`.
+
+- `gtk4-builder-tool validate <ui file name>` validates the ui file.
+If the ui file includes some syntactical error, `gtk4-builder-tool` prints the error.
+- `gtk4-builder-tool simplify <ui file name>` simplifies the ui file and prints the result.
+If `--replace` option is given, it replaces the ui file with the simplified one.
+If the ui file specifies a value of property but it is default, then it will be removed.
+Anf some values are simplified.
+For example, "TRUE"and "FALSE" becomes "1" and "0" respectively.
+However, "TRUE" or "FALSE" is better for maintenance.
+
+It is a good idea to check your ui file before compiling.
 
 ## GtkBuilder
 

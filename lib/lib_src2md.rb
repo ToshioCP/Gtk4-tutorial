@@ -84,9 +84,9 @@ def src2md srcmd, md, width
         c_file = $1
         c_functions = $2.strip.split(" ")
         if c_file =~ /^\// # absolute path
-          c_file_buf = IO.readlines(c_file)
+          c_file_buf = File.readlines(c_file)
         else #relative path
-          c_file_buf = IO.readlines(src_dir+"/"+c_file)
+          c_file_buf = File.readlines(src_dir+"/"+c_file)
         end
         if c_functions.empty? # no functions are specified
           tmp_buf = c_file_buf
@@ -96,7 +96,7 @@ def src2md srcmd, md, width
           c_functions.each do |c_function|
             from = c_file_buf.find_index { |line| line =~ /^#{c_function} *\(/ }
             if ! from
-              warn "ERROR!!! --- Didn't find #{c_function} in #{filename}. ---"
+              warn "ERROR in #{srcmd}: Didn't find #{c_function} in #{c_file}."
               break
             end
             to = from

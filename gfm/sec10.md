@@ -372,7 +372,7 @@ Then C destructs itself and finally the memories allocated to C is freed.
 
 The idea above is based on an assumption that an object referred by nothing has reference count of zero.
 When the reference count drops to zero, the object starts its destruction process.
-The destruction process is spitted into two phases: disposing and finalizing.
+The destruction process is split into two phases: disposing and finalizing.
 In the disposing process, the object invokes the function pointed by `dispose` in its class to release all references to other objects.
 In the finalizing process, it invokes the function pointed by `finalize` in its class to complete the destruction process.
 These functions are also called handlers or methods.

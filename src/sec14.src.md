@@ -1,12 +1,12 @@
 # tfeapplication.c
 
 `tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
-It does following things.
+It does:
 
 - Application support, mainly handling command line arguments.
-- Build widgets using ui file.
-- Connect button signals and their handlers.
-- Manage CSS.
+- Builds widgets using ui file.
+- Connects button signals and their handlers.
+- Manages CSS.
 
 ## main
 
@@ -72,7 +72,8 @@ If you want to set style to GtkTextView, substitute "textview" for the selector.
 textview {color: yellow; ...}
 ~~~
 
-Class, ID and some other things can be applied to the selector like Web CSS. Refer GTK4 API reference for further information.
+Class, ID and some other things can be applied to the selector like Web CSS.
+Refer [GTK4 API reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/theming.html) for further information.
 
 In line 30, the CSS is a string.
 
@@ -81,11 +82,10 @@ textview {padding: 10px; font-family: monospace; font-size: 12pt;}
 ~~~
 
 - padding is a space between the border and contents.
-This space makes the text easier to read.
+This space makes the textview easier to read.
 - font-family is a name of font.
 "monospace" is one of the generic family font keywords.
 - font-size is set to 12pt.
-It is a bit large, but easy on the eyes especially for elderly people.
 
 ### GtkStyleContext, GtkCSSProvider and GdkDisplay
 
@@ -107,6 +107,8 @@ Look at the source file of `startup` handler again.
 
 It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
 To do so, rewrite `tfe_text_view_new`.
+First, get the GtkStyleContext object of a TfeTextView object.
+Then adds the CSS provider to the context.
 
 ~~~C
 GtkWidget *
@@ -137,14 +139,12 @@ They just generate a new GtkNotebookPage.
 tfe5/tfeapplication.c tfe_activate tfe_open
 @@@
 
-- 1-14: `tfe_activate`.
-- 8-10: Gets GtkNotebook object.
-- 12-13: Generates a new GtkNotebookPage and show the window.
-- 16-33: `tfe_open`.
-- 24-26: Gets GtkNotebook object.
-- 28-29: Generates GtkNotebookPage with files.
-- 30-31: If opening and reading file failed and no GtkNotebookPage has generated, then it generates a empty page.
-- 32: Shows the window.
+- 1-11: `tfe_activate`.
+- 8-10: Generates a new page and shows the window.
+- 12-25: `tfe_open`.
+- 20-21: Generates notebook pages with files.
+- 22-23: If no page has generated, maybe because of read error, then it generates a empty page.
+- 24: Shows the window.
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
 
@@ -185,15 +185,10 @@ The second instance immediately quits so shell prompt soon appears.
 ## a series of handlers correspond to the button signals
 
 @@@include
-tfe5/tfeapplication.c open_clicked new_clicked save_clicked close_clicked
+tfe5/tfeapplication.c open_cb new_cb save_cb close_cb
 @@@
 
-`open_clicked`, `new_clicked` and `save_clicked` just call corresponding notebook page functions.
-`close_clicked` is a bit complicated.
-
-- 22-25: If there's only one page, we need to close the top level window and quit the application.
-First, get the top level window and call `gtk_window_destroy`.
-- 26-28: Otherwise, it removes the current page.
+`open_cb`, `new_cb`, `save_cb` and `close_cb` just call corresponding notebook page functions.
 
 ## meson.build
 
@@ -201,13 +196,13 @@ First, get the top level window and call `gtk_window_destroy`.
 tfe5/meson.build
 @@@
 
-In this file, just the source file names are modified.
+In this file, just the source file names are modified from the prior version.
 
 ## source files
 
 The [source files](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe5) of the text editor `tfe` will be shown in the next section.
 
-You can download the files.
+You can also download the files from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 There are two options.
 
 - Use git and clone.
@@ -218,4 +213,4 @@ If you use git, run the terminal and type the following.
 
     $ git clone https://github.com/ToshioCP/Gtk4-tutorial.git
 
-The source files are under `/src/tfe5` directory.
+The source files are under [`/src/tfe5`](tfe5) directory.

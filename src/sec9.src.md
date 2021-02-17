@@ -56,11 +56,7 @@ tfe4/tfetextview.c
 tfe4/tfe.c
 @@@
 
-`tfe.ui`
-
-@@@include
-tfe4/tfe.ui
-@@@
+The ui file `tfe.ui` is the same as `tfe3.ui` in the previous section.
 
 `tfe.gresource.xml`
 
