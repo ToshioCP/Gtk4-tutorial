@@ -32,7 +32,7 @@ The following is extracted from `tfe.ui` and it describes the open button.
 ~~~
 
 Signal tag specifies the name of the signal, handler and user_data object.
-They are the value of name, handler and object attribute.
+They are the value of name, handler and object attributes.
 Swapped attribute has the same meaning as `g_signal_connect_swapped` function.
 So, the signal tag above works the same as the function below.
 
@@ -174,16 +174,16 @@ For example,
 This is the first element of the array `action_accels`.
 
 - The member `action` is "win.open". This specifies the action "open" belongs to the window object.
-- The member `accels` is an array of two strings, "<Control>o" and NULL.
+- The member `accels` is an array of two strings, "\<Control\>o" and NULL.
 The first string specifies a key combination.
 Control key and 'o'.
 If you keep pressing the control key and push 'o' key, then it activates the action `win.open`.
 The second string NULL (or zero) means the end of the list (array).
 You can define more than one accelerator keys and the list must ends with NULL (zero).
 If you want to do so, the array length needs to be three or more.
-The parser recognizes "<control>o", "<Shift><Alt>F2", "<Ctrl>minus" and so on.
-If you want to use symbol key like "<Ctrl>-", use "<Ctrl>minus" instead.
-Such symbol to lower case name relation is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the gtk4 source code.
+The parser recognizes "\<control\>o", "\<Shift\>\<Alt\>F2", "\<Ctrl\>minus" and so on.
+If you want to use symbol key like "\<Ctrl\>-", use "\<Ctrl\>minus" instead.
+Such relation between lower case and symbol (its character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the gtk4 source code.
 
 ## Saveas handler
 
@@ -267,12 +267,12 @@ Preference dialog xml definition is added to `tfe.ui`.
 
 - Preference dialog is an independent dialog.
 It is not a descendant widget of the top GtkApplicationwindow `win`.
-Therefore, no child tag of the dialog object.
+Therefore, There's no child tag of the dialog object.
 - There are four properties of the dialog specified.
 GtkDialog is a child object (not child widget) of GtkWindow, so it inherits all the properties from GtkWindow.
 Title, resizable, modal and transient-for properties are inherited from GtkWindow.
 Transient-for specifies a temporary parent window, which the dialog's location is based on.
-- internal-child attribute is used in the child tag above..
+- internal-child attribute is used in the child tag above.
 GtkDialog has a GtkBox child widget.
 Its id is "content_area" in `gtkdialog.ui`, which is the ui file of GtkDialog in gtk4 source files.
 This box is provided to users to add content widgets in it.
@@ -527,7 +527,7 @@ tfe_startup (GApplication *application) {
 }
 ~~~
 
-The static variable `is_quit` is true when user tries to quit the application and FAULT otherwise.
+The static variable `is_quit` is true when user tries to quit the application and false otherwise.
 When user presses "Ctrl-w", `close_activated` handler is invoked.
 It just calls `close_cb`.
 When user clicks on the close button, `close_cb` handler is invoked.
@@ -681,11 +681,11 @@ It calls `file_changed_cb` and resets the filename, that means it leaves out the
 ### GtkFontButton and GtkFontChooser
 
 The GtkFontButton is a button which displays the current font.
-It opens a font chooser dialog if a user clocked on the button.
+It opens a font chooser dialog if a user clicked on the button.
 A user can change the font (family, style, weight and size) with the dialog.
 Then the button keeps the new font and displays it.
 
-The button is inserted to the preference dialog in the initialization process.
+The button and its signal "font-set" is initialized in the application startup process.
 
 ~~~C
 static void
@@ -715,10 +715,10 @@ Then connect the "font-set" signal to `font_set_cb` handler.
 The signal "font-set" is emitted when the user selects a font.
 
 GtkFontChooser is an interface implemented by GtkFontButton.
-The function `gtk_font_chooser_get_font_desc` gets the PangoFontDescription of the currently-selected font.
+The function `gtk_font_chooser_get_font_desc` gets the PangoFontDescription of the currently selected font.
 
-Another function `gtk_font_chooser_get_font' returns a font name which includes family, style, weight and size.
-I thought it might be applied to tfe editor.
+Another function `gtk_font_chooser_get_font` returns a font name which includes family, style, weight and size.
+I thought it might be able to be applied to tfe editor.
 The font name can be used to the `font` property of GtkTextTag as it is.
 But it can't be used to the CSS without converting the string to fit.
 CSS is appropriate to change the font of entire text in all the buffers.
@@ -830,8 +830,8 @@ This function sets CSS for GdkDisplay.
 The content of the function is the same as the part of startup handler in the previous version of `tfeapplication.c`.
 - 13-20: `set_font_for_display`.
 This function sets CSS with font-family, font-style, font-weight and font-size.
-  - font-family is a name of font. For example, sans-serif, monospace, Helvetica and "Noto Sans" are font-family.
-It is recommended to quote font family names that contain white space, digits, or punctuation characters other than hyphens.
+  - font-family is a name of a font. For example, sans-serif, monospace, Helvetica and "Noto Sans" are font-family.
+It is recommended to quote font family names that contains white space, digits, or punctuation characters other than hyphens.
   - font-style is one of normal, italic and oblique.
   - font-weight specifies the thickness of a font.
 It is normal or bold.
@@ -843,20 +843,20 @@ Small, medium, large and 12pt are font-size.
 - 17: Makes CSS text.
 The function `g_strdup_printf` generates a new string with printf-like formatting.
 - 22-91: `set_font_for_display_with_pango_font_desc`.
-This function takes out font-family, font-style, font-weight and font-size from the PangoFontDescription object.
+This function takes out font-family, font-style, font-weight and font-size from the PangoFontDescription object and calls `set_font`for_display`.
 - 31: Gets the font-family of `pango_font_desc`.
 - 32-46: Gets the font-style of `pango_font_desc`.
-The functions `pango_font_description_get_style` returns a enumerated value.
+The functions `pango_font_description_get_style` returns an enumerated value.
 - 47-88: Gets the font-weight of `pango_font_desc`.
-The function `pango_font_description_get_weight` returns a enumerated value.
+The function `pango_font_description_get_weight` returns an enumerated value.
 They corresponds to the numbers from 100 to 900.
 - 89: Gets the font-size of `pango_font_desc`.
 The function `pango_font_description_get_size` returns the size of a font.
-The unit of this size is (1/PANGO_SCALE)pt.
-If the font size is 10pt, the function returns 10*PANGO_SCALE.
-PANGO_SCALE is defined as 1024.
-Therefore, 10*PANGO_SCALE is 10240.
--90: calls `set_font_for_display` to set CSS for the GdkDisplay.
+The unit of this size is (1/PANGO\_SCALE)pt.
+If the font size is 10pt, the function returns 10*PANGO\_SCALE.
+PANGO\_SCALE is defined as 1024.
+Therefore, 10*PANGO\_SCALE is 10240.
+- 90: calls `set_font_for_display` to set CSS for the GdkDisplay.
 
 ## GSettings
 
@@ -871,7 +871,7 @@ Configuration information data is put into a database file.
 
 The coding with GSettings object is simple and easy.
 However, it is a bit hard to understand the concept.
-This subsection describes the concept first and then how to program.
+This subsection describes the concept first and then how to program it.
 
 ### GSettings schema
 
@@ -888,16 +888,16 @@ For example, "com.github.ToshioCP.tfe" is a correct schema id.
 The path is a location in the database.
 Each key is stored under the path.
 For example, if a key `font` is defined with a path `/com/github/ToshioCP/tfe/`, the key's location in the database is `/com/github/ToshioCP/tfe/font`.
-Path is a string begins with and ends with a slash `/`.
+Path is a string begins with and ends with a slash (`/`).
 And it is delimited by slashes.
 - GSettings save information as key-value style.
-Key is a string begins with lower case characters followed by lower case, digit or dash `-` and ends with lower case or digit.
+Key is a string begins with lower case characters followed by lower case, digit or dash (`-`) and ends with lower case or digit.
 No consecutive dashes are allowed.
 Values can be any type.
-GSettings stores values as GVariant type, which may contain integer, double, boolean, string or complex types like an array.
+GSettings stores values as GVariant type, which may contain, for example, integer, double, boolean, string or complex types like an array.
 The type of values needs to be defined in the schema.
 - A default value needs to be set for each key.
-- A summery and description can be set for each key.
+- A summery and description can be set for each key optionally.
 
 Schemas are described in an XML format.
 For example,
@@ -918,9 +918,9 @@ For example,
 - 4: The type attribute is "s".
 It is [GVariant format string](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
 Other common types are:
-  - "b" gboolean
-  - "i" gint32.
-  - "d" double
+  - "b": gboolean
+  - "i": gint32.
+  - "d": double
 Further information is in the website `GVariant format string` above.
 
 ### gsettings
@@ -1051,9 +1051,10 @@ A path determines where the settings are stored in the conceptual global tree of
 An id identifies the schema.
 - 4: Key tag has two attributes.
 Name is the name of the key.
-Type us the type of the key' value and specified with [GVariant format string](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
+Type is the type of the value of the key and specified with [GVariant format string](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
 - 5: default value of the key `font` is `Monospace 12`.
 - 6: Summery and description elements describes the key.
+They are optional, but it is recommended to add them in the XML file.
 
 The XML file is compiled by glib-compile-schemas.
 When compiling, `glib-compile-schemas` compiles all the XML files which have ".gschema.xml" file extension in the directory given as an argument.
@@ -1075,7 +1076,7 @@ This is because GSettings object searches `GSETTINGS_SCHEMA_DIR` for `gschemas.c
 
 GSettings object looks for this file by the following process.
 
-- It searches `glib-2.0/schemas` subdirectories of all the directories specified in `XDG_DATA_DIRS`.
+- It searches `glib-2.0/schemas` subdirectories of all the directories specified in the environment cariable `XDG_DATA_DIRS`.
 Most common directory is `/usr/share/glib-2.0/schemas`. 
 - If `GSETTINGS_SCHEMA_DIR` environment variable is defined, it searches all the directories specified in the variable.
 `GSETTINGS_SCHEMA_DIR` can specify multiple directories delimited by colon (:).
@@ -1085,7 +1086,7 @@ Therefore, when you install your application, follow the instruction below to in
 
 1. Make `.gschema.xml` file.
 2. Copy it to one of the directories above. For example, `/usr/share/glib-2.0/schemas`.
-3. Run `glib-compile-schemas' on the directory above.
+3. Run `glib-compile-schemas` on the directory above.
 
 ### Meson.build
 
@@ -1150,19 +1151,19 @@ Just generate a GSettings object and bind it to a property of an object.
 ## Installation
 
 It is a good idea to install your application in `$HOME/local/bin` directory if you have installed gtk4 under the instruction in Section 2.
-Then you need to put `--prefix=$HOME/local` option to meson.
+Then you need to put `--prefix=$HOME/local` option to meson like this.
 
 ~~~
 $ meson --prefix=$HOME/local _build
 ~~~
 
-Add install option and set it true in executable function.
+Modify `meson.build` abd add install option and set it true in executable function.
 
 ~~~meson
 executable('tfe', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
 ~~~
 
-Then, you can install your application by:
+You can install your application by:
 
 ~~~
 $ ninja -C _build install
@@ -1178,7 +1179,7 @@ install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
 ~~~
 
 - get_option: This function returns the value of build options.
-The default value of the option 'prefix' is "/usr/local", but it is "$HOME/local" because we have run meson with prefix option.
+The default value of the option 'prefix' is "/usr/local", but it is "\$HOME/local" because we have run meson with prefix option.
 The default value of the option 'datadir' is "share".
 The operator '/' connects the strings with '/' separator.
 So, `$HOME/local/share/glib-2.0/schemas` is assigned to the varable `schema_dir`.
@@ -1191,6 +1192,7 @@ meson.add_install_script('glib-compile-schemas', schema_dir)
 ~~~
 
 This method runs 'glib-compile-schemas' with an argument `schema_dir`.
+The following is `meson.build`.
 
 ~~~meson
  1 project('tfe', 'c')
@@ -1230,6 +1232,8 @@ gschema.dtd
 gschemas.compiled
 ... ...
 ~~~
+
+The screenshot is as follows.
 
 ![tfe6](../image/tfe6.png)
 
