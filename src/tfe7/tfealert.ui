@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TfeAlert" parent="GtkDialog">
+    <property name="title">Are you sure?</property>
+    <property name="resizable">FALSE</property>
+    <property name="modal">TRUE</property>
+    <child internal-child="content_area">
+      <object class="GtkBox">
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="spacing">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">dialog-warning</property>
+                <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lb_alert">
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="btn_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="btn_accept">
+        <property name="label">Close</property>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel" default="true">btn_cancel</action-widget>
+      <action-widget response="accept">btn_accept</action-widget>
+    </action-widgets>
+  </template>
+</interface>
+

@@ -1,6 +1,6 @@
 Up: [Readme.md](../Readme.md),  Prev: [Section 18](sec18.md), Next: [Section 20](sec20.md)
 
-# Upgrade text file editor
+# GtkMenuButton, accelerators, font, pango and gsettings
 
 Traditional menu structure is fine.
 However, Buttons or menu items we often use are not so many.

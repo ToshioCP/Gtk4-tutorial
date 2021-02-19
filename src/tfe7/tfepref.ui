@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TfePref" parent="GtkDialog">
+    <property name="title">Preferences</property>
+    <property name="resizable">FALSE</property>
+    <property name="modal">TRUE</property>
+    <child internal-child="content_area">
+      <object class="GtkBox" id="content_area">
+        <child>
+          <object class="GtkBox" id="pref_boxh">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="spacing">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <child>
+              <object class="GtkLabel" id="fontlabel">
+                <property name="label">Font:</property>
+                <property name="xalign">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFontButton" id="fontbtn">
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
+

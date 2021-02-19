@@ -1,4 +1,4 @@
-# Upgrade text file editor
+# GtkMenuButton, accelerators, font, pango and gsettings
 
 Traditional menu structure is fine.
 However, Buttons or menu items we often use are not so many.
