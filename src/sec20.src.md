@@ -267,7 +267,7 @@ tfe7/meson.build
 $ meson --prefix=$HOME/local _build
 $ ninja -C _build
 $ ninja -C _build install
-===
+~~~
 
 Source files are in [src/tfe7](tfe7) directory.
 
