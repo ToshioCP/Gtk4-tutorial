@@ -147,7 +147,7 @@ Otherwise (latex) it remains.
 ![Screenshot of the box](../../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
 EOS
 
-sample_md = <<EOS
+sample_md_gfm = <<EOS
 # Sample.src.md
 
 This .src.md file is made for the test for lib_src2md.rb.
@@ -239,6 +239,196 @@ Image link.
 If the target type is gfm or html, the size will be removed.
 Otherwise (latex) it remains.
 
+![Screenshot of the box](../../image/screenshot_lb4.png)
+EOS
+
+sample_md_html = <<EOS
+# Sample.src.md
+
+This .src.md file is made for the test for lib_src2md.rb.
+
+Sample.c with line number is:
+
+~~~{.C .numberLines}
+#{sample_c}~~~
+
+The following is also Sample.c with line number.
+
+~~~{.C .numberLines}
+#{sample_c}~~~
+
+The following is Sample.c without line number.
+
+~~~{.C}
+#{sample_c}~~~
+
+The following prints only `printf_something`.
+
+~~~{.C .numberLines}
+void
+printf_something (char *something) {
+  printf ("%s\\n", something);
+}
+~~~
+
+The following prints `printf_something` and `main`.
+
+~~~{.C .numberLines}
+void
+printf_something (char *something) {
+  printf ("%s\\n", something);
+}
+
+int
+main (int argc, char **argv) {
+  printf_something ("Hello world.");
+}
+~~~
+
+Check info string.
+
+~~~{.C .numberLines}
+#{sample_c}~~~
+~~~{.C .numberLines}
+#{sample_h}~~~
+~~~{.ruby .numberLines}
+#{sample_rb}~~~
+~~~{.ruby .numberLines}
+#{rakefile}~~~
+~~~{.xml .numberLines}
+#{sample_xml}~~~
+~~~{.xml .numberLines}
+#{sample_ui}~~~
+~~~{.bison .numberLines}
+#{sample_y}~~~
+~~~{.lex .numberLines}
+#{sample_lex}~~~
+~~~{.numberLines}
+#{sample_build}~~~
+~~~{.markdown .numberLines}
+#{sample0_md}~~~
+
+Compile sample.c with rake like this:
+
+~~~
+$ rake
+~~~
+
+~~~
+$ echo "This text is very long, longer than 100. It must be folded if this file is converted to latex. Because latex doesn't care about verbatim lines. The lines are printed as they are."
+This text is very long, longer than 100. It must be folded if this file is converted to latex. Because latex doesn't care about verbatim lines. The lines are printed as they are.
+~~~
+
+The target type is:
+
+html
+
+[Relative link](../temp/sample.c) will be converted when the target type is gfm or html.
+Otherwise (latex) the link will be removed.
+
+Another [relative link](../../Rakefile).
+
+[Absolute link](https://github.com/ToshioCP) is kept as it is.
+
+Image link.
+If the target type is gfm or html, the size will be removed.
+Otherwise (latex) it remains.
+
+![Screenshot of the box](../../image/screenshot_lb4.png)
+EOS
+
+sample_md_latex = <<EOS
+# Sample.src.md
+
+This .src.md file is made for the test for lib_src2md.rb.
+
+Sample.c with line number is:
+
+~~~{.C .numberLines}
+#{sample_c}~~~
+
+The following is also Sample.c with line number.
+
+~~~{.C .numberLines}
+#{sample_c}~~~
+
+The following is Sample.c without line number.
+
+~~~{.C}
+#{sample_c}~~~
+
+The following prints only `printf_something`.
+
+~~~{.C .numberLines}
+void
+printf_something (char *something) {
+  printf ("%s\\n", something);
+}
+~~~
+
+The following prints `printf_something` and `main`.
+
+~~~{.C .numberLines}
+void
+printf_something (char *something) {
+  printf ("%s\\n", something);
+}
+
+int
+main (int argc, char **argv) {
+  printf_something ("Hello world.");
+}
+~~~
+
+Check info string.
+
+~~~{.C .numberLines}
+#{sample_c}~~~
+~~~{.C .numberLines}
+#{sample_h}~~~
+~~~{.ruby .numberLines}
+#{sample_rb}~~~
+~~~{.ruby .numberLines}
+#{rakefile}~~~
+~~~{.xml .numberLines}
+#{sample_xml}~~~
+~~~{.xml .numberLines}
+#{sample_ui}~~~
+~~~{.numberLines}
+#{sample_y}~~~
+~~~{.numberLines}
+#{sample_lex}~~~
+~~~{.numberLines}
+#{sample_build}~~~
+~~~{.numberLines}
+#{sample0_md}~~~
+
+Compile sample.c with rake like this:
+
+~~~
+$ rake
+~~~
+
+~~~
+$ echo "This text is very long, longer than 100. It must be folded if this file is converted to latex. Because latex doesn't care about verbatim lines. The lines are printed as they are."
+This text is very long, longer than 100. It must be folded if this file is converted to latex. Because latex doesn't care about verbatim lines. The lines are printed as they are.
+~~~
+
+The target type is:
+
+latex
+
+[Relative link](../temp/sample.c) will be converted when the target type is gfm or html.
+Otherwise (latex) the link will be removed.
+
+Another [relative link](../../Rakefile).
+
+[Absolute link](https://github.com/ToshioCP) is kept as it is.
+
+Image link.
+If the target type is gfm or html, the size will be removed.
+Otherwise (latex) it remains.
+
 ![Screenshot of the box](../../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
 EOS
 
@@ -268,16 +458,12 @@ end
 
 # --- test lang
 files.each do |f|
-  if f[2] && lang("temp/#{f[1]}") != f[2]
-    print " lang(\"temp/#{f[1]}\") != #{f[2]}\n"
+  if f[2] && lang("temp/#{f[1]}", "gfm") != f[2]
+    print " lang(\"temp/#{f[1]}\") != #{f[2]} in gfm\n"
   end
-end
-
-# --- test fold
-s = fold "*"*50+"\n", 7
-if s != "*******\n"*7+"*\n"
-  print "Fold didn't work. \"*\"*50 was folded with width 7 was:\n"
-  print s
+  if f[2] && lang("temp/#{f[1]}", "pandoc") != f[2]
+    print " lang(\"temp/#{f[1]}\") != \"\" in pandoc\n" unless f[2] == "meson" && lang("temp/#{f[1]}", "pandoc") == ""
+  end
 end
 
 # --- test change_rel_link
@@ -308,22 +494,27 @@ end
 dst_dirs = ["gfm", "html", "latex"]
 dst_dirs.each do |d|
   Dir.mkdir d unless Dir.exist? d
-  n = d == "latex" ? 86 : -1
-  src2md "temp/sample.src.md", "#{d}/sample.md", n
+  src2md "temp/sample.src.md", "#{d}/sample.md"
   dst_md = File.read "#{d}/sample.md"
   if d == "gfm"
-    print "Gfm result didn't match !!\n" if dst_md != sample_md.gsub(/!\[Screenshot of the box\]\(\.\.\/\.\.\/image\/screenshot_lb4\.png\){width=6\.3cm height=5\.325cm}/,"![Screenshot of the box](../../image/screenshot_lb4.png)")
+    print "Gfm result didn't match !!\n" if dst_md != sample_md_gfm
+#File.write "tmp.txt", sample_md_gfm
+#system "diff", "#{d}/sample.md", "tmp.txt"
+#File.delete "tmp.txt"
   elsif d == "html"
-    print "Html result didn't match !!\n" if dst_md != sample_md.gsub(/^gfm$/, "html").gsub(/!\[Screenshot of the box\]\(\.\.\/\.\.\/image\/screenshot_lb4\.png\){width=6\.3cm height=5\.325cm}/,"![Screenshot of the box](../../image/screenshot_lb4.png)")
+    if dst_md != sample_md_html
+      print "Html result didn't match !!\n"
+#File.write "tmp.txt", sample_md_html
+#system "diff", "#{d}/sample.md", "tmp.txt"
+#File.delete "tmp.txt"
+    end
   elsif d == "latex"
-    sample_md.gsub!(" 1 /* This comment is very long, longer than 100. It must be folded if this file is converted to latex. Because latex doesn't care about verbatim lines. The lines are printed as they are. */", " 1 /* This comment is very long, longer than 100. It must be folded if this file is co\nnverted to latex. Because latex doesn't care about verbatim lines. The lines are print\ned as they are. */")
-    sample_md.gsub!(/^\/\* This comment is very long, longer than 100\. It must be folded if this file is converted to latex\. Because latex doesn't care about verbatim lines\. The lines are printed as they are\. \*\//, "/* This comment is very long, longer than 100. It must be folded if this file is conve\nrted to latex. Because latex doesn't care about verbatim lines. The lines are printed \nas they are. */")
-    sample_md.gsub!(/\$ echo "This text is very long, longer than 100\. It must be folded if this file is converted to latex\. Because latex doesn't care about verbatim lines\. The lines are printed as they are\."/,"$ echo \"This text is very long, longer than 100. It must be folded if this file is con\nverted to latex. Because latex doesn't care about verbatim lines. The lines are printe\nd as they are.\"")
-    sample_md.gsub!(/^This text is very long, longer than 100\. It must be folded if this file is converted to latex\. Because latex doesn't care about verbatim lines\. The lines are printed as they are\./, "This text is very long, longer than 100. It must be folded if this file is converted t\no latex. Because latex doesn't care about verbatim lines. The lines are printed as the\ny are.")
-    sample_md.gsub!(/^gfm/,"latex")
-    sample_md.gsub!(/\[((R|r)elative link)\]\([^)]+\)/, "\\1")
-    if dst_md != sample_md
+    sample_md_latex.gsub!(/\[((R|r)elative link)\]\([^)]+\)/, "\\1")
+    if dst_md != sample_md_latex
       print "Latex result didn't match !!\n"
+#File.write "tmp.txt", sample_md_latex
+#system "diff", "#{d}/sample.md", "tmp.txt"
+#File.delete "tmp.txt"
     end
   else
    print "Unexpected error.\n"

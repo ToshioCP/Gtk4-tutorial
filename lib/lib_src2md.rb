@@ -1,8 +1,8 @@
 # lib_src2md.rb
 require 'pathname'
 
-# The method 'src2md' convert .src.md file into .md file.
-# The output .md file is fit for the final format, which is one of markdown, html and latex.
+# The method 'src2md' converts .src.md file into .md file.
+# The outputed .md file is fit for the final format, which is one of markdown, html and latex.
 # - Links to relative URL are removed for latex. Otherwise, it remains.
 #   See "Hyperref and relative link" below for further explanation.
 # - Width and height for images are removed for markdown and html. it remains for latex.
@@ -40,114 +40,52 @@ require 'pathname'
 
 # If the target is full URL, which means absolute URL begins with "http", no problem happens.
 
-# This script just remove the links if its target is relative URL.
+# This script just remove the links if its target is relative URL if the target is latex.
 # If you want to revive the link with relative URL, refer the description above.
-
-# ---- Folding verbatim lines ----
-# When C sourcefiles or subshell output are included, the lines are folded to fit in 'width'.
-# Width must be positive integer.
-# Otherwise the lines are not folded.
 
 # This script uses "fenced code blocks" for verbatim lines.
 # It is available in GFM and pandoc's markdown but not in original markdown.
 # Two characters backtick (`) and tilde (~) are possible for fences.
 # This script uses tilde because info string cannot contain any backticks for the backtick code fence.
 # Info string follows opening fence and it is usually a language name.
+
+# GFM has fence code block as follows.
 # ~~~C
 # int main (int argc, char **argv) {
 # ........
 # ~~~
 # Then the contents are highlighted based on C language syntax.
-# This script find the language by the suffix of the file name.
+# This script finds the language by the suffix of the file name.
 # .c => C, .h => C, .rb => ruby, Rakefile, => ruby, .xml => xml, .ui => xml, .y => bison, .lex => lex, .build => meson, .md => markdown
 # Makefile => makefile
 
-def src2md srcmd, md, width
+# Pandoc's markdown is a bit different.
+# ~~~{.C .numberLines}
+# int main (int argc, char **argv) {
+# ........
+# ~~~
+# Then the contents are highlighted based on C language syntax and line numbers are added.
+# Pandoc supports C, ruby, xml, bison, lex, markdown and makefile languages, but doesn't meson.
+#
+# After a markdown file is converted to a latex file, listings package is used by lualatex to convert it to a pdf file.
+# Listings package supports only C, ruby, xml and make.
+# Bison, lex, markdown and meson aren't supported.
+
+def src2md srcmd, md
 # parameters:
 #  srcmd: .src.md file's path. source
 #  md:    .md file's path. destination
-#  width: maximum width of lines in fence code block
   src_buf = IO.readlines srcmd
   src_dir = File.dirname srcmd
   md_dir = File.dirname md
   type = File.basename md_dir # type of the target. gfm, html or latex
 
+# phase 1
+# @@@if - @@@elif - @@@else - @@@end
   md_buf = []
-  include_flag = ""
-  shell_flag = false
   if_stat = 0
   src_buf.each do |line|
-    if include_flag == "-N" || include_flag == "-n"
-      if line == "@@@\n"
-        include_flag = false
-      elsif line =~ /^ *(\S*) *(.*)$/
-        c_file = $1
-        c_functions = $2.strip.split(" ")
-        if c_file =~ /^\// # absolute path
-          c_file_buf = File.readlines(c_file)
-        else #relative path
-          c_file_buf = File.readlines(src_dir+"/"+c_file)
-        end
-        if c_functions.empty? # no functions are specified
-          tmp_buf = c_file_buf
-        else
-          tmp_buf = []
-          spc = false
-          c_functions.each do |c_function|
-            from = c_file_buf.find_index { |line| line =~ /^#{c_function} *\(/ }
-            if ! from
-              warn "ERROR in #{srcmd}: Didn't find #{c_function} in #{c_file}."
-              break
-            end
-            to = from
-            while to < c_file_buf.size do
-              if c_file_buf[to] == "}\n"
-                break
-              end
-              to += 1
-            end
-            n = from-1
-            if spc
-              tmp_buf << "\n"
-            else
-              spc = true
-            end
-            while n <= to do
-              tmp_buf << c_file_buf[n]
-              n += 1
-            end
-          end
-        end
-        md_buf << "~~~#{lang(c_file)}\n"
-        ln_width = tmp_buf.size.to_s.length
-        n = 1
-        tmp_buf.each do |l|
-          if include_flag == "-n"
-            l = sprintf("%#{ln_width}d %s", n, l)
-          end
-          fold(l, width).each_line do |l2|
-            md_buf << l2
-          end
-          n += 1
-        end
-        md_buf << "~~~\n"
-      end
-    elsif shell_flag
-      if line == "@@@\n"
-        shell_flag = false
-      else
-        md_buf << "~~~\n"
-        fold("$ #{line}", width).each_line do |l2|
-          md_buf << l2
-        end
-        `cd #{src_dir}; #{line.chomp}`.each_line do |l|
-          fold(l, width).each_line do |l2|
-            md_buf << l2
-          end
-        end
-        md_buf << "~~~\n"
-      end
-    elsif line =~ /^@@@if *(\w+)/ && if_stat == 0
+    if line =~ /^@@@if *(\w+)/ && if_stat == 0
       if_stat = type == $1 ? 1 : -1
     elsif line =~ /^@@@elif *(\w+)/
       if if_stat == 1
@@ -176,21 +114,133 @@ def src2md srcmd, md, width
     elsif line =~ /^@@@end/
       if_stat = 0
     elsif if_stat >= 0
-      if line == "@@@include\n" || line =~ /^@@@include *-n/
-        include_flag = "-n"
-      elsif line =~ /^@@@include *-N/
-        include_flag = "-N"
-      elsif line == "@@@shell\n"
-        shell_flag = true
-      else
-        line = change_rel_link(line, src_dir, md_dir)
-        if type == "latex" # remove relative link
-          line.gsub!(/(^|[^!])\[([^\]]*)\]\((?~http)\)/,"\\1\\2")
-        else # type == "gfm" or "html", then remove size option from link to image files.
-          line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1")
+      md_buf << line
+    end
+  end
+
+# phase 2
+# @@@include and @@@shell
+  src_buf = md_buf
+  md_buf = []
+  include_flag = ""
+  shell_flag = false
+  src_buf.each do |line|
+    if include_flag == "-N" || include_flag == "-n"
+      if line == "@@@\n"
+        include_flag = ""
+      elsif line =~ /^\s*(\S*)\s*(.*)$/
+        c_file = $1
+        c_functions = $2.strip.split(" ")
+        if c_file =~ /^\// # absolute path
+          c_file_buf = File.readlines(c_file)
+        else #relative path
+          c_file_buf = File.readlines(src_dir+"/"+c_file)
         end
-        md_buf << line
+        if c_functions.empty? # no functions are specified
+          tmp_buf = c_file_buf
+        else
+          tmp_buf = []
+          spc = false
+          c_functions.each do |c_function|
+            from = c_file_buf.find_index { |line| line =~ /^#{c_function} *\(/ }
+            if ! from
+              warn "lib_src2md: ERROR in #{srcmd}: Didn't find #{c_function} in #{c_file}."
+              break
+            end
+            to = from
+            while to < c_file_buf.size do
+              if c_file_buf[to] == "}\n"
+                break
+              end
+              to += 1
+            end
+            if to >= c_file_buf.size
+              warn "lib_src2md: ERROR in #{srcmd}: function #{c_function} didn't end in #{c_file}."
+              break
+            end
+            n = from-1
+            if spc
+              tmp_buf << "\n"
+            else
+              spc = true
+            end
+            while n <= to do
+              tmp_buf << c_file_buf[n]
+              n += 1
+            end
+          end
+        end
+        if type == "gfm"
+          md_buf << "~~~#{lang(c_file, "gfm")}\n"
+        elsif type == "html"
+          language = lang(c_file, "pandoc")
+          if include_flag == "-n"
+            if language != ""
+              md_buf << "~~~{.#{language} .numberLines}\n"
+            else
+              md_buf << "~~~{.numberLines}\n"
+            end
+          else
+            if lang(c_file, "pandoc") != ""
+              md_buf << "~~~{.#{language}}\n"
+            else
+              md_buf << "~~~\n"
+            end
+          end
+        elsif type =="latex"
+          language = lang(c_file, "pandoc")
+          if include_flag == "-n"
+            if language == "C" || language == "ruby" || language == "xml" || language == "makefile"
+              md_buf << "~~~{.#{language} .numberLines}\n"
+            else
+              md_buf << "~~~{.numberLines}\n"
+            end
+          else
+            if language == "C" || language == "ruby" || language == "xml" || language == "makefile"
+              md_buf << "~~~{.#{language}}\n"
+            else
+              md_buf << "~~~\n"
+            end
+          end
+        else # This can't happen.
+          md_buf << "~~~"
+        end
+        ln_width = tmp_buf.size.to_s.length
+        n = 1
+        tmp_buf.each do |l|
+          if type == "gfm" && include_flag == "-n"
+            l = sprintf("%#{ln_width}d %s", n, l)
+          end
+          md_buf << l
+          n += 1
+        end
+        md_buf << "~~~\n"
       end
+    elsif shell_flag
+      if line == "@@@\n"
+        md_buf << "~~~\n"
+        shell_flag = false
+      else
+        md_buf << "$ #{line}"
+        `cd #{src_dir}; #{line.chomp}`.each_line do |l|
+            md_buf << l
+        end
+      end
+    elsif line == "@@@include\n" || line =~ /^@@@include *-n/
+      include_flag = "-n"
+    elsif line =~ /^@@@include *-N/
+      include_flag = "-N"
+    elsif line == "@@@shell\n"
+      md_buf << "~~~\n"
+      shell_flag = true
+    else
+      line = change_rel_link(line, src_dir, md_dir)
+      if type == "latex" # remove relative link
+        line.gsub!(/(^|[^!])\[([^\]]*)\]\((?~http)\)/,"\\1\\2")
+      else # type == "gfm" or "html", then remove size option from link to image files.
+        line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1")
+      end
+      md_buf << line
     end
   end
   IO.write(md,md_buf.join)
@@ -217,17 +267,7 @@ def change_rel_link line, org_dir, new_dir
   left + right
 end
 
-def fold line, width
-  if line.instance_of?(String) && width.instance_of?(Integer) && width > 0
-    n = (line.chomp.length - 1) / width
-    n.downto(1) do |i|
-      line.insert width*i, "\n"
-    end
-  end
-  line
-end
-
-def lang file
+def lang file, type_of_md
   tbl = {".c" => "C", ".h" => "C", ".rb" => "ruby", ".xml" => "xml", ".ui" => "xml",
          ".y" => "bison", ".lex" => "lex", ".build" => "meson", ".md" => "markdown" }
   name = File.basename file
@@ -239,7 +279,8 @@ def lang file
     suffix = File.extname name
     tbl.each do |key, val|
       if suffix == key
-        return val
+        return val if type_of_md == "gfm"
+        return val if type_of_md == "pandoc" && val != "meson"
       end
     end
   end

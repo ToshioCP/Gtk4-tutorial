@@ -16,10 +16,8 @@
 
   /* error reporting */
   static void yyerror (char const *s) { /* for syntax error */
-    g_print ("%s\n",s);
+    g_print ("%s from line %d, column %d to line %d, column %d\n",s, yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column);
   }
-  static void runtime_error (char *format, ...);
-
   /* Node type */
   enum {
     N_PU,
@@ -97,7 +95,7 @@
   int yyparse (void);
   void run (void);
 
-  /* node type */
+  /* semantic value type */
   typedef struct _node_t node_t;
   struct _node_t {
     int type;
@@ -122,14 +120,13 @@
   #define value(n) (n)->content.value
 
   /* start of nodes */
-  node_t *node_top = NULL;
+  static node_t *node_top = NULL;
   /* functions to generate trees */
-  node_t *tree1 (int type, node_t *child1, node_t *child2, node_t *child3);
-  node_t *tree2 (int type, double value);
-  node_t *tree3 (int type, char *name);
+  static node_t *tree1 (int type, node_t *child1, node_t *child2, node_t *child3);
+  static node_t *tree2 (int type, double value);
+  static node_t *tree3 (int type, char *name);
 }
 
-%defines
 %locations
 %define api.value.type union /* YYSTYPE, the type of semantic values, is union of following types */
  /* key words */
@@ -188,11 +185,13 @@ primary_procedure:
 | TR expression    { $$ = tree1 (N_TR, $2, NULL, NULL); }
 | BC '(' expression ',' expression ',' expression ')' { $$ = tree1 (N_BC, $3, $5, $7); }
 | FC '(' expression ',' expression ',' expression ')' { $$ = tree1 (N_FC, $3, $5, $7); }
+ /* assignment */
 | ID '=' expression   { $$ = tree1 (N_ASSIGN, tree3 (N_ID, $1), $3, NULL); }
+ /* control flow */
 | IF '(' expression ')' '{' primary_procedure_list '}' { $$ = tree1 (N_IF, $3, $6, NULL); }
 | RT    { $$ = tree1 (N_RT, NULL, NULL, NULL); }
 | RS    { $$ = tree1 (N_RS, NULL, NULL, NULL); }
- /* procedure call */
+ /* user defined procedure call */
 | ID '(' ')'  { $$ = tree1 (N_procedure_call, tree3 (N_ID, $1), NULL, NULL); }
 | ID '(' argument_list ')'  { $$ = tree1 (N_procedure_call, tree3 (N_ID, $1), $3, NULL); }
 ;
@@ -238,6 +237,9 @@ expression:
 ;
 
 %%
+
+/* Declaration of the runtime error function */
+static void runtime_error (char *format, ...);
 
 /* Dinamically allocated memories are added to the single list. They will be freed in the finalize function. */
 GSList *list = NULL;

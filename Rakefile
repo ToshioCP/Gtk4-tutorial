@@ -35,7 +35,7 @@ task md: ["Readme.md"]
 
 file "Readme.md" => mdfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
-  src2md "src/abstract.src.md", "gfm/abstract.md", -1
+  src2md "src/abstract.src.md", "gfm/abstract.md"
   File.open("gfm/abstract.md") do |file|
     file.readlines.each do |line|
       buf << line
@@ -53,7 +53,7 @@ end
 
 0.upto(srcfiles.size - 1) do |i|
   file "gfm/#{srcfiles[i].to_md}" => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "gfm/#{srcfiles[i].to_md}", -1
+    src2md srcfiles[i].path, "gfm/#{srcfiles[i].to_md}"
     if srcfiles.size == 1
       nav = "Up: [Readme.md](../Readme.md)\n"
     elsif i == 0
@@ -74,7 +74,7 @@ task html: ["html/index.html"]
 
 file "html/index.html" => htmlfilenames+["html/tfetextview_doc.html"] do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
-  src2md "src/abstract.src.md", "html/abstract.md", -1
+  src2md "src/abstract.src.md", "html/abstract.md"
   File.open("html/abstract.md") do |file|
     file.readlines.each do |line|
       buf << line
@@ -105,7 +105,7 @@ end
   html_md = "html/#{srcfiles[i].to_md}"
   html_html = "html/#{srcfiles[i].to_html}"
   file html_html => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, html_md, -1
+    src2md srcfiles[i].path, html_md
     if srcfiles.size == 1
       nav = "Up: [index.html](index.html)\n"
     elsif i == 0
@@ -129,8 +129,8 @@ end
 end
 
 task pdf: "latex" do
-  sh "cd latex; pdflatex main.tex"
-  sh "cd latex; pdflatex main.tex"
+  sh "cd latex; lualatex main.tex"
+  sh "cd latex; lualatex main.tex"
   sh "mv latex/main.pdf latex/gtk4_tutorial.pdf"
 end
 
@@ -141,19 +141,19 @@ file "latex/main.tex" => ["latex/abstract.tex", "latex/tfetextview_doc.tex"] + t
 end
 
 file "latex/abstract.tex" => "src/abstract.src.md" do
-  src2md "src/abstract.src.md", "latex/abstract.md", 86
-  sh "pandoc -o latex/abstract.tex latex/abstract.md"
+  src2md "src/abstract.src.md", "latex/abstract.md"
+  sh "pandoc --listings -o latex/abstract.tex latex/abstract.md"
   File.delete("latex/abstract.md")
 end
 
 file "latex/tfetextview_doc.tex" => "src/tfetextview/tfetextview_doc.md" do
-  sh "pandoc -o latex/tfetextview_doc.tex src/tfetextview/tfetextview_doc.md"
+  sh "pandoc --listings -o latex/tfetextview_doc.tex src/tfetextview/tfetextview_doc.md"
 end
 
 0.upto(srcfiles.size - 1) do |i|
   file "latex/#{srcfiles[i].to_tex}" => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "latex/#{srcfiles[i].to_md}", 86
-    sh "pandoc -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
+    src2md srcfiles[i].path, "latex/#{srcfiles[i].to_md}"
+    sh "pandoc --listings -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
     File.delete("latex/#{srcfiles[i].to_md}")
   end
 end

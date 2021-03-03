@@ -2,7 +2,7 @@
 
 In this section I will explain functions in TfeTextView object.
 
-### tfe.h and tfetextview.h
+## tfe.h and tfetextview.h
 
 `tfe.h` is a top header file and it includes `gtk.h` and all the header files.
 C source files `tfeapplication.c` and `tfenotebook.c` include `tfe.h` at the beginning.

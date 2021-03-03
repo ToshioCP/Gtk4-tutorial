@@ -60,7 +60,11 @@ It implies that CSS can also be applied to GTK windowing system.
 
 The syntax of CSS is as follows.
 
+@@@if gfm
 ~~~css
+@@@else
+~~~
+@@@end
 selector { color: yellow; padding-top: 10px; ...}
 ~~~
 
@@ -68,7 +72,11 @@ Every widget has CSS node.
 For example GtkTextView has `textview` node.
 If you want to set style to GtkTextView, substitute "textview" for the selector.
 
+@@@if gfm
 ~~~css
+@@@else
+~~~
+@@@end
 textview {color: yellow; ...}
 ~~~
 
@@ -77,7 +85,11 @@ Refer [GTK4 API reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/theming.
 
 In line 30, the CSS is a string.
 
+@@@if gfm
 ~~~css
+@@@else
+~~~
+@@@end
 textview {padding: 10px; font-family: monospace; font-size: 12pt;}
 ~~~
 

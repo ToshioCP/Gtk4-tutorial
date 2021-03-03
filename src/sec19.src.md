@@ -863,7 +863,11 @@ Meson provides `gnome.compile_schemas` method to compile XML file in the build d
 This is used to test the application.
 Write the following to the `meson.build` file.
 
+@@@if gfm
 ~~~meson
+@@@else
+~~~
+@@@end
 gnome.compile_schemas(build_by_default: true, depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
 ~~~
 
@@ -880,7 +884,7 @@ After compilation, you can test your application like this:
 $ GSETTINGS_SCHEMA_DIR=_build:$GSETTINGS_SCHEMA_DIR _build/tfe
 ~~~
 
-### GSettings object and g_setting_bind
+### GSettings object and g\_settings\_bind
 
 Write gsettings related codes to `tfeapplication.c'.
 
@@ -928,7 +932,11 @@ $ meson --prefix=$HOME/local _build
 
 Modify `meson.build` abd add install option and set it true in executable function.
 
+@@@if gfm
 ~~~meson
+@@@else
+~~~
+@@@end
 executable('tfe', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
 ~~~
 
@@ -942,7 +950,11 @@ However, you need to do one more thing.
 Copy your XML file to `$HOME/local/share/glib-2.0/schemas/`, which is specified in `GSETTINGS_SCHEMA_DIR` environment variable,
 and run `glib-compile-schemas` on that directory.
 
+@@@if gfm
 ~~~meson
+@@@else
+~~~
+@@@end
 schema_dir = get_option('prefix') / get_option('datadir') / 'glib-2.0/schemas/'
 install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
 ~~~
@@ -956,7 +968,11 @@ So, `$HOME/local/share/glib-2.0/schemas` is assigned to the varable `schema_dir`
 
 Meson can runs a post compile script.
 
+@@@if gfm
 ~~~meson
+@@@else
+~~~
+@@@end
 meson.add_install_script('glib-compile-schemas', schema_dir)
 ~~~
 

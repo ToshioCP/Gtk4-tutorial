@@ -15,5 +15,5 @@ turtlelexer = custom_target('turtlelexer', input: 'turtle.lex', output: 'turtle_
 
 sourcefiles=files('turtleapplication.c', '../tfetextview/tfetextview.c')
 
-executable('turtle', sourcefiles, resources, turtleparser, turtlelexer, turtleparser[1], dependencies: [mathdep, gtkdep], export_dynamic: true)
+executable('turtle', sourcefiles, resources, turtleparser, turtlelexer, turtleparser[1], dependencies: [mathdep, gtkdep], export_dynamic: true, install: true)
 

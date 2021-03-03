@@ -1,4 +1,5 @@
 %top{
+#include <string.h>
 #include <stdlib.h>
 #include "turtle.h"
 
@@ -12,12 +13,11 @@
 
 %option noyywrap
 
-DIGIT [0-9]
 REAL_NUMBER (0|[1-9][0-9]*)(\.[0-9]+)?
 IDENTIFIER [a-zA-Z][a-zA-Z0-9]*
 %%
   /* rules */
-#.*\n             nline++; ncolumn = 1; /* comment */
+#.*               ; /* comment. Be careful. Dot symbol (.) matches any character but new line. */
 [ ]               ncolumn++;
 \t                ncolumn += 8; /* assume that tab is 8 spaces. */
 \n                nline++; ncolumn = 1;

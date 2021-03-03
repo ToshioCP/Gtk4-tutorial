@@ -12,18 +12,19 @@ You need:
 - gtk4
 
 It is easy to compile the source file of turtle.
+If you have installed gtk4 with an option `--prefix=$HOME/local`, put the same option to meson so that you can install `turtle` under the directory `$HOME/local/bin`.
 The instruction is:
 
 ~~~
-$ meson _build
+$ meson --prefix=$HOME/local _build
 $ ninja -C _build
+$ ninja -C _build install
 ~~~
 
-Then, the executable file _build/turtle is generated.
 Type the following command then turtle shows the following window.
 
 ~~~
-$ _build/turtle
+$ turtle
 ~~~
 
 ![Screenshot just after it's executed](image/turtle1.png)
@@ -36,7 +37,7 @@ Write turtle language in the text editor and click on `run` button, then the pro
 ![Tree](image/turtle_tree.png)
 
 If you add the following line in `turtle.h`, then codes to inform the status will also be compiled.
-However, the speed will be quite slow because of the output message.
+However, the speed will be quite slow because of the output messages.
 
 ~~~
 # define debug 1
@@ -80,7 +81,7 @@ fd 100
 ~~~
 
 The command `tr` is "Turn Right".
-The argument is angle with degree.
+The argument is angle with degrees.
 Therefore, `tr 90` means "Turn right by 90 degrees".
 If you click on `run`button, then two line segment appears.
 One is vertical and the other is horizontal.
@@ -128,6 +129,7 @@ Statements are executed in the order from the top to the end
 ## Comment and spaces
 
 Characters between `#` (hash mark) and `\n` (new line) inclusive are comment.
+Characters between `#`  and `EOF` (end of file) are also comment.
 Comments are ignored.
 
 ~~~
@@ -139,11 +141,8 @@ tr 120<NEW LINE>
 fd 100 # Now a triangle appears.<EOF>
 ~~~
 
-The comments in the line 1, 2 and 3 are correct.
-But there is a bug in the line 6.
-The characters after `#` is not recognized as a comment because no new line follows.
-You need to press the enter-key and put new line before the end of file.
-This is a difficult bug to find.
+\<NEW LINE\> and \<EOF\> are newline code and end of file respectively.
+The comments in the line 1, 2, 3 and 6 are correct syntactically.
 
 Spaces (white space, tab and new line) are ignored.
 They are used only as delimiters.
@@ -172,7 +171,7 @@ distance = 100
 fd distance
 ~~~
 
-A value 100 is assigned tp the variable `distance` in the first line.
+A value 100 is assigned to the variable `distance` in the first line.
 Assignment is a statement.
 Most of statements begin with commands like `fd`.
 Assignment is the only exception.
@@ -180,14 +179,14 @@ Assignment is the only exception.
 This program draws a line segment of 100 pixels long.
 
 You can use variables in any places in expressions.
-There are 8 kinds of calculation available.
+There are 8 kinds of calculations available.
 
 - addition: x + y
 - subtraction: x - y
 - multiplication: x * y
 - division: x / y
 - unary minus: - x
-- logical equal: x = y  This symbol `=` works as `==` in C language.
+- logical equal: x = y. This symbol `=` works as `==` in C language.
 - greater than: x > y
 - less than: x < y
 
@@ -262,9 +261,9 @@ a ()
 
 This is a correct program.
 
-- 1: Define a procedure `a`.
+- 1: Defines a procedure `a`.
 A variable `a` is in its body.
-- 2: Assign 100 to a variable `a`.
+- 2: Assigns 100 to a variable `a`.
 - 3: Procedure `a` is called.
 
 However, using the same name to a procedure and variable makes confusing.
@@ -315,7 +314,7 @@ It is the first stage.
 The second stage adds two shorter line segments at the endpoint of the original segment.
 The new segment has 70 percent length to the original segment and the orientation is +30 or -30 degrees different.
 The third stage adds two shorter line segments to the second stage line segments.
-And repeat this several times.
+And repeats this several times.
 
 This repeating is programmed by recursive call.
 Two more examples are shown here.
@@ -381,7 +380,7 @@ Comments and spaces:
 These characters are used to separate tokens explicitly.
 They doesn't have any syntactic meaning and are ignored by the parser.
 
-## Syntax
+## Grammar
 
 ~~~
 program:

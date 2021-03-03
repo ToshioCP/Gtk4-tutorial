@@ -1111,7 +1111,7 @@ After compilation, you can test your application like this:
 $ GSETTINGS_SCHEMA_DIR=_build:$GSETTINGS_SCHEMA_DIR _build/tfe
 ~~~
 
-### GSettings object and g_setting_bind
+### GSettings object and g\_settings\_bind
 
 Write gsettings related codes to `tfeapplication.c'.
 
