@@ -24,11 +24,7 @@ run_cb (GtkWidget *btnr) {
   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
   if (surface) {
     init_flex (contents);
-    init_parse ();
     stat = yyparse ();
-#ifdef debug
-  g_print ("yyparse returned %d.\n", stat);
-#endif
     if (stat == 0) /* No error */ {
       run ();
     }

@@ -91,7 +91,6 @@
 
 %code requires {
   int yylex (void);
-  void init_parse (void);
   int yyparse (void);
   void run (void);
 
@@ -101,9 +100,7 @@
     int type;
     union {
       struct {
-        node_t *child1;
-        node_t *child2;
-        node_t *child3;
+        node_t *child1, *child2, *child3;
       } child;
       char *name;
       double value;
@@ -241,7 +238,7 @@ expression:
 /* Declaration of the runtime error function */
 static void runtime_error (char *format, ...);
 
-/* Dinamically allocated memories are added to the single list. They will be freed in the finalize function. */
+/* Dynamically allocated memories are added to the single list. They will be freed in the finalize function. */
 GSList *list = NULL;
 
 node_t *
@@ -283,7 +280,7 @@ tree3 (int type, char *name) {
  * They are stored in a single symbol table.
  * The names and types are the keys to search the corresponding objects from the table. */
 
-#define MAX_TABLE_SIZE 50
+#define MAX_TABLE_SIZE 100
 enum {
   PROC,
   VAR
@@ -300,13 +297,23 @@ struct {
   char *name;
   object_t object;
 } table[MAX_TABLE_SIZE];
-int tp, tp_biggest;
-
-int tbl_lookup (int type, char *name);
+int tp;
 
 void
 init_table (void) {
-  tp = tp_biggest = 0;
+  tp = 0;
+}
+
+int
+tbl_lookup (int type, char *name) {
+  int i;
+
+  if (tp == 0)
+    return -1;
+  for (i=0; i<tp; ++i)
+    if (type == table[i].type && strcmp(name, table[i].name) == 0)
+      return i;
+  return -1;
 }
 
 void
@@ -322,7 +329,6 @@ tbl_install (int type, char *name, object_t object) {
       table[tp++].object.node = object.node;
     else
       table[tp++].object.value = object.value;
-    tp_biggest = tp > tp_biggest ? tp : tp_biggest;
   }
 }
 
@@ -338,18 +344,6 @@ var_install (char *name, double value) {
   object_t object;
   object.value = value;
   tbl_install (VAR, name, object);
-}
-
-int
-tbl_lookup (int type, char *name) {
-  int i;
-
-  if (tp == 0)
-    return -1;
-  for (i=0; i<tp; ++i)
-    if (type == table[i].type && strcmp(name, table[i].name) == 0)
-      return i;
-  return -1;
 }
 
 void
@@ -470,7 +464,7 @@ stack_replace (char *name, double value) {
 }
 
 void
-stack_turn_back(void) {
+stack_return(void) {
   int depth;
 
   if (sp <= 0)
@@ -478,7 +472,7 @@ stack_turn_back(void) {
   depth = (int) stack[sp-1].value;
   if (depth + 1 > sp) /* something strange */
     runtime_error ("Stack error.\n");
-  sp -= depth + 1;
+  sp -= (int) depth + 1;
 }
 
 #ifdef debug
@@ -498,24 +492,24 @@ show_stack (void) {
 #endif
 
 /* procedure - return status */
-int proc_level = 0;
-int ret_level = 0;
+static int proc_level = 0;
+static int ret_level = 0;
 
 /* status of the surface */
-gboolean pen = TRUE;
-double angle = 90.0; /* angle starts from x axis and measured counterclockwise */
+static gboolean pen = TRUE;
+static double angle = 90.0; /* angle starts from x axis and measured counterclockwise */
                    /* Initially facing to the north */
-double cur_x = 0.0;
-double cur_y = 0.0;
-double line_width = 2.0;
+static double cur_x = 0.0;
+static double cur_y = 0.0;
+static double line_width = 2.0;
 
 struct color {
   double red;
   double green;
   double blue;
 };
-struct color bc = {0.95, 0.95, 0.95}; /* white */ 
-struct color fc = {0.0, 0.0, 0.0}; /* black */ 
+static struct color bc = {0.95, 0.95, 0.95}; /* white */ 
+static struct color fc = {0.0, 0.0, 0.0}; /* black */ 
 
 /* cairo */
 static cairo_t *cr;
@@ -589,7 +583,7 @@ g_print ("eval: node type is %s.\n", node_type_table[node->type]);
       if (eval (child2(node)) == 0.0)
         runtime_error ("Division by zerp.\n");
       else
-        value = calc(/);
+        value = calc (/);
       break;
     case N_UMINUS:
       value = -(eval (child1(node)));
@@ -708,8 +702,8 @@ g_print ("fc:  Foreground color is (%f, %f, %f).\n", fc.red, fc.green, fc.blue);
     case N_ASSIGN:
       name = name(child1(node));
       d = eval (child2(node));
-      if (! stack_replace (name, d)) /* First, try to assign the value to the parameter. If it fails, next step is assigning it to the symbol table */
-        var_replace (name, d); /* If the name of the variable in the table, replace the value. Otherwise, install the variable, */
+      if (! stack_replace (name, d)) /* First, tries to replace the value in the stack (parameter).*/
+        var_replace (name, d); /* If the above fails, tries to replace the value in the table. If the variable isn't in the table, installs it, */
       break;
     case N_IF:
       if (eval (child1(node)))
@@ -725,7 +719,7 @@ g_print ("fc:  Foreground color is (%f, %f, %f).\n", fc.red, fc.green, fc.blue);
       cur_y = 0.0;
       line_width = 2.0;
       fc.red = 0.0; fc.green = 0.0; fc.blue = 0.0;
-      /* To change backgroundcolor, use bc. */
+      /* To change background color, use bc. */
       break;
     case N_procedure_call:
       name = name(child1(node));
@@ -776,7 +770,7 @@ node_t *arg_list;
       ret_level = ++proc_level;
       execute (child3(proc));
       ret_level = --proc_level;
-      stack_turn_back ();
+      stack_return ();
       break;
     case N_procedure_definition:
       name = name(child1(node));
@@ -794,16 +788,8 @@ node_t *arg_list;
 static jmp_buf buf;
 
 void
-init_parse (void) {
-  node_top = NULL;
-}
-
-void
 run (void) {
   int i;
-#ifdef debug
-if (node_top == NULL) g_print ("run: node_top is NULL.\n"); else g_print ("run: node_top is NOT NULL.\n");
-#endif
 
   if (! init_cairo()) {
     g_print ("Cairo not initialized.\n");
@@ -819,10 +805,9 @@ if (node_top == NULL) g_print ("run: node_top is NULL.\n"); else g_print ("run: 
 #ifdef debug
   /* statistics */
   g_print ("------ Statistics ------\n");
-  g_print ("The biggest depth of the symbol table is %d.\n", tp_biggest);
+  g_print ("The biggest depth of the symbol table is %d.\n", tp);
   g_print ("The biggest depth of the stack is %d.\n", sp_biggest);
 #endif
-  ret_level = proc_level = 0; /* This is not necessary, because this fuction is going to end soon. */
   destroy_cairo ();
   g_slist_free_full (g_steal_pointer (&list), g_free);
 }

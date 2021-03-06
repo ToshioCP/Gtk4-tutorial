@@ -29,7 +29,7 @@ gtk_application_new (const gchar *application_id, GApplicationFlags flags);
 
 This flag is described in the GApplication section in GIO API reference.
 
-~~~C
+~~~
 GApplicationFlags' Members
 
 G_APPLICATION_FLAGS_NONE  Default. (No argument allowed)

@@ -206,7 +206,7 @@ It is an old and widely used program.
 Make analyzes Makefile and executes compilers.
 All instructions are written in Makefile.
 
-~~~Makefile
+~~~makefile
 sample.o: sample.c
     gcc -o sample.o sample.c
 ~~~

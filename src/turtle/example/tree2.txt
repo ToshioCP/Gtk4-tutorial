@@ -15,4 +15,8 @@ dp tree2 (n, s) {
   tr 180
 }
 
+tr 180
+pu
+fd 100
+tr 180
 tree2 (6, 100)
