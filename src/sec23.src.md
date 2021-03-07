@@ -16,7 +16,13 @@ So, readers can skip that part of this sections.
 
 ## How to use turtle
 
+@@@if gfm
 The documentation of turtle is [here](turtle/turtle_doc.md).
+@@@elif html
+The documentation of turtle is [here](../html/turtle_doc.html).
+@@@if latex
+The documentation of turtle is in the appendix.
+@@@end
 I'll show you a simple example.
 
 ~~~

@@ -31,7 +31,7 @@ CLEAN << "Readme.md"
 task default: :md
 task all: [:md, :html, :pdf]
 
-task md: ["Readme.md"]
+task md: ["Readme.md", "src/turtle/turtle_doc.md"]
 
 file "Readme.md" => mdfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
@@ -70,9 +70,13 @@ end
   end
 end
 
-task html: ["html/index.html"]
+file "src/turtle/turtle_doc.md" => "src/turtle/turtle_doc.src.md" do
+  src2md "src/turtle/turtle_doc.src.md", "src/turtle/turtle_doc.md"
+end
 
-file "html/index.html" => htmlfilenames+["html/tfetextview_doc.html"] do
+task html: ["html/index.html", "html/tfetextview_doc.html", "html/turtle_doc.html"]
+
+file "html/index.html" => htmlfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   src2md "src/abstract.src.md", "html/abstract.md"
   File.open("html/abstract.md") do |file|
@@ -99,6 +103,13 @@ end
 file "html/tfetextview_doc.html" => "src/tfetextview/tfetextview_doc.md" do
   sh "pandoc -o html/tfetextview_doc.html src/tfetextview/tfetextview_doc.md"
   add_head_tail_html "html/tfetextview_doc.html"
+end
+
+file "html/turtle_doc.html" => "src/turtle/turtle_doc.src.md" do
+  src2md "src/turtle/turtle_doc.src.md", "html/turtle_doc.md"
+  sh "pandoc -o html/turtle_doc.html html/turtle_doc.md"
+  File.delete "html/turtle_doc.md"
+  add_head_tail_html "html/turtle_doc.html"
 end
 
 0.upto(srcfiles.size - 1) do |i|
@@ -136,8 +147,8 @@ end
 
 task latex: ["latex/main.tex"]
 
-file "latex/main.tex" => ["latex/abstract.tex", "latex/tfetextview_doc.tex"] + texpathnames do
-  gen_main_tex "latex", texfilenames, ["tfetextview_doc.tex"]
+file "latex/main.tex" => ["latex/abstract.tex", "latex/tfetextview_doc.tex", "latex/turtle_doc.tex"] + texpathnames do
+  gen_main_tex "latex", texfilenames, ["tfetextview_doc.tex", "turtle_doc.tex"]
 end
 
 file "latex/abstract.tex" => "src/abstract.src.md" do
@@ -148,6 +159,12 @@ end
 
 file "latex/tfetextview_doc.tex" => "src/tfetextview/tfetextview_doc.md" do
   sh "pandoc --listings -o latex/tfetextview_doc.tex src/tfetextview/tfetextview_doc.md"
+end
+
+file "latex/turtle_doc.tex" => "src/turtle/turtle_doc.src.md" do
+  src2md "src/turtle/turtle_doc.src.md", "latex/turtle_doc.md"
+  sh "pandoc --listings -o latex/turtle_doc.tex latex/turtle_doc.md"
+  File.delete("latex/turtle_doc.md")
 end
 
 0.upto(srcfiles.size - 1) do |i|

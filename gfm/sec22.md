@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 21](sec21.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)
 
 # Combine GtkDrawingArea and TfeTextView
 
@@ -370,4 +370,4 @@ Probably it is more appropriate.
 Using textview is unnatural.
 It is a good practice to make such application by yourself.
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 21](sec21.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)
