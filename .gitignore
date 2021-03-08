@@ -23,6 +23,7 @@ src/menu/a.out
 src/color/_build
 src/turtle/_build
 src/temp
+src/le
 
 html/*
 latex/*

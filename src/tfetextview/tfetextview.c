@@ -101,7 +101,6 @@ saveas_dialog_response (GtkWidget *dialog, gint response, TfeTextView *tv) {
   GFile *file;
   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
 
-  gtk_window_destroy (GTK_WINDOW (dialog));
   if (response == GTK_RESPONSE_ACCEPT) {
     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
     if (! G_IS_FILE (file))
@@ -115,6 +114,7 @@ saveas_dialog_response (GtkWidget *dialog, gint response, TfeTextView *tv) {
       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
     }
   }
+  gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 void

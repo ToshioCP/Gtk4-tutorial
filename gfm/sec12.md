@@ -160,20 +160,20 @@ The error is managed only in the TfeTextView instance and no information is noti
  4   GFile *file;
  5   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
  6 
- 7   gtk_window_destroy (GTK_WINDOW (dialog));
- 8   if (response == GTK_RESPONSE_ACCEPT) {
- 9     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-10     if (! G_IS_FILE (file))
-11       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
-12     else {
-13       save_file(file, tb, GTK_WINDOW (win));
-14       if (G_IS_FILE (tv->file))
-15         g_object_unref (tv->file);
-16       tv->file = file;
-17       gtk_text_buffer_set_modified (tb, FALSE);
-18       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-19     }
-20   }
+ 7   if (response == GTK_RESPONSE_ACCEPT) {
+ 8     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+ 9     if (! G_IS_FILE (file))
+10       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
+11     else {
+12       save_file(file, tb, GTK_WINDOW (win));
+13       if (G_IS_FILE (tv->file))
+14         g_object_unref (tv->file);
+15       tv->file = file;
+16       gtk_text_buffer_set_modified (tb, FALSE);
+17       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+18     }
+19   }
+20   gtk_window_destroy (GTK_WINDOW (dialog));
 21 }
 22 
 23 void

@@ -545,20 +545,20 @@ It is a good practice for you to add more features.
 101   GFile *file;
 102   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
 103 
-104   gtk_window_destroy (GTK_WINDOW (dialog));
-105   if (response == GTK_RESPONSE_ACCEPT) {
-106     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-107     if (! G_IS_FILE (file))
-108       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
-109     else {
-110       save_file(file, tb, GTK_WINDOW (win));
-111       if (G_IS_FILE (tv->file))
-112         g_object_unref (tv->file);
-113       tv->file = file;
-114       gtk_text_buffer_set_modified (tb, FALSE);
-115       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-116     }
-117   }
+104   if (response == GTK_RESPONSE_ACCEPT) {
+105     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+106     if (! G_IS_FILE (file))
+107       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
+108     else {
+109       save_file(file, tb, GTK_WINDOW (win));
+110       if (G_IS_FILE (tv->file))
+111         g_object_unref (tv->file);
+112       tv->file = file;
+113       gtk_text_buffer_set_modified (tb, FALSE);
+114       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+115     }
+116   }
+117   gtk_window_destroy (GTK_WINDOW (dialog));
 118 }
 119 
 120 void

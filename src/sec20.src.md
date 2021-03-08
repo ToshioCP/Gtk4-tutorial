@@ -225,7 +225,7 @@ But in the future version, it will probably need details.
 - 209-212: `tfe_window_new`.
 This function creates TfeWindow instance.
 
-## GtkApplication
+## TfeApplication
 
 The file `tfeapplication.c` is now very simple.
 
