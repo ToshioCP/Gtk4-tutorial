@@ -7,18 +7,16 @@ exec ruby -x "$0" "$@"
 require_relative 'lib/lib_src2md.rb'
 
 def usage
-  $stderr.print "Usage: ruby srcd2md.rb src.md_file md_file width\n"
-  $stderr.print "    The width is used to fold lines in indented or fenced code blocks.\n"
-  $stderr.print "    If the width is negative, no lines are folded.\n"
+  $stderr.print "Usage: ruby srcd2md.rb src.md_file md_file type\n"
+  $stderr.print "       type is gfm (default), html or latex.\n" 
 end
 
-if ARGV.size != 3
+if ARGV.size == 2
+  src2md ARGV[0], ARGV[1]
+elsif ARGV.size == 3
+  src2md ARGV[0], ARGV[1], ARGV[2]
+else
   usage
   exit 1
 end
-
-srcmd = ARGV[0]
-md = ARGV[1]
-width = ARGV[2]
-src2md srcmd, md, width.to_i
 

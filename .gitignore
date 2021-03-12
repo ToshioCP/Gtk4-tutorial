@@ -25,6 +25,7 @@ src/turtle/_build
 src/temp
 src/le
 
+doc/GFile_example/_build
 html/*
 latex/*
 

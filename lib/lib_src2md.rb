@@ -71,14 +71,17 @@ require 'pathname'
 # Listings package supports only C, ruby, xml and make.
 # Bison, lex, markdown and meson aren't supported.
 
-def src2md srcmd, md
+def src2md srcmd, md, type="gfm"
 # parameters:
 #  srcmd: .src.md file's path. source
 #  md:    .md file's path. destination
   src_buf = IO.readlines srcmd
   src_dir = File.dirname srcmd
   md_dir = File.dirname md
-  type = File.basename md_dir # type of the target. gfm, html or latex
+  type_dir = File.basename md_dir # type of the target. gfm, html or latex
+  if type_dir == "gfm" || type_dir == "html" || type_dir == "latex"
+    type = type_dir
+  end
 
 # phase 1
 # @@@if - @@@elif - @@@else - @@@end
@@ -202,8 +205,8 @@ def src2md srcmd, md
               md_buf << "~~~\n"
             end
           end
-        else # This can't happen.
-          md_buf << "~~~"
+        else
+          md_buf << "~~~\n"
         end
         ln_width = tmp_buf.size.to_s.length
         n = 1
