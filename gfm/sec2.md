@@ -21,7 +21,7 @@ I installed gtk4 under the directory `$HOME/local`.
 This is a private user area.
 
 If you want to install it in the system area, `/opt/gtk4` is one of good choices.
-[Gtk4 API Reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/gtk-building.html) gives an installation example to `/opt/gtk4`.
+[Gtk4 API Reference](https://developer.gnome.org/gtk4/stable/gtk-building.html) gives an installation example to `/opt/gtk4`.
 
 Don't install it to `/usr/local` which is the default.
 It is used by Ubuntu applications, which are not build on gtk4.
@@ -136,7 +136,7 @@ Compile and install it.
     $ ninja -C _build
     $ ninja -C _build install
 
-If you want to know more information, refer to [Gtk4 reference manual](https://gnome.pages.gitlab.gnome.org/gtk/gtk/gtk-building.html).
+If you want to know more information, refer to [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/gtk-building.html).
 
 ## Modify env.sh
 

@@ -145,9 +145,9 @@ For example,
 gssize size = g_input_stream_read (G_INPUT_STREAM (istream), void *buffer, gsize count, GCancellable *cancellable, GError **error);
 ~~~
 
-This function reads data from `istream` and put them into `buffer`.
+This function reads data from `istream` and puts them into `buffer`.
 
-GDtaInputStream is used often.
+GDataInputStream is used often.
 It can read structured data such as sized data (byte, int16, int32 and int64) and lines (new line terminated string).
 For example, 
 

@@ -81,7 +81,7 @@ textview {color: yellow; ...}
 ~~~
 
 Class, ID and some other things can be applied to the selector like Web CSS.
-Refer [GTK4 API reference](https://gnome.pages.gitlab.gnome.org/gtk/gtk/theming.html) for further information.
+Refer [GTK4 API reference](https://developer.gnome.org/gtk4/stable/theming.html) for further information.
 
 In line 30, the CSS is a string.
 

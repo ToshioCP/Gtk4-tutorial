@@ -174,7 +174,7 @@ tfe7/tfewindow.h
 
 There are three public functions.
 The function `tfe_window_notebook_page_new` creates a new notebook page.
-This is a wrapper function of `notebook_page_new`.
+This is a wrapper function for `notebook_page_new`.
 It is called by GtkApplication object.
 The function `tfe_window_notebook_page_new_with_files` creates notebook pages with a contents read from the given files.
 The function `tfe_window_new` creates a TfeWindow instance.
