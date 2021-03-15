@@ -24,14 +24,14 @@ Such programs are difficult to maintain.
 The file `tfeapplication.c` should be divided into several files.
 
 - `tfeapplication.c` only has codes related to GtkApplication.
-- A file about GtkApplicationWindow
-- A file about a preference dialog
-- A file about an alert dialog
+- A file for GtkApplicationWindow
+- A file for a preference dialog
+- A file for an alert dialog
 
 The preference dialog is defined by a ui file.
 And it has GtkBox, GtkLabel and GtkFontButton in it.
 Such widget is called composite widget.
-Composite widget is a child object of the parent widget.
+Composite widget is a child object (not child widget) of a widget.
 For example, the preference composite widget is a child object of GtkDialog.
 Composite widget can be built from template XML.
 Next subsection shows how to build a preference dialog.
@@ -107,7 +107,7 @@ The object `TfePref` is defined in `tfepref.h` and `tfepref.c`.
 - 6-7: When you define a new object, you need to write these two lines.
 Refer to [Section 7](sec7.md).
 - 9-10: `tfe_pref_new` generates a new TfePref object.
-It has a parameter which the object use as a transient parent to show the dialog.
+It has a parameter which the object uses as a transient parent to show the dialog.
 
 ~~~C
  1 #include "tfepref.h"
@@ -180,7 +180,7 @@ The pointer to the object will be assigned to the variable when an instance is g
 The template has been made during the class initialization process.
 Now it is implemented to the instance.
 - 23: Create GSettings object with the id `com.github.ToshioCP.tfe`.
-- 24: Bind the font key in the GSettings object and the font property in the GtkFontButton.
+- 24: Bind the font key in the GSettings object to the font property in the GtkFontButton.
 
 - 36-39: The function `tfe_pref_new` creates an instance of TfePref.
 The parameter `win` is a transient parent.
@@ -340,7 +340,7 @@ The instruction how to use this object is as follows.
 2. Create a TfeAlert object.
 3. Connect "response" signal to a handler
 4. Show the dialog
-5. In the signal handler do something along the response-id.
+5. In the signal handler do something with regard to the response-id.
 Then destroy the dialog.
 
 ## Top level window
@@ -369,13 +369,13 @@ The object name is "TfeWindow".
 18             <child>
 19               <object class="GtkButton" id="btno">
 20                 <property name="label">Open</property>
-21                 <signal name="clicked" handler="open_cb" swapped="TRUE" object="nb"></signal>
+21                 <property name="action-name">win.open</property>
 22               </object>
 23             </child>
 24             <child>
 25               <object class="GtkButton" id="btns">
 26                 <property name="label">Save</property>
-27                 <signal name="clicked" handler="save_cb" swapped="TRUE" object="nb"></signal>
+27                 <property name="action-name">win.save</property>
 28               </object>
 29             </child>
 30             <child>
@@ -386,7 +386,7 @@ The object name is "TfeWindow".
 35             <child>
 36               <object class="GtkButton" id="btnc">
 37                 <property name="label">Close</property>
-38                 <signal name="clicked" handler="close_cb" swapped="TRUE" object="nb"></signal>
+38                 <property name="action-name">win.close</property>
 39               </object>
 40             </child>
 41             <child>
@@ -416,7 +416,23 @@ The object name is "TfeWindow".
 65 
 ~~~
 
-This XML file is the same as before except template tag.
+This XML file is almost same as before except template tag and "action-name" property.
+
+GtkButton implements GtkActionable interface, which has "action-name" property.
+If this property is set, GtkButton activates the action when it is clicked.
+For example, if an open button is clicked, "win.open" action will be activated and `open_activated` handler will be invoked.
+
+This action is also used by "\<Control\>o" accelerator (See the source code of `tfewindow.c` below).
+If you use "clicked" signal for the button, you need its signal handler.
+Then, there are two handlers:
+
+- a handler for the "clicked" signal on the button
+- a handler for the "activate" signal on the "win.open" action, to which "\<Control\>o" accelerator is connected
+
+These two handlers do almost same thing.
+It is inefficient.
+Connecting buttons to actions is a good way to reduce unnecessary codes.
+
 
 ~~~C
  1 #ifndef __TFE_WINDOW_H__
@@ -456,233 +472,205 @@ The function `tfe_window_new` creates a TfeWindow instance.
   6 
   7 struct _TfeWindow {
   8   GtkApplicationWindow parent;
-  9   GtkButton *btno;
- 10   GtkButton *btns;
- 11   GtkButton *btnc;
- 12   GtkMenuButton *btnm;
- 13   GtkNotebook *nb;
- 14   GSettings *settings;
- 15   gboolean is_quit;
- 16 };
- 17 
- 18 G_DEFINE_TYPE (TfeWindow, tfe_window, GTK_TYPE_APPLICATION_WINDOW);
- 19 
- 20 /* alert response signal handler */
- 21 static void
- 22 alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
- 23   TfeWindow *win = TFE_WINDOW (user_data);
- 24 
- 25   if (response_id == GTK_RESPONSE_ACCEPT) {
- 26     if (win->is_quit)
- 27       gtk_window_destroy(GTK_WINDOW (win));
- 28     else
- 29       notebook_page_close (win->nb);
- 30   }
- 31   gtk_window_destroy (GTK_WINDOW (alert));
- 32 }
- 33 
- 34 /* ----- button handlers ----- */
- 35 void
- 36 open_cb (GtkNotebook *nb) {
- 37   notebook_page_open (nb);
- 38 }
- 39 
- 40 void
- 41 save_cb (GtkNotebook *nb) {
- 42   notebook_page_save (nb);
- 43 }
- 44 
- 45 void
- 46 close_cb (GtkNotebook *nb) {
- 47   TfeAlert *alert;
- 48   TfeWindow *win =  TFE_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), TFE_TYPE_WINDOW));
- 49 
- 50   if (has_saved (nb))
- 51     notebook_page_close (nb);
- 52   else {
- 53     win->is_quit = false;
- 54     alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
- 55     tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to close?");
- 56     tfe_alert_set_button_label (alert, "Close");
- 57     g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
- 58     gtk_widget_show (GTK_WIDGET (alert));
- 59   }
- 60 }
- 61 
- 62 /* ----- action activated handlers ----- */
+  9   GtkMenuButton *btnm;
+ 10   GtkNotebook *nb;
+ 11   GSettings *settings;
+ 12   gboolean is_quit;
+ 13 };
+ 14 
+ 15 G_DEFINE_TYPE (TfeWindow, tfe_window, GTK_TYPE_APPLICATION_WINDOW);
+ 16 
+ 17 /* alert response signal handler */
+ 18 static void
+ 19 alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
+ 20   TfeWindow *win = TFE_WINDOW (user_data);
+ 21 
+ 22   if (response_id == GTK_RESPONSE_ACCEPT) {
+ 23     if (win->is_quit)
+ 24       gtk_window_destroy(GTK_WINDOW (win));
+ 25     else
+ 26       notebook_page_close (win->nb);
+ 27   }
+ 28   gtk_window_destroy (GTK_WINDOW (alert));
+ 29 }
+ 30 
+ 31 /* ----- action activated handlers ----- */
+ 32 static void
+ 33 open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 34   TfeWindow *win = TFE_WINDOW (user_data);
+ 35 
+ 36   notebook_page_open (GTK_NOTEBOOK (win->nb));
+ 37 }
+ 38 
+ 39 static void
+ 40 save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 41   TfeWindow *win = TFE_WINDOW (user_data);
+ 42 
+ 43   notebook_page_save (GTK_NOTEBOOK (win->nb));
+ 44 }
+ 45 
+ 46 static void
+ 47 close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 48   TfeWindow *win = TFE_WINDOW (user_data);
+ 49   TfeAlert *alert;
+ 50 
+ 51   if (has_saved (win->nb))
+ 52     notebook_page_close (win->nb);
+ 53   else {
+ 54     win->is_quit = false;
+ 55     alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
+ 56     tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to close?");
+ 57     tfe_alert_set_button_label (alert, "Close");
+ 58     g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
+ 59     gtk_widget_show (GTK_WIDGET (alert));
+ 60   }
+ 61 }
+ 62 
  63 static void
- 64 open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 64 new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
  65   TfeWindow *win = TFE_WINDOW (user_data);
  66 
- 67   open_cb (GTK_NOTEBOOK (win->nb));
+ 67   notebook_page_new (GTK_NOTEBOOK (win->nb));
  68 }
  69 
  70 static void
- 71 save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 71 saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
  72   TfeWindow *win = TFE_WINDOW (user_data);
  73 
- 74   save_cb (GTK_NOTEBOOK (win->nb));
+ 74   notebook_page_saveas (GTK_NOTEBOOK (win->nb));
  75 }
  76 
  77 static void
- 78 close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 78 pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
  79   TfeWindow *win = TFE_WINDOW (user_data);
- 80 
- 81   close_cb (GTK_NOTEBOOK (win->nb));
- 82 }
- 83 
- 84 static void
- 85 new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
- 86   TfeWindow *win = TFE_WINDOW (user_data);
- 87 
- 88   notebook_page_new (GTK_NOTEBOOK (win->nb));
- 89 }
- 90 
- 91 static void
- 92 saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
- 93   TfeWindow *win = TFE_WINDOW (user_data);
- 94 
- 95   notebook_page_saveas (GTK_NOTEBOOK (win->nb));
- 96 }
- 97 
- 98 static void
- 99 pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-100   TfeWindow *win = TFE_WINDOW (user_data);
-101   GtkWidget *pref;
-102 
-103   pref = tfe_pref_new (GTK_WINDOW (win));
-104   gtk_widget_show (pref);
-105 }
-106 
-107 static void
-108 quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-109   TfeWindow *win = TFE_WINDOW (user_data);
+ 80   GtkWidget *pref;
+ 81 
+ 82   pref = tfe_pref_new (GTK_WINDOW (win));
+ 83   gtk_widget_show (pref);
+ 84 }
+ 85 
+ 86 static void
+ 87 quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 88   TfeWindow *win = TFE_WINDOW (user_data);
+ 89 
+ 90   TfeAlert *alert;
+ 91 
+ 92   if (has_saved_all (GTK_NOTEBOOK (win->nb)))
+ 93     gtk_window_destroy (GTK_WINDOW (win));
+ 94   else {
+ 95     win->is_quit = true;
+ 96     alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
+ 97     tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to quit?");
+ 98     tfe_alert_set_button_label (alert, "Quit");
+ 99     g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
+100     gtk_widget_show (GTK_WIDGET (alert));
+101   }
+102 }
+103 
+104 /* gsettings changed::font signal handler */
+105 static void
+106 changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
+107   GtkWindow *win = GTK_WINDOW (user_data); 
+108   const char *font;
+109   PangoFontDescription *pango_font_desc;
 110 
-111   TfeAlert *alert;
-112 
-113   if (has_saved_all (GTK_NOTEBOOK (win->nb)))
-114     gtk_window_destroy (GTK_WINDOW (win));
-115   else {
-116     win->is_quit = true;
-117     alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
-118     tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to quit?");
-119     tfe_alert_set_button_label (alert, "Quit");
-120     g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
-121     gtk_widget_show (GTK_WIDGET (alert));
-122   }
-123 }
-124 
-125 /* gsettings changed::font signal handler */
-126 static void
-127 changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
-128   GtkWindow *win = GTK_WINDOW (user_data); 
-129   const char *font;
-130   PangoFontDescription *pango_font_desc;
-131 
-132   font = g_settings_get_string (settings, "font");
-133   pango_font_desc = pango_font_description_from_string (font);
-134   set_font_for_display_with_pango_font_desc (win, pango_font_desc);
-135 }
-136 
-137 /* --- public functions --- */
-138 
-139 void
-140 tfe_window_notebook_page_new (TfeWindow *win) {
-141   notebook_page_new (win->nb);
-142 }
-143 
-144 void
-145 tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files) {
-146   int i;
-147 
-148   for (i = 0; i < n_files; i++)
-149     notebook_page_new_with_file (win->nb, files[i]);
-150   if (gtk_notebook_get_n_pages (win->nb) == 0)
-151     notebook_page_new (win->nb);
-152 }
+111   font = g_settings_get_string (settings, "font");
+112   pango_font_desc = pango_font_description_from_string (font);
+113   set_font_for_display_with_pango_font_desc (win, pango_font_desc);
+114 }
+115 
+116 /* --- public functions --- */
+117 
+118 void
+119 tfe_window_notebook_page_new (TfeWindow *win) {
+120   notebook_page_new (win->nb);
+121 }
+122 
+123 void
+124 tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files) {
+125   int i;
+126 
+127   for (i = 0; i < n_files; i++)
+128     notebook_page_new_with_file (win->nb, files[i]);
+129   if (gtk_notebook_get_n_pages (win->nb) == 0)
+130     notebook_page_new (win->nb);
+131 }
+132 
+133 /* --- TfeWindow object construction/destruction --- */ 
+134 static void
+135 tfe_window_dispose (GObject *gobject) {
+136   TfeWindow *window = TFE_WINDOW (gobject);
+137 
+138   g_clear_object (&window->settings);
+139   G_OBJECT_CLASS (tfe_window_parent_class)->dispose (gobject);
+140 }
+141 
+142 static void
+143 tfe_window_init (TfeWindow *win) {
+144   GtkBuilder *build;
+145   GMenuModel *menu;
+146 
+147   gtk_widget_init_template (GTK_WIDGET (win));
+148 
+149   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/menu.ui");
+150   menu = G_MENU_MODEL (gtk_builder_get_object (build, "menu"));
+151   gtk_menu_button_set_menu_model (win->btnm, menu);
+152   g_object_unref(build);
 153 
-154 /* --- TfeWindow object construction/destruction --- */ 
-155 static void
-156 tfe_window_dispose (GObject *gobject) {
-157   TfeWindow *window = TFE_WINDOW (gobject);
-158 
-159   g_clear_object (&window->settings);
-160   G_OBJECT_CLASS (tfe_window_parent_class)->dispose (gobject);
-161 }
-162 
-163 static void
-164 tfe_window_init (TfeWindow *win) {
-165   GtkBuilder *build;
-166   GMenuModel *menu;
-167 
-168   gtk_widget_init_template (GTK_WIDGET (win));
-169 
-170   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/menu.ui");
-171   menu = G_MENU_MODEL (gtk_builder_get_object (build, "menu"));
-172   gtk_menu_button_set_menu_model (win->btnm, menu);
-173   g_object_unref(build);
-174 
-175   win->settings = g_settings_new ("com.github.ToshioCP.tfe");
-176   g_signal_connect (win->settings, "changed::font", G_CALLBACK (changed_font_cb), win);
-177 
-178 /* ----- action ----- */
-179   const GActionEntry win_entries[] = {
-180     { "open", open_activated, NULL, NULL, NULL },
-181     { "save", save_activated, NULL, NULL, NULL },
-182     { "close", close_activated, NULL, NULL, NULL },
-183     { "new", new_activated, NULL, NULL, NULL },
-184     { "saveas", saveas_activated, NULL, NULL, NULL },
-185     { "pref", pref_activated, NULL, NULL, NULL },
-186     { "close-all", quit_activated, NULL, NULL, NULL }
-187   };
-188   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
-189 
-190   changed_font_cb(win->settings, "font", win);
-191 }
-192 
-193 static void
-194 tfe_window_class_init (TfeWindowClass *class) {
-195   GObjectClass *object_class = G_OBJECT_CLASS (class);
-196 
-197   object_class->dispose = tfe_window_dispose;
-198   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfewindow.ui");
-199   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btno);
-200   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btns);
-201   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnc);
-202   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);
-203   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);
-204   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), open_cb);
-205   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), save_cb);
-206   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), close_cb);
-207 }
-208 
-209 GtkWidget *
-210 tfe_window_new (GtkApplication *app) {
-211   return GTK_WIDGET (g_object_new (TFE_TYPE_WINDOW, "application", app, NULL));
-212 }
-213 
+154   win->settings = g_settings_new ("com.github.ToshioCP.tfe");
+155   g_signal_connect (win->settings, "changed::font", G_CALLBACK (changed_font_cb), win);
+156 
+157 /* ----- action ----- */
+158   const GActionEntry win_entries[] = {
+159     { "open", open_activated, NULL, NULL, NULL },
+160     { "save", save_activated, NULL, NULL, NULL },
+161     { "close", close_activated, NULL, NULL, NULL },
+162     { "new", new_activated, NULL, NULL, NULL },
+163     { "saveas", saveas_activated, NULL, NULL, NULL },
+164     { "pref", pref_activated, NULL, NULL, NULL },
+165     { "close-all", quit_activated, NULL, NULL, NULL }
+166   };
+167   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
+168 
+169   changed_font_cb(win->settings, "font", win);
+170 }
+171 
+172 static void
+173 tfe_window_class_init (TfeWindowClass *class) {
+174   GObjectClass *object_class = G_OBJECT_CLASS (class);
+175 
+176   object_class->dispose = tfe_window_dispose;
+177   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfewindow.ui");
+178   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);
+179   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);
+180 }
+181 
+182 GtkWidget *
+183 tfe_window_new (GtkApplication *app) {
+184   return GTK_WIDGET (g_object_new (TFE_TYPE_WINDOW, "application", app, NULL));
+185 }
+186 
 ~~~
 
-- 20-32: `alert_response_cb` is a call back function of the "response" signal of TfeAlert dialog.
+- 17-29: `alert_response_cb` is a call back function of the "response" signal of TfeAlert dialog.
 This is the same as before except `gtk_window_destroy(GTK_WINDOW (win))` is used instead of `tfe_application_quit`.
-- 34-60: Handlers of Button clicked signal.
-- 62-123: Handlers of action activated signal.
+- 31-102: Handlers of action activated signal.
 The `user_data` is a pointer to TfeWindow instance.
-- 125-135: A handler of "changed::font" signal of GSettings object.
-- 132: Gets the font from GSettings data.
-- 133: Gets a PangoFontDescription from the font.
+- 104-114: A handler of "changed::font" signal of GSettings object.
+- 111: Gets the font from GSettings data.
+- 112: Gets a PangoFontDescription from the font.
 In the previous version, the program gets the font description from the GtkFontButton.
 The button data and GSettings data are the same.
 Therefore, the data got here is the same as the data in the GtkFontButton.
 In addition, we don't need to worry about the preference dialog is alive or not thanks to the GSettings.
-- 134: Sets CSS on the display with the font description.
-- 137-152: Public functions.
-- 155-161: Dispose handler.
+- 113: Sets CSS on the display with the font description.
+- 116-131: Public functions.
+- 133-140: Dispose handler.
 The GSettings object needs to be released.
-- 163-191: Object initialize function.
-- 168: Generates a composite widget with the template.
-- 170-173: Insert menu to the menu button.
-- 175-176: Creates a GSettings object with the id.
+- 142-170: Object initialize function.
+- 147: Generates a composite widget with the template.
+- 150-152: Insert menu to the menu button.
+- 154-155: Creates a GSettings object with the id.
 Connects "changed::font" signal to the handler `changed_font_cb`.
 This signal emits when the GSettings data is changed.
 The second part "font" of the signal name "changed::font" is called details.
@@ -695,14 +683,13 @@ For example, Suppose a GSettings object has three keys "a", "b" and "c".
 In this version of tfe, there is only one key ("font").
 So, even if the signal doesn't have a detail, the result is the same.
 But in the future version, it will probably need details.
-- 178-188: Creates actions.
-- 190: Sets CSS font.
-- 193-207: Class initialization function.
-- 197: Sets the dispose handler.
-- 198: Sets the composite widget template
-- 199-203: Binds private variable with child objects in the template.
-- 204-206: Binds signal handlers with signal tags in the template.
-- 209-212: `tfe_window_new`.
+- 157-167: Creates actions.
+- 169: Sets CSS font.
+- 172-180: Class initialization function.
+- 176: Sets the dispose handler.
+- 177: Sets the composite widget template
+- 178-179: Binds private variable with child objects in the template.
+- 182-185: `tfe_window_new`.
 This function creates TfeWindow instance.
 
 ## TfeApplication
@@ -718,7 +705,7 @@ The file `tfeapplication.c` is now very simple.
  6   GtkApplication *app = GTK_APPLICATION (application);
  7   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
  8 
- 9   tfe_window_notebook_page_new (win);
+ 9   tfe_window_notebook_page_new (TFE_WINDOW (win));
 10   gtk_widget_show (GTK_WIDGET (win));
 11 }
 12 
@@ -727,56 +714,54 @@ The file `tfeapplication.c` is now very simple.
 15   GtkApplication *app = GTK_APPLICATION (application);
 16   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 17 
-18   tfe_window_notebook_page_new_with_files (win, files, n_files);
+18   tfe_window_notebook_page_new_with_files (TFE_WINDOW (win), files, n_files);
 19   gtk_widget_show (win);
 20 }
 21 
 22 static void
 23 tfe_startup (GApplication *application) {
 24   GtkApplication *app = GTK_APPLICATION (application);
-25   GtkBuilder *build;
-26   TfeWindow *win;
-27   int i;
+25   int i;
+26 
+27   tfe_window_new (app);
 28 
-29   win = tfe_window_new (app);
-30 
-31 /* ----- accelerator ----- */ 
-32   struct {
-33     const char *action;
-34     const char *accels[2];
-35   } action_accels[] = {
-36     { "win.open", { "<Control>o", NULL } },
-37     { "win.save", { "<Control>s", NULL } },
-38     { "win.close", { "<Control>w", NULL } },
-39     { "win.new", { "<Control>n", NULL } },
-40     { "win.saveas", { "<Shift><Control>s", NULL } },
-41     { "win.close-all", { "<Control>q", NULL } },
-42   };
-43 
-44   for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
-45     gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
-46 }
-47 
-48 /* ----- main ----- */
-49 int
-50 main (int argc, char **argv) {
-51   GtkApplication *app;
-52   int stat;
+29 /* ----- accelerator ----- */ 
+30   struct {
+31     const char *action;
+32     const char *accels[2];
+33   } action_accels[] = {
+34     { "win.open", { "<Control>o", NULL } },
+35     { "win.save", { "<Control>s", NULL } },
+36     { "win.close", { "<Control>w", NULL } },
+37     { "win.new", { "<Control>n", NULL } },
+38     { "win.saveas", { "<Shift><Control>s", NULL } },
+39     { "win.close-all", { "<Control>q", NULL } },
+40   };
+41 
+42   for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
+43     gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
+44 }
+45 
+46 /* ----- main ----- */
+47 int
+48 main (int argc, char **argv) {
+49   GtkApplication *app;
+50   int stat;
+51 
+52   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
 53 
-54   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
-55 
-56   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-57   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
-58   g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
-59 
-60   stat =g_application_run (G_APPLICATION (app), argc, argv);
-61   g_object_unref (app);
-62   return stat;
-63 }
-64 
+54   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
+55   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+56   g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
+57 
+58   stat =g_application_run (G_APPLICATION (app), argc, argv);
+59   g_object_unref (app);
+60   return stat;
+61 }
+62 
 ~~~
 
-- 3-11: Activate signal handler.
+- 4-11: Activate signal handler.
 It uses `tfe_window_notebook_page_new` instead of `notebook_page_new`.
 - 13-20: Open signal handler.
 Thanks to `tfe_window_notebook_page_new_with_files`, this handler becomes very simple.

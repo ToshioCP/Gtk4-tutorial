@@ -1,6 +1,6 @@
 Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md)
 
-# List
+# GtkListView
 
 Gtk4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
 The new feature is described in the sections "GListModel support" and "List-based widgets" at the top of [the third chapter of the API reference](https://developer.gnome.org/gtk4/stable/gtkobjects.html).
