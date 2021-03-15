@@ -203,3 +203,105 @@ GtkSingleSelection is used, so user can select one item at a time.
 
 Because this is a small program, the ui data is given as strings.
 However, generally, ui file is better than string and using resource compiler is the best choice.
+
+## GtkDirectoryList
+
+GtkDirectoryList is a list model containing GFileInfo objects which are information of files under a certain directory.
+It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
+The list model is created by `gtk_directory_list_new` function.
+
+~~~C
+GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
+~~~
+
+`attributes` is a comma separated list of file attributes.
+File attributes are key-value pairs.
+A key consists of a namespace and a name.
+For example, "standard::name" key is the name of a file.
+"standard" means general file information.
+"name" means filename.
+The following table shows some example.
+
+|key             |meaning                                                             |
+|:---------------|:-------------------------------------------------------------------|
+|standard::type  |file type. for example, regular file, directory, symbolic link, etc.|
+|standard::name  |filename                                                            |
+|standard::size  |file size in bytes                                                  |
+|access::can-read|read privilege if the user is able to read the file                 |
+|time::modified  |the time the file was last modified in seconds since the UNIX epoch |
+
+The current directory is ".".
+The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
+
+~~~C
+GFile *file = g_file_new_for_path (".");
+GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+g_object_unref (file);
+~~~
+
+It is not so difficult to make file listing program by changing `list2.c` in the previous subsection.
+One problem is that GInfoFile doesn't have properties.
+Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
+Instead, closure tag is appropriate in this case.
+Closure tag specifies a function and the type of the return value of the function.
+
+~~~C
+char *
+get_file_name (GtkListItem *item, GFileInfo *info) {
+  if (! G_IS_FILE_INFO (info))
+    return NULL;
+  else
+    return g_strdup (g_file_info_get_name (info));
+}
+
+... ...
+... ...
+
+"<interface>"
+  "<template class=\"GtkListItem\">"
+    "<property name=\"child\">"
+      "<object class=\"GtkLabel\">"
+        "<binding name=\"label\">"
+          "<closure type=\"gchararray\" function=\"get_file_name\">"
+            "<lookup name=\"item\">GtkListItem</lookup>"
+          "</closure>"
+        "</binding>"
+      "</object>"
+    "</property>"
+  "</template>"
+"</interface>"
+~~~
+
+- "gchararray" is the type of strings.
+"gchar" is the same as "char" type.
+Therefore, "gchararray" is "an array of char type", which is the same as string type.
+It is used to get the type of GValue object.
+GValue is a generic value and it can contain various type of values.
+For example, the type can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
+For the further information, refer to GFileAttribute and GFileInfo section in [GIO API reference](https://developer.gnome.org/gio/stable/).
+- closure tag has type attribute and function attribute.
+Function attribute specifies a function name and type attribute specifies the type of the return value of the function.
+The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
+`<lookup name=\"item\">GtkListItem</lookup>` gives two parameters.
+The first parameter is GListItem object and the second parameter is item property, which is a GFileInfo object in the GtkDirectoryList Object.
+- `gtk_file_name` function first check the `info` parameter.
+Because it can be NULL when GListItem `item` is unbound.
+If its GFileInfo, then return the filename (copy of the filename).
+
+The whole program (`list3.c`) is as follows.
+The program is located in [src/misc](misc) directory.
+
+@@@include
+misc/list3.c
+@@@
+
+Compile and execute it.
+
+~~~
+$ cd misc
+$ comp list3
+$ ./a.out
+~~~
+
+![screenshot list3](../image/list3.png){width=6.04cm height=4.41cm}
+

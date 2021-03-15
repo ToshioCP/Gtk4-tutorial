@@ -324,4 +324,173 @@ GtkSingleSelection is used, so user can select one item at a time.
 Because this is a small program, the ui data is given as strings.
 However, generally, ui file is better than string and using resource compiler is the best choice.
 
+## GtkDirectoryList
+
+GtkDirectoryList is a list model containing GFileInfo objects which are information of files under a certain directory.
+It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
+The list model is created by `gtk_directory_list_new` function.
+
+~~~C
+GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
+~~~
+
+`attributes` is a comma separated list of file attributes.
+File attributes are key-value pairs.
+A key consists of a namespace and a name.
+For example, "standard::name" key is the name of a file.
+"standard" means general file information.
+"name" means filename.
+The following table shows some example.
+
+|key             |meaning                                                             |
+|:---------------|:-------------------------------------------------------------------|
+|standard::type  |file type. for example, regular file, directory, symbolic link, etc.|
+|standard::name  |filename                                                            |
+|standard::size  |file size in bytes                                                  |
+|access::can-read|read privilege if the user is able to read the file                 |
+|time::modified  |the time the file was last modified in seconds since the UNIX epoch |
+
+The current directory is ".".
+The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
+
+~~~C
+GFile *file = g_file_new_for_path (".");
+GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+g_object_unref (file);
+~~~
+
+It is not so difficult to make file listing program by changing `list2.c` in the previous subsection.
+One problem is that GInfoFile doesn't have properties.
+Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
+Instead, closure tag is appropriate in this case.
+Closure tag specifies a function and the type of the return value of the function.
+
+~~~C
+char *
+get_file_name (GtkListItem *item, GFileInfo *info) {
+  if (! G_IS_FILE_INFO (info))
+    return NULL;
+  else
+    return g_strdup (g_file_info_get_name (info));
+}
+
+... ...
+... ...
+
+"<interface>"
+  "<template class=\"GtkListItem\">"
+    "<property name=\"child\">"
+      "<object class=\"GtkLabel\">"
+        "<binding name=\"label\">"
+          "<closure type=\"gchararray\" function=\"get_file_name\">"
+            "<lookup name=\"item\">GtkListItem</lookup>"
+          "</closure>"
+        "</binding>"
+      "</object>"
+    "</property>"
+  "</template>"
+"</interface>"
+~~~
+
+- "gchararray" is the type of strings.
+"gchar" is the same as "char" type.
+Therefore, "gchararray" is "an array of char type", which is the same as string type.
+It is used to get the type of GValue object.
+GValue is a generic value and it can contain various type of values.
+For example, the type can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
+For the further information, refer to GFileAttribute and GFileInfo section in [GIO API reference](https://developer.gnome.org/gio/stable/).
+- closure tag has type attribute and function attribute.
+Function attribute specifies a function name and type attribute specifies the type of the return value of the function.
+The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
+`<lookup name=\"item\">GtkListItem</lookup>` gives two parameters.
+The first parameter is GListItem object and the second parameter is item property, which is a GFileInfo object in the GtkDirectoryList Object.
+- `gtk_file_name` function first check the `info` parameter.
+Because it can be NULL when GListItem `item` is unbound.
+If its GFileInfo, then return the filename (copy of the filename).
+
+The whole program (`list3.c`) is as follows.
+The program is located in [src/misc](../src/misc) directory.
+
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 char *
+ 4 get_file_name (GtkListItem *item, GFileInfo *info) {
+ 5   if (! G_IS_FILE_INFO (info))
+ 6     return NULL;
+ 7   else
+ 8     return g_strdup (g_file_info_get_name (info));
+ 9 }
+10 
+11 /* ----- activate, open, startup handlers ----- */
+12 static void
+13 tfe_activate (GApplication *application) {
+14   GtkApplication *app = GTK_APPLICATION (application);
+15   GtkWidget *win = gtk_application_window_new (app);
+16   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+17   GtkWidget *scr = gtk_scrolled_window_new ();
+18   gtk_window_set_child (GTK_WINDOW (win), scr);
+19 
+20   GFile *file = g_file_new_for_path (".");
+21   GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+22   g_object_unref (file);
+23   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (dl));
+24 
+25   const char *ui_string =
+26 "<interface>"
+27   "<template class=\"GtkListItem\">"
+28     "<property name=\"child\">"
+29       "<object class=\"GtkLabel\">"
+30         "<binding name=\"label\">"
+31           "<closure type=\"gchararray\" function=\"get_file_name\">"
+32             "<lookup name=\"item\">GtkListItem</lookup>"
+33           "</closure>"
+34         "</binding>"
+35       "</object>"
+36     "</property>"
+37   "</template>"
+38 "</interface>"
+39 ;
+40   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
+41   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+42 
+43   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
+44   gtk_list_view_set_enable_rubberband (GTK_LIST_VIEW (lv), TRUE);
+45   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+46   gtk_widget_show (win);
+47 }
+48 
+49 static void
+50 tfe_startup (GApplication *application) {
+51 }
+52 
+53 /* ----- main ----- */
+54 int
+55 main (int argc, char **argv) {
+56   GtkApplication *app;
+57   int stat;
+58 
+59   app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
+60 
+61   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
+62   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+63 
+64   stat =g_application_run (G_APPLICATION (app), argc, argv);
+65   g_object_unref (app);
+66   return stat;
+67 }
+68 
+~~~
+
+Compile and execute it.
+
+~~~
+$ cd misc
+$ comp list3
+$ ./a.out
+~~~
+
+![screenshot list3](../image/list3.png)
+
+
 Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md)
