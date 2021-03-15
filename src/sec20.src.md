@@ -22,14 +22,14 @@ Such programs are difficult to maintain.
 The file `tfeapplication.c` should be divided into several files.
 
 - `tfeapplication.c` only has codes related to GtkApplication.
-- A file about GtkApplicationWindow
-- A file about a preference dialog
-- A file about an alert dialog
+- A file for GtkApplicationWindow
+- A file for a preference dialog
+- A file for an alert dialog
 
 The preference dialog is defined by a ui file.
 And it has GtkBox, GtkLabel and GtkFontButton in it.
 Such widget is called composite widget.
-Composite widget is a child object of the parent widget.
+Composite widget is a child object (not child widget) of a widget.
 For example, the preference composite widget is a child object of GtkDialog.
 Composite widget can be built from template XML.
 Next subsection shows how to build a preference dialog.
@@ -61,7 +61,7 @@ tfe7/tfepref.h
 - 6-7: When you define a new object, you need to write these two lines.
 Refer to [Section 7](sec7.src.md).
 - 9-10: `tfe_pref_new` generates a new TfePref object.
-It has a parameter which the object use as a transient parent to show the dialog.
+It has a parameter which the object uses as a transient parent to show the dialog.
 
 @@@include
 tfe7/tfepref.c
@@ -95,7 +95,7 @@ The pointer to the object will be assigned to the variable when an instance is g
 The template has been made during the class initialization process.
 Now it is implemented to the instance.
 - 23: Create GSettings object with the id `com.github.ToshioCP.tfe`.
-- 24: Bind the font key in the GSettings object and the font property in the GtkFontButton.
+- 24: Bind the font key in the GSettings object to the font property in the GtkFontButton.
 
 - 36-39: The function `tfe_pref_new` creates an instance of TfePref.
 The parameter `win` is a transient parent.
@@ -154,7 +154,7 @@ The instruction how to use this object is as follows.
 2. Create a TfeAlert object.
 3. Connect "response" signal to a handler
 4. Show the dialog
-5. In the signal handler do something along the response-id.
+5. In the signal handler do something with regard to the response-id.
 Then destroy the dialog.
 
 ## Top level window
@@ -166,7 +166,23 @@ The object name is "TfeWindow".
 tfe7/tfewindow.ui
 @@@
 
-This XML file is the same as before except template tag.
+This XML file is almost same as before except template tag and "action-name" property.
+
+GtkButton implements GtkActionable interface, which has "action-name" property.
+If this property is set, GtkButton activates the action when it is clicked.
+For example, if an open button is clicked, "win.open" action will be activated and `open_activated` handler will be invoked.
+
+This action is also used by "\<Control\>o" accelerator (See the source code of `tfewindow.c` below).
+If you use "clicked" signal for the button, you need its signal handler.
+Then, there are two handlers:
+
+- a handler for the "clicked" signal on the button
+- a handler for the "activate" signal on the "win.open" action, to which "\<Control\>o" accelerator is connected
+
+These two handlers do almost same thing.
+It is inefficient.
+Connecting buttons to actions is a good way to reduce unnecessary codes.
+
 
 @@@include
 tfe7/tfewindow.h
@@ -183,26 +199,25 @@ The function `tfe_window_new` creates a TfeWindow instance.
 tfe7/tfewindow.c
 @@@
 
-- 20-32: `alert_response_cb` is a call back function of the "response" signal of TfeAlert dialog.
+- 17-29: `alert_response_cb` is a call back function of the "response" signal of TfeAlert dialog.
 This is the same as before except `gtk_window_destroy(GTK_WINDOW (win))` is used instead of `tfe_application_quit`.
-- 34-60: Handlers of Button clicked signal.
-- 62-123: Handlers of action activated signal.
+- 31-102: Handlers of action activated signal.
 The `user_data` is a pointer to TfeWindow instance.
-- 125-135: A handler of "changed::font" signal of GSettings object.
-- 132: Gets the font from GSettings data.
-- 133: Gets a PangoFontDescription from the font.
+- 104-114: A handler of "changed::font" signal of GSettings object.
+- 111: Gets the font from GSettings data.
+- 112: Gets a PangoFontDescription from the font.
 In the previous version, the program gets the font description from the GtkFontButton.
 The button data and GSettings data are the same.
 Therefore, the data got here is the same as the data in the GtkFontButton.
 In addition, we don't need to worry about the preference dialog is alive or not thanks to the GSettings.
-- 134: Sets CSS on the display with the font description.
-- 137-152: Public functions.
-- 155-161: Dispose handler.
+- 113: Sets CSS on the display with the font description.
+- 116-131: Public functions.
+- 133-140: Dispose handler.
 The GSettings object needs to be released.
-- 163-191: Object initialize function.
-- 168: Generates a composite widget with the template.
-- 170-173: Insert menu to the menu button.
-- 175-176: Creates a GSettings object with the id.
+- 142-170: Object initialize function.
+- 147: Generates a composite widget with the template.
+- 150-152: Insert menu to the menu button.
+- 154-155: Creates a GSettings object with the id.
 Connects "changed::font" signal to the handler `changed_font_cb`.
 This signal emits when the GSettings data is changed.
 The second part "font" of the signal name "changed::font" is called details.
@@ -215,14 +230,13 @@ For example, Suppose a GSettings object has three keys "a", "b" and "c".
 In this version of tfe, there is only one key ("font").
 So, even if the signal doesn't have a detail, the result is the same.
 But in the future version, it will probably need details.
-- 178-188: Creates actions.
-- 190: Sets CSS font.
-- 193-207: Class initialization function.
-- 197: Sets the dispose handler.
-- 198: Sets the composite widget template
-- 199-203: Binds private variable with child objects in the template.
-- 204-206: Binds signal handlers with signal tags in the template.
-- 209-212: `tfe_window_new`.
+- 157-167: Creates actions.
+- 169: Sets CSS font.
+- 172-180: Class initialization function.
+- 176: Sets the dispose handler.
+- 177: Sets the composite widget template
+- 178-179: Binds private variable with child objects in the template.
+- 182-185: `tfe_window_new`.
 This function creates TfeWindow instance.
 
 ## TfeApplication
@@ -233,7 +247,7 @@ The file `tfeapplication.c` is now very simple.
 tfe7/tfeapplication.c
 @@@
 
-- 3-11: Activate signal handler.
+- 4-11: Activate signal handler.
 It uses `tfe_window_notebook_page_new` instead of `notebook_page_new`.
 - 13-20: Open signal handler.
 Thanks to `tfe_window_notebook_page_new_with_files`, this handler becomes very simple.

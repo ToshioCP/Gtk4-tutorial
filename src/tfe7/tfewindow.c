@@ -6,9 +6,6 @@
 
 struct _TfeWindow {
   GtkApplicationWindow parent;
-  GtkButton *btno;
-  GtkButton *btns;
-  GtkButton *btnc;
   GtkMenuButton *btnm;
   GtkNotebook *nb;
   GSettings *settings;
@@ -31,24 +28,28 @@ alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
   gtk_window_destroy (GTK_WINDOW (alert));
 }
 
-/* ----- button handlers ----- */
-void
-open_cb (GtkNotebook *nb) {
-  notebook_page_open (nb);
+/* ----- action activated handlers ----- */
+static void
+open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  TfeWindow *win = TFE_WINDOW (user_data);
+
+  notebook_page_open (GTK_NOTEBOOK (win->nb));
 }
 
-void
-save_cb (GtkNotebook *nb) {
-  notebook_page_save (nb);
+static void
+save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  TfeWindow *win = TFE_WINDOW (user_data);
+
+  notebook_page_save (GTK_NOTEBOOK (win->nb));
 }
 
-void
-close_cb (GtkNotebook *nb) {
+static void
+close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  TfeWindow *win = TFE_WINDOW (user_data);
   TfeAlert *alert;
-  TfeWindow *win =  TFE_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), TFE_TYPE_WINDOW));
 
-  if (has_saved (nb))
-    notebook_page_close (nb);
+  if (has_saved (win->nb))
+    notebook_page_close (win->nb);
   else {
     win->is_quit = false;
     alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
@@ -57,28 +58,6 @@ close_cb (GtkNotebook *nb) {
     g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
     gtk_widget_show (GTK_WIDGET (alert));
   }
-}
-
-/* ----- action activated handlers ----- */
-static void
-open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  open_cb (GTK_NOTEBOOK (win->nb));
-}
-
-static void
-save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  save_cb (GTK_NOTEBOOK (win->nb));
-}
-
-static void
-close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  close_cb (GTK_NOTEBOOK (win->nb));
 }
 
 static void
@@ -196,14 +175,8 @@ tfe_window_class_init (TfeWindowClass *class) {
 
   object_class->dispose = tfe_window_dispose;
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfewindow.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btno);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btns);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnc);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), open_cb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), save_cb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), close_cb);
 }
 
 GtkWidget *

@@ -18,13 +18,13 @@
             <child>
               <object class="GtkButton" id="btno">
                 <property name="label">Open</property>
-                <signal name="clicked" handler="open_cb" swapped="TRUE" object="nb"></signal>
+                <property name="action-name">win.open</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btns">
                 <property name="label">Save</property>
-                <signal name="clicked" handler="save_cb" swapped="TRUE" object="nb"></signal>
+                <property name="action-name">win.save</property>
               </object>
             </child>
             <child>
@@ -35,7 +35,7 @@
             <child>
               <object class="GtkButton" id="btnc">
                 <property name="label">Close</property>
-                <signal name="clicked" handler="close_cb" swapped="TRUE" object="nb"></signal>
+                <property name="action-name">win.close</property>
               </object>
             </child>
             <child>

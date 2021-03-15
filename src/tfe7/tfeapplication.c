@@ -6,7 +6,7 @@ tfe_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 
-  tfe_window_notebook_page_new (win);
+  tfe_window_notebook_page_new (TFE_WINDOW (win));
   gtk_widget_show (GTK_WIDGET (win));
 }
 
@@ -15,18 +15,16 @@ tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 
-  tfe_window_notebook_page_new_with_files (win, files, n_files);
+  tfe_window_notebook_page_new_with_files (TFE_WINDOW (win), files, n_files);
   gtk_widget_show (win);
 }
 
 static void
 tfe_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
-  GtkBuilder *build;
-  TfeWindow *win;
   int i;
 
-  win = tfe_window_new (app);
+  tfe_window_new (app);
 
 /* ----- accelerator ----- */ 
   struct {
