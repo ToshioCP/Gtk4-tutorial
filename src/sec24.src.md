@@ -303,5 +303,5 @@ $ comp list3
 $ ./a.out
 ~~~
 
-![screenshot list3](../image/list3.png){width=6.04cm height=4.41cm}
+![screenshot list3](../image/list3.png){width=10cm height=7.3cm}
 

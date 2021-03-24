@@ -30,7 +30,7 @@ teardown_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_d
 
 /* ----- activate, open, startup handlers ----- */
 static void
-tfe_activate (GApplication *application) {
+app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = gtk_application_window_new (app);
   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -55,7 +55,7 @@ tfe_activate (GApplication *application) {
 }
 
 static void
-tfe_startup (GApplication *application) {
+app_startup (GApplication *application) {
 }
 
 /* ----- main ----- */
@@ -66,8 +66,8 @@ main (int argc, char **argv) {
 
   app = gtk_application_new ("com.github.ToshioCP.list1", G_APPLICATION_FLAGS_NONE);
 
-  g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

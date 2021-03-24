@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkApplicationWindow" id="win">
+    <property name="title">file list</property>
+    <property name="default-width">600</property>
+    <property name="default-height">400</property>
+    <child>
+      <object class="GtkBox" id="boxv">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class="GtkBox" id="boxh">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <child>
+              <object class="GtkLabel" id="dmy1">
+                <property name="hexpand">TRUE</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btnlist">
+                <property name="name">btnlist</property>
+                <property name="action-name">win.view</property>
+                <property name="action-target">&apos;list&apos;</property>
+               <child>
+                  <object class="GtkImage">
+                    <property name="resource">/com/github/ToshioCP/list4/list.png</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btngrid">
+                <property name="name">btngrid</property>
+                <property name="action-name">win.view</property>
+                <property name="action-target">&apos;grid&apos;</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="resource">/com/github/ToshioCP/list4/grid.png</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="dmy2">
+                <property name="width-chars">10</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="scr">
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkListView" id="list">
+    <property name="model">
+      <object class="GtkSingleSelection" id="singleselection">
+        <property name="model">
+          <object class="GtkDirectoryList" id="directorylist">
+            <property name="attributes">standard::name,standard::icon,standard::content-type</property>
+          </object>
+        </property>
+      </object>
+    </property>
+    <property name="factory">
+      <object class="GtkBuilderListItemFactory">
+        <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkImage">
+            <binding name="gicon">
+              <closure type="GIcon" function="get_icon">
+                <lookup name="item">GtkListItem</lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="hexpand">TRUE</property>
+            <property name="xalign">0</property>
+            <binding name="label">
+              <closure type="gchararray" function="get_file_name">
+                <lookup name="item">GtkListItem</lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>
+        ]]></property>
+      </object>
+    </property>
+  </object>
+  <object class="GtkGridView" id="grid">
+    <property name="model">singleselection</property>
+    <property name="factory">
+      <object class="GtkBuilderListItemFactory">
+        <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
+            <binding name="gicon">
+              <closure type="GIcon" function="get_icon">
+                <lookup name="item">GtkListItem</lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="hexpand">TRUE</property>
+            <property name="xalign">0.5</property>
+            <binding name="label">
+              <closure type="gchararray" function="get_file_name">
+                <lookup name="item">GtkListItem</lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>
+        ]]></property>
+      </object>
+    </property>
+  </object>
+</interface>
+

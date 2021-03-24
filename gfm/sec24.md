@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)
 
 # GtkListView
 
@@ -150,7 +150,7 @@ GtkNoSelection is used, so user can't select any item.
 30 
 31 /* ----- activate, open, startup handlers ----- */
 32 static void
-33 tfe_activate (GApplication *application) {
+33 app_activate (GApplication *application) {
 34   GtkApplication *app = GTK_APPLICATION (application);
 35   GtkWidget *win = gtk_application_window_new (app);
 36   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -175,7 +175,7 @@ GtkNoSelection is used, so user can't select any item.
 55 }
 56 
 57 static void
-58 tfe_startup (GApplication *application) {
+58 app_startup (GApplication *application) {
 59 }
 60 
 61 /* ----- main ----- */
@@ -186,8 +186,8 @@ GtkNoSelection is used, so user can't select any item.
 66 
 67   app = gtk_application_new ("com.github.ToshioCP.list1", G_APPLICATION_FLAGS_NONE);
 68 
-69   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-70   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+69   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+70   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 71 
 72   stat =g_application_run (G_APPLICATION (app), argc, argv);
 73   g_object_unref (app);
@@ -260,7 +260,7 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
  2 
  3 /* ----- activate, open, startup handlers ----- */
  4 static void
- 5 tfe_activate (GApplication *application) {
+ 5 app_activate (GApplication *application) {
  6   GtkApplication *app = GTK_APPLICATION (application);
  7   GtkWidget *win = gtk_application_window_new (app);
  8   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -297,7 +297,7 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 39 }
 40 
 41 static void
-42 tfe_startup (GApplication *application) {
+42 app_startup (GApplication *application) {
 43 }
 44 
 45 /* ----- main ----- */
@@ -308,8 +308,8 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 50 
 51   app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
 52 
-53   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-54   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+53   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+54   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 55 
 56   stat =g_application_run (G_APPLICATION (app), argc, argv);
 57   g_object_unref (app);
@@ -424,7 +424,7 @@ The program is located in [src/misc](../src/misc) directory.
 10 
 11 /* ----- activate, open, startup handlers ----- */
 12 static void
-13 tfe_activate (GApplication *application) {
+13 app_activate (GApplication *application) {
 14   GtkApplication *app = GTK_APPLICATION (application);
 15   GtkWidget *win = gtk_application_window_new (app);
 16   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -455,31 +455,30 @@ The program is located in [src/misc](../src/misc) directory.
 41   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
 42 
 43   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
-44   gtk_list_view_set_enable_rubberband (GTK_LIST_VIEW (lv), TRUE);
-45   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-46   gtk_widget_show (win);
-47 }
-48 
-49 static void
-50 tfe_startup (GApplication *application) {
-51 }
-52 
-53 /* ----- main ----- */
-54 int
-55 main (int argc, char **argv) {
-56   GtkApplication *app;
-57   int stat;
-58 
-59   app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
-60 
-61   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-62   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
-63 
-64   stat =g_application_run (G_APPLICATION (app), argc, argv);
-65   g_object_unref (app);
-66   return stat;
-67 }
-68 
+44   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+45   gtk_widget_show (win);
+46 }
+47 
+48 static void
+49 app_startup (GApplication *application) {
+50 }
+51 
+52 /* ----- main ----- */
+53 int
+54 main (int argc, char **argv) {
+55   GtkApplication *app;
+56   int stat;
+57 
+58   app = gtk_application_new ("com.github.ToshioCP.list3", G_APPLICATION_FLAGS_NONE);
+59 
+60   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+61   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+62 
+63   stat =g_application_run (G_APPLICATION (app), argc, argv);
+64   g_object_unref (app);
+65   return stat;
+66 }
+67 
 ~~~
 
 Compile and execute it.
@@ -493,4 +492,4 @@ $ ./a.out
 ![screenshot list3](../image/list3.png)
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)

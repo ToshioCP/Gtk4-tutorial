@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/list5">
+    <file>list5.ui</file>
+    <file>list.png</file>
+    <file>grid.png</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/list4">
+    <file>list4.ui</file>
+    <file>factory_list.ui</file>
+    <file>factory_grid.ui</file>
+    <file>list.png</file>
+    <file>grid.png</file>
+  </gresource>
+</gresources>

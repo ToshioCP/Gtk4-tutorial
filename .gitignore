@@ -24,8 +24,8 @@ src/color/_build
 src/turtle/_build
 src/temp
 src/le
-
-doc/GFile_example/_build
+src/list4/_build
+src/list5/_build
 html/*
 latex/*
 

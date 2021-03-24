@@ -10,7 +10,7 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
 
 /* ----- activate, open, startup handlers ----- */
 static void
-tfe_activate (GApplication *application) {
+app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = gtk_application_window_new (app);
   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -41,13 +41,12 @@ tfe_activate (GApplication *application) {
   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
 
   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
-  gtk_list_view_set_enable_rubberband (GTK_LIST_VIEW (lv), TRUE);
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
   gtk_widget_show (win);
 }
 
 static void
-tfe_startup (GApplication *application) {
+app_startup (GApplication *application) {
 }
 
 /* ----- main ----- */
@@ -56,10 +55,10 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new ("com.github.ToshioCP.list3", G_APPLICATION_FLAGS_NONE);
 
-  g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
