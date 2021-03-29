@@ -59,6 +59,9 @@ tail=<<'EOS'
 </html>
 EOS
 
+  File.delete("sample.md")
+  File.delete("sample.html")
+
   body = File.read(html_file)
   File.write(html_file, head+body+tail)
 end

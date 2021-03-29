@@ -26,6 +26,7 @@ src/temp
 src/le
 src/list4/_build
 src/list5/_build
+src/column
 html/*
 latex/*
 
