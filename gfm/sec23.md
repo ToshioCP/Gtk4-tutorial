@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
 
 # Tiny turtle graphics interpreter
 
@@ -1926,4 +1926,4 @@ Lately, lots of source codes are in the internet.
 Maybe reading source codes are the most useful for programmers.
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)

@@ -36,7 +36,7 @@ run_cb (GtkWidget *btnr) {
 
 void
 open_cb (GtkWidget *btno) {
-  tfe_text_view_open (TFE_TEXT_VIEW (tv), win);
+  tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
 }
 
 void

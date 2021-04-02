@@ -19,7 +19,7 @@ However, first of all, I'd like to focus on the object TfeTextView.
 It is a child object of GtkTextView and has a new member `file` in it.
 The important thing is to manage the Gfile object pointed by `file`.
 
-- What is necessary to GFile when generating (or initializing) TfeTextView?
+- What is necessary to GFile when creating (or initializing) TfeTextView?
 - What is necessary to GFile when destructing TfeTextView?
 - TfeTextView should read/write a file by itself or not?
 - How it communicates with objects outside?
@@ -88,7 +88,7 @@ struct _GtkTextView
 In each structure, its parent instance is declared at the top of members.
 So, every ancestors is included in the child instance.
 This is very important.
-It guarantees a child widget to derive all the features from ancestors.
+It guarantees a child widget to inherit all the features from ancestors.
 The structure of `TfeTextView` is like the following diagram.
 
 ![The structure of the instance TfeTextView](../image/TfeTextView.png){width=14.39cm height=2.16cm}
@@ -104,7 +104,7 @@ tfetextview/tfetextview.c tfe_text_view_new
 
 When this function is run, the following procedure is gone through.
 
-1. Initialize GObject part in TfeTextView instance.
+1. Initialize GObject (GInitiallyUnowned) part in TfeTextView instance.
 2. Initialize GtkWidget part in TfeTextView instance.
 3. Initialize GtkTextView part in TfeTextView instance.
 4. Initialize TfeTextView part in TfeTextView instance.
@@ -123,7 +123,7 @@ This function just initializes `tv->file` to be `NULL`.
 
 ## Functions and Classes
 
-In Gtk, all objects derived from GObject have class and instance.
+In Gtk, all objects derived from GObject have class and instance (except abstract object).
 Instance is memories which has a structure defined by C structure declaration as I mentioned in the previous two subsections.
 Each object can have more than one instance.
 Those instances have the same structure.
@@ -205,14 +205,14 @@ It is illustrated in the following diagram.
 ## Destruction of TfeTextView
 
 Every Object derived from GObject has a reference count.
-If an object A refers an object B, then A keeps a pointer to B in A and at the same time increases the reference count of B by one with the function `g_object_ref (B)`.
+If an object A refers to an object B, then A keeps a pointer to B in A and at the same time increases the reference count of B by one with the function `g_object_ref (B)`.
 If A doesn't need B any longer, then A discards the pointer to B (usually it is done by assigning NULL to the pointer) and decreases the reference count of B by one with the function `g_object_unref (B)`.
 
 If two objects A and B refer to C, then the reference count of C is two.
 If A no longer needs C, A discards the pointer to C and decreases the reference count in C by one.
 Now the reference count of C is one.
 In the same way, if B no longer needs C, B discards the pointer to C and decreases the reference count in C by one.
-At this moment, no object refers C and the reference count of C is zero.
+At this moment, no object refers to C and the reference count of C is zero.
 This means C is no longer useful.
 Then C destructs itself and finally the memories allocated to C is freed.
 

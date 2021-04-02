@@ -105,12 +105,10 @@ saveas_dialog_response (GtkWidget *dialog, gint response, TfeTextView *tv) {
     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
     if (! G_IS_FILE (file))
       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
-    else {
-      save_file(file, tb, GTK_WINDOW (win));
+    else if (save_file(file, tb, GTK_WINDOW (win))) {
       if (G_IS_FILE (tv->file))
         g_object_unref (tv->file);
       tv->file = file;
-      gtk_text_buffer_set_modified (tb, FALSE);
       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
     }
   }
@@ -130,10 +128,8 @@ tfe_text_view_save (TfeTextView *tv) {
     tfe_text_view_saveas (tv);
   else if (! G_IS_FILE (tv->file))
     g_error ("TfeTextView: The pointer in this object isn't NULL nor GFile object.\n");
-  else {
-    if (save_file (tv->file, tb, GTK_WINDOW (win)))
-      gtk_text_buffer_set_modified (tb, FALSE);
-  }
+  else
+    save_file (tv->file, tb, GTK_WINDOW (win));
 }
 
 void
@@ -209,13 +205,13 @@ open_dialog_response(GtkWidget *dialog, gint response, TfeTextView *tv) {
 }
 
 void
-tfe_text_view_open (TfeTextView *tv, GtkWidget *win) {
+tfe_text_view_open (TfeTextView *tv, GtkWindow *win) {
   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
   g_return_if_fail (GTK_IS_WINDOW (win));
 
   GtkWidget *dialog;
 
-  dialog = gtk_file_chooser_dialog_new ("Open file", GTK_WINDOW (win), GTK_FILE_CHOOSER_ACTION_OPEN,
+  dialog = gtk_file_chooser_dialog_new ("Open file", win, GTK_FILE_CHOOSER_ACTION_OPEN,
                                         "Cancel", GTK_RESPONSE_CANCEL,
                                         "Open", GTK_RESPONSE_ACCEPT,
                                         NULL);
