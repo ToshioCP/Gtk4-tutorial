@@ -117,7 +117,7 @@ If it doesn't point GFile, it outputs an error message to the log.
 - 36-42: Otherwise, it calls `save_file` to save the contents to the file.
 `tv->file` is changed, but if the old GFile pointed by `tv->file` exists, it is freed in advance.
 Emits "change-file" signal.
-- 46-51: `Tfe_text_view_save` function.
+- 46-61: `Tfe_text_view_save` function.
 - 48: If `tv` is not a pointer to TfeTextView, then it logs an error message and immediately returns.
 This function is similar to `g_return_val_if_fail` function, but no value is returned because `tfe_text_view_save` doesn't return a value.
 - 53-54: If the buffer hasn't modified, then it doesn't need to save it.
