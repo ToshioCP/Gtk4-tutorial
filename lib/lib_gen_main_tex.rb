@@ -1,7 +1,7 @@
 # lib_gen_main_tex.rb
 #  -- Library ruby script to generate main.tex.
 
-def gen_main_tex directory, texfilenames, appendixfilenames
+def gen_main_tex directory, texfilenames, appendixfilenames=nil
   #  parameter: directory: the destination directory to put generated files.
   #             texfilenames: an array of latex files. Each of them is "secXX.tex" where XX is digits.   
 

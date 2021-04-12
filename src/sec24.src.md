@@ -85,34 +85,34 @@ You can also create them alone and add GListModel later.
 ## GtkListView
 
 GtkListView is a widget to show GListModel items.
-GtkListViewItem is used by GtkListView to represent items of a list model.
-But, GtkListViewItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListView to display an item of the list model.
-"item" property of GtkListViewItem points an object that belongs to the list model.
+GtkListItem is used by GtkListView to represent items of a list model.
+But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListView to display an item of the list model.
+"item" property of GtkListItem points an object that belongs to the list model.
 
-![GtkListViewItem](../image/gtklistviewitem.png){width=10cm height=7.5cm}
+![GtkListItem](../image/gtklistitem.png){width=10cm height=7.5cm}
 
-In case the number of items is very big, for example more than a thousand, GtkListViewItem is recycled and connected to another item which is newly displayed.
-This recycle makes the number of GtkListViewItem objects fairly small, less than 200.
+In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
+This recycle makes the number of GtkListItem objects fairly small, less than 200.
 This is very effective to restrain the growth of memory consumption so that GListModel can contain lots of items, for example, more than a million items.
 
 ## GtkListItemFactory
 
-GtkListItemFactory creates or recycles GtkListViewItem and connects it with an item of the list model.
+GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
 There are two child objects of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
 
 ### GtkSignalListItemFactory
 
-GtkSignalListItemFactory provides signals for users to configure a GtkListViewItem object.
+GtkSignalListItemFactory provides signals for users to configure a GtkListItem object.
 There are four signals.
 
-1. "setup" is emitted to set up GtkListViewItem object.
+1. "setup" is emitted to set up GtkListItem object.
 A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of GtkListViewItem object to it.
-This setting is kept even the GtkListViewItem object is recycled (to bind to another item of GModelList).
+For example, creates a GtkLabel widget and sets the child property of GtkListItem object to it.
+This setting is kept even the GtkListItem object is recycled (to bind to another item of GModelList).
 2. "bind" is emitted to bind an item in the list model to the widget.
-For example, a user gets the item object from "item" property of the GtkListViewItem object.
+For example, a user gets the item object from "item" property of the GtkListItem object.
 Then gets the string of the item and sets the label property of the GtkLabel object with the string.
-This signal is emitted when the GtkListViewItem is newly created and set up, recycled or some changes has happened to the item of the list.
+This signal is emitted when the GtkListItem is newly created and set up, recycled or some changes has happened to the item of the list.
 3. "unbind" is emitted to unbind an item.
 A user undoes everything done in step 2 in the signal handler.
 If some object are created in step 2, they must be destroyed.
