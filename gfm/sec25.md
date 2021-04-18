@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)
 
 # GtkGridView and activate signal
 
@@ -561,4 +561,4 @@ If you feel some difficulty, it is better for you to separate the ui file.
 A directory [src/list5](../src/list5) includes the ui file above.
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)

@@ -42,3 +42,4 @@ You can read it without download.
 1. [Tiny turtle graphics interpreter](gfm/sec23.md)
 1. [GtkListView](gfm/sec24.md)
 1. [GtkGridView and activate signal](gfm/sec25.md)
+1. [GtkExpression](gfm/sec26.md)

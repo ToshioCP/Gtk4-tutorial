@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkWindow" id="win2">
+    <binding name="title">
+      <closure type="gchararray" function="set_title">
+        <lookup name="default-width" type="GtkWindow"></lookup>
+        <lookup name="default-height" type="GtkWindow"></lookup>
+      </closure>
+    </binding>
+    <property name="default-width">600</property>
+    <property name="default-height">400</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class="GtkLabel">
+            <binding name="label">
+              <constant type="gint">100</constant>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <binding name="label">
+              <lookup name="text">buffer</lookup>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <binding name="label">
+              <lookup name="application-id">
+                <lookup name="application">win2</lookup>
+              </lookup>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="entry">
+            <property name="buffer">
+              <object class="GtkEntryBuffer" id="buffer"></object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
