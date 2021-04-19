@@ -35,13 +35,13 @@ task md: ["Readme.md", "src/turtle/turtle_doc.md"]
 
 file "Readme.md" => mdfilenames do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
-  src2md "src/abstract.src.md", "gfm/abstract.md"
-  File.open("gfm/abstract.md") do |file|
+  src2md "src/abstract.src.md", "abstract.md"
+  File.open("abstract.md") do |file|
     file.readlines.each do |line|
       buf << line
     end
   end
-  File.delete("gfm/abstract.md")
+  File.delete("abstract.md")
   buf << "\n"
   buf << "## Table of contents\n\n"
   buf << "\n"
