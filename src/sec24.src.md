@@ -191,7 +191,17 @@ So, the lookup tag is like this:
 string <- GtkStringObject <- item <- GtkListItem
 ~~~
 
-The source code is as follows.
+The last lookup tag has a content `GtkListItem`.
+Usually, C type like `GtkListItem` doesn't appear in the content of tags.
+This is a special case.
+There is an explanation about it in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
+
+> Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
+
+Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
+`this` object will be explained in section 26.
+
+The C source code is as follows.
 Its name is `list2.c` and located under [src/misc](misc) directory.
 
 @@@include

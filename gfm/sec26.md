@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)
 
 # GtkExpression
 
@@ -274,7 +274,7 @@ It watches `expression2`.
 And whenever the value from `expression2` changes, it evaluates `expression2` and set "label" property in `label2`.
 So, the change of the text in `entry` reflects "label" in `label2` immediately.
 
-## closure expression
+## Closure expression
 
 Closure expression calls closure when it is evaluated.
 A closure is a generic representation of a callback (a pointer to a function).
@@ -473,7 +473,7 @@ Because similar expressions are built with the ui file.
 48 </interface>
 ~~~
 
-### constant tag
+### Constant tag
 
 A constant tag corresponds to a constant expression.
 
@@ -503,7 +503,7 @@ A property tag is more straightforward.
 This example just shows the way how to use constant tag.
 Constant tag is mainly used to give a constant argument to a closure.
 
-### lookup tag
+### Lookup tag
 
 A lookup tag corresponds to a property expression.
 Line 23 to 27 is copied here.
@@ -552,7 +552,29 @@ The nested tag makes a chain like:
 "label" <= "application-id" <= "application" <= `win2`
 ~~~
 
-### closure tag
+By the way, the application of `win2` is set after the objects in ui file are built.
+Look at `exp.c`.
+`gtk_window_set_application` is called after `gtk_build_new_from_resource`.
+
+~~~C
+build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp.ui");
+GtkWidget *win2 = GTK_WIDGET (gtk_builder_get_object (build, "win2"));
+gtk_window_set_application (GTK_WINDOW (win2), app);
+~~~
+
+Therefore, before the call for `gtk_window_set_application`, the "application" property of `win2` is *not* set.
+So, the evaluation of `<lookup name="application">win2</lookup>` fails.
+And the evaluation of `<lookup name="application-id">` also fails.
+A function `gtk_expression_bind ()`, which corresponds to `binding` tag, doesn't update the target property if the expression fails.
+So, the "label" property isn't updated at the first evaluation.
+
+Note that an evaluation can fail.
+The care is especially necessary when you write a callback for a closure tag which has contents of expressions like lookup tags.
+The expressions are given to the callback as an argument.
+If an expression fails the argument will be NULL.
+You need to check if the argument exactly points the object that is expected by the callback.
+
+### Closure tag
 
 The lines from 3 to 9 include a closure tag.
 
@@ -617,4 +639,4 @@ Because the "label" property of the second GtkLabel instance is bound to the tex
 If you resize the window, then the size appears in the title bar because the "title" property is bound to "default^width" and "default-height" properties.
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md)
+Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)

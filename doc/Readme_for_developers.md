@@ -247,12 +247,10 @@ For example, a text file "sample.md" has a table like this:
 ~~~
 Price list
 
-@@@table
-|item|price|
-|:-:|:-:|
-|mouse|$10|
-|PC|$500|
-@@@
+|item |price|
+|:---:|:---:|
+|mouse| $10 |
+| PC  |$500 |
 ~~~
 
 Run the script.
