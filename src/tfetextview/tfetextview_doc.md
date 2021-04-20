@@ -74,7 +74,7 @@ The caller needs to set a handler to this signal in advance.
 parameters
 
 - tv: a TfeTextView
-- win: the top level window of the TfeTextView
+- win: the top level window
 
 ### tfe_text_view_save()
 
@@ -186,8 +186,8 @@ user_function (TfeTextView *tv,
 Emitted when the GFile in the TfeTextView object is changed.
 The signal is emitted when:
 
-- a new file is read
-- the contents is saved as a different pathname
+- a new file is opened and read
+- a user choose a file with GtkFileChooserDialog and save the contents. 
 - an error occured during I/O operation, and GFile removed as a result.
 
 ### open-response
