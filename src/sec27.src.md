@@ -5,7 +5,7 @@
 GtkColumnView is like GtkListView, but it has multiple columns.
 Each column is GtkColumnViewColumn.
 
-![Column View](../image/column_view.png)
+![Column View](../image/column_view.png){width=11.3cm height=9cm}
 
 - GtkColumnView has "model" property.
 The property points a GtkSelectionModel object.
@@ -17,7 +17,7 @@ This process is the same as the one in GtkListView.
 
 The following diagram shows the image how everything above works.
 
-![ColumnView](../image/column.png)
+![ColumnView](../image/column.png){width=12cm height=9cm}
 
 The example in this section is a window that displays information of files in a current directory.
 The information is the name, size and last modified datetime of files.
@@ -210,7 +210,7 @@ $ _build/column
 
 Then, a window appears.
 
-![Column View](../image/column_view.png)
+![Column View](../image/column_view.png){width=11.3cm height=9cm}
 
 If you click the header of a column, then the whole lists are sorted by the column.
 If you click the header of another column, then the whole lists are sorted by the newly chosen column.

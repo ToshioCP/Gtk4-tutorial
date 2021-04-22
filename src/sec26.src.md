@@ -425,7 +425,7 @@ $ build/exp
 
 Then, two windows appear.
 
-![Expression](../image/expression.png)
+![Expression](../image/expression.png){width=12cm height=9.1cm}
 
 If you put some text in the field of the entry, then the same text appears in the second GtkLabel.
 Because the "label" property of the second GtkLabel instance is bound to the text in the GtkEntryBuffer.

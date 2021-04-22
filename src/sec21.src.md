@@ -125,5 +125,5 @@ Compile and run it, then a window with a black rectangle (square) appears.
 Try resizing the window.
 The square always appears at the center of the window because the drawing function is invoked every moment the window is resized.
 
-![Square in the window](../image/da1.png)
+![Square in the window](../image/da1.png){width=8cm height=3.4cm}
 

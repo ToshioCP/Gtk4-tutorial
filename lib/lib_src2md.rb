@@ -239,7 +239,9 @@ def src2md srcmd, md, type="gfm"
     else
       line = change_rel_link(line, src_dir, md_dir)
       if type == "latex" # remove relative link
-        line.gsub!(/(^|[^!])\[([^\]]*)\]\((?~http)\)/,"\\1\\2")
+        if ! (line =~ /\[[^\]]*\]\(http[^)]*\)/)
+          line.gsub!(/^([^!]*)\[([^\]]*)\]\([^\)]*\)/,"\\1\\2")
+        end
       else # type == "gfm" or "html", then remove size option from link to image files.
         line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1")
       end

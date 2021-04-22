@@ -12,10 +12,10 @@ end
 srcfiles = Sec_files.new srcfiles
 srcfiles.renum!
 
-mdfilenames = srcfiles.map {|srcfile| "gfm/#{srcfile.to_md}"}
-htmlfilenames = srcfiles.map {|srcfile| "html/#{srcfile.to_html}"}
-texpathnames = srcfiles.map {|srcfile| "latex/#{srcfile.to_tex}"}
-texfilenames = srcfiles.map {|srcfile| srcfile.to_tex}
+mdpathnames   = srcfiles.map {|srcfile| "gfm/#{srcfile.to_md}"}
+htmlpathnames = srcfiles.map {|srcfile| "html/#{srcfile.to_html}"}
+texpathnames  = srcfiles.map {|srcfile| "latex/#{srcfile.to_tex}"}
+texfilenames  = srcfiles.map {|srcfile| srcfile.to_tex}
 
 ["gfm", "html", "latex"].each do |d|
   if ! Dir.exist?(d)
@@ -23,7 +23,7 @@ texfilenames = srcfiles.map {|srcfile| srcfile.to_tex}
   end
 end
 
-CLEAN.append(*mdfilenames)
+CLEAN.append(*mdpathnames)
 CLEAN << "Readme.md"
 
 # tasks
@@ -33,18 +33,12 @@ task all: [:md, :html, :pdf]
 
 task md: ["Readme.md", "src/turtle/turtle_doc.md"]
 
-file "Readme.md" => mdfilenames do
+file "Readme.md" => mdpathnames+["src/abstract.src.md"] do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   src2md "src/abstract.src.md", "abstract.md"
-  File.open("abstract.md") do |file|
-    file.readlines.each do |line|
-      buf << line
-    end
-  end
+  buf += File.readlines("abstract.md")
   File.delete("abstract.md")
-  buf << "\n"
-  buf << "## Table of contents\n\n"
-  buf << "\n"
+  buf.append("\n", "## Table of contents\n", "\n")
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
@@ -65,10 +59,10 @@ end
     else
       nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{srcfiles[i-1].to_md}), Next: [Section #{i+2}](#{srcfiles[i+1].to_md})\n"
     end
-    buf = IO.readlines "gfm/#{srcfiles[i].to_md}"
+    buf = File.readlines "gfm/#{srcfiles[i].to_md}"
     buf.insert(0, nav, "\n")
     buf.append("\n", nav)
-    IO.write "gfm/#{srcfiles[i].to_md}", buf.join
+    File.write "gfm/#{srcfiles[i].to_md}", buf.join
   end
 end
 
@@ -76,25 +70,22 @@ file "src/turtle/turtle_doc.md" => "src/turtle/turtle_doc.src.md" do
   src2md "src/turtle/turtle_doc.src.md", "src/turtle/turtle_doc.md"
 end
 
-task html: ["html/index.html", "html/tfetextview_doc.html", "html/turtle_doc.html"]
+task html: ["html/index.html", "html/tfetextview_doc.html", "html/turtle_doc.html", "html/Readme_for_developers.html"]
 
-file "html/index.html" => htmlfilenames do
+file "html/index.html" => htmlpathnames+["src/abstract.src.md"] do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   src2md "src/abstract.src.md", "html/abstract.md"
-  File.open("html/abstract.md") do |file|
-    file.readlines.each do |line|
-      buf << line
-    end
-  end
+  buf += File.readlines("html/abstract.md")
   File.delete("html/abstract.md")
-  buf << "\n"
+  buf.append("\n", "## Table of contents\n", "\n")
   0.upto(srcfiles.size-1) do |i|
     h = File.open(srcfiles[i].path) { |file| file.readline }
     h = h.gsub(/^#* */,"").chomp
     buf << "1. [#{h}](#{srcfiles[i].to_html})\n"
   end
   buf.each do |line|
-    line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
+    line.gsub!(/doc\/Readme_for_developers.md/,"html/Readme_for_developers.html")
+    line.gsub!(/(\[[^\]]*\])\((.+)\.md\)/,"\\1(\\2.html)")
   end
   File.write("html/index.md", buf.join)
   sh "pandoc -o html/index.html html/index.md"
@@ -114,6 +105,11 @@ file "html/turtle_doc.html" => "src/turtle/turtle_doc.src.md" do
   add_head_tail_html "html/turtle_doc.html"
 end
 
+file "html/Readme_for_developers.html" => "doc/Readme_for_developers.md" do
+  sh "pandoc -o html/Readme_for_developers.html doc/Readme_for_developers.md"
+  add_head_tail_html "html/Readme_for_developers.html"
+end
+
 0.upto(srcfiles.size - 1) do |i|
   html_md = "html/#{srcfiles[i].to_md}"
   html_html = "html/#{srcfiles[i].to_html}"
@@ -128,13 +124,13 @@ end
     else
       nav = "Up: [index.html](index.html),  Prev: [Section #{i}](#{srcfiles[i-1].to_html}), Next: [Section #{i+2}](#{srcfiles[i+1].to_html})\n"
     end
-    buf = IO.readlines html_md
+    buf = File.readlines html_md
     buf.insert(0, nav, "\n")
     buf.append("\n", nav)
     buf.each do |line|
-      line.gsub!(/(\[[^\]]*\])\((sec\d+)\.md\)/,"\\1(\\2.html)")
+      line.gsub!(/(\[[^\]]*\])\((.+)\.md\)/,"\\1(\\2.html)")
     end
-    IO.write html_md, buf.join
+    File.write html_md, buf.join
     sh "pandoc -o #{html_html} #{html_md}"
     File.delete(html_md)
     add_head_tail_html html_html
@@ -170,10 +166,12 @@ file "latex/turtle_doc.tex" => "src/turtle/turtle_doc.src.md" do
 end
 
 0.upto(srcfiles.size - 1) do |i|
-  file "latex/#{srcfiles[i].to_tex}" => (srcfiles[i].c_files << srcfiles[i].path) do
-    src2md srcfiles[i].path, "latex/#{srcfiles[i].to_md}"
-    sh "pandoc --listings -o latex/#{srcfiles[i].to_tex} latex/#{srcfiles[i].to_md}"
-    File.delete("latex/#{srcfiles[i].to_md}")
+  latex_md = "latex/#{srcfiles[i].to_md}"
+  latex_tex = "latex/#{srcfiles[i].to_tex}"
+  file latex_tex => (srcfiles[i].c_files << srcfiles[i].path) do
+    src2md srcfiles[i].path, latex_md
+    sh "pandoc --listings -o #{latex_tex} #{latex_md}"
+    File.delete(latex_md)
   end
 end
 
