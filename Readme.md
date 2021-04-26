@@ -28,7 +28,7 @@ Any question is helpful to make this tutorial get better.
 ## Table of contents
 
 1. [Prerequisite and License](gfm/sec1.md)
-1. [Installation of gtk4 to linux distributions](gfm/sec2.md)
+1. [Installation of gtk4 to Linux distributions](gfm/sec2.md)
 1. [GtkApplication and GtkApplicationWindow](gfm/sec3.md)
 1. [Widgets (1)](gfm/sec4.md)
 1. [Widgets (2)](gfm/sec5.md)
