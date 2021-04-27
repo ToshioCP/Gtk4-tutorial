@@ -18,7 +18,7 @@ So, readers can skip that part of this sections.
 
 ## How to use turtle
 
-The documentation of turtle is [here](../src/turtle/turtle_doc.md).
+The documentation of turtle is [here](turtle_doc.md).
 I'll show you a simple example.
 
 ~~~
@@ -529,7 +529,7 @@ FC '(' NUM ',' NUM ',' NUM ')';
 You can find this is a primary_procedure easily.
 The parser of the turtle language analyzes the turtle source code in the same way.
 
-The grammar of turtle is described in the [document](../src/turtle/turtle_doc.md).
+The grammar of turtle is described in the [document](turtle_doc.md).
 The following is an extract from the document.
 
 ~~~

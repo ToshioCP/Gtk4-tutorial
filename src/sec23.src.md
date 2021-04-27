@@ -17,7 +17,7 @@ So, readers can skip that part of this sections.
 ## How to use turtle
 
 @@@if gfm
-The documentation of turtle is [here](turtle/turtle_doc.md).
+The documentation of turtle is [here](turtle/turtle_doc.src.md).
 @@@elif html
 The documentation of turtle is [here](../html/turtle_doc.html).
 @@@if latex
@@ -407,7 +407,7 @@ FC '(' NUM ',' NUM ',' NUM ')';
 You can find this is a primary_procedure easily.
 The parser of the turtle language analyzes the turtle source code in the same way.
 
-The grammar of turtle is described in the [document](turtle/turtle_doc.md).
+The grammar of turtle is described in the [document](turtle/turtle_doc.src.md).
 The following is an extract from the document.
 
 ~~~

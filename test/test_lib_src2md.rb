@@ -467,12 +467,13 @@ files.each do |f|
 end
 
 # --- test change_rel_link
+file_table = [["sec3.src.md", "../gfm/sec3.md", "../html/sec3.html", "../latex/sec3.html"]]
 # general relative link
 s = "[sample.c](temp/sample.c)"
 t = change_rel_link s, "test", "gfm"
 if t != "[sample.c](../test/temp/sample.c)"
   print "Relative link change according to base directory change didn't work.\n"
-  print "  Base directory test => gtm\n"
+  print "  Base directory test => gfm\n"
   print "  Original link  => #{s}\n"
   print "  Relative link temp/sample.c => #{t}\n"
   print "  ** Correct new link must be [sample.c](../test/temp/sample.c) **\n"
@@ -481,13 +482,13 @@ end
 #   srcdir/secXX.src.md is converted to dstdir/secXX.md.
 #   Therefore,  secXX.src.md must be changed tp secXX.md.
 s = "[Section 3](sec3.src.md)"
-t = change_rel_link s, "test", "gfm"
+t = change_rel_link s, "src", "gfm", file_table, "gfm"
 if t != "[Section 3](sec3.md)"
   print "Relative link change according to base directory change didn't work.\n"
-  print "  Base directory test => gtm\n"
+  print "  Base directory test => gfm\n"
   print "  Original link  => #{s}\n"
   print "  Relative link temp/sample.c => #{t}\n"
-  print "  ** Correct new link must be [Section 2](sec3) **\n"
+  print "  ** Correct new link must be [Section 3](sec3) **\n"
 end
 
 # --- test src2md

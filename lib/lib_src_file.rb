@@ -1,15 +1,15 @@
-class Sec_file < String
+class Src_file <String
   def initialize path
     unless path.instance_of?(String)
-      raise  "Sec_file class initialization error: The argument is not String type."
+      raise  "Src_file class initialization error: The argument is not String type."
     end
     unless File.exist?(path)
-      raise  "Sec_file class initialization error: File #{path} is not exist."
+      raise  "Src_file class initialization error: File #{path} is not exist."
     end
-    unless path =~ /sec\d+(\.\d+)?\.src\.md$/
-      raise  "Sec_file class initialization error: The argment \"#{path}\" doesn't have secXX.src.md form. XX are digits."
+    unless path =~ /\.src\.md$/
+      raise  "Src_file class initialization error: The argment \"#{path}\" doesn't have .src.md suffix."
     end
-    @name = File.basename path
+    @name = File.basename path, ".src.md"
     @dirname = File.dirname path
     super(path)
   end
@@ -17,10 +17,28 @@ class Sec_file < String
     self
   end
   def basename
-    @name
+    @name+".src.md"
   end
   def dirname
     @dirname
+  end
+  def to_md
+    @name+".md"
+  end
+  def to_html
+    @name+".html"
+  end
+  def to_tex
+    @name+".tex"
+  end
+end  
+
+class Sec_file < Src_file
+  def initialize path
+    unless path =~ /sec\d+(\.\d+)?\.src\.md$/
+      raise  "Sec_file class initialization error: The argment \"#{path}\" doesn't have secXX.src.md form. XX is int or float."
+    end
+    super(path)
   end
   def c_files
     buf = IO.readlines(self)
@@ -40,15 +58,6 @@ class Sec_file < String
       end
     end
     files
-  end
-  def to_md
-    @name.gsub(/\.(src\.md|md|html|tex)$/, ".md")
-  end
-  def to_html
-    @name.gsub(/\.(src\.md|md|html|tex)$/, ".html")
-  end
-  def to_tex
-    @name.gsub(/\.(src\.md|md|html|tex)$/, ".tex")
   end
   def num # the return value is String
     @name.match(/\d+(\.\d+)?/)[0]
@@ -80,7 +89,7 @@ class Sec_file < String
       if old != new
         File.rename old, new
         self.replace new
-        @name = File.basename new
+        @name = File.basename new, ".src.md"
         @dirname = File.dirname new
       end
     end

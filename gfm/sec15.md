@@ -5,7 +5,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16]
 ## How to compile and execute tfe text editor.
 
 First, source files are shown in the later subsections.
-How to download them is written at the end of the [previous section](../src/sec14.src.md).
+How to download them is written at the end of the [previous section](sec14.md).
 
 The following is the instruction of compilation and execution.
 

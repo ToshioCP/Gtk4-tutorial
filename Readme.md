@@ -20,7 +20,7 @@ The latest version of the tutorial is located at [Gtk4-tutorial github repositor
 You can read it without download.
 
 If you want to get a html or pdf version, you can make them with `rake`, which is a ruby version of make.
-There is a documentation \("[How to build Gtk4 Tutorial](doc/Readme_for_developers.md)"\) that describes how to make them.
+There is a documentation \("[How to build Gtk4 Tutorial](gfm/Readme_for_developers.md)"\) that describes how to make them.
 
 If you have a question, feel free to post it to the issue.
 Any question is helpful to make this tutorial get better.

@@ -232,5 +232,5 @@ Its original markdown file is under the directory `src/tfetextview`.
 @@@end
 
 All the source files are listed in [Section 15](sec15.src.md).
-You can find them under [src/tfe5](tfe5) and [src/tfetextview](../tfetextview) directories.
+You can find them under [src/tfe5](tfe5) and [src/tfetextview](tfetextview) directories.
 

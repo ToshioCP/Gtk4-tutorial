@@ -415,11 +415,11 @@ Otherwise, if the caller frees the GFile object, `tv->file` is no more guarantee
 
 ## API document and source file of tfetextview.c
 
-Refer [API document of TfeTextView](../src/tfetextview/tfetextview_doc.md).
+Refer [API document of TfeTextView](tfetextview/tfetextview_doc.src.md).
 It is under the directory `src/tfetextview`.
 
 All the source files are listed in [Section 15](sec15.md).
-You can find them under [src/tfe5](../src/tfe5) and [src/tfetextview](../tfetextview) directories.
+You can find them under [src/tfe5](../src/tfe5) and [src/tfetextview](../src/tfetextview) directories.
 
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 11](sec11.md), Next: [Section 13](sec13.md)

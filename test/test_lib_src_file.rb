@@ -1,7 +1,11 @@
 # test_lib_sec_file.rb
-require_relative "../lib/lib_sec_file.rb"
+require_relative "../lib/lib_src_file.rb"
 
 # Sample files for the test
+src_text = <<'EOS'
+This is a source file.
+EOS
+
 sample_c = <<'EOS'
 #include <stdio.h>
 
@@ -52,6 +56,7 @@ Prerequisite
 EOS
 
 files = [
+  ["temp/srcfile.src.md", src_text],
   ["temp/sample.c", sample_c],
   ["temp/sec1.src.md", sec1_text],
   ["temp/sec2.src.md", sec2_text],
@@ -64,6 +69,24 @@ unless Dir.exist? "temp"
 end
 files.each do |f|
   File.write f[0], f[1]
+end
+
+# Test Src_file
+print "****** Src_file class test ******\n"
+src = Src_file.new "temp/srcfile.src.md"
+test_items = [
+  ["path", "\"temp/srcfile.src.md\""],
+  ["basename", "\"srcfile.src.md\""],
+  ["dirname", "\"temp\""],
+  ["to_md", "\"srcfile.md\""],
+  ["to_html", "\"srcfile.html\""],
+  ["to_tex", "\"srcfile.tex\""],
+]
+test_items.each do |item|
+  if eval("src.#{item[0]} != #{item[1]}")
+    print "src.#{item[0]} != #{item[1]}\n"
+    print " ....  src.#{item[0]} is #{eval("src_sec1.#{item[0]}")}\n"
+  end
 end
 
 # Test Sec_file

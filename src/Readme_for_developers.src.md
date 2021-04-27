@@ -49,11 +49,9 @@ It is @@@ command.
 The command starts with a line that begins with "@@@" and it ends with a line "@@@".
 For example, 
 
-~~~
-@@@include
-tfeapplication.c
-@@@
-~~~
+    @@@include
+    tfeapplication.c
+    @@@
 
 There are four types of @@@ command.
 
@@ -61,29 +59,23 @@ There are four types of @@@ command.
 
 This type of @@@ command starts with a line "@@@include".
 
-~~~
-@@@include
-tfeapplication.c
-@@@
-~~~
+    @@@include
+    tfeapplication.c
+    @@@
 
 This command replaces itself with the text read from the C source files surrounded by `@@@include` and `@@@`.
 If a function list follows the filename, only the functions are read.
 If no function list is given, the command can read any text file other than C source file.
 
-~~~
-@@@include
-tfeapplication.c main startup
-@@@
-~~~
+    @@@include
+    tfeapplication.c main startup
+    @@@
 
 The command above is replaced by the contents of `main` and `startup` functions in `tfeapplication.c`.
 
-~~~
-@@@include
-lib_src2md.rb
-@@@
-~~~
+    @@@include
+    lib_src2md.rb
+    @@@
 
 This command is replaced by the contents of `lib_src2md.rb` which is a ruby script (not C file).
 
@@ -192,7 +184,7 @@ The markdwon above is converted to the following latex source file.
 Listing package can color or emphasize keywords, strings, comments and directives.
 But it doesn't analyze the syntax or token of the language, so the kind of emphasis target is limited.
 
-@@@include command have two advantages.
+ @@@include command have two advantages.
 
 1. Less typing.
 2. You don't need to modify your src.md file, even if the C source file is modified.
@@ -201,12 +193,10 @@ But it doesn't analyze the syntax or token of the language, so the kind of empha
 
 This type of @@@ command starts with a line begins with "@@@shell".
 
-~~~
-@@@shell
-shell command
- ... ...
-@@@
-~~~
+    @@@shell
+    shell command
+     ... ...
+    @@@
 
 This command replaces itself with:
 
@@ -215,11 +205,9 @@ This command replaces itself with:
 
 For example,
 
-~~~
-@@@shell
-wc Rakefile
-@@@
-~~~
+    @@@shell
+    wc Rakefile
+    @@@
 
 This is converted to:
 
@@ -234,15 +222,13 @@ This type of @@@ command starts with a line begins with "@@@if", "@@@elif", "@@@
 This command is similar to "#if", "#elif", #else" and "#end" directives in C preprocessor.
 For example,
 
-~~~
-@@@if gfm
-Refer to  [tfetextview API reference](tfetextview/tfetextview_doc.md)
-@@@elif html
-Refer to  [tfetextview API reference](tfetextview_doc.html)
-@@@elif latex
-Refer to tfetextview API reference in appendix.
-@@@end
-~~~
+    @@@if gfm
+    Refer to  [tfetextview API reference](tfetextview/tfetextview_doc.md)
+    @@@elif html
+    Refer to  [tfetextview API reference](tfetextview_doc.html)
+    @@@elif latex
+    Refer to tfetextview API reference in appendix.
+    @@@end
 
 `@@@if` and `@@@elif` have conditions.
 They are `gfm`, `html` or `latex` so far.
