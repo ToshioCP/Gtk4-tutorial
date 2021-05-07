@@ -5,18 +5,21 @@ This section describes how to install gtk4 into Linux distributions.
 This tutorial including this section is without any warranty.
 If you install gtk4 to your computer, do it at your own risk.
 
-There are two possible way to install gtk4 (April/2021).
+This section is written on 7/May/2021.
+"At present" means 7/May/2021 in this section.
+
+There are two possible way to install gtk4.
 
 - Build it from the source file.
 - Install a distribution which uses gtk4.
 
-Regarding the first way, I only have an experience to install it to Ubuntu 20.10.
+Regarding the first way, I only have an experience to install it to Ubuntu 21.04 and 20.10.
 Probably you need more than the explanation below.
-However, at present (April/2021), this is the most general way.
+However, at present, this is the most general way.
 
 The second way is easy to install.
 See [Gnome40 website](https://forty.gnome.org/).
-There are only three choices at present (April/2021).
+There are only three choices at present.
 
   - Gnome OS
   - Fedora 34 Beta
@@ -31,7 +34,8 @@ The first part of this section is about the installation from the source files.
 
 ### Prerequisites for gtk4 installation
 
-- Ubuntu 20.10. Maybe other versions of late years or other distribution might be OK.
+- Ubuntu 21.04 or 20.10. 21.04 is better because the version of libraries is higher, for example, glib.
+Maybe other versions of late years or other distribution might be OK.
 - Packages for development such as gcc, meson, ninja, git, wget and so on.
 - Dev packages necessary for each software below.
 
@@ -48,12 +52,34 @@ It is used by Ubuntu applications, which are not build on gtk4.
 Therefore, the risk is high and probably bad things will happen.
 Actually I did it and I needed to reinstall Ubuntu.
 
+### Installation to Ubuntu 21.04
+
+Most of the necessary libraries are included by Ubuntu 21.04.
+Therefore, they can be installed with `apt-get` command.
+You don't need to install them from the source tarballs.
+You can skip the subsections below about prerequisite library installation (glib, pango, gdk-pixbuf and gtk-doc).
+
 ### Glib installation
 
-Ubuntu includes glib but its version is not high enough to build gtk4.
-Glib 2.66.0 or higher is required.
-At present (Jan/2021), its latest version is 2.67.2.
-I installed 2.67.1 which was the latest version at that time.
+If your ubuntu is 20.10, you might need to install prerequisite libraries from the tarballs.
+Check the version of your library and if it is lower than the necessary version, install it from the source.
+
+For example,
+
+~~~
+$ pkg-config --modversion glib-2.0
+2.66.1
+~~~
+
+The necessary version is 2.66.0 or higher.
+Therefore, the example above shows that you don't need to install glib.
+If the version is lower than 2.66.0, then upgrade your ubuntu glib package or install it from the source.
+
+The following part of this subsection is written in January 2021.
+The glib version was not enough at that time.
+The description below is old now, and it probably doesn't fit to your environment.
+
+I installed 2.67.1 which was the latest version at that time (Jan/2021).
 Download glib source files from the repository, then decompress and extract files.
 
     $ wget https://download.gnome.org/sources/glib/2.67/glib-2.67.1.tar.xz
@@ -116,7 +142,7 @@ Then, compile and install pango.
     $ ninja -C _build
     $ ninja -C _build install
 
-It installs Pnago-1.0.gir under `$HOME/local/share/gir-1.0`.
+It installs Pango-1.0.gir under `$HOME/local/share/gir-1.0`.
 If you installed pango without `--prefix` option, then it would be located at `/usr/local/share/gir-1.0`.
 This directory (/usr/local/share) is used by applications.
 They find the directory by the environment variable `XDG_DATA_DIRS`.
@@ -148,7 +174,8 @@ If you want the latest development version of gtk4, use git and clone the reposi
 
     $ git clone https://gitlab.gnome.org/GNOME/gtk.git
 
-If you want a stable version of gtk4, then download it from [Gnome source website](https://download.gnome.org/sources/gtk/4.0/).
+If you want a stable version of gtk4, then download it from [Gnome source website](https://download.gnome.org/sources/gtk/).
+The latest version is 4.3 (7/May/2021).
 
 Compile and install it.
 
@@ -201,7 +228,7 @@ For example, to compile `sample.c`, type the following.
 
     $ gcc `pkg-config --cflags gtk4` sample.c `pkg-config --libs gtk4`
 
-To know how to compile gtk4 applications, refer to the following sections.
+To know how to compile gtk4 applications, refer to the section 3 (GtkApplication and GtkApplicationWindow) and after.
 
 ## Installing Fedora 34 Beta with gnome-boxes
 

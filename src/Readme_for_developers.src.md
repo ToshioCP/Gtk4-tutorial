@@ -219,7 +219,7 @@ This is converted to:
 ### @@@if series
 
 This type of @@@ command starts with a line begins with "@@@if", and followed by "@@@elif", "@@@else" or "@@@end".
-This command is similar to "#if", "#elif", #else" and "#end" directives in C preprocessor.
+This command is similar to "#if", "#elif", #else" and "#endif" directives in C preprocessor.
 For example,
 
     @@@if gfm
