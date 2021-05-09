@@ -42,6 +42,7 @@
               <object class="GtkMenuButton" id="btnm">
                 <property name="direction">down</property>
                 <property name="halign">start</property>
+                <property name="icon-name">open-menu-symbolic</property>
               </object>
             </child>
             <child>

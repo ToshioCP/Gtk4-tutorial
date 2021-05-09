@@ -5,37 +5,43 @@ This section describes how to install gtk4 into Linux distributions.
 This tutorial including this section is without any warranty.
 If you install gtk4 to your computer, do it at your own risk.
 
-This section is written on 7/May/2021.
-"At present" means 7/May/2021 in this section.
+This section is written on 9/May/2021.
+"At present" means 9/May/2021 in this section.
 
 There are two possible way to install gtk4.
 
+- Install it from the distribution packages.
 - Build it from the source file.
-- Install a distribution which uses gtk4.
 
-Regarding the first way, I only have an experience to install it to Ubuntu 21.04 and 20.10.
-Probably you need more than the explanation below.
-However, at present, this is the most general way.
+The first way is easy to install.
+It is a recommended way.
+I've installed gtk4 packages in Ubuntu 21.04.
 
-The second way is easy to install.
-See [Gnome40 website](https://forty.gnome.org/).
-There are only three choices at present.
+~~~
+$ sudo apt-get install libgtk-4-bin libgtk-4-common libgtk-4-dev libgtk-4-doc
+~~~
 
-  - Gnome OS
-  - Fedora 34 Beta
-  - openSUSE
+Arch, Debian and Fedora are also possible.
+See [Installing GTK from packages](https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages).
+If you've installed gtk4 from the packages, you don't need to read the rest of this section.
 
-I've tried installing Fedora 34 Beta with gnome-boxes.
-It is written at the end of this section.
+The rest of this section includes two parts.
+
+1. Building gtk4 from the source.
+2. Installing Gnome 40 distribution.
+(However, Gnome 40 is not necessary to build gtk4 applications.)
 
 ## Installation from the source files
 
 The first part of this section is about the installation from the source files.
+If your operating system has gtk4 packages, installing from the packages is the recommended way.
+See the previous subsection.
+If your operating system doesn't have gtk4 package, you need to build it from the source.
 
 ### Prerequisites for gtk4 installation
 
-- Ubuntu 21.04 or 20.10. 21.04 is better because the version of libraries is higher, for example, glib.
-Maybe other versions of late years or other distribution might be OK.
+- Linux operating system. For example, Ubuntu 20.10 or 20.04LTS.
+Maybe other distributions might be OK.
 - Packages for development such as gcc, meson, ninja, git, wget and so on.
 - Dev packages necessary for each software below.
 
@@ -52,28 +58,27 @@ It is used by Ubuntu applications, which are not build on gtk4.
 Therefore, the risk is high and probably bad things will happen.
 Actually I did it and I needed to reinstall Ubuntu.
 
-### Installation to Ubuntu 21.04
+### Installation to Ubuntu 20.10
 
-Most of the necessary libraries are included by Ubuntu 21.04.
+Most of the necessary libraries are included by Ubuntu 20.10.
 Therefore, they can be installed with `apt-get` command.
 You don't need to install them from the source tarballs.
 You can skip the subsections below about prerequisite library installation (glib, pango, gdk-pixbuf and gtk-doc).
 
 ### Glib installation
 
-If your ubuntu is 20.10, you might need to install prerequisite libraries from the tarballs.
+If your ubuntu is 20.04LTS, you need to install prerequisite libraries from the tarballs.
 Check the version of your library and if it is lower than the necessary version, install it from the source.
 
 For example,
 
 ~~~
 $ pkg-config --modversion glib-2.0
-2.66.1
+2.64.6
 ~~~
 
 The necessary version is 2.66.0 or higher.
-Therefore, the example above shows that you don't need to install glib.
-If the version is lower than 2.66.0, then upgrade your ubuntu glib package or install it from the source.
+Therefore, the example above shows that you need to install glib.
 
 The following part of this subsection is written in January 2021.
 The glib version was not enough at that time.
@@ -232,12 +237,20 @@ To know how to compile gtk4 applications, refer to the section 3 (GtkApplication
 
 ## Installing Fedora 34 Beta with gnome-boxes
 
-The second part of this section is about installing a distribution based on gtk4.
+The second part of this section is about Gnome40.
+Gnome 40 is a new version of Gnome desktop system.
+And gtk4 is installed in the distribution.
 See [Gnome 40 website](https://forty.gnome.org/) first.
 
-Gnome 40 is a new version of Gnome desktop system.
-It uses gtk4.
-So, you don't need to build and install gtk4 from the source file.
+*However, Gnome40 is not necessary to compile and run Gtk4 applications.*
+
+There are only three choices at present.
+
+  - Gnome OS
+  - Fedora 34 Beta
+  - openSUSE
+
+I've tried installing Fedora 34 Beta with gnome-boxes.
 
 There are two ways to install them.
 

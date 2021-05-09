@@ -20,7 +20,7 @@
                 <property name="name">btnlist</property>
                 <property name="action-name">win.view</property>
                 <property name="action-target">&apos;list&apos;</property>
-               <child>
+                <child>
                   <object class="GtkImage">
                     <property name="resource">/com/github/ToshioCP/list4/list.png</property>
                   </object>
