@@ -86,7 +86,7 @@ You can also create them alone and add GListModel later.
 
 GtkListView is a widget to show GListModel items.
 GtkListItem is used by GtkListView to represent items of a list model.
-But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListView to display an item of the list model.
+But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
 "item" property of GtkListItem points an object that belongs to the list model.
 
 ![GtkListItem](../image/gtklistitem.png){width=10cm height=7.5cm}
@@ -305,10 +305,45 @@ The program is located in [src/misc](misc) directory.
 misc/list3.c
 @@@
 
+The ui data (xml data above) is used to build the GListItem template at runtime.
+GtkBuilder refers to the symbol table to find the function `get_file_name`.
+
+Generally, a symbol table is used by a linker to link objects to an executable file.
+It includes function names and their location.
+A linker usually doesn't put a symbol table into the created executable file.
+But if `--export-dynamic` option is given, the linker add the symbol table to the executable file.
+
+To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
+
+- `-Wl` is a C compiler option that passes the following option to the linker.
+- `--export-dynamic` is a linker option.
+The following is cited from the linker document.
+"When creating a dynamically linked executable, add all symbols to the dynamic symbol table.
+The dynamic symbol table is the set of symbols which are visible from dynamic objects at run time."
+
 Compile and execute it.
 
 ~~~
-$ cd misc
+$ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`
+~~~
+
+You can also make a shell script to compile `list3.c`
+
+~~~bash
+gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
+~~~
+
+Save this one liner to a file `comp`.
+Then, copy it to `$HOME/bin` and give it executable permission.
+
+~~~
+$ cp comp $HOME/bin/comp
+$ chmod +x $HOME/bin/comp
+~~~
+
+You can compile `list3.c` and execute it, like this:
+
+~~~
 $ comp list3
 $ ./a.out
 ~~~
