@@ -17,8 +17,9 @@ bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_da
 
 static void
 unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
-  GtkWidget *lb = gtk_list_item_get_child (listitem);
-  gtk_label_set_text (GTK_LABEL (lb), "");
+  /* There's nothing to do here. */
+  /* If you does something like setting a signal in bind_cb, */
+  /* then disconnecting the signal is necessary in unbind_cb. */
 }
 
 static void

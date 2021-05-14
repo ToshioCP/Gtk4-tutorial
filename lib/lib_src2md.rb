@@ -77,7 +77,7 @@ require 'pathname'
 # type is "gfm", "html" or "latex".
 # Caller can specify the target type.
 
-def src2md srcmd, md, file_table=nil, type="gfm"
+def src2md srcmd, md, file_table=nil, type=nil
 # parameters:
 #  srcmd: .src.md file's path. source
 #  md:    .md file's path. destination
@@ -85,8 +85,12 @@ def src2md srcmd, md, file_table=nil, type="gfm"
   src_dir = File.dirname srcmd
   md_dir = File.dirname md
   type_dir = File.basename md_dir # type of the target. gfm, html or latex
-  if type_dir == "gfm" || type_dir == "html" || type_dir == "latex"
-    type = type_dir
+  if (type == nil || (type != "gfm" && type != "html" && type != "latex"))
+    if type_dir == "gfm" || type_dir == "html" || type_dir == "latex"
+      type = type_dir
+    else
+      type = "gfm" # default type
+    end
   end
 
 # phase 1

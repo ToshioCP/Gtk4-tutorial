@@ -20,8 +20,7 @@ abstract = Src_file.new "src/abstract.src.md"
  
 otherfiles = ["src/turtle/turtle_doc.src.md",
               "src/tfetextview/tfetextview_doc.src.md",
-              "src/Readme_for_developers.src.md"]
-otherfiles = otherfiles.map {|file| Src_file.new file}
+              "src/Readme_for_developers.src.md"].map {|file| Src_file.new file}
 srcfiles = secfiles + otherfiles
 
 file_table = srcfiles.map do |srcfile|

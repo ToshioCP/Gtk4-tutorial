@@ -137,63 +137,64 @@ GtkNoSelection is used, so user can't select any item.
 17 
 18 static void
 19 unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
-20   GtkWidget *lb = gtk_list_item_get_child (listitem);
-21   gtk_label_set_text (GTK_LABEL (lb), "");
-22 }
-23 
-24 static void
-25 teardown_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
-26   gtk_list_item_set_child (listitem, NULL);
-27 /*  When the child of listitem is set to NULL, the reference to GtkLabel will be released and lb will be destroyed. */
-28 /* Therefore, g_object_unref () for the GtkLabel object doesn't need in the user code. */
-29 }
-30 
-31 /* ----- activate, open, startup handlers ----- */
-32 static void
-33 app_activate (GApplication *application) {
-34   GtkApplication *app = GTK_APPLICATION (application);
-35   GtkWidget *win = gtk_application_window_new (app);
-36   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-37   GtkWidget *scr = gtk_scrolled_window_new ();
-38   gtk_window_set_child (GTK_WINDOW (win), scr);
-39 
-40   char *array[] = {
-41     "one", "two", "three", "four", NULL
-42   };
-43   GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
-44   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (sl));
-45 
-46   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
-47   g_signal_connect (factory, "setup", G_CALLBACK (setup_cb), NULL);
-48   g_signal_connect (factory, "bind", G_CALLBACK (bind_cb), NULL);
-49   g_signal_connect (factory, "unbind", G_CALLBACK (unbind_cb), NULL);
-50   g_signal_connect (factory, "teardown", G_CALLBACK (teardown_cb), NULL);
-51 
-52   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
-53   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-54   gtk_widget_show (win);
-55 }
-56 
-57 static void
-58 app_startup (GApplication *application) {
-59 }
-60 
-61 /* ----- main ----- */
-62 int
-63 main (int argc, char **argv) {
-64   GtkApplication *app;
-65   int stat;
-66 
-67   app = gtk_application_new ("com.github.ToshioCP.list1", G_APPLICATION_FLAGS_NONE);
-68 
-69   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-70   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-71 
-72   stat =g_application_run (G_APPLICATION (app), argc, argv);
-73   g_object_unref (app);
-74   return stat;
-75 }
-76 
+20   /* There's nothing to do here. */
+21   /* If you does something like setting a signal in bind_cb, */
+22   /* then disconnecting the signal is necessary in unbind_cb. */
+23 }
+24 
+25 static void
+26 teardown_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+27   gtk_list_item_set_child (listitem, NULL);
+28 /*  When the child of listitem is set to NULL, the reference to GtkLabel will be released and lb will be destroyed. */
+29 /* Therefore, g_object_unref () for the GtkLabel object doesn't need in the user code. */
+30 }
+31 
+32 /* ----- activate, open, startup handlers ----- */
+33 static void
+34 app_activate (GApplication *application) {
+35   GtkApplication *app = GTK_APPLICATION (application);
+36   GtkWidget *win = gtk_application_window_new (app);
+37   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+38   GtkWidget *scr = gtk_scrolled_window_new ();
+39   gtk_window_set_child (GTK_WINDOW (win), scr);
+40 
+41   char *array[] = {
+42     "one", "two", "three", "four", NULL
+43   };
+44   GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
+45   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (sl));
+46 
+47   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
+48   g_signal_connect (factory, "setup", G_CALLBACK (setup_cb), NULL);
+49   g_signal_connect (factory, "bind", G_CALLBACK (bind_cb), NULL);
+50   g_signal_connect (factory, "unbind", G_CALLBACK (unbind_cb), NULL);
+51   g_signal_connect (factory, "teardown", G_CALLBACK (teardown_cb), NULL);
+52 
+53   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
+54   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+55   gtk_widget_show (win);
+56 }
+57 
+58 static void
+59 app_startup (GApplication *application) {
+60 }
+61 
+62 /* ----- main ----- */
+63 int
+64 main (int argc, char **argv) {
+65   GtkApplication *app;
+66   int stat;
+67 
+68   app = gtk_application_new ("com.github.ToshioCP.list1", G_APPLICATION_FLAGS_NONE);
+69 
+70   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+71   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+72 
+73   stat =g_application_run (G_APPLICATION (app), argc, argv);
+74   g_object_unref (app);
+75   return stat;
+76 }
+77 
 ~~~
 
 The file `list1.c` is located under the directory [src/misc](../src/misc).
