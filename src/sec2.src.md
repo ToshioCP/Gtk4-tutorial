@@ -5,7 +5,7 @@ This section describes how to install Gtk4 into Linux distributions.
 This tutorial including this section is without any warranty.
 If you install Gtk4 to your computer, do it at your own risk.
 
-This section is written on 13/Jube/2021.
+This section is written on 13/June/2021.
 "At present" means 13/June/2021 in this section.
 
 There are three possible way to install Gtk4.
@@ -63,7 +63,7 @@ Actually I did it and I needed to reinstall Ubuntu.
 Most of the necessary libraries are included by Ubuntu 20.10.
 Therefore, they can be installed with `apt-get` command.
 You don't need to install them from the source tarballs.
-You can skip the subsections below about prerequisite library installation (glib, pango, gdk-pixbuf and gtk-doc).
+You can skip the subsections below about prerequisite library installation (Glib, Pango, Gdk-pixbuf and Gtk-doc).
 
 ### Glib installation
 
@@ -78,15 +78,15 @@ $ pkg-config --modversion glib-2.0
 ~~~
 
 The necessary version is 2.66.0 or higher.
-Therefore, the example above shows that you need to install glib.
+Therefore, the example above shows that you need to install Glib.
 
 I installed 2.67.1 which was the latest version at that time (January 2021).
-Download glib source files from the repository, then decompress and extract files.
+Download Glib source files from the repository, then decompress and extract files.
 
     $ wget https://download.gnome.org/sources/glib/2.67/glib-2.67.1.tar.xz
     $ tar -Jxf glib-2.67.1.tar.xz
 
-Some packages are required to build glib.
+Some packages are required to build Glib.
 You can find them if you run meson.
 
     $ meson --prefix $HOME/local _build
@@ -96,14 +96,14 @@ For example,
 
     $ sudo apt-get install -y  libpcre2-dev libffi-dev
 
-After that, compile glib.
+After that, compile Glib.
 
     $ rm -rf _build
     $ meson --prefix $HOME/local _build
     $ ninja -C _build
     $ ninja -C _build install
 
-Set several environment variables so that the glib libraries installed can be used by build tools.
+Set several environment variables so that the Glib libraries installed can be used by build tools.
 Make a text file below and save it as `env.sh`
 
     # compiler
@@ -137,14 +137,14 @@ Download and untar.
 
 Try meson and check the required packages.
 Install all the prerequisites.
-Then, compile and install pango.
+Then, compile and install Pango.
 
     $ meson --prefix $HOME/local _build
     $ ninja -C _build
     $ ninja -C _build install
 
 It installs Pango-1.0.gir under `$HOME/local/share/gir-1.0`.
-If you installed pango without `--prefix` option, then it would be located at `/usr/local/share/gir-1.0`.
+If you installed Pango without `--prefix` option, then it would be located at `/usr/local/share/gir-1.0`.
 This directory (/usr/local/share) is used by applications.
 They find the directory by the environment variable `XDG_DATA_DIRS`.
 It is a text file which keep the list of 'share' directories like `/usr/share`, `usr/local/share` and so on.
@@ -152,7 +152,7 @@ Now `$HOME/local/share` needs to be added to `XDG_DATA_DIRS`, or error will occu
 
     $ export XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS
 
-### Gdk-pixbuf and gtk-doc installation
+### Gdk-pixbuf and Gtk-doc installation
 
 Download and untar.
 
@@ -163,7 +163,7 @@ Download and untar.
 
 Same as before, install prerequisite packages, then compile and install them.
 
-The installation of gtk-doc put `gtk-doc.pc` under `$HOME/local/share/pkgconfig`.
+The installation of Gtk-doc put `gtk-doc.pc` under `$HOME/local/share/pkgconfig`.
 This file is used by pkg-config, which is one of the build tools.
 The directory needs to be added to the environment variable `PKG_CONFIG_PATH`
 
@@ -216,7 +216,7 @@ But it's a wrong decision.
 Never write them to your `.profile`.
 The environment variables above are necessary only when you compile and run Gtk4 applications.
 Otherwise it's not necessary.
-If you changed the environment variables above and run gtk3 applications, it probably causes serious damage.
+If you changed the environment variables above and run Gtk3 applications, it probably causes serious damage.
 
 ### Compiling Gtk4 applications
 

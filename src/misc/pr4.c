@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
 static void
-on_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app, gpointer user_data) {
   GtkWidget *win;
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
@@ -16,7 +16,7 @@ main (int argc, char **argv) {
   int stat;
 
   app = gtk_application_new ("com.github.ToshioCP.pr4", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
