@@ -1,21 +1,24 @@
-# Installation of gtk4 to Linux distributions
+# Installation of Gtk4 to Linux distributions
 
-This section describes how to install gtk4 into Linux distributions.
+This section describes how to install Gtk4 into Linux distributions.
 
 This tutorial including this section is without any warranty.
-If you install gtk4 to your computer, do it at your own risk.
+If you install Gtk4 to your computer, do it at your own risk.
 
-This section is written on 9/May/2021.
-"At present" means 9/May/2021 in this section.
+This section is written on 13/Jube/2021.
+"At present" means 13/June/2021 in this section.
 
-There are two possible way to install gtk4.
+There are three possible way to install Gtk4.
 
 - Install it from the distribution packages.
 - Build it from the source file.
+- Install Gnome 40 distribution.
+
+## Installation from the distribution packages
 
 The first way is easy to install.
 It is a recommended way.
-I've installed gtk4 packages in Ubuntu 21.04.
+I've installed Gtk4 packages in Ubuntu 21.04.
 
 ~~~
 $ sudo apt-get install libgtk-4-bin libgtk-4-common libgtk-4-dev libgtk-4-doc
@@ -23,38 +26,35 @@ $ sudo apt-get install libgtk-4-bin libgtk-4-common libgtk-4-dev libgtk-4-doc
 
 Arch, Debian and Fedora are also possible.
 See [Installing GTK from packages](https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages).
-If you've installed gtk4 from the packages, you don't need to read the rest of this section.
+If you've installed Gtk4 from the packages, you don't need to read the rest of this section.
 
-The rest of this section includes two parts.
+## Installation from the source file
 
-1. Building gtk4 from the source.
-2. Installing Gnome 40 distribution.
-(However, Gnome 40 is not necessary to build gtk4 applications.)
+If your operating system doesn't have Gtk4 packages, you need to build it from the source.
+Or, if you want the latest version of Gtk4, you also need to build it from the source.
+At present, the version of Gtk4 on Ubuntu 21.04 is 4.0.3.
 
-## Installation from the source files
+I installed Gtk4 in January 2021.
+So, the following is old information, especially for the version of each software.
+For the latest information, see [Gtk gitlab repository](https://gitlab.gnome.org/GNOME/gtk) and [Gtk official web site](https://docs.gtk.org/gtk4/building.html).
 
-The first part of this section is about the installation from the source files.
-If your operating system has gtk4 packages, installing from the packages is the recommended way.
-See the previous subsection.
-If your operating system doesn't have gtk4 package, you need to build it from the source.
-
-### Prerequisites for gtk4 installation
+### Prerequisites for Gtk4 installation
 
 - Linux operating system. For example, Ubuntu 20.10 or 20.04LTS.
-Maybe other distributions might be OK.
+Other distributions might be OK.
 - Packages for development such as gcc, meson, ninja, git, wget and so on.
 - Dev packages necessary for each software below.
 
 ### Installation target
 
-I installed gtk4 under the directory `$HOME/local`.
+I installed Gtk4 under the directory `$HOME/local`.
 This is a private user area.
 
 If you want to install it in the system area, `/opt/gtk4` is one of good choices.
 [Gtk4 API Reference](https://developer.gnome.org/gtk4/stable/gtk-building.html) gives an installation example to `/opt/gtk4`.
 
 Don't install it to `/usr/local` which is the default.
-It is used by Ubuntu applications, which are not build on gtk4.
+It is used by Ubuntu applications, which are not build on Gtk4.
 Therefore, the risk is high and probably bad things will happen.
 Actually I did it and I needed to reinstall Ubuntu.
 
@@ -67,7 +67,7 @@ You can skip the subsections below about prerequisite library installation (glib
 
 ### Glib installation
 
-If your ubuntu is 20.04LTS, you need to install prerequisite libraries from the tarballs.
+If your Ubuntu is 20.04LTS, you need to install prerequisite libraries from the tarballs.
 Check the version of your library and if it is lower than the necessary version, install it from the source.
 
 For example,
@@ -80,11 +80,7 @@ $ pkg-config --modversion glib-2.0
 The necessary version is 2.66.0 or higher.
 Therefore, the example above shows that you need to install glib.
 
-The following part of this subsection is written in January 2021.
-The glib version was not enough at that time.
-The description below is old now, and it probably doesn't fit to your environment.
-
-I installed 2.67.1 which was the latest version at that time (Jan/2021).
+I installed 2.67.1 which was the latest version at that time (January 2021).
 Download glib source files from the repository, then decompress and extract files.
 
     $ wget https://download.gnome.org/sources/glib/2.67/glib-2.67.1.tar.xz
@@ -175,12 +171,12 @@ The directory needs to be added to the environment variable `PKG_CONFIG_PATH`
 
 ### Gtk4 installation
 
-If you want the latest development version of gtk4, use git and clone the repository.
+If you want the latest development version of Gtk4, use git and clone the repository.
 
     $ git clone https://gitlab.gnome.org/GNOME/gtk.git
 
-If you want a stable version of gtk4, then download it from [Gnome source website](https://download.gnome.org/sources/gtk/).
-The latest version is 4.3 (7/May/2021).
+If you want a stable version of Gtk4, then download it from [Gnome source website](https://download.gnome.org/sources/gtk/).
+The latest version is 4.3.1 (13/June/2021).
 
 Compile and install it.
 
@@ -213,18 +209,18 @@ Modify `env.sh`.
     # girepository-1.0
     export GI_TYPELIB_PATH=$HOME/local/lib/x86_64-linux-gnu/girepository-1.0
 
-Include this file by . (dot) command before using gtk4 libraries.
+Include this file by . (dot) command before using Gtk4 libraries.
 
 You may think you can add them in your `.profile`.
 But it's a wrong decision.
 Never write them to your `.profile`.
-The environment variables above are necessary only when you compile and run gtk4 applications.
+The environment variables above are necessary only when you compile and run Gtk4 applications.
 Otherwise it's not necessary.
 If you changed the environment variables above and run gtk3 applications, it probably causes serious damage.
 
-### Compiling gtk4 applications
+### Compiling Gtk4 applications
 
-Before you compile gtk4 applications, define environment variables above.
+Before you compile Gtk4 applications, define environment variables above.
 
     $ . env.sh
 
@@ -233,13 +229,13 @@ For example, to compile `sample.c`, type the following.
 
     $ gcc `pkg-config --cflags gtk4` sample.c `pkg-config --libs gtk4`
 
-To know how to compile gtk4 applications, refer to the section 3 (GtkApplication and GtkApplicationWindow) and after.
+To know how to compile Gtk4 applications, refer to the section 3 (GtkApplication and GtkApplicationWindow) and after.
 
 ## Installing Fedora 34 Beta with gnome-boxes
 
-The second part of this section is about Gnome40.
+The last part of this section is about Gnome40.
 Gnome 40 is a new version of Gnome desktop system.
-And gtk4 is installed in the distribution.
+And Gtk4 is installed in the distribution.
 See [Gnome 40 website](https://forty.gnome.org/) first.
 
 *However, Gnome40 is not necessary to compile and run Gtk4 applications.*
@@ -277,25 +273,25 @@ Then a dialog appears.
 Click on `Operationg System Image File` and select the iso file you have downloaded.
 5. Then, the installer of Fedora is executed.
 Follow the instructions by the installer.
-At the end of installation, the installer instructs to reboot the system.
-Click the right of the title bar and select reboot or shutdown.
+At the end of the installation, the installer instructs to reboot the system.
+Click on the right of the title bar and select reboot or shutdown.
 6. Your display is back to the initial window of gnome-boxes, but there is a button `Fedora 34 Workstation` on the upper left of the window.
 Click on the button then Fedora will be executed.
 7. A setup dialog appears.
 Setup Fedora according to the wizard.
 
 Now you can use Fedora.
-It includes gtk4 libraries already.
-But you need to install the gtk4 development package.
+It includes Gtk4 libraries already.
+But you need to install the Gtk4 development package.
 Use `dnf` to install `gtk4.x86_64` package.
 
 ~~~
 $ sudo dnf install gtk4.x86_64
 ~~~
 
-### Test for compiling a gtk4 application
+### Test for compiling a Gtk4 application
 
-You can test the gtk4 development package by compiling files which are based on gtk4.
+You can test the Gtk4 development package by compiling files which are based on Gtk4.
 I've tried compiling `tfe` text editor, which is written in section 20.
 
 1. Run Firefox.
@@ -303,8 +299,9 @@ I've tried compiling `tfe` text editor, which is written in section 20.
 3. Click on the green button labeled `Code`.
 4. Select `Download ZIP` and download the codes from the repository.
 5. Unzip the file.
-6. Change your current directory to the top directory of the unzipped source files.
+6. Change your current directory to `src/tfe7`.
 7. Compile it.
+
 ~~~
 $ meson _build
 bash: meson: command not found...
@@ -356,7 +353,9 @@ Installing tfe to /usr/local/bin
 Installing /home/<username>/Gtk4-tutorial-main/src/tfe7/com.github.ToshioCP.tfe.gschema.xml to /usr/local/share/glib-2.0/schemas
 Running custom install script '/usr/bin/glib-compile-schemas /usr/local/share/glib-2.0/schemas/'
 ~~~
+
 8. Execute it.
+
 ~~~
 $ tfe
 ~~~
