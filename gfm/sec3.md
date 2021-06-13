@@ -105,7 +105,7 @@ A child object inherits signals, functions, properties and so on from its parent
 So, Gtkapplication also has the "activate" signal.
 
 Now we can solve the problem in `pr1.c`.
-We need to connect the activate signal to a handler.
+We need to connect the "activate" signal to a handler.
 We use a function `g_signal_connect` which connects a signal to a handler.
 
 ~~~C
@@ -140,10 +140,10 @@ The function `g_signal_connect` has four arguments.
 4. Data to pass to the handler. If no data is necessary, NULL should be given.
 
 You can find the description of each signal in API reference.
-For example, "activate" signal is in GApplication section in [GIO API reference[(https://developer.gnome.org/gio/stable/GApplication.html#GApplication-activate).
+For example, "activate" signal is in GApplication section in [GIO API reference](https://developer.gnome.org/gio/stable/GApplication.html#GApplication-activate).
 The handler function is described in it.
 
-In addition, `g_signal_connect` is described in [GObject API reference[(https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
+In addition, `g_signal_connect` is described in [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
 API reference is very important.
 You should see and understand it to write Gtk applications.
 They are located in ['GNOME Developer Center'](https://developer.gnome.org/).
@@ -202,11 +202,19 @@ What we need to do is:
 2. Connect it to GtkApplication.
 3. Show the window.
 
-Now rewrite the function `add_activate`.
+Now rewrite the function `app_activate`.
 
 #### Create a GtkWindow
 
 ~~~C
+1 static void
+2 app_activate (GApplication *app, gpointer user_data) {
+3   GtkWidget *win;
+4 
+5   win = gtk_window_new ();
+6   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+7   gtk_widget_show (win);
+8 }
 ~~~
 
 Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multi-line text, containers and so on.
@@ -266,7 +274,7 @@ As it destroys itself, the GtkWindow is also destroyed.
 
 The function `gtk_widget_show` is used to show the window.
 
-Gtk4 changed the default widget visibility to on, so every widget doesn't need this function to show itself.
+Gtk4 changes the default widget visibility to on, so every widget doesn't need this function to show itself.
 But, there's an exception.
 Top window (this term will be explained later) isn't visible when it is created.
 So you need to use the function above to show the window.
