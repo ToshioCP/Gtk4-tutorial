@@ -1,12 +1,12 @@
 #include <gtk/gtk.h>
 
 static void
-on_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app, gpointer user_data) {
   g_print ("You need a filename argument.\n");
 }
 
 static void
-on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
   GtkWidget *win;
   GtkWidget *nb;
   GtkWidget *lab;
@@ -38,17 +38,19 @@ on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer 
 
       gtk_text_buffer_set_text (tb, contents, length);
       g_free (contents);
-      filename = g_file_get_basename (files[i]);
-      lab = gtk_label_new (filename);
+      if ((filename = g_file_get_basename (files[i])) != NULL) {
+        lab = gtk_label_new (filename);
+        g_free (filename);
+      } else
+        lab = gtk_label_new ("");
       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);
-      g_free (filename);
-    } else {
-      filename = g_file_get_path (files[i]);
-      g_print ("No such file: %s.\n", filename);
-      g_free (filename);
-    }
+    } else if ((filename = g_file_get_path (files[i])) != NULL) {
+        g_print ("No such file: %s.\n", filename);
+        g_free (filename);
+    } else
+        g_print ("No valid file is given\n");
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0)
     gtk_widget_show (win);
@@ -62,8 +64,8 @@ main (int argc, char **argv) {
   int stat;
 
   app = gtk_application_new ("com.github.ToshioCP.tfv4", G_APPLICATION_HANDLES_OPEN);
-  g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-  g_signal_connect (app, "open", G_CALLBACK (on_open), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;

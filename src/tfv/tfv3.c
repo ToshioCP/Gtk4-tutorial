@@ -1,12 +1,12 @@
 #include <gtk/gtk.h>
 
 static void
-on_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app, gpointer user_data) {
   g_print ("You need a filename argument.\n");
 }
 
 static void
-on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
   GtkWidget *win;
   GtkWidget *scr;
   GtkWidget *tv;
@@ -30,13 +30,16 @@ on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer 
   if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, NULL)) {
     gtk_text_buffer_set_text (tb, contents, length);
     g_free (contents);
-    filename = g_file_get_basename (files[0]);
-    gtk_window_set_title (GTK_WINDOW (win), filename);
-    g_free (filename);
+    if ((filename = g_file_get_basename (files[0])) != NULL) {
+      gtk_window_set_title (GTK_WINDOW (win), filename);
+      g_free (filename);
+    }
     gtk_widget_show (win);
   } else {
-    filename = g_file_get_path (files[0]);
-    g_print ("No such file: %s.\n", filename);
+    if ((filename = g_file_get_path (files[0])) != NULL) {
+      g_print ("No such file: %s.\n", filename);
+      g_free (filename);
+    }
     gtk_window_destroy (GTK_WINDOW (win));
   }
 }
@@ -47,8 +50,8 @@ main (int argc, char **argv) {
   int stat;
 
   app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
-  g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-  g_signal_connect (app, "open", G_CALLBACK (on_open), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
