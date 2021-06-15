@@ -1,33 +1,206 @@
-# tfe5 source files
+# tfeapplication.c
 
-## How to compile and execute tfe text editor.
+`tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
+It does:
 
-First, source files are shown in the later subsections.
-How to download them is written at the end of the [previous section](sec14.src.md).
+- Application support, mainly handling command line arguments.
+- Builds widgets using ui file.
+- Connects button signals and their handlers.
+- Manages CSS.
 
-The following is the instruction of compilation and execution.
+## main
 
-- You need meson and ninja.
-- Set necessary environment variables.
-If you have installed gtk4 under the instruction in [Section 2](sec2.src.md), type `. env.sh` to set the environment variables.
-- change your current directory to `src/tfe5` directory.
-- type `meson _build` for configuration.
-- type `ninja -C _build` for compilation.
-Then the application `tfe` is build under the `_build` directory.
-- type `_build/tfe` to execute it.
+Th function `main` is the first invoked function in C language.
+It connects the command line given by the user and GTK application.
 
-Then the window appears.
-There are four buttons, `New`, `Open`, `Save` and `Close`.
+@@@include
+tfe5/tfeapplication.c main
+@@@
 
-- Click on `Open` button, then a FileChooserDialog appears.
-Choose a file in the list and click on `Open` button.
-Then the file is read and a new Notebook Page appears.
-- Edit the file and click on `Save` button, then the text is saved to the original file.
-- Click `Close`, then the Notebook Page disappears.
-- Click `Close` again, then the `Untitled` Notebook Page disappears and at the same time the application quits.
+- 6: Generates GtkApplication object.
+- 8-10: Connects "startup", "activate" and "open signals to their handlers.
+- 12: Runs the application.
+- 13-14: releases the reference to the application and returns the status.
 
-This is a very simple editor.
-It is a good practice for you to add more features.
+## startup signal handler
+
+Startup signal is emitted just after the application is generated.
+What the signal handler needs to do is initialization of the application.
+
+- Builds the widgets using ui file.
+- Connects button signals and their handlers.
+- Sets CSS.
+
+The handler is as follows.
+
+@@@include
+tfe5/tfeapplication.c tfe_startup
+@@@
+
+- 12-15: Builds widgets using ui file (resource).
+Connects the top window and the application using `gtk_window_set_application`.
+- 16-23: Gets buttons and connects their signals and handlers.
+- 24: Releases the reference to GtkBuilder.
+- 26-31: Sets CSS.
+CSS in GTK is similar to CSS in HTML.
+You can set margin, border, padding, color, font and so on with CSS.
+In this program CSS is in line 30.
+It sets padding, font-family and font size of GtkTextView.
+- 26-28: GdkDisplay is used to set CSS.
+CSS will be explained in the next subsection.
+
+## CSS in GTK
+
+CSS is an abbreviation of Cascading Style Sheet.
+It is originally used with HTML to describe the presentation semantics of a document.
+You might have found that the widgets in GTK is similar to the window in a browser.
+It implies that CSS can also be applied to GTK windowing system.
+
+### CSS nodes, selectors
+
+The syntax of CSS is as follows.
+
+@@@if gfm
+~~~css
+@@@else
+~~~
+@@@end
+selector { color: yellow; padding-top: 10px; ...}
+~~~
+
+Every widget has CSS node.
+For example GtkTextView has `textview` node.
+If you want to set style to GtkTextView, substitute "textview" for the selector.
+
+@@@if gfm
+~~~css
+@@@else
+~~~
+@@@end
+textview {color: yellow; ...}
+~~~
+
+Class, ID and some other things can be applied to the selector like Web CSS.
+Refer [GTK4 API reference](https://developer.gnome.org/gtk4/stable/theming.html) for further information.
+
+In line 30, the CSS is a string.
+
+@@@if gfm
+~~~css
+@@@else
+~~~
+@@@end
+textview {padding: 10px; font-family: monospace; font-size: 12pt;}
+~~~
+
+- padding is a space between the border and contents.
+This space makes the textview easier to read.
+- font-family is a name of font.
+"monospace" is one of the generic family font keywords.
+- font-size is set to 12pt.
+
+### GtkStyleContext, GtkCSSProvider and GdkDisplay
+
+GtkStyleContext is an object that stores styling information affecting a widget.
+Each widget is connected to the corresponding GtkStyleContext.
+You can get the context by `gtk_widget_get_style_context`.
+
+GtkCssProvider is an object which parses CSS in order to style widgets.
+
+To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext.
+However, instead, you can add it to GdkDisplay of the window (usually top level window).
+
+Look at the source file of `startup` handler again.
+
+- 28: The display is obtained by `gtk_widget_get_display`.
+- 29: Generates GtkCssProvider.
+- 30: Puts the CSS into the provider.
+- 31: Adds the provider to the display.
+
+It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
+To do so, rewrite `tfe_text_view_new`.
+First, get the GtkStyleContext object of a TfeTextView object.
+Then adds the CSS provider to the context.
+
+~~~C
+GtkWidget *
+tfe_text_view_new (void) {
+  GtkWidget *tv;
+
+  tv = gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
+
+  GtkStyleContext *context;
+
+  context = gtk_widget_get_style_context (GTK_WIDGET (tv));
+  GtkCssProvider *provider = gtk_css_provider_new ();
+  gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
+  gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+  return tv;
+}
+~~~
+
+CSS in the context takes precedence over CSS in the display.
+
+## activate and open handler
+
+The handler of "activate" and "open" signal are `tfe_activate` and `tfe_open` respectively.
+They just generate a new GtkNotebookPage.
+
+@@@include
+tfe5/tfeapplication.c tfe_activate tfe_open
+@@@
+
+- 1-11: `tfe_activate`.
+- 8-10: Generates a new page and shows the window.
+- 12-25: `tfe_open`.
+- 20-21: Generates notebook pages with files.
+- 22-23: If no page has generated, maybe because of read error, then it generates a empty page.
+- 24: Shows the window.
+
+These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
+
+## Primary instance
+
+Only one GApplication instance can be run at a time per session.
+The session is a bit difficult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login.
+When you use your PC, you probably login first, then your desktop appears until you log off.
+This is the session.
+
+However, linux is multi process OS and you can run two or more instances of the same application.
+Isn't it a contradiction?
+
+When first instance is launched, then it register itself with its application ID (for example, `com.github.ToshioCP.tfe`).
+Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
+I wrote "startup signal is emitted just after the application is generated" in the prior subsection.
+More precisely, it is emitted just after the registration.
+
+If another instance which has the same application ID is invoked after that, it also tries to register itself.
+Because this is the second instance, the registration of the ID has already done, so it fails.
+Because of the failure startup signal isn't emitted.
+After that, activate or open signal is emitted in the primary instance, not the second instance.
+The primary instance receives the signal and its handler is invoked.
+On the other hand, the second instance doesn't receive the signal and it immediately quits.
+
+Try to run two instances in a row.
+
+    $ ./_build/tfe &
+    [1] 84453
+    $ ./build/tfe tfeapplication.c
+    $
+
+First, the primary instance opens a window.
+Then, after the second instance is run, a new notebook page with the contents of `tfeapplication.c` appears in the primary instance's window.
+This is because the open signal is emitted in the primary instance.
+The second instance immediately quits so shell prompt soon appears.
+
+## a series of handlers correspond to the button signals
+
+@@@include
+tfe5/tfeapplication.c open_cb new_cb save_cb close_cb
+@@@
+
+`open_cb`, `new_cb`, `save_cb` and `close_cb` just call corresponding notebook page functions.
 
 ## meson.build
 
@@ -35,57 +208,21 @@ It is a good practice for you to add more features.
 tfe5/meson.build
 @@@
 
-## tfe.gresource.xml
+In this file, just the source file names are modified from the prior version.
 
-@@@include
-tfe5/tfe.gresource.xml
-@@@
+## source files
 
-## tfe.ui
+The [source files](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe5) of the text editor `tfe` will be shown in the next section.
 
-@@@include
-tfe5/tfe.ui
-@@@
+You can also download the files from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+There are two options.
 
-## tfe.h
+- Use git and clone.
+- Run your browser and open the [top page](https://github.com/ToshioCP/Gtk4-tutorial). Then click on "Code" button and click "Download ZIP" in the popup menu.
+After that, unzip the archive file.
 
-@@@include
-tfe5/tfe.h
-@@@
+If you use git, run the terminal and type the following.
 
-## tfeapplication.c
+    $ git clone https://github.com/ToshioCP/Gtk4-tutorial.git
 
-@@@include
-tfe5/tfeapplication.c
-@@@
-
-## tfenotebook.h
-
-@@@include
-tfe5/tfenotebook.h
-@@@
-
-## tfenotebook.c
-
-@@@include
-tfe5/tfenotebook.c
-@@@
-
-## tfetextview.h
-
-@@@include
-tfetextview/tfetextview.h
-@@@
-
-## tfetextview.c
-
-@@@include
-tfetextview/tfetextview.c
-@@@
-
-## Total number of lines, words and characters
-
-@@@shell
-LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
-@@@
-
+The source files are under [`/src/tfe5`](tfe5) directory.

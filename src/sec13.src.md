@@ -1,146 +1,236 @@
-# Functions in GtkNotebook
+# Functions in TfeTextView
 
-GtkNotebook is a very important object in the text file editor `tfe`.
-It connects the application and TfeTextView objects.
-A set of public functions related to GtkNotebook are declared in `tfenotebook.h`.
-The word "tfenotebook" is used only in filenames.
-There's no "TfeNotebook" object.
+In this section I will explain functions in TfeTextView object.
 
-@@@include
-tfe5/tfenotebook.h
-@@@
+## tfe.h and tfetextview.h
 
-This header file describes the public functions in `tfenotebook.c`.
-
-- 1-2: `notebook_page_save` saves the current page to the file of which the name specified in the tab.
-If the name is `untitled` or `untitled` followed by digits, FileChooserDialog appears and a user can choose or specify a filename.
-- 4-5: `notebook_page_close` closes the current page.
-- 7-8: `notebook_page_open` shows a file chooser dialog and a user can choose a file. The file is inserted to a new page.
-- 10-11: `notebook_page_new_with_file` generates a new page and the file give as an argument is read and inserted into the page.
-- 13-14: `notebook_page_new` generates a new empty page.
-
-You probably find that the functions except `notebook_page_close` are higher level functions of
-
-- `tfe_text_view_save`
-- `tef_text_view_open`
-- `tfe_text_view_new_with_file`
-- `tfe_text_view_new`
-
-respectively.
-
-There are two layers.
-One of them is `tfe_text_view ...`, which is the lower level layer.
-The other is `note_book ...`, which is the higher level layer.
-
-Now let's look at the program of each function.
-
-## notebook\_page\_new
+`tfe.h` is a top header file and it includes `gtk.h` and all the header files.
+C source files `tfeapplication.c` and `tfenotebook.c` include `tfe.h` at the beginning.
 
 @@@include
-tfe5/tfenotebook.c get_untitled notebook_page_build notebook_page_new
+tfe5/tfe.h
 @@@
 
-- 27-37: `notebook_page_new` function.
-- 29: `g_return_if_fail` is used to check the argument.
-- 34: Generates TfeTextView object.
-- 35: Generates filename, which is "Untitled", "Untitled1", ... .
-- 1-8: `get_untitled` function.
-- 3: Static variable `c` is initialized at the first call of this function. After that `c` keeps its value unless it is changed explicitly.
-- 4-7: Increases `c` by one and if it is zero then it returns "Untitled". If it is a positive integer then it returns "Untitled\<the integer\>", for example, "Untitled1", "Untitled2", and so on.
-The function `g_strdup_printf` generates a string and it should be freed by `g_free` when it becomes useless.
-The caller of `get_untitled` is in charge of freeing the string.
-- 36: calls `notebook_page_build` to build the contents of the page.
-- 10- 25: `notebook_page_build` function.
-- 12: Generates GtkScrolledWindow.
-- 17: Sets the wrap mode of `tv` to GTK_WRAP_WORD_CHAR so that lines are broken between words or graphemes.
-- 18: Inserts `tv` to GtkscrolledWindow as a child.
-- 19-20: Generates GtkLabel, then appends it to GtkNotebookPage.
-- 21-22: Sets "tab-expand" property to TRUE.
-The function g\_object\_set sets properties on an object.
-The object is any object derived from GObject.
-In many cases, an object has its own function to set its properties, but sometimes not.
-In that case, use g\_object\_set to set the property.
-- 23: Sets the current page of `nb` to the newly generated page.
-- 24: Connects "change-file" signal and `file_changed_cb` handler.
-
-## notebook\_page\_new\_with\_file
+`../tfetextview/tfetextview.h` is a header file which describes the public functions in `tfetextview.c`.
 
 @@@include
-tfe5/tfenotebook.c notebook_page_new_with_file
+tfetextview//tfetextview.h
 @@@
 
-- 9-10: Calls `tfe_text_view_new_with_file`.
-If the function returns NULL, then it does nothing and returns.
-The return value NULL means that an error has happened.
-- 11-12: Gets the filename and builds the contents of the page.
+- 1,2,35: Thanks to these three lines, the following lines are included only once. 
+- 4: Includes gtk4 header files.
+The header file `gtk4` also has the same mechanism to avoid including it multiple times.
+- 6-7: These two lines define TfeTextView type, its class structure and some useful macros.
+- 9-15: A definition of the value of the parameter of "open-response" signal.
+- 17-33: Declarations of public functions on TfeTextView.
 
-## notebook\_page\_open
+## Functions to create TfeTextView object
+
+TfeTextView Object is created with `tfe_text_view_new` or `tfe_text_view_new_with_file`.
+
+~~~C
+GtkWidget *tfe_text_view_new (void);
+~~~
+
+`tfe_text_view_new` just creates a new TfeTextView object and returns the pointer to the new object.
+
+~~~C
+GtkWidget *tfe_text_view_new_with_file (GFile *file);
+~~~
+
+`tfe_text_view_new_with_file` is given a Gfile object as the argument and it loads the file into the GtkTextBuffer object, then returns the pointer to the new object.
+If an error occurs during the creation process, NULL is returned.
+
+Each function is defined as follows.
 
 @@@include
-tfe5/tfenotebook.c open_response notebook_page_open
+tfetextview/tfetextview.c tfe_text_view_new_with_file tfe_text_view_new
 @@@
 
-- 19-28: `notebook_page_open` function.
-- 25: Generates TfeTextView object.
-- 26: Connects the signal "open-response" and the handler `open_response`.
-- 27: Calls `tfe_text_view_open`.
-The function emits an "open-response" signal to inform the status.
-- 1-17: `open_response` handler.
-This is the post-function of `notebook_page_open`.
-- 6-8: If the status is NOT `TFE_OPEN_RESPONSE_SUCCESS`, it cancels what it did in `notebook_page_open`.
-The object `tv` hasn't been a child widget of some other widget yet.
-Such object has floating reference.
-You need to call `g_object_ref_sink` first.
-Then the floating reference is converted into an ordinary reference.
-Now you call `g_object_unref` to decrease the reference count by one.
-- 9-11: If `tfe_text_view_get_file` returns a pointer not to point GFile, it means that an error has happened.
-Sink and unref `tv`.
-- 12-16: Otherwise, everything is okay.
-Gets the filename, builds the contents of the page.
+- 21-24: `tfe_text_view_new` function.
+Just returns the value from the function `g_object_new` but casts it to the pointer to GtkWidget.
+Initialization is done in `tfe_text_view_init` which is called in the process of `g_object_new` function.
+- 1-19: `tfe_text_view_new_with_file` function.
+- 3: `g_return_val_if_fail` is described in [Glib API reference](https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-return-val-if-fail).
+It tests whether the argument `file` is a pointer to GFile.
+If it's true, then the program goes on to the next line.
+If it's false, then it returns NULL (the second argument) immediately.
+And at the same time it logs out the error message (usually the log is outputted to stderr or stdout).
+This function is used to check the programmer's error.
+If an error occurs, the solution is usually to change the (caller) program and fix the bug.
+You need to distinguish programmer's errors and runtime errors.
+You shouldn't use this function to find runtime errors.
+- 10-11: If an error occurs when reading the file, then return NULL.
+- 13: Calls the function `tfe_text_view_new`.
+The function creates TfeTextView instance and returns the pointer to the instance.
+- 14: Gets the pointer to GtkTextBuffer corresponds to `tv`.
+The pointer is assigned to `tb`
+- 15: Assigns the contents read from the file to GtkTextBuffer pointed by `tb`.
+- 16: Frees the memories pointed by `contents`.
+- 17: Duplicates `file` and sets `tv->file` to point it.
+- 18: Returns `tv`, which is a pointer to the newly created TfeTextView instance..
 
-## notebook\_page\_close
+## Save and saveas functions
+
+Save and saveas functions write the contents in GtkTextBuffer to a file.
+
+~~~C
+void tfe_text_view_save (TfeTextView *tv)
+~~~
+
+The function `save` writes the contents in GtkTextBuffer to a file specified by `tv->file`.
+If `tv->file` is NULL, then it shows GtkFileChooserDialog and prompts the user to choose a file to save.
+Then it saves the contents to the file and sets `tv->file` to point the GFile of the file.
+
+~~~C
+void tfe_text_view_saveas (TfeTextView *tv)
+~~~
+
+The function `saveas` uses GtkFileChooserDialog and prompts the user to select a existed file or specify a new file to save.
+Then, the function changes `tv->file` and save the contents to the specified file.
+If an error occurs, it is shown to the user through the message dialog.
+The error is managed only in the TfeTextView instance and no information is notified to the caller.
 
 @@@include
-tfe5/tfenotebook.c notebook_page_close
+tfetextview/tfetextview.c save_file saveas_dialog_response tfe_text_view_save tfe_text_view_saveas
 @@@
 
-This function closes the current page.
-If the page is the only page the notebook has, then the function destroys the top window and quits the application.
+- 1-24: `save_file` function.
+This function is called from `saveas_dialog_response` and `tfe_text_view_save`.
+This function saves the contents of the buffer to the file given as an argument.
+If error happens, it displays an error message.
+- 10-11: Gets the text contents from the buffer.
+- 12-14: Saves the contents to the file.
+If it's been done without error, set the modified flag to be FALSE.
+This means that the buffer is not modified since it has been saved.
+And return TRUE to the caller.
+- 15-22: If it's failed to save the contents, displays an error message.
+Creates a message dialog with the error message.
+Connects the "response" signal  to `gtk_window_destroy`, so that the dialog disappears when a user clicked on the button.
+Shows the window, frees `err` and returns FLASE to the caller.
+- 26-44: `saveas_dialog_response` function.
+This is a signal handler for a "response" signal on GtkFileChooserDialog created by `tfe_text_view_saveas` function.
+This handler analyzes the response and determines whether to save the contents.
+- 32-44: If the response is `GTK_RESPONSE_ACCEPT`, the user has clicked on the `Save` button. So, it tries to save.
+- 33-35: Gets the GFile `file` from GtkFileChooserDialog.
+If it doesn't point GFile, it outputs an error message to the log.
+- 36-42: Otherwise, it calls `save_file` to save the contents to the file.
+`tv->file` is changed, but if the old GFile pointed by `tv->file` exists, it is freed in advance.
+Emits "change-file" signal.
+- 46-61: `Tfe_text_view_save` function.
+- 48: If `tv` is not a pointer to TfeTextView, then it logs an error message and immediately returns.
+This function is similar to `g_return_val_if_fail` function, but no value is returned because `tfe_text_view_save` doesn't return a value.
+- 53-54: If the buffer hasn't modified, then it doesn't need to save it.
+So the function returns.
+- 55-56: If `tv->file` is NULL, no file has given yet.
+It calls `tfe_text_view_saveas` which prompts a user to select a file or specify a new file to save.
+- 57-58: If `tv->file` doesn't point GFile, somethig bad has happened.
+Logs an error message.
+- 59-60: Calls `save_file` and saves the contents to the file.
+It is possible that `save_file`fails, but no notification will be given to the caller.
+- 63-76: `tfe_text_view_saveas` function.
+It shows GtkFileChooserDialog and prompts the user to choose a file.
+- 70-73: Creates GtkFileChooserDialog.
+The title is "Save file".
+Transient parent of the dialog is `win`, which is the top level window.
+The action is save mode.
+The buttons are Cancel and Save.
+- 74: connects the "response" signal of the dialog and `saveas_dialog_response` handler.
 
-- 8-10: If the page is the only page the notebook has, it calls gtk\_window\_destroy to destroys the top window.
-- 11-13: Otherwise, removes the current page.
+![Saveas process](../image/saveas.png){width=10.7cm height=5.16cm}
 
-## notebook\_page\_save
+When you use GtkFileChooserDialog, you need to divide the program into two parts.
+One is a function which creates GtkFileChooserDialog and the other is a signal handler.
+The function just creates and shows GtkFileChooserDialog.
+The rest is done by the handler.
+It gets Gfile from GtkFileChooserDialog and saves the buffer to the file by calling `tfe_text_view_save`.
+
+## Open function
+
+Open function shows GtkFileChooserDialog to users and prompts them to choose a file.
+Then it reads the file and puts the text to GtkTextBuffer.
+
+~~~C
+void tfe_text_view_open (TfeTextView *tv, GtkWindow *win);
+~~~
+
+The parameter `win` is the top level window.
+It will be a transient parent window of GtkFileChooserDialog when the dialog is created.
+This allows window managers to keep the dialog on top of the parent window, or center the dialog over the parent window.
+It is possible to give no parent window to the dialog.
+However, it is encouraged to give a parent window to dialog.
+This function might be called just after `tv` has been created.
+In that case, `tv` has not been incorporated into the widget hierarchy.
+Therefore it is impossible to get the top window from `tv`.
+That's why the function needs `win` parameter.
+
+This function is usually called when the buffer of `tv` is empty.
+However, even if the buffer is not empty, `tfe_text_view_open` doesn't treat it as an error.
+If you want to revert the buffer, calling this function is appropriate.
+Otherwise probably bad things will happen.
 
 @@@include
-tfe5/tfenotebook.c get_current_textview notebook_page_save
+tfetextview/tfetextview.c open_dialog_response tfe_text_view_open
 @@@
 
-- 13-21: `notebook_page_save`.
-- 19: Gets TfeTextView belongs to the current page.
-- 20: Calls `tfe_text_view_save`.
-- 1-11: `get_current_textview`.
-This function gets the TfeTextView object belongs to the current page.
-- 7: Gets the page number of the current page.
-- 8: Gets the child object `scr`, which is GtkScrolledWindow object, of the current page.
-- 9-10: Gets the child object of `scr`, which is TfeTextView object, and return it.
+- 38-51: `tfe_text_view_open` function.
+- 45-48: Creates GtkFileChooserDialog.
+The title is "Open file".
+Transient parent window is the top level window of the application, which is given by the caller.
+The action is open mode.
+The buttons are Cancel and Open.
+- 49: connects the "response" signal of the dialog and `open_dialog_response` signal handler.
+- 50: Shows the dialog.
+- 1-36: `open_dialog_response` signal handler.
+- 10-11: If the response from GtkFileChooserDialog is not `GTK_RESPONSE_ACCEPT`, which means the user has clicked on the "Cancel" button or close button on the header bar, then it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_CANCEL`.
+- 12-14: Gets a pointer to Gfile by `gtk_file_chooser_get_file`.
+If it doesn't point GFile, maybe an error occurred.
+Then it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
+- 15-24: If an error occurs at file reading, then it decreases the reference count of the Gfile, shows a message dialog to report the error to the user and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
+- 25-33: If the file has successfully been read, then the text is inserted to GtkTextBuffer, frees the temporary buffer pointed by `contents` and sets `tv->file` to point the file (no duplication or unref is not necessary).
+Then, it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_SUCCESS` and emits "change-file" signal.
+- 35: closes GtkFileCooserDialog.
 
-## file\_changed\_cb handler
+Now let's think about the whole process between the other object (caller) and TfeTextView.
+It is shown in the following diagram and you would think that it is really complicated.
+Because signal is the only way for GtkFileChooserDialog to communicate with others.
+In Gtk3, `gtk_dialog_run` function is available.
+It simplifies the process.
+However, in Gtk4, `gtk_dialog_run` is unavailable any more.
 
-The function `file_changed_cb` is a handler connected to "change-file" signal.
-If the file in TfeTextView is changed, it emits this signal.
-This handler changes the label of GtkNotebookPage.
+![Caller and TfeTextView](../image/open.png){width=12.405cm height=9.225cm}
+
+1. A caller gets a pointer `tv` to TfeTextView by calling `tfe_text_view_new`.
+2. The caller connects the handler (left bottom in the diagram) and the signal "open-response".
+3. It calls `tfe_text_view_open` to prompt the user to select a file from GtkFileChooserDialog.
+4. The dialog emits a signal and it invokes the handler `open_dialog_response`.
+5. The handler reads the file and inserts the text into GtkTextBuffer and emits a signal to inform the response status.
+6. The handler outside TfeTextView receives the signal.
+
+## Get file function
+
+`gtk_text_view_get_file` is a simple function shown as follows.
 
 @@@include
-tfe5/tfenotebook.c file_changed_cb
+tfetextview/tfetextview.c tfe_text_view_get_file
 @@@
 
-- 8: Gets GFile from TfeTextView.
-- 9: Gets GkScrolledWindow which is the parent widget of `tv`.
-- 10-12: If `file` points GFile, then assigns the filename of the GFile into `filename`.
-Then, unref the GFile object `file`.
-- 13-14: Otherwise (file is NULL), assigns untitled string to `filename`.
-- 15-16: Generates a label with the filename and inserts it into GtkNotebookPage.
+The important thing is to duplicate `tv->file`.
+Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.
 
-The string `filename` is used in the GtkLabel object.
-You mustn't free it.
+## API document and source file of tfetextview.c
+
+@@@if gfm
+Refer [API document of TfeTextView](tfetextview/tfetextview_doc.md).
+It is under the directory `src/tfetextview`.
+@@@elif html
+Refer [API document of TfeTextView](../html/tfetextview_doc.html).
+Its original markdown file is under the directory `src/tfetextview`.
+@@@elif latex
+Refer API document of TfeTextView in the appendix.
+Its original markdown file is under the directory `src/tfetextview`.
+@@@end
+
+All the source files are listed in [Section 16](sec16.src.md).
+You can find them under [src/tfe5](tfe5) and [src/tfetextview](tfetextview) directories.
+

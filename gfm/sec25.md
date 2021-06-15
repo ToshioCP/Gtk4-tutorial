@@ -1,564 +1,541 @@
 Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)
 
-# GtkGridView and activate signal
+# GtkListView
 
-GtkGridView is similar to GtkListView.
-It displays a GListModel as a grid, which is like a square tessellation.
+Gtk4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
+The new feature is described in the sections "GListModel support" and "List-based widgets" at the top of [the third chapter of the API reference](https://developer.gnome.org/gtk4/stable/gtkobjects.html).
 
-![Grid](../image/list4.png)
+Gtk4 has other means to implement lists.
+They are GtkListBox and GtkTreeView which are took over from Gtk3.
+There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
+He described why GtkListView are developed to replace GtkListBox and GtkTreeView.
 
-This is often seen when you use a file browser like nautilus.
+I want to explain GtkListView and its related objects in this tutorial.
 
-In this section, let's make a very simple file browser `list4`.
-It just shows the files in the current directory.
-And a user can choose list or grid by clicking on buttons in the tool bar.
-Each item in the list or grid has an icon and a filename.
-In addition, `list4` provides the way to open the `tfe` text editor to show a text file.
-A user can do that by double clicking on an item or pressing enter key when an item is selected.
+## Outline
 
-## GtkDirectoryList
+A list is a sequential data structure.
+For example, an ordered string sequence "one", "two", "three", "four" is a list.
+Each element of the list is called item.
+A list is like an array, but in many cases it is implemented with pointers which point to the next item of the list.
+And it has a start point.
+So, each item can be referred by the index of the item (first item, second item, ..., nth item, ...).
+There are two cases.
+One is the index starts from one (one-based) and the other is it starts from zero (zero-based).
 
-GtkDirectoryList implements GListModel and it contains information of files in a certain directory.
-The items of the list are GFileInfo objects.
+Gio provides GListModel interface.
+It is a zero-based list of the same type of GObject objects, or objects that implement the same interface.
+An object implements GListModel is usually not a widget.
+So, the list is not displayed on the screen directly.
+There's another object GtkListView which is a widget to display the list.
+The items in the list need to be connected to the items in GtkListView.
+GtkListItemFactory object maps items in the list to GListView.
 
-In the `list4` source files, GtkDirectoryList is described in a ui file and built by GtkBuilder.
-It is referenced to by a GtkSingleSelection model and the GtkSingleSelection model is referenced to by a GListView or GGridView object.
+![List](../image/list.png)
 
-~~~
-GtkListView (model property) => GtkSingleSelection (model property) => GtkDirectoryList
-GtkGridView (model property) => GtkSingleSelection (model property) => GtkDirectoryList
-~~~
+The instruction to build the whole list related objects is:
 
-![DirectoryList](../image/directorylist.png)
+1. Implement the list object which implements GListModel.
+2. Build widgets and put GtkListView as a child of GtkScrolledWindow.
+3. Set GtkListItemFactory.
 
-The part of the ui file `list4.ui` is as follows.
+## GListModel
 
-~~~xml
-<object class="GtkListView" id="list">
-  <property name="model">
-    <object class="GtkSingleSelection" id="singleselection">
-      <property name="model">
-        <object class="GtkDirectoryList" id="directorylist">
-          <property name="attributes">standard::name,standard::icon,standard::content-type</property>
-        </object>
-      </property>
-    </object>
-  </property>
-</object>
-<object class="GtkGridView" id="grid">
-  <property name="model">singleselection</property>
-</object>
-~~~
-
-GtkDirectoryList has an "attributes" property.
-It is attributes of GFileInfo such as "standard::name", "standard::icon" and "standard::content-type".
-
-- standard::name is a filename.
-- standard::icon is an icon of the file. It is a GIcon object.
-- standard::content-type is a content-type.
-Content-type is the same as mime type for the internet technology.
-For example, "text/plain" is a text file, "text/x-csrc" is a C source code and so on.
-("text/x-csrc"is not registered to IANA media types.
-Such "x-" subtype is not a standard mime type.)
-Content type is also used by the desktop system.
-
-GtkGridView has the same structure as GtkListView.
-But it is enough to specify its model property to `singleselection` which is the identification of the GtkSingleSelection.
-Therefore the description for GtkGridView is very short.
-
-## Ui file of the window
-
-Look at the screenshot of `list4` at the top of this section.
-The widgets are built with the following ui file.
-
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <object class="GtkApplicationWindow" id="win">
- 4     <property name="title">file list</property>
- 5     <property name="default-width">600</property>
- 6     <property name="default-height">400</property>
- 7     <child>
- 8       <object class="GtkBox" id="boxv">
- 9         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-10         <child>
-11           <object class="GtkBox" id="boxh">
-12             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-13             <child>
-14               <object class="GtkLabel" id="dmy1">
-15                 <property name="hexpand">TRUE</property>
-16               </object>
-17             </child>
-18             <child>
-19               <object class="GtkButton" id="btnlist">
-20                 <property name="name">btnlist</property>
-21                 <property name="action-name">win.view</property>
-22                 <property name="action-target">&apos;list&apos;</property>
-23                <child>
-24                   <object class="GtkImage">
-25                     <property name="resource">/com/github/ToshioCP/list4/list.png</property>
-26                   </object>
-27                 </child>
-28               </object>
-29             </child>
-30             <child>
-31               <object class="GtkButton" id="btngrid">
-32                 <property name="name">btngrid</property>
-33                 <property name="action-name">win.view</property>
-34                 <property name="action-target">&apos;grid&apos;</property>
-35                 <child>
-36                   <object class="GtkImage">
-37                     <property name="resource">/com/github/ToshioCP/list4/grid.png</property>
-38                   </object>
-39                 </child>
-40               </object>
-41             </child>
-42             <child>
-43               <object class="GtkLabel" id="dmy2">
-44                 <property name="width-chars">10</property>
-45               </object>
-46             </child>
-47           </object>
-48         </child>
-49         <child>
-50           <object class="GtkScrolledWindow" id="scr">
-51             <property name="hexpand">TRUE</property>
-52             <property name="vexpand">TRUE</property>
-53           </object>
-54         </child>
-55       </object>
-56     </child>
-57   </object>
-58   <object class="GtkListView" id="list">
-59     <property name="model">
-60       <object class="GtkSingleSelection" id="singleselection">
-61         <property name="model">
-62           <object class="GtkDirectoryList" id="directorylist">
-63             <property name="attributes">standard::name,standard::icon,standard::content-type</property>
-64           </object>
-65         </property>
-66       </object>
-67     </property>
-68   </object>
-69   <object class="GtkGridView" id="grid">
-70     <property name="model">singleselection</property>
-71   </object>
-72 </interface>
-73 
-~~~
-
-The file consists of two parts.
-The first part begins at the third line and ends at the 57th line.
-This part is the widgets from the top level window to the scrolled window.
-It also includes two buttons.
-The second part begins at the 58th line and ends at the 71st line.
-This is GtkListView and GtkGridView.
-They are described in the previous section.
-
-- 13-17, 42-46: Two labels are dummy labels.
-They just work as a space to put the two buttons at the appropriate position.
-- 19-41: GtkButton `btnlist` and `btngrid`.
-These two buttons work as selection buttons to switch from list to grid and vice versa.
-These two buttons are connected to a stateful action `win.view`.
-This action is stateful and has a parameter.
-Such action consists of prefix, action name and parameter.
-The prefix of the action is `win`, which means the action belongs to the top level window.
-So, a prefix gives scope of the action.
-The action name is `view`.
-The parameters are `list` or `grid`, which show the state of the action.
-A parameter is also called a target, because it is a target to which the buttons are clicked on to change the action state.
-We often write the detailed action like "win.view::list" or "win.view::grid".
-- 21-22: The properties "action-name" and "action-target" belong to GtkActionable interface.
-GtkButton implements GtkActionable.
-The action name is "win.view" and the target is "list".
-Generally, a target is GVariant, which can be string, integer, float and so on.
-You need to use GVariant text format to write GVariant value in ui files.
-If the type of the GVarinat value is string, then the value with GVariant text format is bounded by single quotes or double quotes.
-Because ui file is xml format text, single quote cannot be written without escape.
-Its escape sequence is \&apos;.
-Therefore, the target 'list' is written as \&apos;list\&apos;.
-Because the button is connected to the action, "clicked" signal handler isn't needed.
-- 23-27: The child widget of the button is GtkImage.
-GtkImage has a "resource" property.
-It is a GResource and GtkImage reads an image data from the resource and sets the image.
-This resource is built from 24x24-sized png image data, which is an original icon.
-- 50-53: GtkScrolledWindow.
-Its child widget will be GtkListView or GtkGridView.
-
-The action `view` is created, connected to the "activate" signal handler and inserted to the window (action map) as follows.
+If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
+Because GListModel is a list of GObject objects and strings aren't GObject objects.
+So, you need a wrapper which is a gobject and contains a string.
+GtkStringObject is the wrapper object and GStringList, implements GListModel, is a list of GtkStringObject.
 
 ~~~C
-  act_view = g_simple_action_new_stateful ("view", g_variant_type_new("s"), g_variant_new_string ("list"));
-  g_signal_connect (act_view, "activate", G_CALLBACK (view_activated), scr); /* scr is the GtkScrolledWindow object */
-  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_view));
+char *array[] = {"one", "two", "three", "four", NULL};
+GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
 ~~~
 
-The signal handler `view_activated` will be explained later.
+The function `gtk_string_list_new` creates GtkStringList object.
+Its items are GtkStringObject objects which contain the strings "one", "two", "three" and "four".
+There are functions to add items to the list or remove items from the list.
 
-## Factories
+- `gtk_string_list_append` appends an item to the list
+- `gtk_string_list_remove` removes an item from the list
+- `gtk_string_list_get_string` gets a string in the list
 
-Each view (GtkListView and GtkGridView) has its own factory because its items have different structure of widgets.
-The factories are GtkBuilderListItemFactory objects.
-Their ui files are as follows.
+See [API document](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for the further information.
 
-factory_list.ui
+I'll explain the other list objects later.
+
+## GtkSelectionModel
+
+GtkSelectionModel is an interface to support for selections.
+Thanks to this model, user can select items by clicking on them.
+It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
+These three objects are usually enough to build an application.
+They are created with GListModel.
+You can also create them alone and add GListModel later.
+
+- GtkMultiSelection supports multiple selection.
+- GtkNoSelection supports no selection. This is a wrapper to GListModel when GtkSelectionModel is needed.
+- GtkSingleSelection supports single selection.
+
+## GtkListView
+
+GtkListView is a widget to show GListModel items.
+GtkListItem is used by GtkListView to represent items of a list model.
+But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
+"item" property of GtkListItem points an object that belongs to the list model.
+
+![GtkListItem](../image/gtklistitem.png)
+
+In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
+This recycle makes the number of GtkListItem objects fairly small, less than 200.
+This is very effective to restrain the growth of memory consumption so that GListModel can contain lots of items, for example, more than a million items.
+
+## GtkListItemFactory
+
+GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
+There are two child objects of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
+
+### GtkSignalListItemFactory
+
+GtkSignalListItemFactory provides signals for users to configure a GtkListItem object.
+There are four signals.
+
+1. "setup" is emitted to set up GtkListItem object.
+A user sets its child widget in the handler.
+For example, creates a GtkLabel widget and sets the child property of GtkListItem object to it.
+This setting is kept even the GtkListItem object is recycled (to bind to another item of GModelList).
+2. "bind" is emitted to bind an item in the list model to the widget.
+For example, a user gets the item object from "item" property of the GtkListItem object.
+Then gets the string of the item and sets the label property of the GtkLabel object with the string.
+This signal is emitted when the GtkListItem is newly created and set up, recycled or some changes has happened to the item of the list.
+3. "unbind" is emitted to unbind an item.
+A user undoes everything done in step 2 in the signal handler.
+If some object are created in step 2, they must be destroyed.
+4. "teardown" is emitted to undo everything done in step 1.
+So, the widget created in step 1 must be destroyed.
+After this signal, the list item will be destroyed.
+
+The following program `list1.c` shows the list of strings "one", "two", "three" and "four".
+GtkNoSelection is used, so user can't select any item.
+
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 static void
+ 4 setup_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+ 5   GtkWidget *lb = gtk_label_new ("");
+ 6   gtk_list_item_set_child (listitem, lb);
+ 7 }
+ 8 
+ 9 static void
+10 bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+11   GtkWidget *lb = gtk_list_item_get_child (listitem);
+12   GtkStringObject *strobj = gtk_list_item_get_item (listitem);
+13   const char *text = gtk_string_object_get_string (strobj);
+14 
+15   gtk_label_set_text (GTK_LABEL (lb), text);
+16 }
+17 
+18 static void
+19 unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+20   /* There's nothing to do here. */
+21   /* If you does something like setting a signal in bind_cb, */
+22   /* then disconnecting the signal is necessary in unbind_cb. */
+23 }
+24 
+25 static void
+26 teardown_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+27   gtk_list_item_set_child (listitem, NULL);
+28 /*  When the child of listitem is set to NULL, the reference to GtkLabel will be released and lb will be destroyed. */
+29 /* Therefore, g_object_unref () for the GtkLabel object doesn't need in the user code. */
+30 }
+31 
+32 /* ----- activate, open, startup handlers ----- */
+33 static void
+34 app_activate (GApplication *application) {
+35   GtkApplication *app = GTK_APPLICATION (application);
+36   GtkWidget *win = gtk_application_window_new (app);
+37   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+38   GtkWidget *scr = gtk_scrolled_window_new ();
+39   gtk_window_set_child (GTK_WINDOW (win), scr);
+40 
+41   char *array[] = {
+42     "one", "two", "three", "four", NULL
+43   };
+44   GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
+45   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (sl));
+46 
+47   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
+48   g_signal_connect (factory, "setup", G_CALLBACK (setup_cb), NULL);
+49   g_signal_connect (factory, "bind", G_CALLBACK (bind_cb), NULL);
+50   g_signal_connect (factory, "unbind", G_CALLBACK (unbind_cb), NULL);
+51   g_signal_connect (factory, "teardown", G_CALLBACK (teardown_cb), NULL);
+52 
+53   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
+54   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+55   gtk_widget_show (win);
+56 }
+57 
+58 static void
+59 app_startup (GApplication *application) {
+60 }
+61 
+62 /* ----- main ----- */
+63 int
+64 main (int argc, char **argv) {
+65   GtkApplication *app;
+66   int stat;
+67 
+68   app = gtk_application_new ("com.github.ToshioCP.list1", G_APPLICATION_FLAGS_NONE);
+69 
+70   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+71   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+72 
+73   stat =g_application_run (G_APPLICATION (app), argc, argv);
+74   g_object_unref (app);
+75   return stat;
+76 }
+77 
+~~~
+
+The file `list1.c` is located under the directory [src/misc](../src/misc).
+Make a shell script below and save it to $HOME/local/bin/comp (comp is the filename).
+
+~~~Shell
+gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
+~~~
+
+Change the current directory to the directory includes `list1.c` and type as follows.
+
+~~~
+$ chmod 755 $HOME/local/bin/comp
+$ comp list1
+$ ./a.out
+~~~
+
+Then, `list1.c` has been compiled and executed.
+
+![list1](../image/list1.png)
+
+I think the program is not so difficult.
+If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.
+
+### GtkBuilderListItemFactory
+
+GtkBuilderListItemFactory is another GtkListItemFactory.
+Its behavior is defined with ui file.
 
 ~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <template class="GtkListItem">
- 4     <property name="child">
- 5       <object class="GtkBox">
- 6         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
- 7         <property name="spacing">20</property>
- 8         <child>
- 9           <object class="GtkImage">
-10             <binding name="gicon">
-11               <closure type="GIcon" function="get_icon">
-12                 <lookup name="item">GtkListItem</lookup>
-13               </closure>
-14             </binding>
-15           </object>
-16         </child>
-17         <child>
-18           <object class="GtkLabel">
-19             <property name="hexpand">TRUE</property>
-20             <property name="xalign">0</property>
-21             <binding name="label">
-22               <closure type="gchararray" function="get_file_name">
-23                 <lookup name="item">GtkListItem</lookup>
-24               </closure>
-25             </binding>
-26           </object>
-27         </child>
-28       </object>
-29     </property>
-30   </template>
-31 </interface>
-32 
-~~~
-
-factory_grid.ui
-
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <template class="GtkListItem">
- 4     <property name="child">
- 5       <object class="GtkBox">
- 6         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
- 7         <property name="spacing">20</property>
- 8         <child>
- 9           <object class="GtkImage">
-10             <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
-11             <binding name="gicon">
-12               <closure type="GIcon" function="get_icon">
-13                 <lookup name="item">GtkListItem</lookup>
-14               </closure>
-15             </binding>
-16           </object>
-17         </child>
-18         <child>
-19           <object class="GtkLabel">
-20             <property name="hexpand">TRUE</property>
-21             <property name="xalign">0.5</property>
-22             <binding name="label">
-23               <closure type="gchararray" function="get_file_name">
-24                 <lookup name="item">GtkListItem</lookup>
-25               </closure>
-26             </binding>
-27           </object>
-28         </child>
-29       </object>
-30     </property>
-31   </template>
-32 </interface>
-33 
-~~~
-
-The two files above are almost same.
-The difference is:
-
-- The orientation of the box
-- The icon size
-- The position of the text of the label
-
-~~~
-$ cd list4; diff factory_list.ui factory_grid.ui
-6c6
-<         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
----
->         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-9a10
->             <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
-20c21
-<             <property name="xalign">0</property>
----
->             <property name="xalign">0.5</property>
-~~~
-
-Each view item has two properties, "gicon" in GtkImage and "label" in GtkLabel.
-Because GFileInfo doesn't have properties correspond to icon object or filename, the factory uses closure tag to bind "gicon" and "label" properties to GFileInfo information.
-A function `get_icon` gets GIcon the GFileInfo object has.
-And a function `get_file_name` gets a filename the GFileInfo object has.
-
-~~~C
- 1 GIcon *
- 2 get_icon (GtkListItem *item, GFileInfo *info) {
- 3   GIcon *icon;
- 4 
- 5   if (! G_IS_FILE_INFO (info))
- 6     return NULL;
- 7   else {
- 8     icon = g_file_info_get_icon (info);
- 9     g_object_ref (icon);
-10     return icon;
-11   }
-12 }
-13 
-14 char *
-15 get_file_name (GtkListItem *item, GFileInfo *info) {
-16   if (! G_IS_FILE_INFO (info))
-17     return NULL;
-18   else
-19     return g_strdup (g_file_info_get_name (info));
-20 }
-~~~
-
-One important thing is view items own the object or string.
-It is achieved by `g_object_ref` to increase the reference count by one, or `strdup` to create a copy of the string.
-The object or string will be automatically freed in unbinding process when the view item is recycled.
-
-## An activate signal handler of the action
-
-An activate signal handler `view_activate` switches the view.
-It does two things.
-
-- Change the child widget of GtkScrolledWindow.
-- Change the CSS of buttons to show the current state.
-
-~~~C
- 1 static void
- 2 view_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
- 3   GtkScrolledWindow *scr = GTK_SCROLLED_WINDOW (user_data);
- 4   const char *view = g_variant_get_string (parameter, NULL);
- 5   const char *other;
- 6   char *css;
- 7 
- 8   if (strcmp (view, "list") == 0) {
- 9     other = "grid";
-10     gtk_scrolled_window_set_child (scr, list);
-11   }else {
-12     other = "list";
-13     gtk_scrolled_window_set_child (scr, grid);
-14   }
-15   css = g_strdup_printf ("button#btn%s {background: silver;} button#btn%s {background: white;}", view, other);
-16   gtk_css_provider_load_from_data (provider, css, -1);
-17   g_free (css);
-18   g_action_change_state (G_ACTION (action), parameter);
-19 }
-~~~
-
-The second parameter of this handler is the target of the clicked button.
-Its type is GVariant.
-
-- If `btnlist` has been clicked, then `parameter` is "list".
-- If `btngrid` has been clicked, then `parameter` is "grid".
-
-The third parameter `user_data` points GtkScrolledWindow, which is set in the `g_signal_connect` function.
-
-- 4: `g_variant_get_string` gets the string from the GVariant variable.
-- 8-14: Sets the child of `scr`.
-- 15-17: Sets the CSS of the buttons.
-The background of the clicked button will be silver color and the other button will be white.
-- 18: Changes the state of the action.
- 
-## Activate signal of GtkListView and GtkGridView
-
-Views (GtkListView and GtkGridView) have an "activate" signal.
-It is emitted when an item in the view is double clicked or the enter key is pressed.
-You can do anything you like by connecting the "activate" signal to the handler.
-
-The example `list4` launches `tfe` text file editor if the item of the list is a text file.
-
-~~~C
-static void
-list_activate (GtkListView *list, int position, gpointer user_data) {
-  GFileInfo *info = G_FILE_INFO (g_list_model_get_item (G_LIST_MODEL (gtk_list_view_get_model (list)), position));
-  launch_tfe_with_file (info);
-}
-
-static void
-grid_activate (GtkGridView *grid, int position, gpointer user_data) {
-  GFileInfo *info = G_FILE_INFO (g_list_model_get_item (G_LIST_MODEL (gtk_grid_view_get_model (grid)), position));
-  launch_tfe_with_file (info);
-}
-
-... ...
-... ...
-
-  g_signal_connect (GTK_LIST_VIEW (list), "activate", G_CALLBACK (list_activate), NULL);
-  g_signal_connect (GTK_GRID_VIEW (grid), "activate", G_CALLBACK (grid_activate), NULL);
-~~~
-
-The second parameter of the handlers is the position of the item (GFileInfo) of the GListModel list.
-So you can get the item with `g_list_model_get_item` function.
-
-## Content type and launching an application
-
-The function `launch_tfe_with_file` launches `tfe` with the file whose information has been taken by GFileInfo object, if the file is a text file.
-
-GFileInfo has information about file type.
-The file type is like "text/plain", "text/x-csrc" and so on.
-It is called content type.
-Content type can be got with `g_file_info_get_content_type` function.
-
-~~~C
- 1 static void
- 2 launch_tfe_with_file (GFileInfo *info) {
- 3   GError *err = NULL;
- 4   GFile *file;
- 5   GList *files = NULL;
- 6   const char *content_type;
- 7   const char *text_type = "text/";
- 8   GAppInfo *appinfo;
- 9   int i;
-10 
-11   if (! info)
-12     return;
-13   content_type = g_file_info_get_content_type (info);
-14 g_print ("%s\n", content_type);  /* This line can be commented out if unnecessary */
-15   if (! content_type)
-16     return;
-17   for (i=0;i<5;++i) {
-18     if (content_type[i] != text_type[i])
-19       return;
-20   }
-21   appinfo = g_app_info_create_from_commandline ("tfe", "tfe", G_APP_INFO_CREATE_NONE, &err);
-22   if (err) {
-23     g_printerr ("%s\n", err->message);
-24     return;
-25   }
-26   err = NULL;
-27   file = g_file_new_for_path (g_file_info_get_name (info));
-28   files = g_list_append (files, file);
-29   if (! (g_app_info_launch (appinfo, files, NULL, &err))) {
-30     g_printerr ("%s\n", err->message);
-31   }
-32   g_list_free_full (files, g_object_unref);
-33   g_object_unref (appinfo);
-34 }
-~~~
-
-- 13: Gets the content type of GFileInfo.
-- 14: Prints the content type.
-This is only useful to know a content type of a file.
-- 17-20: If the content type doesn't begin with "text/", then it returns.
-- 21: Creates GAppInfo object of `tfe` application.
-GAppInfo is interface and the variable `appinfo` points a GDesktopAppInfo object.
-GAppInfo is a collection of information of an application.
-- 29: Launches the application (`tfe`) with an argument `file`.
-`g_app_info_launch` has four parameters.
-The first parameter is GAppInfo object.
-The second parameter is a list of GFile objects.
-In this function, only one GFile object is given to `tfe`, but you can give more arguments.
-The third parameter is GAppLaunchContext, but this program gives NULL instead.
-The last parameter is the pointer to the pointer to GError.
-- 32: `g_list_free_full` frees the memories used by the list and items.
-
-At present, my ubuntu runs on Gtk3, not Gtk4.
-If it runs on Gtk4, using `g_app_info_launch_default_for_uri` is convenient.
-The function automatically determines the default application from the file and launches it.
-For example, if the file is text, then it launches gedit with the file.
-Such functionality comes from desktop.
-
-## Compilation and execution
-
-The source files are located in [src/list4](../src/list4) directory.
-To compile and execute list4, type as follows.
-
-~~~
-$ cd list4 # or cd src/list4. It depends your current directory.
-$ meson _build
-$ ninja -C _build
-$ _build/list3
-~~~
-
-Then a file list appears as a list style.
-Click on a button on the tool bar so that you can change the style to grid or back to list.
-Double click "list4.c" item, then `tfe` text editor runs with the argument "list4.c".
-The following is the screenshot.
-
-![Screenshot](../image/screenshot_list4.png)
-
-## "gbytes" property of GtkBuilderListItemFactory
-
-GtkBuilderListItemFactory has "gbytes" property.
-The property contains a byte sequence of ui data.
-If you use this property, you can put the contents of `factory_list.ui` and `factory_grid.ui`into `list4.ui`.
-The following shows a part of the new list4.ui file.
-
-~~~xml
-  <object class="GtkListView" id="list">
-    <property name="model">
-      <object class="GtkSingleSelection" id="singleselection">
-        <property name="model">
-          <object class="GtkDirectoryList" id="directorylist">
-            <property name="attributes">standard::name,standard::icon,standard::content-type</property>
-          </object>
-        </property>
-      </object>
-    </property>
-    <property name="factory">
-      <object class="GtkBuilderListItemFactory">
-        <property name="bytes"><![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="GtkListItem">
     <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-        <property name="spacing">20</property>
-        <child>
-          <object class="GtkImage">
-            <binding name="gicon">
-              <closure type="GIcon" function="get_icon">
-                <lookup name="item">GtkListItem</lookup>
-              </closure>
-            </binding>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="hexpand">TRUE</property>
-            <property name="xalign">0</property>
-            <binding name="label">
-              <closure type="gchararray" function="get_file_name">
-                <lookup name="item">GtkListItem</lookup>
-              </closure>
-            </binding>
-          </object>
-        </child>
+      <object class="GtkLabel">
+        <binding name="label">
+          <lookup name="string" type="GtkStringObject">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
       </object>
     </property>
   </template>
 </interface>
-        ]]></property>
-      </object>
-    </property>
-  </object>
 ~~~
 
-CDATA section begins with "<![CDATA[" and ends with "]]>".
-The contents of CDATA section is recognized as a string.
-Any character, even if it is a key syntax marker such as '<' or '>', is recognized literally.
-Therefore, the text between "<![CDATA[" and "]]>" is inserted to "bytes" property as it is.
+Template tag is used to define GtkListItem.
+And its child property is GtkLabel object.
+The factory sees this template and creates GtkLabel and sets the child property of GtkListItem.
+This is the same as what setup handler of GtkSignalListItemFactory did.
 
-This method decreases the number of ui files.
-But, the new ui file is a bit complicated especially for the beginners.
-If you feel some difficulty, it is better for you to separate the ui file.
+Then, bind the label property of GtkLabel to string property of GtkStringObject.
+The string object is referred to by item property of GtkListItem.
+So, the lookup tag is like this:
 
-A directory [src/list5](../src/list5) includes the ui file above.
+~~~
+string <- GtkStringObject <- item <- GtkListItem
+~~~
+
+The last lookup tag has a content `GtkListItem`.
+Usually, C type like `GtkListItem` doesn't appear in the content of tags.
+This is a special case.
+There is an explanation about it in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
+
+> Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
+
+Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
+`this` object will be explained in section 27.
+
+The C source code is as follows.
+Its name is `list2.c` and located under [src/misc](../src/misc) directory.
+
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 /* ----- activate, open, startup handlers ----- */
+ 4 static void
+ 5 app_activate (GApplication *application) {
+ 6   GtkApplication *app = GTK_APPLICATION (application);
+ 7   GtkWidget *win = gtk_application_window_new (app);
+ 8   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+ 9   GtkWidget *scr = gtk_scrolled_window_new ();
+10   gtk_window_set_child (GTK_WINDOW (win), scr);
+11 
+12   char *array[] = {
+13     "one", "two", "three", "four", NULL
+14   };
+15   GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
+16   GtkSingleSelection *ss = gtk_single_selection_new (G_LIST_MODEL (sl));
+17 
+18   const char *ui_string =
+19 "<interface>"
+20   "<template class=\"GtkListItem\">"
+21     "<property name=\"child\">"
+22       "<object class=\"GtkLabel\">"
+23         "<binding name=\"label\">"
+24           "<lookup name=\"string\" type=\"GtkStringObject\">"
+25             "<lookup name=\"item\">GtkListItem</lookup>"
+26           "</lookup>"
+27         "</binding>"
+28       "</object>"
+29     "</property>"
+30   "</template>"
+31 "</interface>"
+32 ;
+33   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
+34   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+35 
+36   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
+37   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+38   gtk_widget_show (win);
+39 }
+40 
+41 static void
+42 app_startup (GApplication *application) {
+43 }
+44 
+45 /* ----- main ----- */
+46 int
+47 main (int argc, char **argv) {
+48   GtkApplication *app;
+49   int stat;
+50 
+51   app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
+52 
+53   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+54   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+55 
+56   stat =g_application_run (G_APPLICATION (app), argc, argv);
+57   g_object_unref (app);
+58   return stat;
+59 }
+60 
+~~~
+
+No signal handler is needed for GtkBulderListItemFactory.
+GtkSingleSelection is used, so user can select one item at a time.
+
+Because this is a small program, the ui data is given as strings.
+However, generally, ui file is better than string and using resource compiler is the best choice.
+
+## GtkDirectoryList
+
+GtkDirectoryList is a list model containing GFileInfo objects which are information of files under a certain directory.
+It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
+The list model is created by `gtk_directory_list_new` function.
+
+~~~C
+GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
+~~~
+
+`attributes` is a comma separated list of file attributes.
+File attributes are key-value pairs.
+A key consists of a namespace and a name.
+For example, "standard::name" key is the name of a file.
+"standard" means general file information.
+"name" means filename.
+The following table shows some example.
+
+|key             |meaning                                                             |
+|:---------------|:-------------------------------------------------------------------|
+|standard::type  |file type. for example, regular file, directory, symbolic link, etc.|
+|standard::name  |filename                                                            |
+|standard::size  |file size in bytes                                                  |
+|access::can-read|read privilege if the user is able to read the file                 |
+|time::modified  |the time the file was last modified in seconds since the UNIX epoch |
+
+The current directory is ".".
+The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
+
+~~~C
+GFile *file = g_file_new_for_path (".");
+GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+g_object_unref (file);
+~~~
+
+It is not so difficult to make file listing program by changing `list2.c` in the previous subsection.
+One problem is that GInfoFile doesn't have properties.
+Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
+Instead, closure tag is appropriate in this case.
+Closure tag specifies a function and the type of the return value of the function.
+
+~~~C
+char *
+get_file_name (GtkListItem *item, GFileInfo *info) {
+  if (! G_IS_FILE_INFO (info))
+    return NULL;
+  else
+    return g_strdup (g_file_info_get_name (info));
+}
+
+... ...
+... ...
+
+"<interface>"
+  "<template class=\"GtkListItem\">"
+    "<property name=\"child\">"
+      "<object class=\"GtkLabel\">"
+        "<binding name=\"label\">"
+          "<closure type=\"gchararray\" function=\"get_file_name\">"
+            "<lookup name=\"item\">GtkListItem</lookup>"
+          "</closure>"
+        "</binding>"
+      "</object>"
+    "</property>"
+  "</template>"
+"</interface>"
+~~~
+
+- "gchararray" is the type of strings.
+"gchar" is the same as "char" type.
+Therefore, "gchararray" is "an array of char type", which is the same as string type.
+It is used to get the type of GValue object.
+GValue is a generic value and it can contain various type of values.
+For example, the type can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
+For the further information, refer to GFileAttribute and GFileInfo section in [GIO API reference](https://developer.gnome.org/gio/stable/).
+- closure tag has type attribute and function attribute.
+Function attribute specifies a function name and type attribute specifies the type of the return value of the function.
+The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
+`<lookup name=\"item\">GtkListItem</lookup>` gives two parameters.
+The first parameter is GListItem object and the second parameter is item property, which is a GFileInfo object in the GtkDirectoryList Object.
+- `gtk_file_name` function first check the `info` parameter.
+Because it can be NULL when GListItem `item` is unbound.
+If its GFileInfo, then return the filename (copy of the filename).
+
+The whole program (`list3.c`) is as follows.
+The program is located in [src/misc](../src/misc) directory.
+
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 char *
+ 4 get_file_name (GtkListItem *item, GFileInfo *info) {
+ 5   if (! G_IS_FILE_INFO (info))
+ 6     return NULL;
+ 7   else
+ 8     return g_strdup (g_file_info_get_name (info));
+ 9 }
+10 
+11 /* ----- activate, open, startup handlers ----- */
+12 static void
+13 app_activate (GApplication *application) {
+14   GtkApplication *app = GTK_APPLICATION (application);
+15   GtkWidget *win = gtk_application_window_new (app);
+16   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+17   GtkWidget *scr = gtk_scrolled_window_new ();
+18   gtk_window_set_child (GTK_WINDOW (win), scr);
+19 
+20   GFile *file = g_file_new_for_path (".");
+21   GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+22   g_object_unref (file);
+23   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (dl));
+24 
+25   const char *ui_string =
+26 "<interface>"
+27   "<template class=\"GtkListItem\">"
+28     "<property name=\"child\">"
+29       "<object class=\"GtkLabel\">"
+30         "<binding name=\"label\">"
+31           "<closure type=\"gchararray\" function=\"get_file_name\">"
+32             "<lookup name=\"item\">GtkListItem</lookup>"
+33           "</closure>"
+34         "</binding>"
+35       "</object>"
+36     "</property>"
+37   "</template>"
+38 "</interface>"
+39 ;
+40   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
+41   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+42 
+43   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
+44   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+45   gtk_widget_show (win);
+46 }
+47 
+48 static void
+49 app_startup (GApplication *application) {
+50 }
+51 
+52 /* ----- main ----- */
+53 int
+54 main (int argc, char **argv) {
+55   GtkApplication *app;
+56   int stat;
+57 
+58   app = gtk_application_new ("com.github.ToshioCP.list3", G_APPLICATION_FLAGS_NONE);
+59 
+60   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+61   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+62 
+63   stat =g_application_run (G_APPLICATION (app), argc, argv);
+64   g_object_unref (app);
+65   return stat;
+66 }
+67 
+~~~
+
+The ui data (xml data above) is used to build the GListItem template at runtime.
+GtkBuilder refers to the symbol table to find the function `get_file_name`.
+
+Generally, a symbol table is used by a linker to link objects to an executable file.
+It includes function names and their location.
+A linker usually doesn't put a symbol table into the created executable file.
+But if `--export-dynamic` option is given, the linker add the symbol table to the executable file.
+
+To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
+
+- `-Wl` is a C compiler option that passes the following option to the linker.
+- `--export-dynamic` is a linker option.
+The following is cited from the linker document.
+"When creating a dynamically linked executable, add all symbols to the dynamic symbol table.
+The dynamic symbol table is the set of symbols which are visible from dynamic objects at run time."
+
+Compile and execute it.
+
+~~~
+$ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`
+~~~
+
+You can also make a shell script to compile `list3.c`
+
+~~~bash
+gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
+~~~
+
+Save this one liner to a file `comp`.
+Then, copy it to `$HOME/bin` and give it executable permission.
+
+~~~
+$ cp comp $HOME/bin/comp
+$ chmod +x $HOME/bin/comp
+~~~
+
+You can compile `list3.c` and execute it, like this:
+
+~~~
+$ comp list3
+$ ./a.out
+~~~
+
+![screenshot list3](../image/list3.png)
 
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)

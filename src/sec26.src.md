@@ -1,434 +1,345 @@
-# GtkExpression
+# GtkGridView and activate signal
 
-GtkExpression is a fundamental type.
-It is not a descendant of GObject.
-GtkExpression provides a way to describe references to values.
-GtkExpression needs to be evaluated to obtain a value.
+GtkGridView is similar to GtkListView.
+It displays a GListModel as a grid, which is like a square tessellation.
 
-It is similar to arithmetic calculation.
+![Grid](../image/list4.png){width=10cm height=6.6cm}
+
+This is often seen when you use a file browser like nautilus.
+
+In this section, let's make a very simple file browser `list4`.
+It just shows the files in the current directory.
+And a user can choose list or grid by clicking on buttons in the tool bar.
+Each item in the list or grid has an icon and a filename.
+In addition, `list4` provides the way to open the `tfe` text editor to show a text file.
+A user can do that by double clicking on an item or pressing enter key when an item is selected.
+
+## GtkDirectoryList
+
+GtkDirectoryList implements GListModel and it contains information of files in a certain directory.
+The items of the list are GFileInfo objects.
+
+In the `list4` source files, GtkDirectoryList is described in a ui file and built by GtkBuilder.
+It is referenced to by a GtkSingleSelection model and the GtkSingleSelection model is referenced to by a GListView or GGridView object.
 
 ~~~
-1 + 2 = 3
+GtkListView (model property) => GtkSingleSelection (model property) => GtkDirectoryList
+GtkGridView (model property) => GtkSingleSelection (model property) => GtkDirectoryList
 ~~~
 
-`1+2` is an expression.
-It shows the way how to calculate.
-`3` is the value comes from the expression.
-Evaluation is to calculate the expression and get the value.
+![DirectoryList](../image/directorylist.png){width=10cm height=7.5cm}
 
-GtkExpression is a way to get a value.
-Evaluation is like a calculation.
-A value is got by evaluating the expression.
-
-First, I want to show you the C file of the example for GtkExpression.
-Its name is `exp.c` and located under [src/expression](expression) directory.
-You don't need to understand the details now, just look at it.
-It will be explained in the next subsection.
-
-@@@include
-expression/exp.c
-@@@
-
-`exp.c` consists of five functions.
-
-- `notify`
-- `set_title`
-- `app_activate`. This is a handler of "activate" signal on GtkApplication instance.
-- `app_startup`. This is a handler of "startup"signal. But nothing is done in `exp.c`.
-- `main`. This function is called first.
-
-The role of `main`, `app_startup` and `app_activate` is the same as before.
-`app_activate` is an actual main body in `exp.c`.
-
-## Constant expression
-
-Constant expression provides constant value or instance when it is evaluated.
-
-- 73-81: An example code of a constant expression.
-It is extracted and put into here.
-
-~~~C
-  expression = gtk_constant_expression_new (G_TYPE_INT,100);
-  if (gtk_expression_evaluate (expression, NULL, &value)) {
-    s = g_strdup_printf ("%d", g_value_get_int (&value));
-    gtk_label_set_text (GTK_LABEL (label1), s);
-    g_free (s);
-  } else
-    g_print ("The constant expression couldn't be evaluated.\n");
-  gtk_expression_unref (expression);
-  g_value_unset (&value);
-~~~
-
-- Constant expression is created with `gtk_constant_expression_new` function.
-The parameter of the function is a type (GType) and a value (or instance).
-- `gtk_expression_evaluate` evaluates the expression.
-It has three parameters, the expression to evaluate, `this` instance and GValue for being set with the value.
-`this` instance isn't necessary for constant expressions.
-Therefore the second argument is NULL.
-`gtk_expression_evaluate` returns TRUE if it successfully evaluates the expression.
-Otherwise it returns FALSE.
-- If it returns TRUE, the GValue `value` is set with the value of the expression.
-The type is int so it needs to be converted to a string.
-`g_strdup_printf` creates a new string `s`.
-- GtkLabel `label1` is set with `s`.
-- If the evaluation fails a message is displayed.
-- The expression and GValue are freed.
-
-Constant expression is usually used to give a constant value or instance to another expression.
-
-## Property expression
-
-Property expression looks up a property in a GObject object.
-For example, a property expression that refers "label" property in GtkLabel object is created like this.
-
-~~~C
-expression = gtk_property_expression_new (GTK_TYPE_LABEL, another_expression, "label");
-~~~
-
-`another_expression` is expected to give a GtkLabel instance when it is evaluated.
-For example,
-
-~~~C
-label = gtk_label_new ("Hello");
-another_expression = gtk_constant_expression_new (GTK_TYPE_LABEL, label);
-expression = gtk_property_expression_new (GTK_TYPE_LABEL, another_expression, "label");
-~~~
-
-If `expression` is evaluated, the second parameter `another_expression` is evaluated in advance.
-Then the value of `another_expression` is `label` (GtkLabel instance).
-Then, `expression` looks up "label" property of `label` and the evaluation result is "Hello".
-
-In the example above, the second argument of `gtk_property_expression_new` is another expression.
-But the second argument can be NULL.
-If it is NULL, `this` instance is used instead.
-`this` is given by `gtk_expression_evaluate` function at the evaluation.
-
-Now look at `exp.c`.
-The lines from 84 to 86 is extracted here.
-
-~~~C
-  expression1 = gtk_property_expression_new (GTK_TYPE_ENTRY, NULL, "buffer");
-  expression2 = gtk_property_expression_new (GTK_TYPE_ENTRY_BUFFER, expression1, "text");
-  watch = gtk_expression_bind (expression2, label2, "label", entry);
-~~~
-
-- `expression1` looks up "buffer" property of `this` object, which is `GTK_TYPE_ENTRY` type.
-- `expression2` looks up "text" property of GtkEntryBuffer object given by `epression1`.
-- `gtk_expression_bind` binds a property to a value given by the expression.
-In this program, it binds a "label" property in`label2` to the value evaluated with `expresion2` with `entry` as `this` object.
-The evaluation process is as follows.
-  1. `expression2` is evaluated. But it includes `expression1` so `expression1` is evaluated in advance.
-  2. Because the second argument of `expression1` is NULL, `this`object is used.
-`this` is given by `gtk_expression_bind`.
-It is `entry` (GtkEntry instance).
-`expression1` looks up "buffer" property in `entry`.
-It is a GtkEntryBuffer instance `buffer`.
-(See line 64 in `exp.c`.)
-  3. Then, `expression2` looks up "text" property in `buffer`.
-It is a text held in `entry`.
-  4. The text is assigned to "label" property in `label2`.
-- `gtk_expression_bind` creates a GtkExpressionWatch, which is assigned to `watch`.
-It watches `expression2`.
-And whenever the value from `expression2` changes, it evaluates `expression2` and set "label" property in `label2`.
-So, the change of the text in `entry` reflects "label" in `label2` immediately.
-
-## Closure expression
-
-Closure expression calls closure when it is evaluated.
-A closure is a generic representation of a callback (a pointer to a function).
-For information about closure, see [GObject API reference](https://developer.gnome.org/gobject/stable/chapter-signal.html#closure).
-A closure expression is created with `gtk_cclosure_expression_new` function.
-
-~~~C
-GtkExpression *
-gtk_cclosure_expression_new (GType value_type,
-                             GClosureMarshal marshal,
-                             guint n_params,
-                             GtkExpression **params,
-                             GCallback callback_func,
-                             gpointer user_data,
-                             GClosureNotify user_destroy);
-~~~
-
-- `value_type` is the type of the value when it is evaluated.
-- `marshal` is a marshaller.
-You can assign NULL.
-If it is NULL, then `g_cclosure_marshal_generic ()` is used as a marshaller.
-It is a generic marshaller function implemented via libffi.
-- `n_params` is the number of parameters.
-- `params` points expressions for each parameter.
-- `callback_func` is a callback function.
-- `user_data` is user data.
-You can add it for the closure.
-It is like `user_data` in `g_signal_connect`.
-If it is not necessary, assign NULL.
-- `user_destroy` is a destroy notify for `user_data`.
-It is called to destroy `user_data` when it is no longer needed.
-If NULL is assigned to `user_data`, assign NULL to `user_destroy`, too.
-
-The following is extracted from `exp.c`.
-It is from line 48 to line 57.
-
-~~~C
-expression = gtk_cclosure_expression_new (GTK_TYPE_APPLICATION_WINDOW, NULL, 0, NULL,
-               G_CALLBACK (gtk_application_window_new), NULL, NULL);
-if (gtk_expression_evaluate (expression, app, &value)) {
-  win1 = GTK_WIDGET (g_value_get_object (&value)); /* GtkApplicationWindow */
-  g_object_ref (win1);
-  g_print ("Got GtkApplicationWindow object.\n");
-}else
-  g_print ("The cclosure expression couldn't be evaluated.\n");
-gtk_expression_unref (expression);
-g_value_unset (&value);    /* At the same time, the reference count of win1 is decreased by one. */
-~~~
-
-The callback function is `gtk_application_window_new`.
-This function has one parameter which is an instance of GtkApplication.
-And it returns newly created GtkApplicationWindow instance.
-So, the first argument is `GTK_TYPE_APPLICATION_WINDOW` which is the type of the return value.
-The second argument is NULL so general marshaller `g_cclosure_marshal_generic ()` will be used.
-I think assigning NULL works in most cases when you are programming in C language.
-
-The arguments given to the call back function are `this` object and parameters which are the fourth argument of `gtk_cclosure_expression_new`.
-So, the number of arguments is `n_params + 1`.
-Because `gtk_application_window_new` has one parameter, so `n_params` is zero and `**params` is NULL.
-No user data is necessary, so `user_data` and `user_destroy` are NULL.
-
-`gtk_expression_evaluate` evaluates the expression.
-`this` instance will be the first argument for `gtk_application_window_new`, so it is `app`.
-
-If the evaluation succeeds, the GValue `value` holds a newly created GtkApplicationWindow instance.
-It is assigned to `win1`.
-The GValue will be unset when it is no longer used.
-And when it is unset, the GtkApplicationWindow instance will be released and its reference count will be decreased by one.
-It is necessary to increase the reference count by one in advance to keep the instance.
-`gtk_expression_unref` frees `expression` and `value` is unset.
-
-As a result, we got a GtkApplicationWindow instance `win1`.
-We can do the same by:
-
-~~~C
-win1 = gtk_application_window_new (app);
-~~~
-
-The example is more complicated and not practical than this one line code.
-The aim of the example is just to show how closure expression works.
-
-Closure expression is flexible than other type of expression because you can specify your own callback function.
-
-## GtkExpressionWatch
-
-GtkExpressionWatch watches an expression and if the value of the expression changes it calls its notify handler.
-
-The example uses GtkExpressionWatch in the line 104 to 107.
-
-~~~C
-expression1 = gtk_property_expression_new (GTK_TYPE_WINDOW, NULL, "default-width");
-watch_width = gtk_expression_watch (expression1, win1, notify, NULL, NULL);
-expression2 = gtk_property_expression_new (GTK_TYPE_WINDOW, NULL, "default-height");
-watch_height = gtk_expression_watch (expression2, win1, notify, NULL, NULL);
-~~~
-
-The expressions above refer to "default-width" and "default-height" properties of GtkWindow.
-`watch_width` watches `expression1`.
-The second argument `win1` is `this` instance for `expression1`.
-So, `watch_width` watches the value of "default-width" property of `win1`.
-If the value changes, it calls `notify` handler.
-The fourth and fifth arguments are NULL because no user data is necessary.
-
-`watch_height` also connects `notify` handler to `expression2`.
-So, `notiry` is called when "default-width" or "default-height" changes.
-
-The handler `norify` is as follows.
-
-@@@include
-expression/exp.c notify
-@@@
-
-- 6-11: Evaluates `expression1` and `expression2` with `expression_watch_evaluate` function.
-- 12: Creates a string `title`.
-It contains the width and height, for example, "800 x 600".
-- 13: Sets the title of `win1` with the string `title`.
-
-The title of the window reflects the size of the window.
-
-## exp.ui
-
-`exp.c` builds a GtkWindow instance `win2` with `exp.ui`.
-The ui file `exp.ui` includes tags to create GtkExpressions.
-The tags are:
-
-- constant tag to create constant expression
-- lookup tag to create property expression
-- closure tag to create closure expression
-- binding tag to bind a property to an expression
-
-The window `win2` behaves like `win1`.
-Because similar expressions are built with the ui file.
-
-@@@include
-expression/exp.ui
-@@@
-
-### Constant tag
-
-A constant tag corresponds to a constant expression.
-
-- 18: Constant tag.
-The constant expression is created with the tag.
-It returns 100 of which the type is gint when it is evaluated.
-The type gint is the same as int.
-- 17-19: Binding tag corresponds to `gtk_expression_bind` function.
-`name` attribute specifies the "label" property of the GtkLabel object just before the binding tag.
-Binding tag uses the same GtkLabel object for a `this` object to evaluate the expression.
-(But the constant expression doesn't use the `this` object at all.)
-The expression returns a int type GValue.
-On the other hand "label" property holds a string type GValue.
-When a GValue is copied to another GValue, the type is automatically converted if possible.
-In this case, an int `100` is converted to a string `"100"`.
-
-These binding and constant tag works.
-But they are not good.
-A property tag is more straightforward.
+The part of the ui file `list4.ui` is as follows.
 
 ~~~xml
-<object class="GtkLabel">
-  <property name="label">100</property>
+<object class="GtkListView" id="list">
+  <property name="model">
+    <object class="GtkSingleSelection" id="singleselection">
+      <property name="model">
+        <object class="GtkDirectoryList" id="directorylist">
+          <property name="attributes">standard::name,standard::icon,standard::content-type</property>
+        </object>
+      </property>
+    </object>
+  </property>
+</object>
+<object class="GtkGridView" id="grid">
+  <property name="model">singleselection</property>
 </object>
 ~~~
 
-This example just shows the way how to use constant tag.
-Constant tag is mainly used to give a constant argument to a closure.
+GtkDirectoryList has an "attributes" property.
+It is attributes of GFileInfo such as "standard::name", "standard::icon" and "standard::content-type".
 
-### Lookup tag
+- standard::name is a filename.
+- standard::icon is an icon of the file. It is a GIcon object.
+- standard::content-type is a content-type.
+Content-type is the same as mime type for the internet technology.
+For example, "text/plain" is a text file, "text/x-csrc" is a C source code and so on.
+("text/x-csrc"is not registered to IANA media types.
+Such "x-" subtype is not a standard mime type.)
+Content type is also used by the desktop system.
 
-A lookup tag corresponds to a property expression.
-Line 23 to 27 is copied here.
+GtkGridView has the same structure as GtkListView.
+But it is enough to specify its model property to `singleselection` which is the identification of the GtkSingleSelection.
+Therefore the description for GtkGridView is very short.
 
-~~~xml
-          <object class="GtkLabel">
-            <binding name="label">
-              <lookup name="text">buffer</lookup>
-            </binding>
-          </object>
-~~~
+## Ui file of the window
 
-- binding tag binds a "label" property in GtkLabel to an expression.
-The expression is defined with a lookup tag.
-- The lookup tag defines a property expression looks up a "text" property in `buffer` instance.
-The `buffer` instance is defined in the line 41.
-It is a GtkEntryBuffer belongs to a GtkEntry `entry`.
-A lookup tag takes an object in some ways to look up for a property.
-  - If it has no contents, it takes `this` instance when it is evaluated.
-  - If it has a content of a tag for an expression, which is constant, lookup or closure tag, the value of the expression will be the object to look up when it is evaluated.
-  - If it has a content of an id of an object, then the instance of the object will be taken as the object to lookup.
-
-As a result, the label of the GtkLabel instance are bound to the text in the field of GtkEntry.
-If a user input a text in the field, GtkLabel displays the same text.
-
-Another lookup tag is in the lines from 30 to 36.
-
-~~~xml
-          <object class="GtkLabel">
-            <binding name="label">
-              <lookup name="application-id">
-                <lookup name="application">win2</lookup>
-              </lookup>
-            </binding>
-          </object>
-~~~
-
-- Two expressions are nested.
-- A lookup tag looks up "application-id" property of the next expression.
-- The next lookup tag looks up "application" property of `win2` instance.
-
-As a result, the "label" property in the GtkLabel instance is bound to the "application-id" property.
-The nested tag makes a chain like:
-
-~~~
-"label" <= "application-id" <= "application" <= `win2`
-~~~
-
-By the way, the application of `win2` is set after the objects in ui file are built.
-Look at `exp.c`.
-`gtk_window_set_application` is called after `gtk_build_new_from_resource`.
-
-~~~C
-build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp.ui");
-GtkWidget *win2 = GTK_WIDGET (gtk_builder_get_object (build, "win2"));
-gtk_window_set_application (GTK_WINDOW (win2), app);
-~~~
-
-Therefore, before the call for `gtk_window_set_application`, the "application" property of `win2` is *not* set.
-So, the evaluation of `<lookup name="application">win2</lookup>` fails.
-And the evaluation of `<lookup name="application-id">` also fails.
-A function `gtk_expression_bind ()`, which corresponds to `binding` tag, doesn't update the target property if the expression fails.
-So, the "label" property isn't updated at the first evaluation.
-
-Note that an evaluation can fail.
-The care is especially necessary when you write a callback for a closure tag which has contents of expressions like lookup tags.
-The expressions are given to the callback as an argument.
-If an expression fails the argument will be NULL.
-You need to check if the argument exactly points the object that is expected by the callback.
-
-### Closure tag
-
-The lines from 3 to 9 include a closure tag.
-
-~~~xml
-  <object class="GtkWindow" id="win2">
-    <binding name="title">
-      <closure type="gchararray" function="set_title">
-        <lookup name="default-width" type="GtkWindow"></lookup>
-        <lookup name="default-height" type="GtkWindow"></lookup>
-      </closure>
-    </binding>
-~~~
-
-- A binding tag corresponds to a `gtk_expression_bind` function.
-`name` attribute specifies the "title" property of `win2`.
-Binding tag gives `win2` as the `this` object to the expressions, which are the contents of the binding tag.
-So, closure tag and lookup tags use `win2` as the `this` object when they are evaluated.
-- A closure tag corresponds to a closure expression.
-Its callback function is `set_title` and it returns "gchararray" type, which is "an array of characters" i.e. a string.
-The contents of the closure tag are assigned to parameters of the function.
-So, `set_title` has three parameters, `win2` (`this` object), default width and default height.
-- Lookup tags correspond to property expressions.
-They lookup "default-width" and "default-height" properties of `win2` (`this` object).
-- Binding tab creates GtkExpressionWatch automatically, so "title" property reflects  the changes of "default-width" and "default-height" properties.
-
-`set_title` function in `exp.c` is as follows.
+Look at the screenshot of `list4` at the top of this section.
+The widgets are built with the following ui file.
 
 @@@include
-expression/exp.c set_title
+list4/list4.ui
 @@@
 
-It just creates a string, for example, "800 x 600", and returns it.
+The file consists of two parts.
+The first part begins at the third line and ends at the 57th line.
+This part is the widgets from the top level window to the scrolled window.
+It also includes two buttons.
+The second part begins at the 58th line and ends at the 71st line.
+This is GtkListView and GtkGridView.
+They are described in the previous section.
 
-You've probably been notice that ui file is easier and clearer than the corresponding function definitions.
-One of the most useful case of GtkExpression is building GtkListItem instance with GtkBuilderListItemFatory.
-Such case has already been described in the prior two sections.
+- 13-17, 42-46: Two labels are dummy labels.
+They just work as a space to put the two buttons at the appropriate position.
+- 19-41: GtkButton `btnlist` and `btngrid`.
+These two buttons work as selection buttons to switch from list to grid and vice versa.
+These two buttons are connected to a stateful action `win.view`.
+This action is stateful and has a parameter.
+Such action consists of prefix, action name and parameter.
+The prefix of the action is `win`, which means the action belongs to the top level window.
+So, a prefix gives scope of the action.
+The action name is `view`.
+The parameters are `list` or `grid`, which show the state of the action.
+A parameter is also called a target, because it is a target to which the buttons are clicked on to change the action state.
+We often write the detailed action like "win.view::list" or "win.view::grid".
+- 21-22: The properties "action-name" and "action-target" belong to GtkActionable interface.
+GtkButton implements GtkActionable.
+The action name is "win.view" and the target is "list".
+Generally, a target is GVariant, which can be string, integer, float and so on.
+You need to use GVariant text format to write GVariant value in ui files.
+If the type of the GVarinat value is string, then the value with GVariant text format is bounded by single quotes or double quotes.
+Because ui file is xml format text, single quote cannot be written without escape.
+Its escape sequence is \&apos;.
+Therefore, the target 'list' is written as \&apos;list\&apos;.
+Because the button is connected to the action, "clicked" signal handler isn't needed.
+- 23-27: The child widget of the button is GtkImage.
+GtkImage has a "resource" property.
+It is a GResource and GtkImage reads an image data from the resource and sets the image.
+This resource is built from 24x24-sized png image data, which is an original icon.
+- 50-53: GtkScrolledWindow.
+Its child widget will be GtkListView or GtkGridView.
 
-It will be used in the next section to build GtkListItem in GtkColumnView, which is the most useful view object for GListModel.
+The action `view` is created, connected to the "activate" signal handler and inserted to the window (action map) as follows.
+
+~~~C
+  act_view = g_simple_action_new_stateful ("view", g_variant_type_new("s"), g_variant_new_string ("list"));
+  g_signal_connect (act_view, "activate", G_CALLBACK (view_activated), scr); /* scr is the GtkScrolledWindow object */
+  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_view));
+~~~
+
+The signal handler `view_activated` will be explained later.
+
+## Factories
+
+Each view (GtkListView and GtkGridView) has its own factory because its items have different structure of widgets.
+The factories are GtkBuilderListItemFactory objects.
+Their ui files are as follows.
+
+factory_list.ui
+
+@@@include
+list4/factory_list.ui
+@@@
+
+factory_grid.ui
+
+@@@include
+list4/factory_grid.ui
+@@@
+
+The two files above are almost same.
+The difference is:
+
+- The orientation of the box
+- The icon size
+- The position of the text of the label
+
+@@@shell
+cd list4; diff factory_list.ui factory_grid.ui
+@@@
+
+Each view item has two properties, "gicon" in GtkImage and "label" in GtkLabel.
+Because GFileInfo doesn't have properties correspond to icon object or filename, the factory uses closure tag to bind "gicon" and "label" properties to GFileInfo information.
+A function `get_icon` gets GIcon the GFileInfo object has.
+And a function `get_file_name` gets a filename the GFileInfo object has.
+
+@@@include
+list4/list4.c get_icon get_file_name
+@@@
+
+One important thing is view items own the object or string.
+It is achieved by `g_object_ref` to increase the reference count by one, or `strdup` to create a copy of the string.
+The object or string will be automatically freed in unbinding process when the view item is recycled.
+
+## An activate signal handler of the action
+
+An activate signal handler `view_activate` switches the view.
+It does two things.
+
+- Change the child widget of GtkScrolledWindow.
+- Change the CSS of buttons to show the current state.
+
+@@@include
+list4/list4.c view_activated
+@@@
+
+The second parameter of this handler is the target of the clicked button.
+Its type is GVariant.
+
+- If `btnlist` has been clicked, then `parameter` is "list".
+- If `btngrid` has been clicked, then `parameter` is "grid".
+
+The third parameter `user_data` points GtkScrolledWindow, which is set in the `g_signal_connect` function.
+
+- 4: `g_variant_get_string` gets the string from the GVariant variable.
+- 8-14: Sets the child of `scr`.
+- 15-17: Sets the CSS of the buttons.
+The background of the clicked button will be silver color and the other button will be white.
+- 18: Changes the state of the action.
+ 
+## Activate signal of GtkListView and GtkGridView
+
+Views (GtkListView and GtkGridView) have an "activate" signal.
+It is emitted when an item in the view is double clicked or the enter key is pressed.
+You can do anything you like by connecting the "activate" signal to the handler.
+
+The example `list4` launches `tfe` text file editor if the item of the list is a text file.
+
+~~~C
+static void
+list_activate (GtkListView *list, int position, gpointer user_data) {
+  GFileInfo *info = G_FILE_INFO (g_list_model_get_item (G_LIST_MODEL (gtk_list_view_get_model (list)), position));
+  launch_tfe_with_file (info);
+}
+
+static void
+grid_activate (GtkGridView *grid, int position, gpointer user_data) {
+  GFileInfo *info = G_FILE_INFO (g_list_model_get_item (G_LIST_MODEL (gtk_grid_view_get_model (grid)), position));
+  launch_tfe_with_file (info);
+}
+
+... ...
+... ...
+
+  g_signal_connect (GTK_LIST_VIEW (list), "activate", G_CALLBACK (list_activate), NULL);
+  g_signal_connect (GTK_GRID_VIEW (grid), "activate", G_CALLBACK (grid_activate), NULL);
+~~~
+
+The second parameter of the handlers is the position of the item (GFileInfo) of the GListModel list.
+So you can get the item with `g_list_model_get_item` function.
+
+## Content type and launching an application
+
+The function `launch_tfe_with_file` launches `tfe` with the file whose information has been taken by GFileInfo object, if the file is a text file.
+
+GFileInfo has information about file type.
+The file type is like "text/plain", "text/x-csrc" and so on.
+It is called content type.
+Content type can be got with `g_file_info_get_content_type` function.
+
+@@@include
+list4/list4.c launch_tfe_with_file
+@@@
+
+- 13: Gets the content type of GFileInfo.
+- 14: Prints the content type.
+This is only useful to know a content type of a file.
+- 17-20: If the content type doesn't begin with "text/", then it returns.
+- 21: Creates GAppInfo object of `tfe` application.
+GAppInfo is interface and the variable `appinfo` points a GDesktopAppInfo object.
+GAppInfo is a collection of information of an application.
+- 29: Launches the application (`tfe`) with an argument `file`.
+`g_app_info_launch` has four parameters.
+The first parameter is GAppInfo object.
+The second parameter is a list of GFile objects.
+In this function, only one GFile object is given to `tfe`, but you can give more arguments.
+The third parameter is GAppLaunchContext, but this program gives NULL instead.
+The last parameter is the pointer to the pointer to GError.
+- 32: `g_list_free_full` frees the memories used by the list and items.
+
+At present, my ubuntu runs on Gtk3, not Gtk4.
+If it runs on Gtk4, using `g_app_info_launch_default_for_uri` is convenient.
+The function automatically determines the default application from the file and launches it.
+For example, if the file is text, then it launches gedit with the file.
+Such functionality comes from desktop.
 
 ## Compilation and execution
 
-All the sources are in [src/expression](expression) directory.
-Change your current directory to the directory above and run meson and ninja.
-Then, execute the application.
+The source files are located in [src/list4](list4) directory.
+To compile and execute list4, type as follows.
 
 ~~~
+$ cd list4 # or cd src/list4. It depends your current directory.
 $ meson _build
 $ ninja -C _build
-$ build/exp
+$ _build/list3
 ~~~
 
-Then, two windows appear.
+Then a file list appears as a list style.
+Click on a button on the tool bar so that you can change the style to grid or back to list.
+Double click "list4.c" item, then `tfe` text editor runs with the argument "list4.c".
+The following is the screenshot.
 
-![Expression](../image/expression.png){width=12cm height=9.1cm}
+![Screenshot](../image/screenshot_list4.png){width=8cm height=5.62cm}
 
-If you put some text in the field of the entry, then the same text appears in the second GtkLabel.
-Because the "label" property of the second GtkLabel instance is bound to the text in the GtkEntryBuffer.
+## "gbytes" property of GtkBuilderListItemFactory
 
-If you resize the window, then the size appears in the title bar because the "title" property is bound to "default^width" and "default-height" properties.
+GtkBuilderListItemFactory has "gbytes" property.
+The property contains a byte sequence of ui data.
+If you use this property, you can put the contents of `factory_list.ui` and `factory_grid.ui`into `list4.ui`.
+The following shows a part of the new list4.ui file.
+
+~~~xml
+  <object class="GtkListView" id="list">
+    <property name="model">
+      <object class="GtkSingleSelection" id="singleselection">
+        <property name="model">
+          <object class="GtkDirectoryList" id="directorylist">
+            <property name="attributes">standard::name,standard::icon,standard::content-type</property>
+          </object>
+        </property>
+      </object>
+    </property>
+    <property name="factory">
+      <object class="GtkBuilderListItemFactory">
+        <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkImage">
+            <binding name="gicon">
+              <closure type="GIcon" function="get_icon">
+                <lookup name="item">GtkListItem</lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="hexpand">TRUE</property>
+            <property name="xalign">0</property>
+            <binding name="label">
+              <closure type="gchararray" function="get_file_name">
+                <lookup name="item">GtkListItem</lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>
+        ]]></property>
+      </object>
+    </property>
+  </object>
+~~~
+
+CDATA section begins with "<![CDATA[" and ends with "]]>".
+The contents of CDATA section is recognized as a string.
+Any character, even if it is a key syntax marker such as '<' or '>', is recognized literally.
+Therefore, the text between "<![CDATA[" and "]]>" is inserted to "bytes" property as it is.
+
+This method decreases the number of ui files.
+But, the new ui file is a bit complicated especially for the beginners.
+If you feel some difficulty, it is better for you to separate the ui file.
+
+A directory [src/list5](list5) includes the ui file above.
 

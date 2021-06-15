@@ -1,212 +1,218 @@
-# Widgets (3)
+# String and memory management
 
-## Open signal
+GtkTextView and GtkTextBuffer have functions that have string parameters or return a string.
+The knowledge of strings and memory management is very important for us to understand the functions above.
 
-### G\_APPLICATION\_HANDLES\_OPEN flag
+## String and memory
 
-GtkTextView, GtkTextBuffer and GtkScrolledWindow have given us a minimum editor in the previous section.
-Next, we will add a function to read a file and remake the program into a file viewer.
-There are many ways to implement the function.
-Because this is a tutorial for beginners, we'll take the easiest one.
-
-When the program starts, we give a filename as an argument.
-
-    $ ./a.out filename
-
-Then it opens the file and inserts its contents into the GtkTextBuffer.
-
-At the beginning of the implementation, we need to know how GtkApplication (or GApplication) recognizes arguments.
-It is described in the [GIO API reference](https://developer.gnome.org/gio/stable/GApplication.html#GApplication.description).
-
-When GtkApplication is created, a flag (its type is GApplicationFlags) is given as an argument.
+String is an array of characters that is terminated with '\0'.
+String is not a C type such as char, int, float or double.
+But the pointer to a character array behaves like a string type of other languages.
+So, the pointer is often called string.
 
 ~~~C
-GtkApplication *
-gtk_application_new (const gchar *application_id, GApplicationFlags flags);
+char a[10], *b;
+
+a[0] = 'H';
+a[1] = 'e';
+a[2] = 'l';
+a[3] = 'l';
+a[4] = 'o';
+a[5] = '\0';
+
+b = a;
+/* *b is 'H' */
+/* *(++b) is 'e' */
 ~~~
 
-This flag is described in the [GApplication section](https://developer.gnome.org/gio/stable/GApplication.html#GApplicationFlags) in GIO API reference.
+The array `a` has `char` elements and the size is ten.
+The first six elements are 'H', 'e', 'l', 'l', 'o' and '\0'.
+This array represents a string "Hello".
+The first five elements are character codes that correspond to the characters.
+The sixth element is '\0' that is the same as zero.
+And it indicates that the string ends there.
+The size of the array is 10, so 4 bytes aren't used, but it's OK.
+They are just ignored.
 
-~~~
-GApplicationFlags' Members
+The variable 'b' is a pointer to a character.
+Because `a` is assigned to `b`, `a` and `b` point the same character ('H').
+The variable `a` is defined as an array and it can't be changed.
+It always point the top address of the array.
+On the other hand, pointers are mutable, so `b` can change itself.
+It is possible to write `++b` (`b` is increased by one).
 
-G_APPLICATION_FLAGS_NONE  Default. (No argument allowed)
-  ... ... ...
-G_APPLICATION_HANDLES_OPEN  This application handles opening files (in the primary instance).
-  ... ... ...
-~~~
+If a pointer is NULL, it points nothing.
+So, the pointer is not a string.
+Programs with string will include bugs if you aren't careful about NULL pointer.
 
-There are ten flags.
-But we only need two of them so far.
-We've already used `G_APPLICATION_FLAGS_NONE`.
-It is the simplest option.
-No argument is allowed.
-If you give arguments and run the application, then error occurs.
+Another annoying problem is memory that a string is allocated.
+There are four cases.
 
-`G_APPLICATION_HANDLES_OPEN` is the second simplest option.
-It allows arguments but only files.
-The application assumes all the arguments are filenames.
+- The string is read only.
+- The string is in static memory area.
+- The string is in stack.
+- The string is in memory allocated from the heap area.
 
-Now we use this flag when creating GtkApplication.
+## Read only string
+
+A string literal in C program is surrounded by double quotes.
 
 ~~~C
-app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
+char *s;
+s = "Hello"
 ~~~
 
-### open signal
-
-When the application starts, two signals are possible.
-
-- activate signal --- This signal is emitted when there's no argument.
-- open signal --- This signal is emitted when there is at least one argument.
-
-The handler of "open" signal is defined as follows.
+"Hello" is a string literal.
+A string literal is read only.
+In the program above, `s` points the string literal.
+So, the following program is illegal.
 
 ~~~C
-void user_function (GApplication *application,
-                   gpointer      files,
-                   gint          n_files,
-                   gchar        *hint,
-                   gpointer      user_data)
+*(s+1) = 'a';
 ~~~
 
-The parameters are:
+The result is undefined.
+Probably a bad thing will happen, for example, a segmentation fault.
 
-- `application` --- the application (usually GtkApplication)
-- `files` --- an array of GFiles. [array length=n\_files] [element-type GFile]
-- `n_files` --- the number of the elements of `files`
-- `hint` --- a hint provided by the calling instance (usually it can be ignored)
-- `user_data` --- user data set when the signal handler was connected.
+## Strings defined as arrays
 
-The way how to read a file (GFile) will be described in the next subsection.
+If a string is defined as an array, it's in static memory area or stack.
+It depends on the class of the array.
+If the array's class is `static`, then it's placed in static memory area.
+It keeps its value and remains for the life of the program.
+This area is writable.
 
-## Coding a file viewer
-
-### What is a file viewer?
-
-A file viewer is a program that shows a text file given as an argument.
-It works as follows.
-
-- If it is given arguments, it recognizes the first argument as a filename and opens it.
-- If opening the file succeeds, it reads the contents of the file and inserts it to GtkTextBuffer and shows the window.
-- If it fails to open the file, shows an error message and quits.
-- If there's no argument, it shows an error message and quits.
-- If there are two or more arguments, the second one and after are ignored.
-
-The program is as follows.
-
-@@@include
-tfv/tfv3.c
-@@@
-
-Save it as `tfv3.c`.
-Then compile and run it.
-
-    $ comp tfv3
-    $ ./a.out tfv3.c
-
-![File viewer](../image/screenshot_tfv3.png){width=6.3cm height=5.325cm}
-
-Now I want to explain the program `tfv3.c`.
-First, the function `main` changes in only two lines from the previous version.
-
-- `G_APPLICATION_FLAGS_NONE` is replaced by `G_APPLICATION_HANDLES_OPEN`.
-- `g_signal_connect (app, "open", G_CALLBACK (on_open), NULL)` is added.
-
-Next, the handler `app_activate` is now very simple.
-It just outputs the error message.
-The application quits immediately because no window is created.
-
-The point is the handler `app_open`.
-
-- It creates GtkApplicationWindow, GtkScrolledWindow, GtkTextView and GtkTextBuffer and connects them.
-- Sets wrap mode to `GTK_WRAP_WORD_CHAR` in GtktextView.
-- Sets GtkTextView to non-editable because the program isn't an editor but only a viewer.
-- Reads the file and inserts the text into GtkTextBuffer (this will be explained in detail later).
-- If the file is not opened then outputs an error message and destroys the window. It makes the application quit.
-
-The file reading part of the program is shown again below.
+If the array's class is `auto`, then it's placed in stack.
+If the array is defined in a function, its default class is `auto`.
+The stack area will disappear when the function returns to the caller.
+stack is writable.
 
 ~~~C
-if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, NULL)) {
-  gtk_text_buffer_set_text (tb, contents, length);
-  g_free (contents);
-  if ((filename = g_file_get_basename (files[0])) != NULL) {
-    gtk_window_set_title (GTK_WINDOW (win), filename);
-    g_free (filename);
-  }
-  gtk_widget_show (win);
-} else {
-  if ((filename = g_file_get_path (files[0])) != NULL) {
-    g_print ("No such file: %s.\n", filename);
-    g_free (filename);
-  }
-  gtk_window_destroy (GTK_WINDOW (win));
+
+static char a[] = {'H', 'e', 'l', 'l', 'o', '\0'};
+
+void
+print_strings (void) {
+  char b[] = "Hello";
+
+  a[1] = 'a'; /* Because the array is static, it's writable. */
+  b[1] = 'a'; /* Because the array is auto, it's writable. */
+
+  printf ("%s\n", a); /* Hallo */
+  printf ("%s\n", b); /* Hallo */
 }
 ~~~
 
-The function `g_file_load_contents` loads the file contents into a buffer, which is automatically allocated, and sets `contents` to point the buffer.
-And the length of the buffer is set to `length`.
-It returns `TRUE` if the file's contents are successfully loaded. `FALSE` if an error happens.
+The array `a` is defined externally to functions.
+Such variables are placed in static memory area even if the `static` class is left out.
+First, the compiler calculates the number of the elements in the right hand side.
+It is six.
+The compiler allocates six bytes memory in the static memory area and copies the data to the memory.
 
-If the function succeeds, it inserts the contents into GtkTextBuffer, frees the buffer memories pointed by `contents`, sets the title of the window,
-frees the memories pointed by `filename` and shows the window.
-If it fails, it outputs an error message and destroys the window.
+The array `b` is defined inside the function.
+So, its class is `auto`.
+The compiler calculates the number of the elements in the string literal.
+It is six because the string is zero terminated.
+The compiler allocates six bytes memory in the stack and copies the data to the memory.
 
-## GtkNotebook
+Both `a` and `b` are writable.
 
-GtkNotebook is a container widget that contains multiple children with tabs in it.
+The memory is managed by the executable program.
+You don't need to program to allocate or free the memory for `a` and `b`.
+The array `a` remains for the life of the program.
+The array `b` disappears when the function returns to the caller.
 
-![GtkNotebook](../image/screenshot_gtk_notebook.png){width=13.2cm height=5.325cm}
+## Strings in the heap area
 
-Look at the screenshots above.
-The left one is a window at the startup.
-It shows the file `pr1.c`.
-The filename is in the left tab.
-After clicking on the right tab, the contents of `tfv1.c` appears.
-It is shown in the right of the screenshot.
+You can get memory from the heap area and put back the memory to the heap area.
+The standard C library provides `malloc` to get memory and `free` to put back memory.
+Similarly, GLib provides `g_new` and `g_free`.
 
-GtkNotebook widget is between GtkApplicationWindow and GtkScrolledWindow.
-Now I want to show you the program `tfv4.c`.
-
-@@@include
-tfv/tfv4.c
-@@@
-
-Most of the change is in the function `app_open`.
-The numbers at the left of the following items are line numbers in the source code.
-
-- 11-13: Variables `nb`, `lab` and `nbp` are defined and points GtkNotebook, GtkLabel and GtkNotebookPage respectively.
-- 23: The window's title is set to "file viewer".
-- 25: The size of the window is set to maximum because a big window is appropriate for file viewers.
-- 27-28 GtkNotebook is created and inserted to the GtkApplicationWindow as a child.
-- 30-59 For-loop. Each loop corresponds to an argument. And files[i] is GFile object with respect to the i-th argument.
-- 32-37 GtkScrollledWindow, GtkTextView are created and GtkTextBuffer is get from the GtkTextView.
-GtkTextView is connected to GtkScrolledWindow as a child.
-They corresponds to each file, so they are created inside the for-loop.
-- 39-40 inserts the contents of the file into GtkTextBuffer and frees the memory pointed by `contents`.
-- 41-43: Gets the filename and creates GtkLabel with the filename.
-Frees `filename`.
-- 44-45: If `filename` is NULL, creates GtkLabel with the empty string.
-- 46: Appends GtkScrolledWindow and GtkLabel to GtkNotebook.
-At the same time, a GtkNoteBookPage widget is created automatically.
-The GtkScrolledWindow widget is connected to the GtkNotebookPage.
-Therefore, the structure is like this:
-
-~~~
-    GtkNotebook -- GtkNotebookPage -- GtkScrolledWindow
+~~~C
+g_new (struct_type, n_struct)
 ~~~
 
-- 47: Gets GtkNotebookPage widget and sets `nbp` to point the GtkNotebookPage.
-- 48: GtkNotebookPage has a property "tab-expand".
-If it is set to TRUE then the tab expands horizontally as long as possible.
-If it is FALSE, then the width of the tab is determined by the size of the label.
-`g_object_set` is a general function to set properties in any objects.
-See [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html#g-object-set).
-- 49-51: If it fails to read the file, "No such file" message is outputted.
-Frees `filename`.
-- 52-53: If `filename` is NULL, "No valid file is given" message is outputted.
-- 55-58: If at least one file was read, then the number of GtkNotebookPage is greater than zero.
-If it's true, it shows the window.
-If it's false, it destroys the window.
+`g_new` is a macro to allocate memory for an array.
+
+- `struct_type` is the type of the element of the array.
+- `n_struct` is the size of the array.
+- The return value is a pointer to the array.
+Its type is a pointer to `struct_type`.
+
+For example,
+
+~~~C
+char *s;
+s = g_new (char, 10);
+/* s points an array of char. The size of the array is 10. */
+
+struct tuple (int x, int y) *t;
+t = g_new (struct tuple, 5);
+/* t points an array of struct tuple. */
+/* The size of the array is 5. */
+~~~
+
+`g_free` frees memory.
+
+~~~C
+void
+g_free (gpointer mem);
+~~~
+
+If `mem` is NULL, `g_free` does nothing.
+`gpointer` is a type of general pointer.
+It is the same as `void *`.
+This pointer can be casted to any pointer type.
+Conversely, any pointer type can be casted to gpointer. 
+
+~~~C
+g_free (s);
+/* Frees the memory allocated to s. */
+
+g_free (t);
+/* Frees the memory allocated to t. */
+~~~
+
+If the argument doesn't point allocated memory, it will cause an error, for example, segmentation fault.
+
+Some Glib functions allocate memory.
+For example, `g_strdup` allocates memory and copy a string given as an argument.
+
+~~~C
+char *s;
+s = g_strdup ("Hello");
+g_free (s);
+~~~
+
+The string literal "Hello" has 6 bytes because the string has '\0' at the end it.
+`g_strdup` gets 6 bytes from the heap area and copies the string to the memory.
+`s` is assigned the top address of the memory.
+`g_free` returns the memory to the heap area.
+
+`g_strdup` is described in [GLib API reference](https://developer.gnome.org/glib/stable/glib-String-Utility-Functions.html#g-strdup).
+The following is extracted from the reference.
+
+> The returned string should be freed with `g_free()` when no longer needed.
+
+The reference usually describes if the returned value needs to be freed.
+If you forget to free the allocated memory, it causes memory leak.
+
+Some GLib functions return a string which mustn't be freed by the caller.
+
+~~~C
+const char *
+g_quark_to_string (GQuark quark);
+~~~
+
+This function returns `const char*` type.
+The qualifier `const` means immutable.
+Therefore, the characters pointed by the returned value aren't be allowed to change or free.
+
+If a variable is qualified with `const`, the variable can't be assigned except initialization.
+
+~~~C
+const int x = 10; /* initialization is OK. */
+
+x = 20; /* This is illegal because x is qualified with const */
+~~~
 

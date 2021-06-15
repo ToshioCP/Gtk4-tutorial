@@ -1,209 +1,208 @@
-# Ui file and GtkBuilder
+# Define Child object
 
-## New, open and save button
+## Very simple editor
 
-We made the simplest editor in the previous section.
-It reads the files in `on_open` function at start-up and writes them when closing the window.
-It works but is not good.
-It is better to make "New", "Open", "Save" and "Close" buttons.
-This section describes how to put those buttons into the window.
-Signals and handlers will be explained later.
+We made a very simple file viewer in the previous section.
+Now we go on to rewrite it and make a very simple editor.
+Its source file name is tfe1.c (text file editor 1).
 
-![Screenshot of the file editor](../image/screenshot_tfe2.png){width=9.3cm height=6.825cm}
+GtkTextView originally has a feature of multi line editing.
+Therefore, we don't need to rewrite the program from scratch.
+We just add two things to the file viewer.
 
-The screenshot above shows the layout.
-The function `on_open` in the source code `tfe2.c` is as follows.
+- Static memory is needed to store a pointer to GFile.
+- We need to implement file write function.
 
-@@@include
-tfe/tfe2.c on_open
-@@@
+A couple of ways are possible to get memories to keep GFile.
 
-The point is how to build the window.
+- Use global variables.
+- make a child object so that it can extend the memories for the GFile object.
 
-- 25-27: Generates GtkApplicationWindow and sets the title and default size.
-- 29-30: Generates GtkBox `boxv`.
-It is a vertical box and a child of GtkApplicationWindow.
-It has two children.
-The first child is a horizontal box includes buttons.
-The second child is GtkNotebook.
-- 32-33: Generates GtkBox `boxh` and appends it to 'boxv' as a first child.
-- 35-40: Generates three dummy labels.
-The labels `dmy1` and `dmy3` has a character width of ten.
-The other label `dmy2` has hexpand property which is set to be TRUE.
-This makes the label expands horizontally as long as possible.
-- 41-44: Generates four buttons.
-- 46-52: Appends these GtkLabel and GtkButton to `boxh`.
-- 54-57: Generates GtkNotebook and sets hexpand and vexpand properties TRUE.
-This makes it expand horizontally and vertically as big as possible.
-It is appended to `boxv` as the second child.
-
-The number of lines is 33(=57-25+1) to build the widgets.
-And we needed many variables (boxv, boxh, dmy1 ...).
-Most of them aren't necessary except building the widgets.
-Are there any good solution to reduce these work?
-
-Gtk provides GtkBuilder.
-It reads ui data and builds a window.
-It reduces the cumbersome work.
-
-## Ui file
-
-First, let's look at the ui file `tfe3.ui` that defines a structure of the widgets.
-
-@@@include
-tfe/tfe3.ui
-@@@
-
-This is coded with XML structure.
-Constructs beginning with `<` and ending with `>` are called tags.
-And there are two types of tags, start tag and end tag.
-For example, `<interface>` is a start tag and `</interface>` is an end tag.
-Ui file begins and ends with interface tags.
-Some tags, for example, object tags can have a class and id attributes in the start tag.
-
-- 1: The first line is XML declaration.
-It specifies that the version of XML is 1.0 and the encoding is UTF-8.
-Even if the line is left out, GtkBuilder builds objects from the ui file.
-But ui files must use UTF-8 encoding, or GtkBuilder can't recognize it and fatal error occurs.
-- 3-6: An object with `GtkApplicationWindow` class and `win` id is defined.
-This is the top level window.
-And the three properties of the window are defined.
-`title` property is "file editor", `default-width` property is 400 and `default-height` property is 300.
-- 7: child tag means a child of the object above.
-For example, line 7 tells us that GtkBox object which id is "boxv" is a child of `win`.
-
-Compare this ui file and the lines 25-57 in the source code of `on_open` function.
-Those two describe the same structure of widgets.
-
-You can check the ui file with `gtk4-builder-tool`.
-
-- `gtk4-builder-tool validate <ui file name>` validates the ui file.
-If the ui file includes some syntactical error, `gtk4-builder-tool` prints the error.
-- `gtk4-builder-tool simplify <ui file name>` simplifies the ui file and prints the result.
-If `--replace` option is given, it replaces the ui file with the simplified one.
-If the ui file specifies a value of property but it is default, then it will be removed.
-Anf some values are simplified.
-For example, "TRUE"and "FALSE" becomes "1" and "0" respectively.
-However, "TRUE" or "FALSE" is better for maintenance.
-
-It is a good idea to check your ui file before compiling.
-
-## GtkBuilder
-
-GtkBuilder builds widgets based on the ui file.
+Using global variables is easy to implement.
+Define a sufficient size array of pointers to GFile.
+For example,
 
 ~~~C
-GtkBuilder *build;
-
-build = gtk_builder_new_from_file ("tfe3.ui");
-win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+GFile *f[20];
 ~~~
 
-The function `gtk_builder_new_from_file` reads the file given as an argument.
-Then, it builds the widgets and pointers to them, creates GtkBuilder object and put the pointers in it.
-The function `gtk_builder_get_object (build, "win")` returns the pointer to the widget `win`, which is the id in the ui file.
-All the widgets are connected based on the parent-children relationship described in the ui file.
-We only need `win` and `nb` for the program after this, so we don't need to take out any other widgets.
-This reduces lines in the C source file.
+And `f[i]` corresponds to i-th GtkNotebookPage.
+However, there are two problems.
+One is the size of the array.
+If a user gives arguments more than that, bad thing may happen.
+The other is the difficulty of maintenance of the program.
+It is a small program so far.
+However, if you continue developing it, then its size grows bigger and bigger.
+Generally speaking, the bigger the program size, the more difficult to maintain global variables.
 
-@@@shell
-cd tfe; diff tfe2.c tfe3.c
-@@@
+Making child object is a good idea in terms of maintenance.
+However, one thing you need to be careful is the difference between "child object" and "child widget".
+What we are thinking about now is "child object".
+A child object includes its parent object.
+And a child object derives everything from the parent object.
+ 
+![Child widget of GtkTextView](../image/child.png){width=9.675cm height=4.89cm}
 
-`60,103c61,65` means 42 (=103-60+1) lines change to 5 (=65-61+1) lines.
-Therefore 37 lines are reduced.
-Using ui file not only shortens C source files, but also makes the widgets' structure clear.
+We will define TfeTextView as a child object of GtkTextView.
+It has everything that GtkTextView has.
+For example, TfeTextView has GtkTextbuffer corresponds to GtkTextView inside TfeTextView.
+And important thing is that TfeTextView can have a memory to keep a pointer to GFile.
 
-Now I'll show you `on_open` function in the C source code `tfe3.c`.
+However, to understand the general theory about Gobject is very hard especially for beginners.
+So, I will just show you the way how to write the code and avoid the theoretical side in the next subsection.
 
-@@@include
-tfe/tfe3.c on_open
-@@@
+## How to define a child widget of GtkTextView
 
-The whole source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
-If you want to see it, click the link above.
-You can also get the source files below.
-
-### Using ui string
-
-GtkBuilder can build widgets using string.
-Use the function gtk\_builder\_new\_from\_string instead of gtk\_builder\_new\_from\_file.
+Let's define TfeTextView object which is a child object of GtkTextView.
+First, look at the program below.
 
 ~~~C
-char *uistring;
+#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
+G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
 
-uistring =
-"<interface>"
-  "<object class="GtkApplicationWindow" id="win">"
-    "<property name=\"title\">file editor</property>"
-    "<property name=\"default-width\">600</property>"
-    "<property name=\"default-height\">400</property>"
-    "<child>"
-      "<object class=\"GtkBox\" id=\"boxv\">"
-        "<property name="orientation">GTK_ORIENTATION_VERTICAL</property>"
-... ... ...
-... ... ...
-"</interface>";
+struct _TfeTextView
+{
+  GtkTextView parent;
+  GFile *file;
+};
 
-build = gtk_builder_new_from_stringfile (uistring);
+G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+
+static void
+tfe_text_view_init (TfeTextView *tv) {
+}
+
+static void
+tfe_text_view_class_init (TfeTextViewClass *class) {
+}
+
+void
+tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
+  tv -> file = f;
+}
+
+GFile *
+tfe_text_view_get_file (TfeTextView *tv) {
+  return tv -> file;
+}
+
+GtkWidget *
+tfe_text_view_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
+}
 ~~~
 
-This method has an advantage and disadvantage.
-The advantage is that the ui string is written in the source code.
-So ui file is not necessary on runtime.
-The disadvantage is that writing C string is a bit bothersome because of the double quotes.
-If you want to use this method, you should write a script that transforms ui file into C-string.
+If you are curious about the background theory of this program, It's very good for you.
+Because knowing the theory is very important for you to program GTK applications.
+Look at [GObject API reference](https://developer.gnome.org/gobject/stable/).
+All you need is described in it.
+However, it's a tough journey especially for beginners.
+For now, you don't need to know such difficult theory.
+Just remember the instructions below. 
 
-- Add backslash before each double quote.
-- Add double quote at the left and right.
+- TfeTextView is divided into two parts.
+Tfe and TextView.
+Tfe is called prefix, namespace or module.
+TextView is called object.
+- There are three patterns.
+TfeTextView (camel case), tfe\_text\_view (this is used to write functions) and TFE\_TEXT\_VIEW (This is used to write casts).
+- First, define TFE\_TYPE\_TEXT\_VIEW as tfe\_text\_view\_get\_type ().
+The name is always (prefix)\_TYPE\_(object) and the letters are upper case.
+And the replacement text is always (prefix)\_(object)\_get\_type () and the letters are lower case.
+- Next, use G\_DECLARE\_FINAL\_TYPE macro.
+The arguments are the child object name in camel case, lower case with underscore, prefix (upper case), object (upper case with underscore) and parent object name (camel case).
+- Declare the structure \_TfeTextView.
+The underscore is necessary.
+The first member is the parent object.
+Notice this is not a pointer but the object itself.
+The second member and after are members of the child object.
+TfeTextView structure has a pointer to GFile as a member.
+- Use G\_DEFINE\_TYPE macro.
+The arguments are the child object name in camel case, lower case with underscore and parent object type (prefix)\_TYPE\_(module).
+- Define instance init function (tfe\_text\_view\_init).
+Usually you don't need to do anything.
+- Define class init function (tfe\_text\_view\_class\_init).
+You don't need to do anything in this widget.
+- Write function codes you want to add (tfe\_text\_view\_set\_file and tfe\_text\_view\_get\_file).
+`tv` is a pointer to TfeTextView object instance which is a C-structure declared with the tag \_TfeTextView.
+So, the structure has a member `file` as a pointer to GFile.
+`tv->file = f` is an assignment of `f` to a member `file` of the structure pointed by `tv`. 
+This is an example how to use the extended memory in a child widget.
+- Write object generation function.
+Its name is (prefix)\_(object)\_new.
+If the parent object function needs parameters, this function also need them.
+You sometimes might want to add some parameters.
+It's your choice.
+Use g\_object\_new function to generate the child widget.
+The arguments are  (prefix)\_TYPE\_(object), a list to initialize properties and NULL.
+In this code no property needs to be initialized.
+And the return value must be casted to GtkWidget.
 
-### Using Gresource
+This program is not perfect.
+It has some problems.
+But I don't discuss them now.
+It will be modified later.
 
-Using Gresource is similar to using string.
-But Gresource is compressed binary data, not text data.
-And there's a compiler that compiles ui file into Gresource.
-It can compile not only text files but also binary files such as images, sounds and so on.
-And after compilation, it bundles them up into one Gresource object.
+## Close-request signal
 
-An xml file is necessary for the resource compiler `glib-compile-resources`.
-It describes resource files.
+Imagine that you use this editor.
+First, you run the editor with arguments.
+The arguments are filenames.
+The editor reads the files and shows its window with the text of files in it.
+Then you edit the text.
+After you finish editing, you exit the editor.
+The editor updates files just before the window closes.
 
-@@@include
-tfe/tfe3.gresource.xml
-@@@
-
-- 2: `gresources` tag can include multiple gresources (gresource tags).
-However, this xml has only one gresource.
-- 3: The gresource has a prefix `/com/github/ToshioCP/tfe3`.
-- 4: The gresource has `tfe3.ui`.
-And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix. 
-If you want to add more files, then insert them between line 4 and 5.
-
-Save this xml text to `tfe3.gresource.xml`.
-The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
-
-@@@shell
-LANG=C glib-compile-resources --help
-@@@
-
-Now run the compiler.
-
-    $ glib-compile-resources tfe3.gresource.xml --target=resources.c --generate-source
-
-Then a C source file `resources.c` is generated.
-Modify `tfe3.c` and save it as `tfe3_r.c`.
+GtkWindow emits "close-request" signal before it closes.
+We connect the signal and the handler `before_close`.
+A handler is a C function.
+When a function is connected to a certain signal, we call it handler.
+The function `before_close` is invoked when the signal "close-request" is emitted.
 
 ~~~C
-#include "resources.c"
-... ... ...
-... ... ...
-build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe3/tfe3.ui");
-... ... ...
-... ... ...
+g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
 ~~~
 
-Then, compile and run it.
-The window appears and it is the same as the screenshot at the beginning of this page.
+The argument `win` is GtkApplicationWindow, in which the signal "close-request" is defined, and `before_close` is the handler.
+`G_CALLBACK` cast is necessary for the handler.
+The program of `before_close` is as follows.
+
+@@@include
+tfe/tfe1.c before_close
+@@@
+
+The numbers on the left of items are line numbers in the source code.
+
+- 13: Gets the number of pages `nb` has.
+- 14-23: For loop with regard to the index to each pages.
+- 15-17: Gets GtkScrolledWindow, TfeTextView and a pointer to GFile.
+The pointer was stored when `on_open` handler had run. It will be shown later.
+- 18-20: Gets GtkTextBuffer and contents. `start_iter` and `end_iter` are iterators of the buffer.
+I don't want to explain them now because it would take a lot of time.
+Just remember these lines for the present.
+- 21: Writes the file.
+
+## Source code of tfe1.c
+
+Now I will show you all the source code of `tfe1`.c.
+
+@@@include
+tfe/tfe1.c
+@@@
+
+- 102: Sets the pointer to GFile into TfeTextView.
+`files[i]` is a pointer to GFile structure.
+It will be freed by the system. So you need to copy it.
+`g_file_dup` duplicates the given GFile structure.
+- 118: Connects "close-request" signal and `before_close` handler.
+The fourth argument is called user data and it is given to the signal handler.
+So, `nb` is given to `before_close` as the second argument.
+
+Now compile and run it.
+Type `./a.out somefile` and make sure that the file is modified.
+
+Now we got a very simple editor.
+It's not smart.
+We need more features like open, save, saveas, change font and so on.
+We will add them in the next section and after.
 

@@ -1,228 +1,146 @@
-# tfeapplication.c
+# Functions in GtkNotebook
 
-`tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
-It does:
-
-- Application support, mainly handling command line arguments.
-- Builds widgets using ui file.
-- Connects button signals and their handlers.
-- Manages CSS.
-
-## main
-
-Th function `main` is the first invoked function in C language.
-It connects the command line given by the user and GTK application.
+GtkNotebook is a very important object in the text file editor `tfe`.
+It connects the application and TfeTextView objects.
+A set of public functions related to GtkNotebook are declared in `tfenotebook.h`.
+The word "tfenotebook" is used only in filenames.
+There's no "TfeNotebook" object.
 
 @@@include
-tfe5/tfeapplication.c main
+tfe5/tfenotebook.h
 @@@
 
-- 6: Generates GtkApplication object.
-- 8-10: Connects "startup", "activate" and "open signals to their handlers.
-- 12: Runs the application.
-- 13-14: releases the reference to the application and returns the status.
+This header file describes the public functions in `tfenotebook.c`.
 
-## startup signal handler
+- 1-2: `notebook_page_save` saves the current page to the file of which the name specified in the tab.
+If the name is `untitled` or `untitled` followed by digits, FileChooserDialog appears and a user can choose or specify a filename.
+- 4-5: `notebook_page_close` closes the current page.
+- 7-8: `notebook_page_open` shows a file chooser dialog and a user can choose a file. The file is inserted to a new page.
+- 10-11: `notebook_page_new_with_file` generates a new page and the file give as an argument is read and inserted into the page.
+- 13-14: `notebook_page_new` generates a new empty page.
 
-Startup signal is emitted just after the application is generated.
-What the signal handler needs to do is initialization of the application.
+You probably find that the functions except `notebook_page_close` are higher level functions of
 
-- Builds the widgets using ui file.
-- Connects button signals and their handlers.
-- Sets CSS.
+- `tfe_text_view_save`
+- `tef_text_view_open`
+- `tfe_text_view_new_with_file`
+- `tfe_text_view_new`
 
-The handler is as follows.
+respectively.
+
+There are two layers.
+One of them is `tfe_text_view ...`, which is the lower level layer.
+The other is `note_book ...`, which is the higher level layer.
+
+Now let's look at the program of each function.
+
+## notebook\_page\_new
 
 @@@include
-tfe5/tfeapplication.c tfe_startup
+tfe5/tfenotebook.c get_untitled notebook_page_build notebook_page_new
 @@@
 
-- 12-15: Builds widgets using ui file (resource).
-Connects the top window and the application using `gtk_window_set_application`.
-- 16-23: Gets buttons and connects their signals and handlers.
-- 24: Releases the reference to GtkBuilder.
-- 26-31: Sets CSS.
-CSS in GTK is similar to CSS in HTML.
-You can set margin, border, padding, color, font and so on with CSS.
-In this program CSS is in line 30.
-It sets padding, font-family and font size of GtkTextView.
-- 26-28: GdkDisplay is used to set CSS.
-CSS will be explained in the next subsection.
+- 27-37: `notebook_page_new` function.
+- 29: `g_return_if_fail` is used to check the argument.
+- 34: Generates TfeTextView object.
+- 35: Generates filename, which is "Untitled", "Untitled1", ... .
+- 1-8: `get_untitled` function.
+- 3: Static variable `c` is initialized at the first call of this function. After that `c` keeps its value unless it is changed explicitly.
+- 4-7: Increases `c` by one and if it is zero then it returns "Untitled". If it is a positive integer then it returns "Untitled\<the integer\>", for example, "Untitled1", "Untitled2", and so on.
+The function `g_strdup_printf` generates a string and it should be freed by `g_free` when it becomes useless.
+The caller of `get_untitled` is in charge of freeing the string.
+- 36: calls `notebook_page_build` to build the contents of the page.
+- 10- 25: `notebook_page_build` function.
+- 12: Generates GtkScrolledWindow.
+- 17: Sets the wrap mode of `tv` to GTK_WRAP_WORD_CHAR so that lines are broken between words or graphemes.
+- 18: Inserts `tv` to GtkscrolledWindow as a child.
+- 19-20: Generates GtkLabel, then appends it to GtkNotebookPage.
+- 21-22: Sets "tab-expand" property to TRUE.
+The function g\_object\_set sets properties on an object.
+The object is any object derived from GObject.
+In many cases, an object has its own function to set its properties, but sometimes not.
+In that case, use g\_object\_set to set the property.
+- 23: Sets the current page of `nb` to the newly generated page.
+- 24: Connects "change-file" signal and `file_changed_cb` handler.
 
-## CSS in GTK
-
-CSS is an abbreviation of Cascading Style Sheet.
-It is originally used with HTML to describe the presentation semantics of a document.
-You might have found that the widgets in GTK is similar to the window in a browser.
-It implies that CSS can also be applied to GTK windowing system.
-
-### CSS nodes, selectors
-
-The syntax of CSS is as follows.
-
-@@@if gfm
-~~~css
-@@@else
-~~~
-@@@end
-selector { color: yellow; padding-top: 10px; ...}
-~~~
-
-Every widget has CSS node.
-For example GtkTextView has `textview` node.
-If you want to set style to GtkTextView, substitute "textview" for the selector.
-
-@@@if gfm
-~~~css
-@@@else
-~~~
-@@@end
-textview {color: yellow; ...}
-~~~
-
-Class, ID and some other things can be applied to the selector like Web CSS.
-Refer [GTK4 API reference](https://developer.gnome.org/gtk4/stable/theming.html) for further information.
-
-In line 30, the CSS is a string.
-
-@@@if gfm
-~~~css
-@@@else
-~~~
-@@@end
-textview {padding: 10px; font-family: monospace; font-size: 12pt;}
-~~~
-
-- padding is a space between the border and contents.
-This space makes the textview easier to read.
-- font-family is a name of font.
-"monospace" is one of the generic family font keywords.
-- font-size is set to 12pt.
-
-### GtkStyleContext, GtkCSSProvider and GdkDisplay
-
-GtkStyleContext is an object that stores styling information affecting a widget.
-Each widget is connected to the corresponding GtkStyleContext.
-You can get the context by `gtk_widget_get_style_context`.
-
-GtkCssProvider is an object which parses CSS in order to style widgets.
-
-To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext.
-However, instead, you can add it to GdkDisplay of the window (usually top level window).
-
-Look at the source file of `startup` handler again.
-
-- 28: The display is obtained by `gtk_widget_get_display`.
-- 29: Generates GtkCssProvider.
-- 30: Puts the CSS into the provider.
-- 31: Adds the provider to the display.
-
-It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
-To do so, rewrite `tfe_text_view_new`.
-First, get the GtkStyleContext object of a TfeTextView object.
-Then adds the CSS provider to the context.
-
-~~~C
-GtkWidget *
-tfe_text_view_new (void) {
-  GtkWidget *tv;
-
-  tv = gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
-
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (tv));
-  GtkCssProvider *provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-  gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-
-  return tv;
-}
-~~~
-
-CSS in the context takes precedence over CSS in the display.
-
-## activate and open handler
-
-The handler of "activate" and "open" signal are `tfe_activate` and `tfe_open` respectively.
-They just generate a new GtkNotebookPage.
+## notebook\_page\_new\_with\_file
 
 @@@include
-tfe5/tfeapplication.c tfe_activate tfe_open
+tfe5/tfenotebook.c notebook_page_new_with_file
 @@@
 
-- 1-11: `tfe_activate`.
-- 8-10: Generates a new page and shows the window.
-- 12-25: `tfe_open`.
-- 20-21: Generates notebook pages with files.
-- 22-23: If no page has generated, maybe because of read error, then it generates a empty page.
-- 24: Shows the window.
+- 9-10: Calls `tfe_text_view_new_with_file`.
+If the function returns NULL, then it does nothing and returns.
+The return value NULL means that an error has happened.
+- 11-12: Gets the filename and builds the contents of the page.
 
-These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
-
-## Primary instance
-
-Only one GApplication instance can be run at a time per session.
-The session is a bit difficult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login.
-When you use your PC, you probably login first, then your desktop appears until you log off.
-This is the session.
-
-However, linux is multi process OS and you can run two or more instances of the same application.
-Isn't it a contradiction?
-
-When first instance is launched, then it register itself with its application ID (for example, `com.github.ToshioCP.tfe`).
-Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
-I wrote "startup signal is emitted just after the application is generated" in the prior subsection.
-More precisely, it is emitted just after the registration.
-
-If another instance which has the same application ID is invoked after that, it also tries to register itself.
-Because this is the second instance, the registration of the ID has already done, so it fails.
-Because of the failure startup signal isn't emitted.
-After that, activate or open signal is emitted in the primary instance, not the second instance.
-The primary instance receives the signal and its handler is invoked.
-On the other hand, the second instance doesn't receive the signal and it immediately quits.
-
-Try to run two instances in a row.
-
-    $ ./_build/tfe &
-    [1] 84453
-    $ ./build/tfe tfeapplication.c
-    $
-
-First, the primary instance opens a window.
-Then, after the second instance is run, a new notebook page with the contents of `tfeapplication.c` appears in the primary instance's window.
-This is because the open signal is emitted in the primary instance.
-The second instance immediately quits so shell prompt soon appears.
-
-## a series of handlers correspond to the button signals
+## notebook\_page\_open
 
 @@@include
-tfe5/tfeapplication.c open_cb new_cb save_cb close_cb
+tfe5/tfenotebook.c open_response notebook_page_open
 @@@
 
-`open_cb`, `new_cb`, `save_cb` and `close_cb` just call corresponding notebook page functions.
+- 19-28: `notebook_page_open` function.
+- 25: Generates TfeTextView object.
+- 26: Connects the signal "open-response" and the handler `open_response`.
+- 27: Calls `tfe_text_view_open`.
+The function emits an "open-response" signal to inform the status.
+- 1-17: `open_response` handler.
+This is the post-function of `notebook_page_open`.
+- 6-8: If the status is NOT `TFE_OPEN_RESPONSE_SUCCESS`, it cancels what it did in `notebook_page_open`.
+The object `tv` hasn't been a child widget of some other widget yet.
+Such object has floating reference.
+You need to call `g_object_ref_sink` first.
+Then the floating reference is converted into an ordinary reference.
+Now you call `g_object_unref` to decrease the reference count by one.
+- 9-11: If `tfe_text_view_get_file` returns a pointer not to point GFile, it means that an error has happened.
+Sink and unref `tv`.
+- 12-16: Otherwise, everything is okay.
+Gets the filename, builds the contents of the page.
 
-## meson.build
+## notebook\_page\_close
 
 @@@include
-tfe5/meson.build
+tfe5/tfenotebook.c notebook_page_close
 @@@
 
-In this file, just the source file names are modified from the prior version.
+This function closes the current page.
+If the page is the only page the notebook has, then the function destroys the top window and quits the application.
 
-## source files
+- 8-10: If the page is the only page the notebook has, it calls gtk\_window\_destroy to destroys the top window.
+- 11-13: Otherwise, removes the current page.
 
-The [source files](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe5) of the text editor `tfe` will be shown in the next section.
+## notebook\_page\_save
 
-You can also download the files from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-There are two options.
+@@@include
+tfe5/tfenotebook.c get_current_textview notebook_page_save
+@@@
 
-- Use git and clone.
-- Run your browser and open the [top page](https://github.com/ToshioCP/Gtk4-tutorial). Then click on "Code" button and click "Download ZIP" in the popup menu.
-After that, unzip the archive file.
+- 13-21: `notebook_page_save`.
+- 19: Gets TfeTextView belongs to the current page.
+- 20: Calls `tfe_text_view_save`.
+- 1-11: `get_current_textview`.
+This function gets the TfeTextView object belongs to the current page.
+- 7: Gets the page number of the current page.
+- 8: Gets the child object `scr`, which is GtkScrolledWindow object, of the current page.
+- 9-10: Gets the child object of `scr`, which is TfeTextView object, and return it.
 
-If you use git, run the terminal and type the following.
+## file\_changed\_cb handler
 
-    $ git clone https://github.com/ToshioCP/Gtk4-tutorial.git
+The function `file_changed_cb` is a handler connected to "change-file" signal.
+If the file in TfeTextView is changed, it emits this signal.
+This handler changes the label of GtkNotebookPage.
 
-The source files are under [`/src/tfe5`](tfe5) directory.
+@@@include
+tfe5/tfenotebook.c file_changed_cb
+@@@
+
+- 8: Gets GFile from TfeTextView.
+- 9: Gets GkScrolledWindow which is the parent widget of `tv`.
+- 10-12: If `file` points GFile, then assigns the filename of the GFile into `filename`.
+Then, unref the GFile object `file`.
+- 13-14: Otherwise (file is NULL), assigns untitled string to `filename`.
+- 15-16: Generates a label with the filename and inserts it into GtkNotebookPage.
+
+The string `filename` is used in the GtkLabel object.
+You mustn't free it.

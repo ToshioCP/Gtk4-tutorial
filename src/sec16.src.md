@@ -1,170 +1,91 @@
-# Menu and action
+# tfe5 source files
 
-## Menu
+## How to compile and execute tfe text editor.
 
-Users often use menus to tell the command to the computer.
-It is like this:
+First, source files are shown in the later subsections.
+How to download them is written at the end of the [previous section](sec15.src.md).
 
-![Menu](../image/menu.png){width=5.985cm height=5.055cm}
+The following is the instruction of compilation and execution.
 
-Now let's analyze the menu above.
-There are two types of object.
+- You need meson and ninja.
+- Set necessary environment variables.
+If you have installed gtk4 under the instruction in [Section 2](sec2.src.md), type `. env.sh` to set the environment variables.
+- change your current directory to `src/tfe5` directory.
+- type `meson _build` for configuration.
+- type `ninja -C _build` for compilation.
+Then the application `tfe` is build under the `_build` directory.
+- type `_build/tfe` to execute it.
 
-- "File", "Edit", "View", "Cut", "Copy", "Paste" and "Select All".
-They are called "menu item" or simply "item".
-When the user clicks one of these items, then something will happen.
-- Menubar, submenu referenced by "Edit" item and two sections.
-They are called "menu".
-Menu is an ordered list of items.
-They are similar to arrays.
+Then the window appears.
+There are four buttons, `New`, `Open`, `Save` and `Close`.
 
-![Menu structure](../image/menu_structure.png){width=10.23cm height=3.57cm}
+- Click on `Open` button, then a FileChooserDialog appears.
+Choose a file in the list and click on `Open` button.
+Then the file is read and a new Notebook Page appears.
+- Edit the file and click on `Save` button, then the text is saved to the original file.
+- Click `Close`, then the Notebook Page disappears.
+- Click `Close` again, then the `Untitled` Notebook Page disappears and at the same time the application quits.
 
-- Menubar is a menu which has three items, which are "File", "Edit" and "View".
-- The menu item labeled "Edit" has a link to the submenu which has two items.
-These two items don't have labels.
-Each item refers to a section.
-- The first section is a menu which has three items -- "Cut", "Copy" and "Paste".
-- The second section is a menu which has one item -- "Select All".
+This is a very simple editor.
+It is a good practice for you to add more features.
 
-Menus can build a complicated structure thanks to the links of menu items.
-
-## GMenuModel, GMenu and GMenuItem
-
-GMenuModel is an abstract object which represents a menu.
-GMenu is a simple implementation of GMenuModel and a child object of GMenuModel.
-
-    GObjct -- GMenuModel -- GMenu
-
-Because GMenuModel is an abstract object, it doesn't have any functions to generate it.
-Therefore, if you want to generate a menu, use `g_menu_new` function to generate GMenu object.
-GMenu inherits all the functions of GMenuModel because of the child object.
-
-GMenuItem is an object directly derived from GObject.
-GMenuItem and Gmenu (or GMenuModel) don't have a parent-child relationship.
-
-    GObject -- GMenuModel -- GMenu
-    GObject -- GMenuItem
-
-Usually, GMenuItem has attributes.
-One of the attributes is label.
-For example, there is a menu item which has "Edit" label in the first diagram in this section.
-"Cut", "Copy", "Paste" and "Select All" are also the labels of menu items.
-Other attributes will be explained later.
-
-Some menu items have a link to another GMenu.
-There are two types of links, submenu and section.
-
-GMenuItem can be inserted, appended or prepended to GMenu.
-When it is inserted, all of the attributes and link values of the item are copied and used to form a new item within the menu.
-The GMenuItem itself is not really inserted.
-Therefore, after the insertion, GMenuItem is useless and it should be freed.
-The same goes for appending or prepending.
-
-The following code shows how to append GMenuItem to GMenu.
-
-    GMenu *menu = g_menu_new ();
-    GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
-    g_menu_append_item (menu, menu_item_quit);
-    g_object_unref (menu_item_quit);
-
-## Menu and action
-
-One of the attributes of menu items is an action.
-This attribute points an action object.
-
-There are two action objects, GSimpleAction and GPropertyAction.
-GSimpleAction is often used.
-And it is used with a menu item.
-Only GSimpleAction is described in this section.
-
-An action corresponds to a menu item will be activated when the menu item is clicked.
-Then the action emits an activate signal.
-
-1. menu item is clicked.
-2. The corresponding action is activated.
-3. The action emits a signal.
-4. The connected handler is invoked.
-
-
-The following code is an example.
-
-    static void
-    quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app) { ... ... ...}
-
-    GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
-    g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
-    GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
-
-1. `menu_item_quit` is a menu item.
-It has a label "Quit" and is connected to an action "app.quit".
-"app" is a prefix and "quit" is the name of an action.
-The prefix means that the action belongs to GtkApplication.
-If the menu is clicked, then the corresponding action "quit" which belongs to GtkApplication will be activated.
-2. `act_quit` is an action.
-It has a name "quit".
-It belongs to GtkApplication, but it is not obvious in the code above.
-The function `g_simple_action_new` generates a stateless action.
-So, `act_quit` is stateless.
-The meaning of stateless will be explained later.
-The argument `NULL` means that the action doesn't have an parameter.
-Generally, most of the actions are stateless and have no parameter.
-When `act_quit` is activated, it will emit "activate" signal.
-3. "activate" signal of the action is connected to the handler `quit_activated`.
-So, if the action is activated, the handler will be invoked.
-
-## Simple example
-
-The following is a simple example of menus and actions.
+## meson.build
 
 @@@include
-menu/menu1.c
+tfe5/meson.build
 @@@
 
-- 3-7: `quit_activated` is a handler of an action `act_quit`.
-Handlers of actions have three parameters.
-  1. The action object which has emitted the signal.
-  2. Parameter.
-In this example it is `NULL` because the second argument of `g_simple_action_new` (line 15) is `NULL`.
-You don' t need to care about it.
-  3. User data.
-It is the fourth parameter in the `g_signal_connect` (line 17) that has connected the action and the handler.
-- 6: A function `g_application_quit` immediately quits the application.
-- 9-33: `on_activate` is a handler of "activate" signal on GtkApplication.
-- 11-13: Generates a GtkApplicationWindow and assigns a pointer to it to `win`. And sets the title and default size.
-- 15: Generates GSimpleAction `act_quit`.
-It is stateless.
-The first argument of `g_simple_action_new` is a name of the action and the second argument is a parameter.
-If you don't need the parameter, pass `NULL`.
-Therefore, `act_quit` has a name "quit" and no parameter.
-- 16: Adds the action to GtkApplication `app`.
-GtkApplication implements an interface GActionMap and GActionGroup.
-And GtkApplication can have a group of actions and actions are added by the function `g_action_map_add_action`.
-This function is described in GMenuModel section in GIO API reference.
-- 17: Connects "activate" signal of the action and the handler `quit_activated`.
-- 19-22: Generates GMenu and GMenuItem.
-`menubar` and `menu` are GMenu.
-`menu_item_menu` and `menu_item_quit` are GMenuItem.
-`menu_item_menu` has a label "Menu" and no action.
-`menu_item_quit` has a label "Quit".
-The second argument "app.quit" is a combination of "app" and "quit".
-"app" is a prefix and it means that the action belongs to GtkApplication. "quit" is the name of the action.
-Therefore, it points the action which belongs to GtkApplication and has the name "quit" -- it is `act_quit`.
-- 23-24: Appends `act_quit` to `menu`.
-As I mentioned before, all the attribute and link values are copied and used to form a new item within `menu`.
-Therefore after the appending, `menu` has a copy of `act_quit` in itself and `act_quit` is no longer needed.
-It is freed by `g_object_unref`.
-- 25: Sets a submenu link to `menu_item_menu`.
-And the link points the GMenu `menu`.
-- 26-27: Appends `menu_item_menu` to `menubar`.
-Then frees `menu_item_menu`.
-GMenu and GMenuItem are connected and finally a menu is made up.
-The structure of the menu is shown in the diagram below.
-- 29: The menu is inserted to GtkApplication.
-- 30: Sets GtkApplicationWindow to show the menubar.
-- 31: Shows the window.
+## tfe.gresource.xml
 
-![menu and action](../image/menu1.png){width=12.555cm height=3.285cm}
+@@@include
+tfe5/tfe.gresource.xml
+@@@
 
-![Screenshot of menu1](../image/menu1_screenshot.png){width=6.0cm height=5.115cm}
+## tfe.ui
+
+@@@include
+tfe5/tfe.ui
+@@@
+
+## tfe.h
+
+@@@include
+tfe5/tfe.h
+@@@
+
+## tfeapplication.c
+
+@@@include
+tfe5/tfeapplication.c
+@@@
+
+## tfenotebook.h
+
+@@@include
+tfe5/tfenotebook.h
+@@@
+
+## tfenotebook.c
+
+@@@include
+tfe5/tfenotebook.c
+@@@
+
+## tfetextview.h
+
+@@@include
+tfetextview/tfetextview.h
+@@@
+
+## tfetextview.c
+
+@@@include
+tfetextview/tfetextview.c
+@@@
+
+## Total number of lines, words and characters
+
+@@@shell
+LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
+@@@
 

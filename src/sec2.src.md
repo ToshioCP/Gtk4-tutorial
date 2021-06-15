@@ -292,7 +292,7 @@ $ sudo dnf install gtk4.x86_64
 ### Test for compiling a Gtk4 application
 
 You can test the Gtk4 development package by compiling files which are based on Gtk4.
-I've tried compiling `tfe` text editor, which is written in section 20.
+I've tried compiling `tfe` text editor, which is written in section 21.
 
 1. Run Firefox.
 2. Open this website \([Gtk4-Tutorial](https://github.com/ToshioCP/Gtk4-tutorial)\).
