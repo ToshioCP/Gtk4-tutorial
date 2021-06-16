@@ -39,10 +39,12 @@ tfe_text_view_new (void) {
 /* ---------- end of the definition of TfeTextView ---------- */
 
 static gboolean
-before_close (GtkWindow *win, GtkWidget *nb) {
+before_close (GtkWindow *win, gpointer user_data) {
+  GtkWidget *nb = GTK_WIDGET (user_data);
   GtkWidget *scr;
   GtkWidget *tv;
   GFile *file;
+  char *pathname;
   GtkTextBuffer *tb;
   GtkTextIter start_iter;
   GtkTextIter end_iter;
@@ -58,19 +60,23 @@ before_close (GtkWindow *win, GtkWidget *nb) {
     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-    if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL))
-      g_print ("ERROR : Can't save %s.", g_file_get_path (file));
+    if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL)) {
+      pathname = g_file_get_path (file);
+      g_print ("ERROR : Can't save %s.", pathname);
+      g_free (pathname);
+    }
+    g_free (contents);
   }
   return FALSE;
 }
 
 static void
-on_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app, gpointer user_data) {
   g_print ("You need to give filenames as arguments.\n");
 }
 
 static void
-on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
   GtkWidget *win;
   GtkWidget *nb;
   GtkWidget *lab;
@@ -85,7 +91,6 @@ on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer 
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
   gtk_window_maximize (GTK_WINDOW (win));
 
   nb = gtk_notebook_new ();
@@ -108,11 +113,11 @@ on_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer 
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);
       g_free (filename);
-    } else {
-      filename = g_file_get_path (files[i]);
-      g_print ("No such file: %s.\n", filename);
-      g_free (filename);
-    }
+    } else if ((filename = g_file_get_path (files[i])) != NULL) {
+        g_print ("No such file: %s.\n", filename);
+        g_free (filename);
+    } else
+        g_print ("No valid file is given\n");
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
     g_signal_connect (win, "close-request", G_CALLBACK (before_close), nb);
@@ -127,10 +132,9 @@ main (int argc, char **argv) {
   int stat;
 
   app = gtk_application_new ("com.github.ToshioCP.tfe1", G_APPLICATION_HANDLES_OPEN);
-  g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-  g_signal_connect (app, "open", G_CALLBACK (on_open), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
 }
-
