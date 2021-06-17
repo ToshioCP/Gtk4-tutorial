@@ -2,9 +2,9 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12]
 
 # Instance and class
 
-This section and the following four sections are explanations about the next version of the text file editor (tfe).
-It is tfe5.
-It has many changes from the prior version.
+A new version of the text file editor (`tfe`) will be made in this section and the following four sections.
+It is `tfe5`.
+There are many changes from the prior version.
 All the sources are listed in [Section 16](sec16.md).
 They are located in two directories, [src/tfe5](../src/tfe5) and [src/tfetextview](../src/tfetextview).
 
@@ -37,7 +37,8 @@ After that I will explain:
 
 GObject and its children are objects, which have both class and instance.
 First, think about instance of objects.
-Instance is structured memories and described as C language structure.
+Instance is structured memory.
+THe structure is described as C language structure.
 The following is a structure of TfeTextView.
 
 ~~~C
@@ -52,12 +53,16 @@ struct _TfeTextView {
 
 The members of the structure are:
 
-- `parent` is the instance structure of GtkTextView which is the parent object of TfeTextView.
+- The type of `parent` is GtkTextView which is C structure.
+It is declared in `gtktextview.h`.
+GtkTextView is the parent of TfeTextView.
 - `file` is a pointer to GFile. It can be NULL if no file corresponds to the TfeTextView object.
 
 Notice the program above is the declaration of the structure, not the definition.
 So, no memories are allocated at this moment.
 They are to be allocated when `tfe_text_view_new` function is invoked.
+The memory allocated with `tfe_text_view_new` is an instance of TfeTextView object.
+Therefore, There can be multiple TfeTextView instances if `tfe_text_view_new` is called multiple times.
 
 You can find the declaration of the ancestors of TfeTextView in the source files of GTK and GLib.
 The following is extracts from the source files (not exactly the same).
@@ -87,7 +92,7 @@ struct _GtkTextView
 };
 ~~~
 
-In each structure, its parent instance is declared at the top of members.
+In each structure, its parent is declared at the top of the members.
 So, every ancestors is included in the child instance.
 This is very important.
 It guarantees a child widget to inherit all the features from ancestors.
@@ -96,9 +101,9 @@ The structure of `TfeTextView` is like the following diagram.
 ![The structure of the instance TfeTextView](../image/TfeTextView.png)
 
 
-## Generate TfeTextView instance
+## Create TfeTextView instance
 
-The function `tfe_text_view_new` generates a new TfeTextView instance.
+The function `tfe_text_view_new` creates a new TfeTextView instance.
 
 ~~~C
 1 GtkWidget *
@@ -117,8 +122,8 @@ When this function is run, the following procedure is gone through.
 Step one through three is done automatically.
 Step four is done by the function `tfe_text_view_init`.
 
-> In the same way, `gtk_text_view_init`, `gtk_widget_init` and `g_object_init` is the initialization functions of GtkTextView, GtkWidget and GObject respectively.
-> You can find them in the GTK or GLib source files.
+In the same way, `gtk_text_view_init`, `gtk_widget_init` and `g_object_init` is the initialization functions of GtkTextView, GtkWidget and GObject respectively.
+You can find them in the GTK or GLib source files.
 
 ~~~C
 1 static void
@@ -141,8 +146,8 @@ We need at least two things.
 One is functions and the other is class.
 
 You've already seen many functions.
-For example, `tfe_text_view_new` is a function to generate TfeTextView instance.
-These functions are similar to object methods in object oriented languages such as Java or Ruby.
+For example, `tfe_text_view_new` is a function to create a TfeTextView instance.
+These functions are similar to public object methods in object oriented languages such as Java or Ruby.
 Functions are public, which means that they are expected to be used by other objects.
 
 Class comprises mainly pointers to functions.
@@ -153,45 +158,46 @@ For example, GObject class is declared in `gobject.h` in GLib source files.
  1 typedef struct _GObjectClass             GObjectClass;
  2 typedef struct _GObjectClass             GInitiallyUnownedClass;
  3 
- 4 struct  _GObjectClass {
- 5   GTypeClass   g_type_class;
- 6   /*< private >*/
- 7   GSList      *construct_properties;
- 8   /*< public >*/
- 9   /* seldom overidden */
-10   GObject*   (*constructor)     (GType                  type,
-11                                  guint                  n_construct_properties,
-12                                  GObjectConstructParam *construct_properties);
-13   /* overridable methods */
-14   void       (*set_property)		(GObject        *object,
-15                                          guint           property_id,
-16                                          const GValue   *value,
-17                                          GParamSpec     *pspec);
-18   void       (*get_property)		(GObject        *object,
-19                                          guint           property_id,
-20                                          GValue         *value,
-21                                          GParamSpec     *pspec);
-22   void       (*dispose)			(GObject        *object);
-23   void       (*finalize)		(GObject        *object);
-24   /* seldom overidden */
-25   void       (*dispatch_properties_changed) (GObject      *object,
-26 					     guint	   n_pspecs,
-27 					     GParamSpec  **pspecs);
-28   /* signals */
-29   void	     (*notify)			(GObject	*object,
-30 					 GParamSpec	*pspec);
-31 
+ 4 struct  _GObjectClass
+ 5 {
+ 6   GTypeClass   g_type_class;
+ 7   /*< private >*/
+ 8   GSList      *construct_properties;
+ 9   /*< public >*/
+10   /* seldom overridden */
+11   GObject*   (*constructor)     (GType                  type,
+12                                  guint                  n_construct_properties,
+13                                  GObjectConstructParam *construct_properties);
+14   /* overridable methods */
+15   void       (*set_property)    (GObject        *object,
+16                                  guint           property_id,
+17                                  const GValue   *value,
+18                                  GParamSpec     *pspec);
+19   void       (*get_property)    (GObject        *object,
+20                                  guint           property_id,
+21                                  GValue         *value,
+22                                  GParamSpec     *pspec);
+23   void       (*dispose)         (GObject        *object);
+24   void       (*finalize)        (GObject        *object);
+25   /* seldom overridden */
+26   void       (*dispatch_properties_changed) (GObject      *object,
+27                                              guint         n_pspecs,
+28                                              GParamSpec  **pspecs);
+29   /* signals */
+30   void      (*notify)           (GObject    *object,
+31                                  GParamSpec *pspec);
 32   /* called when done constructing */
-33   void	     (*constructed)		(GObject	*object);
+33   void      (*constructed)      (GObject    *object);
 34   /*< private >*/
-35   gsize		flags;
+35   gsize  flags;
 36   /* padding */
-37   gpointer	pdummy[6];
+37   gpointer pdummy[6];
 38 };
+39 
 ~~~
 
 I'd like to explain some of the members.
-There's a pointer to the function `dispose` in line 22.
+There's a pointer to the function `dispose` in line 23.
 
 ~~~C
 void (*dispose) (GObject *object);
@@ -200,7 +206,7 @@ void (*dispose) (GObject *object);
 The declaration is a bit complicated.
 The asterisk before the identifier `dispose` means pointer.
 So, the pointer `dispose` points to a function which has one parameter, which points a GObject structure, and returns no value.
-In the same way, line 23 says `finalize` is a pointer to the function which has one parameter, which points a GObject structure, and returns no value.
+In the same way, line 24 says `finalize` is a pointer to the function which has one parameter, which points a GObject structure, and returns no value.
 
 ~~~C
 void (*finalize) (GObject *object);
@@ -208,14 +214,18 @@ void (*finalize) (GObject *object);
 
 Look at the declaration of `_GObjectClass` so that you would find that most of the members are pointers to functions.
 
-- 10: A function pointed by `constructor` is called when the instance is generated. It completes the initialization of the instance.
-- 22: A function pointed by `dispose` is called when the instance destructs itself.
+- 11: A function pointed by `constructor` is called when the instance is generated. It completes the initialization of the instance.
+- 23: A function pointed by `dispose` is called when the instance destructs itself.
 Destruction process is divided into two phases.
 The first one is called disposing.
 In this phase, the instance releases all the references to other instances.
 The second phase is finalizing.
-- 23: A function pointed by `finalize` finishes the destruction process.
+- 24: A function pointed by `finalize` finishes the destruction process.
 - The other pointers point to functions which are called while the instance lives.
+
+These functions are called class methods.
+The methods are open to its descendants.
+But not open to the objects which are not the descendants.
 
 ## TfeTextView class 
 
@@ -227,119 +237,134 @@ Let's look at all the classes from GObject, which is the top level object, to Tf
 The following is extracts from the source files (not exactly the same).
 
 ~~~C
-  1 struct _GtkWidgetClass {
-  2   GInitiallyUnownedClass parent_class;
-  3   /*< public >*/
-  4   guint activate_signal;
-  5   /* basics */
-  6   void (* show)                (GtkWidget        *widget);
-  7   void (* hide)                (GtkWidget        *widget);
-  8   void (* map)                 (GtkWidget        *widget);
-  9   void (* unmap)               (GtkWidget        *widget);
- 10   void (* realize)             (GtkWidget        *widget);
- 11   void (* unrealize)           (GtkWidget        *widget);
- 12   void (* root)                (GtkWidget        *widget);
- 13   void (* unroot)              (GtkWidget        *widget);
- 14   void (* size_allocate)       (GtkWidget           *widget,
- 15                                 int                  width,
- 16                                 int                  height,
- 17                                 int                  baseline);
- 18   void (* state_flags_changed) (GtkWidget        *widget,
- 19                                 GtkStateFlags     previous_state_flags);
- 20   void (* direction_changed)   (GtkWidget        *widget,
- 21                                 GtkTextDirection  previous_direction);
- 22   void (* grab_notify)         (GtkWidget        *widget,
- 23                                 gboolean          was_grabbed);
- 24   /* size requests */
- 25   GtkSizeRequestMode (* get_request_mode)               (GtkWidget      *widget);
- 26   void              (* measure) (GtkWidget      *widget,
- 27                                  GtkOrientation  orientation,
- 28                                  int             for_size,
- 29                                  int            *minimum,
- 30                                  int            *natural,
- 31                                  int            *minimum_baseline,
- 32                                  int            *natural_baseline);
- 33   /* Mnemonics */
- 34   gboolean (* mnemonic_activate)        (GtkWidget           *widget,
- 35                                          gboolean             group_cycling);
- 36   /* explicit focus */
- 37   gboolean (* grab_focus)               (GtkWidget           *widget);
- 38   gboolean (* focus)                    (GtkWidget           *widget,
- 39                                          GtkDirectionType     direction);
- 40   void     (* set_focus_child)          (GtkWidget           *widget,
- 41                                          GtkWidget           *child);
- 42   /* keyboard navigation */
- 43   void     (* move_focus)               (GtkWidget           *widget,
- 44                                          GtkDirectionType     direction);
- 45   gboolean (* keynav_failed)            (GtkWidget           *widget,
- 46                                          GtkDirectionType     direction);
- 47   /* accessibility support
- 48    */
- 49   AtkObject *  (* get_accessible)     (GtkWidget       *widget);
- 50   gboolean     (* query_tooltip)      (GtkWidget  *widget,
- 51                                        gint        x,
- 52                                        gint        y,
- 53                                        gboolean    keyboard_tooltip,
- 54                                        GtkTooltip *tooltip);
- 55   void         (* compute_expand)     (GtkWidget  *widget,
- 56                                        gboolean   *hexpand_p,
- 57                                        gboolean   *vexpand_p);
- 58   void         (* css_changed)                 (GtkWidget            *widget,
- 59                                                 GtkCssStyleChange    *change);
- 60   void         (* system_setting_changed)      (GtkWidget            *widget,
- 61                                                 GtkSystemSetting      settings);
- 62   void         (* snapshot)                    (GtkWidget            *widget,
- 63                                                 GtkSnapshot          *snapshot);
- 64   gboolean     (* contains)                    (GtkWidget *widget,
- 65                                                 gdouble    x,
- 66                                                 gdouble    y);
- 67   /*< private >*/
- 68   GtkWidgetClassPrivate *priv;
- 69   gpointer padding[8];
- 70 };
- 71 
- 72 struct _GtkTextViewClass {
- 73   GtkWidgetClass parent_class;
- 74   /*< public >*/
- 75   void (* move_cursor)           (GtkTextView      *text_view,
- 76                                   GtkMovementStep   step,
- 77                                   gint              count,
- 78                                   gboolean          extend_selection);
- 79   void (* set_anchor)            (GtkTextView      *text_view);
- 80   void (* insert_at_cursor)      (GtkTextView      *text_view,
- 81                                   const gchar      *str);
- 82   void (* delete_from_cursor)    (GtkTextView      *text_view,
- 83                                   GtkDeleteType     type,
- 84                                   gint              count);
- 85   void (* backspace)             (GtkTextView      *text_view);
- 86   void (* cut_clipboard)         (GtkTextView      *text_view);
- 87   void (* copy_clipboard)        (GtkTextView      *text_view);
- 88   void (* paste_clipboard)       (GtkTextView      *text_view);
- 89   void (* toggle_overwrite)      (GtkTextView      *text_view);
- 90   GtkTextBuffer * (* create_buffer) (GtkTextView   *text_view);
- 91   void (* snapshot_layer)        (GtkTextView      *text_view,
- 92 			          GtkTextViewLayer  layer,
- 93 			          GtkSnapshot      *snapshot);
- 94   gboolean (* extend_selection)  (GtkTextView            *text_view,
- 95                                   GtkTextExtendSelection  granularity,
- 96                                   const GtkTextIter      *location,
- 97                                   GtkTextIter            *start,
- 98                                   GtkTextIter            *end);
- 99   void (* insert_emoji)          (GtkTextView      *text_view);
-100   /*< private >*/
-101   gpointer padding[8];
-102 };
-103 
-104 /* The following definition is generated by the macro G_DECLARE_FINAL_TYPE */
-105 typedef struct {
-106   GtkTextView parent_class;
-107 } TfeTextViewClass;
-108 
+  1 struct _GtkWidgetClass
+  2 {
+  3   GInitiallyUnownedClass parent_class;
+  4 
+  5   /*< public >*/
+  6 
+  7   /* basics */
+  8   void (* show)                (GtkWidget        *widget);
+  9   void (* hide)                (GtkWidget        *widget);
+ 10   void (* map)                 (GtkWidget        *widget);
+ 11   void (* unmap)               (GtkWidget        *widget);
+ 12   void (* realize)             (GtkWidget        *widget);
+ 13   void (* unrealize)           (GtkWidget        *widget);
+ 14   void (* root)                (GtkWidget        *widget);
+ 15   void (* unroot)              (GtkWidget        *widget);
+ 16   void (* size_allocate)       (GtkWidget           *widget,
+ 17                                 int                  width,
+ 18                                 int                  height,
+ 19                                 int                  baseline);
+ 20   void (* state_flags_changed) (GtkWidget        *widget,
+ 21                                 GtkStateFlags     previous_state_flags);
+ 22   void (* direction_changed)   (GtkWidget        *widget,
+ 23                                 GtkTextDirection  previous_direction);
+ 24 
+ 25   /* size requests */
+ 26   GtkSizeRequestMode (* get_request_mode)               (GtkWidget      *widget);
+ 27   void              (* measure) (GtkWidget      *widget,
+ 28                                  GtkOrientation  orientation,
+ 29                                  int             for_size,
+ 30                                  int            *minimum,
+ 31                                  int            *natural,
+ 32                                  int            *minimum_baseline,
+ 33                                  int            *natural_baseline);
+ 34 
+ 35   /* Mnemonics */
+ 36   gboolean (* mnemonic_activate)        (GtkWidget           *widget,
+ 37                                          gboolean             group_cycling);
+ 38 
+ 39   /* explicit focus */
+ 40   gboolean (* grab_focus)               (GtkWidget           *widget);
+ 41   gboolean (* focus)                    (GtkWidget           *widget,
+ 42                                          GtkDirectionType     direction);
+ 43   void     (* set_focus_child)          (GtkWidget           *widget,
+ 44                                          GtkWidget           *child);
+ 45 
+ 46   /* keyboard navigation */
+ 47   void     (* move_focus)               (GtkWidget           *widget,
+ 48                                          GtkDirectionType     direction);
+ 49   gboolean (* keynav_failed)            (GtkWidget           *widget,
+ 50                                          GtkDirectionType     direction);
+ 51 
+ 52   gboolean     (* query_tooltip)      (GtkWidget  *widget,
+ 53                                        int         x,
+ 54                                        int         y,
+ 55                                        gboolean    keyboard_tooltip,
+ 56                                        GtkTooltip *tooltip);
+ 57 
+ 58   void         (* compute_expand)     (GtkWidget  *widget,
+ 59                                        gboolean   *hexpand_p,
+ 60                                        gboolean   *vexpand_p);
+ 61 
+ 62   void         (* css_changed)                 (GtkWidget            *widget,
+ 63                                                 GtkCssStyleChange    *change);
+ 64 
+ 65   void         (* system_setting_changed)      (GtkWidget            *widget,
+ 66                                                 GtkSystemSetting      settings);
+ 67 
+ 68   void         (* snapshot)                    (GtkWidget            *widget,
+ 69                                                 GtkSnapshot          *snapshot);
+ 70 
+ 71   gboolean     (* contains)                    (GtkWidget *widget,
+ 72                                                 double     x,
+ 73                                                 double     y);
+ 74 
+ 75   /*< private >*/
+ 76 
+ 77   GtkWidgetClassPrivate *priv;
+ 78 
+ 79   gpointer padding[8];
+ 80 };
+ 81 
+ 82 struct _GtkTextViewClass
+ 83 {
+ 84   GtkWidgetClass parent_class;
+ 85 
+ 86   /*< public >*/
+ 87 
+ 88   void (* move_cursor)           (GtkTextView      *text_view,
+ 89                                   GtkMovementStep   step,
+ 90                                   int               count,
+ 91                                   gboolean          extend_selection);
+ 92   void (* set_anchor)            (GtkTextView      *text_view);
+ 93   void (* insert_at_cursor)      (GtkTextView      *text_view,
+ 94                                   const char       *str);
+ 95   void (* delete_from_cursor)    (GtkTextView      *text_view,
+ 96                                   GtkDeleteType     type,
+ 97                                   int               count);
+ 98   void (* backspace)             (GtkTextView      *text_view);
+ 99   void (* cut_clipboard)         (GtkTextView      *text_view);
+100   void (* copy_clipboard)        (GtkTextView      *text_view);
+101   void (* paste_clipboard)       (GtkTextView      *text_view);
+102   void (* toggle_overwrite)      (GtkTextView      *text_view);
+103   GtkTextBuffer * (* create_buffer) (GtkTextView   *text_view);
+104   void (* snapshot_layer)        (GtkTextView      *text_view,
+105                                   GtkTextViewLayer  layer,
+106                                   GtkSnapshot      *snapshot);
+107   gboolean (* extend_selection)  (GtkTextView            *text_view,
+108                                   GtkTextExtendSelection  granularity,
+109                                   const GtkTextIter      *location,
+110                                   GtkTextIter            *start,
+111                                   GtkTextIter            *end);
+112   void (* insert_emoji)          (GtkTextView      *text_view);
+113 
+114   /*< private >*/
+115 
+116   gpointer padding[8];
+117 };
+118 
+119 /* The following definition is generated by the macro G_DECLARE_FINAL_TYPE */
+120 typedef struct {
+121   GtkTextView parent_class;
+122 } TfeTextViewClass;
+123 
 ~~~
 
-- 105-107: This three lines are generated by the macro G\_DECLARE\_FINAL\_TYPE.
+- 120-122: This three lines are generated by the macro `G_DECLARE_FINAL_TYPE`.
 So, they are not written in either `tfe_text_view.h` or `tfe_text_view.c`.
-- 2, 73, 106: Each derived class puts its parent class at the first member of its structure.
+- 3, 84, 121: Each derived class puts its parent class at the first member of its structure.
 It is the same as instance structures.
 - Class members in ancestors are open to the descendant class.
 So, they can be changed in `tfe_text_view_class_init` function.
@@ -413,7 +438,7 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
 }
 ~~~
 
-Each ancestors' class has been generated before TfeTextViewClass is generated.
+Each ancestors' class has been created before TfeTextViewClass is created.
 Therefore, there are four classes and each class has a pointer to each dispose handler.
 Look at the following diagram.
 There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass.

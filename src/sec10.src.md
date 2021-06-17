@@ -19,7 +19,7 @@ For example, our source has two things, the definition of TfeTextView and functi
 It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
 
 - `tfetextview.c` includes the definition and functions of TfeTextView.
-- `tfe.c` includes functions like `main`, `on_activate`, `on_open` and so on, which relate to GtkApplication and GtkApplicationWindow
+- `tfe.c` includes functions like `main`, `app_activate`, `app_open` and so on, which relate to GtkApplication and GtkApplicationWindow
 
 Now we have three source files, `tfetextview.c`, `tfe.c` and `tfe3.ui`.
 The `3` of `tfe3.ui` is like a version number.
@@ -27,7 +27,7 @@ Managing version with filenames is one possible idea but it may make bothersome 
 You need to rewrite filename in each version and it affects to contents of source files that refer to filenames.
 So, we should take `3` away from the filename.
 
-In `tfe.c` the function `tfe_text_view_new` is invoked to generate TfeTextView.
+In `tfe.c` the function `tfe_text_view_new` is invoked to create a TfeTextView instance.
 But it is defined in `tfetextview.c`, not `tfe.c`.
 The lack of the declaration (not definition) of `tfe_text_view_new` makes error when `tfe.c` is compiled.
 The declaration is necessary in `tfe.c`.
@@ -89,7 +89,7 @@ sample.o: sample.c
     gcc -o sample.o sample.c
 ~~~
 
-The sample of Malefile above consists of three elements, `sample.o`, `sample.c` and `gcc -0 sample.o sample.c`.
+The sample of Malefile above consists of three elements, `sample.o`, `sample.c` and `gcc -o sample.o sample.c`.
 
 - `sample.o` is called target.
 - `sample.c` is prerequisite.
@@ -132,7 +132,7 @@ If you don't use Ruby, you don't need to read this subsection.
 However, Ruby is really sophisticated and recommendable script language.
 
 - Rakefile controls the behavior of `rake`.
-- You can write any ruby code in Rakefile.
+- You can write any Ruby code in Rakefile.
 
 Rake has task and file task, which is similar to target, prerequisite and recipe in make.
 
@@ -140,24 +140,24 @@ Rake has task and file task, which is similar to target, prerequisite and recipe
 tfe4/Rakefile
 @@@
 
-What `Rakefile` describes is almost same as `Makefile` in the previous subsection. 
+The contents of the `Rakefile` is almost same as the `Makefile` in the previous subsection. 
 
 - 3-6: Defines target file, source file and so on.
 - 1, 8: Loads clean library. And defines CLEAN file list.
 The files included by CLEAN will be removed when `rake clean` is typed on the command line.
-- 10: Default target depends on targetfile.
-Default is the final goal of tasks.
-- 12-14: Targetfile depends on objfiles.
+- 10: The default target depends on `targetfile`.
+The task `default` is the final goal of tasks.
+- 12-14: `targetfile` depends on `objfiles`.
 The variable `t` is a task object.
-  - t.name is a target name
-  - t.prerequisites is an array of prerequisites.
-  - t.source is the first element of prerequisites.
-- sh is a method to give the following string to shell as an argument and execute the shell.
-- 16-21: There's a loop by each element of the array of objfiles. Each object depends on corresponding source file.
+  - `t.name` is a target name
+  - `t.prerequisites` is an array of prerequisites.
+  - `t.source` is the first element of prerequisites.
+- `sh` is a method to give the following string to shell as an argument and executes the shell.
+- 16-21: There's a loop by each element of the array of `objfiles`. Each object depends on corresponding source file.
 - 23-25: Resource file depends on xml file and ui file.
 
 Rakefile might seem to be difficult for beginners.
-But, you can use any ruby syntax in Rakefile, so it is really flexible.
+But, you can use any Ruby syntax in Rakefile, so it is really flexible.
 If you practice Ruby and Rakefile, it will be highly productive tools.
 
 ## Meson and ninja
@@ -179,16 +179,16 @@ The first parameter is the name of the project and the second is the programming
 - 2: `dependency` function defines a dependency that is taken by `pkg-config`.
 We put `gtk4` as an argument.
 - 5: `import` function imports a module.
-In line 5, gnome module is imported and assigned to the variable `gnome`.
-gnome module provides helper tools to build GTK programs.
-- 6: `.compile_resources` is a method of gnome module and compile files to resources under the instruction of xml file.
+In line 5, the gnome module is imported and assigned to the variable `gnome`.
+The gnome module provides helper tools to build GTK programs.
+- 6: `.compile_resources` is a method of the gnome module and compiles files to resources under the instruction of xml file.
 In line 6, the resource filename is `resources`, which means `resources.c` and `resources.h`, and xml file is `tfe.gresource.xml`.
 This method generates C source file by default.
 - 8: Defines source files.
-- 10: Executable function generates a target file by building source files.
+- 10: Executable function generates a target file by compiling source files.
 The first parameter is the filename of the target. The following parameters are source files.
-The last parameter has a option `dependencies`.
-In line 10 it is `gtkdep` which is defined in line 3.
+The last parameter is an option `dependencies`.
+`gtkdep` is used in the compilation.
 
 Now run meson and ninja.
 

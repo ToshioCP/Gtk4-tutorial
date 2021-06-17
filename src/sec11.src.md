@@ -1,8 +1,8 @@
 # Instance and class
 
-This section and the following four sections are explanations about the next version of the text file editor (tfe).
-It is tfe5.
-It has many changes from the prior version.
+A new version of the text file editor (`tfe`) will be made in this section and the following four sections.
+It is `tfe5`.
+There are many changes from the prior version.
 All the sources are listed in [Section 16](sec16.src.md).
 They are located in two directories, [src/tfe5](tfe5) and [src/tfetextview](tfetextview).
 
@@ -35,7 +35,8 @@ After that I will explain:
 
 GObject and its children are objects, which have both class and instance.
 First, think about instance of objects.
-Instance is structured memories and described as C language structure.
+Instance is structured memory.
+THe structure is described as C language structure.
 The following is a structure of TfeTextView.
 
 ~~~C
@@ -50,12 +51,16 @@ struct _TfeTextView {
 
 The members of the structure are:
 
-- `parent` is the instance structure of GtkTextView which is the parent object of TfeTextView.
+- The type of `parent` is GtkTextView which is C structure.
+It is declared in `gtktextview.h`.
+GtkTextView is the parent of TfeTextView.
 - `file` is a pointer to GFile. It can be NULL if no file corresponds to the TfeTextView object.
 
 Notice the program above is the declaration of the structure, not the definition.
 So, no memories are allocated at this moment.
 They are to be allocated when `tfe_text_view_new` function is invoked.
+The memory allocated with `tfe_text_view_new` is an instance of TfeTextView object.
+Therefore, There can be multiple TfeTextView instances if `tfe_text_view_new` is called multiple times.
 
 You can find the declaration of the ancestors of TfeTextView in the source files of GTK and GLib.
 The following is extracts from the source files (not exactly the same).
@@ -85,7 +90,7 @@ struct _GtkTextView
 };
 ~~~
 
-In each structure, its parent instance is declared at the top of members.
+In each structure, its parent is declared at the top of the members.
 So, every ancestors is included in the child instance.
 This is very important.
 It guarantees a child widget to inherit all the features from ancestors.
@@ -94,9 +99,9 @@ The structure of `TfeTextView` is like the following diagram.
 ![The structure of the instance TfeTextView](../image/TfeTextView.png){width=14.39cm height=2.16cm}
 
 
-## Generate TfeTextView instance
+## Create TfeTextView instance
 
-The function `tfe_text_view_new` generates a new TfeTextView instance.
+The function `tfe_text_view_new` creates a new TfeTextView instance.
 
 @@@include
 tfetextview/tfetextview.c tfe_text_view_new
@@ -112,8 +117,8 @@ When this function is run, the following procedure is gone through.
 Step one through three is done automatically.
 Step four is done by the function `tfe_text_view_init`.
 
-> In the same way, `gtk_text_view_init`, `gtk_widget_init` and `g_object_init` is the initialization functions of GtkTextView, GtkWidget and GObject respectively.
-> You can find them in the GTK or GLib source files.
+In the same way, `gtk_text_view_init`, `gtk_widget_init` and `g_object_init` is the initialization functions of GtkTextView, GtkWidget and GObject respectively.
+You can find them in the GTK or GLib source files.
 
 @@@include
 tfetextview/tfetextview.c tfe_text_view_init
@@ -133,8 +138,8 @@ We need at least two things.
 One is functions and the other is class.
 
 You've already seen many functions.
-For example, `tfe_text_view_new` is a function to generate TfeTextView instance.
-These functions are similar to object methods in object oriented languages such as Java or Ruby.
+For example, `tfe_text_view_new` is a function to create a TfeTextView instance.
+These functions are similar to public object methods in object oriented languages such as Java or Ruby.
 Functions are public, which means that they are expected to be used by other objects.
 
 Class comprises mainly pointers to functions.
@@ -146,7 +151,7 @@ class_gobject.c
 @@@
 
 I'd like to explain some of the members.
-There's a pointer to the function `dispose` in line 22.
+There's a pointer to the function `dispose` in line 23.
 
 ~~~C
 void (*dispose) (GObject *object);
@@ -155,7 +160,7 @@ void (*dispose) (GObject *object);
 The declaration is a bit complicated.
 The asterisk before the identifier `dispose` means pointer.
 So, the pointer `dispose` points to a function which has one parameter, which points a GObject structure, and returns no value.
-In the same way, line 23 says `finalize` is a pointer to the function which has one parameter, which points a GObject structure, and returns no value.
+In the same way, line 24 says `finalize` is a pointer to the function which has one parameter, which points a GObject structure, and returns no value.
 
 ~~~C
 void (*finalize) (GObject *object);
@@ -163,14 +168,18 @@ void (*finalize) (GObject *object);
 
 Look at the declaration of `_GObjectClass` so that you would find that most of the members are pointers to functions.
 
-- 10: A function pointed by `constructor` is called when the instance is generated. It completes the initialization of the instance.
-- 22: A function pointed by `dispose` is called when the instance destructs itself.
+- 11: A function pointed by `constructor` is called when the instance is generated. It completes the initialization of the instance.
+- 23: A function pointed by `dispose` is called when the instance destructs itself.
 Destruction process is divided into two phases.
 The first one is called disposing.
 In this phase, the instance releases all the references to other instances.
 The second phase is finalizing.
-- 23: A function pointed by `finalize` finishes the destruction process.
+- 24: A function pointed by `finalize` finishes the destruction process.
 - The other pointers point to functions which are called while the instance lives.
+
+These functions are called class methods.
+The methods are open to its descendants.
+But not open to the objects which are not the descendants.
 
 ## TfeTextView class 
 
@@ -185,9 +194,9 @@ The following is extracts from the source files (not exactly the same).
 classes.c
 @@@
 
-- 105-107: This three lines are generated by the macro G\_DECLARE\_FINAL\_TYPE.
+- 120-122: This three lines are generated by the macro `G_DECLARE_FINAL_TYPE`.
 So, they are not written in either `tfe_text_view.h` or `tfe_text_view.c`.
-- 2, 73, 106: Each derived class puts its parent class at the first member of its structure.
+- 3, 84, 121: Each derived class puts its parent class at the first member of its structure.
 It is the same as instance structures.
 - Class members in ancestors are open to the descendant class.
 So, they can be changed in `tfe_text_view_class_init` function.
@@ -253,7 +262,7 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
 }
 ~~~
 
-Each ancestors' class has been generated before TfeTextViewClass is generated.
+Each ancestors' class has been created before TfeTextViewClass is created.
 Therefore, there are four classes and each class has a pointer to each dispose handler.
 Look at the following diagram.
 There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass.
