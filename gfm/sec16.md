@@ -445,229 +445,232 @@ It is a good practice for you to add more features.
   1 #include <string.h>
   2 #include "tfetextview.h"
   3 
-  4 struct _TfeTextView
-  5 {
-  6   GtkTextView parent;
-  7   GFile *file;
-  8 };
-  9 
- 10 G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
- 11 
- 12 enum {
- 13   CHANGE_FILE,
- 14   OPEN_RESPONSE,
- 15   NUMBER_OF_SIGNALS
- 16 };
- 17 
- 18 static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
- 19 
- 20 static void
- 21 tfe_text_view_dispose (GObject *gobject) {
- 22   TfeTextView *tv = TFE_TEXT_VIEW (gobject);
- 23 
- 24   if (G_IS_FILE (tv->file))
- 25     g_clear_object (&tv->file);
- 26 
- 27   G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject);
- 28 }
- 29 
- 30 static void
- 31 tfe_text_view_init (TfeTextView *tv) {
- 32   tv->file = NULL;
- 33 }
- 34 
- 35 static void
- 36 tfe_text_view_class_init (TfeTextViewClass *class) {
- 37   GObjectClass *object_class = G_OBJECT_CLASS (class);
- 38 
- 39   object_class->dispose = tfe_text_view_dispose;
- 40   tfe_text_view_signals[CHANGE_FILE] = g_signal_newv ("change-file",
- 41                                  G_TYPE_FROM_CLASS (class),
- 42                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
- 43                                  NULL /* closure */,
- 44                                  NULL /* accumulator */,
- 45                                  NULL /* accumulator data */,
- 46                                  NULL /* C marshaller */,
- 47                                  G_TYPE_NONE /* return_type */,
- 48                                  0     /* n_params */,
- 49                                  NULL  /* param_types */);
- 50   GType param_types[] = {G_TYPE_INT}; 
- 51   tfe_text_view_signals[OPEN_RESPONSE] = g_signal_newv ("open-response",
- 52                                  G_TYPE_FROM_CLASS (class),
- 53                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
- 54                                  NULL /* closure */,
- 55                                  NULL /* accumulator */,
- 56                                  NULL /* accumulator data */,
- 57                                  NULL /* C marshaller */,
- 58                                  G_TYPE_NONE /* return_type */,
- 59                                  1     /* n_params */,
- 60                                  param_types);
- 61 }
- 62 
- 63 GFile *
- 64 tfe_text_view_get_file (TfeTextView *tv) {
- 65   g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
- 66 
- 67   if (G_IS_FILE (tv->file))
- 68     return g_file_dup (tv->file);
- 69   else
- 70     return NULL;
- 71 }
- 72 
- 73 static gboolean
- 74 save_file (GFile *file, GtkTextBuffer *tb, GtkWindow *win) {
- 75   GtkTextIter start_iter;
- 76   GtkTextIter end_iter;
- 77   gchar *contents;
+  4 struct _TfeTextView {
+  5   GtkTextView parent;
+  6   GFile *file;
+  7 };
+  8 
+  9 G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+ 10 
+ 11 enum {
+ 12   CHANGE_FILE,
+ 13   OPEN_RESPONSE,
+ 14   NUMBER_OF_SIGNALS
+ 15 };
+ 16 
+ 17 static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
+ 18 
+ 19 static void
+ 20 tfe_text_view_dispose (GObject *gobject) {
+ 21   TfeTextView *tv = TFE_TEXT_VIEW (gobject);
+ 22 
+ 23   if (G_IS_FILE (tv->file))
+ 24     g_clear_object (&tv->file);
+ 25 
+ 26   G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject);
+ 27 }
+ 28 
+ 29 static void
+ 30 tfe_text_view_init (TfeTextView *tv) {
+ 31   tv->file = NULL;
+ 32 }
+ 33 
+ 34 static void
+ 35 tfe_text_view_class_init (TfeTextViewClass *class) {
+ 36   GObjectClass *object_class = G_OBJECT_CLASS (class);
+ 37 
+ 38   object_class->dispose = tfe_text_view_dispose;
+ 39   tfe_text_view_signals[CHANGE_FILE] = g_signal_new ("change-file",
+ 40                                  G_TYPE_FROM_CLASS (class),
+ 41                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+ 42                                  0 /* class offset */,
+ 43                                  NULL /* accumulator */,
+ 44                                  NULL /* accumulator data */,
+ 45                                  NULL /* C marshaller */,
+ 46                                  G_TYPE_NONE /* return_type */,
+ 47                                  0     /* n_params */
+ 48                                  );
+ 49   tfe_text_view_signals[OPEN_RESPONSE] = g_signal_new ("open-response",
+ 50                                  G_TYPE_FROM_CLASS (class),
+ 51                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+ 52                                  0 /* class offset */,
+ 53                                  NULL /* accumulator */,
+ 54                                  NULL /* accumulator data */,
+ 55                                  NULL /* C marshaller */,
+ 56                                  G_TYPE_NONE /* return_type */,
+ 57                                  1     /* n_params */,
+ 58                                  G_TYPE_INT
+ 59                                  );
+ 60 }
+ 61 
+ 62 GFile *
+ 63 tfe_text_view_get_file (TfeTextView *tv) {
+ 64   g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
+ 65 
+ 66   if (G_IS_FILE (tv->file))
+ 67     return g_file_dup (tv->file);
+ 68   else
+ 69     return NULL;
+ 70 }
+ 71 
+ 72 static gboolean
+ 73 save_file (GFile *file, GtkTextBuffer *tb, GtkWindow *win) {
+ 74   GtkTextIter start_iter;
+ 75   GtkTextIter end_iter;
+ 76   gchar *contents;
+ 77   gboolean stat;
  78   GtkWidget *message_dialog;
  79   GError *err = NULL;
  80 
- 81   /* This function doesn't check G_IS_FILE (file). The caller should check it. */
- 82   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
- 83   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
- 84   if (g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err)) {
- 85     gtk_text_buffer_set_modified (tb, FALSE);
- 86     return TRUE;
- 87   } else {
- 88     message_dialog = gtk_message_dialog_new (win, GTK_DIALOG_MODAL,
- 89                                              GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
- 90                                             "%s.\n", err->message);
- 91     g_signal_connect (message_dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
- 92     gtk_widget_show (message_dialog);
- 93     g_error_free (err);
- 94     return FALSE;
- 95   }
- 96 }
- 97 
- 98 static void
- 99 saveas_dialog_response (GtkWidget *dialog, gint response, TfeTextView *tv) {
-100   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-101   GFile *file;
-102   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-103 
-104   if (response == GTK_RESPONSE_ACCEPT) {
-105     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-106     if (! G_IS_FILE (file))
-107       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
-108     else if (save_file(file, tb, GTK_WINDOW (win))) {
-109       if (G_IS_FILE (tv->file))
-110         g_object_unref (tv->file);
-111       tv->file = file;
-112       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-113     }
-114   }
-115   gtk_window_destroy (GTK_WINDOW (dialog));
-116 }
-117 
-118 void
-119 tfe_text_view_save (TfeTextView *tv) {
-120   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
-121 
-122   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-123   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-124 
-125   if (! gtk_text_buffer_get_modified (tb))
-126     return; /* no need to save it */
-127   else if (tv->file == NULL)
-128     tfe_text_view_saveas (tv);
-129   else if (! G_IS_FILE (tv->file))
-130     g_error ("TfeTextView: The pointer in this object isn't NULL nor GFile object.\n");
-131   else
-132     save_file (tv->file, tb, GTK_WINDOW (win));
-133 }
-134 
-135 void
-136 tfe_text_view_saveas (TfeTextView *tv) {
-137   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
-138 
-139   GtkWidget *dialog;
-140   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-141 
-142   dialog = gtk_file_chooser_dialog_new ("Save file", GTK_WINDOW (win), GTK_FILE_CHOOSER_ACTION_SAVE,
-143                                       "Cancel", GTK_RESPONSE_CANCEL,
-144                                       "Save", GTK_RESPONSE_ACCEPT,
-145                                       NULL);
-146   g_signal_connect (dialog, "response", G_CALLBACK (saveas_dialog_response), tv);
-147   gtk_widget_show (dialog);
-148 }
-149 
-150 GtkWidget *
-151 tfe_text_view_new_with_file (GFile *file) {
-152   g_return_val_if_fail (G_IS_FILE (file), NULL);
-153 
-154   GtkWidget *tv;
-155   GtkTextBuffer *tb;
-156   char *contents;
-157   gsize length;
-158 
-159   if (! g_file_load_contents (file, NULL, &contents, &length, NULL, NULL)) /* read error */
-160     return NULL;
-161 
-162   tv = tfe_text_view_new();
-163   tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-164   gtk_text_buffer_set_text (tb, contents, length);
-165   g_free (contents);
-166   TFE_TEXT_VIEW (tv)->file = g_file_dup (file);
-167   return tv;
-168 }
-169 
-170 static void
-171 open_dialog_response(GtkWidget *dialog, gint response, TfeTextView *tv) {
-172   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-173   GFile *file;
-174   char *contents;
-175   gsize length;
-176   GtkWidget *message_dialog;
-177   GError *err = NULL;
-178 
-179   if (response != GTK_RESPONSE_ACCEPT)
-180     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
-181   else if (! G_IS_FILE (file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog)))) {
-182     g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile object.\n");
-183     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
-184   } else if (! g_file_load_contents (file, NULL, &contents, &length, NULL, &err)) { /* read error */
-185     if (G_IS_FILE (file))
-186       g_object_unref (file);
-187     message_dialog = gtk_message_dialog_new (GTK_WINDOW (dialog), GTK_DIALOG_MODAL,
-188                                              GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
-189                                             "%s.\n", err->message);
-190     g_signal_connect (message_dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
-191     gtk_widget_show (message_dialog);
-192     g_error_free (err);
-193     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
-194   } else {
-195     gtk_text_buffer_set_text (tb, contents, length);
-196     g_free (contents);
-197     if (G_IS_FILE (tv->file))
-198       g_object_unref (tv->file);
-199     tv->file = file;
-200     gtk_text_buffer_set_modified (tb, FALSE);
-201     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
-202     g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-203   }
-204   gtk_window_destroy (GTK_WINDOW (dialog));
-205 }
-206 
-207 void
-208 tfe_text_view_open (TfeTextView *tv, GtkWindow *win) {
-209   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
-210   g_return_if_fail (GTK_IS_WINDOW (win));
-211 
-212   GtkWidget *dialog;
-213 
-214   dialog = gtk_file_chooser_dialog_new ("Open file", win, GTK_FILE_CHOOSER_ACTION_OPEN,
-215                                         "Cancel", GTK_RESPONSE_CANCEL,
-216                                         "Open", GTK_RESPONSE_ACCEPT,
-217                                         NULL);
-218   g_signal_connect (dialog, "response", G_CALLBACK (open_dialog_response), tv);
-219   gtk_widget_show (dialog);
-220 }
-221 
-222 GtkWidget *
-223 tfe_text_view_new (void) {
-224   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
-225 }
-226 
+ 81   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+ 82   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+ 83   if (g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err)) {
+ 84     gtk_text_buffer_set_modified (tb, FALSE);
+ 85     stat = TRUE;
+ 86   } else {
+ 87     message_dialog = gtk_message_dialog_new (win, GTK_DIALOG_MODAL,
+ 88                                              GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+ 89                                             "%s.\n", err->message);
+ 90     g_signal_connect (message_dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
+ 91     gtk_widget_show (message_dialog);
+ 92     g_error_free (err);
+ 93     stat = FALSE;
+ 94   }
+ 95   g_free (contents);
+ 96   return stat;
+ 97 }
+ 98 
+ 99 static void
+100 saveas_dialog_response (GtkWidget *dialog, gint response, TfeTextView *tv) {
+101   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+102   GFile *file;
+103   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+104 
+105   if (response == GTK_RESPONSE_ACCEPT) {
+106     file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+107     if (! G_IS_FILE (file))
+108       g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile.\n");
+109     else if (save_file(file, tb, GTK_WINDOW (win))) {
+110       if (G_IS_FILE (tv->file))
+111         g_object_unref (tv->file);
+112       tv->file = file;
+113       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+114     } else
+115       g_object_unref (file);
+116   }
+117   gtk_window_destroy (GTK_WINDOW (dialog));
+118 }
+119 
+120 void
+121 tfe_text_view_save (TfeTextView *tv) {
+122   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+123 
+124   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+125   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+126 
+127   if (! gtk_text_buffer_get_modified (tb))
+128     return; /* no need to save it */
+129   else if (tv->file == NULL)
+130     tfe_text_view_saveas (tv);
+131   else if (! G_IS_FILE (tv->file))
+132     g_error ("TfeTextView: The pointer tv->file isn't NULL nor GFile.\n");
+133   else
+134     save_file (tv->file, tb, GTK_WINDOW (win));
+135 }
+136 
+137 void
+138 tfe_text_view_saveas (TfeTextView *tv) {
+139   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+140 
+141   GtkWidget *dialog;
+142   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+143 
+144   dialog = gtk_file_chooser_dialog_new ("Save file", GTK_WINDOW (win), GTK_FILE_CHOOSER_ACTION_SAVE,
+145                                       "Cancel", GTK_RESPONSE_CANCEL,
+146                                       "Save", GTK_RESPONSE_ACCEPT,
+147                                       NULL);
+148   g_signal_connect (dialog, "response", G_CALLBACK (saveas_dialog_response), tv);
+149   gtk_widget_show (dialog);
+150 }
+151 
+152 GtkWidget *
+153 tfe_text_view_new_with_file (GFile *file) {
+154   g_return_val_if_fail (G_IS_FILE (file), NULL);
+155 
+156   GtkWidget *tv;
+157   GtkTextBuffer *tb;
+158   char *contents;
+159   gsize length;
+160 
+161   if (! g_file_load_contents (file, NULL, &contents, &length, NULL, NULL)) /* read error */
+162     return NULL;
+163 
+164   if ((tv = tfe_text_view_new()) != NULL) {
+165     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+166     gtk_text_buffer_set_text (tb, contents, length);
+167     TFE_TEXT_VIEW (tv)->file = g_file_dup (file);
+168     gtk_text_buffer_set_modified (tb, FALSE);
+169   }
+170   g_free (contents);
+171   return tv;
+172 }
+173 
+174 static void
+175 open_dialog_response(GtkWidget *dialog, gint response, TfeTextView *tv) {
+176   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+177   GFile *file;
+178   char *contents;
+179   gsize length;
+180   GtkWidget *message_dialog;
+181   GError *err = NULL;
+182 
+183   if (response != GTK_RESPONSE_ACCEPT)
+184     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
+185   else if (! G_IS_FILE (file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog)))) {
+186     g_warning ("TfeTextView: gtk_file_chooser_get_file returns non GFile.\n");
+187     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
+188   } else if (! g_file_load_contents (file, NULL, &contents, &length, NULL, &err)) { /* read error */
+189     g_object_unref (file);
+190     message_dialog = gtk_message_dialog_new (GTK_WINDOW (dialog), GTK_DIALOG_MODAL,
+191                                              GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+192                                             "%s.\n", err->message);
+193     g_signal_connect (message_dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
+194     gtk_widget_show (message_dialog);
+195     g_error_free (err);
+196     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
+197   } else {
+198     gtk_text_buffer_set_text (tb, contents, length);
+199     g_free (contents);
+200     if (G_IS_FILE (tv->file))
+201       g_object_unref (tv->file);
+202     tv->file = file;
+203     gtk_text_buffer_set_modified (tb, FALSE);
+204     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
+205     g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+206   }
+207   gtk_window_destroy (GTK_WINDOW (dialog));
+208 }
+209 
+210 void
+211 tfe_text_view_open (TfeTextView *tv, GtkWindow *win) {
+212   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+213   g_return_if_fail (GTK_IS_WINDOW (win));
+214 
+215   GtkWidget *dialog;
+216 
+217   dialog = gtk_file_chooser_dialog_new ("Open file", win, GTK_FILE_CHOOSER_ACTION_OPEN,
+218                                         "Cancel", GTK_RESPONSE_CANCEL,
+219                                         "Open", GTK_RESPONSE_ACCEPT,
+220                                         NULL);
+221   g_signal_connect (dialog, "response", G_CALLBACK (open_dialog_response), tv);
+222   gtk_widget_show (dialog);
+223 }
+224 
+225 GtkWidget *
+226 tfe_text_view_new (void) {
+227   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
+228 }
+229 
 ~~~
 
 ## Total number of lines, words and characters
@@ -680,10 +683,10 @@ $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/t
     4     6    87 tfe5/tfe.h
   140   374  3593 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
-  226   677  8023 tfetextview/tfetextview.c
+  229   671  8017 tfetextview/tfetextview.c
    35    60   701 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  594  1565 18324 total
+  597  1559 18318 total
 ~~~
 
 

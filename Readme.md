@@ -37,7 +37,7 @@ Any question is helpful to make this tutorial get better.
 1. [Define Child object](gfm/sec8.md)
 1. [Ui file and GtkBuilder](gfm/sec9.md)
 1. [Build system](gfm/sec10.md)
-1. [Instance and class](gfm/sec11.md)
+1. [Initialization and destruction of instances](gfm/sec11.md)
 1. [Signals](gfm/sec12.md)
 1. [Functions in TfeTextView](gfm/sec13.md)
 1. [Functions in GtkNotebook](gfm/sec14.md)

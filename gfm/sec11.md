@@ -1,6 +1,6 @@
 Up: [Readme.md](../Readme.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)
 
-# Instance and class
+# Initialization and destruction of instances
 
 A new version of the text file editor (`tfe`) will be made in this section and the following four sections.
 It is `tfe5`.
@@ -101,7 +101,7 @@ The structure of `TfeTextView` is like the following diagram.
 ![The structure of the instance TfeTextView](../image/TfeTextView.png)
 
 
-## Create TfeTextView instance
+## Initialization of a TfeTextView instance
 
 The function `tfe_text_view_new` creates a new TfeTextView instance.
 
@@ -112,18 +112,17 @@ The function `tfe_text_view_new` creates a new TfeTextView instance.
 4 }
 ~~~
 
-When this function is run, the following procedure is gone through.
+When this function is involed, a TfeTextView instance is created and initialized.
+The initialization process is as follows.
 
-1. Initialize GObject (GInitiallyUnowned) part in TfeTextView instance.
-2. Initialize GtkWidget part in TfeTextView instance.
-3. Initialize GtkTextView part in TfeTextView instance.
-4. Initialize TfeTextView part in TfeTextView instance.
+1. Initializes GObject (GInitiallyUnowned) part in TfeTextView instance.
+2. Initializes GtkWidget part in TfeTextView instance.
+3. Initializes GtkTextView part in TfeTextView instance.
+4. Initializes TfeTextView part in TfeTextView instance.
 
-Step one through three is done automatically.
-Step four is done by the function `tfe_text_view_init`.
-
-In the same way, `gtk_text_view_init`, `gtk_widget_init` and `g_object_init` is the initialization functions of GtkTextView, GtkWidget and GObject respectively.
-You can find them in the GTK or GLib source files.
+The step one through three is done by `g_object_init`, `gtk_widget_init` and `gtk_text_view_init`.
+They are called by the system automatically and you don't need to care about them.
+Step four is done by the function `tfe_text_view_init` in `tfetextview.c`.
 
 ~~~C
 1 static void
@@ -137,10 +136,10 @@ This function just initializes `tv->file` to be `NULL`.
 ## Functions and Classes
 
 In Gtk, all objects derived from GObject have class and instance (except abstract object).
-Instance is memories which has a structure defined by C structure declaration as I mentioned in the previous two subsections.
+An instance is memory of C structure, which is described in the previous two subsections.
 Each object can have more than one instance.
 Those instances have the same structure.
-Instance, which is structured memories, only keeps status of the instance.
+An instance just keeps status of the instance.
 Therefore, it is insufficient to define its behavior.
 We need at least two things.
 One is functions and the other is class.
@@ -230,7 +229,20 @@ But not open to the objects which are not the descendants.
 ## TfeTextView class 
 
 TfeTextView class is a structure and it includes all its ancestors' class in it.
-Let's look at all the classes from GObject, which is the top level object, to TfeTextView object, which is the lowest.
+
+~~~C
+typedef _TfeTextView TfeTextView;
+struct _TfeTextView {
+  GtkTextView parent;
+  GFile *file;
+};
+~~~
+
+TfeTextView structure has GtkTextView type as the first member.
+In the same way, GtkTextView has its parent type (GtkWidget) as the first member.
+GtkWidget has its parent type (GtkInitiallyUnowned) as the first member.
+The structure of GtkInitiallyUnowned is the same as GObject.
+Therefore, TFeTextView includes GObject, GtkWidget and GtkTextView in itself.
 
     GObject -- GInitiallyUnowned -- GtkWidget -- GtkTextView -- TfeTextView
 
