@@ -37,6 +37,7 @@ file_changed_cb (TfeTextView *tv, GtkNotebook *nb) {
   } else
     filename = get_untitled ();
   label = gtk_label_new (filename);
+  g_free (filename);
   gtk_notebook_set_tab_label (nb, scr, label);
 }
 
@@ -88,10 +89,7 @@ open_response (TfeTextView *tv, int response, GtkNotebook *nb) {
   GFile *file;
   char *filename;
 
-  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  }else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
+  if (response != TFE_OPEN_RESPONSE_SUCCESS || ! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
     g_object_ref_sink (tv);
     g_object_unref (tv);
   }else {
@@ -107,7 +105,8 @@ notebook_page_open (GtkNotebook *nb) {
 
   GtkWidget *tv;
 
-  tv = tfe_text_view_new ();
+  if ((tv = tfe_text_view_new ()) == NULL)
+    return;
   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
 }
@@ -133,7 +132,8 @@ notebook_page_new (GtkNotebook *nb) {
   GtkWidget *tv;
   char *filename;
 
-  tv = tfe_text_view_new ();
+  if ((tv = tfe_text_view_new ()) == NULL)
+    return;
   filename = get_untitled ();
   notebook_page_build (nb, tv, filename);
 }

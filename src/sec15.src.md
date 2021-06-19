@@ -10,21 +10,61 @@ It does:
 
 ## main
 
-Th function `main` is the first invoked function in C language.
-It connects the command line given by the user and GTK application.
+The function `main` is the first invoked function in C language.
+It connects the command line given by the user and Gtk application.
 
-@@@include
-tfe5/tfeapplication.c main
-@@@
+@@@if gfm
+~~~C
+ 1 #define APPLICATION_ID "com.github.ToshioCP.tfe"
+ 2
+ 3 int
+ 4 main (int argc, char **argv) {
+ 5   GtkApplication *app;
+ 6   int stat;
+ 7
+ 8   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+ 9
+10   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+11   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+12   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+13
+14   stat =g_application_run (G_APPLICATION (app), argc, argv);
+15   g_object_unref (app);
+16   return stat;
+17 }
+~~~
+@@@else
+~~~{.C .numberLines}
+#define APPLICATION_ID "com.github.ToshioCP.tfe"
 
-- 6: Generates GtkApplication object.
-- 8-10: Connects "startup", "activate" and "open signals to their handlers.
-- 12: Runs the application.
-- 13-14: releases the reference to the application and returns the status.
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+
+  stat =g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+~~~
+@@@end
+
+- 1: Defines the application id.
+It is easy to find the application id, and better than the id is embedded in `gtk_application_new`.
+- 8: Creates GtkApplication object.
+- 10-12: Connects "startup", "activate" and "open" signals to their handlers.
+- 14: Runs the application.
+- 15-16: releases the reference to the application and returns the status.
 
 ## startup signal handler
 
-Startup signal is emitted just after the application is generated.
+Startup signal is emitted just after the GtkApplication instance is initialized.
 What the signal handler needs to do is initialization of the application.
 
 - Builds the widgets using ui file.
@@ -34,27 +74,27 @@ What the signal handler needs to do is initialization of the application.
 The handler is as follows.
 
 @@@include
-tfe5/tfeapplication.c tfe_startup
+tfe5/tfeapplication.c app_startup
 @@@
 
 - 12-15: Builds widgets using ui file (resource).
-Connects the top window and the application using `gtk_window_set_application`.
+Connects the top-level window and the application with `gtk_window_set_application`.
 - 16-23: Gets buttons and connects their signals and handlers.
 - 24: Releases the reference to GtkBuilder.
 - 26-31: Sets CSS.
-CSS in GTK is similar to CSS in HTML.
+CSS in Gtk is similar to CSS in HTML.
 You can set margin, border, padding, color, font and so on with CSS.
 In this program CSS is in line 30.
 It sets padding, font-family and font size of GtkTextView.
 - 26-28: GdkDisplay is used to set CSS.
 CSS will be explained in the next subsection.
 
-## CSS in GTK
+## CSS in Gtk
 
 CSS is an abbreviation of Cascading Style Sheet.
 It is originally used with HTML to describe the presentation semantics of a document.
-You might have found that the widgets in GTK is similar to the window in a browser.
-It implies that CSS can also be applied to GTK windowing system.
+You might have found that the widgets in Gtk is similar to a window in a browser.
+It implies that CSS can also be applied to Gtk windowing system.
 
 ### CSS nodes, selectors
 
@@ -81,7 +121,7 @@ textview {color: yellow; ...}
 ~~~
 
 Class, ID and some other things can be applied to the selector like Web CSS.
-Refer [GTK4 API reference](https://developer.gnome.org/gtk4/stable/theming.html) for further information.
+Refer [Gtk4 API reference](https://developer.gnome.org/gtk4/stable/theming.html) for further information.
 
 In line 30, the CSS is a string.
 
@@ -108,14 +148,18 @@ You can get the context by `gtk_widget_get_style_context`.
 GtkCssProvider is an object which parses CSS in order to style widgets.
 
 To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext.
-However, instead, you can add it to GdkDisplay of the window (usually top level window).
+However, instead, you can add it to GdkDisplay of the window (usually top-level window).
 
 Look at the source file of `startup` handler again.
 
 - 28: The display is obtained by `gtk_widget_get_display`.
-- 29: Generates GtkCssProvider.
+- 29: Creates a GtkCssProvider instance.
 - 30: Puts the CSS into the provider.
 - 31: Adds the provider to the display.
+The last argument of `gtk_style_context_add_provider_for_display` is the priority of the style provider.
+`GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` is a priority for application-specific style information.
+`GTK_STYLE_PROVIDER_PRIORITY_USER` is also often used and it is the highest priority.
+So, `GTK_STYLE_PROVIDER_PRIORITY_USER` is often used to a specific widget.
 
 It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
 To do so, rewrite `tfe_text_view_new`.
@@ -144,18 +188,18 @@ CSS in the context takes precedence over CSS in the display.
 
 ## activate and open handler
 
-The handler of "activate" and "open" signal are `tfe_activate` and `tfe_open` respectively.
-They just generate a new GtkNotebookPage.
+The handler of "activate" and "open" signal are `app_activate` and `app_open` respectively.
+They just create a new GtkNotebookPage.
 
 @@@include
-tfe5/tfeapplication.c tfe_activate tfe_open
+tfe5/tfeapplication.c app_activate app_open
 @@@
 
-- 1-11: `tfe_activate`.
-- 8-10: Generates a new page and shows the window.
-- 12-25: `tfe_open`.
-- 20-21: Generates notebook pages with files.
-- 22-23: If no page has generated, maybe because of read error, then it generates a empty page.
+- 1-10: `app_activate`.
+- 8-10: Creates a new page and shows the window.
+- 12-25: `app_open`.
+- 20-21: Creates notebook pages with files.
+- 22-23: If no page has created, maybe because of read error, then it creates an empty page.
 - 24: Shows the window.
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
@@ -167,15 +211,15 @@ The session is a bit difficult concept and also platform-dependent, but roughly 
 When you use your PC, you probably login first, then your desktop appears until you log off.
 This is the session.
 
-However, linux is multi process OS and you can run two or more instances of the same application.
+However, Linux is multi process OS and you can run two or more instances of the same application.
 Isn't it a contradiction?
 
-When first instance is launched, then it register itself with its application ID (for example, `com.github.ToshioCP.tfe`).
+When first instance is launched, then it registers itself with its application ID (for example, `com.github.ToshioCP.tfe`).
 Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
-I wrote "startup signal is emitted just after the application is generated" in the prior subsection.
+I wrote "startup signal is emitted just after the application instance is initialized" in the prior subsection.
 More precisely, it is emitted just after the registration.
 
-If another instance which has the same application ID is invoked after that, it also tries to register itself.
+If another instance which has the same application ID is invoked, it also tries to register itself.
 Because this is the second instance, the registration of the ID has already done, so it fails.
 Because of the failure startup signal isn't emitted.
 After that, activate or open signal is emitted in the primary instance, not the second instance.

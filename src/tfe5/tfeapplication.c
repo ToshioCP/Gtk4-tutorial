@@ -21,7 +21,7 @@ close_cb (GtkNotebook *nb) {
 }
 
 static void
-tfe_activate (GApplication *application) {
+app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
@@ -32,7 +32,7 @@ tfe_activate (GApplication *application) {
 }
 
 static void
-tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
@@ -47,7 +47,7 @@ tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *
 }
 
 static void
-tfe_startup (GApplication *application) {
+app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkBuilder *build;
   GtkApplicationWindow *win;
@@ -76,19 +76,21 @@ GdkDisplay *display;
   display = gtk_widget_get_display (GTK_WIDGET (win));
   GtkCssProvider *provider = gtk_css_provider_new ();
   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
+
+#define APPLICATION_ID "com.github.ToshioCP.tfe"
 
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
 
-  g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
-  g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

@@ -9,7 +9,7 @@ There are two ways to do so.
 
 - Functions.
 For example, `tb = gtk_text_view_get_buffer (tv)`.
-The caller requests `tv` to give `tb`, which is a GtkTextBuffer object connected to `tv` to the caller.
+The caller requests `tv` to give `tb`, which is a GtkTextBuffer instance connected to `tv` to the caller.
 - Signals.
 For example, `activate` signal on GApplication object.
 When the application is activated, the signal is emitted.
@@ -60,7 +60,7 @@ tfetextview/tfetextview.c tfe_text_view_class_init
 
 - 6-15: Registers "change-file" signal.
 `g_signal_new` function is used.
-This signal has no default handler (object method handler).
+The signal "change-file" has no default handler (object method handler).
 You usually don't need to set a default handler.
 If you need it, use `g_signal_new_class_handler` function.
 See [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-new-class-handler) for further information.
@@ -110,7 +110,7 @@ enum
 
 - The parameter is set to `TFE_OPEN_RESPONSE_SUCCESS` when `tfe_text_view_open` has successfully opened a file and read it.
 - The parameter is set to `TFE_OPEN_RESPONSE_CANCEL` when the user has canceled.
-- The parameter is set to `TFE_OPEN_RESPONSE_ERROR` when error has occurred.
+- The parameter is set to `TFE_OPEN_RESPONSE_ERROR` when an error has occurred.
  
 ## Signal connection
 

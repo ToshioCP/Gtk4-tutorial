@@ -1,6 +1,6 @@
 # tfe5 source files
 
-## How to compile and execute tfe text editor.
+## How to compile and execute the text editor 'tfe'.
 
 First, source files are shown in the later subsections.
 How to download them is written at the end of the [previous section](sec15.src.md).
@@ -8,12 +8,16 @@ How to download them is written at the end of the [previous section](sec15.src.m
 The following is the instruction of compilation and execution.
 
 - You need meson and ninja.
-- Set necessary environment variables.
-If you have installed gtk4 under the instruction in [Section 2](sec2.src.md), type `. env.sh` to set the environment variables.
+- Set environment variables if necessary.
+If you have installed gtk4 from the source and you preferred the option `--prefix $HOME/local` (see [Section 2](sec2.src.md)), type `. env.sh` to set the environment variables.
+
+~~~
+$ . env.sh
+~~~
 - change your current directory to `src/tfe5` directory.
 - type `meson _build` for configuration.
 - type `ninja -C _build` for compilation.
-Then the application `tfe` is build under the `_build` directory.
+Then the application `tfe` is built under the `_build` directory.
 - type `_build/tfe` to execute it.
 
 Then the window appears.

@@ -2,7 +2,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 15](sec15.md), Next: [Section 17]
 
 # tfe5 source files
 
-## How to compile and execute tfe text editor.
+## How to compile and execute the text editor 'tfe'.
 
 First, source files are shown in the later subsections.
 How to download them is written at the end of the [previous section](sec15.md).
@@ -10,12 +10,16 @@ How to download them is written at the end of the [previous section](sec15.md).
 The following is the instruction of compilation and execution.
 
 - You need meson and ninja.
-- Set necessary environment variables.
-If you have installed gtk4 under the instruction in [Section 2](sec2.md), type `. env.sh` to set the environment variables.
+- Set environment variables if necessary.
+If you have installed gtk4 from the source and you preferred the option `--prefix $HOME/local` (see [Section 2](sec2.md)), type `. env.sh` to set the environment variables.
+
+~~~
+$ . env.sh
+~~~
 - change your current directory to `src/tfe5` directory.
 - type `meson _build` for configuration.
 - type `ninja -C _build` for compilation.
-Then the application `tfe` is build under the `_build` directory.
+Then the application `tfe` is built under the `_build` directory.
 - type `_build/tfe` to execute it.
 
 Then the window appears.
@@ -158,7 +162,7 @@ It is a good practice for you to add more features.
 21 }
 22 
 23 static void
-24 tfe_activate (GApplication *application) {
+24 app_activate (GApplication *application) {
 25   GtkApplication *app = GTK_APPLICATION (application);
 26   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 27   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
@@ -169,7 +173,7 @@ It is a good practice for you to add more features.
 32 }
 33 
 34 static void
-35 tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+35 app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
 36   GtkApplication *app = GTK_APPLICATION (application);
 37   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 38   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
@@ -184,7 +188,7 @@ It is a good practice for you to add more features.
 47 }
 48 
 49 static void
-50 tfe_startup (GApplication *application) {
+50 app_startup (GApplication *application) {
 51   GtkApplication *app = GTK_APPLICATION (application);
 52   GtkBuilder *build;
 53   GtkApplicationWindow *win;
@@ -213,25 +217,27 @@ It is a good practice for you to add more features.
 76   display = gtk_widget_get_display (GTK_WIDGET (win));
 77   GtkCssProvider *provider = gtk_css_provider_new ();
 78   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-79   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+79   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 80 }
 81 
-82 int
-83 main (int argc, char **argv) {
-84   GtkApplication *app;
-85   int stat;
-86 
-87   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
+82 #define APPLICATION_ID "com.github.ToshioCP.tfe"
+83 
+84 int
+85 main (int argc, char **argv) {
+86   GtkApplication *app;
+87   int stat;
 88 
-89   g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-90   g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
-91   g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
-92 
-93   stat =g_application_run (G_APPLICATION (app), argc, argv);
-94   g_object_unref (app);
-95   return stat;
-96 }
-97 
+89   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+90 
+91   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+92   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+93   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+94 
+95   stat =g_application_run (G_APPLICATION (app), argc, argv);
+96   g_object_unref (app);
+97   return stat;
+98 }
+99 
 ~~~
 
 ## tfenotebook.h
@@ -296,103 +302,103 @@ It is a good practice for you to add more features.
  37   } else
  38     filename = get_untitled ();
  39   label = gtk_label_new (filename);
- 40   gtk_notebook_set_tab_label (nb, scr, label);
- 41 }
- 42 
- 43 void
- 44 notebook_page_save (GtkNotebook *nb) {
- 45   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
- 46 
- 47   TfeTextView *tv;
- 48 
- 49   tv = get_current_textview (nb);
- 50   tfe_text_view_save (TFE_TEXT_VIEW (tv));
- 51 }
- 52 
- 53 void
- 54 notebook_page_close (GtkNotebook *nb) {
- 55   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
- 56 
- 57   GtkWidget *win;
- 58   int i;
- 59 
- 60   if (gtk_notebook_get_n_pages (nb) == 1) {
- 61     win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
- 62     gtk_window_destroy(GTK_WINDOW (win));
- 63   } else {
- 64     i = gtk_notebook_get_current_page (nb);
- 65     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
- 66   }
- 67 }
- 68 
- 69 static void
- 70 notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
- 71   GtkWidget *scr = gtk_scrolled_window_new ();
- 72   GtkNotebookPage *nbp;
- 73   GtkWidget *lab;
- 74   int i;
- 75 
- 76   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
- 77   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
- 78   lab = gtk_label_new (filename);
- 79   i = gtk_notebook_append_page (nb, scr, lab);
- 80   nbp = gtk_notebook_get_page (nb, scr);
- 81   g_object_set (nbp, "tab-expand", TRUE, NULL);
- 82   gtk_notebook_set_current_page (nb, i);
- 83   g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
- 84 }
- 85 
- 86 static void
- 87 open_response (TfeTextView *tv, int response, GtkNotebook *nb) {
- 88   GFile *file;
- 89   char *filename;
- 90 
- 91   if (response != TFE_OPEN_RESPONSE_SUCCESS) {
- 92     g_object_ref_sink (tv);
- 93     g_object_unref (tv);
- 94   }else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
- 95     g_object_ref_sink (tv);
- 96     g_object_unref (tv);
- 97   }else {
- 98     filename = g_file_get_basename (file);
- 99     g_object_unref (file);
-100     notebook_page_build (nb, GTK_WIDGET (tv), filename);
-101   }
-102 }
-103 
-104 void
-105 notebook_page_open (GtkNotebook *nb) {
-106   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+ 40   g_free (filename);
+ 41   gtk_notebook_set_tab_label (nb, scr, label);
+ 42 }
+ 43 
+ 44 void
+ 45 notebook_page_save (GtkNotebook *nb) {
+ 46   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+ 47 
+ 48   TfeTextView *tv;
+ 49 
+ 50   tv = get_current_textview (nb);
+ 51   tfe_text_view_save (TFE_TEXT_VIEW (tv));
+ 52 }
+ 53 
+ 54 void
+ 55 notebook_page_close (GtkNotebook *nb) {
+ 56   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+ 57 
+ 58   GtkWidget *win;
+ 59   int i;
+ 60 
+ 61   if (gtk_notebook_get_n_pages (nb) == 1) {
+ 62     win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+ 63     gtk_window_destroy(GTK_WINDOW (win));
+ 64   } else {
+ 65     i = gtk_notebook_get_current_page (nb);
+ 66     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
+ 67   }
+ 68 }
+ 69 
+ 70 static void
+ 71 notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
+ 72   GtkWidget *scr = gtk_scrolled_window_new ();
+ 73   GtkNotebookPage *nbp;
+ 74   GtkWidget *lab;
+ 75   int i;
+ 76 
+ 77   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+ 78   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+ 79   lab = gtk_label_new (filename);
+ 80   i = gtk_notebook_append_page (nb, scr, lab);
+ 81   nbp = gtk_notebook_get_page (nb, scr);
+ 82   g_object_set (nbp, "tab-expand", TRUE, NULL);
+ 83   gtk_notebook_set_current_page (nb, i);
+ 84   g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
+ 85 }
+ 86 
+ 87 static void
+ 88 open_response (TfeTextView *tv, int response, GtkNotebook *nb) {
+ 89   GFile *file;
+ 90   char *filename;
+ 91 
+ 92   if (response != TFE_OPEN_RESPONSE_SUCCESS || ! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
+ 93     g_object_ref_sink (tv);
+ 94     g_object_unref (tv);
+ 95   }else {
+ 96     filename = g_file_get_basename (file);
+ 97     g_object_unref (file);
+ 98     notebook_page_build (nb, GTK_WIDGET (tv), filename);
+ 99   }
+100 }
+101 
+102 void
+103 notebook_page_open (GtkNotebook *nb) {
+104   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+105 
+106   GtkWidget *tv;
 107 
-108   GtkWidget *tv;
-109 
-110   tv = tfe_text_view_new ();
-111   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
-112   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
-113 }
-114 
-115 void
-116 notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
-117   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-118   g_return_if_fail(G_IS_FILE (file));
-119 
-120   GtkWidget *tv;
-121   char *filename;
-122 
-123   if ((tv = tfe_text_view_new_with_file (file)) == NULL)
-124     return; /* read error */
-125   filename = g_file_get_basename (file);
-126   notebook_page_build (nb, tv, filename);
-127 }
-128 
-129 void
-130 notebook_page_new (GtkNotebook *nb) {
-131   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-132 
-133   GtkWidget *tv;
-134   char *filename;
-135 
-136   tv = tfe_text_view_new ();
+108   if ((tv = tfe_text_view_new ()) == NULL)
+109     return;
+110   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
+111   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
+112 }
+113 
+114 void
+115 notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
+116   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+117   g_return_if_fail(G_IS_FILE (file));
+118 
+119   GtkWidget *tv;
+120   char *filename;
+121 
+122   if ((tv = tfe_text_view_new_with_file (file)) == NULL)
+123     return; /* read error */
+124   filename = g_file_get_basename (file);
+125   notebook_page_build (nb, tv, filename);
+126 }
+127 
+128 void
+129 notebook_page_new (GtkNotebook *nb) {
+130   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+131 
+132   GtkWidget *tv;
+133   char *filename;
+134 
+135   if ((tv = tfe_text_view_new ()) == NULL)
+136     return;
 137   filename = get_untitled ();
 138   notebook_page_build (nb, tv, filename);
 139 }
@@ -678,15 +684,15 @@ It is a good practice for you to add more features.
 ~~~
 $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
-   97   301  3159 tfe5/tfeapplication.c
+   99   304  3205 tfe5/tfeapplication.c
     6     9   153 tfe5/tfe.gresource.xml
     4     6    87 tfe5/tfe.h
-  140   374  3593 tfe5/tfenotebook.c
+  140   378  3601 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
   229   671  8017 tfetextview/tfetextview.c
    35    60   701 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  597  1559 18318 total
+  599  1566 18372 total
 ~~~
 
 
