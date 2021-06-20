@@ -1,7 +1,8 @@
 # Stateful action
 
 Some actions have states.
-The values of states can be boolean or string.
+The typical values of states can be boolean or string.
+However, other type of states is possible if you want.
 Actions which have states are called stateful.
 
 ## Stateful action without a parameter

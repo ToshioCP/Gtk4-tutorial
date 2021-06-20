@@ -1,13 +1,14 @@
 #include <gtk/gtk.h>
 
 static void
-quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
-{
-  g_application_quit (G_APPLICATION(app));
+quit_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GApplication *app = G_APPLICATION (user_data);
+
+  g_application_quit (app);
 }
 
 static void
-on_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app, gpointer user_data) {
   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "menu1");
   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
@@ -32,13 +33,15 @@ on_activate (GApplication *app, gpointer user_data) {
 /*  gtk_widget_show (win); is also OKay instead of gtk_window_present. */
 }
 
+#define APPLICATION_ID "com.github.ToshioCP.menu1"
+
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.menu1", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
