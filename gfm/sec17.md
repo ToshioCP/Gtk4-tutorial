@@ -4,7 +4,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 16](sec16.md), Next: [Section 18]
 
 ## Menu
 
-Users often use menus to tell the command to the computer.
+Users often use menus to tell a command to the computer.
 It is like this:
 
 ![Menu](../image/menu.png)
@@ -39,7 +39,7 @@ GMenu is a simple implementation of GMenuModel and a child object of GMenuModel.
     GObject -- GMenuModel -- GMenu
 
 Because GMenuModel is an abstract object, it isn't instantiatable.
-Therefore, it doesn't have any functions to create it.
+Therefore, it doesn't have any functions to create its instance.
 If you want to create a menu, use `g_menu_new` to create a GMenu instance.
 GMenu inherits all the functions of GMenuModel because of the child object.
 
@@ -92,28 +92,31 @@ Then the action emits an activate signal.
 
 The following code is an example.
 
-    static void
-    quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app) { ... ... ...}
+~~~C
+static void
+quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app) { ... ... ...}
 
-    GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
-    g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
-    GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
+GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
+g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
+g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
+GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
+~~~
 
 1. `menu_item_quit` is a menu item.
 It has a label "Quit" and is connected to an action "app.quit".
-"app" is a prefix and "quit" is the name of an action.
-The prefix means that the action belongs to a GtkApplication instance.
+"app" is a prefix and "quit" is a name of the action.
+The prefix "app" means that the action belongs to a GtkApplication instance.
 If the menu is clicked, then the corresponding action "quit" which belongs to the GtkApplication will be activated.
 2. `act_quit` is an action.
 It has a name "quit".
-It belongs to the GtkApplication, but it is not obvious in the code above.
 The function `g_simple_action_new` creates a stateless action.
 So, `act_quit` is stateless.
 The meaning of stateless will be explained later.
 The argument `NULL` means that the action doesn't have an parameter.
 Most of the actions are stateless and have no parameter.
+3. The action `act_quit` is added to the GtkApplication instance with `g_action_map_add_action`.
 When `act_quit` is activated, it will emit "activate" signal.
-3. "activate" signal of the action is connected to the handler `quit_activated`.
+4. "activate" signal of the action is connected to the handler `quit_activated`.
 So, if the action is activated, the handler will be invoked.
 
 ## Simple example

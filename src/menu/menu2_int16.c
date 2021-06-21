@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 
 static GtkCssProvider *provider;
+static char *c[3] = {"red", "green", "blue"}; 
 
 static void
 fullscreen_changed(GSimpleAction *action, GVariant *value, gpointer win) {
@@ -13,7 +14,8 @@ fullscreen_changed(GSimpleAction *action, GVariant *value, gpointer win) {
 
 static void
 color_activated(GSimpleAction *action, GVariant *parameter, gpointer win) {
-  char *color = g_strdup_printf ("label#lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
+  gint16 index = g_variant_get_int16 (parameter);
+  char *color = g_strdup_printf ("label#lb {background-color: %s;}", c[index]);
   gtk_css_provider_load_from_data (provider, color, -1);
   g_free (color);
   g_action_change_state (G_ACTION (action), parameter);
@@ -38,7 +40,7 @@ app_activate (GApplication *app, gpointer user_data) {
   GSimpleAction *act_fullscreen
     = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
   GSimpleAction *act_color
-    = g_simple_action_new_stateful ("color", g_variant_type_new("s"), g_variant_new_string ("red"));
+    = g_simple_action_new_stateful ("color", g_variant_type_new("n"), g_variant_new_int16 ((gint16) 0)); /* "n": gint16 */
   GSimpleAction *act_quit
     = g_simple_action_new ("quit", NULL);
 
@@ -48,9 +50,9 @@ app_activate (GApplication *app, gpointer user_data) {
   GMenu *section2 = g_menu_new ();
   GMenu *section3 = g_menu_new ();
   GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
-  GMenuItem *menu_item_red = g_menu_item_new ("Red", "win.color::red");
-  GMenuItem *menu_item_green = g_menu_item_new ("Green", "win.color::green");
-  GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "win.color::blue");
+  GMenuItem *menu_item_red = g_menu_item_new ("Red", "win.color(int16 0)");
+  GMenuItem *menu_item_green = g_menu_item_new ("Green", "win.color(int16 1)");
+  GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "win.color(int16 2)");
   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
 
   g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
