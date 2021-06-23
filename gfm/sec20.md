@@ -3,7 +3,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 19](sec19.md), Next: [Section 21]
 # GtkMenuButton, accelerators, font, pango and gsettings
 
 Traditional menu structure is fine.
-However, Buttons or menu items we often use are not so many.
+However, buttons or menu items we often use are not so many.
 Some mightn't be clicked at all.
 Therefore, it's a good idea to put some frequently used buttons on the toolbar and put the rest of the less frequently used operations into the menu.
 Such menu are often connected to GtkMenuButton.
@@ -89,11 +89,11 @@ Menus are described in `menu.ui` file.
 
 There are four items, "New", "Saveas", "Preference" and "Quit".
 
-- New menu creates a new empty page.
-- Saveas menu saves the current page as a new filename.
-- Preference menu sets preference items.
+- "New" menu creates a new empty page.
+- "Saveas" menu saves the current page as a new filename.
+- "Preference" menu sets preference items.
 This version of `tfe` has only font preference.
-- Quit menu quits the application.
+- "Quit" menu quits the application.
 
 These four menus are not used so often.
 That's why they are put to the menu behind the menu button.
@@ -183,7 +183,7 @@ You can define more than one accelerator keys and the list must ends with NULL (
 If you want to do so, the array length needs to be three or more.
 The parser recognizes "\<control\>o", "\<Shift\>\<Alt\>F2", "\<Ctrl\>minus" and so on.
 If you want to use symbol key like "\<Ctrl\>-", use "\<Ctrl\>minus" instead.
-Such relation between lower case and symbol (its character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the gtk4 source code.
+Such relation between lower case and symbol (its character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the Gtk4 source code.
 
 ## Saveas handler
 
@@ -221,9 +221,10 @@ In `tfeapplication.c`, saveas handler just call `notebook_page_saveas`.
 
 ~~~C
 1 static void
-2 saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-3   notebook_page_saveas (GTK_NOTEBOOK (nb));
-4 }
+2 saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+3   GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+4   notebook_page_saveas (nb);
+5 }
 ~~~
 
 ## Preference and alert dialog
@@ -266,16 +267,17 @@ Preference dialog xml definition is added to `tfe.ui`.
 ~~~
 
 - Preference dialog is an independent dialog.
-It is not a descendant widget of the top GtkApplicationwindow `win`.
-Therefore, There's no child tag of the dialog object.
-- There are four properties of the dialog specified.
+It is not a descendant widget of the top-level GtkApplicationwindow `win`.
+Therefore, There's no child tag that surrounds the dialog object.
+- There are four properties of the dialog.
 GtkDialog is a child object (not child widget) of GtkWindow, so it inherits all the properties from GtkWindow.
 Title, resizable, modal and transient-for properties are inherited from GtkWindow.
 Transient-for specifies a temporary parent window, which the dialog's location is based on.
 - internal-child attribute is used in the child tag above.
 GtkDialog has a GtkBox child widget.
-Its id is "content_area" in `gtkdialog.ui`, which is the ui file of GtkDialog in gtk4 source files.
-This box is provided to users to add content widgets in it.
+Its id is "content_area" in `gtkdialog.ui`, which is the ui file of GtkDialog.
+(It is in the Gtk4 source files.)
+This box is provided for users to add content widgets in it.
 The tag `<child internal-child="content_area">` is put at the top of the contents.
 Then you need to specify an object tag and define its class as GtkBox and its id as content_area.
 This object is defined in `gtkdialog.ui` but you need to define it again in the child tag.
@@ -365,7 +367,7 @@ tfe_startup (GApplication *application) {
 }
 ~~~
 
-The function `tfe_application_quit` destroys top level windows and quits the application.
+The function `tfe_application_quit` destroys top-level windows and quits the application.
 It first disconnects the handlers from the signal "close-request".
 
 ### Alert dialog
@@ -447,8 +449,8 @@ An alert message will be inserted by the program later.
 There are two child tags which have "action" type.
 They are button objects located in the action area.
 Action-widgets tag describes the actions of the buttons.
-Btn\_cancel button emits response signal with cancel response (GTK_RESPONSE_CANCEL) if it is clicked on.
-Btn\_accept button emits response signal with accept response (GTK_RESPONSE_ACCEPT) if it is clicked on.
+`btn_cancel` button emits response signal with cancel response (`GTK_RESPONSE_CANCEL`) if it is clicked on.
+`btn_accept` button emits response signal with accept response (`GTK_RESPONSE_ACCEPT`) if it is clicked on.
 The response signal is connected to `alert_response_cb` handler.
 
 The alert dialog keeps alive while the application lives.
@@ -478,8 +480,9 @@ close_cb (GtkNotebook *nb) {
 ... ...
 
 static void
-close_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  close_cb (GTK_NOTEBOOK (nb));
+close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  close_cb (nb);
 }
 
 ... ...
@@ -499,15 +502,16 @@ alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
 }
 
 static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
 
   is_quit = true;
-  if (has_saved_all (GTK_NOTEBOOK (nb)))
+  if (has_saved_all (nb))
     tfe_application_quit (GTK_WINDOW (win));
   else {
     gtk_label_set_text (lb_alert, "Contents aren't saved yet.\nAre you sure to quit?");
-    gtk_button_set_label (close_btn_close, "Quit");
+    gtk_button_set_label (btn_accept, "Quit");
     gtk_widget_show (GTK_WIDGET (alert));
   }
 }
@@ -535,20 +539,24 @@ When user clicks on the close button, `close_cb` handler is invoked.
 The handler sets `is_quit` to false.
 The function `has_saved` returns true if the current page has been saved.
 If it is true, it calls `notebook_page_close` to close the current page.
-Otherwise, it sets the text in the label and button, then shows the alert dialog.
+Otherwise, it sets the message of the dialog and the label of the button, then shows the alert dialog.
 
 The response signal of the dialog is connected to the handler `alert_response_cb`.
 It hides the dialog first.
-Then check the response\_id.
-If it is `GTK_RESPONSE_ACCEPT`, which means user clicked on the close button, then closes the current page.
+Then checks the `response_id`.
+If it is `GTK_RESPONSE_ACCEPT`, which means user clicked on the close button, then it closes the current page.
+Otherwise it does nothing.
 
 When user press "Ctrl-q" or clicked on the quit menu, then `quit_activated` handler is invoked.
 The handler sets `is_quit` to true.
 The function `has_saved_all` returns true if all the pages have been saved.
 If it is true, it calls `tfe_application_quit` to quit the application.
-Otherwise, it sets the text in the label and button, then shows the alert dialog.
+Otherwise, it sets the message of the dialog and the label of the button, then shows the alert dialog.
 
-Now `alert_response_cb` works similar but it calls `tfe_application_quit`instead of `notebook_page_close`.
+If the user clicked on the buttons on the alert dialog, `alert_resoponse_cb` is invoked.
+It hides the dialog and checks the `response_id`.
+If it is `GTK_RESPONSE_ACCEPT`, which means user clicked on the quit button, then it calls `tfe_application_quit` to quit the application.
+Otherwise it does nothing.
 
 The static variables `alert`, `lb_alert` and `btn_accept` are set in the startup handler.
 And the signal "close-request" and `dialog_close_cb` handler are connected.
@@ -592,10 +600,12 @@ And the signal "close-request" and `dialog_close_cb` handler are connected.
 
 - 1-14: `has_saved` function.
 - 10: The function `gtk_text_buffer_get_modified` returns true if the content of the buffer has been modified since the modified flag had set false.
-The flag is set to false when the buffer is generated.
-It is reset to false when it is replaced with a new contents from a file or it is saved to a file.
+The flag is set to false when:
+  - the buffer is created.
+  - the contents of the buffer is replaced
+  - the contents of the buffer is saved to a file.
 - 11-13: This function returns true if the contents of the current page has been saved and no modification has been made.
-If it returns false, then the user tries to close the current page without saving the modified contents.
+It returns false, if the current page has been modified and hasn't been saved.
 - 16-33: `has_saved_all` function.
 This function is similar to `has_saved` function.
 It returns true if all the pages have been saved.
@@ -655,10 +665,11 @@ When a page is built, connect "change-file" and "modified-changed" signals to `f
 34     filename = gtk_notebook_get_tab_label_text (GTK_NOTEBOOK (nb), scr);
 35     text = g_strdup_printf ("*%s", filename);
 36     label = gtk_label_new (text);
-37     gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
-38   } else
-39     file_changed_cb (tv);
-40 }
+37     g_free (text);
+38     gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
+39   } else
+40     file_changed_cb (tv);
+41 }
 ~~~
 
 - 1-20: `file_changed_cb` handler.
@@ -667,12 +678,12 @@ That is, there's no page corresponds to `tv`.
 Then, it isn't necessary to change the name of the tab because no tab exists.
 - 13-15: If `file` is GFile, then it gets the filename and unrefs `file`.
 - 16-17: Otherwise, `file` is probably NULL and it assigns "Untitled" related name to `filename`
-- 18-19: Generates GtkLabel with `filename` and sets the tab of the page with the GtkLabel.
-- 22-40: `modified_changed_cb` handler.
+- 18-19: Creates GtkLabel with `filename` and sets the tab of the page with the GtkLabel.
+- 22-41: `modified_changed_cb` handler.
 - 31-32: If `tv` isn't a descendant of `nb`, then nothing needs to be done.
 - 33-35: If the content is modified, then it gets the text of the tab and adds asterisk at the beginning of the text.
-- 36-37: Sets the tab with the asterisk prepended text.
-- 38-39: Otherwise the modified bit is off.
+- 36-38: Sets the tab with the asterisk prepended text.
+- 39-40: Otherwise the modified bit is off.
 It is because content is saved.
 It calls `file_changed_cb` and resets the filename, that means it leaves out the asterisk.
 
@@ -735,7 +746,7 @@ A new file `css.c` is made for functions related to CSS.
  1 #include "tfe.h"
  2 
  3 void
- 4 set_css_for_display (GtkWindow *win, char *css) {
+ 4 set_css_for_display (GtkWindow *win, const char *css) {
  5   GdkDisplay *display;
  6 
  7   display = gtk_widget_get_display (GTK_WIDGET (win));
@@ -751,78 +762,79 @@ A new file `css.c` is made for functions related to CSS.
 17   textview_css = g_strdup_printf ("textview {padding: 10px; font-family: \"%s\"; font-style: %s; font-weight: %s; font-size: %dpt;}",
 18                                       fontfamily, fontstyle, fontweight, fontsize);
 19   set_css_for_display (win, textview_css);
-20 } 
-21 
-22 void
-23 set_font_for_display_with_pango_font_desc (GtkWindow *win, PangoFontDescription *pango_font_desc) {
-24   int pango_style;
-25   int pango_weight; 
-26   const char *family;
-27   const char *style;
-28   const char *weight;
-29   int fontsize;
-30 
-31   family = pango_font_description_get_family (pango_font_desc);
-32   pango_style = pango_font_description_get_style (pango_font_desc);
-33   switch (pango_style) {
-34   case PANGO_STYLE_NORMAL:
-35     style = "normal";
-36     break;
-37   case PANGO_STYLE_ITALIC:
-38     style = "italic";
-39     break;
-40   case PANGO_STYLE_OBLIQUE:
-41     style = "oblique";
-42     break;
-43   default:
-44     style = "normal";
-45     break;
-46   }
-47   pango_weight = pango_font_description_get_weight (pango_font_desc);
-48   switch (pango_weight) {
-49   case PANGO_WEIGHT_THIN:
-50     weight = "100";
-51     break;
-52   case PANGO_WEIGHT_ULTRALIGHT:
-53     weight = "200";
-54     break;
-55   case PANGO_WEIGHT_LIGHT:
-56     weight = "300";
-57     break;
-58   case PANGO_WEIGHT_SEMILIGHT:
-59     weight = "350";
-60     break;
-61   case PANGO_WEIGHT_BOOK:
-62     weight = "380";
-63     break;
-64   case PANGO_WEIGHT_NORMAL:
-65     weight = "400"; /* or "normal" */
-66     break;
-67   case PANGO_WEIGHT_MEDIUM:
-68     weight = "500";
-69     break;
-70   case PANGO_WEIGHT_SEMIBOLD:
-71     weight = "600";
-72     break;
-73   case PANGO_WEIGHT_BOLD:
-74     weight = "700"; /* or "bold" */
-75     break;
-76   case PANGO_WEIGHT_ULTRABOLD:
-77     weight = "800";
-78     break;
-79   case PANGO_WEIGHT_HEAVY:
-80     weight = "900";
-81     break;
-82   case PANGO_WEIGHT_ULTRAHEAVY:
-83     weight = "900"; /* In PangoWeight definition, the weight is 1000. But CSS allows the weight below 900. */
-84     break;
-85   default:
-86     weight = "normal";
-87     break;
-88   }
-89   fontsize = pango_font_description_get_size (pango_font_desc) / PANGO_SCALE;
-90   set_font_for_display (win, family, style, weight, fontsize);
-91 }
+20   g_free (textview_css);
+21 } 
+22 
+23 void
+24 set_font_for_display_with_pango_font_desc (GtkWindow *win, PangoFontDescription *pango_font_desc) {
+25   PangoStyle pango_style;
+26   PangoWeight pango_weight; 
+27   const char *family;
+28   const char *style;
+29   const char *weight;
+30   int fontsize;
+31 
+32   family = pango_font_description_get_family (pango_font_desc);
+33   pango_style = pango_font_description_get_style (pango_font_desc);
+34   switch (pango_style) {
+35   case PANGO_STYLE_NORMAL:
+36     style = "normal";
+37     break;
+38   case PANGO_STYLE_ITALIC:
+39     style = "italic";
+40     break;
+41   case PANGO_STYLE_OBLIQUE:
+42     style = "oblique";
+43     break;
+44   default:
+45     style = "normal";
+46     break;
+47   }
+48   pango_weight = pango_font_description_get_weight (pango_font_desc);
+49   switch (pango_weight) {
+50   case PANGO_WEIGHT_THIN:
+51     weight = "100";
+52     break;
+53   case PANGO_WEIGHT_ULTRALIGHT:
+54     weight = "200";
+55     break;
+56   case PANGO_WEIGHT_LIGHT:
+57     weight = "300";
+58     break;
+59   case PANGO_WEIGHT_SEMILIGHT:
+60     weight = "350";
+61     break;
+62   case PANGO_WEIGHT_BOOK:
+63     weight = "380";
+64     break;
+65   case PANGO_WEIGHT_NORMAL:
+66     weight = "400"; /* or "normal" */
+67     break;
+68   case PANGO_WEIGHT_MEDIUM:
+69     weight = "500";
+70     break;
+71   case PANGO_WEIGHT_SEMIBOLD:
+72     weight = "600";
+73     break;
+74   case PANGO_WEIGHT_BOLD:
+75     weight = "700"; /* or "bold" */
+76     break;
+77   case PANGO_WEIGHT_ULTRABOLD:
+78     weight = "800";
+79     break;
+80   case PANGO_WEIGHT_HEAVY:
+81     weight = "900";
+82     break;
+83   case PANGO_WEIGHT_ULTRAHEAVY:
+84     weight = "900"; /* In PangoWeight definition, the weight is 1000. But CSS allows the weight below 900. */
+85     break;
+86   default:
+87     weight = "normal";
+88     break;
+89   }
+90   fontsize = pango_font_description_get_size (pango_font_desc) / PANGO_SCALE;
+91   set_font_for_display (win, family, style, weight, fontsize);
+92 }
 ~~~
 
 - 3-11: `set_css_for_display`.
@@ -841,22 +853,24 @@ Bold is 700.
   - font-size specifies the size of a font.
 Small, medium, large and 12pt are font-size.
 - 17: Makes CSS text.
-The function `g_strdup_printf` generates a new string with printf-like formatting.
-- 22-91: `set_font_for_display_with_pango_font_desc`.
+The function `g_strdup_printf` creates a new string with printf-like formatting.
+- 23-92: `set_font_for_display_with_pango_font_desc`.
 This function takes out font-family, font-style, font-weight and font-size from the PangoFontDescription object and calls `set_font`for_display`.
-- 31: Gets the font-family of `pango_font_desc`.
-- 32-46: Gets the font-style of `pango_font_desc`.
+- 32: Gets the font-family of `pango_font_desc`.
+- 33-47: Gets the font-style of `pango_font_desc`.
 The functions `pango_font_description_get_style` returns an enumerated value.
-- 47-88: Gets the font-weight of `pango_font_desc`.
+- 48-89: Gets the font-weight of `pango_font_desc`.
 The function `pango_font_description_get_weight` returns an enumerated value.
 They corresponds to the numbers from 100 to 900.
-- 89: Gets the font-size of `pango_font_desc`.
+- 90: Gets the font-size of `pango_font_desc`.
 The function `pango_font_description_get_size` returns the size of a font.
 The unit of this size is (1/PANGO\_SCALE)pt.
 If the font size is 10pt, the function returns 10*PANGO\_SCALE.
 PANGO\_SCALE is defined as 1024.
 Therefore, 10*PANGO\_SCALE is 10240.
-- 90: calls `set_font_for_display` to set CSS for the GdkDisplay.
+- 91: calls `set_font_for_display` to set CSS for the GdkDisplay.
+
+For further information, see [Pango reference manual](https://developer.gnome.org/pango/1.46/).
 
 ## GSettings
 
@@ -920,12 +934,13 @@ It is [GVariant format string](https://developer.gnome.org/glib/stable/gvariant-
 Other common types are:
   - "b": gboolean
   - "i": gint32.
-  - "d": double
-Further information is in the website `GVariant format string` above.
+  - "d": double.
+
+Further information is in [Glib reference manual](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
 
 ### gsettings
 
-First, let's try `gsetting` application.
+First, let's try `gsettings` application.
 It is a configuration tool for GSettings.
 
 ~~~
@@ -1005,7 +1020,7 @@ Then, change the mode to advanced and quit.
 
 ![gnome-calculator advanced mode](../image/gnome_calculator_advanced.png)
 
-Run gsettongs and check whether the value of `button-mode` changes.
+Run gsettings and check whether the value of `button-mode` changes.
 
 ~~~
 $ gsettings list-recursively org.gnome.calculator
@@ -1018,13 +1033,13 @@ org.gnome.calculator button-mode 'advanced'
 
 ~~~
 
-Now we know that Gnome Calculator used gsettings and it sets `button-mode` key to "advanced" which is the current mode.
+Now we know that Gnome Calculator used gsettings and it has set `button-mode` key to "advanced".
 The value remains even the calculator quits.
 So when the calculator is run again, it will appear as an advanced mode calculator.
 
 ### glib-compile-schemas
 
-GSettings schemas are specified with XML format.
+GSettings schemas are specified with an XML format.
 The XML schema files must have the filename extension `.gschema.xml`.
 The following is the XML schema file for the application `tfe`.
 
@@ -1059,7 +1074,7 @@ They are optional, but it is recommended to add them in the XML file.
 The XML file is compiled by glib-compile-schemas.
 When compiling, `glib-compile-schemas` compiles all the XML files which have ".gschema.xml" file extension in the directory given as an argument.
 It converts the XML file into a binary file `gschemas.compiled`.
-Suppose the XML file above is under `tfe6`directory.
+Suppose the XML file above is under `tfe6` directory.
 
 ~~~
 $ glib-compile-schemas tfe6
@@ -1076,7 +1091,7 @@ This is because GSettings object searches `GSETTINGS_SCHEMA_DIR` for `gschemas.c
 
 GSettings object looks for this file by the following process.
 
-- It searches `glib-2.0/schemas` subdirectories of all the directories specified in the environment cariable `XDG_DATA_DIRS`.
+- It searches `glib-2.0/schemas` subdirectories of all the directories specified in the environment variable `XDG_DATA_DIRS`.
 Most common directory is `/usr/share/glib-2.0/schemas`. 
 - If `GSETTINGS_SCHEMA_DIR` environment variable is defined, it searches all the directories specified in the variable.
 `GSETTINGS_SCHEMA_DIR` can specify multiple directories delimited by colon (:).
@@ -1085,7 +1100,7 @@ In the directories above, all the `.gschema.xml` files are stored.
 Therefore, when you install your application, follow the instruction below to install your schemas.
 
 1. Make `.gschema.xml` file.
-2. Copy it to one of the directories above. For example, `/usr/share/glib-2.0/schemas`.
+2. Copy it to one of the directories above. For example, `/usr/local/share/glib-2.0/schemas`.
 3. Run `glib-compile-schemas` on the directory above.
 
 ### Meson.build
@@ -1146,18 +1161,21 @@ Then the two values will be always the same.
 If one value changes then the other will automatically change.
 
 You need to make an effort to understand GSettings concept, but coding is very simple.
-Just generate a GSettings object and bind it to a property of an object.
+Just create a GSettings object and bind it to a property of an object.
 
 ## Installation
 
-It is a good idea to install your application in `$HOME/local/bin` directory if you have installed gtk4 under the instruction in Section 2.
+It is a good idea to install your application in `$HOME/local/bin` directory if you have installed Gtk4 from the source (See Section 2).
 Then you need to put `--prefix=$HOME/local` option to meson like this.
 
 ~~~
 $ meson --prefix=$HOME/local _build
 ~~~
 
-Modify `meson.build` abd add install option and set it true in executable function.
+If you've installed Gtk4 from the distribution package, `--prefix` option isn't necessary.
+You just install `tfe` to the default bin directory like `/usr/local/bin`.
+
+Modify `meson.build` and add install option and set it true in executable function.
 
 ~~~meson
 executable('tfe', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
@@ -1182,10 +1200,10 @@ install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
 The default value of the option 'prefix' is "/usr/local", but it is "\$HOME/local" because we have run meson with prefix option.
 The default value of the option 'datadir' is "share".
 The operator '/' connects the strings with '/' separator.
-So, `$HOME/local/share/glib-2.0/schemas` is assigned to the varable `schema_dir`.
+So, `$HOME/local/share/glib-2.0/schemas` is assigned to the variable `schema_dir`.
 - install_data: This function installs the data to the install directory.
 
-Meson can runs a post compile script.
+Meson can run a post compile script.
 
 ~~~meson
 meson.add_install_script('glib-compile-schemas', schema_dir)

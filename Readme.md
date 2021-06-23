@@ -9,7 +9,7 @@ The table of contents are shown at the end of this abstract.
 - Section 24 to 27 describes list model and list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
-Please refer to [Gtk API reference](https://developer.gnome.org/gtk4/stable/index.html)
+Please refer to [Gtk reference manual](https://developer.gnome.org/gtk4/stable/index.html)
 and [Gnome Developer Center](https://developer.gnome.org/) for further topics.
 
 This tutorial is under development and unstable.

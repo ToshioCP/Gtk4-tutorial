@@ -91,7 +91,7 @@ Signals are registered in the class initialization function.
 The signal "change-file" has no default handler (object method handler).
 You usually don't need to set a default handler.
 If you need it, use `g_signal_new_class_handler` function.
-See [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-new-class-handler) for further information.
+See [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-new-class-handler) for further information.
 - The return value of `g_signal_new` is the signal id.
 The type of signal id is guint, which is the same as unsigned int.
 It is used in the function `g_signal_emit`.
@@ -101,7 +101,7 @@ This signal has a parameter.
 "open-response" signal has one parameter.
 - 25: The type of the parameter.
 `G_TYPE_INT` is a type of integer.
-Such fundamental types are described in [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-Type-Information.html).
+Such fundamental types are described in [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Type-Information.html).
 
 The handlers are declared as follows.
 

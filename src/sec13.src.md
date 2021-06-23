@@ -51,7 +51,7 @@ tfetextview/tfetextview.c tfe_text_view_new_with_file tfe_text_view_new
 Just returns the value from the function `g_object_new` but casts it to the pointer to GtkWidget.
 Initialization is done in `tfe_text_view_init` which is called in the process of `g_object_new` function.
 - 1-21: `tfe_text_view_new_with_file` function.
-- 3: `g_return_val_if_fail` is described in [Glib API reference](https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-return-val-if-fail).
+- 3: `g_return_val_if_fail` is described in [Glib reference manual](https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-return-val-if-fail).
 It tests whether the argument `file` is a pointer to GFile.
 If it's true, then the program goes on to the next line.
 If it's false, then it returns NULL (the second argument) immediately.
@@ -239,7 +239,7 @@ The important thing is to duplicate `tv->file`.
 Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.
 Another reason to use `g_file_dup` is that GFile isn't thread-safe.
 If you use GFile in the different thread, the duplication is necessary.
-See [Gio API reference](https://developer.gnome.org/gio/stable/GFile.html#g-file-dup).
+See [Gio reference manual](https://developer.gnome.org/gio/stable/GFile.html#g-file-dup).
 
 ## The API document and source file of tfetextview.c
 

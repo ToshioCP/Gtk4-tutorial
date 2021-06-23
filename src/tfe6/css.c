@@ -1,7 +1,7 @@
 #include "tfe.h"
 
 void
-set_css_for_display (GtkWindow *win, char *css) {
+set_css_for_display (GtkWindow *win, const char *css) {
   GdkDisplay *display;
 
   display = gtk_widget_get_display (GTK_WIDGET (win));
@@ -17,12 +17,13 @@ set_font_for_display (GtkWindow *win, const char *fontfamily, const char *fontst
   textview_css = g_strdup_printf ("textview {padding: 10px; font-family: \"%s\"; font-style: %s; font-weight: %s; font-size: %dpt;}",
                                       fontfamily, fontstyle, fontweight, fontsize);
   set_css_for_display (win, textview_css);
+  g_free (textview_css);
 } 
 
 void
 set_font_for_display_with_pango_font_desc (GtkWindow *win, PangoFontDescription *pango_font_desc) {
-  int pango_style;
-  int pango_weight; 
+  PangoStyle pango_style;
+  PangoWeight pango_weight; 
   const char *family;
   const char *style;
   const char *weight;

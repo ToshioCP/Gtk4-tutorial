@@ -195,7 +195,7 @@ Therefore, `act_quit` has a name "quit" and no parameter.
 - 17: Adds the action to GtkApplication `app`.
 GtkApplication implements an interface GActionMap and GActionGroup.
 GtkApplication (GActionMap) can have a group of actions and the actions are added with the function `g_action_map_add_action`.
-This function is described in [GMenuModel section in GIO API reference](https://developer.gnome.org/gio/stable/GActionMap.html#g-action-map-add-action).
+This function is described in [GMenuModel section in GIO reference manual](https://developer.gnome.org/gio/stable/GActionMap.html#g-action-map-add-action).
 - 18: Connects "activate" signal of the action and the handler `quit_activated`.
 - 20-23: Creates GMenu and GMenuItem instances.
 `menubar` and `menu` are GMenu.

@@ -138,7 +138,7 @@ g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
 The code above does:
 
 - Builds the "quit" action
-- Connects the action and the "activate" signal handler `quit_activate`
+- Connects the action and the "activate" signal handler `quit_activated`
 - Adds the action to the action map `app`.
 
 The same goes for the other actions.
@@ -156,7 +156,7 @@ The code above does:
 - Builds a "fullscreen" action and "color" action.
 - Connects the "fullscreen" action and the "change-state" signal handler `fullscreen_changed`
 - Its initial state is set to FALSE.
-- Connects the "color" action and the "activate" signal handler `color_activate`
+- Connects the "color" action and the "activate" signal handler `color_activated`
 - Its parameter type is string and the initial value is "red".
 - Adds the actions to the action map `win`.
 

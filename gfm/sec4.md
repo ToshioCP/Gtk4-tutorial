@@ -223,7 +223,7 @@ The change is:
 - The fourth argument of `g_signal_connect` is changed from `NULL` to `win`. 
 
 Most important is the fourth argument of `g_signal_connect`.
-It is described as "data to pass to handler" in the definition of `g_signal_connect` in [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
+It is described as "data to pass to handler" in the definition of `g_signal_connect` in [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
 Therefore, `win` which is a pointer to GtkApplicationWindow is passed to the handler as a second parameter `user_data`.
 Then, the handler cast it to a pointer to GtkWindow and call `gtk_window_destroy` to destroy the top-level window.
 Then, the application quits.

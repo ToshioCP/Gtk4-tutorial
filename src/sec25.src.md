@@ -1,7 +1,7 @@
 # GtkListView
 
 Gtk4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
-The new feature is described in the sections "GListModel support" and "List-based widgets" at the top of [the third chapter of the API reference](https://developer.gnome.org/gtk4/stable/gtkobjects.html).
+The new feature is described in the sections "GListModel support" and "List-based widgets" at the top of [the third chapter of Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/gtkobjects.html).
 
 Gtk4 has other means to implement lists.
 They are GtkListBox and GtkTreeView which are took over from Gtk3.
@@ -65,7 +65,7 @@ There are functions to add items to the list or remove items from the list.
 - `gtk_string_list_remove` removes an item from the list
 - `gtk_string_list_get_string` gets a string in the list
 
-See [API document](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for the further information.
+See [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for the further information.
 
 I'll explain the other list objects later.
 
@@ -288,7 +288,7 @@ Therefore, "gchararray" is "an array of char type", which is the same as string 
 It is used to get the type of GValue object.
 GValue is a generic value and it can contain various type of values.
 For example, the type can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
-For the further information, refer to GFileAttribute and GFileInfo section in [GIO API reference](https://developer.gnome.org/gio/stable/).
+For the further information, refer to GFileAttribute and GFileInfo section in [GIO reference manual](https://developer.gnome.org/gio/stable/).
 - closure tag has type attribute and function attribute.
 Function attribute specifies a function name and type attribute specifies the type of the return value of the function.
 The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.

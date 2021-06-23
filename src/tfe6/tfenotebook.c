@@ -58,6 +58,7 @@ modified_changed_cb (GtkTextBuffer *tb, gpointer user_data) {
     filename = gtk_notebook_get_tab_label_text (GTK_NOTEBOOK (nb), scr);
     text = g_strdup_printf ("*%s", filename);
     label = gtk_label_new (text);
+    g_free (text);
     gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
   } else
     file_changed_cb (tv);

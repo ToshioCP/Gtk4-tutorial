@@ -107,12 +107,12 @@ The function `g_signal_connect` has four arguments.
 3. A handler function (also called callback), which needs to be casted by `G_CALLBACK`.
 4. Data to pass to the handler. If no data is necessary, NULL should be given.
 
-You can find the description of each signal in API reference.
-For example, "activate" signal is in GApplication section in [GIO API reference](https://developer.gnome.org/gio/stable/GApplication.html#GApplication-activate).
+You can find the description of each signal in the API reference manual.
+For example, "activate" signal is in GApplication section in [GIO reference manual](https://developer.gnome.org/gio/stable/GApplication.html#GApplication-activate).
 The handler function is described in it.
 
-In addition, `g_signal_connect` is described in [GObject API reference](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
-API reference is very important.
+In addition, `g_signal_connect` is described in [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
+API reference manual is very important.
 You should see and understand it to write Gtk applications.
 They are located in ['GNOME Developer Center'](https://developer.gnome.org/).
 

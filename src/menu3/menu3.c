@@ -52,7 +52,7 @@ quit_activated (GSimpleAction *action, GVariant *parameter, gpointer app)
 }
 
 static void
-on_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app, gpointer user_data) {
   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
 
   const GActionEntry win_entries[] = {
@@ -77,7 +77,7 @@ on_activate (GApplication *app, gpointer user_data) {
 }
 
 static void
-on_startup (GApplication *app, gpointer user_data) {
+app_startup (GApplication *app, gpointer user_data) {
   GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
   GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
 
@@ -90,14 +90,16 @@ on_startup (GApplication *app, gpointer user_data) {
   g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
 }
 
+#define APPLICATION_ID "com.github.ToshioCP.menu3"
+
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.menu3", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "startup", G_CALLBACK (on_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

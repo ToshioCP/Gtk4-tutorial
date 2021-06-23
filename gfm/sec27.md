@@ -278,7 +278,7 @@ So, the change of the text in `entry` reflects "label" in `label2` immediately.
 
 Closure expression calls closure when it is evaluated.
 A closure is a generic representation of a callback (a pointer to a function).
-For information about closure, see [GObject API reference](https://developer.gnome.org/gobject/stable/chapter-signal.html#closure).
+For information about closure, see [GObject reference manual](https://developer.gnome.org/gobject/stable/chapter-signal.html#closure).
 A closure expression is created with `gtk_cclosure_expression_new` function.
 
 ~~~C

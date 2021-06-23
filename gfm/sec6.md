@@ -191,7 +191,7 @@ The string literal "Hello" has 6 bytes because the string has '\0' at the end it
 `s` is assigned the top address of the memory.
 `g_free` returns the memory to the heap area.
 
-`g_strdup` is described in [GLib API reference](https://developer.gnome.org/glib/stable/glib-String-Utility-Functions.html#g-strdup).
+`g_strdup` is described in [GLib reference manual](https://developer.gnome.org/glib/stable/glib-String-Utility-Functions.html#g-strdup).
 The following is extracted from the reference.
 
 > The returned string should be freed with `g_free()` when no longer needed.

@@ -95,7 +95,7 @@ tfe_text_view_new (void) {
 
 If you are curious about the background theory of this program, It's very good for you.
 Because knowing the theory is very important for you to program GTK applications.
-Look at [GObject API reference](https://developer.gnome.org/gobject/stable/).
+Look at [GObject reference manual](https://developer.gnome.org/gobject/stable/).
 All you need is described in it.
 Or, refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
 However, it's a tough journey especially for beginners.

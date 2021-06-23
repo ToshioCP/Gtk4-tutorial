@@ -36,28 +36,33 @@ close_cb (GtkNotebook *nb) {
 
 /* ----- menu or accelerator => action => handlers ----- */
 static void
-open_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  open_cb (GTK_NOTEBOOK (nb));
+open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  open_cb (nb);
 }
 
 static void
-save_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  save_cb (GTK_NOTEBOOK (nb));
+save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  save_cb (nb);
 }
 
 static void
-close_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  close_cb (GTK_NOTEBOOK (nb));
+close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  close_cb (nb);
 }
 
 static void
-new_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  notebook_page_new (GTK_NOTEBOOK (nb));
+new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  notebook_page_new (nb);
 }
 
 static void
-saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  notebook_page_saveas (GTK_NOTEBOOK (nb));
+saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  notebook_page_saveas (nb);
 }
 
 static gboolean
@@ -76,7 +81,7 @@ font_set_cb (GtkFontButton *fontbtn, gpointer user_data) {
 }
 
 static void
-pref_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
+pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
   gtk_widget_show (GTK_WIDGET (pref));
 }
 
@@ -95,11 +100,12 @@ alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
 }
 
 static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
 
   is_quit = true;
-  if (has_saved_all (GTK_NOTEBOOK (nb)))
+  if (has_saved_all (nb))
     tfe_application_quit (GTK_WINDOW (win));
   else {
     gtk_label_set_text (lb_alert, "Contents aren't saved yet.\nAre you sure to quit?");

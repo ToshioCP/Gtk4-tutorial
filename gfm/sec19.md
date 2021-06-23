@@ -216,7 +216,7 @@ g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
 The code above does:
 
 - Builds the "quit" action
-- Connects the action and the "activate" signal handler `quit_activate`
+- Connects the action and the "activate" signal handler `quit_activated`
 - Adds the action to the action map `app`.
 
 The same goes for the other actions.
@@ -234,7 +234,7 @@ The code above does:
 - Builds a "fullscreen" action and "color" action.
 - Connects the "fullscreen" action and the "change-state" signal handler `fullscreen_changed`
 - Its initial state is set to FALSE.
-- Connects the "color" action and the "activate" signal handler `color_activate`
+- Connects the "color" action and the "activate" signal handler `color_activated`
 - Its parameter type is string and the initial value is "red".
 - Adds the actions to the action map `win`.
 
@@ -297,7 +297,7 @@ The C source code of `menu3` and `meson.build` is as follows.
  52 }
  53 
  54 static void
- 55 on_activate (GApplication *app, gpointer user_data) {
+ 55 app_activate (GApplication *app, gpointer user_data) {
  56   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
  57 
  58   const GActionEntry win_entries[] = {
@@ -322,7 +322,7 @@ The C source code of `menu3` and `meson.build` is as follows.
  77 }
  78 
  79 static void
- 80 on_startup (GApplication *app, gpointer user_data) {
+ 80 app_startup (GApplication *app, gpointer user_data) {
  81   GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
  82   GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
  83 
@@ -335,20 +335,22 @@ The C source code of `menu3` and `meson.build` is as follows.
  90   g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
  91 }
  92 
- 93 int
- 94 main (int argc, char **argv) {
- 95   GtkApplication *app;
- 96   int stat;
- 97 
- 98   app = gtk_application_new ("com.github.ToshioCP.menu3", G_APPLICATION_FLAGS_NONE);
- 99   g_signal_connect (app, "startup", G_CALLBACK (on_startup), NULL);
-100   g_signal_connect (app, "activate", G_CALLBACK (on_activate), NULL);
-101 
-102   stat =g_application_run (G_APPLICATION (app), argc, argv);
-103   g_object_unref (app);
-104   return stat;
-105 }
-106 
+ 93 #define APPLICATION_ID "com.github.ToshioCP.menu3"
+ 94 
+ 95 int
+ 96 main (int argc, char **argv) {
+ 97   GtkApplication *app;
+ 98   int stat;
+ 99 
+100   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+101   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+102   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+103 
+104   stat =g_application_run (G_APPLICATION (app), argc, argv);
+105   g_object_unref (app);
+106   return stat;
+107 }
+108 
 ~~~
 
 meson.build
