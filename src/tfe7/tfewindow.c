@@ -105,11 +105,12 @@ quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) 
 static void
 changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
   GtkWindow *win = GTK_WINDOW (user_data); 
-  const char *font;
+  char *font;
   PangoFontDescription *pango_font_desc;
 
   font = g_settings_get_string (settings, "font");
   pango_font_desc = pango_font_description_from_string (font);
+  g_free (font);
   set_font_for_display_with_pango_font_desc (win, pango_font_desc);
 }
 

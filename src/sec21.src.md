@@ -1,4 +1,4 @@
-# Template XML
+# Template XML and composite widget
 
 The tfe program in the previous section is not so good because many things are crammed into `tfepplication.c`.
 Many static variables in `tfepplication.c` shows that.
@@ -60,8 +60,8 @@ tfe7/tfepref.h
 
 - 6-7: When you define a new object, you need to write these two lines.
 Refer to [Section 8](sec8.src.md).
-- 9-10: `tfe_pref_new` generates a new TfePref object.
-It has a parameter which the object uses as a transient parent to show the dialog.
+- 9-10: `tfe_pref_new` creates a new TfePref object.
+It has a parameter `win` which is used as a transient parent window to show the dialog.
 
 @@@include
 tfe7/tfepref.c
@@ -69,34 +69,31 @@ tfe7/tfepref.c
 
 - 3-8: The structure of an instance of this object.
 It has two variables, settings and fontbtn.
-- 10: G\_DEFINE\_TYPE macro generates lines to register the type.
-- 12-18: dispose handler.
-This handler is called when this object is finalizing.
-The process has two stages, disposing and finalizing.
-When disposing, the object releases all the objects it has had.
-TfePref object holds a GSetting object.
+- 10: `G_DEFINE_TYPE` macro.
+This macro registers the TfePref type.
+- 12-18: Dispose handler.
+This handler is called when the instance is destroyed.
+The destruction process has two stages, disposing and finalizing.
+When disposing, the instance releases all the references (to the other instances).
+TfePref object holds a reference to the GSettings instance.
 It is released in line 16.
 After that parents dispose handler is called in line 17.
-Refer to [Section 11](sec11.src.md).
+For further information about destruction process, refer to [Section 11](sec11.src.md).
 - 27-34: Class initialization function.
-This is called in the class generation process.
 - 31: Set the dispose handler.
-- 32: `gtk_widget_class_set_template_from_resource` function associates the description in the XML file with the widget.
-At this moment no object is generated.
+- 32: `gtk_widget_class_set_template_from_resource` function associates the description in the XML file (`tfepref.ui`) with the widget.
+At this moment no instance is created.
 It just make the class to know the structure of the object.
-That's why the top level tag is not an object but template in the XML file.
+That's why the top level tag is not `<object>` but `<template>` in the XML file.
 - 33: `gtk_widget_class_bind_template_child` function binds a private variable of the object with a child object in the template.
 This function is a macro.
-The name of the private variable (in the line 7) and the id (in the line 24) in the XML file must be the same.
-In the program above, the name is `fontbtn`.
-The pointer to the object will be assigned to the variable when an instance is generated.
+The name of the private variable (`fontbtn` in line 7) and the id `fontbtn` in the XML file (line 24) must be the same.
+The pointer to the instance will be assigned to the variable `fontbtn` when the instance is created.
 - 20-25: Instance initialization function.
-- 22: Initializes the template of this object.
+- 22: Creates the instance based on the template in the class.
 The template has been made during the class initialization process.
-Now it is implemented to the instance.
-- 23: Create GSettings object with the id `com.github.ToshioCP.tfe`.
+- 23: Create GSettings instance with the id "com.github.ToshioCP.tfe".
 - 24: Bind the font key in the GSettings object to the font property in the GtkFontButton.
-
 - 36-39: The function `tfe_pref_new` creates an instance of TfePref.
 The parameter `win` is a transient parent.
 
@@ -105,7 +102,7 @@ A caller just creates this object and shows it.
 
 ~~~C
 TfePref *pref;
-pref = tfe_pref_new (win) /* win is the top level window */
+pref = tfe_pref_new (win) /* win is the top-level window */
 gtk_widget_show (GTK_WINDOW (win));
 ~~~
 
@@ -134,7 +131,7 @@ The functions `tfe_alert_set_message` and `tfe_alert_set_button_label` sets the 
 For example, if you want to show an alert that the user tries to close without saving the content, set them like:
 
 ~~~C
-tfe_alert_set_message (alert, "Are you really close without saving?"); /* alert points to a TfeAlert object */
+tfe_alert_set_message (alert, "Are you really close without saving?"); /* alert points to a TfeAlert instance */
 tfe_alert_set_button_label (alert, "Close");
 ~~~
 
@@ -154,10 +151,10 @@ The instruction how to use this object is as follows.
 2. Create a TfeAlert object.
 3. Connect "response" signal to a handler
 4. Show the dialog
-5. In the signal handler do something with regard to the response-id.
+5. In the signal handler, do something with regard to the response-id.
 Then destroy the dialog.
 
-## Top level window
+## Top-level window
 
 In the same way, create a child object of GtkApplicationWindow.
 The object name is "TfeWindow".
@@ -166,7 +163,7 @@ The object name is "TfeWindow".
 tfe7/tfewindow.ui
 @@@
 
-This XML file is almost same as before except template tag and "action-name" property.
+This XML file is almost same as before except template tag and "action-name" property in buttons.
 
 GtkButton implements GtkActionable interface, which has "action-name" property.
 If this property is set, GtkButton activates the action when it is clicked.
@@ -203,40 +200,40 @@ tfe7/tfewindow.c
 This is the same as before except `gtk_window_destroy(GTK_WINDOW (win))` is used instead of `tfe_application_quit`.
 - 31-102: Handlers of action activated signal.
 The `user_data` is a pointer to TfeWindow instance.
-- 104-114: A handler of "changed::font" signal of GSettings object.
+- 104-115: A handler of "changed::font" signal of GSettings object.
 - 111: Gets the font from GSettings data.
 - 112: Gets a PangoFontDescription from the font.
 In the previous version, the program gets the font description from the GtkFontButton.
 The button data and GSettings data are the same.
 Therefore, the data got here is the same as the data in the GtkFontButton.
 In addition, we don't need to worry about the preference dialog is alive or not thanks to the GSettings.
-- 113: Sets CSS on the display with the font description.
-- 116-131: Public functions.
-- 133-140: Dispose handler.
+- 114: Sets CSS on the display with the font description.
+- 117-132: Public functions.
+- 134-141: Dispose handler.
 The GSettings object needs to be released.
-- 142-170: Object initialize function.
-- 147: Generates a composite widget with the template.
-- 150-152: Insert menu to the menu button.
-- 154-155: Creates a GSettings object with the id.
+- 143-171: Instance initialization function.
+- 148: Creates a composite widget instance with the template.
+- 151-153: Insert `menu` to the menu button.
+- 155-156: Creates a GSettings instance with the id "com.github.ToshioCP.tfe".
 Connects "changed::font" signal to the handler `changed_font_cb`.
 This signal emits when the GSettings data is changed.
 The second part "font" of the signal name "changed::font" is called details.
 Signals can have details.
-If a GSettings object has more than one key, "changed" signal emits only if the key which has the same name as the detail changes its value.
+If a GSettings instance has more than one key, "changed" signal emits only if the key, which has the same name as the detail, changes its value.
 For example, Suppose a GSettings object has three keys "a", "b" and "c".
-  - "changed::a" is emitted when the value of "a" is changed. It isn't emitted when the value of "b" or "c" is changed.
-  - "changed::b" is emitted when the value of "b" is changed. It isn't emitted when the value of "a" or "c" is changed.
-  - "changed::c" is emitted when the value of "c" is changed. It isn't emitted when the value of "a" or "b" is changed.
+  - "changed::a" is emitted when the value of the key "a" is changed. It isn't emitted when the value of "b" or "c" is changed.
+  - "changed::b" is emitted when the value of the key "b" is changed. It isn't emitted when the value of "a" or "c" is changed.
+  - "changed::c" is emitted when the value of the key "c" is changed. It isn't emitted when the value of "a" or "b" is changed.
 In this version of tfe, there is only one key ("font").
 So, even if the signal doesn't have a detail, the result is the same.
 But in the future version, it will probably need details.
-- 157-167: Creates actions.
-- 169: Sets CSS font.
-- 172-180: Class initialization function.
-- 176: Sets the dispose handler.
-- 177: Sets the composite widget template
-- 178-179: Binds private variable with child objects in the template.
-- 182-185: `tfe_window_new`.
+- 158-168: Creates actions.
+- 170: Sets CSS font.
+- 173-181: Class initialization function.
+- 177: Sets the dispose handler.
+- 178: Sets the composite widget template
+- 179-180: Binds private variable with child objects in the template.
+- 183-186: `tfe_window_new`.
 This function creates TfeWindow instance.
 
 ## TfeApplication
@@ -251,9 +248,9 @@ tfe7/tfeapplication.c
 It uses `tfe_window_notebook_page_new` instead of `notebook_page_new`.
 - 13-20: Open signal handler.
 Thanks to `tfe_window_notebook_page_new_with_files`, this handler becomes very simple.
-- 22-46: Startup signal handler.
-Most of the task is moved to TfeWindow, the remaining task is creating a window and setting accelerations.
-- 49-63: A function main.
+- 22-44: Startup signal handler.
+Most of the tasks are moved to TfeWindow, the remaining tasks are creating a window and setting accelerations.
+- 48-64: A function `main`.
 
 ## Other files
 
@@ -275,12 +272,23 @@ Meson.build
 tfe7/meson.build
 @@@
 
-## Compiling and installation.
+## Compilation and installation.
+
+If you build Gtk4 from the source, use `--prefix` option.
 
 ~~~
 $ meson --prefix=$HOME/local _build
 $ ninja -C _build
 $ ninja -C _build install
+~~~
+
+If you install Gtk4 from the distribution packages, you don't need the prefix option.
+Maybe you need root privilege to install it.
+
+~~~
+$ meson _build
+$ ninja -C _build
+$ ninja -C _build install  # or 'sudo ninja -C _build install'
 ~~~
 
 Source files are in [src/tfe7](tfe7) directory.

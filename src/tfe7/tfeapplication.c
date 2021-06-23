@@ -2,7 +2,7 @@
 
 /* ----- activate, open, startup handlers ----- */
 static void
-tfe_activate (GApplication *application) {
+app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 
@@ -11,7 +11,7 @@ tfe_activate (GApplication *application) {
 }
 
 static void
-tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
 
@@ -20,7 +20,7 @@ tfe_open (GApplication *application, GFile ** files, gint n_files, const gchar *
 }
 
 static void
-tfe_startup (GApplication *application) {
+app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   int i;
 
@@ -44,16 +44,19 @@ tfe_startup (GApplication *application) {
 }
 
 /* ----- main ----- */
+
+#define APPLICATION_ID "com.github.ToshioCP.tfe"
+
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
 
-  g_signal_connect (app, "startup", G_CALLBACK (tfe_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (tfe_activate), NULL);
-  g_signal_connect (app, "open", G_CALLBACK (tfe_open), NULL);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
