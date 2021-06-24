@@ -38,7 +38,7 @@ The instruction is as follows:
 This will be a destination.
 2. Create a cairo context with the surface and the surface will be the destination of the context.
 3. Create a source pattern within the context.
-4. Create paths, which are lines, rectangles, arcs, texts or more complicated shapes, to generate a mask.
+4. Create paths, which are lines, rectangles, arcs, texts or more complicated shapes in the mask.
 5. Use drawing operator such as `cairo_stroke` to transfer the paint in the source to the destination.
 6. Save the destination surface to a file if necessary.
 
@@ -48,31 +48,36 @@ Here's a simple example code that draws a small square and save it as a png file
 misc/cairo.c
 @@@
 
-- 1: Includes the header file of cairo.
-- 12: `cairo_image_surface_create` creates an image surface.
+- 1: Includes the header file of Cairo.
+- 6: `cairo_surface_t` is the type of a surface.
+- 7: `cairo_t` is the type of a cairo context.
+- 8-10: `width` and `height` is the size of `surface`.
+`square_size` is the size of a square drawn on the surface.
+- 13: `cairo_image_surface_create` creates an image surface.
 `CAIRO_FORMAT_RGB24` is a constant which means that each pixel has red, green and blue data.
-Each data has 8 bit quantity.
+Each data has 8 bits quantity.
+Therefore, 24 bits (3x8=24) is the size of RGB24.
 Modern displays have this type of color depth.
 Width and height are pixels and given as integers.
-- 13: Creates cairo context.
+- 14: Creates cairo context.
 The surface given as an argument will be the destination of the context.
-- 17: `cairo_set_source_rgb` creates a source pattern, which is a solid white paint.
+- 18: `cairo_set_source_rgb` creates a source pattern, which is a solid white paint.
 The second to fourth argument is red, green and blue color depth respectively.
 Their type is float and the values are between zero and one.
 (0,0,0) is black and (1,1,1) is white.
-- 18: `cairo_paint` copies everywhere in the source to destination.
-The destination is filled with white pixels by this command.
-- 20: Sets the source color to black.
-- 21: `cairo_set_line_width` set the width of lines.
+- 19: `cairo_paint` copies everywhere in the source to destination.
+The destination is filled with white pixels with this command.
+- 21: Sets the source color to black.
+- 22: `cairo_set_line_width` set the width of lines.
 In this case, the line width is set to two pixels.
 (It is because the transformation is identity.
 If the transformation isn't identity, for example scaling with the factor three, the actual width in destination will be six (2x3=6) pixels.)
-- 22: Draws a rectangle (square).
-The top-left coordinate is (width/2.0-20.0, height/2.0-20.0) and the width and height have the same length 40.0.
-- 23: `cairo_stroke` transfer the source to destination through the rectangle in mask.
-- 26: Outputs the image to a png file `rectangle.png`.
-- 27: Destroys the context. At the same time the source is destroyed.
-- 28: Destroys the destination surface.
+- 23: Draws a rectangle (square) on the mask.
+The square is located at the center.
+- 24: `cairo_stroke` transfer the source to destination through the rectangle in the mask.
+- 27: Outputs the image to a png file `rectangle.png`.
+- 28: Destroys the context. At the same time the source is destroyed.
+- 29: Destroys the surface.
 
 To compile this, type the following.
 
@@ -81,7 +86,7 @@ To compile this, type the following.
 ![rectangle.png](misc/rectangle.png)
 
 There are lots of documentations in [Cairo's website](https://www.cairographics.org/).
-If you aren't familiar with cairo, it is strongly recommended to read the [tutorial](https://www.cairographics.org/tutorial/) in the website.
+If you aren't familiar with Cairo, it is strongly recommended to read the [tutorial](https://www.cairographics.org/tutorial/) in the website.
 
 ## GtkDrawingArea
 
@@ -92,34 +97,36 @@ misc/da1.c
 @@@
 
 The function `main` is almost same as before.
-The two functions `on_activate` and `draw_function` is important in this example.
+The two functions `app_activate` and `draw_function` is important in this example.
 
-- 16: Generates a GtkDrawingArea object.
-- 20,21: Sets the width and height of the contents of the GtkDrawingArea widget.
-These width and height is the size of the destination surface of the cairo context provided by the widget.
-- 22: Sets a drawing function of the widget.
+- 18: Creates a GtkDrawingArea instance.
+- 21: Sets a drawing function of the widget.
 GtkDrawingArea widget uses the function to draw the contents of itself whenever its necessary.
-For example, when a user drag a mouse pointer and resize a top level window, GtkDrawingArea also changes the size.
+For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
 Then, the whole window needs to be redrawn.
+For the information of `gtk_drawing_area_set_draw_func`, see [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkDrawingArea.html#gtk-drawing-area-set-draw-func).
 
 The drawing function has five parameters.
 
-    void drawing_function (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height,
-                           gpointer user_data);
+~~~C
+void drawing_function (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height,
+                       gpointer user_data);
+~~~
 
-The first parameter is the GtkDrawingArea widget which calls the drawing function.
-However, you can't change any properties, for example `content-width` or `content-height`, in this function.
+The first parameter is the GtkDrawingArea widget.
+You can't change any properties, for example `content-width` or `content-height`, in this function.
 The second parameter is a cairo context given by the widget.
 The destination surface of the context is connected to the contents of the widget.
 What you draw to this surface will appear in the widget on the screen.
 The third and fourth parameters are the size of the destination surface.
+Now, look at the program of the example again.
 
-- 3-11: The drawing function.
-- 4-5: Sets the source to be white and paint the destination white.
-- 7: Sets the line width to be 2.
-- 8: Sets the source to be black.
-- 9: Adds a rectangle to the mask.
-- 10: Draws the rectangle with black color to the destination.
+- 3-13: The drawing function.
+- 7-8: Sets the source to be white and paint the destination white.
+- 9: Sets the line width to be 2.
+- 10: Sets the source to be black.
+- 11: Adds a rectangle to the mask.
+- 12: Draws the rectangle with black color to the destination.
 
 Compile and run it, then a window with a black rectangle (square) appears.
 Try resizing the window.

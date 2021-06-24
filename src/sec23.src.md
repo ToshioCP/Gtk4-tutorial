@@ -2,7 +2,7 @@
 
 Now, we will make a new application which has GtkDrawingArea and TfeTextView in it.
 Its name is "color".
-If you write a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
+If you write a name of a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
 
 ![color](../image/color.png){width=7.0cm height=5.13cm}
 
@@ -36,7 +36,7 @@ The ui file is as follows.
 color/color.ui
 @@@
 
-- 10-53: This part describes the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
+- 10-53: This part is the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
 This is similar to the toolbar of tfe text editor in [Section 9](sec9.src.md).
 There are two differences.
 `Run` button replaces `New` button.
@@ -71,7 +71,7 @@ This is the main file.
 It deals with:
 
 - Building widgets by GtkBuilder.
-- Seting a drawing function of GtkDrawingArea.
+- Setting a drawing function of GtkDrawingArea.
 And connecting a handler to "resize" signal on GtkDrawingArea.
 - Implementing each call back functions.
 Particularly, `Run` signal handler is the point in this program.
@@ -82,35 +82,35 @@ The following is `colorapplication.c`.
 color/colorapplication.c
 @@@
 
-- 108-121: The function `main` is almost same as before but there are some differences.
+- 109-124: The function `main` is almost same as before but there are some differences.
 The application ID is "com.github.ToshioCP.color".
 `G_APPLICATION_FLAGS_NONE` is specified so no open signal handler is necessary.
-- 86-106: Startup handler.
-- 91-96: Builds widgets.
+- 87-107: Startup handler.
+- 92-97: Builds widgets.
 The pointers of the top window, TfeTextView and GtkDrawingArea objects are stored to static variables `win`, `tv` and `da` respectively.
 This is because these objects are often used in handlers.
 They never be rewritten so they're thread safe.
-- 97: connects "resize" signal and the handler.
-- 98: sets the drawing function.
-- 81-84: Activates handler, which just shows the widgets.
-- 73-79: The drawing function.
+- 98: connects "resize" signal and the handler.
+- 99: sets the drawing function.
+- 82-85: Activate handler, which just shows the widgets.
+- 74-80: The drawing function.
 It just copies `surface` to destination.
-- 65-71: Resize handler.
-Re-creates the surface to fit the width and height of the drawing area and paints by calling the function `run`.
-- 58-63: Closes the handler.
+- 66-72: Resize handler.
+Re-creates the surface to fit its width and height for the drawing area and paints by calling the function `run`.
+- 59-64: Close handler.
 It destroys `surface` if it exists.
-Then it destroys the top window and quits the application.
-- 48-56: Open and save handler.
+Then it destroys the top-level window and quits the application.
+- 49-57: Open and save handler.
 They just call the corresponding functions of TfeTextView.
-- 42-46: Run handler.
+- 43-47: Run handler.
 It calls run function to paint the surface.
 After that `gtk_widget_queue_draw` is called.
-This fhunction adds the widget (GtkDrawingArea) to the queue to be redrawn.
-It is important to know that the drawing function is called when it is necessary.
+This function adds the widget (GtkDrawingArea) to the queue to be redrawn.
+It is important to know that the window is redrawn whenever it is necessary.
 For example, when another window is moved and uncovers part of the widget, or when the window containing it is resized.
-But repaint of `surface` is not automatically notified to gtk.
+But repainting `surface` is not automatically notified to gtk.
 Therefore, you need to call `gtk_widget_queue_draw` to redraw the widget.
-- 9-40: Run function paints the surface.
+- 9-41: Run function paints the surface.
 First, it gets the contents of GtkTextBuffer.
 Then it compares it to "red", "green" and so on.
 If it matches the color, then the surface is painted the color.
@@ -128,7 +128,8 @@ color/meson.build
 
 ## Compile and execute it
 
-First you need to export some variables (refer to [Section 2](sec2.src.md)).
+First you need to export some variables (refer to [Section 2](sec2.src.md)) if you've installed Gtk4 from the source.
+If you've installed Gtk4 from the distribution packages, you don't need to do this.
 
     $ . env.sh
 

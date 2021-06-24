@@ -37,6 +37,7 @@ run (void) {
     cairo_paint (cr);
     cairo_destroy (cr);
   }
+  g_free (contents);
 }
 
 void
@@ -47,7 +48,7 @@ run_cb (GtkWidget *btnr) {
 
 void
 open_cb (GtkWidget *btno) {
-  tfe_text_view_open (TFE_TEXT_VIEW (tv), win);
+  tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
 }
 
 void
@@ -79,12 +80,12 @@ draw_func (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height, gpo
 }
 
 static void
-activate (GApplication *application) {
+app_activate (GApplication *application) {
   gtk_widget_show (win);
 }
 
 static void
-startup (GApplication *application) {
+app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkBuilder *build;
 
@@ -105,15 +106,17 @@ GdkDisplay *display;
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
+#define APPLICATION_ID "com.github.ToshioCP.color"
+
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.color", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
 
-  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

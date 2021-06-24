@@ -4,7 +4,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24]
 
 Now, we will make a new application which has GtkDrawingArea and TfeTextView in it.
 Its name is "color".
-If you write a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
+If you write a name of a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
 
 ![color](../image/color.png)
 
@@ -117,7 +117,7 @@ The ui file is as follows.
 80 </interface>
 ~~~
 
-- 10-53: This part describes the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
+- 10-53: This part is the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
 This is similar to the toolbar of tfe text editor in [Section 9](sec9.md).
 There are two differences.
 `Run` button replaces `New` button.
@@ -159,7 +159,7 @@ This is the main file.
 It deals with:
 
 - Building widgets by GtkBuilder.
-- Seting a drawing function of GtkDrawingArea.
+- Setting a drawing function of GtkDrawingArea.
 And connecting a handler to "resize" signal on GtkDrawingArea.
 - Implementing each call back functions.
 Particularly, `Run` signal handler is the point in this program.
@@ -206,120 +206,123 @@ The following is `colorapplication.c`.
  37     cairo_paint (cr);
  38     cairo_destroy (cr);
  39   }
- 40 }
- 41 
- 42 void
- 43 run_cb (GtkWidget *btnr) {
- 44   run ();
- 45   gtk_widget_queue_draw (GTK_WIDGET (da));
- 46 }
- 47 
- 48 void
- 49 open_cb (GtkWidget *btno) {
- 50   tfe_text_view_open (TFE_TEXT_VIEW (tv), win);
- 51 }
- 52 
- 53 void
- 54 save_cb (GtkWidget *btns) {
- 55   tfe_text_view_save (TFE_TEXT_VIEW (tv));
- 56 }
- 57 
- 58 void
- 59 close_cb (GtkWidget *btnc) {
- 60   if (surface)
- 61     cairo_surface_destroy (surface);
- 62   gtk_window_destroy (GTK_WINDOW (win));
- 63 }
- 64 
- 65 static void
- 66 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
- 67   if (surface)
- 68     cairo_surface_destroy (surface);
- 69   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
- 70   run ();
- 71 }
- 72 
- 73 static void
- 74 draw_func (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height, gpointer user_data) {
- 75   if (surface) {
- 76     cairo_set_source_surface (cr, surface, 0, 0);
- 77     cairo_paint (cr);
- 78   }
- 79 }
- 80 
- 81 static void
- 82 activate (GApplication *application) {
- 83   gtk_widget_show (win);
- 84 }
- 85 
- 86 static void
- 87 startup (GApplication *application) {
- 88   GtkApplication *app = GTK_APPLICATION (application);
- 89   GtkBuilder *build;
- 90 
- 91   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/color/color.ui");
- 92   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
- 93   gtk_window_set_application (GTK_WINDOW (win), app);
- 94   tv = GTK_WIDGET (gtk_builder_get_object (build, "tv"));
- 95   da = GTK_WIDGET (gtk_builder_get_object (build, "da"));
- 96   g_object_unref(build);
- 97   g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
- 98   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (da), draw_func, NULL, NULL);
- 99 
-100 GdkDisplay *display;
-101 
-102   display = gtk_widget_get_display (GTK_WIDGET (win));
-103   GtkCssProvider *provider = gtk_css_provider_new ();
-104   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-105   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-106 }
-107 
-108 int
-109 main (int argc, char **argv) {
-110   GtkApplication *app;
-111   int stat;
-112 
-113   app = gtk_application_new ("com.github.ToshioCP.color", G_APPLICATION_FLAGS_NONE);
-114 
-115   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-116   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+ 40   g_free (contents);
+ 41 }
+ 42 
+ 43 void
+ 44 run_cb (GtkWidget *btnr) {
+ 45   run ();
+ 46   gtk_widget_queue_draw (GTK_WIDGET (da));
+ 47 }
+ 48 
+ 49 void
+ 50 open_cb (GtkWidget *btno) {
+ 51   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
+ 52 }
+ 53 
+ 54 void
+ 55 save_cb (GtkWidget *btns) {
+ 56   tfe_text_view_save (TFE_TEXT_VIEW (tv));
+ 57 }
+ 58 
+ 59 void
+ 60 close_cb (GtkWidget *btnc) {
+ 61   if (surface)
+ 62     cairo_surface_destroy (surface);
+ 63   gtk_window_destroy (GTK_WINDOW (win));
+ 64 }
+ 65 
+ 66 static void
+ 67 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
+ 68   if (surface)
+ 69     cairo_surface_destroy (surface);
+ 70   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+ 71   run ();
+ 72 }
+ 73 
+ 74 static void
+ 75 draw_func (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height, gpointer user_data) {
+ 76   if (surface) {
+ 77     cairo_set_source_surface (cr, surface, 0, 0);
+ 78     cairo_paint (cr);
+ 79   }
+ 80 }
+ 81 
+ 82 static void
+ 83 app_activate (GApplication *application) {
+ 84   gtk_widget_show (win);
+ 85 }
+ 86 
+ 87 static void
+ 88 app_startup (GApplication *application) {
+ 89   GtkApplication *app = GTK_APPLICATION (application);
+ 90   GtkBuilder *build;
+ 91 
+ 92   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/color/color.ui");
+ 93   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+ 94   gtk_window_set_application (GTK_WINDOW (win), app);
+ 95   tv = GTK_WIDGET (gtk_builder_get_object (build, "tv"));
+ 96   da = GTK_WIDGET (gtk_builder_get_object (build, "da"));
+ 97   g_object_unref(build);
+ 98   g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
+ 99   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (da), draw_func, NULL, NULL);
+100 
+101 GdkDisplay *display;
+102 
+103   display = gtk_widget_get_display (GTK_WIDGET (win));
+104   GtkCssProvider *provider = gtk_css_provider_new ();
+105   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
+106   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+107 }
+108 
+109 #define APPLICATION_ID "com.github.ToshioCP.color"
+110 
+111 int
+112 main (int argc, char **argv) {
+113   GtkApplication *app;
+114   int stat;
+115 
+116   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
 117 
-118   stat =g_application_run (G_APPLICATION (app), argc, argv);
-119   g_object_unref (app);
-120   return stat;
-121 }
-122 
+118   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+119   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+120 
+121   stat =g_application_run (G_APPLICATION (app), argc, argv);
+122   g_object_unref (app);
+123   return stat;
+124 }
+125 
 ~~~
 
-- 108-121: The function `main` is almost same as before but there are some differences.
+- 109-124: The function `main` is almost same as before but there are some differences.
 The application ID is "com.github.ToshioCP.color".
 `G_APPLICATION_FLAGS_NONE` is specified so no open signal handler is necessary.
-- 86-106: Startup handler.
-- 91-96: Builds widgets.
+- 87-107: Startup handler.
+- 92-97: Builds widgets.
 The pointers of the top window, TfeTextView and GtkDrawingArea objects are stored to static variables `win`, `tv` and `da` respectively.
 This is because these objects are often used in handlers.
 They never be rewritten so they're thread safe.
-- 97: connects "resize" signal and the handler.
-- 98: sets the drawing function.
-- 81-84: Activates handler, which just shows the widgets.
-- 73-79: The drawing function.
+- 98: connects "resize" signal and the handler.
+- 99: sets the drawing function.
+- 82-85: Activate handler, which just shows the widgets.
+- 74-80: The drawing function.
 It just copies `surface` to destination.
-- 65-71: Resize handler.
-Re-creates the surface to fit the width and height of the drawing area and paints by calling the function `run`.
-- 58-63: Closes the handler.
+- 66-72: Resize handler.
+Re-creates the surface to fit its width and height for the drawing area and paints by calling the function `run`.
+- 59-64: Close handler.
 It destroys `surface` if it exists.
-Then it destroys the top window and quits the application.
-- 48-56: Open and save handler.
+Then it destroys the top-level window and quits the application.
+- 49-57: Open and save handler.
 They just call the corresponding functions of TfeTextView.
-- 42-46: Run handler.
+- 43-47: Run handler.
 It calls run function to paint the surface.
 After that `gtk_widget_queue_draw` is called.
-This fhunction adds the widget (GtkDrawingArea) to the queue to be redrawn.
-It is important to know that the drawing function is called when it is necessary.
+This function adds the widget (GtkDrawingArea) to the queue to be redrawn.
+It is important to know that the window is redrawn whenever it is necessary.
 For example, when another window is moved and uncovers part of the widget, or when the window containing it is resized.
-But repaint of `surface` is not automatically notified to gtk.
+But repainting `surface` is not automatically notified to gtk.
 Therefore, you need to call `gtk_widget_queue_draw` to redraw the widget.
-- 9-40: Run function paints the surface.
+- 9-41: Run function paints the surface.
 First, it gets the contents of GtkTextBuffer.
 Then it compares it to "red", "green" and so on.
 If it matches the color, then the surface is painted the color.
@@ -346,7 +349,8 @@ An argument "export_dynamic: true" is added to executable function.
 
 ## Compile and execute it
 
-First you need to export some variables (refer to [Section 2](sec2.md)).
+First you need to export some variables (refer to [Section 2](sec2.md)) if you've installed Gtk4 from the source.
+If you've installed Gtk4 from the distribution packages, you don't need to do this.
 
     $ . env.sh
 

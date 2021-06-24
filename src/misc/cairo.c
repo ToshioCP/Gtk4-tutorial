@@ -7,8 +7,9 @@ main (int argc, char **argv)
   cairo_t *cr;
   int width = 100;
   int height = 100;
+  int square_size = 40.0;
 
-  /* Generate surface and cairo */
+  /* Create surface and cairo */
   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
   cr = cairo_create (surface);
 
@@ -19,7 +20,7 @@ main (int argc, char **argv)
   /* Draw a black rectangle */
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_set_line_width (cr, 2.0);
-  cairo_rectangle (cr, width/2.0 - 20.0, height/2.0 - 20.0, 40.0, 40.0);
+  cairo_rectangle (cr, width/2.0 - square_size/2, height/2.0 - square_size/2, square_size, square_size);
   cairo_stroke (cr);
 
   /* Write the surface to a png file and clean up cairo and surface. */
