@@ -516,6 +516,8 @@ static cairo_t *cr;
 gboolean
 init_cairo (void) {
   int width, height;
+  cairo_matrix_t matrix;
+
   pen = TRUE;
   angle = 90.0;
   cur_x = 0.0;
@@ -524,13 +526,12 @@ init_cairo (void) {
   bc.red = 0.95; bc.green = 0.95; bc.blue = 0.95;
   fc.red = 0.0; fc.green = 0.0; fc.blue = 0.0;
 
-  width = cairo_image_surface_get_width (surface);
-  height = cairo_image_surface_get_height (surface);
-
-  cairo_matrix_t matrix;
+  if (surface) {
+    width = cairo_image_surface_get_width (surface);
+    height = cairo_image_surface_get_height (surface);
     matrix.xx = 1.0; matrix.xy = 0.0; matrix.x0 = (double) width / 2.0;
     matrix.yx = 0.0; matrix.yy = -1.0; matrix.y0 = (double) height / 2.0;
-  if (surface) {
+
     cr = cairo_create (surface);
     cairo_transform (cr, &matrix);
     cairo_set_source_rgb (cr, bc.red, bc.green, bc.blue);

@@ -83,14 +83,14 @@ fd 100
 The command `tr` is "Turn Right".
 The argument is angle with degrees.
 Therefore, `tr 90` means "Turn right by 90 degrees".
-If you click on `run`button, then two line segment appears.
+If you click on the `run`button, then two line segments appears.
 One is vertical and the other is horizontal.
 
 ![Two line segments on the surface](image/turtle2.png){width=8cm height=5.11cm}
 
 ## Background and foreground color
 
-Colors are specified by RGB.
+Colors are specified with RGB.
 A vector (r, g, b) denotes RGB color.
 Each of the elements is a real number between 0 and 1.
 
@@ -129,7 +129,7 @@ Statements are executed in the order from the top to the end
 ## Comment and spaces
 
 Characters between `#` (hash mark) and `\n` (new line) inclusive are comment.
-Characters between `#`  and `EOF` (end of file) are also comment.
+If the comment is at the end of the file, the trailing new line can be left out.
 Comments are ignored.
 
 ~~~
@@ -141,7 +141,7 @@ tr 120<NEW LINE>
 fd 100 # Now a triangle appears.<EOF>
 ~~~
 
-\<NEW LINE\> and \<EOF\> are newline code and end of file respectively.
+\<NEW LINE\> and \<EOF\> indicate newline code and end of file respectively.
 The comments in the line 1, 2, 3 and 6 are correct syntactically.
 
 Spaces (white space, tab and new line) are ignored.
@@ -150,14 +150,15 @@ Tabs are recognized as eight spaces to calculate the column number.
 
 ## Variables and expressions
 
-Variable begins alphabet followed by alphabet or digit except key words like `fd`, `tr` and so on.
-`Distance` and `angle5` can be variables, but `1step` isn't a variable because the first character isn't alphabet.
+Variable begins alphabet followed by alphabet or digit.
+Key words like `fd`, `tr` can't be variables.
+`Distance` and `angle5` are variables, but `1step` isn't a variable because the first character isn't alphabet.
 Variable names are case sensitive.
 Variables keep real numbers.
 Their type is the same as `double` in C language.
 Integers are casted to real numbers automatically.
 So 1 and 1.0 are the same value.
-Numbers begins digits, not signs (`+` or `-`).
+Numbers begin digits, not signs (`+` or `-`).
 
 - 100, 20.34 and 0.01 are numbers
 - +100 isn't a number. It causes syntax error. Use 100 instead.
@@ -176,9 +177,9 @@ Assignment is a statement.
 Most of statements begin with commands like `fd`.
 Assignment is the only exception.
 
-This program draws a line segment of 100 pixels long.
+The example above draws a line segment of 100 pixels long.
 
-You can use variables in any places in expressions.
+You can use variables in expressions.
 There are 8 kinds of calculations available.
 
 - addition: x + y
@@ -289,7 +290,7 @@ repeat (4)
 
 Repeat is called in the body of repeat.
 The call to itself is a recursive call.
-Parameters are generated each time the procedure is called.
+Parameters are created and set each time the procedure is called.
 So, parameter `n` is 4 at the first call but it is 3 at the second call.
 Each time the procedure is called, the parameter `n` decreases by one.
 Finally, it becomes less than zero, then the procedures return.
@@ -314,7 +315,7 @@ It is the first stage.
 The second stage adds two shorter line segments at the endpoint of the original segment.
 The new segment has 70 percent length to the original segment and the orientation is +30 or -30 degrees different.
 The third stage adds two shorter line segments to the second stage line segments.
-And repeats this several times.
+And repeats it several times.
 
 This repeating is programmed by recursive call.
 Two more examples are shown here.
@@ -345,8 +346,8 @@ Keywords:
 identifiers and numbers:
 
 - identifier: This is used for the name of variables, parameters and procedures.
-It is expressed ` [a-zA-Z][a-zA-Z0-9]*` by regular expression.
-- number: This is expressed `(0|[1-9][0-9]*)(\.[0-9]+)?` by regular expression.
+It is expressed ` [a-zA-Z][a-zA-Z0-9]*` in regular expression.
+- number: This is expressed `(0|[1-9][0-9]*)(\.[0-9]+)?` in regular expression.
 It doesn't have `+` or `-` sign because they bring some syntactic confusion.
 However negative number such as `-10` can be recognized as unary minus and a number.
 
@@ -373,9 +374,10 @@ Delimiters
 Comments and spaces:
 
 - comment: This is characters between `#` and new line inclusive.
+If a comment is at the end of the file, the trailing new line can be left out.
 - white space:
 - horizontal tab: tab is recognized as eight spaces.
-- new line: This is the end of a line and denoted by '\\n'.
+- new line: This is the end of a line.
 
 These characters are used to separate tokens explicitly.
 They doesn't have any syntactic meaning and are ignored by the parser.

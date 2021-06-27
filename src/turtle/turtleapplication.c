@@ -30,6 +30,7 @@ run_cb (GtkWidget *btnr) {
     }
     finalize_flex ();
   }
+  g_free (contents);
   gtk_widget_queue_draw (GTK_WIDGET (da));
   busy = FALSE;
 }
@@ -51,6 +52,13 @@ close_cb (GtkWidget *btnc) {
   gtk_window_destroy (GTK_WINDOW (win));
 }
 
+static gboolean
+close_request_cb (GtkWindow *win, gpointer user_data) {
+  if (surface)
+    cairo_surface_destroy (surface);
+  return FALSE;
+}
+
 static void
 show_filename (TfeTextView *tv) {
   GFile *file;
@@ -62,10 +70,11 @@ show_filename (TfeTextView *tv) {
     filename = g_file_get_basename (file);
     title = g_strdup_printf ("Turtle (%s)", filename);
     g_free (filename);
+    g_object_unref (file);
   } else
-    title = "Turtle";
-  g_object_unref (file);
+    title = g_strdup ("Turtle");
   gtk_window_set_title (GTK_WINDOW (win), title);
+  g_free (title);
 }
 
 static void
@@ -84,12 +93,12 @@ draw_func (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height, gpo
 }
 
 static void
-activate (GApplication *application) {
+app_activate (GApplication *application) {
   gtk_widget_show (win);
 }
 
 static void
-startup (GApplication *application) {
+app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkBuilder *build;
 
@@ -99,6 +108,7 @@ startup (GApplication *application) {
   tv = GTK_WIDGET (gtk_builder_get_object (build, "tv"));
   da = GTK_WIDGET (gtk_builder_get_object (build, "da"));
   g_object_unref(build);
+  g_signal_connect (win, "close-request", G_CALLBACK (close_request_cb), NULL);
   g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
   g_signal_connect (tv, "change-file", G_CALLBACK (show_filename), NULL);
   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (da), draw_func, NULL, NULL);
@@ -111,15 +121,17 @@ GdkDisplay *display;
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
+#define APPLICATION_ID "com.github.ToshioCP.turtle"
+
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.turtle", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
 
-  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

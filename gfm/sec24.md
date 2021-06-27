@@ -3,7 +3,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md), Next: [Section 25]
 # Tiny turtle graphics interpreter
 
 A program `turtle` is an example with the combination of TfeTextView and GtkDrawingArea objects.
-It is a very small interpreter but it provides a way to draw fractal curves.
+It is a very small interpreter but it provides a tool to draw fractal curves.
 The following diagram is a Koch curve, which is a famous example of fractal curves.
 
 ![Koch curve](../src/turtle/image/turtle_koch.png)
@@ -50,6 +50,18 @@ You can read these files into `turtle` editor by clicking on the `Open` button.
 Turtle uses TfeTextView and GtkDrawingArea.
 It is similar to `color` program in the previous section.
 
+1. A user inputs/reads a turtle program into the buffer in the TfeTextView instance.
+2. The user clicks on the "Run" button.
+3. The parser reads the program and generates tree-structured data.
+4. The interpriter reads the data and executes it step by step.
+And it draws shapes on a surface.
+The surface is different from the surface of the GtkDrawingArea widget.
+5. The widget is added to the queue.
+It will be redrawn with the drawing function.
+The function just copies the surface, which is drawn by the interpreter, into the surface of the GtkDrawingArea.
+
+![Parser, interpreter and drawing function](../image/turtle.png)
+
 The body of the interpreter is written with flex and bison.
 The codes are not thread safe.
 So the handler of "clicked" signal of the `Run` button prevents from reentering.
@@ -79,37 +91,42 @@ So the handler of "clicked" signal of the `Run` button prevents from reentering.
 22     }
 23     finalize_flex ();
 24   }
-25   gtk_widget_queue_draw (GTK_WIDGET (da));
-26   busy = FALSE;
-27 }
-28 
-29 static void
-30 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
-31   if (surface)
-32     cairo_surface_destroy (surface);
-33   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-34 }
+25   g_free (contents);
+26   gtk_widget_queue_draw (GTK_WIDGET (da));
+27   busy = FALSE;
+28 }
+29 
+30 static void
+31 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
+32   if (surface)
+33     cairo_surface_destroy (surface);
+34   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+35 }
 ~~~
 
 - 8-13: The static value `busy` holds a status of the interpreter.
 If it is `TRUE`, the interpreter is running and it is not possible to call the interpreter again because it's not a re-entrant program.
 If it is `FALSE`, it is safe to call the interpreter.
-- 14: Now it is about to call the interpreter so changes `busy` to be TRUE.
-- 15-16: Gets the contents of GtkTextBuffer.
+- 14: Now it is about to call the interpreter so it changes `busy` to TRUE.
+- 15-16: Gets the contents of `tb`.
 - 17: The variable `surface` is a static variable.
-It points to a `cairo_surface_t` object.
-It is generated when the GtkDrawingArea object is realized and whenever it is resized.
+It points to a `cairo_surface_t` instance.
+It is created when the GtkDrawingArea instance is realized and whenever it is resized.
 Therefore, `surface` isn't NULL usually.
 But if it is NULL, the interpreter won't be called.
 - 18: Initializes lexical analyzer.
 - 19: Calls parser.
-Parser analyze the program codes syntactically and generate a tree structured data.
+Parser analyzes the program codes syntactically and generate a tree structured data.
 - 20-22: If the parser successfully parsed, it calls `run` (runtime routine).
-- 23: finalize the lexical analyzer.
-- 25: Add the drawing area object to the queue to draw.
-- 26: The interpreter program has finished so `busy` is now FALSE.
+- 23: finalizes the lexical analyzer.
+- 25: frees `contents`.
+- 26: Adds the drawing area widget to the queue to draw.
+- 27: The interpreter program has finished so `busy` is now changed to FALSE.
 - 29-34: A handler of "resized" signal.
-It generates or regenerates a surface object.
+If `surface` isn't NULL, it destroys the old surface.
+Then it creates a new surface.
+Its size is the same as the surface of the GtkDrawingArea instance.
+
 
 Other part of `turtleapplication.c` is almost same as the codes of `colorapplication.c` in the previous section.
 The codes of `turtleapplication.c` is in the [turtle directory](../src/turtle).
@@ -127,8 +144,8 @@ The turtle recognizes the program above and works as follows.
 
 - Generally, a program consists of tokens.
 Tokens are "distance", "=", "100", "fd", "*" and "2" in the above example..
-- The parser calls `yylex` to read a token in the source file.
-The `yylex` returns a code which is called "token kind" and sets a global variable `yylval` with a value, which is called a semantic value.
+- The parser calls a function `yylex` to read a token in the source file.
+`yylex` returns a code which is called "token kind" and sets a global variable `yylval` with a value, which is called a semantic value.
 The type of `yylval` is union and `yylval.ID` is string and `yylval.NUM` is double.
 There are seven tokens in the program so `yylex` is called seven times.
 
@@ -151,7 +168,7 @@ This part of `turtle` is called parser.
 ![turtle parser tree](../image/turtle_parser_tree.png)
 
 - `turtle` analyzes the tree and executes it.
-This part of `turtle` is called runtime routine.
+This part of `turtle` is called runtime routine or interpreter.
 The tree consists of rectangles and line segments between the rectangles.
 The rectangles are called nodes.
 For example, N\_PROGRAM, N\_ASSIGN, N\_FD and N\_MUL are nodes.
@@ -175,19 +192,22 @@ Multiplies 100 by 2 and gets 200.
 Then `turtle` goes back to N_FD.
   6. Now `turtle` knows the distance is 200.
 It moves the cursor forward by 200 pixels.
+The segment is drawn on the surface (`surface`).
   8. There are no node follows.
-Runtime routine returns to the main routine.
+Runtime routine returns to the function `run_cb`.
 
-- `turtle` draws a segment on GtkDrawingArea then stops.
+- `run_cb` calls `gtk_widget_queue_draw` and put the GtkDrawingArea widget to the queue.
+- The system redraws the widget.
+At that time drawing function `draw_func` is called.
+The function copies the surface (`surface`) to the surface in the GtkDrawingArea.
 
-Most turtle programs are more complicated than the example above.
-So, `turtle` does much more work to interpret programs.
-However, basically it works by the same way above.
+Actual turtle program is more complicated than the example above.
+However, what turtle does is basically the same.
 Interpretation consists of three parts.
 
 - Lexical analysis
 - Syntax Parsing and tree generation
-- Interpret the tree and execute commands.
+- Interpretation and execution of the tree.
 
 ## Compilation flow
 
@@ -260,7 +280,8 @@ The argument `turtleparser[1]` refers to `tirtle_parser.h` which is the second o
 ### What does flex do?
 
 Flex creates lexical analyzer from flex source file.
-Flex source file is a text file and its syntactic rule will be explained later.
+Flex source file is a text file.
+Its syntactic rule will be explained later.
 Generated lexical analyzer is a C source file.
 It is also called scanner.
 It reads a text file, which is a source file of a program language, and gets variable names, numbers and symbols.
@@ -280,7 +301,7 @@ The words `fc`, `pd`, `distance`, `angle`, `tr`, `1`, `0`, `100` and `90` are ca
 The characters '`(`' (left parenthesis), '`,`' (comma), '`)`' (right parenthesis) and '`=`' (equal sign) are called symbols.
 ( Sometimes those symbols called tokens, too.)
 
-Flex reads `turtle.lex` and generates a scanner.
+Flex reads `turtle.lex` and generates the C source file of a scanner.
 The file `turtle.lex` specifies tokens, symbols and the behavior which corresponds to each token or symbol.
 Turtle.lex isn't a big program.
 
@@ -368,8 +389,6 @@ They are definitions, rules and user code sections.
 
 ### Definitions section
 
-First, look at the definitions section.
-
 - 1-12: Lines between "%top{" and "}" are C source codes.
 They will be copied to the top of the generated C source file.
 - 2-3: The function `strlen`, in line 62, is defined in `string.h`
@@ -390,6 +409,10 @@ You can leave out such definitions here and use regular expressions in rules sec
 
 This section is the most important part.
 Rules consist of patterns and actions.
+The patterns are regular expressions or names surrounded by braces.
+The names must be defined in the definitions section.
+The definition of the regular expression is written in the flex documentation.
+
 For example, line 37 is a rule.
 
 - `{REAL_NUMBER}` is a pattern
@@ -407,23 +430,23 @@ The scanner generated by flex and C compiler has `yylex` function.
 If `yylex` is called and the input is "123.4", then it works as follows.
 
 1. A string "123.4" matches `{REAL_NUMBER}`.
-2. Update the location variable `ncolumn` and `yylloc`.
-3. `atof` converts the string "123.4" to double sized floating point number 123.4.
+2. Update the location variable `ncolumn` and `yylloc`with `get_location`.
+3. `atof` converts the string "123.4" to double type number 123.4.
 4. It is assigned to `yylval.NUM`.
 5. `yylex` returns `NUM` to the caller.
 
 Then the caller knows the input is `NUM` (number), and its value is 123.4.
 
 - 19-55: Rules section.
-- 20: Comment begins `#` followed by any characters except newline.
+- 20: The symbol `.` (dot) matches any character except newline.
+Therefore, a comment begins `#` followed by any characters except newline.
 No action happens.
 - 21: White space just increases a variable `ncolumn` by one.
 - 22: Tab is assumed to be equal to eight spaces.
 - 23: New line increases a variable `nline` by one and resets `ncolumn`.
 - 25-35: Keywords just updates the location variables `ncolumn` and `yylloc`, and return the codes of the keywords.
 - 37: Real number constant.
-- 38: Identifier is defined in line 17.
-It begins alphabet followed by zero or more alphabet or digit.
+- 38: `IDENTIFIER` is defined in line 17.
 The location variables are updated and the name of the identifier is assigned to `yylval.ID`.
 The memory of the name is allocated by the function `g_strdup`.
 The memory is registered to the list (GSlist type list).
@@ -440,11 +463,10 @@ This section is just copied to C source file.
 
 - 58-63: A function `get_location`.
 The location of the input is recorded to `nline` and `ncolumn`.
-These two variables are for the scanner.
-A variable `yylloc` is shared by the scanner and the parser.
+A variable `yylloc` is referred by the parser.
 It is a C structure and has four members, `first_line`, `first_column`, `last_line` and `last_column`.
 They point the start and end of the current input text.
-- 65: `YY_BUFFER_STATE` is a type of the pointer points the input buffer.
+- 65: `YY_BUFFER_STATE` is a pointer points the input buffer.
 - 67-70: `init_flex` is called by `run_cb` signal handler, which is called when `Run` button is clicked on.
 `run_cb` calls `init_flex` with one argument which is the copy of the content of GtkTextBuffer.
 `yy_scan_string` sets the input buffer to read from the text.
@@ -505,7 +527,7 @@ It doesn't return any values.
 Programmers can define their own procedures.
 On the other hand, `fc` is a built-in procedure.
 Such procedures are called primary procedures.
-It is described in Bison source code like:
+It is described in bison source code like:
 
 ~~~
 primary_procedure: FC '(' expression ',' expression ',' expression ')';
@@ -526,8 +548,7 @@ The first line is:
 FC '(' NUM ',' NUM ',' NUM ')';
 ~~~
 
-You can find this is a primary_procedure easily.
-The parser of the turtle language analyzes the turtle source code in the same way.
+The parser analyzes the turtle source code and if the input matches the definition above, the parser recognizes it as a primary procedure.
 
 The grammar of turtle is described in the [document](turtle_doc.md).
 The following is an extract from the document.
@@ -850,7 +871,7 @@ This type is shared by the scanner file and the parser implementation file.
 The error report function `yyerror` uses it so that it can inform the location that error occurs.
 
 `%define api.value.type union` generates semantic value type with tokens and nterms and inserts it to the header file.
-The inserted part is shown in the previous section as the extracts that shows the value type (YYSTYPE).
+The inserted part is shown in the previous subsection as the extracts that shows the value type (YYSTYPE).
 
 `%token` and `%nterm` directives define tokens and non terminal symbols respectively.
 
@@ -977,7 +998,7 @@ There's no action specified.
 Then, the default action is executed.
 It is ` $$ = $1`.
 - `primary_procedure` is `FD` followed by expression.
-The action calls `tree1` and assign its return value to `$$`.
+The action calls `tree1` and assigns its return value to `$$`.
 `tree1` makes a tree node.
 The tree node has type and union of three pointers to children nodes, string or double.
 ~~~
@@ -989,7 +1010,7 @@ node --+-- type
 ~~~
 - `tree1` assigns the four arguments to type, child1, child2 and child3 members.
 - `expression` is `NUM`.
-- `tree2` assigns the two arguments to type and a double member.
+- `tree2` makes a tree node. The paremeters of `tree2` are a type and a semantic value.
 
 Suppose the parser reads the following program.
 
@@ -1098,15 +1119,15 @@ expression:
 ### Epilogue
 
 The epilogue is written in C language and copied to the parser implementation file.
-Generally, you can put anything into epilogue.
+Generally, you can put anything into the epilogue.
 In the case of turtle interpreter, the runtime routine and some other functions are in the epilogue.
 
-#### Functions to generate tree nodes
+#### Functions to create tree nodes
 
 There are three functions, `tree1`, `tree2` and `tree3`.
 
 - `tree1` creates a node and sets the node type and pointers to its three children (NULL is possible).
-- `tree2` creates a node and sets the node type and a value.
+- `tree2` creates a node and sets the node type and a value (double).
 - `tree3` creates a node and sets the node type and a pointer to a string.
 
 Each function gets memories first and build a node on them.
@@ -1313,7 +1334,8 @@ We can know the amount of elements used in the array during the runtime.
 The purpose of the variable is to find appropriate `MAX_STACK_SIZE`.
 It will be unnecessary in the future version if the stack is implemented with better data structure and memory allocation.
 
-The runtime routine push data to the stack when it executes a procedure call node.
+The runtime routine push data to the stack when it executes a node of a procedure call.
+(The type of the node is `N_procedure_call`.)
 
 ~~~
 dp drawline (angle, distance) { ... ... ... }
@@ -1353,7 +1375,7 @@ It searches only the parameters of the latest procedure.
 It returns TRUE and sets the argument `value` to point the value, if the variable has been found.
 Otherwise it returns FALSE.
 - `stack_replace` replaces the value of the variable in the stack.
-If it successes, it returns TRUE. Otherwise returns FALSE.
+If it succeeds, it returns TRUE. Otherwise returns FALSE.
 - `stack_return` throws away the latest parameters.
 The stack pointer goes back to the point before the latest procedure call so that it points to parameters of the previous called procedure.
 
@@ -1430,7 +1452,9 @@ It is initialized in `turtleapplication.c`.
 The runtime routine has its own cairo context.
 This is different from the cairo of GtkDrawingArea.
 Runtime routine draws a shape on the `surface` with the cairo context.
-After runtime routine returns to `run_cb`, the drawing function `draw_func` copies the `surface` to the surface in the GtkDrawingArea object.
+After runtime routine returns to `run_cb`, `run_cb` adds the GtkDrawingArea widget to the queue to redraw.
+When the widget is redraw,the drawing function `draw_func` is called.
+It copies the `surface` to the surface in the GtkDrawingArea object.
 
 `turtle.y` has two functions `init_cairo` and `destroy_cairo`.
 
@@ -1492,6 +1516,8 @@ static cairo_t *cr;
 gboolean
 init_cairo (void) {
   int width, height;
+  cairo_matrix_t matrix;
+
   pen = TRUE;
   angle = 90.0;
   cur_x = 0.0;
@@ -1500,13 +1526,12 @@ init_cairo (void) {
   bc.red = 0.95; bc.green = 0.95; bc.blue = 0.95;
   fc.red = 0.0; fc.green = 0.0; fc.blue = 0.0;
 
-  width = cairo_image_surface_get_width (surface);
-  height = cairo_image_surface_get_height (surface);
-
-  cairo_matrix_t matrix;
+  if (surface) {
+    width = cairo_image_surface_get_width (surface);
+    height = cairo_image_surface_get_height (surface);
     matrix.xx = 1.0; matrix.xy = 0.0; matrix.x0 = (double) width / 2.0;
     matrix.yx = 0.0; matrix.yy = -1.0; matrix.y0 = (double) height / 2.0;
-  if (surface) {
+
     cr = cairo_create (surface);
     cairo_transform (cr, &matrix);
     cairo_set_source_rgb (cr, bc.red, bc.green, bc.blue);
@@ -1587,7 +1612,7 @@ double value = 0.0;
 
 #### Execute function
 
-Primary procedures and procedure definitions are analyzed and carried out by a function `execute`.
+Primary procedures and procedure definitions are analyzed and executed by the function `execute`.
 It doesn't return any values.
 It calls itself recursively.
 The process of `N_RT` and `N_procedure_call` is complicated.
@@ -1783,7 +1808,7 @@ When the parser reads the fifth line in the example, it creates nodes like this:
 
 When the runtime routine meets `N_procedure_call` node, it behaves like this:
 
-1. Searches the symbol table for the procedure by the name.
+1. Searches the symbol table for the procedure with the name.
 2. Gets pointers to the node to parameters and the node to the body.
 3. Creates a temporary stack.
 Makes a tuple of each parameter name and argument value.
