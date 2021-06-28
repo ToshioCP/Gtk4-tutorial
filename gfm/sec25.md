@@ -43,7 +43,7 @@ The instruction to build the whole list related objects is:
 
 If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
 Because GListModel is a list of GObject objects and strings aren't GObject objects.
-So, you need a wrapper which is a gobject and contains a string.
+So, you need a wrapper which is a GObject and contains a string.
 GtkStringObject is the wrapper object and GStringList, implements GListModel, is a list of GtkStringObject.
 
 ~~~C
@@ -59,7 +59,7 @@ There are functions to add items to the list or remove items from the list.
 - `gtk_string_list_remove` removes an item from the list
 - `gtk_string_list_get_string` gets a string in the list
 
-See [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for the further information.
+See [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for further information.
 
 I'll explain the other list objects later.
 
@@ -101,12 +101,12 @@ There are four signals.
 
 1. "setup" is emitted to set up GtkListItem object.
 A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of GtkListItem object to it.
-This setting is kept even the GtkListItem object is recycled (to bind to another item of GModelList).
+For example, creates a GtkLabel widget and sets the child property of GtkListItem to it.
+This setting is kept even the GtkListItem instance is recycled (to bind to another item of GListModel).
 2. "bind" is emitted to bind an item in the list model to the widget.
-For example, a user gets the item object from "item" property of the GtkListItem object.
-Then gets the string of the item and sets the label property of the GtkLabel object with the string.
-This signal is emitted when the GtkListItem is newly created and set up, recycled or some changes has happened to the item of the list.
+For example, a user gets the item from "item" property of the GtkListItem instance.
+Then gets the string of the item and sets the label property of the GtkLabel instance with the string.
+This signal is emitted when the GtkListItem is newly created, recycled or some changes has happened to the item of the list.
 3. "unbind" is emitted to unbind an item.
 A user undoes everything done in step 2 in the signal handler.
 If some object are created in step 2, they must be destroyed.
@@ -122,7 +122,7 @@ GtkNoSelection is used, so user can't select any item.
  2 
  3 static void
  4 setup_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
- 5   GtkWidget *lb = gtk_label_new ("");
+ 5   GtkWidget *lb = gtk_label_new (NULL);
  6   gtk_list_item_set_child (listitem, lb);
  7 }
  8 
@@ -180,25 +180,29 @@ GtkNoSelection is used, so user can't select any item.
 60 }
 61 
 62 /* ----- main ----- */
-63 int
-64 main (int argc, char **argv) {
-65   GtkApplication *app;
-66   int stat;
-67 
-68   app = gtk_application_new ("com.github.ToshioCP.list1", G_APPLICATION_FLAGS_NONE);
+63 #define APPLICATION_ID "com.github.ToshioCP.list1"
+64 
+65 int
+66 main (int argc, char **argv) {
+67   GtkApplication *app;
+68   int stat;
 69 
-70   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-71   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-72 
-73   stat =g_application_run (G_APPLICATION (app), argc, argv);
-74   g_object_unref (app);
-75   return stat;
-76 }
-77 
+70   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+71 
+72   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+73   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+74 
+75   stat =g_application_run (G_APPLICATION (app), argc, argv);
+76   g_object_unref (app);
+77   return stat;
+78 }
+79 
 ~~~
 
 The file `list1.c` is located under the directory [src/misc](../src/misc).
-Make a shell script below and save it to $HOME/local/bin/comp (comp is the filename).
+Make a shell script below and save it to your bin directory.
+(If you've installed Gtk4 from the source to $HOME/local, then your bin directory is $Home/local/bin.
+Otherwise, $Home/bin is your private bin directory.)
 
 ~~~Shell
 gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
@@ -207,7 +211,7 @@ gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 Change the current directory to the directory includes `list1.c` and type as follows.
 
 ~~~
-$ chmod 755 $HOME/local/bin/comp
+$ chmod 755 $HOME/local/bin/comp # or chmod 755 $Home/bin/comp
 $ comp list1
 $ ./a.out
 ~~~
@@ -261,7 +265,7 @@ There is an explanation about it in the [GTK Development Blog](https://blog.gtk.
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
 Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in section 27.
+`this` object will be explained in [section 27](sec27.md).
 
 The C source code is as follows.
 Its name is `list2.c` and located under [src/misc](../src/misc) directory.
@@ -312,28 +316,29 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 43 }
 44 
 45 /* ----- main ----- */
-46 int
-47 main (int argc, char **argv) {
-48   GtkApplication *app;
-49   int stat;
-50 
-51   app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
+46 #define APPLICATION_ID "com.github.ToshioCP.list2"
+47 
+48 int
+49 main (int argc, char **argv) {
+50   GtkApplication *app;
+51   int stat;
 52 
-53   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-54   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-55 
-56   stat =g_application_run (G_APPLICATION (app), argc, argv);
-57   g_object_unref (app);
-58   return stat;
-59 }
-60 
+53   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+54 
+55   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+56   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+57 
+58   stat =g_application_run (G_APPLICATION (app), argc, argv);
+59   g_object_unref (app);
+60   return stat;
+61 }
+62 
 ~~~
 
 No signal handler is needed for GtkBulderListItemFactory.
 GtkSingleSelection is used, so user can select one item at a time.
 
-Because this is a small program, the ui data is given as strings.
-However, generally, ui file is better than string and using resource compiler is the best choice.
+Because this is a small program, the ui data is given as a string.
 
 ## GtkDirectoryList
 
@@ -403,18 +408,20 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
 "</interface>"
 ~~~
 
-- "gchararray" is the type of strings.
+- "gchararray" is the type name of strings.
 "gchar" is the same as "char" type.
 Therefore, "gchararray" is "an array of char type", which is the same as string type.
 It is used to get the type of GValue object.
 GValue is a generic value and it can contain various type of values.
-For example, the type can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
-For the further information, refer to GFileAttribute and GFileInfo section in [GIO reference manual](https://developer.gnome.org/gio/stable/).
+For example, the type name can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
+These type names are the names of the fundamental types that are registered to the type system.
+See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue).
 - closure tag has type attribute and function attribute.
-Function attribute specifies a function name and type attribute specifies the type of the return value of the function.
+Function attribute specifies the function name and type attribute specifies the type of the return value of the function.
 The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
-`<lookup name=\"item\">GtkListItem</lookup>` gives two parameters.
-The first parameter is GListItem object and the second parameter is item property, which is a GFileInfo object in the GtkDirectoryList Object.
+`<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
+This will be the second argument of the function.
+The first parameter is always the GListItem instance.
 - `gtk_file_name` function first check the `info` parameter.
 Because it can be NULL when GListItem `item` is unbound.
 If its GFileInfo, then return the filename (copy of the filename).
@@ -475,21 +482,23 @@ The program is located in [src/misc](../src/misc) directory.
 50 }
 51 
 52 /* ----- main ----- */
-53 int
-54 main (int argc, char **argv) {
-55   GtkApplication *app;
-56   int stat;
-57 
-58   app = gtk_application_new ("com.github.ToshioCP.list3", G_APPLICATION_FLAGS_NONE);
+53 #define APPLICATION_ID "com.github.ToshioCP.list3"
+54 
+55 int
+56 main (int argc, char **argv) {
+57   GtkApplication *app;
+58   int stat;
 59 
-60   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-61   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-62 
-63   stat =g_application_run (G_APPLICATION (app), argc, argv);
-64   g_object_unref (app);
-65   return stat;
-66 }
-67 
+60   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+61 
+62   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+63   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+64 
+65   stat =g_application_run (G_APPLICATION (app), argc, argv);
+66   g_object_unref (app);
+67   return stat;
+68 }
+69 
 ~~~
 
 The ui data (xml data above) is used to build the GListItem template at runtime.
@@ -498,7 +507,7 @@ GtkBuilder refers to the symbol table to find the function `get_file_name`.
 Generally, a symbol table is used by a linker to link objects to an executable file.
 It includes function names and their location.
 A linker usually doesn't put a symbol table into the created executable file.
-But if `--export-dynamic` option is given, the linker add the symbol table to the executable file.
+But if `--export-dynamic` option is given, the linker adds the symbol table to the executable file.
 
 To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
 

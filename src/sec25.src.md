@@ -41,7 +41,7 @@ The instruction to build the whole list related objects is:
 
 If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
 Because GListModel is a list of GObject objects and strings aren't GObject objects.
-So, you need a wrapper which is a gobject and contains a string.
+So, you need a wrapper which is a GObject and contains a string.
 GtkStringObject is the wrapper object and GStringList, implements GListModel, is a list of GtkStringObject.
 
 @@@if gfm
@@ -65,7 +65,7 @@ There are functions to add items to the list or remove items from the list.
 - `gtk_string_list_remove` removes an item from the list
 - `gtk_string_list_get_string` gets a string in the list
 
-See [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for the further information.
+See [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for further information.
 
 I'll explain the other list objects later.
 
@@ -107,12 +107,12 @@ There are four signals.
 
 1. "setup" is emitted to set up GtkListItem object.
 A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of GtkListItem object to it.
-This setting is kept even the GtkListItem object is recycled (to bind to another item of GModelList).
+For example, creates a GtkLabel widget and sets the child property of GtkListItem to it.
+This setting is kept even the GtkListItem instance is recycled (to bind to another item of GListModel).
 2. "bind" is emitted to bind an item in the list model to the widget.
-For example, a user gets the item object from "item" property of the GtkListItem object.
-Then gets the string of the item and sets the label property of the GtkLabel object with the string.
-This signal is emitted when the GtkListItem is newly created and set up, recycled or some changes has happened to the item of the list.
+For example, a user gets the item from "item" property of the GtkListItem instance.
+Then gets the string of the item and sets the label property of the GtkLabel instance with the string.
+This signal is emitted when the GtkListItem is newly created, recycled or some changes has happened to the item of the list.
 3. "unbind" is emitted to unbind an item.
 A user undoes everything done in step 2 in the signal handler.
 If some object are created in step 2, they must be destroyed.
@@ -128,7 +128,9 @@ misc/list1.c
 @@@
 
 The file `list1.c` is located under the directory [src/misc](misc).
-Make a shell script below and save it to $HOME/local/bin/comp (comp is the filename).
+Make a shell script below and save it to your bin directory.
+(If you've installed Gtk4 from the source to $HOME/local, then your bin directory is $Home/local/bin.
+Otherwise, $Home/bin is your private bin directory.)
 
 @@@if gfm
 ~~~Shell
@@ -145,7 +147,7 @@ gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 Change the current directory to the directory includes `list1.c` and type as follows.
 
 ~~~
-$ chmod 755 $HOME/local/bin/comp
+$ chmod 755 $HOME/local/bin/comp # or chmod 755 $Home/bin/comp
 $ comp list1
 $ ./a.out
 ~~~
@@ -199,7 +201,7 @@ There is an explanation about it in the [GTK Development Blog](https://blog.gtk.
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
 Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in section 27.
+`this` object will be explained in [section 27](sec27.src.md).
 
 The C source code is as follows.
 Its name is `list2.c` and located under [src/misc](misc) directory.
@@ -211,8 +213,7 @@ misc/list2.c
 No signal handler is needed for GtkBulderListItemFactory.
 GtkSingleSelection is used, so user can select one item at a time.
 
-Because this is a small program, the ui data is given as strings.
-However, generally, ui file is better than string and using resource compiler is the best choice.
+Because this is a small program, the ui data is given as a string.
 
 ## GtkDirectoryList
 
@@ -282,18 +283,20 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
 "</interface>"
 ~~~
 
-- "gchararray" is the type of strings.
+- "gchararray" is the type name of strings.
 "gchar" is the same as "char" type.
 Therefore, "gchararray" is "an array of char type", which is the same as string type.
 It is used to get the type of GValue object.
 GValue is a generic value and it can contain various type of values.
-For example, the type can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
-For the further information, refer to GFileAttribute and GFileInfo section in [GIO reference manual](https://developer.gnome.org/gio/stable/).
+For example, the type name can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
+These type names are the names of the fundamental types that are registered to the type system.
+See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue).
 - closure tag has type attribute and function attribute.
-Function attribute specifies a function name and type attribute specifies the type of the return value of the function.
+Function attribute specifies the function name and type attribute specifies the type of the return value of the function.
 The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
-`<lookup name=\"item\">GtkListItem</lookup>` gives two parameters.
-The first parameter is GListItem object and the second parameter is item property, which is a GFileInfo object in the GtkDirectoryList Object.
+`<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
+This will be the second argument of the function.
+The first parameter is always the GListItem instance.
 - `gtk_file_name` function first check the `info` parameter.
 Because it can be NULL when GListItem `item` is unbound.
 If its GFileInfo, then return the filename (copy of the filename).
@@ -311,7 +314,7 @@ GtkBuilder refers to the symbol table to find the function `get_file_name`.
 Generally, a symbol table is used by a linker to link objects to an executable file.
 It includes function names and their location.
 A linker usually doesn't put a symbol table into the created executable file.
-But if `--export-dynamic` option is given, the linker add the symbol table to the executable file.
+But if `--export-dynamic` option is given, the linker adds the symbol table to the executable file.
 
 To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
 

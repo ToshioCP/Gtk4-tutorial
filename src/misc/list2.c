@@ -43,12 +43,14 @@ app_startup (GApplication *application) {
 }
 
 /* ----- main ----- */
+#define APPLICATION_ID "com.github.ToshioCP.list2"
+
 int
 main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.list2", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
 
   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
