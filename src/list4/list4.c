@@ -56,6 +56,7 @@ g_print ("%s\n", content_type);  /* This line can be commented out if unnecessar
   appinfo = g_app_info_create_from_commandline ("tfe", "tfe", G_APP_INFO_CREATE_NONE, &err);
   if (err) {
     g_printerr ("%s\n", err->message);
+    g_error_free (err);
     return;
   }
   err = NULL;
@@ -63,6 +64,7 @@ g_print ("%s\n", content_type);  /* This line can be commented out if unnecessar
   files = g_list_append (files, file);
   if (! (g_app_info_launch (appinfo, files, NULL, &err))) {
     g_printerr ("%s\n", err->message);
+    g_error_free (err);
   }
   g_list_free_full (files, g_object_unref);
   g_object_unref (appinfo);

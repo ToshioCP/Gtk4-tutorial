@@ -22,7 +22,7 @@
                 <property name="action-target">&apos;list&apos;</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="resource">/com/github/ToshioCP/list4/list.png</property>
+                    <property name="resource">/com/github/ToshioCP/list5/list.png</property>
                   </object>
                 </child>
               </object>
@@ -34,7 +34,7 @@
                 <property name="action-target">&apos;grid&apos;</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="resource">/com/github/ToshioCP/list4/grid.png</property>
+                    <property name="resource">/com/github/ToshioCP/list5/grid.png</property>
                   </object>
                 </child>
               </object>
