@@ -22,7 +22,11 @@
         <child>
           <object class="GtkLabel">
             <binding name="label">
-              <lookup name="text">buffer</lookup>
+              <lookup name="text">
+                <lookup name="buffer">
+                  entry
+                </lookup>
+              </lookup>
             </binding>
           </object>
         </child>
@@ -38,7 +42,7 @@
         <child>
           <object class="GtkEntry" id="entry">
             <property name="buffer">
-              <object class="GtkEntryBuffer" id="buffer"></object>
+              <object class="GtkEntryBuffer"></object>
             </property>
           </object>
         </child>

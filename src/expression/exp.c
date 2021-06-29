@@ -38,7 +38,6 @@ app_activate (GApplication *application) {
   GtkEntryBuffer *buffer;
   GtkBuilder *build;
   GtkExpression *expression, *expression1, *expression2;
-  GtkExpressionWatch *watch;
   GValue value = G_VALUE_INIT;
   char *s;
 
@@ -50,9 +49,9 @@ app_activate (GApplication *application) {
   if (gtk_expression_evaluate (expression, app, &value)) {
     win1 = GTK_WIDGET (g_value_get_object (&value)); /* GtkApplicationWindow */
     g_object_ref (win1);
-    g_print ("Got GtkApplicationWindow object.\n");
+    g_print ("Got GtkApplicationWindow instance.\n");
   }else
-    g_print ("The cclosure expression couldn't be evaluated.\n");
+    g_print ("The cclosure expression wasn't evaluated correctly.\n");
   gtk_expression_unref (expression);
   g_value_unset (&value);    /* At the same time, the reference count of win1 is decreased by one. */
 
@@ -68,7 +67,7 @@ app_activate (GApplication *application) {
   gtk_box_append (GTK_BOX (box), label3);
   gtk_box_append (GTK_BOX (box), entry);
   gtk_window_set_child (GTK_WINDOW (win1), box);
-  
+
   /* Constant expression */
   expression = gtk_constant_expression_new (G_TYPE_INT,100);
   if (gtk_expression_evaluate (expression, NULL, &value)) {
@@ -76,14 +75,14 @@ app_activate (GApplication *application) {
     gtk_label_set_text (GTK_LABEL (label1), s);
     g_free (s);
   } else
-    g_print ("The constant expression couldn't be evaluated.\n");
+    g_print ("The constant expression wasn't evaluated correctly.\n");
   gtk_expression_unref (expression);
   g_value_unset (&value);
 
   /* Property expression and binding*/
   expression1 = gtk_property_expression_new (GTK_TYPE_ENTRY, NULL, "buffer");
   expression2 = gtk_property_expression_new (GTK_TYPE_ENTRY_BUFFER, expression1, "text");
-  watch = gtk_expression_bind (expression2, label2, "label", entry);
+  gtk_expression_bind (expression2, label2, "label", entry);
 
   /* Constant expression instead of "this" instance */
   expression1 = gtk_constant_expression_new (GTK_TYPE_APPLICATION, app);
@@ -91,7 +90,7 @@ app_activate (GApplication *application) {
   if (gtk_expression_evaluate (expression2, NULL, &value))
     gtk_label_set_text (GTK_LABEL (label3), g_value_get_string (&value));
   else
-    g_print ("The property expression couldn't be evaluated.\n");
+    g_print ("The property expression wasn't evaluated correctly.\n");
   gtk_expression_unref (expression1); /* expression 2 is also freed. */
   g_value_unset (&value);
 
