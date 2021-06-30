@@ -199,7 +199,7 @@ GtkNoSelection is used, so user can't select any item.
 79 
 ~~~
 
-The file `list1.c` is located under the directory [src/misc](misc).
+The file `list1.c` is located under the directory [src/misc](../src/misc).
 Make a shell script below and save it to your bin directory.
 (If you've installed Gtk4 from the source to $HOME/local, then your bin directory is $Home/local/bin.
 Otherwise, $Home/bin is your private bin directory.)
@@ -268,7 +268,7 @@ Therefore, GtkListItem instance is used as the `this` object of the lookup tag w
 `this` object will be explained in [section 27](sec27.md).
 
 The C source code is as follows.
-Its name is `list2.c` and located under [src/misc](misc) directory.
+Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 
 ~~~C
  1 #include <gtk/gtk.h>
@@ -427,7 +427,7 @@ Because it can be NULL when GListItem `item` is unbound.
 If its GFileInfo, then return the filename (copy of the filename).
 
 The whole program (`list3.c`) is as follows.
-The program is located in [src/misc](misc) directory.
+The program is located in [src/misc](../src/misc) directory.
 
 ~~~C
  1 #include <gtk/gtk.h>

@@ -23,7 +23,7 @@ Evaluation is like a calculation.
 A value is got by evaluating the expression.
 
 First, I want to show you the C file of the example for GtkExpression.
-Its name is `exp.c` and located under [src/expression](expression) directory.
+Its name is `exp.c` and located under [src/expression](../src/expression) directory.
 You don't need to understand the details now, just look at it.
 It will be explained in the next subsection.
 
@@ -637,7 +637,7 @@ It will be used in the next section to build GtkListItem in GtkColumnView, which
 
 ## Compilation and execution
 
-All the sources are in [src/expression](expression) directory.
+All the sources are in [src/expression](../src/expression) directory.
 Change your current directory to the directory and run meson and ninja.
 Then, execute the application.
 

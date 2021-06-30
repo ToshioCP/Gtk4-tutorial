@@ -274,15 +274,18 @@ def change_rel_link line, org_dir, new_dir, file_table=nil, type="gfm"
     right = $'
     name = $1
     link = $2
+    converted = false
     if file_table
       file_table.each do |tbl|
         if tbl[0] == "#{org_dir}/#{link}"
           p_link = Pathname.new tbl[i]
           link = p_link.relative_path_from(p_new_dir).to_s
+          converted = true
           break
         end
       end
-    elsif ! (link =~ /^(http|\/)/)
+    end
+    if ! converted && ! (link =~ /^(http|\/)/)
       p_link = Pathname.new "#{org_dir}/#{link}"
       link = p_link.relative_path_from(p_new_dir).to_s
     end

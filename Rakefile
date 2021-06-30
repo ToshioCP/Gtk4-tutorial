@@ -156,7 +156,11 @@ file_table.each do |tbl|
   file tbl[3] => [tbl[0]] + tbl[0].c_files do
     tex_md = "latex/" + tbl[0].to_md
     src2md tbl[0], tex_md, file_table, "latex"
-    sh "pandoc --listings -o #{tbl[3]} #{tex_md}"
+    if tbl[0] == "src/Readme_for_developers.src.md"
+      sh "pandoc -o #{tbl[3]} #{tex_md}"
+    else
+      sh "pandoc --listings -o #{tbl[3]} #{tex_md}"
+    end
     File.delete(tex_md)
   end
 end

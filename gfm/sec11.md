@@ -6,7 +6,7 @@ A new version of the text file editor (`tfe`) will be made in this section and t
 It is `tfe5`.
 There are many changes from the prior version.
 All the sources are listed in [Section 16](sec16.md).
-They are located in two directories, [src/tfe5](tfe5) and [src/tfetextview](tfetextview).
+They are located in two directories, [src/tfe5](../src/tfe5) and [src/tfetextview](../src/tfetextview).
 
 ## Encapsulation
 

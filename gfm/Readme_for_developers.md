@@ -223,9 +223,9 @@ This command is similar to "#if", "#elif", #else" and "#endif" directives in C p
 For example,
 
     @@@if gfm
-    Refer to  [tfetextview API reference](tfetextview_doc.md)
+    Refer to  [tfetextview API reference](../src/tfetextview_doc.md)
     @@@elif html
-    Refer to  [tfetextview API reference](tfetextview_doc.html)
+    Refer to  [tfetextview API reference](../src/tfetextview_doc.html)
     @@@elif latex
     Refer to tfetextview API reference in appendix.
     @@@end
@@ -397,10 +397,10 @@ So the size is removed in the conversion.
 
 If a .src.md file has relative URL link, it will be changed by conversion.
 Because .src.md files are located under `src` directory and GFM files are located under `gfm` directory, base URL of GFM files is different from base URL of .src.md files.
-For example, `[src/sample.c](sample.c)` is translated to `[src/sample.c](../src/sample.c)`.
+For example, `[src/sample.c](../src/sample.c)` is translated to `[src/sample.c](../src/sample.c)`.
 
 If a link points another .src.md file, then the target filename will be changed to .md file.
-For example, `[Section 5](sec5.md)` is translated to `[Section 5](sec5.md)`.
+For example, `[Section 5](sec5.md)` is translated to `[Section 5](../src/sec5.md)`.
 
 If you want to clean the directory, that means remove all the generated markdown files, type `rake clean`.
 

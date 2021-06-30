@@ -87,11 +87,13 @@ main = <<'EOS'
 EOS
 
   texfilenames.each do |filename|
+    filename = filename.sub(/^#{directory}\//, "")
     main += "  \\input{#{filename}}\n"
   end
   main += "\\newpage\n"
   main += "\\appendix\n"
   appendixfilenames.each do |filename|
+    filename = filename.sub(/^#{directory}\//, "")
     main += "  \\input{#{filename}}\n"
   end
   main += "\\end{document}\n"

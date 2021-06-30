@@ -6,7 +6,7 @@ A program `turtle` is an example with the combination of TfeTextView and GtkDraw
 It is a very small interpreter but it provides a tool to draw fractal curves.
 The following diagram is a Koch curve, which is a famous example of fractal curves.
 
-![Koch curve](turtle/image/turtle_koch.png)
+![Koch curve](../src/turtle/image/turtle_koch.png)
 
 This program uses flex and bison.
 Flex is a lexical analyzer.
@@ -42,7 +42,7 @@ The side of the square is 100 pixels long.
 
 In the same way, you can draw other curves.
 The documentation above shows some fractal curves such as tree, snow and square-koch.
-The source code in turtle language is located at [src/turtle/example](turtle/example) directory.
+The source code in turtle language is located at [src/turtle/example](../src/turtle/example) directory.
 You can read these files into `turtle` editor by clicking on the `Open` button.
 
 ## Combination of TfeTextView and GtkDrawingArea objects
@@ -129,7 +129,7 @@ Its size is the same as the surface of the GtkDrawingArea instance.
 
 
 Other part of `turtleapplication.c` is almost same as the codes of `colorapplication.c` in the previous section.
-The codes of `turtleapplication.c` is in the [turtle directory](turtle).
+The codes of `turtleapplication.c` is in the [turtle directory](../src/turtle).
 
 ## What does the interpreter do?
 
