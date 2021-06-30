@@ -3,23 +3,23 @@
 TfeTextView -- Child object of GtkTextView. It holds GFile which the contents of GtkTextBuffer correponds to.
 
 ## Functions
-- GFile *[tfe_text_view_get_file ()](../src/tfetextview/#tfe_text_view_get_file)
-- void [tfe_text_view_open ()](../src/tfetextview/#tfe_text_view_open)
-- void [tfe_text_view_save ()](../src/tfetextview/#tfe_text_view_save)
-- void [tfe_text_view_saveas ()](../src/tfetextview/#tfe_text_view_saveas)
-- GtkWidget *[tfe_text_view_new_with_file ()](../src/tfetextview/#tfe_text_view_new_with_file)
-- GtkWidget *[tfe_text_view_new ()](../src/tfetextview/#tfe_text_view_new)
+- GFile *[tfe_text_view_get_file ()](#tfe_text_view_get_file)
+- void [tfe_text_view_open ()](#tfe_text_view_open)
+- void [tfe_text_view_save ()](#tfe_text_view_save)
+- void [tfe_text_view_saveas ()](#tfe_text_view_saveas)
+- GtkWidget *[tfe_text_view_new_with_file ()](#tfe_text_view_new_with_file)
+- GtkWidget *[tfe_text_view_new ()](#tfe_text_view_new)
 
 ## Signals
 
-- void [change-file](../src/tfetextview/#change-file)
-- void [open-response](../src/tfetextview/#open-response)
+- void [change-file](#change-file)
+- void [open-response](#open-response)
 
 ## Types and Values
 
-- [TfeTextView](../src/tfetextview/#tfetextview-1)
-- [TfeTextViewClass](../src/tfetextview/#tfetextviewclass)
-- [TfeTextViewOpenResponseType](../src/tfetextview/#enum-tfetextviewopenresponsetype)
+- [TfeTextView](#tfetextview-1)
+- [TfeTextViewClass](#tfetextviewclass)
+- [TfeTextViewOpenResponseType](#enum-tfetextviewopenresponsetype)
 
 ## Object Hierarchy
 

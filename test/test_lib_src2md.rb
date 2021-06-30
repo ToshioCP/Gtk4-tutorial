@@ -467,7 +467,7 @@ files.each do |f|
 end
 
 # --- test change_rel_link
-file_table = [["sec3.src.md", "../gfm/sec3.md", "../html/sec3.html", "../latex/sec3.html"]]
+file_table = [["src/sec3.src.md", "gfm/sec3.md", "html/sec3.html", "latex/sec3.html"]]
 # general relative link
 s = "[sample.c](temp/sample.c)"
 t = change_rel_link s, "test", "gfm"
@@ -498,27 +498,23 @@ dst_dirs.each do |d|
   src2md "temp/sample.src.md", "#{d}/sample.md"
   dst_md = File.read "#{d}/sample.md"
   if d == "gfm"
-    print "Gfm result didn't match !!\n" if dst_md != sample_md_gfm
+    print "Gfm result didn't match !!\n" unless dst_md == sample_md_gfm
 #File.write "tmp.txt", sample_md_gfm
 #system "diff", "#{d}/sample.md", "tmp.txt"
 #File.delete "tmp.txt"
   elsif d == "html"
-    if dst_md != sample_md_html
-      print "Html result didn't match !!\n"
+    print "Html result didn't match !!\n" unless dst_md == sample_md_html
 #File.write "tmp.txt", sample_md_html
 #system "diff", "#{d}/sample.md", "tmp.txt"
 #File.delete "tmp.txt"
-    end
   elsif d == "latex"
     sample_md_latex.gsub!(/\[((R|r)elative link)\]\([^)]+\)/, "\\1")
-    if dst_md != sample_md_latex
-      print "Latex result didn't match !!\n"
+    print "Latex result didn't match !!\n" unless dst_md == sample_md_latex
 #File.write "tmp.txt", sample_md_latex
 #system "diff", "#{d}/sample.md", "tmp.txt"
 #File.delete "tmp.txt"
-    end
   else
-   print "Unexpected error.\n"
+    print "Unexpected error.\n"
   end
 end
 

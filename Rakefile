@@ -12,12 +12,8 @@ end
 secfiles = Sec_files.new secfiles
 secfiles.renum!
 
-def basename srcfile
-  File.basename(srcfile, ".src.md")
-end
-
 abstract = Src_file.new "src/abstract.src.md"
- 
+
 otherfiles = ["src/turtle/turtle_doc.src.md",
               "src/tfetextview/tfetextview_doc.src.md",
               "src/Readme_for_developers.src.md"].map {|file| Src_file.new file}
@@ -32,26 +28,11 @@ file_table = srcfiles.map do |srcfile|
   ]
 end
 
-# Paths are relative from the directory "src".
-file_table_src = srcfiles.map do |srcfile|
-  [
-    srcfile.sub(/^src\//, ""),
-    "../gfm/" + srcfile.to_md,
-    "../html/" + srcfile.to_html,
-    "../latex/" + srcfile.to_tex
-  ]
-end
-
-othermdfiles = otherfiles.map {|file| "gfm/" + file.to_md}
-otherhtmlfiles = otherfiles.map {|file| "html/" + file.to_html}
-othertexfiles = otherfiles.map {|file| "latex/" + file.to_tex}
-
 mdfiles = srcfiles.map {|file| "gfm/" + file.to_md}
 htmlfiles = srcfiles.map {|file| "html/" + file.to_html}
 sectexfiles = secfiles.map {|file| "latex/" + file.to_tex}
 othertexfiles = otherfiles.map {|file| "latex/" + file.to_tex}
 texfiles = srcfiles.map {|file| "latex/" + file.to_tex}
-
 
 ["gfm", "html", "latex"].each do |d|
   if ! Dir.exist?(d)
@@ -71,7 +52,7 @@ task md: %w[Readme.md] + mdfiles
 
 file "Readme.md" => [abstract] + secfiles do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
-  src2md abstract, abstract.to_md, file_table_src, "gfm"
+  src2md abstract, abstract.to_md, file_table, "gfm"
   buf += File.readlines(abstract.to_md)
   File.delete(abstract.to_md)
   buf.append("\n", "## Table of contents\n", "\n")
@@ -84,8 +65,8 @@ file "Readme.md" => [abstract] + secfiles do
 end
 
 file_table.each do |tbl|
-  file tbl[1] => tbl[0] do
-    src2md tbl[0], tbl[1], file_table_src, "gfm"
+  file tbl[1] => [tbl[0]] + tbl[0].c_files do
+    src2md tbl[0], tbl[1], file_table, "gfm"
     if tbl[0].instance_of? Sec_file
       i = tbl[0].num.to_i - 1
       if secfiles.size == 1
@@ -110,7 +91,7 @@ task html: ["html/index.html"] + htmlfiles
 file "html/index.html" => [abstract] + secfiles do
   buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]
   abstract_md = "html/#{abstract.to_md}"
-  src2md abstract, abstract_md, file_table_src, "html"
+  src2md abstract, abstract_md, file_table, "html"
   buf += File.readlines(abstract_md)
   File.delete(abstract_md)
   buf.append("\n", "## Table of contents\n", "\n")
@@ -126,9 +107,9 @@ file "html/index.html" => [abstract] + secfiles do
 end
 
 file_table.each do |tbl|
-  file tbl[2] => tbl[0] do
+  file tbl[2] => [tbl[0]] + tbl[0].c_files do
     html_md = "html/" + tbl[0].to_md
-    src2md tbl[0], html_md, file_table_src, "html"
+    src2md tbl[0], html_md, file_table, "html"
     if tbl[0].instance_of? Sec_file
       i = tbl[0].num.to_i - 1 # 0 based index
       if secfiles.size == 1
@@ -166,15 +147,15 @@ end
 abstract_tex = "latex/"+abstract.to_tex
 file abstract_tex => abstract do
   abstract_md = "latex/"+abstract.to_md
-  src2md abstract, abstract_md, file_table_src, "latex"
+  src2md abstract, abstract_md, file_table, "latex"
   sh "pandoc --listings -o #{abstract_tex} #{abstract_md}"
   File.delete(abstract_md)
 end
 
 file_table.each do |tbl|
-  file tbl[3] => tbl[0] do
+  file tbl[3] => [tbl[0]] + tbl[0].c_files do
     tex_md = "latex/" + tbl[0].to_md
-    src2md tbl[0], tex_md, file_table_src, "latex"
+    src2md tbl[0], tex_md, file_table, "latex"
     sh "pandoc --listings -o #{tbl[3]} #{tex_md}"
     File.delete(tex_md)
   end

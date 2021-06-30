@@ -72,7 +72,8 @@ require 'pathname'
 # Bison, lex, markdown and meson aren't supported.
 
 # file_table contains paths of source, GFM, html and latex.
-# It is possible to get the relationship between source file and created GFM/html/latex file.
+# If the paths are relative, srcmd and md must be relative.
+# And their base directory must be the same.
 
 # type is "gfm", "html" or "latex".
 # Caller can specify the target type.
@@ -275,13 +276,13 @@ def change_rel_link line, org_dir, new_dir, file_table=nil, type="gfm"
     link = $2
     if file_table
       file_table.each do |tbl|
-        if tbl[0] == link
-          link = tbl[i]
+        if tbl[0] == "#{org_dir}/#{link}"
+          p_link = Pathname.new tbl[i]
+          link = p_link.relative_path_from(p_new_dir).to_s
           break
         end
       end
-    end
-    if ! (link =~ /^(http|\/)/)
+    elsif ! (link =~ /^(http|\/)/)
       p_link = Pathname.new "#{org_dir}/#{link}"
       link = p_link.relative_path_from(p_new_dir).to_s
     end

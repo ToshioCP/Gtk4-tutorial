@@ -116,7 +116,7 @@ To compile this, type the following.
 
     $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
 
-![rectangle.png](../src/misc/rectangle.png)
+![rectangle.png](misc/rectangle.png)
 
 There are lots of documentations in [Cairo's website](https://www.cairographics.org/).
 If you aren't familiar with Cairo, it is strongly recommended to read the [tutorial](https://www.cairographics.org/tutorial/) in the website.

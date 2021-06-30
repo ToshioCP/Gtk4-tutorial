@@ -1,6 +1,6 @@
 class Src_file <String
   def initialize path
-    unless path.instance_of?(String)
+    unless path.is_a?(String)
       raise  "Src_file class initialization error: The argument is not String type."
     end
     unless File.exist?(path)
@@ -12,6 +12,20 @@ class Src_file <String
     @name = File.basename path, ".src.md"
     @dirname = File.dirname path
     super(path)
+  end
+  def replace path
+    unless path.is_a?(String)
+      raise  "Replace error: The argument is not String type."
+    end
+    unless File.exist?(path)
+      raise  "Replace error: File #{path} is not exist."
+    end
+    unless path =~ /\.src\.md$/
+      raise  "Replace error: The argment \"#{path}\" doesn't have .src.md suffix."
+    end
+    super(path)
+    @name = File.basename path, ".src.md"
+    @dirname = File.dirname path
   end
   def path
     self
@@ -31,15 +45,6 @@ class Src_file <String
   def to_tex
     @name+".tex"
   end
-end  
-
-class Sec_file < Src_file
-  def initialize path
-    unless path =~ /sec\d+(\.\d+)?\.src\.md$/
-      raise  "Sec_file class initialization error: The argment \"#{path}\" doesn't have secXX.src.md form. XX is int or float."
-    end
-    super(path)
-  end
   def c_files
     buf = IO.readlines(self)
     files = []
@@ -57,7 +62,17 @@ class Sec_file < Src_file
         # lines out of @@@include command is thrown away.
       end
     end
+    raise "Syntax error: @@@include didn't end (no @@@ line)." if in_include
     files
+  end
+end  
+
+class Sec_file < Src_file
+  def initialize path
+    unless path =~ /sec\d+(\.\d+)?\.src\.md$/
+      raise  "Sec_file class initialization error: The argment \"#{path}\" doesn't have secXX.src.md form. XX is int or float."
+    end
+    super(path)
   end
   def num # the return value is String
     @name.match(/\d+(\.\d+)?/)[0]
@@ -89,8 +104,6 @@ class Sec_file < Src_file
       if old != new
         File.rename old, new
         self.replace new
-        @name = File.basename new, ".src.md"
-        @dirname = File.dirname new
       end
     end
   end
@@ -136,7 +149,7 @@ private
     (self.size - 1).downto 0 do |i|
       if tbl[i][2] == false
         n = tbl[i][1] # number to substitute
-        found = self.find_index { |sec_file| sec_file != self && sec_file.to_f == n }
+        found = self.find_index { |sec_file| sec_file.to_f == n }
         unless found # OK to replace
           self[i].renum! n
           tbl[i][2] = true

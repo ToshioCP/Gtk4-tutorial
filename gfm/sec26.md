@@ -482,7 +482,7 @@ Such functionality comes from desktop.
 
 ## Compilation and execution
 
-The source files are located in [src/list4](../src/list4) directory.
+The source files are located in [src/list4](list4) directory.
 To compile and execute list4, type as follows.
 
 ~~~
@@ -566,7 +566,7 @@ This method decreases the number of ui files.
 But, the new ui file is a bit complicated especially for the beginners.
 If you feel some difficulty, it is better for you to separate the ui file.
 
-A directory [src/list5](../src/list5) includes the ui file above.
+A directory [src/list5](list5) includes the ui file above.
 
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)

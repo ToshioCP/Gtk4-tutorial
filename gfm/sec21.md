@@ -842,7 +842,7 @@ $ ninja -C _build
 $ ninja -C _build install  # or 'sudo ninja -C _build install'
 ~~~
 
-Source files are in [src/tfe7](../src/tfe7) directory.
+Source files are in [src/tfe7](tfe7) directory.
 
 We made a very small text editor.
 You can add features to this editor.

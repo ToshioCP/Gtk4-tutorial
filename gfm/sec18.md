@@ -336,19 +336,21 @@ The code is as follows.
  90   gtk_window_present (GTK_WINDOW (win));
  91 }
  92 
- 93 int
- 94 main (int argc, char **argv) {
- 95   GtkApplication *app;
- 96   int stat;
- 97 
- 98   app = gtk_application_new ("com.github.ToshioCP.menu2", G_APPLICATION_FLAGS_NONE);
- 99   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-100 
-101   stat =g_application_run (G_APPLICATION (app), argc, argv);
-102   g_object_unref (app);
-103   return stat;
-104 }
-105 
+ 93 #define APPLICATION_ID "com.github.ToshioCP.menu2"
+ 94 
+ 95 int
+ 96 main (int argc, char **argv) {
+ 97   GtkApplication *app;
+ 98   int stat;
+ 99 
+100   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+101   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+102 
+103   stat =g_application_run (G_APPLICATION (app), argc, argv);
+104   g_object_unref (app);
+105   return stat;
+106 }
+107 
 ~~~
 
 - 5-26: Signal handlers.

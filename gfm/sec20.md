@@ -1231,7 +1231,7 @@ The following is `meson.build`.
 16 
 ~~~
 
-Source files of `tfe` is under [src/tfe6](../src/tfe6) directory.
+Source files of `tfe` is under [src/tfe6](tfe6) directory.
 Copy them to your temporary directory and try to compile and install.
 
 ~~~

@@ -490,7 +490,7 @@ These are almost same as the functions in section 25 and 26.
 
 ## Compilation and execution.
 
-All the source files are in [src/column](../src/column) directory.
+All the source files are in [src/column](column) directory.
 Change your current directory to the directory and type the following.
 
 ~~~

@@ -5,13 +5,13 @@
 1. You need linux operationg system, ruby, rake, pandoc and latex system.
 2. download this repository and uncompress the files.
 3. change your current directory to the top directory of the source files.
-4. type `rake html` to create html files. The files are generated under `html` directory.
-5. type `rake pdf` to create pdf file. The file is generated under `latex` directory.
+4. type `rake html` to create html files. The files are created under `html` directory.
+5. type `rake pdf` to create pdf file. The file is created under `latex` directory.
 
 ## Prerequisites
 
 - Linux operationg system.
-The programs in the repository has been tested on Ubuntu 2.04.
+The programs in the repository has been tested on Ubuntu 21.04.
 - Download the files in this repository.
 There are two ways to download.
   1. Use git.
@@ -223,9 +223,9 @@ This command is similar to "#if", "#elif", #else" and "#endif" directives in C p
 For example,
 
     @@@if gfm
-    Refer to  [tfetextview API reference](tfetextview/tfetextview_doc.src.md)
+    Refer to  [tfetextview API reference](tfetextview_doc.md)
     @@@elif html
-    Refer to  [tfetextview API reference](tfetextview/tfetextview_doc.src.html)
+    Refer to  [tfetextview API reference](tfetextview_doc.html)
     @@@elif latex
     Refer to tfetextview API reference in appendix.
     @@@end
@@ -297,6 +297,12 @@ The script makes a backup file `sample.md.bak`.
 The task of the script seems easy, but the program is not so simple.
 The script `mktbl.rb` uses a library `lib/lib_mktbl.rb`
 This script is independent from `src2md.rb`.
+
+@@@commands are effective in the whole text.
+This means you can't stop the @@@commands.
+But sometimes you want to show the commands literally like this document.
+One solution is to add four blanks at the top of the line.
+Then @@@commands are not effective because @@@commands must be at the top of the line.
 
 ## Directory structure
 

@@ -442,11 +442,11 @@ See [Gio reference manual](https://developer.gnome.org/gio/stable/GFile.html#g-f
 
 ## The API document and source file of tfetextview.c
 
-Refer [API document of TfeTextView](tfetextview_doc.md).
+Refer [API document of TfeTextView](../gfm/tfetextview_doc.md).
 It is under the directory `src/tfetextview`.
 
 All the source files are listed in [Section 16](sec16.md).
-You can find them under [src/tfe5](../src/tfe5) and [src/tfetextview](../src/tfetextview) directories.
+You can find them under [src/tfe5](tfe5) and [src/tfetextview](tfetextview) directories.
 
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
