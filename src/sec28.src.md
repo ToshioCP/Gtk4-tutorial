@@ -12,10 +12,10 @@ The property points a GtkSelectionModel object.
 - Each GtkColumnViewColumn has "factory" property.
 The property points a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).
 - The factory connects GtkListItem, which belongs to GtkColumnViewColumn, and items of GtkSelectionModel.
-And the factory builds the descendants widgets of GtkListView to display the item on the display.
+And the factory builds the descendants widgets of GtkColumnView to display the item on the display.
 This process is the same as the one in GtkListView.
 
-The following diagram shows the image how everything above works.
+The following diagram shows the image how it works.
 
 ![ColumnView](../image/column.png){width=12cm height=9cm}
 
@@ -49,9 +49,10 @@ Therefore, the chain is: GtkColumnView => GtkSingleSelection => GtkSortListModel
 It is a list of GFileInfo, which holds information of files under a directory.
 It has "attributes" property.
 It specifies what attributes is kept in each GFileInfo.
-"standard::name" is a name of the file.
-"standard::size" is the file size.
-"time::modified" is the date and time the file was last modified.
+  - "standard::name" is a name of the file.
+  - "standard::icon" is a GIcon object of the file
+  - "standard::size" is the file size.
+  - "time::modified" is the date and time the file was last modified.
 - 29-79: The first GtkColumnViewColumn object.
 There are four properties, "title", "expand", factory" and "sorter".
 - 31: Sets the "title" property with "Name".
@@ -61,12 +62,12 @@ This is the title on the header of the column.
 - 33- 69: Sets the "factory" property with GtkBuilderListItemFactory.
 The factory has "bytes" property which holds a ui string to define a template to build GtkListItem composite widget.
 The CDATA section (line 36-66) is the ui string to put into the "bytes" property.
-The contents are the same as the section 25 and 25.
+The contents are the same as the ui file `factory_list.ui` in the section 26.
 - 70-77: Sets the "sorter" property with GtkStringSorter object.
 This object provides a sorter that compares strings.
 It has "expression" property which is set with GtkExpression.
 A closure tag with a string type function `get_file_name` is used here.
-The function is explained later.
+The function will be explained later.
 - 80-115: The second GtkColumnViewColumn object.
 Its "title", "factory" and "sorter" properties are set.
 GtkNumericSorter is used.
@@ -91,8 +92,8 @@ The property is bound to "sorter" property of GtkColumnView in line 22 to 24.
 Therefore, `columnview` determines the way how to sort the list model.
 The "sorter" property of GtkColumnView is read-only property and it is a special sorter.
 It reflects the user's sorting choice.
-If a user clicks the header of a column, then the sorter ("sorter" property) of the column is referred to by "sorter" property of the GtkColumnView object.
-If the user clicks the header of another column, then the "sorter" property of the GtkColumnView object reflects the newly clicked column's "sorter" property.
+If a user clicks the header of a column, then the sorter ("sorter" property) of the column is referenced by "sorter" property of the GtkColumnView.
+If the user clicks the header of another column, then the "sorter" property of the GtkColumnView refers to the newly clicked column's "sorter" property.
 
 The binding above makes a indirect connection between the "sorter" property of GtkSortListModel and the "sorter" property of each column.
 
@@ -107,7 +108,7 @@ The example uses GtkStringSorter and GtkNumericSorter.
 
 GtkStringSorter uses GtkExpression to get the strings from the objects.
 The GtkExpression is stored in the "expression" property of GtkStringSorter.
-For example, in the ui file above, the GtkExpression is in the line 73 to 74.
+For example, in the ui file above, the GtkExpression is in the line 71 to 76.
 
 ~~~xml
 <object class="GtkStringSorter" id="sorter_name">
@@ -152,7 +153,7 @@ column/column.c get_file_size
 
 It just returns the size of `info`.
 The type of the size is `goffset`.
-`goffset` is the same as `gint64`.
+The type `goffset` is the same as `gint64`.
 
 The lines from 142 to 148 is:
 
@@ -185,8 +186,8 @@ It returns the unix time (gint64 type).
 column/column.c
 @@@
 
-- 4-47: Functions for the closure tag in the bytes property of GtkBuilderListItemFactory.
-These are almost same as the functions in section 25 and 25.
+- 4-47: Functions for the closure tag in the "bytes" property of GtkBuilderListItemFactory.
+These are almost same as the functions in section 25 and 26.
 - 50-72: Functions for the closure in the expression property of GtkStringSorter or GtkNumericSorter.
 - 75-92: `app_activate` is an "activate" handler of GApplication.
 - 80-83: Builds objects with ui resource and gets `win` and `directorylist`.
@@ -213,7 +214,7 @@ Then, a window appears.
 ![Column View](../image/column_view.png){width=11.3cm height=9cm}
 
 If you click the header of a column, then the whole lists are sorted by the column.
-If you click the header of another column, then the whole lists are sorted by the newly chosen column.
+If you click the header of another column, then the whole lists are sorted by the newly selected column.
 
 GtkColumnView is very useful and it can manage very big GListModel.
 It is possible to use it for file list, application list, database frontend and so on.
