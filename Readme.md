@@ -12,6 +12,10 @@ It also describes GtkExpression.
 Please refer to [Gtk reference manual](https://developer.gnome.org/gtk4/stable/index.html)
 and [Gnome Developer Center](https://developer.gnome.org/) for further topics.
 
+If you want to know about GObject and type system, refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
+It includes the initialization and destruction process of GObject class and instances.
+These knowledge is necessary to write gtk4 programs.
+
 This tutorial is under development and unstable.
 Even though the codes of the examples have been tested on gtk4 version 4.0, there might exist bugs.
 If you find any bugs, errors or mistakes in the tutorial and C examples, please let me know.

@@ -27,7 +27,10 @@ GtkApplication *
 gtk_application_new (const gchar *application_id, GApplicationFlags flags);
 ~~~
 
-This flag is described in the [GApplication section](https://developer.gnome.org/gio/stable/GApplication.html#GApplicationFlags) in GIO reference manual.
+This tutorial explains only two flags, `G_APPLICATION_FLAGS_NONE` and `G_APPLICATION_HANDLES_OPEN`.
+If you want to handle command line arguments, `G_APPLICATION_HANDLES_COMMAND_LINE` flag is what you need.
+How to program it is written in [GIO reference manual, g\_application\_run](https://developer.gnome.org/gio/stable/GApplication.html#g-application-run).
+And the flag is described in the [GApplication section](https://developer.gnome.org/gio/stable/GApplication.html#GApplicationFlags) in GIO reference manual.
 
 ~~~
 GApplicationFlags' Members

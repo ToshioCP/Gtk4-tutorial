@@ -256,7 +256,7 @@ In the same way, the method is called in the action in `Rakefile`.
 The code analyzing @@@if series command is rather complicated.
 It is based on the state diagram below.
 
-![state diagram](../image/state_diagram.png)
+![state diagram](../image/state_diagram.png){width=15cm height=8.4cm}
 
 ## mktbl.rb script
 
