@@ -870,7 +870,7 @@ PANGO\_SCALE is defined as 1024.
 Therefore, 10*PANGO\_SCALE is 10240.
 - 91: calls `set_font_for_display` to set CSS for the GdkDisplay.
 
-For further information, see [Pango reference manual](https://developer.gnome.org/pango/1.46/).
+For further information, see [Pango API Reference](https://docs.gtk.org/Pango/).
 
 ## GSettings
 
@@ -930,13 +930,13 @@ For example,
 ~~~
 
 - 4: The type attribute is "s".
-It is [GVariant format string](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
+It is [GLib API Reference, GVariant Type Strings](https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings).
 Other common types are:
   - "b": gboolean
   - "i": gint32.
   - "d": double.
 
-Further information is in [Glib reference manual](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
+Further information is in [Glib API Reference, VarientType](https://docs.gtk.org/glib/struct.VariantType.html).
 
 ### gsettings
 
@@ -1066,7 +1066,7 @@ A path determines where the settings are stored in the conceptual global tree of
 An id identifies the schema.
 - 4: Key tag has two attributes.
 Name is the name of the key.
-Type is the type of the value of the key and specified with [GVariant format string](https://developer.gnome.org/glib/stable/gvariant-format-strings.html).
+Type is the type of the value of the key and specified with [GLib API Reference, VariantType](https://docs.gtk.org/glib/struct.VariantType.html).
 - 5: default value of the key `font` is `Monospace 12`.
 - 6: Summery and description elements describes the key.
 They are optional, but it is recommended to add them in the XML file.

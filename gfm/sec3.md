@@ -140,13 +140,13 @@ The function `g_signal_connect` has four arguments.
 4. Data to pass to the handler. If no data is necessary, NULL should be given.
 
 You can find the description of each signal in the API reference manual.
-For example, "activate" signal is in GApplication section in [GIO reference manual](https://developer.gnome.org/gio/stable/GApplication.html#GApplication-activate).
+For example, "activate" signal is in GApplication section in [GIO API Reference](https://docs.gtk.org/gio/signal.Application.activate.html).
 The handler function is described in it.
 
-In addition, `g_signal_connect` is described in [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-connect).
+In addition, `g_signal_connect` is described in [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
 API reference manual is very important.
 You should see and understand it to write Gtk applications.
-They are located in ['GNOME Developer Center'](https://developer.gnome.org/).
+They are located in ['GTK Documentation'](https://docs.gtk.org/).
 
 Let's compile the source file above (`pr2.c`) and run it.
 

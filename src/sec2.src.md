@@ -5,8 +5,8 @@ This section describes how to install Gtk4 into Linux distributions.
 This tutorial including this section is without any warranty.
 If you install Gtk4 to your computer, do it at your own risk.
 
-This section is written on 13/June/2021.
-"At present" means 13/June/2021 in this section.
+This section is written on 12/August/2021.
+"At present" means 12/August/2021 in this section.
 
 There are three possible way to install Gtk4.
 
@@ -36,7 +36,7 @@ At present, the version of Gtk4 on Ubuntu 21.04 is 4.0.3.
 
 I installed Gtk4 in January 2021.
 So, the following is old information, especially for the version of each software.
-For the latest information, see [Gtk gitlab repository](https://gitlab.gnome.org/GNOME/gtk) and [Gtk official web site](https://docs.gtk.org/gtk4/building.html).
+For the latest information, see [Gtk API Reference, Building GTK](https://docs.gtk.org/gtk4/building.html).
 
 ### Prerequisites for Gtk4 installation
 
@@ -51,7 +51,7 @@ I installed Gtk4 under the directory `$HOME/local`.
 This is a private user area.
 
 If you want to install it in the system area, `/opt/gtk4` is one of good choices.
-[Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/gtk-building.html) gives an installation example to `/opt/gtk4`.
+[Gtk API Reference, Building GTK](https://docs.gtk.org/gtk4/building.html) gives an installation example to `/opt/gtk4`.
 
 Don't install it to `/usr/local` which is the default.
 It is used by Ubuntu applications, which are not build on Gtk4.
@@ -184,7 +184,7 @@ Compile and install it.
     $ ninja -C _build
     $ ninja -C _build install
 
-If you want to know more information, refer to [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/gtk-building.html).
+If you want to know more information, refer to [Gtk4 API Reference, Building GTK](https://docs.gtk.org/gtk4/building.html).
 
 ### Modify env.sh
 

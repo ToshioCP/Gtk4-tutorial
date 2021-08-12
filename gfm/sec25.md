@@ -3,7 +3,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md), Next: [Section 26]
 # GtkListView
 
 Gtk4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
-The new feature is described in the sections "GListModel support" and "List-based widgets" at the top of [the third chapter of Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/gtkobjects.html).
+The new feature is described in [Gtk API Reference, List Widget Overview](https://docs.gtk.org/gtk4/section-list-widget.html).
 
 Gtk4 has other means to implement lists.
 They are GtkListBox and GtkTreeView which are took over from Gtk3.
@@ -59,7 +59,7 @@ There are functions to add items to the list or remove items from the list.
 - `gtk_string_list_remove` removes an item from the list
 - `gtk_string_list_get_string` gets a string in the list
 
-See [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkStringList.html) for further information.
+See [Gtk4 API Reference, GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html) for further information.
 
 I'll explain the other list objects later.
 

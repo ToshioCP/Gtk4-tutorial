@@ -263,13 +263,13 @@ So, it is necessary to include it by `#include <math.h>` and also link the libra
 - 6: Gets gtk4 library.
 - 8: Gets gnome module.
 Module is a system provided by meson.
-See [Meson build system website](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
+See [Meson build system website, GNUME module](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
 - 9: Compiles ui file to C source file according to the XML file `turtle.gresource.xml`.
 - 11: Gets flex.
 - 12: Gets bison.
 - 13: Compiles `turtle.y` to `turtle_parser.c` and `turtle_parser.h` by bison.
 The function `custom_target` creates a custom top level target.
-See [Meson build system website](https://mesonbuild.com/Reference-manual.html#custom_target) for further information.
+See [Meson build system website, custom target](https://mesonbuild.com/Reference-manual.html#custom_target) for further information.
 - 14: Compiles `turtle.lex` to `turtle_lex.c` by flex.
 - 16: Specifies C source files.
 - 18: Compiles C source files including generated files by glib-compile-resources, bison and flex.

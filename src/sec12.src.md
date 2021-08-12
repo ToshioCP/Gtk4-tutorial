@@ -63,7 +63,7 @@ tfetextview/tfetextview.c tfe_text_view_class_init
 The signal "change-file" has no default handler (object method handler).
 You usually don't need to set a default handler.
 If you need it, use `g_signal_new_class_handler` function.
-See [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Signals.html#g-signal-new-class-handler) for further information.
+See [GObject API Reference, g\_signal\_new\_class\_handler](https://docs.gtk.org/gobject/func.signal_new_class_handler.html) for further information.
 - The return value of `g_signal_new` is the signal id.
 The type of signal id is guint, which is the same as unsigned int.
 It is used in the function `g_signal_emit`.
@@ -73,7 +73,7 @@ This signal has a parameter.
 "open-response" signal has one parameter.
 - 25: The type of the parameter.
 `G_TYPE_INT` is a type of integer.
-Such fundamental types are described in [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-Type-Information.html).
+Such fundamental types are described in [GObject reference manual](https://developer-old.gnome.org/gobject/stable/gobject-Type-Information.html).
 
 The handlers are declared as follows.
 

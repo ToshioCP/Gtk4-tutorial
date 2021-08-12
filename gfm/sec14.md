@@ -199,7 +199,7 @@ On the other hand, when an instance of GObject (not GInitiallyUnowned) is create
 And the instance has a normal reference count instead of floating reference.
 
 If you use `g_object_unref` to an instance that has a floating reference, you need to convert the floating reference to a normal reference in advance.
-See [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html#gobject-The-Base-Object-Type.description) for further information.
+See [GObject Reference Manual](https://developer-old.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html#gobject-The-Base-Object-Type.description) for further information.
 
 ## notebook\_page\_close
 

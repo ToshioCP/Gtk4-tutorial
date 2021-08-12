@@ -371,7 +371,7 @@ Now I'll show you `app_open` function in the C file `tfe3.c`.
 48 }
 ~~~
 
-The whole source code of `tfe3.c` is stored in [src/tfe](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe) directory.
+The whole source code of `tfe3.c` is stored in [src/tfe](../src/tfe) directory.
 If you want to see it, click the link above.
 
 ### Using ui string

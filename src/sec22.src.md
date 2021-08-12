@@ -104,7 +104,7 @@ The two functions `app_activate` and `draw_function` is important in this exampl
 GtkDrawingArea widget uses the function to draw the contents of itself whenever its necessary.
 For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
 Then, the whole window needs to be redrawn.
-For the information of `gtk_drawing_area_set_draw_func`, see [Gtk4 reference manual](https://developer.gnome.org/gtk4/stable/GtkDrawingArea.html#gtk-drawing-area-set-draw-func).
+For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference, gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
 
 The drawing function has five parameters.
 

@@ -284,7 +284,7 @@ So, the change of the text in `entry` makes the "label" property reflect it imme
 
 Closure expression calls closure when it is evaluated.
 A closure is a generic representation of a callback (a pointer to a function).
-For information about closure, see [GObject reference manual](https://developer.gnome.org/gobject/stable/chapter-signal.html#closure).
+For information about closure, see [GObject API Reference, The GObject messaging system](https://docs.gtk.org/gobject/concepts.html#the-gobject-messaging-system).
 A closure expression is created with `gtk_cclosure_expression_new` function.
 
 ~~~C

@@ -18,7 +18,7 @@ When the program starts, we give a filename as an argument.
 Then it opens the file and inserts its contents into the GtkTextBuffer.
 
 At the beginning of the implementation, we need to know how GtkApplication (or GApplication) recognizes arguments.
-It is described in the [GIO reference manual](https://developer.gnome.org/gio/stable/GApplication.html#GApplication.description).
+It is described in the [GIO API Reference, Application](https://docs.gtk.org/gio/class.Application.html).
 
 When GtkApplication is created, a flag (its type is GApplicationFlags) is given as an argument.
 
@@ -29,8 +29,8 @@ gtk_application_new (const gchar *application_id, GApplicationFlags flags);
 
 This tutorial explains only two flags, `G_APPLICATION_FLAGS_NONE` and `G_APPLICATION_HANDLES_OPEN`.
 If you want to handle command line arguments, `G_APPLICATION_HANDLES_COMMAND_LINE` flag is what you need.
-How to program it is written in [GIO reference manual, g\_application\_run](https://developer.gnome.org/gio/stable/GApplication.html#g-application-run).
-And the flag is described in the [GApplication section](https://developer.gnome.org/gio/stable/GApplication.html#GApplicationFlags) in GIO reference manual.
+How to program it is written in [GIO API Reference, g\_application\_run](https://docs.gtk.org/gio/method.Application.run.html).
+And the flag is described in the [GIO API Reference, ApplicationFlags](https://docs.gtk.org/gio/flags.ApplicationFlags.html).
 
 ~~~
 GApplicationFlags' Members
@@ -337,7 +337,7 @@ Therefore, the structure is like this:
 If it is set to TRUE then the tab expands horizontally as long as possible.
 If it is FALSE, then the width of the tab is determined by the size of the label.
 `g_object_set` is a general function to set properties in any objects.
-See [GObject reference manual](https://developer.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html#g-object-set).
+See [GObject API Reference, g\_object\_set](https://docs.gtk.org/gobject/method.Object.set.html).
 - 49-51: If it fails to read the file, "No such file" message is outputted.
 Frees `filename`.
 - 52-53: If `filename` is NULL, "No valid file is given" message is outputted.
