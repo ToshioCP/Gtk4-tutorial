@@ -18,7 +18,7 @@ Please refer to [Gtk API Reference](https://docs.gtk.org/gtk4/index.html)
 and [Gnome Developer Documentation Website](https://developer.gnome.org/) for further topics.
 
 These websites are newly opend lately (Aug/2021).
-The old documentation is located at [Gtk Reference Manual](https://developer-old.gnome.org/gdk4/stable/) and [Gnome Developer Center](https://developer-old.gnome.org/).
+The old documentation is located at [Gtk Reference Manual](https://developer-old.gnome.org/gtk4/stable/) and [Gnome Developer Center](https://developer-old.gnome.org/).
 The new website is in progress at present, so you might need to refer to the old version.
 
 If you want to know about GObject and type system, refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
