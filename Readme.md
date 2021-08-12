@@ -6,9 +6,9 @@ This tutorial illustrates how to write C programs with Gtk4 library.
 It focuses on beginners so the contents are limited to basic things.
 The table of contents are shown at the end of this abstract.
 
-- Section 3 to 20 describes basics and the example is a simple editor `tfe` (Text File Editor).
-- Section 21 to 23 describes GtkDrawingArea.
-- Section 24 to 27 describes list model and list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 3 to 21 describes basics and the example is a simple editor `tfe` (Text File Editor).
+- Section 22 to 24 describes GtkDrawingArea.
+- Section 25 to 28 describes list model and list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [Gtk4-tutorial github repository](https://github.com/ToshioCP/Gtk4-tutorial).
