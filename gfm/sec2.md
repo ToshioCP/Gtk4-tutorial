@@ -257,7 +257,7 @@ This is a usual installation.
 - Install them to a virtual machine.
 
 I've chosen the second way.
-I've tried installing Fedora 34 Beta with gnome-boxes.
+I've tried installing Fedora 34 with gnome-boxes.
 My OS was Ubuntu 21.04 at that time.
 Gnome-boxes creates a virtual machine in Ubuntu and Fedora will be installed to that virtual machine.
 

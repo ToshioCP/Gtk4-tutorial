@@ -231,7 +231,7 @@ For example, to compile `sample.c`, type the following.
 
 To know how to compile Gtk4 applications, refer to the section 3 (GtkApplication and GtkApplicationWindow) and after.
 
-## Installing Fedora 34 Beta with gnome-boxes
+## Installing Fedora 34 with gnome-boxes
 
 The last part of this section is about Gnome40.
 Gnome 40 is a new version of Gnome desktop system.
@@ -243,10 +243,10 @@ See [Gnome 40 website](https://forty.gnome.org/) first.
 There are only three choices at present.
 
   - Gnome OS
-  - Fedora 34 Beta
+  - Fedora 34
   - openSUSE
 
-I've tried installing Fedora 34 Beta with gnome-boxes.
+I've tried installing Fedora 34 with gnome-boxes.
 
 There are two ways to install them.
 
@@ -255,13 +255,13 @@ This is a usual installation.
 - Install them to a virtual machine.
 
 I've chosen the second way.
-I've tried installing Fedora 34 Beta with gnome-boxes.
+I've tried installing Fedora 34 with gnome-boxes.
 My OS was Ubuntu 21.04 at that time.
 Gnome-boxes creates a virtual machine in Ubuntu and Fedora will be installed to that virtual machine.
 
 The instruction is as follows.
 
-1. Download Fedora 34 Beta iso file.
+1. Download Fedora 34 iso file.
 There is an link at the end of [Gnome 40 website](https://forty.gnome.org/).
 2. Install gnome-boxes with apt-get command.
 ~~~
