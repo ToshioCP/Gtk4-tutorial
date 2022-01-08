@@ -78,9 +78,10 @@ main = <<'EOS'
 \date{}
 \begin{document}
 \maketitle
-\begin{abstract}
+\begin{center}
+\textbf{abstract}
+\end{center}
 \input{abstract.tex}
-\end{abstract}
 \newpage
 \tableofcontents
 \newpage
