@@ -4,15 +4,17 @@
 
 ### GtkApplication and g\_application\_run
 
-Usually people write a programming code to make an application.
+Usually people write programming code to make an application.
 What are applications?
-Applications are software that runs using libraries, which includes OS, frameworks and so on.
-In Gtk4 programming, GtkApplication is an object that runs on Gtk libraries.
+Applications are software that runs using libraries, which includes the
+OS, frameworks and so on.
+In Gtk4 programming, the GtkApplication is a program (or executable) that runs
+using Gtk libraries.
 
-The basic way how to write GtkApplication is as follows.
+The basic way to write a GtkApplication is as follows.
 
-- Creates a GtkApplication instance.
-- Runs the application.
+- Create a GtkApplication instance.
+- Run the application.
 
 That's all.
 Very simple.
@@ -40,7 +42,7 @@ The string `pr1.c` is the filename of the C source code above.
 $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
 ~~~
 
-The C compiler gcc generates an executable file `a.out`.
+The C compiler gcc generates an executable file, `a.out`.
 Let's run it.
 
 ~~~
@@ -49,37 +51,41 @@ $ ./a.out
 (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
 g_application_activate() and has no handlers connected to the "activate" signal.
 It should do one of these.
-$ 
+$
 ~~~
 
-Oh, just an error message.
-But this error message means that the GtkApplication object ran without a doubt.
-Now, think about the message in the next subsection.
+Oh, it just produces an error message.
+This error message means that the GtkApplication object ran, without a doubt.
+Now, let's think about what this message means.
 
 ### signal
 
 The message tells us that:
 
-1. The application GtkApplication doesn't implement `g_application_activate()`.
-2. And it has no handlers connected to the "activate" signal.
-3. You need to solve at least one of these.
+1. The application GtkApplication doesn't implement `g_application_activate()`,
+2. It has no handlers connected to the "activate" signal, and
+3. You will need to solve at least one of these.
 
 These two causes of the error are related to signals.
-So, I will explain it to you first.
+So, I will explain that to you first.
 
-Signal is emitted when something happens.
+A signal is emitted when something happens.
 For example, a window is created, a window is destroyed and so on.
-The signal "activate" is emitted when the application is activated.
-If the signal is connected to a function, which is called signal handler or simply handler, then the function is invoked when the signal emits.
+The signal "activate" is emitted when the application is activated, or started.
+If the signal is connected to a function, which is called a signal handler or
+simply handler, then the function is invoked when the signal emits.
+
 The flow is like this:
 
 1. Something happens.
 2. If it's related to a certain signal, then the signal is emitted.
-3. If the signal is connected to a handler in advance, then the handler is invoked.
+3. If the signal as been connected to a handler, then the handler is invoked.
 
 Signals are defined in objects.
-For example, "activate" signal belongs to GApplication object, which is a parent object of GtkApplication object.
-GApplication object is a child object of GObject object.
+For example, the "activate" signal belongs to the GApplication object, which is
+a parent object of GtkApplication object.
+
+The GApplication object is a child object of the GObject object.
 GObject is the top object in the hierarchy of all the objects.
 
 ~~~
@@ -88,7 +94,7 @@ GObject -- GApplication -- GtkApplication
 ~~~
 
 A child object inherits signals, functions, properties and so on from its parent object.
-So, Gtkapplication also has the "activate" signal.
+So, GtkApplication also has the "activate" signal.
 
 Now we can solve the problem in `pr1.c`.
 We need to connect the "activate" signal to a handler.
@@ -123,12 +129,12 @@ $ gcc `pkg-config --cflags gtk4` pr2.c `pkg-config --libs gtk4`
 $ ./a.out
 GtkApplication is activated.
 $
-~~~ 
+~~~
 
 OK, well done.
 However, you may have noticed that it's painful to type such a long line to compile.
 It is a good idea to use shell script to solve this problem.
-Make a text file which contains the following line. 
+Make a text file which contains the following line.
 
 ~~~
 gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
@@ -153,7 +159,7 @@ If this is the first time that you make a $HOME/bin directory and save a file in
 $ comp pr2
 $ ./a.out
 GtkApplication is activated.
-$ 
+$
 ~~~
 
 ## GtkWindow and GtkApplicationWindow
