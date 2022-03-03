@@ -4,15 +4,17 @@
 
 ### GtkApplication and g\_application\_run
 
-Usually people write a programming code to make an application.
+Usually people write programming code to make an application.
 What are applications?
-Applications are software that runs using libraries, which includes OS, frameworks and so on.
-In Gtk4 programming, GtkApplication is an object that runs on Gtk libraries.
+Applications are software that runs using libraries, which includes the
+OS, frameworks and so on.
+In Gtk4 programming, the GtkApplication is a program (or executable) that runs
+using Gtk libraries.
 
-The basic way how to write GtkApplication is as follows.
+The basic way to write a GtkApplication is as follows.
 
-- Creates a GtkApplication instance.
-- Runs the application.
+- Create a GtkApplication instance.
+- Run the application.
 
 That's all.
 Very simple.
@@ -49,7 +51,7 @@ $ ./a.out
 (a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
 g_application_activate() and has no handlers connected to the "activate" signal.
 It should do one of these.
-$ 
+$
 ~~~
 
 Oh, just an error message.
@@ -123,12 +125,12 @@ $ gcc `pkg-config --cflags gtk4` pr2.c `pkg-config --libs gtk4`
 $ ./a.out
 GtkApplication is activated.
 $
-~~~ 
+~~~
 
 OK, well done.
 However, you may have noticed that it's painful to type such a long line to compile.
 It is a good idea to use shell script to solve this problem.
-Make a text file which contains the following line. 
+Make a text file which contains the following line.
 
 ~~~
 gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
@@ -153,7 +155,7 @@ If this is the first time that you make a $HOME/bin directory and save a file in
 $ comp pr2
 $ ./a.out
 GtkApplication is activated.
-$ 
+$
 ~~~
 
 ## GtkWindow and GtkApplicationWindow
