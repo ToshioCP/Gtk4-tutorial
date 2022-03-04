@@ -20,16 +20,16 @@ See the sample program `tfv1.c` below.
  7   GtkTextBuffer *tb;
  8   gchar *text;
  9 
-10   text = 
-11 "Once upon a time, there was an old man who was called Taketori-no-Okina."
+10   text =
+11 "Once upon a time, there was an old man who was called Taketori-no-Okina. "
 12 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-13 "One day, he went into a mountain and found a shining bamboo."
-14 "\"What a mysterious bamboo it is!,\" he said."
-15 "He cut it, then there was a small cute baby girl in it."
-16 "The girl was shining faintly."
+13 "One day, he went into a mountain and found a shining bamboo. "
+14 "\"What a mysterious bamboo it is!,\" he said. "
+15 "He cut it, then there was a small cute baby girl in it. "
+16 "The girl was shining faintly. "
 17 "He thought this baby girl is a gift from Heaven and took her home.\n"
-18 "His wife was surprized at his tale."
-19 "They were very happy because they had no children."
+18 "His wife was surprized at his tale. "
+19 "They were very happy because they had no children. "
 20 ;
 21   win = gtk_application_window_new (GTK_APPLICATION (app));
 22   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
@@ -56,7 +56,6 @@ See the sample program `tfv1.c` below.
 43   g_object_unref (app);
 44   return stat;
 45 }
-46 
 ~~~
 
 Look at line 25.
@@ -76,22 +75,23 @@ Now compile and run it.
 ![GtkTextView](../image/screenshot_tfv1.png)
 
 There's an I-beam pointer in the window.
-You can add or delete any characters on the GtkTextview.
-And your change is kept in the GtkTextBuffer.
-If you add more characters than the limit of the window, the height of the window extends.
-If the height gets bigger than the height of the display screen, you won't be able to control the size of the window back to the original size.
-It's a problem and it shows that there exists a bug in the program.
-You can solve it by putting a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
+You can add or delete any characters on the GtkTextview,
+and your changes are kept in the GtkTextBuffer.
+If you add more characters beyond the limit of the window, the height increases and the window extends.
+If the height gets bigger than the height of the display screen, you won't be
+able to control the size of the window, and change it back to the original size.
+This is a problem and shows that there is a bug in our program.
+This can solve it by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
 
 ### GtkScrolledWindow
 
 What we need to do is:
 
-- Create a GtkScrolledWindow instance and insert it to the GtkApplicationWindow as a child.
-- insert the GtkTextView to the GtkScrolledWindow as a child.
+- Create a GtkScrolledWindow and insert it as a child of the GtkApplicationWindow; and
+- Insert the GtkTextView widget to the GtkScrolledWindow as a child.
 
 Modify `tfv1.c` and save it as `tfv2.c`.
-The difference between these two files is very little.
+The difference between these two files is small.
 
 ~~~
 $ cd tfv; diff tfv1.c tfv2.c
@@ -111,7 +111,7 @@ $ cd tfv; diff tfv1.c tfv2.c
 >   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
 ~~~
 
-Though you can modify the source file by this diff output, It's good for you to show `tfv2.c`.
+Here is the complete code of `tfv2.c`.
 
 ~~~C
  1 #include <gtk/gtk.h>
@@ -124,16 +124,16 @@ Though you can modify the source file by this diff output, It's good for you to 
  8   GtkTextBuffer *tb;
  9   gchar *text;
 10 
-11   text = 
-12 "Once upon a time, there was an old man who was called Taketori-no-Okina."
+11   text =
+12 "Once upon a time, there was an old man who was called Taketori-no-Okina. "
 13 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-14 "One day, he went into a mountain and found a shining bamboo."
-15 "\"What a mysterious bamboo it is!,\" he said."
-16 "He cut it, then there was a small cute baby girl in it."
-17 "The girl was shining faintly."
+14 "One day, he went into a mountain and found a shining bamboo. "
+15 "\"What a mysterious bamboo it is!,\" he said. "
+16 "He cut it, then there was a small cute baby girl in it. "
+17 "The girl was shining faintly. "
 18 "He thought this baby girl is a gift from Heaven and took her home.\n"
-19 "His wife was surprized at his tale."
-20 "They were very happy because they had no children."
+19 "His wife was surprized at his tale. "
+20 "They were very happy because they had no children. "
 21 ;
 22   win = gtk_application_window_new (GTK_APPLICATION (app));
 23   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
@@ -163,12 +163,10 @@ Though you can modify the source file by this diff output, It's good for you to 
 47   g_object_unref (app);
 48   return stat;
 49 }
-50 
 ~~~
 
-Now compile and run it.
-This time the window doesn't extend even if you type a lot of characters.
-It just scrolls.
-
+Compile and run it.
+Notice how this time the window doesn't extend when you type a lot of characters,
+it just scrolls and displays a slider.
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)

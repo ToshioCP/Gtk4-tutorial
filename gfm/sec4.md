@@ -6,10 +6,10 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](se
 
 ### GtkLabel
 
-We made a window and show it on the screen in the previous section.
-Now we go on to the next topic, widgets in the window.
+In the previous section we made a window and displayed it on the screen.
+Now we go on to the next topic, where we add widgets to this window.
 The simplest widget is GtkLabel.
-It is a widget with a string in it.
+It is a widget with text in it.
 
 ~~~C
  1 #include <gtk/gtk.h>
@@ -77,7 +77,7 @@ $ cd misc; diff pr4.c lb1.c
 
 This tells us:
 
-- The definition of a variable `lab` is added.
+- The definition of a new variable `lab` is added.
 - The title of the window is changed.
 - A label is created and connected to the window as a child.
 
@@ -89,20 +89,20 @@ But these two relationships are totally different.
 Don't be confused.
 In the program `lb1.c`, `lab` is a child widget of `win`.
 Child widgets are always located in their parent widget on the screen.
-See the window appeared on the screen.
-The window includes the label.
+See how the window has appeared on the screen.
+The application window includes the label.
 
 The window `win` doesn't have any parents.
 We call such a window top-level window.
-One application can have two or more top-level windows.
+An application can have more than one top-level window.
 
 ### GtkButton
 
-Next widget is GtkButton.
-It has a label or icon on it.
+The next widget to introduce is GtkButton.
+It displays a button on the screen with a label or icon on it.
 In this subsection, we will make a button with a label.
-When a button is clicked on, it emits a "clicked" signal.
-The following program shows how to catch the signal and do something.
+When the button is clicked, it emits a "clicked" signal.
+The following program shows how to catch the signal to then do something.
 
 ~~~C
  1 #include <gtk/gtk.h>
@@ -149,16 +149,16 @@ Finally, connects a "clicked" signal of the button to a handler (function) `clic
 So, if `btn` is clicked, the function `click_cb` is invoked.
 The suffix "cb" means "call back".
 
-Name the program `lb2.c` and save it. 
+Name the program `lb2.c` and save it.
 Now compile and run it.
 
 ![Screenshot of the label](../image/screenshot_lb2.png)
- 
+
 A window with the button appears.
 Click the button (it is a large button, you can click everywhere in the window), then a string "Clicked." appears on the terminal.
 It shows the handler was invoked by clicking the button.
 
-It's fairly good for us to make sure that the clicked signal was caught and the handler was invoked.
+It's good that we make sure that the clicked signal was caught and the handler was invoked by using `g_print`.
 However, using g_print is out of harmony with Gtk which is a GUI library.
 So, we will change the handler.
 The following code is `lb3.c`.
@@ -216,17 +216,17 @@ $ cd misc; diff lb2.c lb3.c
 < 
 ~~~
 
-The change is:
+The changes are:
 
-- The function `g_print` in `lb2.c` was deleted and two lines above are inserted instead.
+- The function `g_print` in `lb2.c` was deleted and the two lines above are inserted instead.
 - The label of `btn` is changed from "Click me" to "Quit".
-- The fourth argument of `g_signal_connect` is changed from `NULL` to `win`. 
+- The fourth argument of `g_signal_connect` is changed from `NULL` to `win`.
 
-Most important is the fourth argument of `g_signal_connect`.
-It is described as "data to pass to handler" in the definition of `g_signal_connect` in [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
+The most important change is the fourth argument of `g_signal_connect`.
+This argument is described as "data to pass to handler" in the definition of `g_signal_connect` in [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
 Therefore, `win` which is a pointer to GtkApplicationWindow is passed to the handler as a second parameter `user_data`.
-Then, the handler cast it to a pointer to GtkWindow and call `gtk_window_destroy` to destroy the top-level window.
-Then, the application quits.
+The handler then casts it to a pointer to GtkWindow and calls `gtk_window_destroy` to destroy the top-level window.
+The application then quits.
 
 ### GtkBox
 
@@ -326,6 +326,5 @@ Then, these two buttons are appended to the box.
 
 The handler corresponds to `btn1` toggles its label.
 The handler corresponds to `btn2` destroys the top-level window and the application quits.
-
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](sec5.md)
