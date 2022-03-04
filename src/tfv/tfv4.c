@@ -66,8 +66,7 @@ main (int argc, char **argv) {
   app = gtk_application_new ("com.github.ToshioCP.tfv4", G_APPLICATION_HANDLES_OPEN);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-  stat =g_application_run (G_APPLICATION (app), argc, argv);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
 }
-
