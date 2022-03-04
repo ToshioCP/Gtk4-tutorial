@@ -29,34 +29,34 @@ Now compile and run it.
 ![GtkTextView](../image/screenshot_tfv1.png){width=6.3cm height=5.325cm}
 
 There's an I-beam pointer in the window.
-You can add or delete any characters on the GtkTextview.
-And your change is kept in the GtkTextBuffer.
-If you add more characters than the limit of the window, the height of the window extends.
-If the height gets bigger than the height of the display screen, you won't be able to control the size of the window back to the original size.
-It's a problem and it shows that there exists a bug in the program.
-You can solve it by putting a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
+You can add or delete any characters on the GtkTextview,
+and your changes are kept in the GtkTextBuffer.
+If you add more characters beyond the limit of the window, the height increases and the window extends.
+If the height gets bigger than the height of the display screen, you won't be
+able to control the size of the window, and change it back to the original size.
+This is a problem and shows that there is a bug in our program.
+This can solve it by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
 
 ### GtkScrolledWindow
 
 What we need to do is:
 
-- Create a GtkScrolledWindow instance and insert it to the GtkApplicationWindow as a child.
-- insert the GtkTextView to the GtkScrolledWindow as a child.
+- Create a GtkScrolledWindow and insert it as a child of the GtkApplicationWindow; and
+- Insert the GtkTextView widget to the GtkScrolledWindow as a child.
 
 Modify `tfv1.c` and save it as `tfv2.c`.
-The difference between these two files is very little.
+The difference between these two files is small.
 
 @@@shell
 cd tfv; diff tfv1.c tfv2.c
 @@@
 
-Though you can modify the source file by this diff output, It's good for you to show `tfv2.c`.
+Here is the complete code of `tfv2.c`.
 
 @@@include
 tfv/tfv2.c
 @@@
 
-Now compile and run it.
-This time the window doesn't extend even if you type a lot of characters.
-It just scrolls.
-
+Compile and run it.
+Notice how this time the window doesn't extend when you type a lot of characters,
+it just scrolls and displays a slider.
