@@ -8,16 +8,16 @@ app_activate (GApplication *app, gpointer user_data) {
   GtkTextBuffer *tb;
   gchar *text;
 
-  text = 
-"Once upon a time, there was an old man who was called Taketori-no-Okina."
+  text =
+"Once upon a time, there was an old man who was called Taketori-no-Okina. "
 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-"One day, he went into a mountain and found a shining bamboo."
-"\"What a mysterious bamboo it is!,\" he said."
-"He cut it, then there was a small cute baby girl in it."
-"The girl was shining faintly."
+"One day, he went into a mountain and found a shining bamboo. "
+"\"What a mysterious bamboo it is!,\" he said. "
+"He cut it, then there was a small cute baby girl in it. "
+"The girl was shining faintly. "
 "He thought this baby girl is a gift from Heaven and took her home.\n"
-"His wife was surprized at his tale."
-"They were very happy because they had no children."
+"His wife was surprized at his tale. "
+"They were very happy because they had no children. "
 ;
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
@@ -47,4 +47,3 @@ main (int argc, char **argv) {
   g_object_unref (app);
   return stat;
 }
-
