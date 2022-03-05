@@ -21,16 +21,16 @@ See the sample program `tfv1.c` below.
  8   gchar *text;
  9 
 10   text =
-11 "Once upon a time, there was an old man who was called Taketori-no-Okina. "
-12 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-13 "One day, he went into a mountain and found a shining bamboo. "
-14 "\"What a mysterious bamboo it is!,\" he said. "
-15 "He cut it, then there was a small cute baby girl in it. "
-16 "The girl was shining faintly. "
-17 "He thought this baby girl is a gift from Heaven and took her home.\n"
-18 "His wife was surprized at his tale. "
-19 "They were very happy because they had no children. "
-20 ;
+11       "Once upon a time, there was an old man who was called Taketori-no-Okina. "
+12       "It is a japanese word that means a man whose work is making bamboo baskets.\n"
+13       "One day, he went into a mountain and found a shining bamboo. "
+14       "\"What a mysterious bamboo it is!,\" he said. "
+15       "He cut it, then there was a small cute baby girl in it. "
+16       "The girl was shining faintly. "
+17       "He thought this baby girl is a gift from Heaven and took her home.\n"
+18       "His wife was surprized at his tale. "
+19       "They were very happy because they had no children. "
+20       ;
 21   win = gtk_application_window_new (GTK_APPLICATION (app));
 22   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
 23   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
@@ -52,7 +52,7 @@ See the sample program `tfv1.c` below.
 39 
 40   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_FLAGS_NONE);
 41   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-42   stat =g_application_run (G_APPLICATION (app), argc, argv);
+42   stat = g_application_run (G_APPLICATION (app), argc, argv);
 43   g_object_unref (app);
 44   return stat;
 45 }
@@ -125,16 +125,16 @@ Here is the complete code of `tfv2.c`.
  9   gchar *text;
 10 
 11   text =
-12 "Once upon a time, there was an old man who was called Taketori-no-Okina. "
-13 "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-14 "One day, he went into a mountain and found a shining bamboo. "
-15 "\"What a mysterious bamboo it is!,\" he said. "
-16 "He cut it, then there was a small cute baby girl in it. "
-17 "The girl was shining faintly. "
-18 "He thought this baby girl is a gift from Heaven and took her home.\n"
-19 "His wife was surprized at his tale. "
-20 "They were very happy because they had no children. "
-21 ;
+12       "Once upon a time, there was an old man who was called Taketori-no-Okina. "
+13       "It is a japanese word that means a man whose work is making bamboo baskets.\n"
+14       "One day, he went into a mountain and found a shining bamboo. "
+15       "\"What a mysterious bamboo it is!,\" he said. "
+16       "He cut it, then there was a small cute baby girl in it. "
+17       "The girl was shining faintly. "
+18       "He thought this baby girl is a gift from Heaven and took her home.\n"
+19       "His wife was surprized at his tale. "
+20       "They were very happy because they had no children. "
+21       ;
 22   win = gtk_application_window_new (GTK_APPLICATION (app));
 23   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
 24   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
@@ -159,7 +159,7 @@ Here is the complete code of `tfv2.c`.
 43 
 44   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
 45   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-46   stat =g_application_run (G_APPLICATION (app), argc, argv);
+46   stat = g_application_run (G_APPLICATION (app), argc, argv);
 47   g_object_unref (app);
 48   return stat;
 49 }
