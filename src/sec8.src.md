@@ -1,22 +1,21 @@
-# Define Child object
+# Defining a Child object
 
-## Very simple editor
+## A Very Simple Editor
 
-We made a very simple file viewer in the previous section.
-Now we go on to rewrite it and make a very simple editor.
-Its source file name is tfe1.c (text file editor 1).
+In the previous section we made a very simple file viewer.
+Now we go on to rewrite it and turn it into very simple editor.
+Its source file is in tfe1.c (text file editor 1).
 
-GtkTextView originally has a feature of multi line editing.
-Therefore, we don't need to write the program from scratch.
-We just add two things to the file viewer.
+GtkTextView has a feature for editing  multiple lines. Therefore, we don't need to
+write the program from scratch, we just add two things to the file viewer:
 
 - Memory to store a pointer to the GFile instance.
 - A function to write the file.
 
-A couple of ways are possible to get memories to keep GFile.
+There are a couple of ways to store the details of GFile.
 
-- Use global variables.
-- make a child object so that it can extend the instance memory for the GFile object.
+- Use global variables; or
+- Make a child object, which can extend the instance memory for the GFile object.
 
 Using global variables is easy to implement.
 Define a sufficient size array of pointers to GFile.
@@ -26,35 +25,36 @@ For example,
 GFile *f[20];
 ~~~
 
-And `f[i]` corresponds to the i-th GtkNotebookPage.
-However, there are two problems.
-One is the size of the array.
-If a user gives arguments more than that (20 in the example above), it is impossible to store all the pointers to the GFile instances.
-The other is the difficulty of maintenance of the program.
-It is a small program so far.
-However, if you continue developing it, then the size of the program grows bigger and bigger.
-Generally speaking, the bigger the program size, the more difficult to maintain global variables.
+The variable `f[i]` corresponds to the file associated to the i-th GtkNotebookPage.
+There are however two problems with this.
+The first concerns the size of the array.
+If a user gives too many arguments (more than 20 in the example above), it is impossible to store the additional pointers to the GFile instances.
+The second is the increasing difficulty for maintenance of the program.
+We have a small program so far,
+but however, if you continue developing it, the size of the program will grow.
+Generally speaking, the bigger the program size, the more difficult it is to keep track of and maintain global variables. Global variables can be used and changed anywhere throughout the entire program.
 
-Making child object is a good idea in terms of maintenance.
-However, one thing you need to be careful is the difference between "child object" and "child widget".
-What we are thinking about now is "child object".
-A child object includes its parent object.
-And a child object derives everything from the parent object.
- 
+Making a child object is a good idea in terms of maintenance.
+One thing you need to be careful of is the difference between "child object" and "child widget".
+Here we are describing a "child object".
+A child object includes, and expands on its parent object, as
+a child object derives everything from the parent object.
+
 ![Child object of GtkTextView](../image/child.png){width=9.675cm height=4.89cm}
 
 We will define TfeTextView as a child object of GtkTextView.
 It has everything that GtkTextView has.
-For example, TfeTextView has GtkTextbuffer corresponds to GtkTextView inside TfeTextView.
-And important thing is that TfeTextView can have a memory to keep a pointer to GFile.
+Specifically, TfeTextView has a GtkTextbuffer which corresponds to the GtkTextView inside TfeTextView.
+The additional important thing is that TfeTextView can also keep an additional pointer to GFile.
 
-However, to understand the general theory about Gobject is very hard especially for beginners.
-So, I will just show you the way how to write the code and avoid the theoretical side in the next subsection.
-If you want to know about GObject system, refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
+In general, this is how GObjects work. Understanding the general theory about Gobject's is difficult,
+particularly for beginners.
+So, I will just show you the way how to write the code and avoid the theoretical side.
+If you want to know about GObject system, refer to the separate tutorial](https://github.com/ToshioCP/Gobject-tutorial).
 
-## How to define a child object of GtkTextView
+## How to Define a Child Object of GtkTextView
 
-Let's define TfeTextView object which is a child object of GtkTextView.
+Let's define the TfeTextView object, which is a child object of GtkTextView.
 First, look at the program below.
 
 ~~~C
@@ -93,20 +93,19 @@ tfe_text_view_new (void) {
 }
 ~~~
 
-If you are curious about the background theory of this program, It's very good for you.
-Because knowing the theory is very important for you to program GTK applications.
+If you are curious about the background theory of this program, that's good,
+because knowing the theory is very important if you want to program GTK applications.
 Look at [GObject API Reference](https://docs.gtk.org/gobject/).
-All you need is described in it.
-Or, refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
-However, it's a tough journey especially for beginners.
-For now, you don't need to know such difficult theory.
-Just remember the instructions below. 
+All you need is described there,
+or refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
+It's a tough journey especially for beginners so for now, you don't need to know about this difficult theory.
+It is enough to just remember the instructions below.
 
 - TfeTextView is divided into two parts.
 Tfe and TextView.
-Tfe is called prefix, namespace or module.
-TextView is called object.
-- There are three patterns.
+Tfe is called the prefix, namespace or module.
+TextView is called the object.
+- There are three differnet identifier patterns.
 TfeTextView (camel case), tfe\_text\_view (this is used to write functions) and TFE\_TEXT\_VIEW (This is used to cast a pointer to point TfeTextView type).
 - First, define TFE\_TYPE\_TEXT\_VIEW macro as tfe\_text\_view\_get\_type ().
 The name is always (prefix)\_TYPE\_(object) and the letters are upper case.
@@ -128,7 +127,7 @@ You don't need to do anything in this object.
 - Write function codes you want to add (tfe\_text\_view\_set\_file and tfe\_text\_view\_get\_file).
 `tv` is a pointer to the TfeTextView object instance which is a C-structure declared with the tag \_TfeTextView.
 So, the structure has a member `file` as a pointer to a GFile instance.
-`tv->file = f` is an assignment of `f` to a member `file` of the structure pointed by `tv`. 
+`tv->file = f` is an assignment of `f` to a member `file` of the structure pointed by `tv`.
 This is an example how to use the extended memory in a child widget.
 - Write a function to create an instance.
 Its name is (prefix)\_(object)\_new.
@@ -146,7 +145,7 @@ It will be modified later.
 
 ## Close-request signal
 
-Imagine that you use this editor.
+Imagine that you are using this editor.
 First, you run the editor with arguments.
 The arguments are filenames.
 The editor reads the files and shows the window with the text of files in it.
@@ -154,7 +153,7 @@ Then you edit the text.
 After you finish editing, you exit the editor.
 The editor updates files just before the window closes.
 
-GtkWindow emits "close-request" signal before it closes.
+GtkWindow emits the "close-request" signal before it closes.
 We connect the signal and the handler `before_close`.
 A handler is a C function.
 When a function is connected to a certain signal, we call it a handler.
@@ -164,7 +163,7 @@ The function `before_close` is invoked when the signal "close-request" is emitte
 g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
 ~~~
 
-The argument `win` is GtkApplicationWindow, in which the signal "close-request" is defined, and `before_close` is the handler.
+The argument `win` is a GtkApplicationWindow, in which the signal "close-request" is defined, and `before_close` is the handler.
 `G_CALLBACK` cast is necessary for the handler.
 The program of `before_close` is as follows.
 
@@ -187,7 +186,7 @@ If it fails, it outputs an error message.
 
 ## Source code of tfe1.c
 
-Now I will show you all the source code of `tfe1.c`.
+The following is the complete source code of `tfe1.c`.
 
 @@@include
 tfe/tfe1.c
@@ -211,4 +210,3 @@ Now we got a very simple editor.
 It's not smart.
 We need more features like open, save, saveas, change font and so on.
 We will add them in the next section and after.
-
