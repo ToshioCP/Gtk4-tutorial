@@ -1,11 +1,11 @@
-# Ui file and GtkBuilder
+# The User Interface (UI) file and GtkBuilder
 
-## New, open and save button
+## New, Open and Save button
 
-We made the simplest editor in the previous section.
-It reads the files in `app_open` function at start-up and writes them when closing the window.
-It works but is not good.
-It is better to make "New", "Open", "Save" and "Close" buttons.
+In the last section we made the almost simplest editor possible.
+It reads files in the `app_open` function at start-up and writes them out when closing the window.
+It works but is not very good.
+It would be better if we had "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
 Signals and handlers will be explained later.
 
@@ -18,7 +18,7 @@ The function `app_open` in the source code `tfe2.c` is as follows.
 tfe/tfe2.c app_open
 @@@
 
-The point is how to build the window.
+The aim is to build the widgets of the main application window.
 
 - 25-27: Creates a GtkApplicationWindow instance and sets the title and default size.
 - 29-30: Creates a GtkBox instance `boxv`.
@@ -37,29 +37,29 @@ This makes the label expands horizontally as long as possible.
 This makes it expand horizontally and vertically as big as possible.
 It is appended to `boxv` as the second child.
 
-The number of lines is 33(=57-25+1) to build the widgets.
-And we needed many variables (`boxv`, `boxh`, `dmy1`, ...).
-Most of them aren't necessary except building the widgets.
+The number of lines to build the widgets is 33(=57-25+1).
+We also needed many additional variables (`boxv`, `boxh`, `dmy1`, ...),
+most of which weren't  necessary, except for building the widgets.
 Are there any good solution to reduce these work?
 
 Gtk provides GtkBuilder.
-It reads ui data and builds a window.
-It reduces the cumbersome work.
+It reads user interface (UI) data and builds a window.
+It reduces this cumbersome work.
 
-## Ui file
+## The UI File
 
-First, let's look at the ui file `tfe3.ui` that defines a structure of the widgets.
+First, let's look at the UI file `tfe3.ui` that is used to define the widget structure.
 
 @@@include
 tfe/tfe3.ui
 @@@
 
 The structure of this file is XML.
-Constructs beginning with `<` and ending with `>` are called tags.
-And there are two types of tags, start tag and end tag.
+Constructs that begin with `<` and end with `>` are called tags.
+There are two types of tags, the start tag and the end tag.
 For example, `<interface>` is a start tag and `</interface>` is an end tag.
-Ui file begins and ends with interface tags.
-Some tags, for example, object tags can have a class and id attributes in the start tag.
+The UI file begins and ends with interface tags.
+Some tags, for example object tags, can have a class and id attributes in their start tag.
 
 - 1: The first line is XML declaration.
 It specifies that the version of XML is 1.0 and the encoding is UTF-8.
@@ -177,7 +177,7 @@ tfe/tfe3.gresource.xml
 However, this xml has only one gresource.
 - 3: The gresource has a prefix `/com/github/ToshioCP/tfe3`.
 - 4: The gresource has `tfe3.ui`.
-And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix. 
+And it is pointed by `/com/github/ToshioCP/tfe3/tfe3.ui` because it needs prefix.
 If you want to add more files, then insert them between line 4 and 5.
 
 Save this xml text to `tfe3.gresource.xml`.
@@ -205,4 +205,3 @@ build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe3/tfe3.ui");
 
 Then, compile and run it.
 The window appears and it is the same as the screenshot at the beginning of this page.
-
