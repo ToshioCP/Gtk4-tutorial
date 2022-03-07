@@ -16,7 +16,7 @@ Cairo is a set of two dimensional graphical drawing functions (or graphics libra
 There is a lot of documentation on [Cairo's website](https://www.cairographics.org/).
 If you aren't familiar with Cairo, it is worth reading their [tutorial](https://www.cairographics.org/tutorial/).
 
-The following is a gentle introduction on the Cairo library and how to use it.
+The following is a gentle introduction to the Cairo library and how to use it.
 Firstly, in order to use Cairo you need to know about surfaces, sources, masks, destinations, cairo context and transformations.
 
 - A surface represents an image.
