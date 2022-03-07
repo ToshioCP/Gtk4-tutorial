@@ -3,8 +3,8 @@
 #### Contents of this Repository
 
 This tutorial illustrates how to write C programs with the Gtk4 library.
-It focuses on beginners so the contents are limited to basic things.
-The table of contents is shown at the end of this abstract.
+It focuses on beginners so the contents are limited to the basics.
+The table of contents is at the end of this abstract.
 
 - Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
 - Section 22 to 24 describes GtkDrawingArea.
@@ -56,7 +56,7 @@ There is a documentation \("[How to build Gtk4 Tutorial](gfm/Readme_for_develope
 1. [String and memory management](gfm/sec6.md)
 1. [Widgets (3)](gfm/sec7.md)
 1. [Defining a Child object](gfm/sec8.md)
-1. [Ui file and GtkBuilder](gfm/sec9.md)
+1. [The User Interface (UI) file and GtkBuilder](gfm/sec9.md)
 1. [Build system](gfm/sec10.md)
 1. [Initialization and destruction of instances](gfm/sec11.md)
 1. [Signals](gfm/sec12.md)

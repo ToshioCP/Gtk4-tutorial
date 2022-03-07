@@ -1,8 +1,8 @@
 #### Contents of this Repository
 
 This tutorial illustrates how to write C programs with the Gtk4 library.
-It focuses on beginners so the contents are limited to basic things.
-The table of contents is shown at the end of this abstract.
+It focuses on beginners so the contents are limited to the basics.
+The table of contents is at the end of this abstract.
 
 - Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
 - Section 22 to 24 describes GtkDrawingArea.

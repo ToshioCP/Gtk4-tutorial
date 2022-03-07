@@ -20,7 +20,7 @@ So, readers can skip that part of this sections.
 The documentation of turtle is [here](turtle/turtle_doc.src.md).
 @@@elif html
 The documentation of turtle is [here](../html/turtle_doc.html).
-@@@if latex
+@@@elif latex
 The documentation of turtle is in the appendix.
 @@@end
 I'll show you a simple example.

@@ -20,7 +20,11 @@ main (int argc, char **argv)
   /* Draw a black rectangle */
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_set_line_width (cr, 2.0);
-  cairo_rectangle (cr, width/2.0 - square_size/2, height/2.0 - square_size/2, square_size, square_size);
+  cairo_rectangle (cr,
+                   width/2.0 - square_size/2,
+                   height/2.0 - square_size/2,
+                   square_size,
+                   square_size);
   cairo_stroke (cr);
 
   /* Write the surface to a png file and clean up cairo and surface. */
