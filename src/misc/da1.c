@@ -4,11 +4,15 @@ static void
 draw_function (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
   int square_size = 40.0;
 
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* whilte */
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
   cairo_paint (cr);
   cairo_set_line_width (cr, 2.0);
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
-  cairo_rectangle (cr, width/2.0 - square_size/2, height/2.0 - square_size/2, square_size, square_size);
+  cairo_rectangle (cr,
+                   width/2.0 - square_size/2,
+                   height/2.0 - square_size/2,
+                   square_size,
+                   square_size);
   cairo_stroke (cr);
 }
 
@@ -37,4 +41,3 @@ main (int argc, char **argv) {
   g_object_unref (app);
   return stat;
 }
-
