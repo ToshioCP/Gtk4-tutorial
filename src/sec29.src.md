@@ -16,7 +16,7 @@ The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, whic
 
 The complete code is at the end.
 
-## Drawing the clock face and hands
+## Drawing the clock face, hour, minute and second hands
 
 The `draw_clock()` function does all the work. See the in-file comments for an
 explanation of how the Cairo drawing works.
