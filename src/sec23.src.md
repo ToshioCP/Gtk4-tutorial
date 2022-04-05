@@ -58,7 +58,7 @@ tfc/tfc.c time_handler
 get a ticking analog clock.
 
 If you get this working, you can try modifying some of the code in
-`draw_clock()` to tweek the application (such as change the color or size and
+`draw_clock()` to tweak the application (such as change the color or size and
 length of the hands) or even add text, or create a digital clock.
 
 ## The Complete code
