@@ -7,8 +7,8 @@ It focuses on beginners so the contents are limited to the basics.
 The table of contents is at the end of this abstract.
 
 - Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
-- Section 22 to 24 describes GtkDrawingArea.
-- Section 25 to 28 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 22 to 25 describes GtkDrawingArea.
+- Section 26 to 29 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [Gtk4-tutorial github repository](https://github.com/ToshioCP/Gtk4-tutorial).
@@ -70,9 +70,10 @@ There is a documentation \("[How to build Gtk4 Tutorial](gfm/Readme_for_develope
 1. [GtkMenuButton, accelerators, font, pango and gsettings](gfm/sec20.md)
 1. [Template XML and composite widget](gfm/sec21.md)
 1. [GtkDrawingArea and Cairo](gfm/sec22.md)
-1. [Combine GtkDrawingArea and TfeTextView](gfm/sec23.md)
-1. [Tiny turtle graphics interpreter](gfm/sec24.md)
-1. [GtkListView](gfm/sec25.md)
-1. [GtkGridView and activate signal](gfm/sec26.md)
-1. [GtkExpression](gfm/sec27.md)
-1. [GtkColumnView](gfm/sec28.md)
+1. [Periodic Events](gfm/sec23.md)
+1. [Combine GtkDrawingArea and TfeTextView](gfm/sec24.md)
+1. [Tiny turtle graphics interpreter](gfm/sec25.md)
+1. [GtkListView](gfm/sec26.md)
+1. [GtkGridView and activate signal](gfm/sec27.md)
+1. [GtkExpression](gfm/sec28.md)
+1. [GtkColumnView](gfm/sec29.md)

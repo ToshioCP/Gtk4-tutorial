@@ -5,8 +5,8 @@ It focuses on beginners so the contents are limited to the basics.
 The table of contents is at the end of this abstract.
 
 - Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
-- Section 22 to 24 describes GtkDrawingArea.
-- Section 25 to 28 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 22 to 25 describes GtkDrawingArea.
+- Section 26 to 29 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [Gtk4-tutorial github repository](https://github.com/ToshioCP/Gtk4-tutorial).

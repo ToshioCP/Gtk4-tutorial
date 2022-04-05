@@ -1,0 +1,2 @@
+glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source
+gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm

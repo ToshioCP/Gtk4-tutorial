@@ -1,377 +1,412 @@
 Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
 
-# Combine GtkDrawingArea and TfeTextView
+# Periodic Events
 
-Now, we will make a new application which has GtkDrawingArea and TfeTextView in it.
-Its name is "color".
-If you write a name of a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
+This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
 
-![color](../image/color.png)
+## How do we create an animation?
 
-The following colors are available.
+In this section we will continue to build on our previous work. We will create
+an analog clock application. By adding a function which periodically redraws
+GtkDrawingArea, the clock will be able to continuously display the time.
 
-- white
-- black
-- red
-- green
-- blue
+The application uses a compiled in 'resource' file, so if the GTK4 libraries and
+their dependencies are installed and available, the application will run from
+anywhere.
 
-In addition the following two options are also available.
+The program also makes use of some standard mathematical and time handling
+functions.
 
-- light: Make the color of the drawing area lighter.
-- dark: Make the color of the drawing area darker.
+The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
+[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
 
-This application can only do very simple things.
-However, it tells us that if we add powerful parser to it, we will be able to make it more efficient.
-I want to show it to you in the later section by making a turtle graphics language like Logo program language.
+The complete code is at the end.
 
-In this section, we focus on how to bind the two objects.
+## Drawing the clock face, hour, minute and second hands
 
-## Color.ui and color.gresource.xml
+The `draw_clock()` function does all the work. See the in-file comments for an
+explanation of how the Cairo drawing works.
 
-First, We need to make the ui file of the widgets.
-The image in the previous subsection gives us the structure of the widgets.
-Title bar, four buttons in the tool bar and two widgets textview and drawing area.
-The ui file is as follows.
+For a detailed reference of what each of the Cairo functions does see the
+[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
+
+~~~C
+  1 static void
+  2 draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
+  3 
+  4     // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
+  5     // the center of the window
+  6     cairo_scale(cr, width, height);
+  7     cairo_translate(cr, 0.5, 0.5);
+  8 
+  9     // Set the line width and save the cairo drawing state.
+ 10     cairo_set_line_width(cr, m_line_width);
+ 11     cairo_save(cr);
+ 12 
+ 13     // Set the background to a slightly transparent green.
+ 14     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+ 15     cairo_paint(cr);
+ 16 
+ 17     // Resore back to precious drawing state and draw the circular path
+ 18     // representing the clockface. Save this state (including the path) so we
+ 19     // can reuse it.
+ 20     cairo_restore(cr);
+ 21     cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
+ 22     cairo_save(cr);
+ 23 
+ 24     // Fill the clockface with white
+ 25     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
+ 26     cairo_fill_preserve(cr);
+ 27     // Restore the path, paint the outside of the clock face.
+ 28     cairo_restore(cr);
+ 29     cairo_stroke_preserve(cr);
+ 30     // Set the 'clip region' to the inside of the path (fill region).
+ 31     cairo_clip(cr);
+ 32 
+ 33     // Clock ticks
+ 34     for (int i = 0; i < 12; i++)
+ 35     {
+ 36         // Major tick size
+ 37         double inset = 0.05;
+ 38 
+ 39         // Save the graphics state, restore after drawing tick to maintain pen
+ 40         // size
+ 41         cairo_save(cr);
+ 42         cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+ 43 
+ 44         // Minor ticks are shorter, and narrower.
+ 45         if(i % 3 != 0)
+ 46         {
+ 47             inset *= 0.8;
+ 48             cairo_set_line_width(cr, 0.03);
+ 49         }
+ 50 
+ 51         // Draw tick mark
+ 52         cairo_move_to(
+ 53             cr,
+ 54             (m_radius - inset) * cos (i * M_PI / 6.0),
+ 55             (m_radius - inset) * sin (i * M_PI / 6.0));
+ 56         cairo_line_to(
+ 57             cr,
+ 58             m_radius * cos (i * M_PI / 6.0),
+ 59             m_radius * sin (i * M_PI / 6.0));
+ 60         cairo_stroke(cr);
+ 61         cairo_restore(cr); /* stack-pen-size */
+ 62     }
+ 63 
+ 64     // Draw the analog hands
+ 65 
+ 66     // Get the current Unix time, convert to the local time and break into time
+ 67     // structure to read various time parts.
+ 68     time_t rawtime;
+ 69     time(&rawtime);
+ 70     struct tm * timeinfo = localtime (&rawtime);
+ 71 
+ 72     // Calculate the angles of the hands of our clock
+ 73     double hours   = timeinfo->tm_hour * M_PI / 6.0;
+ 74     double minutes = timeinfo->tm_min * M_PI / 30.0;
+ 75     double seconds = timeinfo->tm_sec * M_PI / 30.0;
+ 76 
+ 77     // Save the graphics state
+ 78     cairo_save(cr);
+ 79     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+ 80 
+ 81     cairo_save(cr);
+ 82 
+ 83     // Draw the seconds hand
+ 84     cairo_set_line_width(cr, m_line_width / 3.0);
+ 85     cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
+ 86     cairo_move_to(cr, 0.0, 0.0);
+ 87     cairo_line_to(cr,
+ 88                   sin(seconds) * (m_radius * 0.9),
+ 89                   -cos(seconds) * (m_radius * 0.9));
+ 90     cairo_stroke(cr);
+ 91     cairo_restore(cr);
+ 92 
+ 93     // Draw the minutes hand
+ 94     cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
+ 95     cairo_move_to(cr, 0, 0);
+ 96     cairo_line_to(cr,
+ 97                   sin(minutes + seconds / 60) * (m_radius * 0.8),
+ 98                   -cos(minutes + seconds / 60) * (m_radius * 0.8));
+ 99     cairo_stroke(cr);
+100 
+101     // draw the hours hand
+102     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+103     cairo_move_to(cr, 0.0, 0.0);
+104     cairo_line_to(cr,
+105                   sin(hours + minutes / 12.0) * (m_radius * 0.5),
+106                   -cos(hours + minutes / 12.0) * (m_radius * 0.5));
+107     cairo_stroke(cr);
+108     cairo_restore(cr);
+109 
+110     // Draw a little dot in the middle
+111     cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
+112     cairo_fill(cr);
+113 }
+~~~
+
+In order for the clock to be drawn, the drawing function `draw_clock()` needs
+to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
+
+Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
+
+There is still a problem though. In order to animate the clock we need to also
+tell the application that the clock needs to be redrawn every second. This
+process starts by registering (on the next line, line 15) a timeout function
+with `g_timeout_add()` that will wakeup and run another function `time_handler`,
+every second (or 1000ms).
+
+~~~C
+ 1 static void
+ 2 app_activate (GApplication *app, gpointer user_data) {
+ 3     GtkWidget *win;
+ 4     GtkWidget *clock;
+ 5     GtkBuilder *build;
+ 6 
+ 7     build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
+ 8     win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+ 9     gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+10 
+11     clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
+12     g_object_unref(build);
+13 
+14     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
+15     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
+16     gtk_widget_show(win);
+17 
+18 }
+~~~
+
+Our `time_handler()` function is very simple, as it just calls
+`gtk_widget_queue_draw()` which schedules a redraw of the widget.
+
+~~~C
+1 gboolean
+2 time_handler(GtkWidget* widget) {
+3     gtk_widget_queue_draw(widget);
+4 
+5     return TRUE;
+6 }
+~~~
+
+.. and that is all there is to it. If you compile and run the example you will
+get a ticking analog clock.
+
+If you get this working, you can try modifying some of the code in
+`draw_clock()` to tweak the application (such as change the color or size and
+length of the hands) or even add text, or create a digital clock.
+
+## The Complete code
+
+You can find the source files in the `tfc` directory. it can be compiled with `./comp tfc`.
+
+`tfc.c`
+
+~~~C
+  1 #include <gtk/gtk.h>
+  2 #include <math.h>
+  3 #include <time.h>
+  4 
+  5 float m_radius     = 0.42;
+  6 float m_line_width = 0.05;
+  7 
+  8 static void
+  9 draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
+ 10 
+ 11     // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
+ 12     // the center of the window
+ 13     cairo_scale(cr, width, height);
+ 14     cairo_translate(cr, 0.5, 0.5);
+ 15 
+ 16     // Set the line width and save the cairo drawing state.
+ 17     cairo_set_line_width(cr, m_line_width);
+ 18     cairo_save(cr);
+ 19 
+ 20     // Set the background to a slightly transparent green.
+ 21     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+ 22     cairo_paint(cr);
+ 23 
+ 24     // Resore back to precious drawing state and draw the circular path
+ 25     // representing the clockface. Save this state (including the path) so we
+ 26     // can reuse it.
+ 27     cairo_restore(cr);
+ 28     cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
+ 29     cairo_save(cr);
+ 30 
+ 31     // Fill the clockface with white
+ 32     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
+ 33     cairo_fill_preserve(cr);
+ 34     // Restore the path, paint the outside of the clock face.
+ 35     cairo_restore(cr);
+ 36     cairo_stroke_preserve(cr);
+ 37     // Set the 'clip region' to the inside of the path (fill region).
+ 38     cairo_clip(cr);
+ 39 
+ 40     // Clock ticks
+ 41     for (int i = 0; i < 12; i++)
+ 42     {
+ 43         // Major tick size
+ 44         double inset = 0.05;
+ 45 
+ 46         // Save the graphics state, restore after drawing tick to maintain pen
+ 47         // size
+ 48         cairo_save(cr);
+ 49         cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+ 50 
+ 51         // Minor ticks are shorter, and narrower.
+ 52         if(i % 3 != 0)
+ 53         {
+ 54             inset *= 0.8;
+ 55             cairo_set_line_width(cr, 0.03);
+ 56         }
+ 57 
+ 58         // Draw tick mark
+ 59         cairo_move_to(
+ 60             cr,
+ 61             (m_radius - inset) * cos (i * M_PI / 6.0),
+ 62             (m_radius - inset) * sin (i * M_PI / 6.0));
+ 63         cairo_line_to(
+ 64             cr,
+ 65             m_radius * cos (i * M_PI / 6.0),
+ 66             m_radius * sin (i * M_PI / 6.0));
+ 67         cairo_stroke(cr);
+ 68         cairo_restore(cr); /* stack-pen-size */
+ 69     }
+ 70 
+ 71     // Draw the analog hands
+ 72 
+ 73     // Get the current Unix time, convert to the local time and break into time
+ 74     // structure to read various time parts.
+ 75     time_t rawtime;
+ 76     time(&rawtime);
+ 77     struct tm * timeinfo = localtime (&rawtime);
+ 78 
+ 79     // Calculate the angles of the hands of our clock
+ 80     double hours   = timeinfo->tm_hour * M_PI / 6.0;
+ 81     double minutes = timeinfo->tm_min * M_PI / 30.0;
+ 82     double seconds = timeinfo->tm_sec * M_PI / 30.0;
+ 83 
+ 84     // Save the graphics state
+ 85     cairo_save(cr);
+ 86     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+ 87 
+ 88     cairo_save(cr);
+ 89 
+ 90     // Draw the seconds hand
+ 91     cairo_set_line_width(cr, m_line_width / 3.0);
+ 92     cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
+ 93     cairo_move_to(cr, 0.0, 0.0);
+ 94     cairo_line_to(cr,
+ 95                   sin(seconds) * (m_radius * 0.9),
+ 96                   -cos(seconds) * (m_radius * 0.9));
+ 97     cairo_stroke(cr);
+ 98     cairo_restore(cr);
+ 99 
+100     // Draw the minutes hand
+101     cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
+102     cairo_move_to(cr, 0, 0);
+103     cairo_line_to(cr,
+104                   sin(minutes + seconds / 60) * (m_radius * 0.8),
+105                   -cos(minutes + seconds / 60) * (m_radius * 0.8));
+106     cairo_stroke(cr);
+107 
+108     // draw the hours hand
+109     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+110     cairo_move_to(cr, 0.0, 0.0);
+111     cairo_line_to(cr,
+112                   sin(hours + minutes / 12.0) * (m_radius * 0.5),
+113                   -cos(hours + minutes / 12.0) * (m_radius * 0.5));
+114     cairo_stroke(cr);
+115     cairo_restore(cr);
+116 
+117     // Draw a little dot in the middle
+118     cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
+119     cairo_fill(cr);
+120 }
+121 
+122 
+123 gboolean
+124 time_handler(GtkWidget* widget) {
+125     gtk_widget_queue_draw(widget);
+126 
+127     return TRUE;
+128 }
+129 
+130 
+131 static void
+132 app_activate (GApplication *app, gpointer user_data) {
+133     GtkWidget *win;
+134     GtkWidget *clock;
+135     GtkBuilder *build;
+136 
+137     build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
+138     win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+139     gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+140 
+141     clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
+142     g_object_unref(build);
+143 
+144     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
+145     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
+146     gtk_widget_show(win);
+147 
+148 }
+149 
+150 static void
+151 app_open (GApplication *app, GFile **files, gint n_files, gchar *hint, gpointer user_data) {
+152     app_activate(app,user_data);
+153 }
+154 
+155 int
+156 main (int argc, char **argv) {
+157     GtkApplication *app;
+158     int stat;
+159 
+160     app = gtk_application_new ("com.github.ToshioCP.tfc", G_APPLICATION_HANDLES_OPEN);
+161     g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+162     g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+163     stat = g_application_run (G_APPLICATION (app), argc, argv);
+164     g_object_unref (app);
+165     return stat;
+166 }
+~~~
+
+`tfc.ui`
 
 ~~~xml
  1 <?xml version="1.0" encoding="UTF-8"?>
  2 <interface>
  3   <object class="GtkApplicationWindow" id="win">
- 4     <property name="title">color changer</property>
- 5     <property name="default-width">600</property>
- 6     <property name="default-height">400</property>
+ 4     <property name="title">Clock</property>
+ 5     <property name="default-width">200</property>
+ 6     <property name="default-height">200</property>
  7     <child>
- 8       <object class="GtkBox" id="boxv">
- 9         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-10         <child>
-11           <object class="GtkBox" id="boxh1">
-12             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-13             <child>
-14               <object class="GtkLabel" id="dmy1">
-15                 <property name="width-chars">10</property>
-16               </object>
-17             </child>
-18             <child>
-19               <object class="GtkButton" id="btnr">
-20                 <property name="label">Run</property>
-21                 <signal name="clicked" handler="run_cb"></signal>
-22               </object>
-23             </child>
-24             <child>
-25               <object class="GtkButton" id="btno">
-26                 <property name="label">Open</property>
-27                 <signal name="clicked" handler="open_cb"></signal>
-28               </object>
-29             </child>
-30             <child>
-31               <object class="GtkLabel" id="dmy2">
-32                 <property name="hexpand">TRUE</property>
-33               </object>
-34             </child>
-35             <child>
-36               <object class="GtkButton" id="btns">
-37                 <property name="label">Save</property>
-38                 <signal name="clicked" handler="save_cb"></signal>
-39               </object>
-40             </child>
-41             <child>
-42               <object class="GtkButton" id="btnc">
-43                 <property name="label">Close</property>
-44                 <signal name="clicked" handler="close_cb"></signal>
-45               </object>
-46             </child>
-47             <child>
-48               <object class="GtkLabel" id="dmy3">
-49                 <property name="width-chars">10</property>
-50               </object>
-51             </child>
-52           </object>
-53         </child>
-54         <child>
-55           <object class="GtkBox" id="boxh2">
-56             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-57             <property name="homogeneous">TRUE</property>
-58             <child>
-59               <object class="GtkScrolledWindow" id="scr">
-60                 <property name="hexpand">TRUE</property>
-61                 <property name="vexpand">TRUE</property>
-62                 <child>
-63                   <object class="TfeTextView" id="tv">
-64                     <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>
-65                   </object>
-66                 </child>
-67               </object>
-68             </child>
-69             <child>
-70               <object class="GtkDrawingArea" id="da">
-71                 <property name="hexpand">TRUE</property>
-72                 <property name="vexpand">TRUE</property>
-73               </object>
-74             </child>
-75           </object>
-76         </child>
-77       </object>
-78     </child>
-79   </object>
-80 </interface>
+ 8       <object class="GtkDrawingArea" id="clock">
+ 9         <property name="hexpand">TRUE</property>
+10         <property name="vexpand">TRUE</property>
+11       </object>
+12     </child>
+13   </object>
+14 </interface>
 ~~~
 
-- 10-53: This part is the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
-This is similar to the toolbar of tfe text editor in [Section 9](sec9.md).
-There are two differences.
-`Run` button replaces `New` button.
-A signal element is added to each button object.
-It has "name" attribute which is a signal name and "handler" attribute which is the name of its signal handler function.
-Options "-WI, --export-dynamic" CFLAG is necessary when you compile the application.
-You can achieve this by adding "export_dynamic: true" argument to executable function in `meson.build`.
-And be careful that the handler must be defined without 'static' class.
-- 54-76: Puts GtkScrolledWindow and GtkDrawingArea into GtkBox.
-GtkBox has "homogeneous property" with TRUE value, so the two children have the same width in the box.
-TfeTextView is a child of GtkScrolledWindow.
-
-The xml file for the resource compiler is almost same as before.
-Just substitute "color" for "tfe".
+`tfc.gresource.xml`
 
 ~~~xml
 1 <?xml version="1.0" encoding="UTF-8"?>
 2 <gresources>
-3   <gresource prefix="/com/github/ToshioCP/color">
-4     <file>color.ui</file>
+3   <gresource prefix="/com/github/ToshioCP/tfc">
+4     <file>tfc.ui</file>
 5   </gresource>
 6 </gresources>
 ~~~
 
-## Tfetextview.h, tfetextview.c and color.h
+`comp`
 
-First two files are the same as before.
-Color.h just includes tfetextview.h.
-
-~~~C
-1 #include <gtk/gtk.h>
-2 
-3 #include "../tfetextview/tfetextview.h"
 ~~~
-
-## Colorapplication.c
-
-This is the main file.
-It deals with:
-
-- Building widgets by GtkBuilder.
-- Setting a drawing function of GtkDrawingArea.
-And connecting a handler to "resize" signal on GtkDrawingArea.
-- Implementing each call back functions.
-Particularly, `Run` signal handler is the point in this program.
-
-The following is `colorapplication.c`.
-
-~~~C
-  1 #include "color.h"
-  2 
-  3 static GtkWidget *win;
-  4 static GtkWidget *tv;
-  5 static GtkWidget *da;
-  6 
-  7 static cairo_surface_t *surface = NULL;
-  8 
-  9 static void
- 10 run (void) {
- 11   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
- 12   GtkTextIter start_iter;
- 13   GtkTextIter end_iter;
- 14   char *contents;
- 15   cairo_t *cr;
- 16 
- 17   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
- 18   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
- 19   if (surface) {
- 20     cr = cairo_create (surface);
- 21     if (g_strcmp0 ("red", contents) == 0)
- 22       cairo_set_source_rgb (cr, 1, 0, 0);
- 23     else if (g_strcmp0 ("green", contents) == 0)
- 24       cairo_set_source_rgb (cr, 0, 1, 0);
- 25     else if (g_strcmp0 ("blue", contents) == 0)
- 26       cairo_set_source_rgb (cr, 0, 0, 1);
- 27     else if (g_strcmp0 ("white", contents) == 0)
- 28       cairo_set_source_rgb (cr, 1, 1, 1);
- 29     else if (g_strcmp0 ("black", contents) == 0)
- 30       cairo_set_source_rgb (cr, 0, 0, 0);
- 31     else if (g_strcmp0 ("light", contents) == 0)
- 32       cairo_set_source_rgba (cr, 1, 1, 1, 0.5);
- 33     else if (g_strcmp0 ("dark", contents) == 0)
- 34       cairo_set_source_rgba (cr, 0, 0, 0, 0.5);
- 35     else
- 36       cairo_set_source_surface (cr, surface, 0, 0);
- 37     cairo_paint (cr);
- 38     cairo_destroy (cr);
- 39   }
- 40   g_free (contents);
- 41 }
- 42 
- 43 void
- 44 run_cb (GtkWidget *btnr) {
- 45   run ();
- 46   gtk_widget_queue_draw (GTK_WIDGET (da));
- 47 }
- 48 
- 49 void
- 50 open_cb (GtkWidget *btno) {
- 51   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
- 52 }
- 53 
- 54 void
- 55 save_cb (GtkWidget *btns) {
- 56   tfe_text_view_save (TFE_TEXT_VIEW (tv));
- 57 }
- 58 
- 59 void
- 60 close_cb (GtkWidget *btnc) {
- 61   if (surface)
- 62     cairo_surface_destroy (surface);
- 63   gtk_window_destroy (GTK_WINDOW (win));
- 64 }
- 65 
- 66 static void
- 67 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
- 68   if (surface)
- 69     cairo_surface_destroy (surface);
- 70   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
- 71   run ();
- 72 }
- 73 
- 74 static void
- 75 draw_func (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height, gpointer user_data) {
- 76   if (surface) {
- 77     cairo_set_source_surface (cr, surface, 0, 0);
- 78     cairo_paint (cr);
- 79   }
- 80 }
- 81 
- 82 static void
- 83 app_activate (GApplication *application) {
- 84   gtk_widget_show (win);
- 85 }
- 86 
- 87 static void
- 88 app_startup (GApplication *application) {
- 89   GtkApplication *app = GTK_APPLICATION (application);
- 90   GtkBuilder *build;
- 91 
- 92   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/color/color.ui");
- 93   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
- 94   gtk_window_set_application (GTK_WINDOW (win), app);
- 95   tv = GTK_WIDGET (gtk_builder_get_object (build, "tv"));
- 96   da = GTK_WIDGET (gtk_builder_get_object (build, "da"));
- 97   g_object_unref(build);
- 98   g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
- 99   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (da), draw_func, NULL, NULL);
-100 
-101 GdkDisplay *display;
-102 
-103   display = gtk_widget_get_display (GTK_WIDGET (win));
-104   GtkCssProvider *provider = gtk_css_provider_new ();
-105   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-106   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-107 }
-108 
-109 #define APPLICATION_ID "com.github.ToshioCP.color"
-110 
-111 int
-112 main (int argc, char **argv) {
-113   GtkApplication *app;
-114   int stat;
-115 
-116   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
-117 
-118   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-119   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-120 
-121   stat =g_application_run (G_APPLICATION (app), argc, argv);
-122   g_object_unref (app);
-123   return stat;
-124 }
-125 
+1 glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source
+2 gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm
 ~~~
-
-- 109-124: The function `main` is almost same as before but there are some differences.
-The application ID is "com.github.ToshioCP.color".
-`G_APPLICATION_FLAGS_NONE` is specified so no open signal handler is necessary.
-- 87-107: Startup handler.
-- 92-97: Builds widgets.
-The pointers of the top window, TfeTextView and GtkDrawingArea objects are stored to static variables `win`, `tv` and `da` respectively.
-This is because these objects are often used in handlers.
-They never be rewritten so they're thread safe.
-- 98: connects "resize" signal and the handler.
-- 99: sets the drawing function.
-- 82-85: Activate handler, which just shows the widgets.
-- 74-80: The drawing function.
-It just copies `surface` to destination.
-- 66-72: Resize handler.
-Re-creates the surface to fit its width and height for the drawing area and paints by calling the function `run`.
-- 59-64: Close handler.
-It destroys `surface` if it exists.
-Then it destroys the top-level window and quits the application.
-- 49-57: Open and save handler.
-They just call the corresponding functions of TfeTextView.
-- 43-47: Run handler.
-It calls run function to paint the surface.
-After that `gtk_widget_queue_draw` is called.
-This function adds the widget (GtkDrawingArea) to the queue to be redrawn.
-It is important to know that the window is redrawn whenever it is necessary.
-For example, when another window is moved and uncovers part of the widget, or when the window containing it is resized.
-But repainting `surface` is not automatically notified to gtk.
-Therefore, you need to call `gtk_widget_queue_draw` to redraw the widget.
-- 9-41: Run function paints the surface.
-First, it gets the contents of GtkTextBuffer.
-Then it compares it to "red", "green" and so on.
-If it matches the color, then the surface is painted the color.
-If it matches "light" or "dark", then the color of the surface is lightened or darkened respectively.
-Alpha channel is used.
-
-## Meson.build
-
-This file is almost same as before.
-An argument "export_dynamic: true" is added to executable function.
-
-~~~meson
- 1 project('color', 'c')
- 2 
- 3 gtkdep = dependency('gtk4')
- 4 
- 5 gnome=import('gnome')
- 6 resources = gnome.compile_resources('resources','color.gresource.xml')
- 7 
- 8 sourcefiles=files('colorapplication.c', '../tfetextview/tfetextview.c')
- 9 
-10 executable('color', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true)
-~~~
-
-## Compile and execute it
-
-First you need to export some variables (refer to [Section 2](sec2.md)) if you've installed Gtk4 from the source.
-If you've installed Gtk4 from the distribution packages, you don't need to do this.
-
-    $ . env.sh
-
-Then type the following to compile it.
-
-    $ meson _build
-    $ ninja -C _build
-
-The application is made in `_build` directory.
-Type the following to execute it.
-
-    $ _build/color
-
-Type "red", "green", "blue", "white", black", "light" or "dark" in the TfeTextView.
-Then, click on `Run` button.
-Make sure the color of GtkDrawingArea changes.
-
-In this program TfeTextView is used to change the color.
-You can use buttons or menus instead of textview.
-Probably it is more appropriate.
-Using textview is unnatural.
-It is a good practice to make such application by yourself.
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
