@@ -1,5 +1,6 @@
 # lib_src2md.rb
 require 'pathname'
+include Math
 
 # The method 'src2md' converts .src.md file into .md file.
 # The .md file is the final format for GFM, or intermediate markdown file for html and/or latex.
@@ -40,7 +41,7 @@ require 'pathname'
 
 # If the target is full URL, which means absolute URL begins with "http(s)", no problem happens.
 
-# This script just remove the links if its target is relative URL if the target is latex.
+# This script just remove the links if its target is relative URL and the target is latex.
 # If you want to revive the link with relative URL, refer the description above.
 
 # This script uses "fenced code blocks" for verbatim lines.
@@ -49,7 +50,7 @@ require 'pathname'
 # This script uses tilde because info string cannot contain any backticks for the backtick code fence.
 # Info string follows opening fence and it is usually a language name.
 
-# GFM has fence code block as follows.
+# GFM has fence code block like this.
 # ~~~C
 # int main (int argc, char **argv) {
 # ........
@@ -67,51 +68,65 @@ require 'pathname'
 # Then the contents are highlighted based on C language syntax and line numbers are added.
 # Pandoc supports C, ruby, xml, bison, lex, markdown and makefile languages, but doesn't meson.
 #
-# After a markdown file is converted to a latex file, listings package is used by lualatex to convert it to a pdf file.
+# After a markdown file is converted to a latex file, listings package is used by lualatex.
 # Listings package supports only C, ruby, xml and make.
 # Bison, lex, markdown and meson aren't supported.
 
-# file_table contains paths of source, GFM, html and latex.
+# file_table contains paths of srcmd, GFM, html and latex.
+# Example: [ [src/sec1.src.md, gfm/sec1.md, html/sec1.html and latex/sec1.tex], [src/sec2/src.md .....] .... ]
 # If the paths are relative, srcmd and md must be relative.
 # And their base directory must be the same.
 
 # type is "gfm", "html" or "latex".
 # Caller can specify the target type.
 
-def src2md srcmd, md, file_table=nil, type=nil
-# parameters:
-#  srcmd: .src.md file's path. source
-#  md:    .md file's path. destination
-  src_buf = IO.readlines srcmd
-  src_dir = File.dirname srcmd
-  md_dir = File.dirname md
-  type_dir = File.basename md_dir # type of the target. gfm, html or latex
-  if (type == nil || (type != "gfm" && type != "html" && type != "latex"))
-    if type_dir == "gfm" || type_dir == "html" || type_dir == "latex"
-      type = type_dir
-    else
-      type = "gfm" # default type
+# select lines match to the type from @@@if-elif-else-end
+class String
+  def partitions pattern
+    a = []
+    b = self.partition(pattern)
+    until b[1] == ""
+      a += [b[0],b[1]]
+      b = b[2].partition(pattern)
     end
+    a += [b[0]]
   end
+end
 
-# phase 1
+def src2md src_path, dst_path, type
+  src_dir = File.dirname src_path
+  dst_dir = File.dirname dst_path
+  src = File.read(src_path)
+  src = at_if_else(src, type)
+  buf = src.partitions(/^@@@include\s*(-(N|n))?.*?@@@\n/m)
+  buf = buf.map{|chunk| chunk=~/\A@@@include/ ? do_include(chunk, src_dir, type) : chunk}
+  src = buf.join
+  buf = src.partitions(/^@@@shell.*?@@@\n/m)
+  buf = buf.map{|chunk| chunk=~/\A@@@shell.*?@@@\n/m ? do_shell(chunk, src_dir) : chunk}
+  src = buf.join
+  src = change_link(src, src_dir, type, dst_dir)
+  File.write(dst_path, src)
+end
+
 # @@@if - @@@elif - @@@else - @@@end
-  md_buf = []
+def at_if_else str, type
+  buf = str.each_line.to_a
+  obuf = []
   if_stat = 0
-  src_buf.each do |line|
+  buf.each do |line|
     if line =~ /^@@@if *(\w+)/ && if_stat == 0
-      if_stat = type == $1 ? 1 : -1
+      if_stat = (type == $1 ? 1 : -1)
     elsif line =~ /^@@@elif *(\w+)/
       if if_stat == 1
         if_stat = -2
       elsif if_stat == -1
-        if_stat = type == $1 ? 3 : -3
+        if_stat = (type == $1 ? 3 : -3)
       elsif if_stat == -2
         # if_stat is kept to be -2
       elsif if_stat == 3
         if_stat = -2
       elsif if_stat == -3
-        if_stat = type == $1 ? 3 : -3
+        if_stat = (type == $1 ? 3 : -3)
       end
     elsif line =~ /^@@@else/
       if if_stat == 1
@@ -128,188 +143,199 @@ def src2md srcmd, md, file_table=nil, type=nil
     elsif line =~ /^@@@end/
       if_stat = 0
     elsif if_stat >= 0
-      md_buf << line
+      obuf << line
     end
   end
+  obuf.join
+end
 
-# phase 2
-# @@@include and @@@shell
-  src_buf = md_buf
-  md_buf = []
-  include_flag = ""
-  shell_flag = false
-  src_buf.each do |line|
-    if include_flag == "-N" || include_flag == "-n"
-      if line == "@@@\n"
-        include_flag = ""
-      elsif line =~ /^\s*(\S*)\s*(.*)$/
-        c_file = $1
-        c_functions = $2.strip.split(" ")
-        if c_file =~ /^\// # absolute path
-          c_file_buf = File.readlines(c_file)
-        else #relative path
-          c_file_buf = File.readlines(src_dir+"/"+c_file)
+def width n
+  return nil if n < 0
+  log10(n.to_f).to_i+1
+end
+
+# @@@include -(N|n|) - @@@
+def do_include str, src_dir, type
+  buf = str.each_line.to_a
+  opt = buf[0].match(/^@@@include\s*(-(N|n))?\s*$/).to_a[1]
+  buf.delete_at(0); buf.delete_at(-1)
+  obuf = []
+  buf.each do |line|
+    file_func = line.chomp.split(/\s/).reject{|a| a == ""}
+    language = lang(file_func[0], type)
+    next unless File.file?("#{src_dir}/#{file_func[0]}")
+    src = File.read("#{src_dir}/#{file_func[0]}")
+    if language == "C"
+      if file_func.size >= 2
+        a = []
+        (1..file_func.size-1).each do |i|
+          func_match_data = src.match(/(.*\n#{file_func[i]}\s*\(.*?\)\s*\{\s*\n(.|\n)*?^\}\s*?\n?)/)
+          a << func_match_data[0] unless func_match_data == nil # func_match_data.to_s is OK, too.
         end
-        if c_functions.empty? # no functions are specified
-          tmp_buf = c_file_buf
-        else
-          tmp_buf = []
-          spc = false
-          c_functions.each do |c_function|
-            from = c_file_buf.find_index { |line| line =~ /^#{c_function} *\(/ }
-            if ! from
-              warn "lib_src2md: ERROR in #{srcmd}: Didn't find #{c_function} in #{c_file}."
-              break
-            end
-            to = from
-            while to < c_file_buf.size do
-              if c_file_buf[to] == "}\n"
-                break
-              end
-              to += 1
-            end
-            if to >= c_file_buf.size
-              warn "lib_src2md: ERROR in #{srcmd}: function #{c_function} didn't end in #{c_file}."
-              break
-            end
-            n = from-1
-            if spc
-              tmp_buf << "\n"
-            else
-              spc = true
-            end
-            while n <= to do
-              tmp_buf << c_file_buf[n]
-              n += 1
-            end
-          end
-        end
-        if type == "gfm"
-          md_buf << "~~~#{lang(c_file, "gfm")}\n"
-        elsif type == "html"
-          language = lang(c_file, "pandoc")
-          if include_flag == "-n"
-            if language != ""
-              md_buf << "~~~{.#{language} .numberLines}\n"
-            else
-              md_buf << "~~~{.numberLines}\n"
-            end
-          else
-            if lang(c_file, "pandoc") != ""
-              md_buf << "~~~{.#{language}}\n"
-            else
-              md_buf << "~~~\n"
-            end
-          end
-        elsif type =="latex"
-          language = lang(c_file, "pandoc")
-          if include_flag == "-n"
-            if language == "C" || language == "ruby" || language == "xml" || language == "makefile"
-              md_buf << "~~~{.#{language} .numberLines}\n"
-            else
-              md_buf << "~~~{.numberLines}\n"
-            end
-          else
-            if language == "C" || language == "ruby" || language == "xml" || language == "makefile"
-              md_buf << "~~~{.#{language}}\n"
-            else
-              md_buf << "~~~\n"
-            end
-          end
-        else
-          md_buf << "~~~\n"
-        end
-        ln_width = tmp_buf.size.to_s.length
-        n = 1
-        tmp_buf.each do |l|
-          if type == "gfm" && include_flag == "-n"
-            l = sprintf("%#{ln_width}d %s", n, l)
-          end
-          md_buf << l
-          n += 1
-        end
-        md_buf << "~~~\n"
+        src = a.join("\n")
       end
-    elsif shell_flag
-      if line == "@@@\n"
-        md_buf << "~~~\n"
-        shell_flag = false
+    end
+    i = 0; src_lines = src.each_line.to_a; w = width(src_lines.size)
+    src_with_number = src_lines.map{|l| i+=1; sprintf("%#{w}d ", i)+l}.join
+    dst = "" # declare here because of the scope of local variables.
+    if type == "gfm"
+      unless opt == "-N"
+        dst = "~~~#{language}\n#{src_with_number}~~~\n"
       else
-        md_buf << "$ #{line}"
-        `cd #{src_dir}; #{line.chomp}`.each_line do |l|
-            md_buf << l
+        dst = "~~~#{language}\n#{src}~~~\n"
+      end
+    elsif type == "html" || type == "latex"
+      unless opt == "-N"
+        if language == ""
+          dst = "~~~{.numberLines}\n#{src}~~~\n"
+        else
+          dst = "~~~{.#{language} .numberLines}\n#{src}~~~\n"
+        end
+      else
+        if language == ""
+          dst = "~~~\n#{src}~~~\n"
+        else
+          dst = "~~~{.#{language}}\n#{src}~~~\n"
         end
       end
-    elsif line == "@@@include\n" || line =~ /^@@@include *-n/
-      include_flag = "-n"
-    elsif line =~ /^@@@include *-N/
-      include_flag = "-N"
-    elsif line == "@@@shell\n"
-      md_buf << "~~~\n"
-      shell_flag = true
+    end
+    obuf << dst
+  end
+  obuf.join
+end
+
+# @@@shell - @@@
+def do_shell str, src_dir
+  buf = str.each_line.to_a
+  buf.delete_at(0); buf.delete_at(-1)
+  obuf = ["~~~\n"]
+  buf.each do |line|
+    obuf << "$ #{line}"
+    `cd #{src_dir}; #{line.chomp}`.each_line {|l| obuf << l}
+  end
+  obuf << "~~~\n"
+  obuf.join
+end
+
+# Change relative links in the secXX.src.md to the one in gfm/secXX.md, html/secXX.html or latex/secXX.tex
+# Example:
+#  src=>gfm:  [Section 1](sec1.src.md) => [Section 1](sec1.md)
+#  src=>html:  [Section 1](sec1.src.md) => [Section 1](sec1.html)
+#  src=>latex:  [Section 1](sec1.src.md) => Section 1
+#  src=>gfm:  [document](../doc/document.md) => [document](document.md)
+#  src=>html:  [document](../doc/document.md) => [document]document.html
+#  src=>latex:  [document](../doc/document.md) => document
+#  src=>latex:  [Github](https://github.com/ToshioCP) => [Github](https://github.com/ToshioCP)
+# The examples above are simple. But some source files are located in the different directories.
+#  src/abstract.src.md => ./Readme.md: [Section 1](src/sec1.src.md) => [Section 1](gfm/sec1.md).
+#  src/abstract.src.md => html/index.md: [Section 1](src/sec1.src.md) => [Section 1](sec1.html).
+#  src/abstract.src.md => latex/abstract.md: [Section 1](src/sec1.src.md) => Section 1
+#  src/turtle/turtle_doc.src.md => src/turtle/turtle_doc.md: [Section 1](../sec1.src.md) => [Section 1](../../gfm/sec1.md)
+#  src/turtle/turtle_doc.src.md => gfm/turtle_doc.md: [Section 1](../sec1.src.md) => [Section 1](sec1.md)
+
+# src: String
+# old_dir: the directory which 'src' (XXXX.src.md) comes from
+# type: 'gfm', 'html' or 'latex'.
+# new_dir: the directory which the converted string put into
+#   new_dir is usually gfm, html or latex. But abstract.src.md is an exception. It goes to the top directory.
+#   src/turtle/turtle_doc.src.md has two possibilities.
+#   It goes to src/turtle/turtle_doc.md or gfm/turtle_doc.md.
+def change_link src, old_dir, type, new_dir=nil
+  raise "Illegal type." unless type == "gfm" || type == "html" || type == "latex"
+  new_dir = type if new_dir == nil
+  p_new_dir = Pathname.new(new_dir)
+  buf = src.partitions(/!?\[.*?\]\(.*?\)(\{.*?\})?/)
+  buf = buf.map do |chunk|
+    m = chunk.match(/(!?\[.*?\])\((.*?)\)(\{.*?\})?/)
+    if m == nil
+      chunk
     else
-      line = change_rel_link(line, src_dir, md_dir, file_table, type)
-      if type == "latex" # remove relative link
-        if ! (line =~ /\[[^\]]*\]\(http[^)]*\)/)
-          line.gsub!(/^([^!]*)\[([^\]]*)\]\([^\)]*\)/,"\\1\\2")
+      name = m[1]
+      target = m[2]
+      size = m[3]
+      if target =~ /\.src\.md$/
+        case type
+        when "gfm"
+          "#{name}(#{File.basename(target,'.src.md')}.md)"
+        when "html"
+          "#{name}(#{File.basename(target,'.src.md')}.html)"
+        when "latex"
+          name.match(/!?\[(.*?)\]/)[1]
         end
-      else # type == "gfm" or "html", then remove size option from link to image files.
-        line.gsub!(/(!\[[^\]]*\]\([^\)]*\)) *{width *= *\d*(|\.\d*)cm *height *= *\d*(|\.\d*)cm}/,"\\1")
-      end
-      md_buf << line
-    end
-  end
-  IO.write(md,md_buf.join)
-end
-
-# Change the base of relative links from org_dir to new_dir
-def change_rel_link line, org_dir, new_dir, file_table=nil, type="gfm"
-  i = [nil, "gfm", "html", "latex"].find_index(type)
-  raise "Illegal type (#{type}).\n" unless i == 1 || i == 2 || i == 3
-  p_new_dir = Pathname.new new_dir
-  left = ""
-  right = line
-  while right =~ /(!?\[[^\]]*\])\(([^\)]*)\)/
-    left += $`
-    right = $'
-    name = $1
-    link = $2
-    converted = false
-    if file_table
-      file_table.each do |tbl|
-        if tbl[0] == "#{org_dir}/#{link}"
-          p_link = Pathname.new tbl[i]
-          link = p_link.relative_path_from(p_new_dir).to_s
-          converted = true
-          break
+      elsif m[2] =~ /^(http|\/)/
+        chunk
+      elsif size != nil
+        p_target = Pathname.new "#{old_dir}/#{target}"
+        target = p_target.relative_path_from(p_new_dir).to_s
+        case type
+        when "gfm"
+          "#{name}(#{target})"
+        when "html"
+          "#{name}(#{target})"
+        when "latex"
+          chunk
+        end
+      else
+        p_target = Pathname.new "#{old_dir}/#{target}"
+        target = p_target.relative_path_from(p_new_dir).to_s
+        if type == "latex"
+          name.match(/!?\[(.*?)\]/)[1]
+        else
+          "#{name}(#{target})"
         end
       end
     end
-    if ! converted && ! (link =~ /^(http|\/)/)
-      p_link = Pathname.new "#{org_dir}/#{link}"
-      link = p_link.relative_path_from(p_new_dir).to_s
-    end
-    left += "#{name}(#{link})"
   end
-  left + right
+  buf.join
 end
 
-def lang file, type_of_md
-  tbl = {".c" => "C", ".h" => "C", ".rb" => "ruby", ".xml" => "xml", ".ui" => "xml",
-         ".y" => "bison", ".lex" => "lex", ".build" => "meson", ".md" => "markdown" }
+# Color fence code.
+# See gfm => GFM document
+#     html => pandoc document
+#     latex => listings package
+def lang file, type
+  tbl = {
+    "gfm.c" => "C",
+    "html.c" => "C",
+    "latex.c" => "C",
+    "gfm.h" => "C",
+    "html.h" => "C",
+    "latex.h" => "C",
+    "gfm.rb" => "ruby",
+    "html.rb" => "ruby",
+    "latex.rb" => "ruby",
+    "gfm.xml" => "xml",
+    "html.xml" => "xml",
+    "latex.xml" => "xml",
+    "gfm.ui" => "xml",
+    "html.ui" => "xml",
+    "latex.ui" => "xml",
+    "gfm.y" => "bison",
+    "html.y" => "bison",
+    "latex.y" => "",
+    "gfm.lex" => "lex",
+    "html.lex" => "lex",
+    "latex.lex" => "",
+    "gfm.build" => "meson",
+    "html.build" => "",
+    "latex.build" => "",
+    "gfm.md" => "markdown",
+    "html.md" => "markdown",
+    "latex.md" => "",
+    "gfm.Makefile" => "makefile",
+    "html.Makefile" => "makefile",
+    "latex.Makefile" => "makefile",
+    "gfm.Rakefile" => "ruby",
+    "html.Rakefile" => "ruby",
+    "latex.Rakefile" => "ruby",
+   }
   name = File.basename file
-  if name == "Makefile"
-    return "makefile"
-  elsif name == "Rakefile"
-    return "ruby"
+  if name == "Makefile" || name == "Rakefile"
+    suffix = ".#{name}"
+  elsif name =~ /\.src\.md$/
+    suffix = ".src.md"
   else
     suffix = File.extname name
-    tbl.each do |key, val|
-      if suffix == key
-        return val if type_of_md == "gfm"
-        return val if type_of_md == "pandoc" && val != "meson"
-      end
-    end
   end
-  return ""
+  tbl["#{type}#{suffix}"].to_s
 end

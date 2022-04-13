@@ -1,162 +1,146 @@
 # test_lib_sec_file.rb
+require 'minitest/autorun'
+require 'fileutils'
 require_relative "../lib/lib_src_file.rb"
 
-# Sample files for the test
-src_text = <<'EOS'
-This is a source file.
-EOS
+module Prepare_test
+  def files
+    src_text = <<~'EOS'
+    This is a source file.
+    EOS
 
-sample_c = <<'EOS'
-#include <stdio.h>
+    sample_c = <<~'EOS'
+    #include <stdio.h>
 
-int
-main (int argc, char **argv) {
-  printf ("Hello world.\n");
-}
-EOS
+    int
+    main (int argc, char **argv) {
+      printf ("Hello world.\n");
+    }
+    EOS
 
-sec1_text = <<'EOS'
-This is a test file.
-The sorce of `sample.c` is:
+    sec1_text = <<~'EOS'
+    This is a test file.
+    The sorce of `sample.c` is:
 
-@@@include
-sample.c main
-@@@
+    @@@include
+    sample.c main
+    @@@
 
-It is the simplest C program.
-EOS
+    It is the simplest C program.
+    EOS
 
-sec2_text = <<'EOS'
-To compile the C source file `sample.c`, type:
+    sec2_text = <<~'EOS'
+    To compile the C source file `sample.c`, type:
 
-~~~
-$ gcc sample.c
-~~~
+    ~~~
+    $ gcc sample.c
+    ~~~
 
-Then executable file `a.out` is generated.
+    Then executable file `a.out` is generated.
 
-@@@shell
-ls
-@@@
+    @@@shell
+    ls
+    @@@
 
-To execute it, type:
+    To execute it, type:
 
-~~~
-$ ./a.out
-~~~
+    ~~~
+    $ ./a.out
+    ~~~
 
-The source code is in [Section 1](sec1.src.md)
-EOS
+    The source code is in [Section 1](sec1.src.md)
+    EOS
 
-sec05_text = <<'EOS'
-Prerequisite
+    sec05_text = <<~'EOS'
+    Prerequisite
 
-- Linux OS like Ubuntu or Debian.
-- gcc
-EOS
+    - Linux OS like Ubuntu or Debian.
+    - gcc
+    EOS
 
-files = [
-  ["temp/srcfile.src.md", src_text],
-  ["temp/sample.c", sample_c],
-  ["temp/sec1.src.md", sec1_text],
-  ["temp/sec2.src.md", sec2_text],
-  ["temp/sec0.5.src.md", sec05_text]
-]
-
-# Generate sample file
-unless Dir.exist? "temp"
-  Dir.mkdir "temp"
-end
-files.each do |f|
-  File.write f[0], f[1]
-end
-
-# Test Src_file
-print "****** Src_file class test ******\n"
-src = Src_file.new "temp/srcfile.src.md"
-test_items = [
-  ["path", "\"temp/srcfile.src.md\""],
-  ["basename", "\"srcfile.src.md\""],
-  ["dirname", "\"temp\""],
-  ["to_md", "\"srcfile.md\""],
-  ["to_html", "\"srcfile.html\""],
-  ["to_tex", "\"srcfile.tex\""],
-]
-test_items.each do |item|
-  if eval("src.#{item[0]} != #{item[1]}")
-    print "src.#{item[0]} != #{item[1]}\n"
-    print " ....  src.#{item[0]} is #{eval("src_sec1.#{item[0]}")}\n"
+    [
+      ["srcfile.src.md", src_text],
+      ["sample.c", sample_c],
+      ["sec1.src.md", sec1_text],
+      ["sec2.src.md", sec2_text],
+      ["sec0.5.src.md", sec05_text]
+    ]
   end
 end
 
-# Test Sec_file
-print "****** Sec_file class test ******\n"
-src_sec05 = Sec_file.new "temp/sec0.5.src.md"
-src_sec1 = Sec_file.new "temp/sec1.src.md"
-src_sec2 = Sec_file.new "temp/sec2.src.md"
-test_items = [
-  ["path", "\"temp/sec1.src.md\""],
-  ["basename", "\"sec1.src.md\""],
-  ["dirname", "\"temp\""],
-  ["c_files", "[ \"temp/sample.c\" ]"],
-  ["to_md", "\"sec1.md\""],
-  ["to_html", "\"sec1.html\""],
-  ["to_tex", "\"sec1.tex\""],
-  ["num", "\"1\""],
-  ["to_f", "1.0"],
-  ["<=> src_sec05", "1"],
-  ["<=> src_sec1", "0"],
-  ["<=> src_sec2", "-1"],
-  ["is_i?", "true"]
-]
-test_items.each do |item|
-  if eval("src_sec1.#{item[0]} != #{item[1]}")
-    print "src_sec1.#{item[0]} != #{item[1]}\n"
-    print " ....  src_sec1.#{item[0]} is #{eval("src_sec1.#{item[0]}")}\n"
+class Test_lib_src_file < Minitest::Test
+  include FileUtils
+  include Prepare_test
+  def setup
+    # Create sample file
+    @temp = get_temp_name()
+    Dir.mkdir @temp unless Dir.exist? @temp
+    files().each do |f|
+      File.write "#{@temp}/#{f[0]}", f[1]
+    end
+  end
+  def teardown
+    remove_entry_secure(@temp)
+  end
+  def test_src_file
+    src = Src_file.new "#{@temp}/srcfile.src.md"
+    test_items = [
+      ["path", "\"#{@temp}/srcfile.src.md\""],
+      ["basename", "\"srcfile.src.md\""],
+      ["dirname", "\"#{@temp}\""],
+      ["to_md", "\"srcfile.md\""],
+      ["to_html", "\"srcfile.html\""],
+      ["to_tex", "\"srcfile.tex\""],
+    ]
+    test_items.each do |item|
+      assert item[1], eval("src.#{item[0]}")
+    end
+  end
+  def test_sec_file
+    src = Src_file.new "#{@temp}/srcfile.src.md"
+    src_sec05 = Sec_file.new "#{@temp}/sec0.5.src.md"
+    src_sec1 = Sec_file.new "#{@temp}/sec1.src.md"
+    src_sec2 = Sec_file.new "#{@temp}/sec2.src.md"
+    test_items = [
+      ["path", "\"#{@temp}/sec1.src.md\""],
+      ["basename", "\"sec1.src.md\""],
+      ["dirname", "\"#{@temp}\""],
+      ["c_files", "[ \"#{@temp}/sample.c\" ]"],
+      ["to_md", "\"sec1.md\""],
+      ["to_html", "\"sec1.html\""],
+      ["to_tex", "\"sec1.tex\""],
+      ["num", "\"1\""],
+      ["to_f", "1.0"],
+      ["<=> src_sec05", "1"],
+      ["<=> src_sec1", "0"],
+      ["<=> src_sec2", "-1"],
+      ["is_i?", "true"]
+    ]
+    test_items.each do |item|
+      assert item[1], eval("src_sec1.#{item[0]}")
+    end
+    refute src_sec05.is_i?
+  end
+  def test_sec_files
+    temp_renum = "temp_renum"+get_temp_name()
+    unless Dir.exist? temp_renum
+      Dir.mkdir temp_renum
+    end
+    files.each do |f|
+      File.write "#{temp_renum}/#{f[0]}", f[1]
+    end
+    src_sec05 = Sec_file.new "#{temp_renum}/sec0.5.src.md"
+    src_sec1 = Sec_file.new "#{temp_renum}/sec1.src.md"
+    src_sec2 = Sec_file.new "#{temp_renum}/sec2.src.md"
+    sec_files = Sec_files.new [src_sec05, src_sec1, src_sec2]
+    sec_files.renum!
+    line_actual = File.read(src_sec2).match(/The source code is in \[Section \d\]\(sec\d.src.md\)\n/).to_a[0]
+    remove_entry_secure(temp_renum)
+    assert_equal ["#{temp_renum}/sec1.src.md", "#{temp_renum}/sec2.src.md", "#{temp_renum}/sec3.src.md"], sec_files
+    assert_equal "The source code is in [Section 2](sec2.src.md)\n", line_actual
+  end
+private
+  def get_temp_name
+    "temp_"+Time.now.to_f.to_s.gsub(/\./,'')
   end
 end
-if src_sec05.is_i? != false
-  print "src_sec05.is_i? != false\n"
-end
-src_sec2.renum! 3
-print "\n\"src_sec2.renum! 3\" is invoked.\n\n"
-if src_sec2.path != "temp/sec3.src.md"
-  print "temp/sec2.src.md is renumbered to 3, but the name didn't changed to sec3.src.md\n"
-  print " ....  The name is #{src_sec2.path})}\n"
-end
-unless File.exist? "temp/sec3.src.md"
-  print "temp/sec3/src/md doesn't exist.\n"
-end
-if src_sec2.basename != "sec3.src.md"
-  print "The new basename isn't sec3.src.md.\n"
-  print " ....  It is #{src_sec2.basename}.\n"
-end
-if src_sec2.dirname != "temp"
-  print "The new dirname isn't temp.\n"
-  print " ....  It is #{src_sec2.dirname}.\n"
-end
-
-# Test Sec_files
-print "****** Sec_files class test ******\n"
-sec_files = Sec_files.new [src_sec05, src_sec1, src_sec2]
-sec_files.renum!
-print "\n\"sec_files.renum!\" is invoked.\n\n"
-filenames = sec_files.map { |sec_file| sec_file.path }
-if filenames != ["temp/sec1.src.md", "temp/sec2.src.md", "temp/sec3.src.md"]
-  print "Renumbering failed.\n"
-  print "The filenames are:\n"
-  p filenames
-end
-s_line = /The source code is in \[Section \d\]\(sec\d.src.md\)/
-buf = File.readlines src_sec2.path
-i = buf.find_index {|l| l =~ s_line }
-if i
-  line = buf[i]
-else
-  print "The line \"The source code is in [Section \\d](sec\\d.src.md)\" didn't find in src_sec2.\n"
-end
-if line != "The source code is in [Section 2](sec2.src.md)\n"
-  print "\"Section 1\" didn't change to \"Section 2\", or \"sec1\" didn't change to \"sec2\".\n"
-  print " ....  The line is #{line.chomp}.\n"
-end
-system "rm", "-rf", "temp"

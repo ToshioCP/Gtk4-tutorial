@@ -1,32 +1,22 @@
 class Src_file <String
   def initialize path
-    unless path.is_a?(String)
-      raise  "Src_file class initialization error: The argument is not String type."
-    end
-    unless File.exist?(path)
-      raise  "Src_file class initialization error: File #{path} is not exist."
-    end
-    unless path =~ /\.src\.md$/
-      raise  "Src_file class initialization error: The argment \"#{path}\" doesn't have .src.md suffix."
-    end
-    @name = File.basename path, ".src.md"
-    @dirname = File.dirname path
+    check_init path
     super(path)
   end
   def replace path
-    unless path.is_a?(String)
-      raise  "Replace error: The argument is not String type."
-    end
-    unless File.exist?(path)
-      raise  "Replace error: File #{path} is not exist."
-    end
-    unless path =~ /\.src\.md$/
-      raise  "Replace error: The argment \"#{path}\" doesn't have .src.md suffix."
-    end
+    check_init path
     super(path)
+  end
+
+  def check_init path
+    raise  "The argument is not String type." unless path.is_a?(String)
+    raise  "File #{path} is not exist." unless File.exist?(path)
+    raise  "The argment \"#{path}\" doesn't have .src.md suffix." unless path =~ /\.src\.md$/
     @name = File.basename path, ".src.md"
     @dirname = File.dirname path
   end
+  private :check_init
+
   def path
     self
   end
@@ -46,32 +36,15 @@ class Src_file <String
     @name+".tex"
   end
   def c_files
-    buf = IO.readlines(self)
-    files = []
-    in_include = false
-    buf.each do |line|
-      if in_include
-        if line == "@@@\n"
-          in_include = false
-        else
-          files << @dirname+"/"+line.match(/^ *(\S*)/)[1]
-        end
-      elsif line == "@@@include\n"
-        in_include = true
-      else
-        # lines out of @@@include command is thrown away.
-      end
-    end
-    raise "Syntax error: @@@include didn't end (no @@@ line)." if in_include
-    files
+    File.read(self).scan(/@@@include\n.*?@@@\n/m).map{|s| s.each_line.to_a}.flatten\
+                   .reject{|line| line =~ /@@@include\n|@@@\n/}\
+                   .map{|line| @dirname+"/"+(line.match(/\S*/)[0])}
   end
-end  
+end
 
 class Sec_file < Src_file
   def initialize path
-    unless path =~ /sec\d+(\.\d+)?\.src\.md$/
-      raise  "Sec_file class initialization error: The argment \"#{path}\" doesn't have secXX.src.md form. XX is int or float."
-    end
+    raise  "The argment \"#{path}\" doesn't have secXX.src.md form. (XX is int or float.)" unless path =~ /sec\d+(\.\d+)?\.src\.md$/
     super(path)
   end
   def num # the return value is String
@@ -92,77 +65,52 @@ class Sec_file < Src_file
   def is_i?
     self.to_f == self.to_f.floor
   end
-  def renum! n
-    if n.instance_of?(String)
-      n = n.to_i if n =~ /^\d+$/
-      n = n.to_f if n =~ /^\d+\.\d+/
-    end
-    if n.instance_of?(Integer) || n.instance_of?(Float)
-      n = n.to_i if n == n.floor
-      old = self
-      new = self.gsub(/\d+(\.\d+)?\.src\.md$/, "#{n}.src.md")
-      if old != new
-        File.rename old, new
-        self.replace new
-      end
-    end
-  end
 end
 
 class Sec_files < Array
   def initialize sec_files
-    if sec_files.instance_of? Array
-      sec_files.each do |sec_file|
-        unless sec_file.instance_of? Sec_file
-          raise "#{sec_file} is not an instance of Sec_file."
-        end
-      end
-      super(sec_files)
-    else
-      raise "#{sec_files} is not an array."
+    raise "#{sec_files} is not an array." unless sec_files.instance_of? Array
+    sec_files.each do |sec_file|
+      raise "#{sec_file} is not an instance of Sec_file." unless sec_file.instance_of? Sec_file
     end
+    super(sec_files)
   end
   def renum!
+    temp = get_temp_name()
     self.sort!
-    tbl = []
-    n = 1
-    self.each do |sec_file|
-      tbl << [ sec_file.num, n, sec_file.to_f == n ? true : false ]
-      n += 1
+    rename_rule = []
+    self.each_with_index do |file, i|
+      # rule: sec_file, filename_old, temporary_file, filename_new, number_old, number_new
+      # Be careful that the sec_file will change from filename_old to filename_new. String is mutable!
+      rename_rule << [file, String.new(file), file+temp, file.gsub(/\d+(\.\d+)?\.src\.md$/,"#{i+1}.src.md"),\
+                      file.match(/(\d+(\.\d+)?)\.src\.md$/)[1], (i+1).to_s]
     end
-    while any_diff?(tbl)
-      unless try_renum(tbl)
-        break
+    rename_rule.each do |rule|
+      File.rename rule[1], rule[2]
+    end
+    rename_rule.each do |rule|
+      File.rename rule[2], rule[3]
+      rule[0].replace rule[3]
+    end
+    self.each do |file|
+      buf = File.read(file)
+      rename_rule.each do |rule|
+        if rule[1] != rule[3]
+          buf = buf.gsub(/(\[(S|s)ection *)#{rule[4]}\]\(sec#{rule[4]}\.src\.md\)/, "\\1#{rule[4]}](#{rule[2]})")
+        end
       end
-    end
-    if any_diff?(tbl)
-      raise "Renumbering failed."
+      rename_rule.each do |rule|
+        if rule[1] != rule[3]
+          buf = buf.gsub(/(\[(S|s)ection *)#{rule[4]}\]\(#{rule[2]}\)/, "\\1#{rule[5]}](sec#{rule[5]}.src.md)")
+        end
+      end
+      File.write(file, buf)
     end
   end
 
 private
-  def any_diff? tbl
-    tbl.find_index { |row| row[2] == false }
+  def get_temp_name
+    "temp_"+Time.now.to_f.to_s.gsub(/\./,'')
   end
-  def try_renum tbl
-    changed = false
-    (self.size - 1).downto 0 do |i|
-      if tbl[i][2] == false
-        n = tbl[i][1] # number to substitute
-        found = self.find_index { |sec_file| sec_file.to_f == n }
-        unless found # OK to replace
-          self[i].renum! n
-          tbl[i][2] = true
-#         tbl[0] (old number (String) is kept in the array 'tbl')
-          changed = true
-          self.each do |sec_file|
-            buf = IO.readlines sec_file
-            buf_n = buf.map { |line| line.gsub(/((S|s)ection *)#{tbl[i][0]}/, "\\1#{n}").gsub(/((S|s)ec *)#{tbl[i][0]}/, "\\1#{n}") }
-            IO.write sec_file, buf_n.join
-          end
-        end
-      end
-    end
-    changed
-  end
+
 end
