@@ -157,7 +157,7 @@ char *s;
 s = g_new (char, 10);
 /* s points an array of char. The size of the array is 10. */
 
-struct tuple (int x, int y) *t;
+struct tuple {int x, y;} *t;
 t = g_new (struct tuple, 5);
 /* t points an array of struct tuple. */
 /* The size of the array is 5. */
