@@ -98,11 +98,13 @@ def src2md src_path, dst_path, type
   dst_dir = File.dirname dst_path
   src = File.read(src_path)
   src = at_if_else(src, type)
+  buf = src.partitions(/^@@@table\n.*?@@@\n/m)
+  buf = buf.map{|chunk| chunk=~/\A@@@table/ ? at_table(chunk) : chunk}.join
   buf = src.partitions(/^@@@include\s*(-(N|n))?.*?@@@\n/m)
-  buf = buf.map{|chunk| chunk=~/\A@@@include/ ? do_include(chunk, src_dir, type) : chunk}
+  buf = buf.map{|chunk| chunk=~/\A@@@include/ ? at_include(chunk, src_dir, type) : chunk}
   src = buf.join
   buf = src.partitions(/^@@@shell.*?@@@\n/m)
-  buf = buf.map{|chunk| chunk=~/\A@@@shell.*?@@@\n/m ? do_shell(chunk, src_dir) : chunk}
+  buf = buf.map{|chunk| chunk=~/\A@@@shell.*?@@@\n/m ? at_shell(chunk, src_dir) : chunk}
   src = buf.join
   src = change_link(src, src_dir, type, dst_dir)
   File.write(dst_path, src)
@@ -149,13 +151,67 @@ def at_if_else str, type
   obuf.join
 end
 
+def get_alignments(separator)
+  separator = separator.sub(/^\|/,'').sub(/\|$/,'')
+  separator.split('|').map{|cell| cell.lstrip.rstrip.squeeze}\
+    .map do |cell|
+      case cell
+      when '-',':-' then :l
+      when '-:' then :r
+      when ':-:' then :c
+      else nil
+      end
+    end
+end
+
+def mkcell(cell, alignment, width)
+  return cell if (l = cell.length) >= width
+  sp_l = (width - l) / 2
+  sp_r = width - l - sp_l
+  case alignment
+  when :l then cell+" "*(sp_l+sp_r)
+  when :r then " "*(sp_l+sp_r)+cell
+  when :c then " "*sp_l+cell+" "*sp_r
+  else cell
+  end
+end
+
+def mksep(alignments, widths)
+  seps = (0...alignments.size).map do |i|
+    case alignments[i]
+    when :l then ':'+'-'*(widths[i]-1)
+    when :r then '-'*(widths[i]-1)+':'
+    when :c then ':'+'-'*(widths[i]-2)+':'
+    else ':'+'-'*(widths[i]-1)
+    end
+  end
+  '|' + seps.join('|') + '|'
+end
+
+def at_table src
+  lines = src.each_line.to_a
+  lines.delete_at(0); lines.delete_at(-1)
+  return lines.join unless lines[1] =~ /^\|(:?-+:?\|)+$/ && lines.map{|line| line.count('|')}.uniq.size == 1
+  alignments = get_alignments(lines[1])
+  a_widths = alignments.map{|alignment| alignment == :c ? 3 : 2}
+  lines.delete_at(1)
+  array_of_cells = lines.map{|line| line.sub(/^\|/,'').sub(/\|$/,'').split('|').map{|cell| cell.lstrip.rstrip}}
+  widths = array_of_cells.inject(a_widths){|cells1, cells2| (0...cells1.size).map{|i| [cells1[i],cells2[i].length].max}}
+  lines = array_of_cells.map do |cells|
+   '|' + (0...cells.size).map{|i| mkcell(cells[i], alignments[i], widths[i])}.join('|') + '|'
+  end
+  separator = mksep(alignments, widths)
+  lines.insert(1,separator)
+  lines.map{|line| line+"\n"}.join
+end
+
 def width n
   return nil if n < 0
   log10(n.to_f).to_i+1
 end
 
 # @@@include -(N|n|) - @@@
-def do_include str, src_dir, type
+def at_include str, src_dir, type
   buf = str.each_line.to_a
   opt = buf[0].match(/^@@@include\s*(-(N|n))?\s*$/).to_a[1]
   buf.delete_at(0); buf.delete_at(-1)
@@ -205,7 +261,7 @@ def do_include str, src_dir, type
 end
 
 # @@@shell - @@@
-def do_shell str, src_dir
+def at_shell str, src_dir
   buf = str.each_line.to_a
   buf.delete_at(0); buf.delete_at(-1)
   obuf = ["~~~\n"]
@@ -256,9 +312,9 @@ def change_link src, old_dir, type, new_dir=nil
       if target =~ /\.src\.md$/
         case type
         when "gfm"
-          "#{name}(#{File.basename(target,'.src.md')}.md)"
+          "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.md')})"
         when "html"
-          "#{name}(#{File.basename(target,'.src.md')}.html)"
+          "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.html')})"
         when "latex"
           name.match(/!?\[(.*?)\]/)[1]
         end

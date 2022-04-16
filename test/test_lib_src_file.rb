@@ -4,7 +4,7 @@ require 'fileutils'
 require_relative "../lib/lib_src_file.rb"
 
 module Prepare_test
-  def files
+  def files_srcfile
     src_text = <<~'EOS'
     This is a source file.
     EOS
@@ -75,7 +75,7 @@ class Test_lib_src_file < Minitest::Test
     # Create sample file
     @temp = get_temp_name()
     Dir.mkdir @temp unless Dir.exist? @temp
-    files().each do |f|
+    files_srcfile().each do |f|
       File.write "#{@temp}/#{f[0]}", f[1]
     end
   end
@@ -85,39 +85,42 @@ class Test_lib_src_file < Minitest::Test
   def test_src_file
     src = Src_file.new "#{@temp}/srcfile.src.md"
     test_items = [
-      ["path", "\"#{@temp}/srcfile.src.md\""],
-      ["basename", "\"srcfile.src.md\""],
-      ["dirname", "\"#{@temp}\""],
-      ["to_md", "\"srcfile.md\""],
-      ["to_html", "\"srcfile.html\""],
-      ["to_tex", "\"srcfile.tex\""],
+      ["path", "#{@temp}/srcfile.src.md"],
+      ["basename", "srcfile.src.md"],
+      ["dirname", "#{@temp}"],
+      ["to_md", "srcfile.md"],
+      ["to_html", "srcfile.html"],
+      ["to_tex", "srcfile.tex"],
     ]
     test_items.each do |item|
-      assert item[1], eval("src.#{item[0]}")
+      assert_equal item[1], src.public_send(item[0].to_sym)
     end
   end
   def test_sec_file
-    src = Src_file.new "#{@temp}/srcfile.src.md"
     src_sec05 = Sec_file.new "#{@temp}/sec0.5.src.md"
     src_sec1 = Sec_file.new "#{@temp}/sec1.src.md"
     src_sec2 = Sec_file.new "#{@temp}/sec2.src.md"
     test_items = [
-      ["path", "\"#{@temp}/sec1.src.md\""],
-      ["basename", "\"sec1.src.md\""],
-      ["dirname", "\"#{@temp}\""],
-      ["c_files", "[ \"#{@temp}/sample.c\" ]"],
-      ["to_md", "\"sec1.md\""],
-      ["to_html", "\"sec1.html\""],
-      ["to_tex", "\"sec1.tex\""],
-      ["num", "\"1\""],
-      ["to_f", "1.0"],
-      ["<=> src_sec05", "1"],
-      ["<=> src_sec1", "0"],
-      ["<=> src_sec2", "-1"],
-      ["is_i?", "true"]
+      ["path", "#{@temp}/sec1.src.md"],
+      ["basename", "sec1.src.md"],
+      ["dirname", "#{@temp}"],
+      ["c_files", [ "#{@temp}/sample.c" ]],
+      ["to_md", "sec1.md"],
+      ["to_html", "sec1.html"],
+      ["to_tex", "sec1.tex"],
+      ["num", "1"],
+      ["to_f", 1.0],
+      ["<=>", src_sec05, 1],
+      ["<=>", src_sec1, 0],
+      ["<=>", src_sec2, -1],
+      ["is_i?", true]
     ]
     test_items.each do |item|
-      assert item[1], eval("src_sec1.#{item[0]}")
+      if item.size == 2
+        assert_equal item[1], src_sec1.public_send(item[0].to_sym)
+      else
+        assert_equal item[2], src_sec1.public_send(item[0].to_sym, item[1])
+      end
     end
     refute src_sec05.is_i?
   end
@@ -126,7 +129,7 @@ class Test_lib_src_file < Minitest::Test
     unless Dir.exist? temp_renum
       Dir.mkdir temp_renum
     end
-    files.each do |f|
+    files_srcfile().each do |f|
       File.write "#{temp_renum}/#{f[0]}", f[1]
     end
     src_sec05 = Sec_file.new "#{temp_renum}/sec0.5.src.md"

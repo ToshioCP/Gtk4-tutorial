@@ -4,8 +4,10 @@ require 'fileutils'
 require 'diff/lcs'
 require_relative '../lib/lib_src2md.rb'
 
+include Math
+
 module Prepare_test
-  def files
+  def files_src2md
     # Many kinds of file types are supported.
     # .c => C, .h => C, .rb => ruby, Rakefile, => ruby, .xml => xml, .ui => xml, .y => bison, .lex => lex, .build => meson, .md => markdown, Makefile => makefile
 
@@ -72,6 +74,10 @@ module Prepare_test
     # Sample.src.md
 
     This .src.md file is made for the test for lib_src2md.rb.
+
+    No conversion happens.
+        @@@include
+        @@@
 
     Sample.c with line number is:
 
@@ -156,6 +162,10 @@ module Prepare_test
     # Sample.src.md
 
     This .src.md file is made for the test for lib_src2md.rb.
+
+    No conversion happens.
+        @@@include
+        @@@
 
     Sample.c with line number is:
 
@@ -252,6 +262,10 @@ module Prepare_test
 
     This .src.md file is made for the test for lib_src2md.rb.
 
+    No conversion happens.
+        @@@include
+        @@@
+
     Sample.c with line number is:
 
     ~~~{.C .numberLines}
@@ -346,6 +360,10 @@ module Prepare_test
     # Sample.src.md
 
     This .src.md file is made for the test for lib_src2md.rb.
+
+    No conversion happens.
+        @@@include
+        @@@
 
     Sample.c with line number is:
 
@@ -465,6 +483,120 @@ class Test_lib_src_file < Minitest::Test
   include FileUtils
   include Prepare_test
 
+  def setup
+    table_1_src = <<~EOS
+    @@@table
+    |angle|sine|cosine|tangent|
+    |-:|:-|:-|:-|
+    |0|#{sin 0}|#{cos 0}|#{tan 0}|
+    |1|#{sin 1*PI/180}|#{cos 1*PI/180}|#{tan 1*PI/180}|
+    |2|#{sin 2*PI/180}|#{cos 2*PI/180}|#{tan 2*PI/180}|
+    |3|#{sin 3*PI/180}|#{cos 3*PI/180}|#{tan 3*PI/180}|
+    |4|#{sin 4*PI/180}|#{cos 4*PI/180}|#{tan 4*PI/180}|
+    |5|#{sin 5*PI/180}|#{cos 5*PI/180}|#{tan 5*PI/180}|
+    |6|#{sin 6*PI/180}|#{cos 6*PI/180}|#{tan 6*PI/180}|
+    |7|#{sin 7*PI/180}|#{cos 7*PI/180}|#{tan 7*PI/180}|
+    |8|#{sin 8*PI/180}|#{cos 8*PI/180}|#{tan 8*PI/180}|
+    |9|#{sin 9*PI/180}|#{cos 9*PI/180}|#{tan 9*PI/180}|
+    |10|#{sin 10*PI/180}|#{cos 10*PI/180}|#{tan 10*PI/180}|
+    @@@
+    EOS
+    table_1_dst = <<~EOS
+    |angle|sine               |cosine            |tangent             |
+    |----:|:------------------|:-----------------|:-------------------|
+    |    0|0.0                |1.0               |0.0                 |
+    |    1|0.01745240643728351|0.9998476951563913|0.017455064928217585|
+    |    2|0.03489949670250097|0.9993908270190958|0.03492076949174773 |
+    |    3|0.05233595624294383|0.9986295347545738|0.052407779283041196|
+    |    4|0.0697564737441253 |0.9975640502598242|0.06992681194351041 |
+    |    5|0.08715574274765817|0.9961946980917455|0.08748866352592401 |
+    |    6|0.10452846326765346|0.9945218953682733|0.10510423526567646 |
+    |    7|0.12186934340514748|0.992546151641322 |0.1227845609029046  |
+    |    8|0.13917310096006544|0.9902680687415704|0.14054083470239145 |
+    |    9|0.15643446504023087|0.9876883405951378|0.15838444032453627 |
+    |   10|0.17364817766693033|0.984807753012208 |0.17632698070846498 |
+    EOS
+
+    table_2_src = <<~'EOS'
+    @@@table
+    | |token kind | yylval.ID | yylval.NUM |
+    |:-:|:-|-:|:-:|
+    |1|ID|distance| |
+    |2|=|||
+    |3|NUM||100|
+    |4|FD|||
+    |5|ID|distance||
+    |6|*|||
+    |7|NUM||2|
+    @@@
+    EOS
+    table_2_dst = <<~'EOS'
+    |   |token kind|yylval.ID|yylval.NUM|
+    |:-:|:---------|--------:|:--------:|
+    | 1 |ID        | distance|          |
+    | 2 |=         |         |          |
+    | 3 |NUM       |         |   100    |
+    | 4 |FD        |         |          |
+    | 5 |ID        | distance|          |
+    | 6 |*         |         |          |
+    | 7 |NUM       |         |    2     |
+    EOS
+    @tables = [[table_1_src, table_1_dst], [table_2_src, table_2_dst]]
+
+    # No @@@table or @@@
+    no_table_1 = <<~EOS
+    |angle|sine|cosine|tangent|
+    |-:|:-|:-|:-|
+    |0|#{sin 0}|#{cos 0}|#{tan 0}|
+    |1|#{sin 1*PI/180}|#{cos 1*PI/180}|#{tan 1*PI/180}|
+    |2|#{sin 2*PI/180}|#{cos 2*PI/180}|#{tan 2*PI/180}|
+    |3|#{sin 3*PI/180}|#{cos 3*PI/180}|#{tan 3*PI/180}|
+    |4|#{sin 4*PI/180}|#{cos 4*PI/180}|#{tan 4*PI/180}|
+    |5|#{sin 5*PI/180}|#{cos 5*PI/180}|#{tan 5*PI/180}|
+    |6|#{sin 6*PI/180}|#{cos 6*PI/180}|#{tan 6*PI/180}|
+    |7|#{sin 7*PI/180}|#{cos 7*PI/180}|#{tan 7*PI/180}|
+    |8|#{sin 8*PI/180}|#{cos 8*PI/180}|#{tan 8*PI/180}|
+    |9|#{sin 9*PI/180}|#{cos 9*PI/180}|#{tan 9*PI/180}|
+    |10|#{sin 10*PI/180}|#{cos 10*PI/180}|#{tan 10*PI/180}|
+    EOS
+    # Numbers of the columns are not the same
+    no_table_2 = <<~EOS
+    @@@table
+    |angle|sine|cosine|tangent|
+    |-:|:-|:-|:-|
+    |0|#{sin 0}|#{cos 0}|#{tan 0}|
+    |1|#{sin 1*PI/180}|#{cos 1*PI/180}|#{tan 1*PI/180}|
+    |2|#{sin 2*PI/180}|#{cos 2*PI/180}|#{tan 2*PI/180}|
+    |3|#{sin 3*PI/180}|#{cos 3*PI/180}|#{tan 3*PI/180}|
+    |4|#{sin 4*PI/180}|#{cos 4*PI/180}|
+    |5|#{sin 5*PI/180}|#{cos 5*PI/180}|#{tan 5*PI/180}|
+    |6|#{sin 6*PI/180}|#{cos 6*PI/180}|#{tan 6*PI/180}|
+    |7|#{sin 7*PI/180}|#{cos 7*PI/180}|#{tan 7*PI/180}|
+    |8|#{sin 8*PI/180}|#{cos 8*PI/180}|#{tan 8*PI/180}|
+    |9|#{sin 9*PI/180}|#{cos 9*PI/180}|#{tan 9*PI/180}|
+    |10|#{sin 10*PI/180}|#{cos 10*PI/180}|#{tan 10*PI/180}|
+    @@@
+    EOS
+    # Horizontal separator syntax error
+    no_table_3 = <<~EOS
+    @@@table
+    |angle|sine|cosine|tangent|
+    |::|:-|:-|:-|
+    |0|#{sin 0}|#{cos 0}|#{tan 0}|
+    |1|#{sin 1*PI/180}|#{cos 1*PI/180}|#{tan 1*PI/180}|
+    |2|#{sin 2*PI/180}|#{cos 2*PI/180}|#{tan 2*PI/180}|
+    |3|#{sin 3*PI/180}|#{cos 3*PI/180}|#{tan 3*PI/180}|
+    |4|#{sin 4*PI/180}|#{cos 4*PI/180}|#{tan 4*PI/180}|
+    |5|#{sin 5*PI/180}|#{cos 5*PI/180}|#{tan 5*PI/180}|
+    |6|#{sin 6*PI/180}|#{cos 6*PI/180}|#{tan 6*PI/180}|
+    |7|#{sin 7*PI/180}|#{cos 7*PI/180}|#{tan 7*PI/180}|
+    |8|#{sin 8*PI/180}|#{cos 8*PI/180}|#{tan 8*PI/180}|
+    |9|#{sin 9*PI/180}|#{cos 9*PI/180}|#{tan 9*PI/180}|
+    |10|#{sin 10*PI/180}|#{cos 10*PI/180}|#{tan 10*PI/180}|
+    @@@
+    EOS
+    @no_tables = [no_table_1, no_table_2, no_table_3]
+  end
   def test_string_partitions
     sample = <<~'EOS'
     For further information, See [Section 1](sec1.src.md).
@@ -484,14 +616,31 @@ class Test_lib_src_file < Minitest::Test
     actual = sample.partitions(/!?\[.*?\]\(.*?\)(\{.*?\})?/)
     assert_equal expected, actual
   end
+  def test_get_alignments
+    assert_equal [:c, :l, :r, :l], get_alignments("|:-:|:---|---:|-|\n")
+  end
+  def test_mkcell
+    assert_equal "book     ", mkcell("book", :l, 9)
+    assert_equal "  author", mkcell("author", :r, 8)
+    assert_equal " 3600 ", mkcell("3600", :c, 6)
+    assert_equal " 3600  ", mkcell("3600", :c, 7)
+  end
+  def test_mksep
+    assert_equal "|:--|:------:|--------:|:----:|", mksep([:l, :c, :r, :c], [3, 8, 9, 6])
+  end
+  def test_at_table
+    @tables.each do |src, dst|
+      assert_equal dst, at_table(src)
+    end
+  end
   def test_lang
-    files()[:files].each do |f|
+    files_src2md()[:files].each do |f|
       assert_equal f[2], lang(f[1], "gfm") if f[2]
       assert_equal f[2], lang(f[1], "html") if f[2] && f[2]=~/C|ruby|xml|markdown|bison|lex|makefile/
       assert_equal f[2], lang(f[1], "latex") if f[2] && f[2]=~/C|ruby|xml|makefile/
       assert_equal "", lang(f[1], "gfm") if f[2] == nil
-      assert_equal "", lang(f[1], "html") if f[2] == nil || !f[2]=~/C|ruby|xml|markdown|bison|lex|makefile/
-      assert_equal "", lang(f[1], "latex") if f[2] == nil || !f[2]=~/C|ruby|xml|makefile/
+      assert_equal "", lang(f[1], "html") if f[2] == nil || !(f[2]=~/C|ruby|xml|markdown|bison|lex|makefile/)
+      assert_equal "", lang(f[1], "latex") if f[2] == nil || !(f[2]=~/C|ruby|xml|makefile/)
     end
   end
   def test_width
@@ -516,8 +665,8 @@ class Test_lib_src_file < Minitest::Test
     assert_equal "head\nlatex\ntail\n", at_if_else(str, "latex")
     assert_equal "head\nothers\ntail\n", at_if_else(str, "others")
   end
-  def test_do_include
-    temp = "temp_do_include"+Time.now.to_f.to_s.gsub(/\./,'')
+  def test_at_include
+    temp = "temp_at_include"+Time.now.to_f.to_s.gsub(/\./,'')
     Dir.mkdir(temp) unless Dir.exist?(temp)
     File.write("#{temp}/temp.c", <<~'EOS')
       #include <stdio.h>
@@ -621,12 +770,12 @@ class Test_lib_src_file < Minitest::Test
       4 }
       ~~~
     EOS
-    actual_c_gfm = do_include("@@@include -n\ntemp.c\n@@@\n", temp, "gfm")
-    actual_c_pandoc = do_include("@@@include\ntemp.c\n@@@\n", temp, "html")
-    actual_ruby_gfm = do_include("@@@include -N\ntemp.rb\n@@@\n", temp, "gfm")
-    actual_ruby_pandoc = do_include("@@@include -N\ntemp.rb\n@@@\n", temp, "latex")
-    actual_c_ruby_gfm = do_include("@@@include -n\ntemp.c\ntemp.rb\n@@@\n", temp, "gfm")
-    actual_c_main_gfm = do_include("@@@include -n\ntemp.c main\n@@@\n", temp, "gfm")
+    actual_c_gfm = at_include("@@@include -n\ntemp.c\n@@@\n", temp, "gfm")
+    actual_c_pandoc = at_include("@@@include\ntemp.c\n@@@\n", temp, "html")
+    actual_ruby_gfm = at_include("@@@include -N\ntemp.rb\n@@@\n", temp, "gfm")
+    actual_ruby_pandoc = at_include("@@@include -N\ntemp.rb\n@@@\n", temp, "latex")
+    actual_c_ruby_gfm = at_include("@@@include -n\ntemp.c\ntemp.rb\n@@@\n", temp, "gfm")
+    actual_c_main_gfm = at_include("@@@include -n\ntemp.c main\n@@@\n", temp, "gfm")
     remove_entry_secure(temp)
     # If you want to see the difference
     # p Diff::LCS.diff(expected_c_gfm.each_line.to_a, actual_c_gfm.each_line.to_a)
@@ -638,8 +787,8 @@ class Test_lib_src_file < Minitest::Test
     assert_equal expected_c_gfm+expected_ruby_n_gfm, actual_c_ruby_gfm
     assert_equal expected_c_main_gfm, actual_c_main_gfm
   end
-  def test_do_shell
-    actual = do_shell("@@@shell\necho abc\n@@@\n", ".")
+  def test_at_shell
+    actual = at_shell("@@@shell\necho abc\n@@@\n", ".")
     expected = "~~~\n$ echo abc\nabc\n~~~\n"
     assert_equal expected, actual
   end
@@ -702,7 +851,7 @@ class Test_lib_src_file < Minitest::Test
   def test_src2md
     temp = "temp"
     Dir.mkdir(temp) unless Dir.exist?(temp)
-    files()[:files].each do |f|
+    files_src2md()[:files].each do |f|
       File.write "#{temp}/#{f[1]}", f[0]
     end
     dst_dirs = ["gfm", "html", "latex"]
@@ -716,7 +865,7 @@ class Test_lib_src_file < Minitest::Test
     remove_entry_secure(temp)
 
     # If you want to see the difference
-    # Diff::LCS.diff(files()[:sample_md_gfm].each_line.to_a, dst_md["gfm"].each_line.to_a).each do |array|
+    # Diff::LCS.diff(files_src2md()[:sample_md_gfm].each_line.to_a, dst_md["gfm"].each_line.to_a).each do |array|
     #   array.each do |change|
     #     print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
     #   end
@@ -726,9 +875,9 @@ class Test_lib_src_file < Minitest::Test
     #     print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
     #   end
     # end
-    assert_equal files()[:sample_md_gfm], dst_md["gfm"]
-    assert_equal files()[:sample_md_html], dst_md["html"]
-    assert_equal files()[:sample_md_latex], dst_md["latex"]
+    assert_equal files_src2md()[:sample_md_gfm], dst_md["gfm"]
+    assert_equal files_src2md()[:sample_md_html], dst_md["html"]
+    assert_equal files_src2md()[:sample_md_latex], dst_md["latex"]
   end
 
 end

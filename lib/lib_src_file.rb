@@ -36,7 +36,7 @@ class Src_file <String
     @name+".tex"
   end
   def c_files
-    File.read(self).scan(/@@@include\n.*?@@@\n/m).map{|s| s.each_line.to_a}.flatten\
+    File.read(self).scan(/^@@@include\n.*?@@@\n/m).map{|s| s.each_line.to_a}.flatten\
                    .reject{|line| line =~ /@@@include\n|@@@\n/}\
                    .map{|line| @dirname+"/"+(line.match(/\S*/)[0])}
   end
@@ -86,10 +86,10 @@ class Sec_files < Array
                       file.match(/(\d+(\.\d+)?)\.src\.md$/)[1], (i+1).to_s]
     end
     rename_rule.each do |rule|
-      File.rename rule[1], rule[2]
+      File.rename rule[1], rule[2] if rule[1] != rule[3]
     end
     rename_rule.each do |rule|
-      File.rename rule[2], rule[3]
+      File.rename rule[2], rule[3] if rule[1] != rule[3]
       rule[0].replace rule[3]
     end
     self.each do |file|
