@@ -113,7 +113,7 @@ task pdf: %w[latex/main.tex] do
   sh "mv latex/main.pdf latex/gtk4_tutorial.pdf"
 end
 
-file "latex/main.tex" => [abstract_tex] + sectexfiles + othertexfiles do
+file "latex/main.tex" => [abstract_tex] + texfiles do
   gen_main_tex "latex", abstract.to_tex, sectexfiles, othertexfiles
 end
 
@@ -124,7 +124,7 @@ file abstract_tex => abstract do
   File.delete(abstract_md)
 end
 
-(0...srcfiles.size).each do |i|
+(0...texfiles.size).each do |i|
   file texfiles[i] => [srcfiles[i]] + srcfiles[i].c_files do
     tex_md = "latex/#{srcfiles[i].to_md}"
     src2md srcfiles[i], tex_md, "latex"

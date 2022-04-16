@@ -329,7 +329,7 @@ def change_link src, old_dir, type, new_dir=nil
         when "html"
           "#{name}(#{target})"
         when "latex"
-          chunk
+          "#{name}(#{target})#{size}"
         end
       else
         p_target = Pathname.new "#{old_dir}/#{target}"

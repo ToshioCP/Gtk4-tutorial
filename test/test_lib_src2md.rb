@@ -878,6 +878,22 @@ class Test_lib_src_file < Minitest::Test
     assert_equal files_src2md()[:sample_md_gfm], dst_md["gfm"]
     assert_equal files_src2md()[:sample_md_html], dst_md["html"]
     assert_equal files_src2md()[:sample_md_latex], dst_md["latex"]
+
+    temp = "temp"+Time.now.to_f.to_s.gsub(/\./,'')
+    src_dir = "#{temp}/src"
+    dst_dir = "#{temp}/dst"
+    Dir.mkdir(temp) unless Dir.exist?(temp)
+    Dir.mkdir(src_dir) unless Dir.exist?(src_dir)
+    Dir.mkdir(dst_dir) unless Dir.exist?(dst_dir)
+    File.write("#{src_dir}/sample.src.md", "![image](image/image.png){width=8cm hight=6cm}\n")
+    ["gfm", "html", "latex"].each do |d|
+      src2md "#{src_dir}/sample.src.md", "#{dst_dir}/sample.md", d
+      dst_md[d] = File.read "#{dst_dir}/sample.md"
+    end
+    remove_entry_secure(temp)
+    assert_equal "![image](../src/image/image.png)\n", dst_md["gfm"]
+    assert_equal "![image](../src/image/image.png)\n", dst_md["html"]
+    assert_equal "![image](../src/image/image.png){width=8cm hight=6cm}\n", dst_md["latex"]
   end
 
 end
