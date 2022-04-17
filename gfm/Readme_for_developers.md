@@ -47,7 +47,7 @@ Src.md file has ".src.md" suffix.
 The syntax of .src.md file is similar to markdown but it has a special command which isn't included in markdown syntax.
 It is @@@ command.
 The command starts with a line that begins with "@@@" and it ends with a line "@@@".
-For example, 
+For example,
 
     @@@include
     tfeapplication.c
@@ -239,30 +239,16 @@ They are `gfm`, `html` or `latex` so far.
 
 Other type of conditions may be available in the future version.
 
-## Conversion
-
-The @@@ commands above (@@@include, @@@shell and @@@if series) are carried out by `src2md.rb`.
-In addition, some other conversions are made by `src2md.rb`.
-
-- Relative links are changed according to the change of the base directory.
-- Size option in image link is removed when the destination is GFM or html.
-- Relative link is removed when the destination is latex.
-
-There's a method `src2md` in the `lib/lib_src2md.rb`.
-This method converts src.md file into md file.
-The script `src2md.rb` just invokes this method.
-In the same way, the method is called in the action in `Rakefile`.
-
 The code analyzing @@@if series command is rather complicated.
 It is based on the state diagram below.
 
 ![state diagram](../image/state_diagram.png)
 
-## mktbl.rb script
+### @@@table
 
-The fourth @@@ command begins with "@@@table".
+This type of @@@ command starts with a line begins with "@@@table".
 The contents of this command is a table of GFM or pandoc's markdown.
-The script `mktbl.rb` in `src` directory makes a table easy to read.
+The command makes a table easy to read.
 For example, a text file `sample.md` has a table like this:
 
     Price list
@@ -274,14 +260,7 @@ For example, a text file `sample.md` has a table like this:
     |PC|$500|
     @@@
 
-Run the script.
-
-~~~
-$ cd src
-$ ruby mktbl.rb sample.md
-~~~
-
-Then, the file is changed to:
+The command changes this into:
 
 ~~~
 Price list
@@ -292,17 +271,50 @@ Price list
 | PC  |$500 |
 ~~~
 
-The script makes a backup file `sample.md.bak`.
+This command just changes the appearance of the table.
+There's no influence on html/latex files that is converted from the markdown.
+
+A script `mktbl.rb` supports this command.
+If you run the script like this:
+
+~~~
+$ ruby mktbl.rb sample.md
+~~~
+
+Then, the appearance of the table will be changed
+The script also makes a backup file `sample.md.bak`.
 
 The task of the script seems easy, but the program is not so simple.
-The script `mktbl.rb` uses a library `lib/lib_mktbl.rb`
-This script is independent from `src2md.rb`.
+The script `mktbl.rb` uses a library `lib/lib_src2md.rb`
 
 @@@commands are effective in the whole text.
 This means you can't stop the @@@commands.
 But sometimes you want to show the commands literally like this document.
 One solution is to add four blanks at the top of the line.
 Then @@@commands are not effective because @@@commands must be at the top of the line.
+
+## Conversion
+
+The @@@ commands above (@@@include, @@@shell, @@@if series and @@@table) are carried out by a method `src2md`,
+which is in the file `lib/lib_src2md.rb`.
+This method converts `src.md` file into `md` file.
+In addition, some other conversions are made by `src2md` method.
+
+- Relative links are changed according to the change of the base directory.
+- Size option in image link is removed when the destination is GFM or html.
+- Relative link is removed when the destination is latex.
+
+The order of the conversions are:
+
+1. @@@if
+2. @@@table
+3. @@@include
+4. @@@shell
+5. others
+
+There is `src2md.rb` file in the top directory of this repository.
+It just invokes the method `src2md`.
+In the same way, the method is called in the action in `Rakefile`.
 
 ## Directory structure
 
@@ -318,7 +330,7 @@ It is possible that these three directories don't exist before the conversion.
 - latex: This directory is empty at first. `rake latex` will convert src.md files to latex files and store them in this directory.
 `rake pdf` creates pdf file in `latex` directory.
 - lib: This directory includes ruby library files.
- 
+
 ## Src directory and the top directory
 
 Src directory contains .src.md files and C-related source files.
@@ -358,7 +370,7 @@ You can make a temporary section 4.5, that is a rational number between 4 and 5.
 However, section numbers are usually integer so section 4.5 must be changed to section 5.
 And the numbers of the following sections must be increased by one.
 
-This renumbering is done by a method `renum` of the class `Sec_files`.
+This renumbering is done by a method `renum!` of the class `Sec_files`.
 The method and class is written in `lib/lib_sec_file.rb`.
 
 - It changes file names.
@@ -372,8 +384,7 @@ Rakefile in this tutorial has the following tasks.
 - md: generate GFM markdown files. This is the default.
 - html: generate html files.
 - pdf: generate latex files and a pdf file, which is compiled by lualatex.
-- latex: generate latex files.
-- all: generate md, html, latex and pdf files.
+- all: generate md, html and pdf files.
 
 Rake does renumbering before the tasks above.
 
@@ -450,18 +461,18 @@ You can customize the style by modifying `lib/lib_add_head_tail_html.rb`.
 `html` directory contains all the necessary html files.
 So if you want to upload the html files to your own web site, just upload the files in the `html` directory.
 
-## Generate latex files and a pdf file
+## Generate a pdf file
 
-You need pandoc to convert .src.md files to latex source files.
+You need pandoc to convert markdown files into latex source files.
 
-Type `rake latex` to generate latex files.
+Type `rake pdf` to generate latex files and finally make a pdf file.
 
-    $ rake latex
+    $ rake pdf
 
 First, it generates pandoc's markdown files under `latex` directory.
-Then, pandoc converts them to latex files.
+Then, pandoc converts them into latex files.
 Links to files or directories are removed because latex doesn't support them.
-However, links to full URL are kept.
+However, links to full URL and image files are kept.
 Image size is set with the size between the left brace and right brace.
 
     ![sample image](../image/sample_image.png)
@@ -470,24 +481,18 @@ You need to specify appropriate width and height.
 It is almost `0.015 x pixels` cm.
 For example, if the width of an image is 400 pixels, the width in a latex file will be almost 6cm.
 
-`main.tex` is the top latex file.
-It is a root file and it includes each section file between `\begin{document}` and `\end{document}`.
-It also includes `helper.tex` in its preamble.
-`main.tex` and `helper.tex` is created by `lib/lib_gen_main_tex.rb`.
-It has a sample markdown code and convert it witn pandoc and `-s` option.
-Pandoc generates preamble.
-`lib/lib_gen_main_tx.rb` extracts the preamble and put a part of it into `helper.tex`.
+A file `main.tex` is the root file of all the generated latex files.
+It has `\input` commands, which inserts each section file, between `\begin{document}` and `\end{document}`.
+It also has `\input`, which inserts `helper.tex`, in the preamble.
+Two files `main.tex` and `helper.tex` are created by `lib/lib_gen_main_tex.rb`.
+It has a sample markdown code and converts it witn `pandoc -s`.
+Then, it extracts the preamble in the generated file and puts it into `helper.tex`.
 You can customize `helper.tex` by modifying `lib/lib_gen_main_tex.rb`.
 
-You can generate pdf file by typing `rake pdf`.
-
-    $ rake pdf
-
-This does `rake latex` and compiles the latex files with lualatex.
+Finally, lualatex compiles the `main.tex` into a pdf file.
 
 If you want to clean `latex` directory, type `rake cleanlatex`
 
     $ rake cleanlatex
 
 This removes all the latex source files and a pdf file.
-
