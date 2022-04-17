@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Gtk4 tutorial for beginners</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    body {width: 1080px; margin: 0 auto; font-size: large;}
+    h2 {padding: 10px; background-color: #d0f0d0; }
+    div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
+    th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
+    td {padding: 2px 6px; border: 1px solid;}
+    img {display: block; margin-left: auto; margin-right: auto;}
+    figcaption {text-align: center;}
+  </style>
+</head>
+<body>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec7.html">Section 7</a>, Next: <a href="sec9.html">Section 9</a></p>
+<h1 id="defining-a-child-object">Defining a Child object</h1>
+<h2 id="a-very-simple-editor">A Very Simple Editor</h2>
+<p>In the previous section we made a very simple file viewer. Now we go on to rewrite it and turn it into very simple editor. Its source file is in tfe1.c (text file editor 1).</p>
+<p>GtkTextView has a feature for editing multiple lines. Therefore, we don’t need to write the program from scratch, we just add two things to the file viewer:</p>
+<ul>
+<li>Memory to store a pointer to the GFile instance.</li>
+<li>A function to write the file.</li>
+</ul>
+<p>There are a couple of ways to store the details of GFile.</p>
+<ul>
+<li>Use global variables; or</li>
+<li>Make a child object, which can extend the instance memory for the GFile object.</li>
+</ul>
+<p>Using global variables is easy to implement. Define a sufficient size array of pointers to GFile. For example,</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>GFile *f[<span class="dv">20</span>];</span></code></pre></div>
+<p>The variable <code>f[i]</code> corresponds to the file associated to the i-th GtkNotebookPage. There are however two problems with this. The first concerns the size of the array. If a user gives too many arguments (more than 20 in the example above), it is impossible to store the additional pointers to the GFile instances. The second is the increasing difficulty for maintenance of the program. We have a small program so far, but however, if you continue developing it, the size of the program will grow. Generally speaking, the bigger the program size, the more difficult it is to keep track of and maintain global variables. Global variables can be used and changed anywhere throughout the entire program.</p>
+<p>Making a child object is a good idea in terms of maintenance. One thing you need to be careful of is the difference between “child object” and “child widget”. Here we are describing a “child object”. A child object includes, and expands on its parent object, as a child object derives everything from the parent object.</p>
+<figure>
+<img src="../image/child.png" alt="" /><figcaption>Child object of GtkTextView</figcaption>
+</figure>
+<p>We will define TfeTextView as a child object of GtkTextView. It has everything that GtkTextView has. Specifically, TfeTextView has a GtkTextbuffer which corresponds to the GtkTextView inside TfeTextView. The additional important thing is that TfeTextView can also keep an additional pointer to GFile.</p>
+<p>In general, this is how GObjects work. Understanding the general theory about Gobject’s is difficult, particularly for beginners. So, I will just show you the way how to write the code and avoid the theoretical side. If you want to know about GObject system, refer to the separate tutorial](https://github.com/ToshioCP/Gobject-tutorial).</p>
+<h2 id="how-to-define-a-child-object-of-gtktextview">How to Define a Child Object of GtkTextView</h2>
+<p>Let’s define the TfeTextView object, which is a child object of GtkTextView. First, look at the program below.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="kw">struct</span> _TfeTextView</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>{</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  GtkTextView parent;</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>  GFile *file;</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>};</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>tfe_text_view_init (TfeTextView *tv) {</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>}</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>tfe_text_view_class_init (TfeTextViewClass *class) {</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>}</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a><span class="dt">void</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>tfe_text_view_set_file (TfeTextView *tv, GFile *f) {</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>  tv -&gt; file = f;</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>}</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>GFile *</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a>tfe_text_view_get_file (TfeTextView *tv) {</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>  <span class="cf">return</span> tv -&gt; file;</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a>}</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>GtkWidget *</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a>tfe_text_view_new (<span class="dt">void</span>) {</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>  <span class="cf">return</span> GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>}</span></code></pre></div>
+<p>If you are curious about the background theory of this program, that’s good, because knowing the theory is very important if you want to program GTK applications. Look at <a href="https://docs.gtk.org/gobject/">GObject API Reference</a>. All you need is described there, or refer to <a href="https://github.com/ToshioCP/Gobject-tutorial">GObject tutorial</a>. It’s a tough journey especially for beginners so for now, you don’t need to know about this difficult theory. It is enough to just remember the instructions below.</p>
+<ul>
+<li>TfeTextView is divided into two parts. Tfe and TextView. Tfe is called the prefix, namespace or module. TextView is called the object.</li>
+<li>There are three differnet identifier patterns. TfeTextView (camel case), tfe_text_view (this is used to write functions) and TFE_TEXT_VIEW (This is used to cast a pointer to point TfeTextView type).</li>
+<li>First, define TFE_TYPE_TEXT_VIEW macro as tfe_text_view_get_type (). The name is always (prefix)_TYPE_(object) and the letters are upper case. And the replacement text is always (prefix)_(object)_get_type () and the letters are lower case.</li>
+<li>Next, use G_DECLARE_FINAL_TYPE macro. The arguments are the child object name in camel case, lower case with underscore, prefix (upper case), object (upper case with underscore) and parent object name (camel case).</li>
+<li>Declare the structure _TfeTextView. The underscore is necessary. The first member is the parent object. Notice this is not a pointer but the object itself. The second member and after are members of the child object. TfeTextView structure has a pointer to a GFile instance as a member.</li>
+<li>Use G_DEFINE_TYPE macro. The arguments are the child object name in camel case, lower case with underscore and parent object type (prefix)_TYPE_(module).</li>
+<li>Define instance init function (tfe_text_view_init). Usually you don’t need to do anything.</li>
+<li>Define class init function (tfe_text_view_class_init). You don’t need to do anything in this object.</li>
+<li>Write function codes you want to add (tfe_text_view_set_file and tfe_text_view_get_file). <code>tv</code> is a pointer to the TfeTextView object instance which is a C-structure declared with the tag _TfeTextView. So, the structure has a member <code>file</code> as a pointer to a GFile instance. <code>tv-&gt;file = f</code> is an assignment of <code>f</code> to a member <code>file</code> of the structure pointed by <code>tv</code>. This is an example how to use the extended memory in a child widget.</li>
+<li>Write a function to create an instance. Its name is (prefix)_(object)_new. If the parent object function needs parameters, this function also need them. You sometimes might want to add some parameters. It’s your choice. Use g_object_new function to create the instance. The arguments are (prefix)_TYPE_(object), a list to initialize properties and NULL. In this code no property needs to be initialized. And the return value is casted to GtkWidget.</li>
+</ul>
+<p>This program is not perfect. It has some problems. It will be modified later.</p>
+<h2 id="close-request-signal">Close-request signal</h2>
+<p>Imagine that you are using this editor. First, you run the editor with arguments. The arguments are filenames. The editor reads the files and shows the window with the text of files in it. Then you edit the text. After you finish editing, you exit the editor. The editor updates files just before the window closes.</p>
+<p>GtkWindow emits the “close-request” signal before it closes. We connect the signal and the handler <code>before_close</code>. A handler is a C function. When a function is connected to a certain signal, we call it a handler. The function <code>before_close</code> is invoked when the signal “close-request” is emitted.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>g_signal_connect (win, <span class="st">&quot;close-request&quot;</span>, G_CALLBACK (before_close), NULL);</span></code></pre></div>
+<p>The argument <code>win</code> is a GtkApplicationWindow, in which the signal “close-request” is defined, and <code>before_close</code> is the handler. <code>G_CALLBACK</code> cast is necessary for the handler. The program of <code>before_close</code> is as follows.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> gboolean</span>
+<span id="cb4-2"><a href="#cb4-2"></a>before_close (GtkWindow *win, gpointer user_data) {</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  GtkWidget *nb = GTK_WIDGET (user_data);</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  GtkWidget *scr;</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  GtkWidget *tv;</span>
+<span id="cb4-6"><a href="#cb4-6"></a>  GFile *file;</span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="dt">char</span> *pathname;</span>
+<span id="cb4-8"><a href="#cb4-8"></a>  GtkTextBuffer *tb;</span>
+<span id="cb4-9"><a href="#cb4-9"></a>  GtkTextIter start_iter;</span>
+<span id="cb4-10"><a href="#cb4-10"></a>  GtkTextIter end_iter;</span>
+<span id="cb4-11"><a href="#cb4-11"></a>  <span class="dt">char</span> *contents;</span>
+<span id="cb4-12"><a href="#cb4-12"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> n;</span>
+<span id="cb4-13"><a href="#cb4-13"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> i;</span>
+<span id="cb4-14"><a href="#cb4-14"></a></span>
+<span id="cb4-15"><a href="#cb4-15"></a>  n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));</span>
+<span id="cb4-16"><a href="#cb4-16"></a>  <span class="cf">for</span> (i = <span class="dv">0</span>; i &lt; n; ++i) {</span>
+<span id="cb4-17"><a href="#cb4-17"></a>    scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);</span>
+<span id="cb4-18"><a href="#cb4-18"></a>    tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));</span>
+<span id="cb4-19"><a href="#cb4-19"></a>    file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));</span>
+<span id="cb4-20"><a href="#cb4-20"></a>    tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));</span>
+<span id="cb4-21"><a href="#cb4-21"></a>    gtk_text_buffer_get_bounds (tb, &amp;start_iter, &amp;end_iter);</span>
+<span id="cb4-22"><a href="#cb4-22"></a>    contents = gtk_text_buffer_get_text (tb, &amp;start_iter, &amp;end_iter, FALSE);</span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="cf">if</span> (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL)) {</span>
+<span id="cb4-24"><a href="#cb4-24"></a>      pathname = g_file_get_path (file);</span>
+<span id="cb4-25"><a href="#cb4-25"></a>      g_print (<span class="st">&quot;ERROR : Can&#39;t save %s.&quot;</span>, pathname);</span>
+<span id="cb4-26"><a href="#cb4-26"></a>      g_free (pathname);</span>
+<span id="cb4-27"><a href="#cb4-27"></a>    }</span>
+<span id="cb4-28"><a href="#cb4-28"></a>    g_free (contents);</span>
+<span id="cb4-29"><a href="#cb4-29"></a>  }</span>
+<span id="cb4-30"><a href="#cb4-30"></a>  <span class="cf">return</span> FALSE;</span>
+<span id="cb4-31"><a href="#cb4-31"></a>}</span></code></pre></div>
+<p>The numbers on the left of items are line numbers in the source code.</p>
+<ul>
+<li>15: Gets the number of pages <code>nb</code> has.</li>
+<li>16-29: For loop with regard to the index to each pages.</li>
+<li>17-19: Gets GtkScrolledWindow, TfeTextView and a pointer to GFile. The pointer was stored when <code>app_open</code> handler had run. It will be shown later.</li>
+<li>20-22: Gets GtkTextBuffer and contents. <code>start_iter</code> and <code>end_iter</code> are iterators of the buffer. I don’t want to explain them now because it would take a lot of time. Just remember these lines for the present.</li>
+<li>23-27: Writes the contents to the file. If it fails, it outputs an error message.</li>
+<li>28: Frees <code>contents</code>.</li>
+</ul>
+<h2 id="source-code-of-tfe1.c">Source code of tfe1.c</h2>
+<p>The following is the complete source code of <code>tfe1.c</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">/* Define TfeTextView Widget which is the child object of GtkTextView */</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)</span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="kw">struct</span> _TfeTextView</span>
+<span id="cb5-9"><a href="#cb5-9"></a>{</span>
+<span id="cb5-10"><a href="#cb5-10"></a>  GtkTextView parent;</span>
+<span id="cb5-11"><a href="#cb5-11"></a>  GFile *file;</span>
+<span id="cb5-12"><a href="#cb5-12"></a>};</span>
+<span id="cb5-13"><a href="#cb5-13"></a></span>
+<span id="cb5-14"><a href="#cb5-14"></a>G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);</span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>tfe_text_view_init (TfeTextView *tv) {</span>
+<span id="cb5-18"><a href="#cb5-18"></a>}</span>
+<span id="cb5-19"><a href="#cb5-19"></a></span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a>tfe_text_view_class_init (TfeTextViewClass *class) {</span>
+<span id="cb5-22"><a href="#cb5-22"></a>}</span>
+<span id="cb5-23"><a href="#cb5-23"></a></span>
+<span id="cb5-24"><a href="#cb5-24"></a><span class="dt">void</span></span>
+<span id="cb5-25"><a href="#cb5-25"></a>tfe_text_view_set_file (TfeTextView *tv, GFile *f) {</span>
+<span id="cb5-26"><a href="#cb5-26"></a>  tv -&gt; file = f;</span>
+<span id="cb5-27"><a href="#cb5-27"></a>}</span>
+<span id="cb5-28"><a href="#cb5-28"></a></span>
+<span id="cb5-29"><a href="#cb5-29"></a>GFile *</span>
+<span id="cb5-30"><a href="#cb5-30"></a>tfe_text_view_get_file (TfeTextView *tv) {</span>
+<span id="cb5-31"><a href="#cb5-31"></a>  <span class="cf">return</span> tv -&gt; file;</span>
+<span id="cb5-32"><a href="#cb5-32"></a>}</span>
+<span id="cb5-33"><a href="#cb5-33"></a></span>
+<span id="cb5-34"><a href="#cb5-34"></a>GtkWidget *</span>
+<span id="cb5-35"><a href="#cb5-35"></a>tfe_text_view_new (<span class="dt">void</span>) {</span>
+<span id="cb5-36"><a href="#cb5-36"></a>  <span class="cf">return</span> GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));</span>
+<span id="cb5-37"><a href="#cb5-37"></a>}</span>
+<span id="cb5-38"><a href="#cb5-38"></a></span>
+<span id="cb5-39"><a href="#cb5-39"></a><span class="co">/* ---------- end of the definition of TfeTextView ---------- */</span></span>
+<span id="cb5-40"><a href="#cb5-40"></a></span>
+<span id="cb5-41"><a href="#cb5-41"></a><span class="dt">static</span> gboolean</span>
+<span id="cb5-42"><a href="#cb5-42"></a>before_close (GtkWindow *win, gpointer user_data) {</span>
+<span id="cb5-43"><a href="#cb5-43"></a>  GtkWidget *nb = GTK_WIDGET (user_data);</span>
+<span id="cb5-44"><a href="#cb5-44"></a>  GtkWidget *scr;</span>
+<span id="cb5-45"><a href="#cb5-45"></a>  GtkWidget *tv;</span>
+<span id="cb5-46"><a href="#cb5-46"></a>  GFile *file;</span>
+<span id="cb5-47"><a href="#cb5-47"></a>  <span class="dt">char</span> *pathname;</span>
+<span id="cb5-48"><a href="#cb5-48"></a>  GtkTextBuffer *tb;</span>
+<span id="cb5-49"><a href="#cb5-49"></a>  GtkTextIter start_iter;</span>
+<span id="cb5-50"><a href="#cb5-50"></a>  GtkTextIter end_iter;</span>
+<span id="cb5-51"><a href="#cb5-51"></a>  <span class="dt">char</span> *contents;</span>
+<span id="cb5-52"><a href="#cb5-52"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> n;</span>
+<span id="cb5-53"><a href="#cb5-53"></a>  <span class="dt">unsigned</span> <span class="dt">int</span> i;</span>
+<span id="cb5-54"><a href="#cb5-54"></a></span>
+<span id="cb5-55"><a href="#cb5-55"></a>  n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));</span>
+<span id="cb5-56"><a href="#cb5-56"></a>  <span class="cf">for</span> (i = <span class="dv">0</span>; i &lt; n; ++i) {</span>
+<span id="cb5-57"><a href="#cb5-57"></a>    scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);</span>
+<span id="cb5-58"><a href="#cb5-58"></a>    tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));</span>
+<span id="cb5-59"><a href="#cb5-59"></a>    file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));</span>
+<span id="cb5-60"><a href="#cb5-60"></a>    tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));</span>
+<span id="cb5-61"><a href="#cb5-61"></a>    gtk_text_buffer_get_bounds (tb, &amp;start_iter, &amp;end_iter);</span>
+<span id="cb5-62"><a href="#cb5-62"></a>    contents = gtk_text_buffer_get_text (tb, &amp;start_iter, &amp;end_iter, FALSE);</span>
+<span id="cb5-63"><a href="#cb5-63"></a>    <span class="cf">if</span> (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL)) {</span>
+<span id="cb5-64"><a href="#cb5-64"></a>      pathname = g_file_get_path (file);</span>
+<span id="cb5-65"><a href="#cb5-65"></a>      g_print (<span class="st">&quot;ERROR : Can&#39;t save %s.&quot;</span>, pathname);</span>
+<span id="cb5-66"><a href="#cb5-66"></a>      g_free (pathname);</span>
+<span id="cb5-67"><a href="#cb5-67"></a>    }</span>
+<span id="cb5-68"><a href="#cb5-68"></a>    g_free (contents);</span>
+<span id="cb5-69"><a href="#cb5-69"></a>  }</span>
+<span id="cb5-70"><a href="#cb5-70"></a>  <span class="cf">return</span> FALSE;</span>
+<span id="cb5-71"><a href="#cb5-71"></a>}</span>
+<span id="cb5-72"><a href="#cb5-72"></a></span>
+<span id="cb5-73"><a href="#cb5-73"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-74"><a href="#cb5-74"></a>app_activate (GApplication *app, gpointer user_data) {</span>
+<span id="cb5-75"><a href="#cb5-75"></a>  g_print (<span class="st">&quot;You need to give filenames as arguments.</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
+<span id="cb5-76"><a href="#cb5-76"></a>}</span>
+<span id="cb5-77"><a href="#cb5-77"></a></span>
+<span id="cb5-78"><a href="#cb5-78"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-79"><a href="#cb5-79"></a>app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {</span>
+<span id="cb5-80"><a href="#cb5-80"></a>  GtkWidget *win;</span>
+<span id="cb5-81"><a href="#cb5-81"></a>  GtkWidget *nb;</span>
+<span id="cb5-82"><a href="#cb5-82"></a>  GtkWidget *lab;</span>
+<span id="cb5-83"><a href="#cb5-83"></a>  GtkNotebookPage *nbp;</span>
+<span id="cb5-84"><a href="#cb5-84"></a>  GtkWidget *scr;</span>
+<span id="cb5-85"><a href="#cb5-85"></a>  GtkWidget *tv;</span>
+<span id="cb5-86"><a href="#cb5-86"></a>  GtkTextBuffer *tb;</span>
+<span id="cb5-87"><a href="#cb5-87"></a>  <span class="dt">char</span> *contents;</span>
+<span id="cb5-88"><a href="#cb5-88"></a>  gsize length;</span>
+<span id="cb5-89"><a href="#cb5-89"></a>  <span class="dt">char</span> *filename;</span>
+<span id="cb5-90"><a href="#cb5-90"></a>  <span class="dt">int</span> i;</span>
+<span id="cb5-91"><a href="#cb5-91"></a></span>
+<span id="cb5-92"><a href="#cb5-92"></a>  win = gtk_application_window_new (GTK_APPLICATION (app));</span>
+<span id="cb5-93"><a href="#cb5-93"></a>  gtk_window_set_title (GTK_WINDOW (win), <span class="st">&quot;file editor&quot;</span>);</span>
+<span id="cb5-94"><a href="#cb5-94"></a>  gtk_window_maximize (GTK_WINDOW (win));</span>
+<span id="cb5-95"><a href="#cb5-95"></a></span>
+<span id="cb5-96"><a href="#cb5-96"></a>  nb = gtk_notebook_new ();</span>
+<span id="cb5-97"><a href="#cb5-97"></a>  gtk_window_set_child (GTK_WINDOW (win), nb);</span>
+<span id="cb5-98"><a href="#cb5-98"></a></span>
+<span id="cb5-99"><a href="#cb5-99"></a>  <span class="cf">for</span> (i = <span class="dv">0</span>; i &lt; n_files; i++) {</span>
+<span id="cb5-100"><a href="#cb5-100"></a>    <span class="cf">if</span> (g_file_load_contents (files[i], NULL, &amp;contents, &amp;length, NULL, NULL)) {</span>
+<span id="cb5-101"><a href="#cb5-101"></a>      scr = gtk_scrolled_window_new ();</span>
+<span id="cb5-102"><a href="#cb5-102"></a>      tv = tfe_text_view_new ();</span>
+<span id="cb5-103"><a href="#cb5-103"></a>      tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));</span>
+<span id="cb5-104"><a href="#cb5-104"></a>      gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);</span>
+<span id="cb5-105"><a href="#cb5-105"></a>      gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);</span>
+<span id="cb5-106"><a href="#cb5-106"></a></span>
+<span id="cb5-107"><a href="#cb5-107"></a>      tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));</span>
+<span id="cb5-108"><a href="#cb5-108"></a>      gtk_text_buffer_set_text (tb, contents, length);</span>
+<span id="cb5-109"><a href="#cb5-109"></a>      g_free (contents);</span>
+<span id="cb5-110"><a href="#cb5-110"></a>      filename = g_file_get_basename (files[i]);</span>
+<span id="cb5-111"><a href="#cb5-111"></a>      lab = gtk_label_new (filename);</span>
+<span id="cb5-112"><a href="#cb5-112"></a>      gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);</span>
+<span id="cb5-113"><a href="#cb5-113"></a>      nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);</span>
+<span id="cb5-114"><a href="#cb5-114"></a>      g_object_set (nbp, <span class="st">&quot;tab-expand&quot;</span>, TRUE, NULL);</span>
+<span id="cb5-115"><a href="#cb5-115"></a>      g_free (filename);</span>
+<span id="cb5-116"><a href="#cb5-116"></a>    } <span class="cf">else</span> <span class="cf">if</span> ((filename = g_file_get_path (files[i])) != NULL) {</span>
+<span id="cb5-117"><a href="#cb5-117"></a>        g_print (<span class="st">&quot;No such file: %s.</span><span class="sc">\n</span><span class="st">&quot;</span>, filename);</span>
+<span id="cb5-118"><a href="#cb5-118"></a>        g_free (filename);</span>
+<span id="cb5-119"><a href="#cb5-119"></a>    } <span class="cf">else</span></span>
+<span id="cb5-120"><a href="#cb5-120"></a>        g_print (<span class="st">&quot;No valid file is given</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
+<span id="cb5-121"><a href="#cb5-121"></a>  }</span>
+<span id="cb5-122"><a href="#cb5-122"></a>  <span class="cf">if</span> (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) &gt; <span class="dv">0</span>) {</span>
+<span id="cb5-123"><a href="#cb5-123"></a>    g_signal_connect (win, <span class="st">&quot;close-request&quot;</span>, G_CALLBACK (before_close), nb);</span>
+<span id="cb5-124"><a href="#cb5-124"></a>    gtk_widget_show (win);</span>
+<span id="cb5-125"><a href="#cb5-125"></a>  } <span class="cf">else</span></span>
+<span id="cb5-126"><a href="#cb5-126"></a>    gtk_window_destroy (GTK_WINDOW (win));</span>
+<span id="cb5-127"><a href="#cb5-127"></a>}</span>
+<span id="cb5-128"><a href="#cb5-128"></a></span>
+<span id="cb5-129"><a href="#cb5-129"></a><span class="dt">int</span></span>
+<span id="cb5-130"><a href="#cb5-130"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
+<span id="cb5-131"><a href="#cb5-131"></a>  GtkApplication *app;</span>
+<span id="cb5-132"><a href="#cb5-132"></a>  <span class="dt">int</span> stat;</span>
+<span id="cb5-133"><a href="#cb5-133"></a></span>
+<span id="cb5-134"><a href="#cb5-134"></a>  app = gtk_application_new (<span class="st">&quot;com.github.ToshioCP.tfe1&quot;</span>, G_APPLICATION_HANDLES_OPEN);</span>
+<span id="cb5-135"><a href="#cb5-135"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
+<span id="cb5-136"><a href="#cb5-136"></a>  g_signal_connect (app, <span class="st">&quot;open&quot;</span>, G_CALLBACK (app_open), NULL);</span>
+<span id="cb5-137"><a href="#cb5-137"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
+<span id="cb5-138"><a href="#cb5-138"></a>  g_object_unref (app);</span>
+<span id="cb5-139"><a href="#cb5-139"></a>  <span class="cf">return</span> stat;</span>
+<span id="cb5-140"><a href="#cb5-140"></a>}</span></code></pre></div>
+<ul>
+<li>107: Sets the pointer to GFile into TfeTextView. <code>files[i]</code> is a pointer to GFile structure. It will be freed by the system. So you need to copy it. <code>g_file_dup</code> duplicates the given GFile structure.</li>
+<li>123: Connects “close-request” signal and <code>before_close</code> handler. The fourth argument is called user data and it is given to the signal handler. So, <code>nb</code> is given to <code>before_close</code> as the second argument.</li>
+</ul>
+<p>Now compile and run it. There’s a sample file in the directory <code>tfe</code>. Type <code>./a.out taketori.txt</code>. Modify the contents and close the window. Make sure that the file is modified.</p>
+<p>Now we got a very simple editor. It’s not smart. We need more features like open, save, saveas, change font and so on. We will add them in the next section and after.</p>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec7.html">Section 7</a>, Next: <a href="sec9.html">Section 9</a></p>
+</body>
+</html>

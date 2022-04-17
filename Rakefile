@@ -13,14 +13,16 @@ otherfiles = ["src/turtle/turtle_doc.src.md",
 srcfiles = secfiles + otherfiles
 abstract = Src_file.new "src/abstract.src.md"
 
+# docs is a directory for html files.
+html_dir = 'docs'
 mdfiles = srcfiles.map {|file| "gfm/" + file.to_md}
-htmlfiles = srcfiles.map {|file| "html/" + file.to_html}
+htmlfiles = srcfiles.map {|file| "#{html_dir}/" + file.to_html}
 sectexfiles = secfiles.map {|file| "latex/" + file.to_tex}
 othertexfiles = otherfiles.map {|file| "latex/" + file.to_tex}
 texfiles = sectexfiles + othertexfiles
 abstract_tex = "latex/"+abstract.to_tex
 
-["gfm", "html", "latex"].each{|d| Dir.mkdir(d) unless Dir.exist?(d)}
+["gfm", html_dir, "latex"].each{|d| Dir.mkdir(d) unless Dir.exist?(d)}
 
 CLEAN.append(*mdfiles)
 CLEAN << "Readme.md"
@@ -69,10 +71,10 @@ pair(srcfiles, mdfiles).each do |src, dst, i|
   end
 end
 
-task html: %w[html/index.html] + htmlfiles
+task html: %W[#{html_dir}/index.html] + htmlfiles
 
-file "html/index.html" => [abstract] + secfiles do
-  abstract_md = "html/#{abstract.to_md}"
+file "#{html_dir}/index.html" => [abstract] + secfiles do
+  abstract_md = "#{html_dir}/#{abstract.to_md}"
   src2md abstract, abstract_md, "html"
   buf = ["# Gtk4 Tutorial for beginners\n", "\n"]\
         + File.readlines(abstract_md)\
@@ -82,15 +84,15 @@ file "html/index.html" => [abstract] + secfiles do
     h = File.open(secfile.path){|file| file.readline}.sub(/^#* */,"").chomp
     buf << "1. [#{h}](#{secfile.to_html})\n"
   end
-  File.write("html/index.md", buf.join)
-  sh "pandoc -o html/index.html html/index.md"
-  File.delete "html/index.md"
-  add_head_tail_html "html/index.html"
+  File.write("#{html_dir}/index.md", buf.join)
+  sh "pandoc -o #{html_dir}/index.html #{html_dir}/index.md"
+  File.delete "#{html_dir}/index.md"
+  add_head_tail_html "#{html_dir}/index.html"
 end
 
 pair(srcfiles, htmlfiles).each do |src, dst, i|
   file dst => [src] + src.c_files do
-    html_md = "html/#{src.to_md}"
+    html_md = "#{html_dir}/#{src.to_md}"
     src2md src, html_md, "html"
     if src.instance_of? Sec_file
       if secfiles.size == 1
