@@ -1,7 +1,7 @@
-require_relative 'lib/lib_mktbl.rb'
+require_relative 'lib/lib_src2md.rb'
 
 src = File.read ARGV[0]
 buf = src.partitions(/^@@@table\n.*?@@@\n/m)
-buf = buf.map{|chunk| chunk=~/\A@@@table/ ? at_table(chunk) : chunk}.join
-File.write file+".bak", src # backup
-File.write file, buf
+dst = buf.map{|chunk| chunk=~/\A@@@table/ ? at_table(chunk) : chunk}.join
+File.write ARGV[0]+".bak", src # backup
+File.write ARGV[0], dst

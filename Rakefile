@@ -25,6 +25,11 @@ abstract_tex = "latex/"+abstract.to_tex
 CLEAN.append(*mdfiles)
 CLEAN << "Readme.md"
 
+def pair array1, array2
+  n = [array1.size, array2.size].max
+  (0...n).map{|i| [array1[i], array2[i], i]}
+end
+
 # tasks
 
 task default: :md
@@ -46,11 +51,10 @@ file "Readme.md" => [abstract] + secfiles do
 end
 
 # srcfiles => mdfiles
-(0...srcfiles.size).each do |i|
-  file mdfiles[i] => [srcfiles[i]] + srcfiles[i].c_files do
-    src2md srcfiles[i], mdfiles[i], "gfm"
-    if srcfiles[i].instance_of? Sec_file
-      i = srcfiles[i].num.to_i - 1
+pair(srcfiles, mdfiles).each do |src, dst, i|
+  file dst => [src] + src.c_files do
+    src2md src, dst, "gfm"
+    if src.instance_of? Sec_file
       if secfiles.size == 1
         nav = "Up: [Readme.md](../Readme.md)\n"
       elsif i == 0
@@ -60,7 +64,7 @@ end
       else
         nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{secfiles[i-1].to_md}), Next: [Section #{i+2}](#{secfiles[i+1].to_md})\n"
       end
-      File.write(mdfiles[i], nav + "\n" + File.read(mdfiles[i]) + "\n" + nav)
+      File.write(dst, nav + "\n" + File.read(dst) + "\n" + nav)
     end
   end
 end
@@ -84,12 +88,11 @@ file "html/index.html" => [abstract] + secfiles do
   add_head_tail_html "html/index.html"
 end
 
-(0...srcfiles.size).each do |i|
-  file htmlfiles[i] => [srcfiles[i]] + srcfiles[i].c_files do
-    html_md = "html/#{srcfiles[i].to_md}"
-    src2md srcfiles[i], html_md, "html"
-    if srcfiles[i].instance_of? Sec_file
-      i = srcfiles[i].num.to_i - 1 # 0 based index
+pair(srcfiles, htmlfiles).each do |src, dst, i|
+  file dst => [src] + src.c_files do
+    html_md = "html/#{src.to_md}"
+    src2md src, html_md, "html"
+    if src.instance_of? Sec_file
       if secfiles.size == 1
         nav = "Up: [index.html](index.html)\n"
       elsif i == 0
@@ -101,9 +104,9 @@ end
       end
       File.write(html_md, nav + "\n" + File.read(html_md) + "\n" + nav)
     end
-    sh "pandoc -o #{htmlfiles[i]} #{html_md}"
+    sh "pandoc -o #{dst} #{html_md}"
     File.delete(html_md)
-    add_head_tail_html htmlfiles[i]
+    add_head_tail_html dst
   end
 end
 
@@ -124,14 +127,14 @@ file abstract_tex => abstract do
   File.delete(abstract_md)
 end
 
-(0...texfiles.size).each do |i|
-  file texfiles[i] => [srcfiles[i]] + srcfiles[i].c_files do
-    tex_md = "latex/#{srcfiles[i].to_md}"
-    src2md srcfiles[i], tex_md, "latex"
-    if srcfiles[i] == "src/Readme_for_developers.src.md"
-      sh "pandoc -o #{texfiles[i]} #{tex_md}"
+pair(srcfiles, texfiles).each do |src, dst, i|
+  file dst => [src] + src.c_files do
+    tex_md = "latex/#{src.to_md}"
+    src2md src, tex_md, "latex"
+    if src == "src/Readme_for_developers.src.md"
+      sh "pandoc -o #{dst} #{tex_md}"
     else
-      sh "pandoc --listings -o #{texfiles[i]} #{tex_md}"
+      sh "pandoc --listings -o #{dst} #{tex_md}"
     end
     File.delete(tex_md)
   end

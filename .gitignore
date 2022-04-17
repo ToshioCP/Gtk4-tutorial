@@ -1,7 +1,5 @@
 # .gitignore
 
-insertfunc.rb
-pickoutfunc.rb
 src/img.rb
 src/imgsize.rb
 src/toi.rb
@@ -34,4 +32,3 @@ latex/*
 
 # backup file
 *~
-gfm_org

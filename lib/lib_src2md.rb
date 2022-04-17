@@ -334,7 +334,7 @@ def change_link src, old_dir, type, new_dir=nil
       else
         p_target = Pathname.new "#{old_dir}/#{target}"
         target = p_target.relative_path_from(p_new_dir).to_s
-        if type == "latex"
+        if type == "latex" && name[0] != '!'
           name.match(/!?\[(.*?)\]/)[1]
         else
           "#{name}(#{target})"

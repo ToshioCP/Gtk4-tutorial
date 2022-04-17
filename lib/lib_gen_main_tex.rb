@@ -87,8 +87,8 @@ EOS
     main += "  \\input{#{filename}}\n"
   end
   main += "\\newpage\n"
-  main += "\\appendix\n"
-  appendixfiles.each do |filename|
+  main += "\\appendix\n" if appendixfiles
+  appendixfiles.to_a.each do |filename|
     filename = filename.sub(/^#{directory}\//, "")
     main += "  \\input{#{filename}}\n"
   end
