@@ -28,6 +28,7 @@ src/list5/_build
 src/expression/_build
 src/column/_build
 latex/*
+html/*
 
 # backup file
 *~
