@@ -1,3 +1,6 @@
+The github page of this tutorial is also available.
+Click [here](https://toshiocp.github.io/Gtk4-tutorial/).
+
 #### Contents of this Repository
 
 This tutorial illustrates how to write C programs with the Gtk4 library.
