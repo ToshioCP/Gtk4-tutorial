@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Gtk4 tutorial for beginners</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    body {width: 1080px; margin: 0 auto; font-size: large;}
+    h2 {padding: 10px; background-color: #d0f0d0; }
+    div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
+    th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
+    td {padding: 2px 6px; border: 1px solid;}
+    img {display: block; margin-left: auto; margin-right: auto;}
+    figcaption {text-align: center;}
+  </style>
+</head>
+<body>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec2.html">Section 2</a>, Next: <a href="sec4.html">Section 4</a></p>
+<h1 id="gtkapplication-and-gtkapplicationwindow">GtkApplication and GtkApplicationWindow</h1>
+<h2 id="gtkapplication">GtkApplication</h2>
+<h3 id="gtkapplication-and-g_application_run">GtkApplication and g_application_run</h3>
+<p>Usually people write programming code to make an application. What are applications? Applications are software that runs using libraries, which includes the OS, frameworks and so on. In Gtk4 programming, the GtkApplication is a program (or executable) that runs using Gtk libraries.</p>
+<p>The basic way to write a GtkApplication is as follows.</p>
+<ul>
+<li>Create a GtkApplication instance.</li>
+<li>Run the application.</li>
+</ul>
+<p>That’s all. Very simple. The following is the C code representing the scenario above.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  GtkApplication *app;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="dt">int</span> stat;</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  app = gtk_application_new (<span class="st">&quot;com.github.ToshioCP.pr1&quot;</span>, G_APPLICATION_FLAGS_NONE);</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  g_object_unref (app);</span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="cf">return</span> stat;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>}</span></code></pre></div>
+<p>The first line says that this program includes the header files of the Gtk libraries. The function <code>main</code> above is a startup function in C language. The variable <code>app</code> is defined as a pointer to a GtkApplication instance. The function <code>gtk_application_new</code> creates a GtkApplication instance and returns a pointer to the instance. The GtkApplication instance is a C structure data in which the information about the application is stored. The meaning of the arguments will be explained later. The function <code>g_application_run</code> runs an application that the instance defined. (We often say that the function runs <code>app</code>. Actually, <code>app</code> is not an application but a pointer to the instance of the application. However, it is simple and short, and probably no confusion occurs.)</p>
+<p>To compile this, the following command needs to be run. The string <code>pr1.c</code> is the filename of the C source code above.</p>
+<pre><code>$ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`</code></pre>
+<p>The C compiler gcc generates an executable file, <code>a.out</code>. Let’s run it.</p>
+<pre><code>$ ./a.out
+
+(a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
+g_application_activate() and has no handlers connected to the &quot;activate&quot; signal.
+It should do one of these.
+$</code></pre>
+<p>Oh, it just produces an error message. This error message means that the GtkApplication object ran, without a doubt. Now, let’s think about what this message means.</p>
+<h3 id="signal">signal</h3>
+<p>The message tells us that:</p>
+<ol type="1">
+<li>The application GtkApplication doesn’t implement <code>g_application_activate()</code>,</li>
+<li>It has no handlers connected to the “activate” signal, and</li>
+<li>You will need to solve at least one of these.</li>
+</ol>
+<p>These two causes of the error are related to signals. So, I will explain that to you first.</p>
+<p>A signal is emitted when something happens. For example, a window is created, a window is destroyed and so on. The signal “activate” is emitted when the application is activated, or started. If the signal is connected to a function, which is called a signal handler or simply handler, then the function is invoked when the signal emits.</p>
+<p>The flow is like this:</p>
+<ol type="1">
+<li>Something happens.</li>
+<li>If it’s related to a certain signal, then the signal is emitted.</li>
+<li>If the signal as been connected to a handler, then the handler is invoked.</li>
+</ol>
+<p>Signals are defined in objects. For example, the “activate” signal belongs to the GApplication object, which is a parent object of GtkApplication object.</p>
+<p>The GApplication object is a child object of the GObject object. GObject is the top object in the hierarchy of all the objects.</p>
+<pre><code>GObject -- GApplication -- GtkApplication
+&lt;---parent                      ---&gt;child</code></pre>
+<p>A child object inherits signals, functions, properties and so on from its parent object. So, GtkApplication also has the “activate” signal.</p>
+<p>Now we can solve the problem in <code>pr1.c</code>. We need to connect the “activate” signal to a handler. We use a function <code>g_signal_connect</code> which connects a signal to a handler.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>app_activate (GApplication *app, gpointer *user_data) {</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  g_print (<span class="st">&quot;GtkApplication is activated.</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
+<span id="cb5-6"><a href="#cb5-6"></a>}</span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="dt">int</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
+<span id="cb5-10"><a href="#cb5-10"></a>  GtkApplication *app;</span>
+<span id="cb5-11"><a href="#cb5-11"></a>  <span class="dt">int</span> stat;</span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a>  app = gtk_application_new (<span class="st">&quot;com.github.ToshioCP.pr2&quot;</span>, G_APPLICATION_FLAGS_NONE);</span>
+<span id="cb5-14"><a href="#cb5-14"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
+<span id="cb5-15"><a href="#cb5-15"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
+<span id="cb5-16"><a href="#cb5-16"></a>  g_object_unref (app);</span>
+<span id="cb5-17"><a href="#cb5-17"></a>  <span class="cf">return</span> stat;</span>
+<span id="cb5-18"><a href="#cb5-18"></a>}</span></code></pre></div>
+<p>First, we define the handler <code>app_activate</code> which simply displays a message. In the function <code>main</code>, we add <code>g_signal_connect</code> before <code>g_application_run</code>. The function <code>g_signal_connect</code> has four arguments.</p>
+<ol type="1">
+<li>An instance to which the signal belongs.</li>
+<li>The name of the signal.</li>
+<li>A handler function (also called callback), which needs to be casted by <code>G_CALLBACK</code>.</li>
+<li>Data to pass to the handler. If no data is necessary, NULL should be given.</li>
+</ol>
+<p>You can find the description of each signal in the API reference manual. For example, “activate” signal is in GApplication section in <a href="https://docs.gtk.org/gio/signal.Application.activate.html">GIO API Reference</a>. The handler function is described in it.</p>
+<p>In addition, <code>g_signal_connect</code> is described in <a href="https://docs.gtk.org/gobject/func.signal_connect.html">GObject API Reference</a>. API reference manual is very important. You should see and understand it to write Gtk applications. They are located in <a href="https://docs.gtk.org/">‘GTK Documentation’</a>.</p>
+<p>Let’s compile the source file above (<code>pr2.c</code>) and run it.</p>
+<pre><code>$ gcc `pkg-config --cflags gtk4` pr2.c `pkg-config --libs gtk4`
+$ ./a.out
+GtkApplication is activated.
+$</code></pre>
+<p>OK, well done. However, you may have noticed that it’s painful to type such a long line to compile. It is a good idea to use shell script to solve this problem. Make a text file which contains the following line.</p>
+<pre><code>gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`</code></pre>
+<p>Then, save it under the directory $HOME/bin, which is usually /home/(username)/bin. (If your user name is James, then the directory is /home/james/bin). And turn on the execute bit of the file. If the filename is <code>comp</code>, do like this:</p>
+<pre><code>$ chmod 755 $HOME/bin/comp
+$ ls -log $HOME/bin
+    ...  ...  ...
+-rwxr-xr-x 1   62 May 23 08:21 comp
+    ...  ...  ...</code></pre>
+<p>If this is the first time that you make a $HOME/bin directory and save a file in it, then you need to logout and login again.</p>
+<pre><code>$ comp pr2
+$ ./a.out
+GtkApplication is activated.
+$</code></pre>
+<h2 id="gtkwindow-and-gtkapplicationwindow">GtkWindow and GtkApplicationWindow</h2>
+<h3 id="gtkwindow">GtkWindow</h3>
+<p>A message “GtkApplication is activated.” was printed out in the previous subsection. It was good in terms of a test of GtkApplication. However, it is insufficient because Gtk is a framework for graphical user interface (GUI). Now we go ahead with adding a window into this program. What we need to do is:</p>
+<ol type="1">
+<li>Create a GtkWindow.</li>
+<li>Connect it to GtkApplication.</li>
+<li>Show the window.</li>
+</ol>
+<p>Now rewrite the function <code>app_activate</code>.</p>
+<h4 id="create-a-gtkwindow">Create a GtkWindow</h4>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>app_activate (GApplication *app, gpointer user_data) {</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  GtkWidget *win;</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  win = gtk_window_new ();</span>
+<span id="cb10-6"><a href="#cb10-6"></a>  gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));</span>
+<span id="cb10-7"><a href="#cb10-7"></a>  gtk_widget_show (win);</span>
+<span id="cb10-8"><a href="#cb10-8"></a>}</span></code></pre></div>
+<p>Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multi-line text, containers and so on. And GtkWidget is a base object from which all the GUI objects derive.</p>
+<pre><code>parent &lt;-----&gt; child
+GtkWidget -- GtkWindow</code></pre>
+<p>GtkWindow includes GtkWidget at the top of its object.</p>
+<figure>
+<img src="../image/window_widget.png" alt="" /><figcaption>GtkWindow and GtkWidget</figcaption>
+</figure>
+<p>The function <code>gtk_window_new</code> is defined as follows.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>GtkWidget *</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>gtk_window_new (<span class="dt">void</span>);</span></code></pre></div>
+<p>By this definition, it returns a pointer to GtkWidget, not GtkWindow. It actually creates a new GtkWindow instance (not GtkWidget) but returns a pointer to GtkWidget. However,the pointer points the GtkWidget and at the same time it also points GtkWindow that contains GtkWidget in it.</p>
+<p>If you want to use <code>win</code> as a pointer to the GtkWindow, you need to cast it.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>(GtkWindow *) win</span></code></pre></div>
+<p>Or you can use <code>GTK_WINDOW</code> macro that performs a similar function.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>GTK_WINDOW (win)</span></code></pre></div>
+<p>This is a recommended way.</p>
+<h4 id="connect-it-to-gtkapplication.">Connect it to GtkApplication.</h4>
+<p>The function <code>gtk_window_set_application</code> is used to connect GtkWindow to GtkApplication.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));</span></code></pre></div>
+<p>You need to cast <code>win</code> to GtkWindow and <code>app</code> to GtkApplication. <code>GTK_WINDOW</code> and <code>GTK_APPLICATION</code> macro is appropriate for that.</p>
+<p>GtkApplication continues to run until the related window is destroyed. If you didn’t connect GtkWindow and GtkApplication, GtkApplication destroys itself immediately. Because no window is connected to GtkApplication, GtkApplication doesn’t need to wait anything. As it destroys itself, the GtkWindow is also destroyed.</p>
+<h4 id="show-the-window.">Show the window.</h4>
+<p>The function <code>gtk_widget_show</code> is used to show the window.</p>
+<p>Gtk4 changes the default widget visibility to on, so every widget doesn’t need this function to show itself. But, there’s an exception. Top window (this term will be explained later) isn’t visible when it is created. So you need to use the function above to show the window.</p>
+<p>Save the program as <code>pr3.c</code> and compile and run it.</p>
+<pre><code>$ comp pr3
+$ ./a.out</code></pre>
+<p>A small window appears.</p>
+<figure>
+<img src="../image/screenshot_pr3.png" alt="" /><figcaption>Screenshot of the window</figcaption>
+</figure>
+<p>Click on the close button then the window disappears and the program finishes.</p>
+<h3 id="gtkapplicationwindow">GtkApplicationWindow</h3>
+<p>GtkApplicationWindow is a child object of GtkWindow. It has some extra functionality for better integration with GtkApplication. It is recommended to use it instead of GtkWindow when you use GtkApplication.</p>
+<p>Now rewrite the program and use GtkAppliction Window.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>app_activate (GApplication *app, gpointer user_data) {</span>
+<span id="cb17-3"><a href="#cb17-3"></a>  GtkWidget *win;</span>
+<span id="cb17-4"><a href="#cb17-4"></a></span>
+<span id="cb17-5"><a href="#cb17-5"></a>  win = gtk_application_window_new (GTK_APPLICATION (app));</span>
+<span id="cb17-6"><a href="#cb17-6"></a>  gtk_window_set_title (GTK_WINDOW (win), <span class="st">&quot;pr4&quot;</span>);</span>
+<span id="cb17-7"><a href="#cb17-7"></a>  gtk_window_set_default_size (GTK_WINDOW (win), <span class="dv">400</span>, <span class="dv">300</span>);</span>
+<span id="cb17-8"><a href="#cb17-8"></a>  gtk_widget_show (win);</span>
+<span id="cb17-9"><a href="#cb17-9"></a>}</span></code></pre></div>
+<p>When you create GtkApplicationWindow, you need to give GtkApplication instance as an argument. Then it automatically connect these two instances. So you don’t need to call <code>gtk_window_set_application</code> any more.</p>
+<p>The program sets the title and the default size of the window. Compile it and run <code>a.out</code>, then you will see a bigger window with its title “pr4”.</p>
+<figure>
+<img src="../image/screenshot_pr4.png" alt="" /><figcaption>Screenshot of the window</figcaption>
+</figure>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec2.html">Section 2</a>, Next: <a href="sec4.html">Section 4</a></p>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Gtk4 tutorial for beginners</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    body {width: 1080px; margin: 0 auto; font-size: large;}
+    h2 {padding: 10px; background-color: #d0f0d0; }
+    div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
+    th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
+    td {padding: 2px 6px; border: 1px solid;}
+    img {display: block; margin-left: auto; margin-right: auto;}
+    figcaption {text-align: center;}
+  </style>
+</head>
+<body>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec1.html">Section 1</a>, Next: <a href="sec3.html">Section 3</a></p>
+<h1 id="installation-of-gtk4-to-linux-distributions">Installation of Gtk4 to Linux distributions</h1>
+<p>This section describes how to install Gtk4 into Linux distributions.</p>
+<p>This tutorial including this section is without any warranty. If you install Gtk4 to your computer, do it at your own risk.</p>
+<p>This section is written on 12/August/2021. “At present” means 12/August/2021 in this section.</p>
+<p>There are three possible way to install Gtk4.</p>
+<ul>
+<li>Install it from the distribution packages.</li>
+<li>Build it from the source file.</li>
+<li>Install Gnome 40 distribution.</li>
+</ul>
+<h2 id="installation-from-the-distribution-packages">Installation from the distribution packages</h2>
+<p>The first way is easy to install. It is a recommended way. I’ve installed Gtk4 packages in Ubuntu 21.04.</p>
+<pre><code>$ sudo apt-get install libgtk-4-bin libgtk-4-common libgtk-4-dev libgtk-4-doc</code></pre>
+<p>Arch, Debian and Fedora are also possible. See <a href="https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages">Installing GTK from packages</a>. If you’ve installed Gtk4 from the packages, you don’t need to read the rest of this section.</p>
+<h2 id="installation-from-the-source-file">Installation from the source file</h2>
+<p>If your operating system doesn’t have Gtk4 packages, you need to build it from the source. Or, if you want the latest version of Gtk4, you also need to build it from the source. At present, the version of Gtk4 on Ubuntu 21.04 is 4.0.3.</p>
+<p>I installed Gtk4 in January 2021. So, the following is old information, especially for the version of each software. For the latest information, see <a href="https://docs.gtk.org/gtk4/building.html">Gtk API Reference, Building GTK</a>.</p>
+<h3 id="prerequisites-for-gtk4-installation">Prerequisites for Gtk4 installation</h3>
+<ul>
+<li>Linux operating system. For example, Ubuntu 20.10 or 20.04LTS. Other distributions might be OK.</li>
+<li>Packages for development such as gcc, meson, ninja, git, wget and so on.</li>
+<li>Dev packages necessary for each software below.</li>
+</ul>
+<h3 id="installation-target">Installation target</h3>
+<p>I installed Gtk4 under the directory <code>$HOME/local</code>. This is a private user area.</p>
+<p>If you want to install it in the system area, <code>/opt/gtk4</code> is one of good choices. <a href="https://docs.gtk.org/gtk4/building.html">Gtk API Reference, Building GTK</a> gives an installation example to <code>/opt/gtk4</code>.</p>
+<p>Don’t install it to <code>/usr/local</code> which is the default. It is used by Ubuntu applications, which are not build on Gtk4. Therefore, the risk is high and probably bad things will happen. Actually I did it and I needed to reinstall Ubuntu.</p>
+<h3 id="installation-to-ubuntu-20.10">Installation to Ubuntu 20.10</h3>
+<p>Most of the necessary libraries are included by Ubuntu 20.10. Therefore, they can be installed with <code>apt-get</code> command. You don’t need to install them from the source tarballs. You can skip the subsections below about prerequisite library installation (Glib, Pango, Gdk-pixbuf and Gtk-doc).</p>
+<h3 id="glib-installation">Glib installation</h3>
+<p>If your Ubuntu is 20.04LTS, you need to install prerequisite libraries from the tarballs. Check the version of your library and if it is lower than the necessary version, install it from the source.</p>
+<p>For example,</p>
+<pre><code>$ pkg-config --modversion glib-2.0
+2.64.6</code></pre>
+<p>The necessary version is 2.66.0 or higher. Therefore, the example above shows that you need to install Glib.</p>
+<p>I installed 2.67.1 which was the latest version at that time (January 2021). Download Glib source files from the repository, then decompress and extract files.</p>
+<pre><code>$ wget https://download.gnome.org/sources/glib/2.67/glib-2.67.1.tar.xz
+$ tar -Jxf glib-2.67.1.tar.xz</code></pre>
+<p>Some packages are required to build Glib. You can find them if you run meson.</p>
+<pre><code>$ meson --prefix $HOME/local _build</code></pre>
+<p>Use apt-get and install the prerequisites. For example,</p>
+<pre><code>$ sudo apt-get install -y  libpcre2-dev libffi-dev</code></pre>
+<p>After that, compile Glib.</p>
+<pre><code>$ rm -rf _build
+$ meson --prefix $HOME/local _build
+$ ninja -C _build
+$ ninja -C _build install</code></pre>
+<p>Set several environment variables so that the Glib libraries installed can be used by build tools. Make a text file below and save it as <code>env.sh</code></p>
+<pre><code># compiler
+CPPFLAGS=&quot;-I$HOME/local/include&quot;
+LDFLAGS=&quot;-L$HOME/local/lib&quot;
+PKG_CONFIG_PATH=&quot;$HOME/local/lib/pkgconfig:$HOME/local/lib/x86_64-linux-gnu/pkgconfig&quot;
+export CPPFLAGS LDFLAGS PKG_CONFIG_PATH
+# linker
+LD_LIBRARY_PATH=&quot;$HOME/local/lib/x86_64-linux-gnu/&quot;
+PATH=&quot;$HOME/local/bin:$PATH&quot;
+export LD_LIBRARY_PATH PATH
+# gsetting
+export GSETTINGS_SCHEMA_DIR=$HOME/local/share/glib-2.0/schemas</code></pre>
+<p>Then, use . (dot) or source command to include these commands to the current bash.</p>
+<pre><code>$ . env.sh</code></pre>
+<p>or</p>
+<pre><code>$ source env.sh</code></pre>
+<p>This command carries out the commands in <code>env.sh</code> and changes the environment variables above in the current shell.</p>
+<h3 id="pango-installation">Pango installation</h3>
+<p>Download and untar.</p>
+<pre><code>$ wget https://download.gnome.org/sources/pango/1.48/pango-1.48.0.tar.xz
+$ tar -Jxf pango-1.48.0.tar.xz</code></pre>
+<p>Try meson and check the required packages. Install all the prerequisites. Then, compile and install Pango.</p>
+<pre><code>$ meson --prefix $HOME/local _build
+$ ninja -C _build
+$ ninja -C _build install</code></pre>
+<p>It installs Pango-1.0.gir under <code>$HOME/local/share/gir-1.0</code>. If you installed Pango without <code>--prefix</code> option, then it would be located at <code>/usr/local/share/gir-1.0</code>. This directory (/usr/local/share) is used by applications. They find the directory by the environment variable <code>XDG_DATA_DIRS</code>. It is a text file which keep the list of ‘share’ directories like <code>/usr/share</code>, <code>usr/local/share</code> and so on. Now <code>$HOME/local/share</code> needs to be added to <code>XDG_DATA_DIRS</code>, or error will occur in the later compilation.</p>
+<pre><code>$ export XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS</code></pre>
+<h3 id="gdk-pixbuf-and-gtk-doc-installation">Gdk-pixbuf and Gtk-doc installation</h3>
+<p>Download and untar.</p>
+<pre><code>$ wget https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.2.tar.xz
+$ tar -Jxf gdk-pixbuf-2.42.2.tar.xz
+$ wget https://download.gnome.org/sources/gtk-doc/1.33/gtk-doc-1.33.1.tar.xz
+$ tar -Jxf gtk-doc-1.33.1.tar.xz</code></pre>
+<p>Same as before, install prerequisite packages, then compile and install them.</p>
+<p>The installation of Gtk-doc put <code>gtk-doc.pc</code> under <code>$HOME/local/share/pkgconfig</code>. This file is used by pkg-config, which is one of the build tools. The directory needs to be added to the environment variable <code>PKG_CONFIG_PATH</code></p>
+<pre><code>$ export PKG_CONFIG_PATH=&quot;$HOME/local/share/pkgconfig:$PKG_CONFIG_PATH&quot;</code></pre>
+<h3 id="gtk4-installation">Gtk4 installation</h3>
+<p>If you want the latest development version of Gtk4, use git and clone the repository.</p>
+<pre><code>$ git clone https://gitlab.gnome.org/GNOME/gtk.git</code></pre>
+<p>If you want a stable version of Gtk4, then download it from <a href="https://download.gnome.org/sources/gtk/">Gnome source website</a>. The latest version is 4.3.1 (13/June/2021).</p>
+<p>Compile and install it.</p>
+<pre><code>$ meson --prefix $HOME/local _build
+$ ninja -C _build
+$ ninja -C _build install</code></pre>
+<p>If you want to know more information, refer to <a href="https://docs.gtk.org/gtk4/building.html">Gtk4 API Reference, Building GTK</a>.</p>
+<h3 id="modify-env.sh">Modify env.sh</h3>
+<p>Because environment variables disappear when you log out, you need to add them again. Modify <code>env.sh</code>.</p>
+<pre><code># compiler
+CPPFLAGS=&quot;-I$HOME/local/include&quot;
+LDFLAGS=&quot;-L$HOME/local/lib&quot;
+PKG_CONFIG_PATH=&quot;$HOME/local/lib/pkgconfig:$HOME/local/lib/x86_64-linux-gnu/pkgconfig:
+$HOME/local/share/pkgconfig&quot;
+export CPPFLAGS LDFLAGS PKG_CONFIG_PATH
+# linker
+LD_LIBRARY_PATH=&quot;$HOME/local/lib/x86_64-linux-gnu/&quot;
+PATH=&quot;$HOME/local/bin:$PATH&quot;
+export LD_LIBRARY_PATH PATH
+# gir
+XDG_DATA_DIRS=$HOME/local/share:$XDG_DATA_DIRS
+export XDG_DATA_DIRS
+# gsetting
+export GSETTINGS_SCHEMA_DIR=$HOME/local/share/glib-2.0/schemas
+# girepository-1.0
+export GI_TYPELIB_PATH=$HOME/local/lib/x86_64-linux-gnu/girepository-1.0</code></pre>
+<p>Include this file by . (dot) command before using Gtk4 libraries.</p>
+<p>You may think you can add them in your <code>.profile</code>. But it’s a wrong decision. Never write them to your <code>.profile</code>. The environment variables above are necessary only when you compile and run Gtk4 applications. Otherwise it’s not necessary. If you changed the environment variables above and run Gtk3 applications, it probably causes serious damage.</p>
+<h3 id="compiling-gtk4-applications">Compiling Gtk4 applications</h3>
+<p>Before you compile Gtk4 applications, define environment variables above.</p>
+<pre><code>$ . env.sh</code></pre>
+<p>After that you can compile them without anything. For example, to compile <code>sample.c</code>, type the following.</p>
+<pre><code>$ gcc `pkg-config --cflags gtk4` sample.c `pkg-config --libs gtk4`</code></pre>
+<p>To know how to compile Gtk4 applications, refer to the section 3 (GtkApplication and GtkApplicationWindow) and after.</p>
+<h2 id="installing-fedora-34-with-gnome-boxes">Installing Fedora 34 with gnome-boxes</h2>
+<p>The last part of this section is about Gnome40. Gnome 40 is a new version of Gnome desktop system. And Gtk4 is installed in the distribution. See <a href="https://forty.gnome.org/">Gnome 40 website</a> first.</p>
+<p><em>However, Gnome40 is not necessary to compile and run Gtk4 applications.</em></p>
+<p>There are only three choices at present.</p>
+<ul>
+<li>Gnome OS</li>
+<li>Fedora 34</li>
+<li>openSUSE</li>
+</ul>
+<p>I’ve tried installing Fedora 34 with gnome-boxes.</p>
+<p>There are two ways to install them.</p>
+<ul>
+<li>Install them to a hard disk. This is a usual installation.</li>
+<li>Install them to a virtual machine.</li>
+</ul>
+<p>I’ve chosen the second way. I’ve tried installing Fedora 34 with gnome-boxes. My OS was Ubuntu 21.04 at that time. Gnome-boxes creates a virtual machine in Ubuntu and Fedora will be installed to that virtual machine.</p>
+<p>The instruction is as follows.</p>
+<ol type="1">
+<li>Download Fedora 34 iso file. There is an link at the end of <a href="https://forty.gnome.org/">Gnome 40 website</a>.</li>
+<li>Install gnome-boxes with apt-get command.</li>
+</ol>
+<pre><code>$ sudo apt-get install gnome-boxes</code></pre>
+<ol start="3" type="1">
+<li>Run gnome-boxes.</li>
+<li>Click on <code>+</code> button on the top left corner and launch a box creation wizard by clicking <code>Create a Virtual Machine ...</code>. Then a dialog appears. Click on <code>Operationg System Image File</code> and select the iso file you have downloaded.</li>
+<li>Then, the installer of Fedora is executed. Follow the instructions by the installer. At the end of the installation, the installer instructs to reboot the system. Click on the right of the title bar and select reboot or shutdown.</li>
+<li>Your display is back to the initial window of gnome-boxes, but there is a button <code>Fedora 34 Workstation</code> on the upper left of the window. Click on the button then Fedora will be executed.</li>
+<li>A setup dialog appears. Setup Fedora according to the wizard.</li>
+</ol>
+<p>Now you can use Fedora. It includes Gtk4 libraries already. But you need to install the Gtk4 development package. Use <code>dnf</code> to install <code>gtk4.x86_64</code> package.</p>
+<pre><code>$ sudo dnf install gtk4.x86_64</code></pre>
+<h3 id="test-for-compiling-a-gtk4-application">Test for compiling a Gtk4 application</h3>
+<p>You can test the Gtk4 development package by compiling files which are based on Gtk4. I’ve tried compiling <code>tfe</code> text editor, which is written in section 21.</p>
+<ol type="1">
+<li>Run Firefox.</li>
+<li>Open this website (<a href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4-Tutorial</a>).</li>
+<li>Click on the green button labeled <code>Code</code>.</li>
+<li>Select <code>Download ZIP</code> and download the codes from the repository.</li>
+<li>Unzip the file.</li>
+<li>Change your current directory to <code>src/tfe7</code>.</li>
+<li>Compile it.</li>
+</ol>
+<pre><code>$ meson _build
+bash: meson: command not found...
+Install package &#39;meson&#39; to provide command &#39;meson&#39;? [N/y] y
+
+ * Waiting in queue...
+The following packages have to be installed:
+ meson-0.56.2-2.fc34.noarch    High productivity build system
+ ninja-build-1.10.2-2.fc34.x86_64    Small build system with a focus on speed
+ vim-filesystem-2:8.2.2787-1.fc34.noarch    VIM filesystem layout
+Proceed with changes? [N/y] y
+
+... ...
+... ...
+
+The Meson build system
+Version: 0.56.2
+
+... ...
+... ...
+
+Project name: tfe
+Project version: undefined
+C compiler for the host machine: cc (gcc 11.0.0 &quot;cc (GCC) 11.0.0 20210210 (Red Hat 11.0.0-0)&quot;)
+C linker for the host machine: cc ld.bfd 2.35.1-38
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Found pkg-config: /usr/bin/pkg-config (1.7.3)
+Run-time dependency gtk4 found: YES 4.2.0
+Found pkg-config: /usr/bin/pkg-config (1.7.3)
+Program glib-compile-resources found: YES (/usr/bin/glib-compile-resources)
+Program glib-compile-schemas found: YES (/usr/bin/glib-compile-schemas)
+Program glib-compile-schemas found: YES (/usr/bin/glib-compile-schemas)
+Build targets in project: 4
+ 
+Found ninja-1.10.2 at /usr/bin/ninja
+ 
+$ ninja -C _build
+ninja: Entering directory `_build&#39;
+[12/12] Linking target tfe
+
+$ ninja -C _build install
+ninja: Entering directory `_build&#39;
+[0/1] Installing files.
+Installing tfe to /usr/local/bin
+Installation failed due to insufficient permissions.
+Attempting to use polkit to gain elevated privileges...
+Installing tfe to /usr/local/bin
+Installing /home/&lt;username&gt;/Gtk4-tutorial-main/src/tfe7/com.github.ToshioCP.tfe.gschema.xml to /usr/local/share/glib-2.0/schemas
+Running custom install script &#39;/usr/bin/glib-compile-schemas /usr/local/share/glib-2.0/schemas/&#39;</code></pre>
+<ol start="8" type="1">
+<li>Execute it.</li>
+</ol>
+<pre><code>$ tfe</code></pre>
+<p>Then, the window of <code>tfe</code> text editor appears. The compilation and execution have succeeded.</p>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec1.html">Section 1</a>, Next: <a href="sec3.html">Section 3</a></p>
+</body>
+</html>

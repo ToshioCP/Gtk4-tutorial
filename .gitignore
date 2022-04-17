@@ -27,7 +27,6 @@ src/list4/_build
 src/list5/_build
 src/expression/_build
 src/column/_build
-html/*
 latex/*
 
 # backup file

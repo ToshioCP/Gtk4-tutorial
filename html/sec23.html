@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Gtk4 tutorial for beginners</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    body {width: 1080px; margin: 0 auto; font-size: large;}
+    h2 {padding: 10px; background-color: #d0f0d0; }
+    div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
+    table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
+    th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
+    td {padding: 2px 6px; border: 1px solid;}
+    img {display: block; margin-left: auto; margin-right: auto;}
+    figcaption {text-align: center;}
+  </style>
+</head>
+<body>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec22.html">Section 22</a>, Next: <a href="sec24.html">Section 24</a></p>
+<h1 id="periodic-events">Periodic Events</h1>
+<p>This chapter was written by Paul Schulz <a href="mailto:paul@mawsonlakes.org" class="email">paul@mawsonlakes.org</a>.</p>
+<h2 id="how-do-we-create-an-animation">How do we create an animation?</h2>
+<p>In this section we will continue to build on our previous work. We will create an analog clock application. By adding a function which periodically redraws GtkDrawingArea, the clock will be able to continuously display the time.</p>
+<p>The application uses a compiled in ‘resource’ file, so if the GTK4 libraries and their dependencies are installed and available, the application will run from anywhere.</p>
+<p>The program also makes use of some standard mathematical and time handling functions.</p>
+<p>The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found <a href="https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en">here</a>.</p>
+<p>The complete code is at the end.</p>
+<h2 id="drawing-the-clock-face-hour-minute-and-second-hands">Drawing the clock face, hour, minute and second hands</h2>
+<p>The <code>draw_clock()</code> function does all the work. See the in-file comments for an explanation of how the Cairo drawing works.</p>
+<p>For a detailed reference of what each of the Cairo functions does see the <a href="https://www.cairographics.org/manual/cairo-cairo-t.html">cairo_t reference</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>draw_clock (GtkDrawingArea *area, cairo_t *cr, <span class="dt">int</span> width, <span class="dt">int</span> height, gpointer user_data) {</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="co">// Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>    <span class="co">// the center of the window</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    cairo_scale(cr, width, height);</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    cairo_translate(cr, <span class="fl">0.5</span>, <span class="fl">0.5</span>);</span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>    <span class="co">// Set the line width and save the cairo drawing state.</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>    cairo_set_line_width(cr, m_line_width);</span>
+<span id="cb1-11"><a href="#cb1-11"></a>    cairo_save(cr);</span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a>    <span class="co">// Set the background to a slightly transparent green.</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>    cairo_set_source_rgba(cr, <span class="fl">0.337</span>, <span class="fl">0.612</span>, <span class="fl">0.117</span>, <span class="fl">0.9</span>);   <span class="co">// green</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>    cairo_paint(cr);</span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a>    <span class="co">// Resore back to precious drawing state and draw the circular path</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>    <span class="co">// representing the clockface. Save this state (including the path) so we</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>    <span class="co">// can reuse it.</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>    cairo_restore(cr);</span>
+<span id="cb1-21"><a href="#cb1-21"></a>    cairo_arc(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>, m_radius, <span class="fl">0.0</span>, <span class="fl">2.0</span> * M_PI);</span>
+<span id="cb1-22"><a href="#cb1-22"></a>    cairo_save(cr);</span>
+<span id="cb1-23"><a href="#cb1-23"></a></span>
+<span id="cb1-24"><a href="#cb1-24"></a>    <span class="co">// Fill the clockface with white</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>    cairo_set_source_rgba(cr, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">0.8</span>);</span>
+<span id="cb1-26"><a href="#cb1-26"></a>    cairo_fill_preserve(cr);</span>
+<span id="cb1-27"><a href="#cb1-27"></a>    <span class="co">// Restore the path, paint the outside of the clock face.</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a>    cairo_restore(cr);</span>
+<span id="cb1-29"><a href="#cb1-29"></a>    cairo_stroke_preserve(cr);</span>
+<span id="cb1-30"><a href="#cb1-30"></a>    <span class="co">// Set the &#39;clip region&#39; to the inside of the path (fill region).</span></span>
+<span id="cb1-31"><a href="#cb1-31"></a>    cairo_clip(cr);</span>
+<span id="cb1-32"><a href="#cb1-32"></a></span>
+<span id="cb1-33"><a href="#cb1-33"></a>    <span class="co">// Clock ticks</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">12</span>; i++)</span>
+<span id="cb1-35"><a href="#cb1-35"></a>    {</span>
+<span id="cb1-36"><a href="#cb1-36"></a>        <span class="co">// Major tick size</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a>        <span class="dt">double</span> inset = <span class="fl">0.05</span>;</span>
+<span id="cb1-38"><a href="#cb1-38"></a></span>
+<span id="cb1-39"><a href="#cb1-39"></a>        <span class="co">// Save the graphics state, restore after drawing tick to maintain pen</span></span>
+<span id="cb1-40"><a href="#cb1-40"></a>        <span class="co">// size</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a>        cairo_save(cr);</span>
+<span id="cb1-42"><a href="#cb1-42"></a>        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);</span>
+<span id="cb1-43"><a href="#cb1-43"></a></span>
+<span id="cb1-44"><a href="#cb1-44"></a>        <span class="co">// Minor ticks are shorter, and narrower.</span></span>
+<span id="cb1-45"><a href="#cb1-45"></a>        <span class="cf">if</span>(i % <span class="dv">3</span> != <span class="dv">0</span>)</span>
+<span id="cb1-46"><a href="#cb1-46"></a>        {</span>
+<span id="cb1-47"><a href="#cb1-47"></a>            inset *= <span class="fl">0.8</span>;</span>
+<span id="cb1-48"><a href="#cb1-48"></a>            cairo_set_line_width(cr, <span class="fl">0.03</span>);</span>
+<span id="cb1-49"><a href="#cb1-49"></a>        }</span>
+<span id="cb1-50"><a href="#cb1-50"></a></span>
+<span id="cb1-51"><a href="#cb1-51"></a>        <span class="co">// Draw tick mark</span></span>
+<span id="cb1-52"><a href="#cb1-52"></a>        cairo_move_to(</span>
+<span id="cb1-53"><a href="#cb1-53"></a>            cr,</span>
+<span id="cb1-54"><a href="#cb1-54"></a>            (m_radius - inset) * cos (i * M_PI / <span class="fl">6.0</span>),</span>
+<span id="cb1-55"><a href="#cb1-55"></a>            (m_radius - inset) * sin (i * M_PI / <span class="fl">6.0</span>));</span>
+<span id="cb1-56"><a href="#cb1-56"></a>        cairo_line_to(</span>
+<span id="cb1-57"><a href="#cb1-57"></a>            cr,</span>
+<span id="cb1-58"><a href="#cb1-58"></a>            m_radius * cos (i * M_PI / <span class="fl">6.0</span>),</span>
+<span id="cb1-59"><a href="#cb1-59"></a>            m_radius * sin (i * M_PI / <span class="fl">6.0</span>));</span>
+<span id="cb1-60"><a href="#cb1-60"></a>        cairo_stroke(cr);</span>
+<span id="cb1-61"><a href="#cb1-61"></a>        cairo_restore(cr); <span class="co">/* stack-pen-size */</span></span>
+<span id="cb1-62"><a href="#cb1-62"></a>    }</span>
+<span id="cb1-63"><a href="#cb1-63"></a></span>
+<span id="cb1-64"><a href="#cb1-64"></a>    <span class="co">// Draw the analog hands</span></span>
+<span id="cb1-65"><a href="#cb1-65"></a></span>
+<span id="cb1-66"><a href="#cb1-66"></a>    <span class="co">// Get the current Unix time, convert to the local time and break into time</span></span>
+<span id="cb1-67"><a href="#cb1-67"></a>    <span class="co">// structure to read various time parts.</span></span>
+<span id="cb1-68"><a href="#cb1-68"></a>    <span class="dt">time_t</span> rawtime;</span>
+<span id="cb1-69"><a href="#cb1-69"></a>    time(&amp;rawtime);</span>
+<span id="cb1-70"><a href="#cb1-70"></a>    <span class="kw">struct</span> tm * timeinfo = localtime (&amp;rawtime);</span>
+<span id="cb1-71"><a href="#cb1-71"></a></span>
+<span id="cb1-72"><a href="#cb1-72"></a>    <span class="co">// Calculate the angles of the hands of our clock</span></span>
+<span id="cb1-73"><a href="#cb1-73"></a>    <span class="dt">double</span> hours   = timeinfo-&gt;tm_hour * M_PI / <span class="fl">6.0</span>;</span>
+<span id="cb1-74"><a href="#cb1-74"></a>    <span class="dt">double</span> minutes = timeinfo-&gt;tm_min * M_PI / <span class="fl">30.0</span>;</span>
+<span id="cb1-75"><a href="#cb1-75"></a>    <span class="dt">double</span> seconds = timeinfo-&gt;tm_sec * M_PI / <span class="fl">30.0</span>;</span>
+<span id="cb1-76"><a href="#cb1-76"></a></span>
+<span id="cb1-77"><a href="#cb1-77"></a>    <span class="co">// Save the graphics state</span></span>
+<span id="cb1-78"><a href="#cb1-78"></a>    cairo_save(cr);</span>
+<span id="cb1-79"><a href="#cb1-79"></a>    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);</span>
+<span id="cb1-80"><a href="#cb1-80"></a></span>
+<span id="cb1-81"><a href="#cb1-81"></a>    cairo_save(cr);</span>
+<span id="cb1-82"><a href="#cb1-82"></a></span>
+<span id="cb1-83"><a href="#cb1-83"></a>    <span class="co">// Draw the seconds hand</span></span>
+<span id="cb1-84"><a href="#cb1-84"></a>    cairo_set_line_width(cr, m_line_width / <span class="fl">3.0</span>);</span>
+<span id="cb1-85"><a href="#cb1-85"></a>    cairo_set_source_rgba(cr, <span class="fl">0.7</span>, <span class="fl">0.7</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>);   <span class="co">// gray</span></span>
+<span id="cb1-86"><a href="#cb1-86"></a>    cairo_move_to(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>);</span>
+<span id="cb1-87"><a href="#cb1-87"></a>    cairo_line_to(cr,</span>
+<span id="cb1-88"><a href="#cb1-88"></a>                  sin(seconds) * (m_radius * <span class="fl">0.9</span>),</span>
+<span id="cb1-89"><a href="#cb1-89"></a>                  -cos(seconds) * (m_radius * <span class="fl">0.9</span>));</span>
+<span id="cb1-90"><a href="#cb1-90"></a>    cairo_stroke(cr);</span>
+<span id="cb1-91"><a href="#cb1-91"></a>    cairo_restore(cr);</span>
+<span id="cb1-92"><a href="#cb1-92"></a></span>
+<span id="cb1-93"><a href="#cb1-93"></a>    <span class="co">// Draw the minutes hand</span></span>
+<span id="cb1-94"><a href="#cb1-94"></a>    cairo_set_source_rgba(cr, <span class="fl">0.117</span>, <span class="fl">0.337</span>, <span class="fl">0.612</span>, <span class="fl">0.9</span>);   <span class="co">// blue</span></span>
+<span id="cb1-95"><a href="#cb1-95"></a>    cairo_move_to(cr, <span class="dv">0</span>, <span class="dv">0</span>);</span>
+<span id="cb1-96"><a href="#cb1-96"></a>    cairo_line_to(cr,</span>
+<span id="cb1-97"><a href="#cb1-97"></a>                  sin(minutes + seconds / <span class="dv">60</span>) * (m_radius * <span class="fl">0.8</span>),</span>
+<span id="cb1-98"><a href="#cb1-98"></a>                  -cos(minutes + seconds / <span class="dv">60</span>) * (m_radius * <span class="fl">0.8</span>));</span>
+<span id="cb1-99"><a href="#cb1-99"></a>    cairo_stroke(cr);</span>
+<span id="cb1-100"><a href="#cb1-100"></a></span>
+<span id="cb1-101"><a href="#cb1-101"></a>    <span class="co">// draw the hours hand</span></span>
+<span id="cb1-102"><a href="#cb1-102"></a>    cairo_set_source_rgba(cr, <span class="fl">0.337</span>, <span class="fl">0.612</span>, <span class="fl">0.117</span>, <span class="fl">0.9</span>);   <span class="co">// green</span></span>
+<span id="cb1-103"><a href="#cb1-103"></a>    cairo_move_to(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>);</span>
+<span id="cb1-104"><a href="#cb1-104"></a>    cairo_line_to(cr,</span>
+<span id="cb1-105"><a href="#cb1-105"></a>                  sin(hours + minutes / <span class="fl">12.0</span>) * (m_radius * <span class="fl">0.5</span>),</span>
+<span id="cb1-106"><a href="#cb1-106"></a>                  -cos(hours + minutes / <span class="fl">12.0</span>) * (m_radius * <span class="fl">0.5</span>));</span>
+<span id="cb1-107"><a href="#cb1-107"></a>    cairo_stroke(cr);</span>
+<span id="cb1-108"><a href="#cb1-108"></a>    cairo_restore(cr);</span>
+<span id="cb1-109"><a href="#cb1-109"></a></span>
+<span id="cb1-110"><a href="#cb1-110"></a>    <span class="co">// Draw a little dot in the middle</span></span>
+<span id="cb1-111"><a href="#cb1-111"></a>    cairo_arc(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>, m_line_width / <span class="fl">3.0</span>, <span class="fl">0.0</span>, <span class="fl">2.0</span> * M_PI);</span>
+<span id="cb1-112"><a href="#cb1-112"></a>    cairo_fill(cr);</span>
+<span id="cb1-113"><a href="#cb1-113"></a>}</span></code></pre></div>
+<p>In order for the clock to be drawn, the drawing function <code>draw_clock()</code> needs to be registered with GTK4. This is done in the <code>app_activate()</code> function (on line 24).</p>
+<p>Whenever the application needs to redraw the GtkDrawingArea, it will now call <code>draw_clock()</code>.</p>
+<p>There is still a problem though. In order to animate the clock we need to also tell the application that the clock needs to be redrawn every second. This process starts by registering (on the next line, line 15) a timeout function with <code>g_timeout_add()</code> that will wakeup and run another function <code>time_handler</code>, every second (or 1000ms).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>app_activate (GApplication *app, gpointer user_data) {</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    GtkWidget *win;</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    GtkWidget *clock;</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    GtkBuilder *build;</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    build = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/tfc/tfc.ui&quot;</span>);</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    win = GTK_WIDGET (gtk_builder_get_object (build, <span class="st">&quot;win&quot;</span>));</span>
+<span id="cb2-9"><a href="#cb2-9"></a>    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a>    clock = GTK_WIDGET (gtk_builder_get_object (build, <span class="st">&quot;clock&quot;</span>));</span>
+<span id="cb2-12"><a href="#cb2-12"></a>    g_object_unref(build);</span>
+<span id="cb2-13"><a href="#cb2-13"></a></span>
+<span id="cb2-14"><a href="#cb2-14"></a>    gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);</span>
+<span id="cb2-15"><a href="#cb2-15"></a>    g_timeout_add(<span class="dv">1000</span>, (GSourceFunc) time_handler, (gpointer) clock);</span>
+<span id="cb2-16"><a href="#cb2-16"></a>    gtk_widget_show(win);</span>
+<span id="cb2-17"><a href="#cb2-17"></a></span>
+<span id="cb2-18"><a href="#cb2-18"></a>}</span></code></pre></div>
+<p>Our <code>time_handler()</code> function is very simple, as it just calls <code>gtk_widget_queue_draw()</code> which schedules a redraw of the widget.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>gboolean</span>
+<span id="cb3-2"><a href="#cb3-2"></a>time_handler(GtkWidget* widget) {</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    gtk_widget_queue_draw(widget);</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="cf">return</span> TRUE;</span>
+<span id="cb3-6"><a href="#cb3-6"></a>}</span></code></pre></div>
+<p>.. and that is all there is to it. If you compile and run the example you will get a ticking analog clock.</p>
+<p>If you get this working, you can try modifying some of the code in <code>draw_clock()</code> to tweak the application (such as change the color or size and length of the hands) or even add text, or create a digital clock.</p>
+<h2 id="the-complete-code">The Complete code</h2>
+<p>You can find the source files in the <code>tfc</code> directory. it can be compiled with <code>./comp tfc</code>.</p>
+<p><code>tfc.c</code></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#include </span><span class="im">&lt;math.h&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="pp">#include </span><span class="im">&lt;time.h&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="dt">float</span> m_radius     = <span class="fl">0.42</span>;</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">float</span> m_line_width = <span class="fl">0.05</span>;</span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>draw_clock (GtkDrawingArea *area, cairo_t *cr, <span class="dt">int</span> width, <span class="dt">int</span> height, gpointer user_data) {</span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="co">// Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="co">// the center of the window</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    cairo_scale(cr, width, height);</span>
+<span id="cb4-14"><a href="#cb4-14"></a>    cairo_translate(cr, <span class="fl">0.5</span>, <span class="fl">0.5</span>);</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a>    <span class="co">// Set the line width and save the cairo drawing state.</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>    cairo_set_line_width(cr, m_line_width);</span>
+<span id="cb4-18"><a href="#cb4-18"></a>    cairo_save(cr);</span>
+<span id="cb4-19"><a href="#cb4-19"></a></span>
+<span id="cb4-20"><a href="#cb4-20"></a>    <span class="co">// Set the background to a slightly transparent green.</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>    cairo_set_source_rgba(cr, <span class="fl">0.337</span>, <span class="fl">0.612</span>, <span class="fl">0.117</span>, <span class="fl">0.9</span>);   <span class="co">// green</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>    cairo_paint(cr);</span>
+<span id="cb4-23"><a href="#cb4-23"></a></span>
+<span id="cb4-24"><a href="#cb4-24"></a>    <span class="co">// Resore back to precious drawing state and draw the circular path</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>    <span class="co">// representing the clockface. Save this state (including the path) so we</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>    <span class="co">// can reuse it.</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>    cairo_restore(cr);</span>
+<span id="cb4-28"><a href="#cb4-28"></a>    cairo_arc(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>, m_radius, <span class="fl">0.0</span>, <span class="fl">2.0</span> * M_PI);</span>
+<span id="cb4-29"><a href="#cb4-29"></a>    cairo_save(cr);</span>
+<span id="cb4-30"><a href="#cb4-30"></a></span>
+<span id="cb4-31"><a href="#cb4-31"></a>    <span class="co">// Fill the clockface with white</span></span>
+<span id="cb4-32"><a href="#cb4-32"></a>    cairo_set_source_rgba(cr, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">0.8</span>);</span>
+<span id="cb4-33"><a href="#cb4-33"></a>    cairo_fill_preserve(cr);</span>
+<span id="cb4-34"><a href="#cb4-34"></a>    <span class="co">// Restore the path, paint the outside of the clock face.</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a>    cairo_restore(cr);</span>
+<span id="cb4-36"><a href="#cb4-36"></a>    cairo_stroke_preserve(cr);</span>
+<span id="cb4-37"><a href="#cb4-37"></a>    <span class="co">// Set the &#39;clip region&#39; to the inside of the path (fill region).</span></span>
+<span id="cb4-38"><a href="#cb4-38"></a>    cairo_clip(cr);</span>
+<span id="cb4-39"><a href="#cb4-39"></a></span>
+<span id="cb4-40"><a href="#cb4-40"></a>    <span class="co">// Clock ticks</span></span>
+<span id="cb4-41"><a href="#cb4-41"></a>    <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">12</span>; i++)</span>
+<span id="cb4-42"><a href="#cb4-42"></a>    {</span>
+<span id="cb4-43"><a href="#cb4-43"></a>        <span class="co">// Major tick size</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>        <span class="dt">double</span> inset = <span class="fl">0.05</span>;</span>
+<span id="cb4-45"><a href="#cb4-45"></a></span>
+<span id="cb4-46"><a href="#cb4-46"></a>        <span class="co">// Save the graphics state, restore after drawing tick to maintain pen</span></span>
+<span id="cb4-47"><a href="#cb4-47"></a>        <span class="co">// size</span></span>
+<span id="cb4-48"><a href="#cb4-48"></a>        cairo_save(cr);</span>
+<span id="cb4-49"><a href="#cb4-49"></a>        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);</span>
+<span id="cb4-50"><a href="#cb4-50"></a></span>
+<span id="cb4-51"><a href="#cb4-51"></a>        <span class="co">// Minor ticks are shorter, and narrower.</span></span>
+<span id="cb4-52"><a href="#cb4-52"></a>        <span class="cf">if</span>(i % <span class="dv">3</span> != <span class="dv">0</span>)</span>
+<span id="cb4-53"><a href="#cb4-53"></a>        {</span>
+<span id="cb4-54"><a href="#cb4-54"></a>            inset *= <span class="fl">0.8</span>;</span>
+<span id="cb4-55"><a href="#cb4-55"></a>            cairo_set_line_width(cr, <span class="fl">0.03</span>);</span>
+<span id="cb4-56"><a href="#cb4-56"></a>        }</span>
+<span id="cb4-57"><a href="#cb4-57"></a></span>
+<span id="cb4-58"><a href="#cb4-58"></a>        <span class="co">// Draw tick mark</span></span>
+<span id="cb4-59"><a href="#cb4-59"></a>        cairo_move_to(</span>
+<span id="cb4-60"><a href="#cb4-60"></a>            cr,</span>
+<span id="cb4-61"><a href="#cb4-61"></a>            (m_radius - inset) * cos (i * M_PI / <span class="fl">6.0</span>),</span>
+<span id="cb4-62"><a href="#cb4-62"></a>            (m_radius - inset) * sin (i * M_PI / <span class="fl">6.0</span>));</span>
+<span id="cb4-63"><a href="#cb4-63"></a>        cairo_line_to(</span>
+<span id="cb4-64"><a href="#cb4-64"></a>            cr,</span>
+<span id="cb4-65"><a href="#cb4-65"></a>            m_radius * cos (i * M_PI / <span class="fl">6.0</span>),</span>
+<span id="cb4-66"><a href="#cb4-66"></a>            m_radius * sin (i * M_PI / <span class="fl">6.0</span>));</span>
+<span id="cb4-67"><a href="#cb4-67"></a>        cairo_stroke(cr);</span>
+<span id="cb4-68"><a href="#cb4-68"></a>        cairo_restore(cr); <span class="co">/* stack-pen-size */</span></span>
+<span id="cb4-69"><a href="#cb4-69"></a>    }</span>
+<span id="cb4-70"><a href="#cb4-70"></a></span>
+<span id="cb4-71"><a href="#cb4-71"></a>    <span class="co">// Draw the analog hands</span></span>
+<span id="cb4-72"><a href="#cb4-72"></a></span>
+<span id="cb4-73"><a href="#cb4-73"></a>    <span class="co">// Get the current Unix time, convert to the local time and break into time</span></span>
+<span id="cb4-74"><a href="#cb4-74"></a>    <span class="co">// structure to read various time parts.</span></span>
+<span id="cb4-75"><a href="#cb4-75"></a>    <span class="dt">time_t</span> rawtime;</span>
+<span id="cb4-76"><a href="#cb4-76"></a>    time(&amp;rawtime);</span>
+<span id="cb4-77"><a href="#cb4-77"></a>    <span class="kw">struct</span> tm * timeinfo = localtime (&amp;rawtime);</span>
+<span id="cb4-78"><a href="#cb4-78"></a></span>
+<span id="cb4-79"><a href="#cb4-79"></a>    <span class="co">// Calculate the angles of the hands of our clock</span></span>
+<span id="cb4-80"><a href="#cb4-80"></a>    <span class="dt">double</span> hours   = timeinfo-&gt;tm_hour * M_PI / <span class="fl">6.0</span>;</span>
+<span id="cb4-81"><a href="#cb4-81"></a>    <span class="dt">double</span> minutes = timeinfo-&gt;tm_min * M_PI / <span class="fl">30.0</span>;</span>
+<span id="cb4-82"><a href="#cb4-82"></a>    <span class="dt">double</span> seconds = timeinfo-&gt;tm_sec * M_PI / <span class="fl">30.0</span>;</span>
+<span id="cb4-83"><a href="#cb4-83"></a></span>
+<span id="cb4-84"><a href="#cb4-84"></a>    <span class="co">// Save the graphics state</span></span>
+<span id="cb4-85"><a href="#cb4-85"></a>    cairo_save(cr);</span>
+<span id="cb4-86"><a href="#cb4-86"></a>    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);</span>
+<span id="cb4-87"><a href="#cb4-87"></a></span>
+<span id="cb4-88"><a href="#cb4-88"></a>    cairo_save(cr);</span>
+<span id="cb4-89"><a href="#cb4-89"></a></span>
+<span id="cb4-90"><a href="#cb4-90"></a>    <span class="co">// Draw the seconds hand</span></span>
+<span id="cb4-91"><a href="#cb4-91"></a>    cairo_set_line_width(cr, m_line_width / <span class="fl">3.0</span>);</span>
+<span id="cb4-92"><a href="#cb4-92"></a>    cairo_set_source_rgba(cr, <span class="fl">0.7</span>, <span class="fl">0.7</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>);   <span class="co">// gray</span></span>
+<span id="cb4-93"><a href="#cb4-93"></a>    cairo_move_to(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>);</span>
+<span id="cb4-94"><a href="#cb4-94"></a>    cairo_line_to(cr,</span>
+<span id="cb4-95"><a href="#cb4-95"></a>                  sin(seconds) * (m_radius * <span class="fl">0.9</span>),</span>
+<span id="cb4-96"><a href="#cb4-96"></a>                  -cos(seconds) * (m_radius * <span class="fl">0.9</span>));</span>
+<span id="cb4-97"><a href="#cb4-97"></a>    cairo_stroke(cr);</span>
+<span id="cb4-98"><a href="#cb4-98"></a>    cairo_restore(cr);</span>
+<span id="cb4-99"><a href="#cb4-99"></a></span>
+<span id="cb4-100"><a href="#cb4-100"></a>    <span class="co">// Draw the minutes hand</span></span>
+<span id="cb4-101"><a href="#cb4-101"></a>    cairo_set_source_rgba(cr, <span class="fl">0.117</span>, <span class="fl">0.337</span>, <span class="fl">0.612</span>, <span class="fl">0.9</span>);   <span class="co">// blue</span></span>
+<span id="cb4-102"><a href="#cb4-102"></a>    cairo_move_to(cr, <span class="dv">0</span>, <span class="dv">0</span>);</span>
+<span id="cb4-103"><a href="#cb4-103"></a>    cairo_line_to(cr,</span>
+<span id="cb4-104"><a href="#cb4-104"></a>                  sin(minutes + seconds / <span class="dv">60</span>) * (m_radius * <span class="fl">0.8</span>),</span>
+<span id="cb4-105"><a href="#cb4-105"></a>                  -cos(minutes + seconds / <span class="dv">60</span>) * (m_radius * <span class="fl">0.8</span>));</span>
+<span id="cb4-106"><a href="#cb4-106"></a>    cairo_stroke(cr);</span>
+<span id="cb4-107"><a href="#cb4-107"></a></span>
+<span id="cb4-108"><a href="#cb4-108"></a>    <span class="co">// draw the hours hand</span></span>
+<span id="cb4-109"><a href="#cb4-109"></a>    cairo_set_source_rgba(cr, <span class="fl">0.337</span>, <span class="fl">0.612</span>, <span class="fl">0.117</span>, <span class="fl">0.9</span>);   <span class="co">// green</span></span>
+<span id="cb4-110"><a href="#cb4-110"></a>    cairo_move_to(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>);</span>
+<span id="cb4-111"><a href="#cb4-111"></a>    cairo_line_to(cr,</span>
+<span id="cb4-112"><a href="#cb4-112"></a>                  sin(hours + minutes / <span class="fl">12.0</span>) * (m_radius * <span class="fl">0.5</span>),</span>
+<span id="cb4-113"><a href="#cb4-113"></a>                  -cos(hours + minutes / <span class="fl">12.0</span>) * (m_radius * <span class="fl">0.5</span>));</span>
+<span id="cb4-114"><a href="#cb4-114"></a>    cairo_stroke(cr);</span>
+<span id="cb4-115"><a href="#cb4-115"></a>    cairo_restore(cr);</span>
+<span id="cb4-116"><a href="#cb4-116"></a></span>
+<span id="cb4-117"><a href="#cb4-117"></a>    <span class="co">// Draw a little dot in the middle</span></span>
+<span id="cb4-118"><a href="#cb4-118"></a>    cairo_arc(cr, <span class="fl">0.0</span>, <span class="fl">0.0</span>, m_line_width / <span class="fl">3.0</span>, <span class="fl">0.0</span>, <span class="fl">2.0</span> * M_PI);</span>
+<span id="cb4-119"><a href="#cb4-119"></a>    cairo_fill(cr);</span>
+<span id="cb4-120"><a href="#cb4-120"></a>}</span>
+<span id="cb4-121"><a href="#cb4-121"></a></span>
+<span id="cb4-122"><a href="#cb4-122"></a></span>
+<span id="cb4-123"><a href="#cb4-123"></a>gboolean</span>
+<span id="cb4-124"><a href="#cb4-124"></a>time_handler(GtkWidget* widget) {</span>
+<span id="cb4-125"><a href="#cb4-125"></a>    gtk_widget_queue_draw(widget);</span>
+<span id="cb4-126"><a href="#cb4-126"></a></span>
+<span id="cb4-127"><a href="#cb4-127"></a>    <span class="cf">return</span> TRUE;</span>
+<span id="cb4-128"><a href="#cb4-128"></a>}</span>
+<span id="cb4-129"><a href="#cb4-129"></a></span>
+<span id="cb4-130"><a href="#cb4-130"></a></span>
+<span id="cb4-131"><a href="#cb4-131"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-132"><a href="#cb4-132"></a>app_activate (GApplication *app, gpointer user_data) {</span>
+<span id="cb4-133"><a href="#cb4-133"></a>    GtkWidget *win;</span>
+<span id="cb4-134"><a href="#cb4-134"></a>    GtkWidget *clock;</span>
+<span id="cb4-135"><a href="#cb4-135"></a>    GtkBuilder *build;</span>
+<span id="cb4-136"><a href="#cb4-136"></a></span>
+<span id="cb4-137"><a href="#cb4-137"></a>    build = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/tfc/tfc.ui&quot;</span>);</span>
+<span id="cb4-138"><a href="#cb4-138"></a>    win = GTK_WIDGET (gtk_builder_get_object (build, <span class="st">&quot;win&quot;</span>));</span>
+<span id="cb4-139"><a href="#cb4-139"></a>    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));</span>
+<span id="cb4-140"><a href="#cb4-140"></a></span>
+<span id="cb4-141"><a href="#cb4-141"></a>    clock = GTK_WIDGET (gtk_builder_get_object (build, <span class="st">&quot;clock&quot;</span>));</span>
+<span id="cb4-142"><a href="#cb4-142"></a>    g_object_unref(build);</span>
+<span id="cb4-143"><a href="#cb4-143"></a></span>
+<span id="cb4-144"><a href="#cb4-144"></a>    gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);</span>
+<span id="cb4-145"><a href="#cb4-145"></a>    g_timeout_add(<span class="dv">1000</span>, (GSourceFunc) time_handler, (gpointer) clock);</span>
+<span id="cb4-146"><a href="#cb4-146"></a>    gtk_widget_show(win);</span>
+<span id="cb4-147"><a href="#cb4-147"></a></span>
+<span id="cb4-148"><a href="#cb4-148"></a>}</span>
+<span id="cb4-149"><a href="#cb4-149"></a></span>
+<span id="cb4-150"><a href="#cb4-150"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-151"><a href="#cb4-151"></a>app_open (GApplication *app, GFile **files, gint n_files, gchar *hint, gpointer user_data) {</span>
+<span id="cb4-152"><a href="#cb4-152"></a>    app_activate(app,user_data);</span>
+<span id="cb4-153"><a href="#cb4-153"></a>}</span>
+<span id="cb4-154"><a href="#cb4-154"></a></span>
+<span id="cb4-155"><a href="#cb4-155"></a><span class="dt">int</span></span>
+<span id="cb4-156"><a href="#cb4-156"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
+<span id="cb4-157"><a href="#cb4-157"></a>    GtkApplication *app;</span>
+<span id="cb4-158"><a href="#cb4-158"></a>    <span class="dt">int</span> stat;</span>
+<span id="cb4-159"><a href="#cb4-159"></a></span>
+<span id="cb4-160"><a href="#cb4-160"></a>    app = gtk_application_new (<span class="st">&quot;com.github.ToshioCP.tfc&quot;</span>, G_APPLICATION_HANDLES_OPEN);</span>
+<span id="cb4-161"><a href="#cb4-161"></a>    g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
+<span id="cb4-162"><a href="#cb4-162"></a>    g_signal_connect (app, <span class="st">&quot;open&quot;</span>, G_CALLBACK (app_open), NULL);</span>
+<span id="cb4-163"><a href="#cb4-163"></a>    stat = g_application_run (G_APPLICATION (app), argc, argv);</span>
+<span id="cb4-164"><a href="#cb4-164"></a>    g_object_unref (app);</span>
+<span id="cb4-165"><a href="#cb4-165"></a>    <span class="cf">return</span> stat;</span>
+<span id="cb4-166"><a href="#cb4-166"></a>}</span></code></pre></div>
+<p><code>tfc.ui</code></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">&lt;interface&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>Clock<span class="kw">&lt;/property&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span><span class="kw">&gt;</span>200<span class="kw">&lt;/property&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span><span class="kw">&gt;</span>200<span class="kw">&lt;/property&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="kw">&lt;child&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkDrawingArea&quot;</span><span class="ot"> id=</span><span class="st">&quot;clock&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>      <span class="kw">&lt;/object&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>    <span class="kw">&lt;/child&gt;</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>  <span class="kw">&lt;/object&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
+<p><code>tfc.gresource.xml</code></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">&lt;gresources&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="kw">&lt;gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfc&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="kw">&lt;file&gt;</span>tfc.ui<span class="kw">&lt;/file&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="kw">&lt;/gresource&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">&lt;/gresources&gt;</span></span></code></pre></div>
+<p><code>comp</code></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1"></a>glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source</span>
+<span id="cb7-2"><a href="#cb7-2"></a>gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm</span></code></pre></div>
+<p>Up: <a href="index.html">index.html</a>, Prev: <a href="sec22.html">Section 22</a>, Next: <a href="sec24.html">Section 24</a></p>
+</body>
+</html>
