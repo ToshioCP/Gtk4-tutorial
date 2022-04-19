@@ -243,8 +243,10 @@ See [Gnome 40 website](https://forty.gnome.org/) first.
 There are only three choices at present.
 
   - Gnome OS
-  - Fedora 34
+  - Arch Linux
+  - Fedora 34+
   - openSUSE
+  - Ubuntu 21.04+
 
 I've tried installing Fedora 34 with gnome-boxes.
 

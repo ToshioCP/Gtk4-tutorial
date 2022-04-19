@@ -463,6 +463,7 @@ Application Options:
   --internal                   Don?t export functions; declare them G_GNUC_INTERNAL
   --external-data              Don?t embed resource data in the C file; assume it's linked externally instead
   --c-name                     C identifier name used for the generated source code
+  -C, --compiler               The target C compiler (default: the CC environment variable)
 
 ~~~
 
