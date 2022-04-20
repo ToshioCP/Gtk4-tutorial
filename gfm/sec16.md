@@ -683,16 +683,16 @@ It is a good practice for you to add more features.
 
 ~~~
 $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
-   10    17   294 tfe5/meson.build
-   99   304  3205 tfe5/tfeapplication.c
-    6     9   153 tfe5/tfe.gresource.xml
-    4     6    87 tfe5/tfe.h
-  140   378  3601 tfe5/tfenotebook.c
-   15    21   241 tfe5/tfenotebook.h
-  229   671  8017 tfetextview/tfetextview.c
-   35    60   701 tfetextview/tfetextview.h
-   61   100  2073 tfe5/tfe.ui
-  599  1566 18372 total
+      10      17     294 tfe5/meson.build
+      99     304    3205 tfe5/tfeapplication.c
+       6       9     153 tfe5/tfe.gresource.xml
+       4       6      87 tfe5/tfe.h
+     140     378    3601 tfe5/tfenotebook.c
+      15      21     241 tfe5/tfenotebook.h
+     229     671    8017 tfetextview/tfetextview.c
+      35      60     701 tfetextview/tfetextview.h
+      61     100    2073 tfe5/tfe.ui
+     599    1566   18372 total
 ~~~
 
 
