@@ -3,50 +3,50 @@
 ## Quick start guide
 
 1. You need linux operationg system, ruby, rake, pandoc and latex system.
-2. download this repository and uncompress the files.
+2. download this repository and uncompress the file.
 3. change your current directory to the top directory of the source files.
-4. type `rake html` to create html files. The files are created under `html` directory.
-5. type `rake pdf` to create pdf file. The file is created under `latex` directory.
+4. type `rake html` to create html files. The files are created under the `docs` directory.
+5. type `rake pdf` to create pdf file. The file is created under the `latex` directory.
 
 ## Prerequisites
 
 - Linux operationg system.
-The programs in the repository has been tested on Ubuntu 21.04.
-- Download the files in this repository.
+The programs in this repository has been tested on Ubuntu 21.04.
+- Download the files in the repository.
 There are two ways to download.
   1. Use git.
 Type `git clone https://github.com/ToshioCP/Gtk4-tutorial.git` on the command-line.
   2. Download a zip file.
-Click on the code button (green button) in the top page of this repository.
+Click on the `Code` button (green button) on the top page of the repository.
 Then, click "Download ZIP".
 - Ruby and rake.
-- Pandoc. It is used to convert markdown to html and latex.
+- Pandoc. It is used to convert markdown to html and/or latex.
 - Latex system. Texlive2020 or later version is recommended.
 It is used to generate pdf file.
 
 ## Github flavored markdown
 
-When you see [gtk4_tutorial github page](https://github.com/ToshioCP/Gtk4-tutorial), you'll find the contents of `Readme.md` below the list of files.
+When you see [gtk4_tutorial github repository](https://github.com/ToshioCP/Gtk4-tutorial), you'll find the contents of the `Readme.md` file.
 This file is written in markdown language.
-A markdown file has `.md` suffix.
+Markdown files have `.md` suffix.
 
 There are several kinds of markdown language.
 `Readme.md` uses 'github flavored markdown', which is often shortened as GFM.
-Markdown files in the `gfm` directory also written in GFM.
+Markdown files in the `gfm` directory are written in GFM.
 If you are not familiar with it, refer to the page [github flavor markdown spec](https://github.github.com/gfm/).
 
 ## Pandoc's markdown
 
-This tutorial also uses another markdown -- pandoc's markdown.
+This tutorial also uses another markdown -- 'pandoc's markdown'.
 Pandoc is a converter between markdown, html, latex, word docx and so on.
-This type of markdown is used to convert markdown to html and latex.
+This type of markdown is used to convert markdown to html and/or latex.
 
 ## Src.md file
 
 Src.md file has ".src.md" suffix.
 The syntax of .src.md file is similar to markdown but it has a special command which isn't included in markdown syntax.
 It is @@@ command.
-The command starts with a line that begins with "@@@" and it ends with a line "@@@".
+The command starts with a line begins with "@@@" and ends with a line "@@@".
 For example,
 
     @@@include
@@ -63,28 +63,30 @@ This type of @@@ command starts with a line "@@@include".
     tfeapplication.c
     @@@
 
-This command replaces itself with the text read from the C source files surrounded by `@@@include` and `@@@`.
+This command replaces itself with the texts read from the C source files surrounded by `@@@include` and `@@@`.
 If a function list follows the filename, only the functions are read.
-If no function list is given, the command can read any text file other than C source file.
 
     @@@include
     tfeapplication.c main startup
     @@@
 
-The command above is replaced by the contents of `main` and `startup` functions in `tfeapplication.c`.
+The command above is replaced by the contents of `main` and `startup` functions in the file `tfeapplication.c`.
+
+Other language's source files are also possible.
+The following example shows that the ruby file 'lib_src2.rb' is inserted by the command.
 
     @@@include
     lib_src2md.rb
     @@@
 
-This command is replaced by the contents of `lib_src2md.rb` which is a ruby script (not C file).
+You can't specify functions or methods unless the file is C source.
 
 The inserted text is converted to fence code block.
 Fence code block begins with `~~~` and ends with `~~~`.
 The contents are displayed verbatim.
 `~~~` is look like a fence so the block is called "fence code block".
 
-If the target markdown is GFM, then an info string follows the beginning fence.
+If the target markdown is GFM, then an info string can follow the beginning fence.
 The following example shows that the @@@ command includes a C source file `sample.c`.
 
     $ cat src/sample.c
@@ -116,9 +118,9 @@ This string is decided with the filename extension.
 - `.rb`  => ruby
 - `.xml` => xml
 
-The supported language is written in line 290 and 291 in `lib/lib_src2md.rb`.
+The supported languages are written in the `lang` method in `lib/lib_src2md.rb`.
 
-A line number is inserted at the top of each line in the code block.
+A line number will be inserted at the top of each line in the code block.
 If you don't want to insert it, give "-N" option to @@@include command.
 
 Options:
@@ -126,7 +128,7 @@ Options:
 - `-n`: Inserts a line number at the top of each line (default).
 - `-N`: No line number is inserted.
 
-The following shows that line numbers are inserted at the beginning of lines.
+The following shows that the line numbers are inserted at the beginning of each line.
 
     $cat src/sample.src.md
       ... ...
@@ -145,7 +147,7 @@ The following shows that line numbers are inserted at the beginning of lines.
     ~~~
       ... ...
 
-If the target markdown is an intermediate file to html, then another type of info string follows the beginning fence.
+If a markdown is an intermediate file to html, then another type of info string follows the fence.
 If @@@include command doesn't have -N option, then the generated markdown is:
 
     ~~~{.C .numberLines}
@@ -161,7 +163,7 @@ If the class is given, pandoc generates CSS to insert line numbers to the source
 That's why the fence code block in the markdown doesn't have line numbers, which is different from gfm markdown.
 If `-N` option is given, then the info string is `{.C}` only.
 
-If the target markdown is an intermediate file to latex, then the same info string follows the beginning fence.
+If a markdown is an intermediate file to latex, then the same info string follows the beginning fence.
 
     ~~~{.C .numberLines}
     int
@@ -171,8 +173,8 @@ If the target markdown is an intermediate file to latex, then the same info stri
     ~~~
 
 Rake uses pandoc with --listings option when it converts markdown to latex.
-The generated latex file uses listings package to list source files instead of verbatim environment.
-The markdwon above is converted to the following latex source file.
+The generated latex file uses 'listings package' to list source files instead of verbatim environment.
+The markdown above is converted to the following latex source file.
 
     \begin{lstlisting}[language=C, numbers=left]
     int
@@ -182,7 +184,7 @@ The markdwon above is converted to the following latex source file.
     \end{lstlisting}
 
 Listing package can color or emphasize keywords, strings, comments and directives.
-But it doesn't analyze the syntax or token of the language, so the kind of emphasis target is limited.
+But it doesn't really analyze the syntax of the language, so the emphasis tokens is limited.
 
  @@@include command have two advantages.
 
@@ -223,9 +225,9 @@ This command is similar to "#if", "#elif", #else" and "#endif" directives in C p
 For example,
 
     @@@if gfm
-    Refer to  [tfetextview API reference](../src/tfetextview_doc.md)
+    Refer to  [tfetextview API reference](tfetextview_doc.md)
     @@@elif html
-    Refer to  [tfetextview API reference](../src/tfetextview_doc.html)
+    Refer to  [tfetextview API reference](tfetextview_doc.html)
     @@@elif latex
     Refer to tfetextview API reference in appendix.
     @@@end
@@ -273,6 +275,7 @@ Price list
 
 This command just changes the appearance of the table.
 There's no influence on html/latex files that is converted from the markdown.
+Notice that the command supports only the above type of markdown table format.
 
 A script `mktbl.rb` supports this command.
 If you run the script like this:
@@ -281,7 +284,6 @@ If you run the script like this:
 $ ruby mktbl.rb sample.md
 ~~~
 
-Then, the appearance of the table will be changed
 The script also makes a backup file `sample.md.bak`.
 
 The task of the script seems easy, but the program is not so simple.
@@ -295,9 +297,9 @@ Then @@@commands are not effective because @@@commands must be at the top of the
 
 ## Conversion
 
-The @@@ commands above (@@@include, @@@shell, @@@if series and @@@table) are carried out by a method `src2md`,
+The @@@ commands are carried out by a method `src2md`,
 which is in the file `lib/lib_src2md.rb`.
-This method converts `src.md` file into `md` file.
+This method converts `.src.md` file into `.md` file.
 In addition, some other conversions are made by `src2md` method.
 
 - Relative links are changed according to the change of the base directory.
@@ -314,22 +316,24 @@ The order of the conversions are:
 
 There is `src2md.rb` file in the top directory of this repository.
 It just invokes the method `src2md`.
-In the same way, the method is called in the action in `Rakefile`.
+In the same way, the method is called in the action in the `Rakefile`.
 
 ## Directory structure
 
-There are six directories under `gtk4_tutorial` directory.
-They are `gfm`, `src`, `image`, `html`, `latex` and `lib`.
-Three directories `gfm`, `html` and `latex` are the destination directories for GFM, html and latex files respectively.
+There are seven directories under `gtk4_tutorial` directory.
+They are `gfm`, `docs`, `latex`, `src`, `image`, `test` and `lib`.
+Three directories `gfm`, `docs` and `latex` are the destination directories for GFM, html and latex files respectively.
 It is possible that these three directories don't exist before the conversion.
 
 - src: This directory contains .src.md files and C-related source files.
 - image: This directory contains image files like png or jpg.
 - gfm: `rake` converts src.md files to GFM files and store them in this directory.
-- html: This directory is empty at first. `rake html` will convert src.md files to html files and store them in this directory.
-- latex: This directory is empty at first. `rake latex` will convert src.md files to latex files and store them in this directory.
-`rake pdf` creates pdf file in `latex` directory.
+- docs: `rake html` will convert src.md files to html files and store them in this directory.
+- latex: `rake pdf` will convert src.md files to latex files and store them in this directory.
+Finally it creates a pdf file in `latex` directory.
 - lib: This directory includes ruby library files.
+- test: This directory contains test files.
+The tests are carried out by typing `rake test` on the terminal.
 
 ## Src directory and the top directory
 
@@ -338,7 +342,7 @@ The top directory, which is gtk\_tutorial directory, contains `Rakefile`, `src2m
 When `Readme.md` is generated, it will be located at the top directory.
 `Readme.md` has title, abstract, table of contents with links to GFM files.
 
-Rakefile describes how to convert .src.md files into GFM files.
+Rakefile describes how to convert .src.md files into GFM, html and/or pdf files.
 Rake carries out the conversion according to the `Rakefile`.
 
 ## The name of files in src directory
@@ -394,37 +398,37 @@ Markdown files (GFM) are generated by rake.
 
     $ rake
 
-This command generates `Readme.md` with `src/abstract.src.md` and titles of .src.md files.
-At the same time, it converts each .src.md file into GFM file under `gfm` directory.
+This command generates `Readme.md` with `src/abstract.src.md` and titles of each `.src.md` file.
+At the same time, it converts each .src.md file into a GFM file under the `gfm` directory.
 Navigation lines are added at the top and bottom of each markdown section file.
 
 You can describe width and height of images in .src.md files.
 For example,
 
-    ![sample image](../image/sample_image.png)
+    ![sample image](../image/sample_image.png){width=10cm height=6cm}
 
 The size between left brace and right brace is used in latex file and it is not fit to GFM syntax.
-So the size is removed in the conversion.
+So the size will be removed in the conversion.
 
 If a .src.md file has relative URL link, it will be changed by conversion.
 Because .src.md files are located under `src` directory and GFM files are located under `gfm` directory, base URL of GFM files is different from base URL of .src.md files.
-For example, `[src/sample.c](../src/sample.c)` is translated to `[src/sample.c](../src/sample.c)`.
+For example, `[src/sample.c](sample.c)` is translated to `[src/sample.c](../src/sample.c)`.
 
 If a link points another .src.md file, then the target filename will be changed to .md file.
-For example, `[Section 5](sec5.md)` is translated to `[Section 5](../src/sec5.md)`.
+For example, `[Section 5](sec5.src.md)` is translated to `[Section 5](sec5.md)`.
 
-If you want to clean the directory, that means remove all the generated markdown files, type `rake clean`.
+If you want to clean the directory, that means remove all the generated markdown files, type `rake clobber`.
 
-    $ rake clean
+    $ rake clobber
 
 Sometimes this is necessary before generating GFM files.
 
-    $ rake clean
+    $ rake clobber
     $ rake
 
-For example, if you append a new section and other files are still the same as before, `rake clean` is necessary.
+For example, if you append a new section and other files are still the same as before, `rake clobber` is necessary.
 Because the navigation of the previous section of the newly added section needs to be updated.
-If you don't do `rake clean`, then it won't be updated because the the timestamp of .md file in gfm is newer than the one of .src.md file.
+If you don't do `rake clobber`, then it won't be updated because the the timestamp of .md file in gfm is newer than the one of .src.md file.
 In this case, using `touch` to the previous section .src.md also works to update the file.
 
 If you see the github repository (ToshioCP/Gtk4-tutorial), `Readme.md` is shown below the code.
@@ -442,24 +446,25 @@ Type `rake html` to generate html files.
 
     $ rake html
 
-First, it generates pandoc's markdown files under `html` directory.
+First, it generates pandoc's markdown files under `docs` directory.
 Then, pandoc converts them to html files.
 The width and height of image files are removed.
 
 `index.html` is the top html file.
-If you want to clean `html` directory, type `rake cleanhtml`
+If you want to clean html files, type `rake clobber`
 
-    $ rake cleanhtml
+    $ rake clobber
 
-Every html file has stylesheet in its header.
-This is created by `lib/lib_add_head_tail_html.rb`.
-This script has a sample markdown code and convert it with pandoc and `-s` option.
-Pandoc generates a html file with header.
-The script extracts the header and use it for html files.
-You can customize the style by modifying `lib/lib_add_head_tail_html.rb`.
+Every html file has a header (`<head> -- </head>`).
+It is created by pandoc with '-s' option.
+You can customize the output with your own template file for pandoc.
+Rake uses `lib/lib_mk_html_template.rb` to create its own template.
+The template inserts bootstrap CSS and Javascript through `jsDelivr`.
 
-`html` directory contains all the necessary html files.
-So if you want to upload the html files to your own web site, just upload the files in the `html` directory.
+The `docs` directory contains all the necessary html files.
+They are used in the [github pages](https://ToshioCP.github.io/Gtk4-tutorial) of this repository.
+
+So if you want to publish this tutorial on your own web site, just upload the files in the `docs` directory to your site.
 
 ## Generate a pdf file
 
@@ -475,7 +480,7 @@ Links to files or directories are removed because latex doesn't support them.
 However, links to full URL and image files are kept.
 Image size is set with the size between the left brace and right brace.
 
-    ![sample image](../image/sample_image.png)
+    ![sample image](../image/sample_image.png){width=10cm height=6cm}
 
 You need to specify appropriate width and height.
 It is almost `0.015 x pixels` cm.

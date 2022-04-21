@@ -3,7 +3,7 @@ require 'fileutils'
 require_relative 'lib/lib_src_file.rb'
 require_relative 'lib/lib_src2md.rb'
 require_relative 'lib/lib_gen_main_tex.rb'
-require_relative 'lib/lib_add_head_tail_html.rb'
+require_relative 'lib/lib_mk_html_template.rb'
 
 secfiles = Sec_files.new(FileList['src/sec*.src.md'].to_a.map{|file| Sec_file.new(file)})
 secfiles.renum!
@@ -24,8 +24,10 @@ abstract_tex = "latex/"+abstract.to_tex
 
 ["gfm", html_dir, "latex"].each{|d| Dir.mkdir(d) unless Dir.exist?(d)}
 
-CLEAN.append(*mdfiles)
-CLEAN << "Readme.md"
+CLEAN.append(FileList["latex/*.tex", "latex/*.aux", "latex/*.log", "latex/*.toc"])
+CLOBBER.append("Readme.md").append(*mdfiles)
+CLOBBER.append(FileList["docs/*.html"])
+CLOBBER.append(FileList["latex/*.pdf"])
 
 def pair array1, array2
   n = [array1.size, array2.size].max
@@ -41,9 +43,9 @@ task md: %w[Readme.md] + mdfiles
 
 file "Readme.md" => [abstract] + secfiles do
   src2md abstract, abstract.to_md, "gfm"
-  buf = [ "# Gtk4 Tutorial for beginners\n", "\n" ]\
+  buf = ["# Gtk4 Tutorial for beginners\n\nThe github page of this tutorial is also available. Click [here](https://toshiocp.github.io/Gtk4-tutorial/).\n\n"]\
         + File.readlines(abstract.to_md)\
-        + ["\n", "## Table of contents\n", "\n"]
+        + ["\n## Table of contents\n\n"]
   File.delete(abstract.to_md)
   secfiles.each_with_index do |secfile, i|
     h = File.open(secfile.path){|file| file.readline}.sub(/^#* */,"").chomp
@@ -76,18 +78,20 @@ task html: %W[#{html_dir}/index.html] + htmlfiles
 file "#{html_dir}/index.html" => [abstract] + secfiles do
   abstract_md = "#{html_dir}/#{abstract.to_md}"
   src2md abstract, abstract_md, "html"
-  buf = ["# Gtk4 Tutorial for beginners\n", "\n"]\
+  buf = [ "# Gtk4 Tutorial for beginners\n\n" ]\
         + File.readlines(abstract_md)\
-        + ["\n", "## Table of contents\n", "\n"]
+        + ["\n## Table of contents\n\n"]
   File.delete(abstract_md)
   secfiles.each_with_index do |secfile, i|
     h = File.open(secfile.path){|file| file.readline}.sub(/^#* */,"").chomp
     buf << "1. [#{h}](#{secfile.to_html})\n"
   end
+  buf << "\nThis website uses [Bootstrap](https://getbootstrap.jp/)."
   File.write("#{html_dir}/index.md", buf.join)
-  sh "pandoc -o #{html_dir}/index.html #{html_dir}/index.md"
+  mk_html_template(nil, nil, nil)
+  sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o #{html_dir}/index.html #{html_dir}/index.md"
   File.delete "#{html_dir}/index.md"
-  add_head_tail_html "#{html_dir}/index.html"
+  File.delete "docs/template.html"
 end
 
 pair(srcfiles, htmlfiles).each do |src, dst, i|
@@ -96,19 +100,20 @@ pair(srcfiles, htmlfiles).each do |src, dst, i|
     src2md src, html_md, "html"
     if src.instance_of? Sec_file
       if secfiles.size == 1
-        nav = "Up: [index.html](index.html)\n"
+        mk_html_template("index.html", nil, nil)
       elsif i == 0
-        nav = "Up: [index.html](index.html),  Next: [Section 2](#{secfiles[1].to_html})\n"
+        mk_html_template("index.html", nil, "sec2.html")
       elsif i == secfiles.size - 1
-        nav = "Up: [index.html](index.html),  Prev: [Section #{i}](#{secfiles[i-1].to_html})\n"
+        mk_html_template("index.html", "sec#{i}.html", nil)
       else
-        nav = "Up: [index.html](index.html),  Prev: [Section #{i}](#{secfiles[i-1].to_html}), Next: [Section #{i+2}](#{secfiles[i+1].to_html})\n"
+        mk_html_template("index.html", "sec#{i}.html", "sec#{i+2}.html")
       end
-      File.write(html_md, nav + "\n" + File.read(html_md) + "\n" + nav)
+    else
+      mk_html_template("index.html", nil, nil)
     end
-    sh "pandoc -o #{dst} #{html_md}"
+    sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o #{dst} #{html_md}"
     File.delete(html_md)
-    add_head_tail_html dst
+    File.delete "docs/template.html"
   end
 end
 
@@ -143,10 +148,4 @@ pair(srcfiles, texfiles).each do |src, dst, i|
 end
 
 task :clean
-task :cleanhtml do
-  remove_entry_secure('html') if Dir.exist?('html')
-end
-task :cleanlatex do
-  remove_entry_secure('latex') if Dir.exist?('latex')
-end
-task cleanall: [:clean, :cleanhtml, :cleanlatex]
+task :clobber

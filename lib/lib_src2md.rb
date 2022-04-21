@@ -99,13 +99,11 @@ def src2md src_path, dst_path, type
   src = File.read(src_path)
   src = at_if_else(src, type)
   buf = src.partitions(/^@@@table\n.*?@@@\n/m)
-  buf = buf.map{|chunk| chunk=~/\A@@@table/ ? at_table(chunk) : chunk}.join
+  src = buf.map{|chunk| chunk=~/\A@@@table/ ? at_table(chunk) : chunk}.join
   buf = src.partitions(/^@@@include\s*(-(N|n))?.*?@@@\n/m)
-  buf = buf.map{|chunk| chunk=~/\A@@@include/ ? at_include(chunk, src_dir, type) : chunk}
-  src = buf.join
+  src = buf.map{|chunk| chunk=~/\A@@@include/ ? at_include(chunk, src_dir, type) : chunk}.join
   buf = src.partitions(/^@@@shell.*?@@@\n/m)
-  buf = buf.map{|chunk| chunk=~/\A@@@shell.*?@@@\n/m ? at_shell(chunk, src_dir) : chunk}
-  src = buf.join
+  src = buf.map{|chunk| chunk=~/\A@@@shell.*?@@@\n/m ? at_shell(chunk, src_dir) : chunk}.join
   src = change_link(src, src_dir, type, dst_dir)
   File.write(dst_path, src)
 end
@@ -300,46 +298,58 @@ def change_link src, old_dir, type, new_dir=nil
   raise "Illegal type." unless type == "gfm" || type == "html" || type == "latex"
   new_dir = type if new_dir == nil
   p_new_dir = Pathname.new(new_dir)
-  buf = src.partitions(/!?\[.*?\]\(.*?\)(\{.*?\})?/)
+  buf = src.partitions(/^    .*\n/)
+  buf = buf.map{|chunk| chunk.partitions(/^~~~.*?^~~~\n/m)}
+  buf = buf.inject([]){|b,e| b.append(*e)}
+  buf = buf.map{|chunk| chunk.partitions(/`.*?`/)}
+  buf = buf.inject([]){|b,e| b.append(*e)}
   buf = buf.map do |chunk|
-    m = chunk.match(/(!?\[.*?\])\((.*?)\)(\{.*?\})?/)
-    if m == nil
+    if (chunk =~ /^    .*\n/ || chunk =~ /^~~~.*?^~~~\n/m) || chunk =~ /`.*?`/
       chunk
     else
-      name = m[1]
-      target = m[2]
-      size = m[3]
-      if target =~ /\.src\.md$/
-        case type
-        when "gfm"
-          "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.md')})"
-        when "html"
-          "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.html')})"
-        when "latex"
-          name.match(/!?\[(.*?)\]/)[1]
-        end
-      elsif m[2] =~ /^(http|\/)/
-        chunk
-      elsif size != nil
-        p_target = Pathname.new "#{old_dir}/#{target}"
-        target = p_target.relative_path_from(p_new_dir).to_s
-        case type
-        when "gfm"
-          "#{name}(#{target})"
-        when "html"
-          "#{name}(#{target})"
-        when "latex"
-          "#{name}(#{target})#{size}"
-        end
-      else
-        p_target = Pathname.new "#{old_dir}/#{target}"
-        target = p_target.relative_path_from(p_new_dir).to_s
-        if type == "latex" && name[0] != '!'
-          name.match(/!?\[(.*?)\]/)[1]
+      b = chunk.partitions(/!?\[.*?\]\(.*?\)(\{.*?\})?/)
+      b = b.map do |c|
+        m = c.match(/(!?\[.*?\])\((.*?)\)(\{.*?\})?/)
+        if m == nil
+          c
         else
-          "#{name}(#{target})"
+          name = m[1]
+          target = m[2]
+          size = m[3]
+          if target =~ /\.src\.md$/
+            case type
+            when "gfm"
+              "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.md')})"
+            when "html"
+              "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.html')})"
+            when "latex"
+              name.match(/!?\[(.*?)\]/)[1]
+            end
+          elsif m[2] =~ /^(http|\/)/
+            c
+          elsif size != nil
+            p_target = Pathname.new "#{old_dir}/#{target}"
+            target = p_target.relative_path_from(p_new_dir).to_s
+            case type
+            when "gfm"
+              "#{name}(#{target})"
+            when "html"
+              "#{name}(#{target})"
+            when "latex"
+              "#{name}(#{target})#{size}"
+            end
+          else
+            p_target = Pathname.new "#{old_dir}/#{target}"
+            target = p_target.relative_path_from(p_new_dir).to_s
+            if type == "latex" && name[0] != '!'
+              name.match(/!?\[(.*?)\]/)[1]
+            else
+              "#{name}(#{target})"
+            end
+          end
         end
       end
+      b.join
     end
   end
   buf.join

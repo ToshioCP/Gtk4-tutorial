@@ -93,18 +93,19 @@ class Sec_files < Array
       rule[0].replace rule[3]
     end
     self.each do |file|
-      buf = File.read(file)
+      org = File.read(file)
+      new = File.read(file)
       rename_rule.each do |rule|
         if rule[1] != rule[3]
-          buf = buf.gsub(/(\[(S|s)ection *)#{rule[4]}\]\(sec#{rule[4]}\.src\.md\)/, "\\1#{rule[4]}](#{rule[2]})")
+          new = new.gsub(/(\[(S|s)ection *)#{rule[4]}\]\(sec#{rule[4]}\.src\.md\)/, "\\1#{rule[4]}](#{rule[2]})")
         end
       end
       rename_rule.each do |rule|
         if rule[1] != rule[3]
-          buf = buf.gsub(/(\[(S|s)ection *)#{rule[4]}\]\(#{rule[2]}\)/, "\\1#{rule[5]}](sec#{rule[5]}.src.md)")
+          new = new.gsub(/(\[(S|s)ection *)#{rule[4]}\]\(#{rule[2]}\)/, "\\1#{rule[5]}](sec#{rule[5]}.src.md)")
         end
       end
-      File.write(file, buf)
+      File.write(file, new) unless new == org
     end
   end
 

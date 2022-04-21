@@ -1,3 +1,7 @@
+# mk_html_template
+
+def mk_html_template(home, sec_prev, sec_next)
+  template = <<~EOS
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -5,7 +9,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>$title$</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -96,42 +100,36 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            
-            <li class="nav-item">
-<a class="nav-link" href="sec2.html">Next: section2</a>
-</li>
-
+            @@@home
+            @@@prev
+            @@@next
           </ul>
         </div>
       </div>
     </nav>
-<h1 id="prerequisite-and-license">Prerequisite and License</h1>
-<h2 id="prerequisite">Prerequisite</h2>
-<h3 id="gtk4-on-a-linux-os">Gtk4 on a Linux OS</h3>
-<p>This tutorial is about Gtk4 libraries. It is originally used on Linux with C compiler, but now it is used more widely, on Windows and MacOS, with Vala, Python and so on. However, this tutorial describes only <em>C programs on Linux</em>.</p>
-<p>If you want to try the examples in the tutorial, you need:</p>
-<ul>
-<li>PC with Linux distribution like Ubuntu, Debian and so on.</li>
-<li>Gcc.</li>
-<li>Gtk4. The stable version of Gtk on Linux distributions is version three at present. You need to install Gtk4 to your computer. See <a href="sec3.html">Section 3</a> for the installation of Gtk4.</li>
-</ul>
-<h3 id="ruby-and-rake-for-making-the-document">Ruby and rake for making the document</h3>
-<p>This repository includes Ruby programs. They are used to make Markdown files, HTML files, Latex files and a PDF file.</p>
-<p>You need:</p>
-<ul>
-<li>Linux distribution like Ubuntu.</li>
-<li>Ruby programming language. There are two ways to install it. One is installing the distribution’s package. The other is using rbenv and ruby-build. If you want to use the latest version of ruby, use rbenv.</li>
-<li>Rake. It is a gem, which is a library written in Ruby. You can install it as a package of your distribution or use gem command.</li>
-</ul>
-<h2 id="license">License</h2>
-<p>Copyright (C) 2020 ToshioCP (Toshio Sekiya)</p>
-<p>Gtk4 tutorial repository contains the tutorial document and software such as converters, generators and controllers. All of them make up the ‘Gtk4 tutorial’ package. This package is simply called ‘Gtk4 tutorial’ in the following description. ‘Gtk4 tutorial’ is free; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License or, at your option, any later version.</p>
-<p>‘Gtk4 tutorial’ is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a> for more details.</p>
+$body$
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>
   </html>
+  EOS
+
+  if home == nil
+    template = template.sub(/@@@home/,'')
+  else
+    template = template.sub(/@@@home/, "<li class=\"nav-item\">\n<a class=\"nav-link\" href=\"#{home}\">Home</a>\n</li>\n")
+  end
+  if sec_prev == nil
+    template = template.sub(/@@@prev/,'')
+  else
+    i = sec_prev.match(/\d+/).to_a[0]
+    template = template.sub(/@@@prev/, "<li class=\"nav-item\">\n<a class=\"nav-link\" href=\"#{sec_prev}\">Prev: section#{i}</a>\n</li>\n")
+  end
+  if sec_next == nil
+    template = template.sub(/@@@next/,'')
+  else
+    i = sec_next.match(/\d+/).to_a[0]
+    template = template.sub(/@@@next/, "<li class=\"nav-item\">\n<a class=\"nav-link\" href=\"#{sec_next}\">Next: section#{i}</a>\n</li>\n")
+  end
+  File.write("docs/template.html", template)
+end
