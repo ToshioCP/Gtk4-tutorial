@@ -227,7 +227,7 @@ G_APPLICATION_HANDLES_OPEN  This application handles opening files (in the prima
 <pre><code>$ comp tfv3
 $ ./a.out tfv3.c</code></pre>
 <figure>
-<img src="../image/screenshot_tfv3.png" alt="" /><figcaption>File viewer</figcaption>
+<img src="image/screenshot_tfv3.png" alt="" /><figcaption>File viewer</figcaption>
 </figure>
 <p>Let’s explain how the program <code>tfv3.c</code> works. First, the function <code>main</code> has only two changes from the previous version.</p>
 <ul>
@@ -264,7 +264,7 @@ $ ./a.out tfv3.c</code></pre>
 <h2 id="gtknotebook">GtkNotebook</h2>
 <p>GtkNotebook is a container widget that uses tabs and contains multiple children. The child that is displayed depends on which tab has been selected.</p>
 <figure>
-<img src="../image/screenshot_gtk_notebook.png" alt="" /><figcaption>GtkNotebook</figcaption>
+<img src="image/screenshot_gtk_notebook.png" alt="" /><figcaption>GtkNotebook</figcaption>
 </figure>
 <p>Looking at the screenshots above, the left one is the window at the startup. It shows the file <code>pr1.c</code> and the filename is in the left tab. After clicking on the right tab, the contents of the file <code>tfv1.c</code> are shown instead. This is shown in the right screenshot.</p>
 <p>The GtkNotebook widget is inserted as a child of GtkApplicationWindow and contains a GtkScrolledWindow for each file that is being displayed. The code to do this is given in <code>tfv4.c</code> and is:</p>

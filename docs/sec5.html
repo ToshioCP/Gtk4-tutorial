@@ -166,7 +166,7 @@
 <p>In line 30, <code>tv</code> is added to <code>win</code> as a child.</p>
 <p>Now compile and run it.</p>
 <figure>
-<img src="../image/screenshot_tfv1.png" alt="" /><figcaption>GtkTextView</figcaption>
+<img src="image/screenshot_tfv1.png" alt="" /><figcaption>GtkTextView</figcaption>
 </figure>
 <p>There’s an I-beam pointer in the window. You can add or delete any characters on the GtkTextview, and your changes are kept in the GtkTextBuffer. If you add more characters beyond the limit of the window, the height increases and the window extends. If the height gets bigger than the height of the display screen, you won’t be able to control the size of the window, and change it back to the original size. This is a problem and shows that there is a bug in our program. This can solve it by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.</p>
 <h3 id="gtkscrolledwindow">GtkScrolledWindow</h3>

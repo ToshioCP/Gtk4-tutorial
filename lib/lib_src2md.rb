@@ -325,26 +325,25 @@ def change_link src, old_dir, type, new_dir=nil
             when "latex"
               name.match(/!?\[(.*?)\]/)[1]
             end
-          elsif m[2] =~ /^(http|\/)/
+          elsif target =~ /^(http|\/)/
             c
-          elsif size != nil
-            p_target = Pathname.new "#{old_dir}/#{target}"
-            target = p_target.relative_path_from(p_new_dir).to_s
+          elsif name =~ /^!/ # link to an image file
+            n_target = Pathname.new("#{old_dir}/#{target}").relative_path_from(p_new_dir).to_s
+            b_target = File.basename(target)
             case type
             when "gfm"
-              "#{name}(#{target})"
+              "#{name}(#{n_target})"
             when "html"
-              "#{name}(#{target})"
+              "#{name}(image/#{b_target})"
             when "latex"
-              "#{name}(#{target})#{size}"
+              size ? "#{name}(#{n_target})#{size}" : "#{name}(#{target})"
             end
           else
-            p_target = Pathname.new "#{old_dir}/#{target}"
-            target = p_target.relative_path_from(p_new_dir).to_s
-            if type == "latex" && name[0] != '!'
-              name.match(/!?\[(.*?)\]/)[1]
-            else
-              "#{name}(#{target})"
+            n_target = Pathname.new("#{old_dir}/#{target}").relative_path_from(p_new_dir).to_s
+            if type == "gfm"
+              "#{name}(#{n_target})"
+            else # remove link
+              name.match(/\[(.*?)\]/)[1]
             end
           end
         end

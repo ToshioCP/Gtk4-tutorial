@@ -122,12 +122,12 @@ $ ninja -C _build install</code></pre>
 <p>Type the following command then turtle shows the following window.</p>
 <pre><code>$ turtle</code></pre>
 <figure>
-<img src="../src/turtle/image/turtle1.png" alt="" /><figcaption>Screenshot just after it’s executed</figcaption>
+<img src="image/turtle1.png" alt="" /><figcaption>Screenshot just after it’s executed</figcaption>
 </figure>
 <p>The left half is a text editor and the right half is a surface. Surface is like a canvas to draw shapes.</p>
 <p>Write turtle language in the text editor and click on <code>run</code> button, then the program will be executed and it draws shapes on the surface.</p>
 <figure>
-<img src="../src/turtle/image/turtle_tree.png" alt="" /><figcaption>Tree</figcaption>
+<img src="image/turtle_tree.png" alt="" /><figcaption>Tree</figcaption>
 </figure>
 <p>If you add the following line in <code>turtle.h</code>, then codes to inform the status will also be compiled. However, the speed will be quite slow because of the output messages.</p>
 <pre><code># define debug 1</code></pre>
@@ -151,7 +151,7 @@ tr 90
 fd 100</code></pre>
 <p>The command <code>tr</code> is “Turn Right”. The argument is angle with degrees. Therefore, <code>tr 90</code> means “Turn right by 90 degrees”. If you click on the <code>run</code>button, then two line segments appears. One is vertical and the other is horizontal.</p>
 <figure>
-<img src="../src/turtle/image/turtle2.png" alt="" /><figcaption>Two line segments on the surface</figcaption>
+<img src="image/turtle2.png" alt="" /><figcaption>Two line segments on the surface</figcaption>
 </figure>
 <h2 id="background-and-foreground-color">Background and foreground color</h2>
 <p>Colors are specified with RGB. A vector (r, g, b) denotes RGB color. Each of the elements is a real number between 0 and 1.</p>
@@ -169,7 +169,7 @@ fd 100</code></pre>
 <li>fc: Foreground Color. <code>fc (0,1,0)</code> changes the foreground color to green. This command changes the pen color. The prior shapes on the surface aren’t affected. After this command, the turtle draws lines with the new color.</li>
 </ul>
 <figure>
-<img src="../src/turtle/image/turtle3.png" alt="" /><figcaption>Change the foreground color</figcaption>
+<img src="image/turtle3.png" alt="" /><figcaption>Change the foreground color</figcaption>
 </figure>
 <h2 id="other-simple-commands">Other simple commands</h2>
 <ul>
@@ -269,15 +269,15 @@ repeat (4)</code></pre>
 <h2 id="fractal-curves">Fractal curves</h2>
 <p>Recursive call can be applied to draw fractal curves. Fractal curves appear when a procedure is applied to it repeatedly. The procedure replaces a part of the curve with the contracted curve.</p>
 <figure>
-<img src="../src/turtle/image/turtle_tree.png" alt="" /><figcaption>Tree</figcaption>
+<img src="image/turtle_tree.png" alt="" /><figcaption>Tree</figcaption>
 </figure>
 <p>This shape is called tree. The basic pattern of this shape is a line segment. It is the first stage. The second stage adds two shorter line segments at the endpoint of the original segment. The new segment has 70 percent length to the original segment and the orientation is +30 or -30 degrees different. The third stage adds two shorter line segments to the second stage line segments. And repeats it several times.</p>
 <p>This repeating is programmed by recursive call. Two more examples are shown here. They are Koch curve and Square Koch curve.</p>
 <figure>
-<img src="../src/turtle/image/turtle_koch.png" alt="" /><figcaption>Koch curve</figcaption>
+<img src="image/turtle_koch.png" alt="" /><figcaption>Koch curve</figcaption>
 </figure>
 <figure>
-<img src="../src/turtle/image/turtle_square_koch.png" alt="" /><figcaption>Square Koch curve</figcaption>
+<img src="image/turtle_square_koch.png" alt="" /><figcaption>Square Koch curve</figcaption>
 </figure>
 <h2 id="tokens-and-punctuations">Tokens and punctuations</h2>
 <p>The following is the list of tokens.</p>

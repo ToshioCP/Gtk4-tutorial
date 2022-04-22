@@ -342,10 +342,10 @@ module Prepare_test
 
     html
 
-    [Relative link](../temp/sample.c) will be converted when the target type is gfm or html.
+    Relative link will be converted when the target type is gfm or html.
     Otherwise (latex) the link will be removed.
 
-    Another [relative link](../../Rakefile).
+    Another relative link.
 
     [Absolute link](https://github.com/ToshioCP) is kept as it is.
 
@@ -353,7 +353,7 @@ module Prepare_test
     If the target type is gfm or html, the size will be removed.
     Otherwise (latex) it remains.
 
-    ![Screenshot of the box](../../image/screenshot_lb4.png)
+    ![Screenshot of the box](image/screenshot_lb4.png)
     EOS
 
     sample_md_latex = <<~EOS
@@ -826,7 +826,7 @@ class Test_lib_src_file < Minitest::Test
     dst_src = <<~'EOS'
       [Section 1](sec1.html)
       [document](document.html)
-      ![image](../image/image.png)
+      ![image](image/image.png)
       [Github](https://github.com/ToshioCP)
     EOS
     assert_equal dst_src, change_link(src_src, "src", "html", "html")
@@ -892,7 +892,7 @@ class Test_lib_src_file < Minitest::Test
     end
     remove_entry_secure(temp)
     assert_equal "![image](../src/image/image.png)\n", dst_md["gfm"]
-    assert_equal "![image](../src/image/image.png)\n", dst_md["html"]
+    assert_equal "![image](image/image.png)\n", dst_md["html"]
     assert_equal "![image](../src/image/image.png){width=8cm hight=6cm}\n", dst_md["latex"]
   end
 

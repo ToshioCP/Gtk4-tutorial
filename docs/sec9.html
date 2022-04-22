@@ -116,7 +116,7 @@
 <h2 id="new-open-and-save-button">New, Open and Save button</h2>
 <p>In the last section we made the almost simplest editor possible. It reads files in the <code>app_open</code> function at start-up and writes them out when closing the window. It works but is not very good. It would be better if we had “New”, “Open”, “Save” and “Close” buttons. This section describes how to put those buttons into the window. Signals and handlers will be explained later.</p>
 <figure>
-<img src="../image/screenshot_tfe2.png" alt="" /><figcaption>Screenshot of the file editor</figcaption>
+<img src="image/screenshot_tfe2.png" alt="" /><figcaption>Screenshot of the file editor</figcaption>
 </figure>
 <p>The screenshot above shows the layout. The function <code>app_open</code> in the source code <code>tfe2.c</code> is as follows.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -408,7 +408,7 @@
 <span id="cb5-46"><a href="#cb5-46"></a>  } <span class="cf">else</span></span>
 <span id="cb5-47"><a href="#cb5-47"></a>    gtk_window_destroy (GTK_WINDOW (win));</span>
 <span id="cb5-48"><a href="#cb5-48"></a>}</span></code></pre></div>
-<p>The whole source code of <code>tfe3.c</code> is stored in <a href="../src/tfe">src/tfe</a> directory. If you want to see it, click the link above.</p>
+<p>The whole source code of <code>tfe3.c</code> is stored in src/tfe directory. If you want to see it, click the link above.</p>
 <h3 id="using-ui-string">Using ui string</h3>
 <p>GtkBuilder can build widgets using string. Use the function <code>gtk_builder_new_from_string</code> instead of <code>gtk_builder_new_from_file</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="dt">char</span> *uistring;</span>

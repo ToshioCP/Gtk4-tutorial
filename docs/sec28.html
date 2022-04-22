@@ -118,7 +118,7 @@
 <pre><code>1 + 2 = 3</code></pre>
 <p><code>1+2</code> is an expression. It shows the way how to calculate. <code>3</code> is the value comes from the expression. Evaluation is to calculate the expression and get the value.</p>
 <p>GtkExpression is a way to get a value. Evaluation is like a calculation. A value is got by evaluating the expression.</p>
-<p>First, I want to show you the C file of the example for GtkExpression. Its name is <code>exp.c</code> and located under <a href="../src/expression">src/expression</a> directory. You don’t need to understand the details now, just look at it. It will be explained in the next subsection.</p>
+<p>First, I want to show you the C file of the example for GtkExpression. Its name is <code>exp.c</code> and located under src/expression directory. You don’t need to understand the details now, just look at it. It will be explained in the next subsection.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a></span>
 <span id="cb2-3"><a href="#cb2-3"></a>GtkWidget *win1;</span>
@@ -527,13 +527,13 @@
 <p>You’ve probably been noticed that ui file is easier and clearer than the corresponding C program. One of the most useful case of GtkExpression is building GtkListItem instance with GtkBuilderListItemFatory. Such case has already been described in the prior two sections.</p>
 <p>It will be used in the next section to build GtkListItem in GtkColumnView, which is the most useful view object for GListModel.</p>
 <h2 id="compilation-and-execution">Compilation and execution</h2>
-<p>All the sources are in <a href="../src/expression">src/expression</a> directory. Change your current directory to the directory and run meson and ninja. Then, execute the application.</p>
+<p>All the sources are in src/expression directory. Change your current directory to the directory and run meson and ninja. Then, execute the application.</p>
 <pre><code>$ meson _build
 $ ninja -C _build
 $ build/exp</code></pre>
 <p>Then, two windows appear.</p>
 <figure>
-<img src="../image/expression.png" alt="" /><figcaption>Expression</figcaption>
+<img src="image/expression.png" alt="" /><figcaption>Expression</figcaption>
 </figure>
 <p>If you put some text in the field of the entry, then the same text appears in the second GtkLabel. Because the “label” property of the second GtkLabel instance is bound to the text in the GtkEntryBuffer.</p>
 <p>If you resize the window, then the size appears in the title bar because the “title” property is bound to “default-width” and “default-height” properties.</p>

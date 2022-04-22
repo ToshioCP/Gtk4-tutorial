@@ -115,7 +115,7 @@
 <h1 id="gtkgridview-and-activate-signal">GtkGridView and activate signal</h1>
 <p>GtkGridView is similar to GtkListView. It displays a GListModel as a grid, which is like a square tessellation.</p>
 <figure>
-<img src="../image/list4.png" alt="" /><figcaption>Grid</figcaption>
+<img src="image/list4.png" alt="" /><figcaption>Grid</figcaption>
 </figure>
 <p>This is often seen when you use a file browser like nautilus.</p>
 <p>In this section, let’s make a very simple file browser <code>list4</code>. It just shows the files in the current directory. And a user can choose list or grid by clicking on buttons in the tool bar. Each item in the list or grid has an icon and a filename. In addition, <code>list4</code> provides the way to open the <code>tfe</code> text editor to show a text file. A user can do that by double clicking on an item or pressing enter key when an item is selected.</p>
@@ -125,7 +125,7 @@
 <pre><code>GtkListView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList
 GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList</code></pre>
 <figure>
-<img src="../image/directorylist.png" alt="" /><figcaption>DirectoryList</figcaption>
+<img src="image/directorylist.png" alt="" /><figcaption>DirectoryList</figcaption>
 </figure>
 <p>The following is the part of the ui file <code>list4.ui</code>. It defines GtkListView, GtkSingleSelection and GtkDirectoryList. It also defines GtkGridView and GtkSingleSelection.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span><span class="kw">&gt;</span></span>
@@ -449,14 +449,14 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
 </ul>
 <p>If your distribution supports Gtk4, using <code>g_app_info_launch_default_for_uri</code> is convenient. The function automatically determines the default application from the file and launches it. For example, if the file is text, then it launches gedit with the file. Such functionality comes from desktop.</p>
 <h2 id="compilation-and-execution">Compilation and execution</h2>
-<p>The source files are located in <a href="../src/list4">src/list4</a> directory. To compile and execute list4, type as follows.</p>
+<p>The source files are located in src/list4 directory. To compile and execute list4, type as follows.</p>
 <pre><code>$ cd list4 # or cd src/list4. It depends your current directory.
 $ meson _build
 $ ninja -C _build
 $ _build/list4</code></pre>
 <p>Then a file list appears as a list style. Click on a button on the tool bar so that you can change the style to grid or back to list. Double click “list4.c” item, then <code>tfe</code> text editor runs with the argument “list4.c”. The following is the screenshot.</p>
 <figure>
-<img src="../image/screenshot_list4.png" alt="" /><figcaption>Screenshot</figcaption>
+<img src="image/screenshot_list4.png" alt="" /><figcaption>Screenshot</figcaption>
 </figure>
 <h2 id="gbytes-property-of-gtkbuilderlistitemfactory">“gbytes” property of GtkBuilderListItemFactory</h2>
 <p>GtkBuilderListItemFactory has “gbytes” property. The property contains a byte sequence of ui data. If you use this property, you can put the contents of <code>factory_list.ui</code> and <code>factory_grid.ui</code>into <code>list4.ui</code>. The following shows a part of the new ui file (<code>list5.ui</code>).</p>
@@ -510,7 +510,7 @@ $ _build/list4</code></pre>
 <span id="cb13-48"><a href="#cb13-48" aria-hidden="true"></a>  <span class="kw">&lt;/object&gt;</span></span></code></pre></div>
 <p>CDATA section begins with “&lt;[CDATA[" and ends with "]]&gt;”. The contents of CDATA section is recognized as a string. Any character, even if it is a key syntax marker such as ‘&lt;’ or ‘&gt;’, is recognized literally. Therefore, the text between “&lt;[CDATA[" and "]]&gt;” is inserted to “bytes” property as it is.</p>
 <p>This method decreases the number of ui files. But, the new ui file is a bit complicated especially for the beginners. If you feel some difficulty, it is better for you to separate the ui file.</p>
-<p>A directory <a href="../src/list5">src/list5</a> includes the ui file above.</p>
+<p>A directory src/list5 includes the ui file above.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

@@ -325,7 +325,7 @@
 <li>78: Shows the dialog.</li>
 </ul>
 <figure>
-<img src="../image/saveas.png" alt="" /><figcaption>Saveas process</figcaption>
+<img src="image/saveas.png" alt="" /><figcaption>Saveas process</figcaption>
 </figure>
 <p>When you use GtkFileChooserDialog, you need to divide the program into two parts. One is a function which creates GtkFileChooserDialog and the other is a signal handler. The function just creates and shows GtkFileChooserDialog. The rest is done by the handler. It gets Gfile from GtkFileChooserDialog and saves the buffer to the file by calling <code>save_file</code>.</p>
 <h2 id="open-function">Open function</h2>
@@ -397,7 +397,7 @@
 </ul>
 <p>Now let’s think about the whole process between the caller and TfeTextView. It is shown in the following diagram and you would think that it is really complicated. Because signal is the only way for GtkFileChooserDialog to communicate with others. In Gtk3, <code>gtk_dialog_run</code> function is available. It simplifies the process. However, in Gtk4, <code>gtk_dialog_run</code> is unavailable any more.</p>
 <figure>
-<img src="../image/open.png" alt="" /><figcaption>Caller and TfeTextView</figcaption>
+<img src="image/open.png" alt="" /><figcaption>Caller and TfeTextView</figcaption>
 </figure>
 <ol type="1">
 <li>A caller gets a pointer <code>tv</code> to a TfeTextView instance by calling <code>tfe_text_view_new</code>.</li>
@@ -420,8 +420,8 @@
 <span id="cb11-9"><a href="#cb11-9"></a>}</span></code></pre></div>
 <p>The important thing is to duplicate <code>tv-&gt;file</code>. Otherwise, if the caller frees the GFile object, <code>tv-&gt;file</code> is no more guaranteed to point the GFile. Another reason to use <code>g_file_dup</code> is that GFile isn’t thread-safe. If you use GFile in the different thread, the duplication is necessary. See <a href="https://docs.gtk.org/gio/method.File.dup.html">Gio API Reference, g_file_dup</a>.</p>
 <h2 id="the-api-document-and-source-file-of-tfetextview.c">The API document and source file of tfetextview.c</h2>
-<p>Refer <a href="../html/tfetextview_doc.html">API document of TfeTextView</a>. Its original markdown file is under the directory <code>src/tfetextview</code>.</p>
-<p>All the source files are listed in <a href="sec16.html">Section 16</a>. You can find them under <a href="../src/tfe5">src/tfe5</a> and <a href="../src/tfetextview">src/tfetextview</a> directories.</p>
+<p>Refer API document of TfeTextView. Its original markdown file is under the directory <code>src/tfetextview</code>.</p>
+<p>All the source files are listed in <a href="sec16.html">Section 16</a>. You can find them under src/tfe5 and src/tfetextview directories.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

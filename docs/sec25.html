@@ -115,11 +115,11 @@
 <h1 id="tiny-turtle-graphics-interpreter">Tiny turtle graphics interpreter</h1>
 <p>A program <code>turtle</code> is an example with the combination of TfeTextView and GtkDrawingArea objects. It is a very small interpreter but it provides a tool to draw fractal curves. The following diagram is a Koch curve, which is a famous example of fractal curves.</p>
 <figure>
-<img src="../src/turtle/image/turtle_koch.png" alt="" /><figcaption>Koch curve</figcaption>
+<img src="image/turtle_koch.png" alt="" /><figcaption>Koch curve</figcaption>
 </figure>
 <p>This program uses flex and bison. Flex is a lexical analyzer. Bison is a parser generator. These two programs are similar to lex and yacc which are proprietary software developed in Bell Laboratory. However, flex and bison are open source software. I will write about how to use those software, but they are not topics about gtk. So, readers can skip that part of this sections.</p>
 <h2 id="how-to-use-turtle">How to use turtle</h2>
-<p>The documentation of turtle is <a href="../html/turtle_doc.html">here</a>. I’ll show you a simple example.</p>
+<p>The documentation of turtle is here. I’ll show you a simple example.</p>
 <pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
 pd         # Pen down.
 fd 100     # Go forward by 100 pixels.
@@ -135,7 +135,7 @@ tr 90</code></pre>
 <li>Type the program above in the editor (left part of the window).</li>
 <li>Click on the <code>Run</code> button, then a red square appears on the right part of the window. The side of the square is 100 pixels long.</li>
 </ol>
-<p>In the same way, you can draw other curves. The documentation above shows some fractal curves such as tree, snow and square-koch. The source code in turtle language is located at <a href="../src/turtle/example">src/turtle/example</a> directory. You can read these files into <code>turtle</code> editor by clicking on the <code>Open</code> button.</p>
+<p>In the same way, you can draw other curves. The documentation above shows some fractal curves such as tree, snow and square-koch. The source code in turtle language is located at src/turtle/example directory. You can read these files into <code>turtle</code> editor by clicking on the <code>Open</code> button.</p>
 <h2 id="combination-of-tfetextview-and-gtkdrawingarea-objects">Combination of TfeTextView and GtkDrawingArea objects</h2>
 <p>Turtle uses TfeTextView and GtkDrawingArea. It is similar to <code>color</code> program in the previous section.</p>
 <ol type="1">
@@ -146,7 +146,7 @@ tr 90</code></pre>
 <li>The widget is added to the queue. It will be redrawn with the drawing function. The function just copies the surface, which is drawn by the interpreter, into the surface of the GtkDrawingArea.</li>
 </ol>
 <figure>
-<img src="../image/turtle.png" alt="" /><figcaption>Parser, interpreter and drawing function</figcaption>
+<img src="image/turtle.png" alt="" /><figcaption>Parser, interpreter and drawing function</figcaption>
 </figure>
 <p>The body of the interpreter is written with flex and bison. The codes are not thread safe. So the handler of “clicked” signal of the <code>Run</code> button prevents from reentering.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">void</span></span>
@@ -198,7 +198,7 @@ tr 90</code></pre>
 <li>27: The interpreter program has finished so <code>busy</code> is now changed to FALSE.</li>
 <li>29-34: A handler of “resized” signal. If <code>surface</code> isn’t NULL, it destroys the old surface. Then it creates a new surface. Its size is the same as the surface of the GtkDrawingArea instance.</li>
 </ul>
-<p>Other part of <code>turtleapplication.c</code> is almost same as the codes of <code>colorapplication.c</code> in the previous section. The codes of <code>turtleapplication.c</code> is in the <a href="../src/turtle">turtle directory</a>.</p>
+<p>Other part of <code>turtleapplication.c</code> is almost same as the codes of <code>colorapplication.c</code> in the previous section. The codes of <code>turtleapplication.c</code> is in the turtle directory.</p>
 <h2 id="what-does-the-interpreter-do">What does the interpreter do?</h2>
 <p>Suppose that the turtle runs with the following program.</p>
 <pre><code>distance = 100
@@ -267,7 +267,7 @@ fd distance*2</code></pre>
 <li><code>turtle</code> makes a tree structured data. This part of <code>turtle</code> is called parser.</li>
 </ul>
 <figure>
-<img src="../image/turtle_parser_tree.png" alt="" /><figcaption>turtle parser tree</figcaption>
+<img src="image/turtle_parser_tree.png" alt="" /><figcaption>turtle parser tree</figcaption>
 </figure>
 <ul>
 <li><code>turtle</code> analyzes the tree and executes it. This part of <code>turtle</code> is called runtime routine or interpreter. The tree consists of rectangles and line segments between the rectangles. The rectangles are called nodes. For example, N_PROGRAM, N_ASSIGN, N_FD and N_MUL are nodes.
@@ -306,7 +306,7 @@ fd distance*2</code></pre>
 <li>gcc compiles <code>application.c</code>, <code>resources.c</code>, <code>turtle_parser.c</code> and <code>turtle_lex.c</code> with <code>turtle.h</code>, <code>turtle_lex.h</code>, <code>resources.h</code> and <code>turtle_parser.h</code>. It generates an executable file <code>turtle</code>.</li>
 </ol>
 <figure>
-<img src="../image/turtle_compile_process.png" alt="" /><figcaption>compile process</figcaption>
+<img src="image/turtle_compile_process.png" alt="" /><figcaption>compile process</figcaption>
 </figure>
 <p>Meson controls the process and the instruction is described in <code>meson.build</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb4-1"><a href="#cb4-1"></a>project(&#39;turtle&#39;, &#39;c&#39;)</span>
@@ -1283,7 +1283,7 @@ expression:
 <li>Finally <code>node_top</code> points the node <code>N_FD</code> and the node <code>N_FD</code> points the node <code>N_NUM</code>.</li>
 </ol>
 <figure>
-<img src="../image/tree.png" alt="" /><figcaption>tree</figcaption>
+<img src="image/tree.png" alt="" /><figcaption>tree</figcaption>
 </figure>
 <p>The following is the grammar rule extracted from <code>turtle.y</code>. The rules there are based on the same idea above. I don’t want to explain the whole rules below. Please look into each line carefully so that you will understand all the rules and actions.</p>
 <pre class="bison"><code>program:
@@ -1546,7 +1546,7 @@ drawline (90, 100)</code></pre>
 <p>The following diagram shows the structure of the stack. First, <code>procedure 1</code> is called. The procedure has two parameters. In the <code>procedure 1</code>, another procedure <code>procedure 2</code>, which has one parameter, is called. And in the <code>procedure 2</code>, <code>procedure 3</code>, which has three parameters, is called.</p>
 <p>Programs push data to a stack from a low address memory to a high address memory. In the following diagram, the lowest address is at the top and the highest address is at the bottom. That is the order of the address. However, “the top of the stack” is the last pushed data and “the bottom of the stack” is the first pushed data. Therefore, “the top of the stack” is the bottom of the rectangle in the diagram and “the bottom of the stack” is the top of the rectangle.</p>
 <figure>
-<img src="../image/stack.png" alt="" /><figcaption>Stack</figcaption>
+<img src="image/stack.png" alt="" /><figcaption>Stack</figcaption>
 </figure>
 <p>There are four functions to access the stack.</p>
 <ul>
@@ -1628,7 +1628,7 @@ drawline (90, 100)</code></pre>
 <p>Turtle has its own coordinate. The origin is at the center of the surface, and positive direction of x and y axes are right and up respectively. But surfaces have its own coordinate. Its origin is at the top-left corner of the surface and positive direction of x and y are right and down respectively. A plane with the turtle’s coordinate is called user space, which is the same as cairo’s user space. A plane with the surface’s coordinate is called device space.</p>
 <p>Cairo provides a transformation which is an affine transformation. It transforms a user-space coordinate (x, y) into a device-space coordinate (z, w).</p>
 <figure>
-<img src="../image/transformation.png" alt="" /><figcaption>transformation</figcaption>
+<img src="image/transformation.png" alt="" /><figcaption>transformation</figcaption>
 </figure>
 <p><code>init_cairo</code> gets the width and height of the <code>surface</code> (See the program below).</p>
 <ul>
@@ -1913,15 +1913,15 @@ drawline (90, 100)</code></pre>
 <p>This example draws a square.</p>
 <p>When The parser reads the lines from one to four, it creates nodes like this:</p>
 <figure>
-<img src="../image/tree2.png" alt="" /><figcaption>Nodes of drawline</figcaption>
+<img src="image/tree2.png" alt="" /><figcaption>Nodes of drawline</figcaption>
 </figure>
 <p>Runtime routine just stores the procedure to the symbol table with its name and node.</p>
 <figure>
-<img src="../image/table.png" alt="" /><figcaption>Symbol table</figcaption>
+<img src="image/table.png" alt="" /><figcaption>Symbol table</figcaption>
 </figure>
 <p>When the parser reads the fifth line in the example, it creates nodes like this:</p>
 <figure>
-<img src="../image/proc_call.png" alt="" /><figcaption>Nodes of procedure call</figcaption>
+<img src="image/proc_call.png" alt="" /><figcaption>Nodes of procedure call</figcaption>
 </figure>
 <p>When the runtime routine meets <code>N_procedure_call</code> node, it behaves like this:</p>
 <ol type="1">

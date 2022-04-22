@@ -120,7 +120,7 @@
 <p>A list is a sequential data structure. For example, an ordered string sequence “one”, “two”, “three”, “four” is a list. Each element of the list is called item. A list is like an array, but in many cases it is implemented with pointers which point to the next item of the list. And it has a start point. So, each item can be referred by the index of the item (first item, second item, …, nth item, …). There are two cases. One is the index starts from one (one-based) and the other is it starts from zero (zero-based).</p>
 <p>Gio provides GListModel interface. It is a zero-based list of the same type of GObject objects, or objects that implement the same interface. An object implements GListModel is usually not a widget. So, the list is not displayed on the screen directly. There’s another object GtkListView which is a widget to display the list. The items in the list need to be connected to the items in GtkListView. GtkListItemFactory object maps items in the list to GListView.</p>
 <figure>
-<img src="../image/list.png" alt="" /><figcaption>List</figcaption>
+<img src="image/list.png" alt="" /><figcaption>List</figcaption>
 </figure>
 <p>The instruction to build the whole list related objects is:</p>
 <ol type="1">
@@ -150,7 +150,7 @@
 <h2 id="gtklistview-1">GtkListView</h2>
 <p>GtkListView is a widget to show GListModel items. GtkListItem is used by GtkListView to represent items of a list model. But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model. “item” property of GtkListItem points an object that belongs to the list model.</p>
 <figure>
-<img src="../image/gtklistitem.png" alt="" /><figcaption>GtkListItem</figcaption>
+<img src="image/gtklistitem.png" alt="" /><figcaption>GtkListItem</figcaption>
 </figure>
 <p>In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed. This recycle makes the number of GtkListItem objects fairly small, less than 200. This is very effective to restrain the growth of memory consumption so that GListModel can contain lots of items, for example, more than a million items.</p>
 <h2 id="gtklistitemfactory">GtkListItemFactory</h2>
@@ -242,7 +242,7 @@
 <span id="cb2-76"><a href="#cb2-76"></a>  g_object_unref (app);</span>
 <span id="cb2-77"><a href="#cb2-77"></a>  <span class="cf">return</span> stat;</span>
 <span id="cb2-78"><a href="#cb2-78"></a>}</span></code></pre></div>
-<p>The file <code>list1.c</code> is located under the directory <a href="../src/misc">src/misc</a>. Make a shell script below and save it to your bin directory. (If you’ve installed Gtk4 from the source to $HOME/local, then your bin directory is $Home/local/bin. Otherwise, $Home/bin is your private bin directory.)</p>
+<p>The file <code>list1.c</code> is located under the directory src/misc. Make a shell script below and save it to your bin directory. (If you’ve installed Gtk4 from the source to $HOME/local, then your bin directory is $Home/local/bin. Otherwise, $Home/bin is your private bin directory.)</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="fu">gcc</span> <span class="kw">`</span><span class="ex">pkg-config</span> --cflags gtk4<span class="kw">`</span> <span class="va">$1</span>.c <span class="kw">`</span><span class="ex">pkg-config</span> --libs gtk4<span class="kw">`</span></span></code></pre></div>
 <p>Change the current directory to the directory includes <code>list1.c</code> and type as follows.</p>
 <pre><code>$ chmod 755 $HOME/local/bin/comp # or chmod 755 $Home/bin/comp
@@ -250,7 +250,7 @@ $ comp list1
 $ ./a.out</code></pre>
 <p>Then, <code>list1.c</code> has been compiled and executed.</p>
 <figure>
-<img src="../image/list1.png" alt="" /><figcaption>list1</figcaption>
+<img src="image/list1.png" alt="" /><figcaption>list1</figcaption>
 </figure>
 <p>I think the program is not so difficult. If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.</p>
 <h3 id="gtkbuilderlistitemfactory">GtkBuilderListItemFactory</h3>
@@ -276,7 +276,7 @@ $ ./a.out</code></pre>
 <p>Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.</p>
 </blockquote>
 <p>Therefore, GtkListItem instance is used as the <code>this</code> object of the lookup tag when it is evaluated. <code>this</code> object will be explained in <a href="sec28.html">section 28</a>.</p>
-<p>The C source code is as follows. Its name is <code>list2.c</code> and located under <a href="../src/misc">src/misc</a> directory.</p>
+<p>The C source code is as follows. Its name is <code>list2.c</code> and located under src/misc directory.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="co">/* ----- activate, open, startup handlers ----- */</span></span>
@@ -412,7 +412,7 @@ $ ./a.out</code></pre>
 <li>closure tag has type attribute and function attribute. Function attribute specifies the function name and type attribute specifies the type of the return value of the function. The contents of closure tag (it is between &lt;closure…&gt; and&lt;/closure&gt;) is parameters of the function. <code>&lt;lookup name="item"&gt;GtkListItem&lt;/lookup&gt;</code> gives the value of the item property of the GtkListItem. This will be the second argument of the function. The first parameter is always the GListItem instance.</li>
 <li><code>gtk_file_name</code> function first check the <code>info</code> parameter. Because it can be NULL when GListItem <code>item</code> is unbound. If its GFileInfo, then return the filename (copy of the filename).</li>
 </ul>
-<p>The whole program (<code>list3.c</code>) is as follows. The program is located in <a href="../src/misc">src/misc</a> directory.</p>
+<p>The whole program (<code>list3.c</code>) is as follows. The program is located in src/misc directory.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="dt">char</span> *</span>
@@ -499,7 +499,7 @@ $ chmod +x $HOME/bin/comp</code></pre>
 <pre><code>$ comp list3
 $ ./a.out</code></pre>
 <figure>
-<img src="../image/list3.png" alt="" /><figcaption>screenshot list3</figcaption>
+<img src="image/list3.png" alt="" /><figcaption>screenshot list3</figcaption>
 </figure>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

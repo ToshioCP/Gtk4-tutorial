@@ -149,7 +149,7 @@
 $ ./a.out</code></pre>
 <p>A window with a message “Hello.” appears.</p>
 <figure>
-<img src="../image/screenshot_lb1.png" alt="" /><figcaption>Screenshot of the label</figcaption>
+<img src="image/screenshot_lb1.png" alt="" /><figcaption>Screenshot of the label</figcaption>
 </figure>
 <p>There’s only a little change between <code>pr4.c</code> and <code>lb1.c</code>. A program <code>diff</code> is good to know the difference between two files.</p>
 <pre><code>$ cd misc; diff pr4.c lb1.c
@@ -215,7 +215,7 @@ $ ./a.out</code></pre>
 <p>Look at the line 17 to 19. First, it creates a GtkButton instance <code>btn</code> with a label “Click me”. Then, adds the button to the window <code>win</code> as a child. Finally, connects a “clicked” signal of the button to a handler (function) <code>click_cb</code>. So, if <code>btn</code> is clicked, the function <code>click_cb</code> is invoked. The suffix “cb” means “call back”.</p>
 <p>Name the program <code>lb2.c</code> and save it. Now compile and run it.</p>
 <figure>
-<img src="../image/screenshot_lb2.png" alt="" /><figcaption>Screenshot of the label</figcaption>
+<img src="image/screenshot_lb2.png" alt="" /><figcaption>Screenshot of the label</figcaption>
 </figure>
 <p>A window with the button appears. Click the button (it is a large button, you can click everywhere in the window), then a string “Clicked.” appears on the terminal. It shows the handler was invoked by clicking the button.</p>
 <p>It’s good that we make sure that the clicked signal was caught and the handler was invoked by using <code>g_print</code>. However, using g_print is out of harmony with Gtk which is a GUI library. So, we will change the handler. The following code is <code>lb3.c</code>.</p>
@@ -282,7 +282,7 @@ $ ./a.out</code></pre>
 </ul>
 <p>After this, the Widgets are connected as the following diagram.</p>
 <figure>
-<img src="../image/box.png" alt="" /><figcaption>Parent-child relationship</figcaption>
+<img src="image/box.png" alt="" /><figcaption>Parent-child relationship</figcaption>
 </figure>
 <p>The program <code>lb4.c</code> includes these widgets. It is as follows.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
@@ -349,7 +349,7 @@ gtk_box_set_homogeneous (GTK_BOX (box), TRUE);</code></pre>
 <p>The first argument arranges the children of the box vertically. The second argument is the size between the children. The next function fills the box with the children, giving them the same space.</p>
 <p>After that, two buttons <code>btn1</code> and <code>btn2</code> are created and the signal handlers are set. Then, these two buttons are appended to the box.</p>
 <figure>
-<img src="../image/screenshot_lb4.png" alt="" /><figcaption>Screenshot of the box</figcaption>
+<img src="image/screenshot_lb4.png" alt="" /><figcaption>Screenshot of the box</figcaption>
 </figure>
 <p>The handler corresponds to <code>btn1</code> toggles its label. The handler corresponds to <code>btn2</code> destroys the top-level window and the application quits.</p>
     </div>

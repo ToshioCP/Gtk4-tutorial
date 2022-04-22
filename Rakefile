@@ -4,6 +4,7 @@ require_relative 'lib/lib_src_file.rb'
 require_relative 'lib/lib_src2md.rb'
 require_relative 'lib/lib_gen_main_tex.rb'
 require_relative 'lib/lib_mk_html_template.rb'
+require_relative 'lib/lib_cp_images.rb'
 
 secfiles = Sec_files.new(FileList['src/sec*.src.md'].to_a.map{|file| Sec_file.new(file)})
 secfiles.renum!
@@ -27,6 +28,7 @@ abstract_tex = "latex/"+abstract.to_tex
 CLEAN.append(FileList["latex/*.tex", "latex/*.aux", "latex/*.log", "latex/*.toc"])
 CLOBBER.append("Readme.md").append(*mdfiles)
 CLOBBER.append(FileList["docs/*.html"])
+CLOBBER.append(FileList["docs/image/*"])
 CLOBBER.append(FileList["latex/*.pdf"])
 
 def pair array1, array2
@@ -73,7 +75,9 @@ pair(srcfiles, mdfiles).each do |src, dst, i|
   end
 end
 
-task html: %W[#{html_dir}/index.html] + htmlfiles
+task html: %W[#{html_dir}/index.html] + htmlfiles do
+  cp_images srcfiles, "docs/image"
+end
 
 file "#{html_dir}/index.html" => [abstract] + secfiles do
   abstract_md = "#{html_dir}/#{abstract.to_md}"

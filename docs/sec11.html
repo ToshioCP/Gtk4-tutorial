@@ -113,7 +113,7 @@
       </div>
     </nav>
 <h1 id="initialization-and-destruction-of-instances">Initialization and destruction of instances</h1>
-<p>A new version of the text file editor (<code>tfe</code>) will be made in this section and the following four sections. It is <code>tfe5</code>. There are many changes from the prior version. All the sources are listed in <a href="sec16.html">Section 16</a>. They are located in two directories, <a href="../src/tfe5">src/tfe5</a> and <a href="../src/tfetextview">src/tfetextview</a>.</p>
+<p>A new version of the text file editor (<code>tfe</code>) will be made in this section and the following four sections. It is <code>tfe5</code>. There are many changes from the prior version. All the sources are listed in <a href="sec16.html">Section 16</a>. They are located in two directories, src/tfe5 and src/tfetextview.</p>
 <h2 id="encapsulation">Encapsulation</h2>
 <p>We’ve divided C source file into two parts. But it is not enough in terms of encapsulation.</p>
 <ul>
@@ -172,7 +172,7 @@
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>};</span></code></pre></div>
 <p>In each structure, its parent is declared at the top of the members. So, every ancestors is included in the child instance. This is very important. It guarantees a child widget to inherit all the features from ancestors. The structure of <code>TfeTextView</code> is like the following diagram.</p>
 <figure>
-<img src="../image/TfeTextView.png" alt="" /><figcaption>The structure of the instance TfeTextView</figcaption>
+<img src="image/TfeTextView.png" alt="" /><figcaption>The structure of the instance TfeTextView</figcaption>
 </figure>
 <h2 id="initialization-of-a-tfetextview-instance">Initialization of a TfeTextView instance</h2>
 <p>The function <code>tfe_text_view_new</code> creates a new TfeTextView instance.</p>
@@ -387,13 +387,13 @@
 </ul>
 <p>TfeTextViewClass includes its ancestors’ class in it. It is illustrated in the following diagram.</p>
 <figure>
-<img src="../image/TfeTextViewClass.png" alt="" /><figcaption>The structure of TfeTextView Class</figcaption>
+<img src="image/TfeTextViewClass.png" alt="" /><figcaption>The structure of TfeTextView Class</figcaption>
 </figure>
 <h2 id="destruction-of-tfetextview">Destruction of TfeTextView</h2>
 <p>Every Object derived from GObject has a reference count. If an object A refers to an object B, then A keeps a pointer to B in A and at the same time increases the reference count of B by one with the function <code>g_object_ref (B)</code>. If A doesn’t need B any longer, then A discards the pointer to B (usually it is done by assigning NULL to the pointer) and decreases the reference count of B by one with the function <code>g_object_unref (B)</code>.</p>
 <p>If two objects A and B refer to C, then the reference count of C is two. If A no longer needs C, A discards the pointer to C and decreases the reference count in C by one. Now the reference count of C is one. In the same way, if B no longer needs C, B discards the pointer to C and decreases the reference count in C by one. At this moment, no object refers to C and the reference count of C is zero. This means C is no longer useful. Then C destructs itself and finally the memories allocated to C is freed.</p>
 <figure>
-<img src="../image/refcount.png" alt="" /><figcaption>Reference count of B</figcaption>
+<img src="image/refcount.png" alt="" /><figcaption>Reference count of B</figcaption>
 </figure>
 <p>The idea above is based on an assumption that an object referred by nothing has reference count of zero. When the reference count drops to zero, the object starts its destruction process. The destruction process is split into two phases: disposing and finalizing. In the disposing process, the object invokes the function pointed by <code>dispose</code> in its class to release all references to other objects. In the finalizing process, it invokes the function pointed by <code>finalize</code> in its class to complete the destruction process. These functions are also called handlers or methods. For example, dispose handler or dispose method.</p>
 <p>In the destruction process of TfeTextView, the reference count of widgets related to TfeTextView is automatically decreased. But GFile pointed by <code>tv-&gt;file</code> needs to decrease its reference count by one. You must write the code in the dispose handler <code>tfe_text_view_dispose</code>.</p>
@@ -420,7 +420,7 @@
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>}</span></code></pre></div>
 <p>Each ancestors’ class has been created before TfeTextViewClass is created. Therefore, there are four classes and each class has a pointer to each dispose handler. Look at the following diagram. There are four classes – GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass. Each class has its own dispose handler – <code>dh1</code>, <code>dh2</code>, <code>dh3</code> and <code>tfe_text_view_dispose</code>.</p>
 <figure>
-<img src="../image/dispose_handler.png" alt="" /><figcaption>dispose handlers</figcaption>
+<img src="image/dispose_handler.png" alt="" /><figcaption>dispose handlers</figcaption>
 </figure>
 <p>Now, look at the <code>tfe_text_view_dispose</code> program above. It first releases the reference to GFile object pointed by <code>tv-&gt;file</code>. Then it invokes its parent’s dispose handler in line 8.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>G_OBJECT_CLASS (tfe_text_view_parent_class)-&gt;dispose (gobject);</span></code></pre></div>

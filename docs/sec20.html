@@ -402,7 +402,7 @@
 <pre><code>$ gtk4-icon-browser</code></pre>
 <p>The icon named “dialog-warning” is something like this.</p>
 <figure>
-<img src="../image/dialog_warning.png" alt="" /><figcaption>dialog-warning icon is like …</figcaption>
+<img src="image/dialog_warning.png" alt="" /><figcaption>dialog-warning icon is like …</figcaption>
 </figure>
 <p>These are made by my hand. The real image on the alert dialog is nicer.</p>
 <p>The GtkLabel <code>lb_alert</code> has no text yet. An alert message will be inserted by the program later.</p>
@@ -821,11 +821,11 @@ org.gnome.calculator show-zeroes false</code></pre>
 <p>This schema is used by Gnome Calculator. Run the calculator and change the mode, then check the schema again.</p>
 <pre><code>$ gnome-calculator</code></pre>
 <figure>
-<img src="../image/gnome_calculator_basic.png" alt="" /><figcaption>gnome-calculator basic mode</figcaption>
+<img src="image/gnome_calculator_basic.png" alt="" /><figcaption>gnome-calculator basic mode</figcaption>
 </figure>
 <p>Then, change the mode to advanced and quit.</p>
 <figure>
-<img src="../image/gnome_calculator_advanced.png" alt="" /><figcaption>gnome-calculator advanced mode</figcaption>
+<img src="image/gnome_calculator_advanced.png" alt="" /><figcaption>gnome-calculator advanced mode</figcaption>
 </figure>
 <p>Run gsettings and check whether the value of <code>button-mode</code> changes.</p>
 <pre><code>$ gsettings list-recursively org.gnome.calculator
@@ -939,7 +939,7 @@ install_data(&#39;com.github.ToshioCP.tfe.gschema.xml&#39;, install_dir: schema_
 <span id="cb40-13"><a href="#cb40-13"></a>schema_dir = get_option(&#39;prefix&#39;) / get_option(&#39;datadir&#39;) / &#39;glib-2.0/schemas/&#39;</span>
 <span id="cb40-14"><a href="#cb40-14"></a>install_data(&#39;com.github.ToshioCP.tfe.gschema.xml&#39;, install_dir: schema_dir)</span>
 <span id="cb40-15"><a href="#cb40-15"></a>meson.add_install_script(&#39;glib-compile-schemas&#39;, schema_dir)</span></code></pre></div>
-<p>Source files of <code>tfe</code> is under <a href="../src/tfe6">src/tfe6</a> directory. Copy them to your temporary directory and try to compile and install.</p>
+<p>Source files of <code>tfe</code> is under src/tfe6 directory. Copy them to your temporary directory and try to compile and install.</p>
 <pre><code>$ meson --prefix=$HOME/local _build
 $ ninja -C _build
 $ GSETTINGS_SCHEMA_DIR=_build:$GSETTINGS_SCHEMA_DIR _build/tfe
@@ -956,7 +956,7 @@ gschemas.compiled
 ... ...</code></pre>
 <p>The screenshot is as follows.</p>
 <figure>
-<img src="../image/tfe6.png" alt="" /><figcaption>tfe6</figcaption>
+<img src="image/tfe6.png" alt="" /><figcaption>tfe6</figcaption>
 </figure>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

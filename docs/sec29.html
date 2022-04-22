@@ -113,7 +113,7 @@
 <h2 id="gtkcolumnview-1">GtkColumnView</h2>
 <p>GtkColumnView is like GtkListView, but it has multiple columns. Each column is GtkColumnViewColumn.</p>
 <figure>
-<img src="../image/column_view.png" alt="" /><figcaption>Column View</figcaption>
+<img src="image/column_view.png" alt="" /><figcaption>Column View</figcaption>
 </figure>
 <ul>
 <li>GtkColumnView has “model” property. The property points a GtkSelectionModel object.</li>
@@ -122,7 +122,7 @@
 </ul>
 <p>The following diagram shows the image how it works.</p>
 <figure>
-<img src="../image/column.png" alt="" /><figcaption>ColumnView</figcaption>
+<img src="image/column.png" alt="" /><figcaption>ColumnView</figcaption>
 </figure>
 <p>The example in this section is a window that displays information of files in a current directory. The information is the name, size and last modified datetime of files. So, there are three columns.</p>
 <p>In addition, the example uses GtkSortListModel and GtkSorter to sort the information.</p>
@@ -498,13 +498,13 @@
 </ul>
 <p><code>exp.c</code> is simple and short thanks to <code>exp.ui</code>.</p>
 <h2 id="compilation-and-execution.">Compilation and execution.</h2>
-<p>All the source files are in <a href="../src/column">src/column</a> directory. Change your current directory to the directory and type the following.</p>
+<p>All the source files are in src/column directory. Change your current directory to the directory and type the following.</p>
 <pre><code>$ meson _build
 $ ninja -C _build
 $ _build/column</code></pre>
 <p>Then, a window appears.</p>
 <figure>
-<img src="../image/column_view.png" alt="" /><figcaption>Column View</figcaption>
+<img src="image/column_view.png" alt="" /><figcaption>Column View</figcaption>
 </figure>
 <p>If you click the header of a column, then the whole lists are sorted by the column. If you click the header of another column, then the whole lists are sorted by the newly selected column.</p>
 <p>GtkColumnView is very useful and it can manage very big GListModel. It is possible to use it for file list, application list, database frontend and so on.</p>
