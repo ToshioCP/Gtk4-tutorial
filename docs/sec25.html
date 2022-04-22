@@ -119,7 +119,7 @@
 </figure>
 <p>This program uses flex and bison. Flex is a lexical analyzer. Bison is a parser generator. These two programs are similar to lex and yacc which are proprietary software developed in Bell Laboratory. However, flex and bison are open source software. I will write about how to use those software, but they are not topics about gtk. So, readers can skip that part of this sections.</p>
 <h2 id="how-to-use-turtle">How to use turtle</h2>
-<p>The documentation of turtle is here. I’ll show you a simple example.</p>
+<p>The documentation of turtle is <a href="turtle_doc.html">here</a>. I’ll show you a simple example.</p>
 <pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
 pd         # Pen down.
 fd 100     # Go forward by 100 pixels.
@@ -1427,7 +1427,7 @@ expression:
 <span id="cb31-9"><a href="#cb31-9" aria-hidden="true"></a>  node_t *node;</span>
 <span id="cb31-10"><a href="#cb31-10" aria-hidden="true"></a>  <span class="dt">double</span> value;</span>
 <span id="cb31-11"><a href="#cb31-11" aria-hidden="true"></a>};</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true"></a> </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true"></a></span>
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true"></a><span class="kw">struct</span> {</span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true"></a>  <span class="dt">int</span> type;</span>
 <span id="cb31-15"><a href="#cb31-15" aria-hidden="true"></a>  <span class="dt">char</span> *name;</span>
@@ -1652,8 +1652,8 @@ drawline (90, 100)</code></pre>
 <span id="cb37-11"><a href="#cb37-11" aria-hidden="true"></a>  <span class="dt">double</span> green;</span>
 <span id="cb37-12"><a href="#cb37-12" aria-hidden="true"></a>  <span class="dt">double</span> blue;</span>
 <span id="cb37-13"><a href="#cb37-13" aria-hidden="true"></a>};</span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true"></a><span class="dt">static</span> <span class="kw">struct</span> color bc = {<span class="fl">0.95</span>, <span class="fl">0.95</span>, <span class="fl">0.95</span>}; <span class="co">/* white */</span> </span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true"></a><span class="dt">static</span> <span class="kw">struct</span> color fc = {<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>}; <span class="co">/* black */</span> </span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true"></a><span class="dt">static</span> <span class="kw">struct</span> color bc = {<span class="fl">0.95</span>, <span class="fl">0.95</span>, <span class="fl">0.95</span>}; <span class="co">/* white */</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true"></a><span class="dt">static</span> <span class="kw">struct</span> color fc = {<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>}; <span class="co">/* black */</span></span>
 <span id="cb37-16"><a href="#cb37-16" aria-hidden="true"></a></span>
 <span id="cb37-17"><a href="#cb37-17" aria-hidden="true"></a><span class="co">/* cairo */</span></span>
 <span id="cb37-18"><a href="#cb37-18" aria-hidden="true"></a><span class="dt">static</span> cairo_t *cr;</span>
@@ -1740,7 +1740,7 @@ drawline (90, 100)</code></pre>
 <span id="cb38-39"><a href="#cb38-39" aria-hidden="true"></a>    <span class="cf">case</span> N_NUM:</span>
 <span id="cb38-40"><a href="#cb38-40" aria-hidden="true"></a>      value = value(node);</span>
 <span id="cb38-41"><a href="#cb38-41" aria-hidden="true"></a>      <span class="cf">break</span>;</span>
-<span id="cb38-42"><a href="#cb38-42" aria-hidden="true"></a>    <span class="cf">default</span>: </span>
+<span id="cb38-42"><a href="#cb38-42" aria-hidden="true"></a>    <span class="cf">default</span>:</span>
 <span id="cb38-43"><a href="#cb38-43" aria-hidden="true"></a>      runtime_error (<span class="st">&quot;Illegal expression.</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
 <span id="cb38-44"><a href="#cb38-44" aria-hidden="true"></a>  }</span>
 <span id="cb38-45"><a href="#cb38-45" aria-hidden="true"></a>  <span class="cf">return</span> value;</span>
