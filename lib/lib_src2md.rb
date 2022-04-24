@@ -298,15 +298,18 @@ def change_link src, old_dir, type, new_dir=nil
   raise "Illegal type." unless type == "gfm" || type == "html" || type == "latex"
   new_dir = type if new_dir == nil
   p_new_dir = Pathname.new(new_dir)
-  buf = src.partitions(/^    .*\n/)
-  buf = buf.map{|chunk| chunk.partitions(/^~~~.*?^~~~\n/m)}
-  buf = buf.inject([]){|b,e| b.append(*e)}
-  buf = buf.map{|chunk| chunk.partitions(/`.*?`/)}
-  buf = buf.inject([]){|b,e| b.append(*e)}
+  buf = src.partitions(/^~~~.*?^~~~\n/m)
+  buf = buf.map{|chunk| chunk =~ /\A~~~.*?^~~~\n\z/m ? chunk : chunk.partitions(/(^    .*\n)+/)}.flatten
+  # buf = buf.inject([]){|b,e| b.append(*e)}
   buf = buf.map do |chunk|
-    if (chunk =~ /^    .*\n/ || chunk =~ /^~~~.*?^~~~\n/m) || chunk =~ /`.*?`/
+    if (chunk =~ /\A~~~.*?^~~~\n\z/m || chunk =~ /\A(^    .*\n)+\z/)
       chunk
     else
+      # change inline codes (`...`) to escape char ("\e"=0x1B) in the link change procedure temporarily.
+      # This avoids the influence of the change in the inline codes.
+      # So, .src.md files must not include escape code (0x1B).
+      codes = chunk.scan(/`.*?`/)
+      chunk = chunk.gsub(/`.*?`/,"\e")
       b = chunk.partitions(/!?\[.*?\]\(.*?\)(\{.*?\})?/)
       b = b.map do |c|
         m = c.match(/(!?\[.*?\])\((.*?)\)(\{.*?\})?/)
@@ -316,7 +319,9 @@ def change_link src, old_dir, type, new_dir=nil
           name = m[1]
           target = m[2]
           size = m[3]
-          if target =~ /\.src\.md$/
+          if target.include?("\e")
+            c
+          elsif target =~ /\.src\.md$/
             case type
             when "gfm"
               "#{name}(#{File.basename(target).sub(/\.src\.md$/,'.md')})"
@@ -348,7 +353,10 @@ def change_link src, old_dir, type, new_dir=nil
           end
         end
       end
-      b.join
+      c = b.join
+      a = c.split("\e")
+      i = 0
+      codes.inject([a[0]]){|b, code| i+=1; b.append(code, a[i])}.join
     end
   end
   buf.join

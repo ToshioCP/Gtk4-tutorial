@@ -847,6 +847,19 @@ class Test_lib_src_file < Minitest::Test
     assert_equal "[Section 3](sec3.md)", change_link("[Section 3](sec3.src.md)", "src", "gfm")
     assert_equal "[Section 3](sec3.html)", change_link("[Section 3](sec3.src.md)", "src", "html")
     assert_equal "Section 3", change_link("[Section 3](sec3.src.md)", "src", "latex")
+    src_src = <<~'EOS'
+      [Section 1](`sec1.src.md`)
+      [`document`](../doc/document.src.md)
+      `![image](../image/image.png){width=9.0cm height=6.0cm}``
+      [Github`](`https://github.com/ToshioCP)
+    EOS
+    dst_src = <<~'EOS'
+      [Section 1](`sec1.src.md`)
+      [`document`](document.md)
+      `![image](../image/image.png){width=9.0cm height=6.0cm}``
+      [Github`](`https://github.com/ToshioCP)
+    EOS
+    assert_equal dst_src, change_link(src_src, "src", "gfm", "gfm")
   end
   def test_src2md
     temp = "temp"
@@ -865,11 +878,11 @@ class Test_lib_src_file < Minitest::Test
     remove_entry_secure(temp)
 
     # If you want to see the difference
-    # Diff::LCS.diff(files_src2md()[:sample_md_gfm].each_line.to_a, dst_md["gfm"].each_line.to_a).each do |array|
-    #   array.each do |change|
-    #     print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
-    #   end
-    # end
+    Diff::LCS.diff(files_src2md()[:sample_md_gfm].each_line.to_a, dst_md["gfm"].each_line.to_a).each do |array|
+      array.each do |change|
+        print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
+      end
+    end
     # Diff::LCS.diff(files()[:sample_md_latex].each_line.to_a, dst_md["latex"].each_line.to_a).each do |array|
     #   array.each do |change|
     #     print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"

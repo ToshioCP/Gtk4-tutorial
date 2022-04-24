@@ -80,7 +80,6 @@ def mk_html_template(home, sec_prev, sec_next)
       code span.va { color: #19177c; } /* Variable */
       code span.vs { color: #4070a0; } /* VerbatimString */
       code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      body {width: 1080px; margin: 0 auto; font-size: large;}
       div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
       pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
       table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}

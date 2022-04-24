@@ -76,7 +76,6 @@
       code span.va { color: #19177c; } /* Variable */
       code span.vs { color: #4070a0; } /* VerbatimString */
       code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      body {width: 1080px; margin: 0 auto; font-size: large;}
       div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
       pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
       table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
@@ -302,7 +301,7 @@ Refer to tfetextview API reference in appendix.
 <ul>
 <li>Relative links are changed according to the change of the base directory.</li>
 <li>Size option in image link is removed when the destination is GFM or html.</li>
-<li>Relative link is removed when the destination is latex.</li>
+<li>Relative link is removed when the destination is html and/or latex.</li>
 </ul>
 <p>The order of the conversions are:</p>
 <ol type="1">
@@ -369,7 +368,11 @@ $ rake</code></pre>
 <p>Src.md files can be translated to html files. You need pandoc to do this. Most linux distribution has pandoc package. Refer to your distribution document to install it.</p>
 <p>Type <code>rake html</code> to generate html files.</p>
 <pre><code>$ rake html</code></pre>
-<p>First, it generates pandoc’s markdown files under <code>docs</code> directory. Then, pandoc converts them to html files. The width and height of image files are removed.</p>
+<p>First, it generates pandoc’s markdown files under <code>docs</code> directory. Then, pandoc converts them to html files. The width and height of image files are removed. Links to .src.md files will be converted like this.</p>
+<pre><code>[Section 5](sec5.src.md) =&gt; [Section 5](sec5.html)</code></pre>
+<p>Image files are copied to <code>docs/image</code> direcotiry and links to them will be converted like this:</p>
+<pre><code>[sample.png](../image/sample.png) =&gt; [sample.png](image/sample.png)</code></pre>
+<p>Other relative links will be removed.</p>
 <p><code>index.html</code> is the top html file. If you want to clean html files, type <code>rake clobber</code></p>
 <pre><code>$ rake clobber</code></pre>
 <p>Every html file has a header (<code>&lt;head&gt; -- &lt;/head&gt;</code>). It is created by pandoc with ‘-s’ option. You can customize the output with your own template file for pandoc. Rake uses <code>lib/lib_mk_html_template.rb</code> to create its own template. The template inserts bootstrap CSS and Javascript through <code>jsDelivr</code>.</p>

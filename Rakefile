@@ -1,27 +1,61 @@
 require 'rake/clean'
 require 'fileutils'
-require_relative 'lib/lib_src_file.rb'
+require_relative 'lib/lib_renumber.rb'
 require_relative 'lib/lib_src2md.rb'
 require_relative 'lib/lib_gen_main_tex.rb'
 require_relative 'lib/lib_mk_html_template.rb'
-require_relative 'lib/lib_cp_images.rb'
 
-secfiles = Sec_files.new(FileList['src/sec*.src.md'].to_a.map{|file| Sec_file.new(file)})
-secfiles.renum!
+def pair array1, array2
+  n = [array1.size, array2.size].max
+  (0...n).map{|i| [array1[i], array2[i], i]}
+end
+def s2md file
+  "#{File.basename(file,'.src.md')}.md"
+end
+def s2html file
+  "#{File.basename(file,'.src.md')}.html"
+end
+def s2tex file
+  "#{File.basename(file,'.src.md')}.tex"
+end
+def c_files path
+  dir = File.dirname(path)
+  File.read(path).scan(/^@@@include\n(.*?)@@@\n/m).flatten\
+                 .map{|s| s.each_line.to_a}.flatten\
+                 .map{|line| "#{dir}/#{(line.match(/^\S*/)[0])}"}
+end
+
+# source files
+secfiles = FileList['src/sec*.src.md']
+renumber(secfiles)
 otherfiles = ["src/turtle/turtle_doc.src.md",
               "src/tfetextview/tfetextview_doc.src.md",
-              "src/Readme_for_developers.src.md"].map {|file| Src_file.new file}
+              "src/Readme_for_developers.src.md"]
 srcfiles = secfiles + otherfiles
-abstract = Src_file.new "src/abstract.src.md"
+abstract = "src/abstract.src.md"
+# imagesrcfiles are the image files used in the srcfiles.
+# They are absolute paths.
+imagesrcfiles = srcfiles.map do |file|
+    d = File.dirname(file)
+    File.read(file)\
+        .gsub(/^    .*\n/,'').gsub(/^~~~.*?^~~~\n/m,'')\
+        .scan(/!\[.*?\]\((.*?)\)/).flatten.uniq
+        .map{|img| File.absolute_path("#{d}/#{img}")}
+  end
+imagesrcfiles = imagesrcfiles.flatten.sort.uniq
 
 # docs is a directory for html files.
 html_dir = 'docs'
-mdfiles = srcfiles.map {|file| "gfm/" + file.to_md}
-htmlfiles = srcfiles.map {|file| "#{html_dir}/" + file.to_html}
-sectexfiles = secfiles.map {|file| "latex/" + file.to_tex}
-othertexfiles = otherfiles.map {|file| "latex/" + file.to_tex}
+
+# target files
+mdfiles = srcfiles.map{|file| "gfm/#{s2md(file)}"}
+htmlfiles = srcfiles.map {|file| "#{html_dir}/#{s2html(file)}"}
+sectexfiles = secfiles.map {|file| "latex/#{s2tex(file)}"}
+othertexfiles = otherfiles.map {|file| "latex/#{s2tex(file)}"}
 texfiles = sectexfiles + othertexfiles
-abstract_tex = "latex/"+abstract.to_tex
+abstract_md = "gfm/#{s2md(abstract)}"
+abstract_tex = "latex/#{s2tex(abstract)}"
+htmlimagefiles = imagesrcfiles.map{|file| "#{html_dir}/image/#{File.basename(file)}"}
 
 ["gfm", html_dir, "latex"].each{|d| Dir.mkdir(d) unless Dir.exist?(d)}
 
@@ -31,11 +65,6 @@ CLOBBER.append(FileList["docs/*.html"])
 CLOBBER.append(FileList["docs/image/*"])
 CLOBBER.append(FileList["latex/*.pdf"])
 
-def pair array1, array2
-  n = [array1.size, array2.size].max
-  (0...n).map{|i| [array1[i], array2[i], i]}
-end
-
 # tasks
 
 task default: :md
@@ -44,51 +73,49 @@ task all: [:md, :html, :pdf]
 task md: %w[Readme.md] + mdfiles
 
 file "Readme.md" => [abstract] + secfiles do
-  src2md abstract, abstract.to_md, "gfm"
+  src2md abstract, abstract_md, "gfm"
   buf = ["# Gtk4 Tutorial for beginners\n\nThe github page of this tutorial is also available. Click [here](https://toshiocp.github.io/Gtk4-tutorial/).\n\n"]\
-        + File.readlines(abstract.to_md)\
+        + File.readlines(abstract_md)\
         + ["\n## Table of contents\n\n"]
-  File.delete(abstract.to_md)
+  File.delete(abstract_md)
   secfiles.each_with_index do |secfile, i|
-    h = File.open(secfile.path){|file| file.readline}.sub(/^#* */,"").chomp
-    buf << "1. [#{h}](gfm/#{secfile.to_md})\n"
+    h = File.open(secfile){|file| file.readline}.sub(/^#* */,"").chomp
+    buf << "1. [#{h}](gfm/#{s2md(secfile)})\n"
   end
   File.write("Readme.md", buf.join)
 end
 
 # srcfiles => mdfiles
 pair(srcfiles, mdfiles).each do |src, dst, i|
-  file dst => [src] + src.c_files do
+  file dst => [src] + c_files(src) do
     src2md src, dst, "gfm"
-    if src.instance_of? Sec_file
+    if src =~ /sec\d+\.src\.md$/
       if secfiles.size == 1
         nav = "Up: [Readme.md](../Readme.md)\n"
       elsif i == 0
-        nav = "Up: [Readme.md](../Readme.md),  Next: [Section 2](#{secfiles[1].to_md})\n"
+        nav = "Up: [Readme.md](../Readme.md),  Next: [Section 2](#{s2md(secfiles[1])})\n"
       elsif i == secfiles.size - 1
-        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{secfiles[i-1].to_md})\n"
+        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{s2md(secfiles[i-1])})\n"
       else
-        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{secfiles[i-1].to_md}), Next: [Section #{i+2}](#{secfiles[i+1].to_md})\n"
+        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](#{s2md(secfiles[i-1])}), Next: [Section #{i+2}](#{s2md(secfiles[i+1])})\n"
       end
       File.write(dst, nav + "\n" + File.read(dst) + "\n" + nav)
     end
   end
 end
 
-task html: %W[#{html_dir}/index.html] + htmlfiles do
-  cp_images srcfiles, "docs/image"
-end
+task html: %W[#{html_dir}/index.html] + htmlfiles + htmlimagefiles
 
 file "#{html_dir}/index.html" => [abstract] + secfiles do
-  abstract_md = "#{html_dir}/#{abstract.to_md}"
-  src2md abstract, abstract_md, "html"
+  abstract_html_md = "#{html_dir}/#{s2md(abstract)}"
+  src2md abstract, abstract_html_md, "html"
   buf = [ "# Gtk4 Tutorial for beginners\n\n" ]\
-        + File.readlines(abstract_md)\
+        + File.readlines(abstract_html_md)\
         + ["\n## Table of contents\n\n"]
-  File.delete(abstract_md)
+  File.delete(abstract_html_md)
   secfiles.each_with_index do |secfile, i|
-    h = File.open(secfile.path){|file| file.readline}.sub(/^#* */,"").chomp
-    buf << "1. [#{h}](#{secfile.to_html})\n"
+    h = File.open(secfile){|file| file.readline}.sub(/^#* */,"").chomp
+    buf << "1. [#{h}](#{s2html(secfile)})\n"
   end
   buf << "\nThis website uses [Bootstrap](https://getbootstrap.jp/)."
   File.write("#{html_dir}/index.md", buf.join)
@@ -99,10 +126,10 @@ file "#{html_dir}/index.html" => [abstract] + secfiles do
 end
 
 pair(srcfiles, htmlfiles).each do |src, dst, i|
-  file dst => [src] + src.c_files do
-    html_md = "#{html_dir}/#{src.to_md}"
+  file dst => [src] + c_files(src) do
+    html_md = "#{html_dir}/#{s2md(src)}"
     src2md src, html_md, "html"
-    if src.instance_of? Sec_file
+    if src =~ /sec\d+\.src\.md$/
       if secfiles.size == 1
         mk_html_template("index.html", nil, nil)
       elsif i == 0
@@ -121,6 +148,12 @@ pair(srcfiles, htmlfiles).each do |src, dst, i|
   end
 end
 
+pair(imagesrcfiles, htmlimagefiles).each do |src, dst, i|
+  file dst => src do
+    cp src, dst
+  end
+end
+
 task pdf: %w[latex/main.tex] do
   sh "cd latex; lualatex main.tex"
   sh "cd latex; lualatex main.tex"
@@ -128,19 +161,19 @@ task pdf: %w[latex/main.tex] do
 end
 
 file "latex/main.tex" => [abstract_tex] + texfiles do
-  gen_main_tex "latex", abstract.to_tex, sectexfiles, othertexfiles
+  gen_main_tex "latex", s2tex(abstract), sectexfiles, othertexfiles
 end
 
 file abstract_tex => abstract do
-  abstract_md = "latex/"+abstract.to_md
-  src2md abstract, abstract_md, "latex"
-  sh "pandoc --listings -o #{abstract_tex} #{abstract_md}"
-  File.delete(abstract_md)
+  abstract_tex_md = "latex/#{s2md(abstract)}"
+  src2md abstract, abstract_tex_md, "latex"
+  sh "pandoc --listings -o #{abstract_tex} #{abstract_tex_md}"
+  File.delete(abstract_tex_md)
 end
 
 pair(srcfiles, texfiles).each do |src, dst, i|
-  file dst => [src] + src.c_files do
-    tex_md = "latex/#{src.to_md}"
+  file dst => [src] + c_files(src) do
+    tex_md = "latex/#{s2md(src)}"
     src2md src, tex_md, "latex"
     if src == "src/Readme_for_developers.src.md"
       sh "pandoc -o #{dst} #{tex_md}"

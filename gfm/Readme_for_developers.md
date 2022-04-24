@@ -304,7 +304,7 @@ In addition, some other conversions are made by `src2md` method.
 
 - Relative links are changed according to the change of the base directory.
 - Size option in image link is removed when the destination is GFM or html.
-- Relative link is removed when the destination is latex.
+- Relative link is removed when the destination is html and/or latex.
 
 The order of the conversions are:
 
@@ -449,6 +449,15 @@ Type `rake html` to generate html files.
 First, it generates pandoc's markdown files under `docs` directory.
 Then, pandoc converts them to html files.
 The width and height of image files are removed.
+Links to .src.md files will be converted like this.
+
+    [Section 5](sec5.src.md) => [Section 5](sec5.html)
+
+Image files are copied to `docs/image` direcotiry and links to them will be converted like this:
+
+    [sample.png](../image/sample.png) => [sample.png](image/sample.png)
+
+Other relative links will be removed.
 
 `index.html` is the top html file.
 If you want to clean html files, type `rake clobber`

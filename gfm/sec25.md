@@ -1041,7 +1041,7 @@ The semantic value of `statement` is assigned to the one of `program` and the st
 The following is the grammar rule extracted from `turtle.y`.
 The rules there are based on the same idea above.
 I don't want to explain the whole rules below.
-Please look into each line carefully so that you will understand all the rules and actions. 
+Please look into each line carefully so that you will understand all the rules and actions.
 
 ~~~bison
 program:
@@ -1203,7 +1203,7 @@ union _object_t {
   node_t *node;
   double value;
 };
- 
+
 struct {
   int type;
   char *name;
@@ -1508,8 +1508,8 @@ struct color {
   double green;
   double blue;
 };
-static struct color bc = {0.95, 0.95, 0.95}; /* white */ 
-static struct color fc = {0.0, 0.0, 0.0}; /* black */ 
+static struct color bc = {0.95, 0.95, 0.95}; /* white */
+static struct color fc = {0.0, 0.0, 0.0}; /* black */
 
 /* cairo */
 static cairo_t *cr;
@@ -1603,7 +1603,7 @@ double value = 0.0;
     case N_NUM:
       value = value(node);
       break;
-    default: 
+    default:
       runtime_error ("Illegal expression.\n");
   }
   return value;
@@ -1949,6 +1949,5 @@ However, the following information is very useful (but old).
 
 Lately, lots of source codes are in the internet.
 Maybe reading source codes are the most useful for programmers.
-
 
 Up: [Readme.md](../Readme.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)
