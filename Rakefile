@@ -82,7 +82,9 @@ file "Readme.md" => [abstract] + secfiles do
     h = File.open(secfile){|file| file.readline}.sub(/^#* */,"").chomp
     buf << "1. [#{h}](gfm/#{s2md(secfile)})\n"
   end
-  File.write("Readme.md", buf.join)
+  readme_md = buf.join
+  readme_md.sub!(/\[How to build Gtk4 Tutorial\]\(Readme_for_developers.md\)/,'[How to build Gtk4 Tutorial](gfm/Readme_for_developers.md)')
+  File.write("Readme.md", readme_md)
 end
 
 # srcfiles => mdfiles

@@ -46,7 +46,7 @@ All questions are helpful and will make this tutorial get better.
 If you want to get a HTML or PDF version, you can make them with `rake`, which is a ruby version of make.
 Type `rake html` for HTML.
 Type `rake pdf` for PDF.
-There is a documentation \("[How to build Gtk4 Tutorial](Readme_for_developers.md)"\) that describes how to make them.
+There is a documentation \("[How to build Gtk4 Tutorial](gfm/Readme_for_developers.md)"\) that describes how to make them.
 
 ## Table of contents
 
