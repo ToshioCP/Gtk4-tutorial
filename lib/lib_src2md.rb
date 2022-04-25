@@ -1,6 +1,8 @@
 # lib_src2md.rb
+require 'fileutils'
 require 'pathname'
 include Math
+include FileUtils
 
 # The method 'src2md' converts .src.md file into .md file.
 # The .md file is the final format for GFM, or intermediate markdown file for html and/or latex.
@@ -93,9 +95,10 @@ class String
   end
 end
 
-def src2md src_path, dst_path, type
+def src2md src_path, type
+  dst_dir = {"gfm"=>"gfm","html"=>"docs","latex"=>"latex"}[type]
+  dst_path = "#{dst_dir}/#{File.basename(src_path, ".src.md")}.md"
   src_dir = File.dirname src_path
-  dst_dir = File.dirname dst_path
   src = File.read(src_path)
   src = at_if_else(src, type)
   buf = src.partitions(/^@@@table\n.*?@@@\n/m)
@@ -105,6 +108,7 @@ def src2md src_path, dst_path, type
   buf = src.partitions(/^@@@shell.*?@@@\n/m)
   src = buf.map{|chunk| chunk=~/\A@@@shell.*?@@@\n/m ? at_shell(chunk, src_dir) : chunk}.join
   src = change_link(src, src_dir, type, dst_dir)
+  mkdir_p(dst_dir) unless Dir.exist?(dst_dir)
   File.write(dst_path, src)
 end
 

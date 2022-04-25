@@ -147,7 +147,7 @@ module Prepare_test
     [Relative link](sample.c) will be converted when the target type is gfm or html.
     Otherwise (latex) the link will be removed.
 
-    Another [relative link](../../Rakefile).
+    Another [relative link](../Rakefile).
 
     [Absolute link](https://github.com/ToshioCP) is kept as it is.
 
@@ -155,7 +155,7 @@ module Prepare_test
     If the target type is gfm or html, the size will be removed.
     Otherwise (latex) it remains.
 
-    ![Screenshot of the box](../../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
+    ![Screenshot of the box](../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
     EOS
 
     sample_md_gfm = <<~EOS
@@ -243,10 +243,10 @@ module Prepare_test
 
     gfm
 
-    [Relative link](../temp/sample.c) will be converted when the target type is gfm or html.
+    [Relative link](../src/sample.c) will be converted when the target type is gfm or html.
     Otherwise (latex) the link will be removed.
 
-    Another [relative link](../../Rakefile).
+    Another [relative link](../Rakefile).
 
     [Absolute link](https://github.com/ToshioCP) is kept as it is.
 
@@ -254,7 +254,7 @@ module Prepare_test
     If the target type is gfm or html, the size will be removed.
     Otherwise (latex) it remains.
 
-    ![Screenshot of the box](../../image/screenshot_lb4.png)
+    ![Screenshot of the box](../image/screenshot_lb4.png)
     EOS
 
     sample_md_html = <<~EOS
@@ -452,7 +452,7 @@ module Prepare_test
     If the target type is gfm or html, the size will be removed.
     Otherwise (latex) it remains.
 
-    ![Screenshot of the box](../../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
+    ![Screenshot of the box](../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
     EOS
 
     # -------------------
@@ -862,27 +862,32 @@ class Test_lib_src_file < Minitest::Test
     assert_equal dst_src, change_link(src_src, "src", "gfm", "gfm")
   end
   def test_src2md
-    temp = "temp"
-    Dir.mkdir(temp) unless Dir.exist?(temp)
+    cur_dir = pwd()
+    temp = "temp"+Time.now.to_f.to_s.gsub(/\./,'')
+    src_dir = "#{temp}/src"
+    mkdir_p(src_dir) unless Dir.exist?(src_dir)
     files_src2md()[:files].each do |f|
-      File.write "#{temp}/#{f[1]}", f[0]
+      File.write "#{src_dir}/#{f[1]}", f[0]
     end
-    dst_dirs = ["gfm", "html", "latex"]
+    File.write("#{src_dir}/sample_image.src.md", "![image](image/image.png){width=8cm hight=6cm}\n")
     dst_md = {}
-    dst_dirs.each do |d|
-      Dir.mkdir(d) unless Dir.exist?(d)
-      src2md "#{temp}/sample.src.md", "#{d}/sample.md", d
-      dst_md[d] = File.read "#{d}/sample.md"
-      remove_entry_secure(d)
+    ["gfm", "html", "latex"].each do |type|
+      dst_dir = {"gfm"=>"gfm","html"=>"docs","latex"=>"latex"}[type]
+      chdir(temp)
+      mkdir(dst_dir) unless Dir.exist?(dst_dir)
+      src2md "src/sample.src.md", type
+      src2md "src/sample_image.src.md", type
+      dst_md[type] = File.read "#{dst_dir}/sample.md"
+      dst_md["#{type}_image"] = File.read "#{dst_dir}/sample_image.md"
+      chdir(cur_dir)
     end
     remove_entry_secure(temp)
-
     # If you want to see the difference
-    Diff::LCS.diff(files_src2md()[:sample_md_gfm].each_line.to_a, dst_md["gfm"].each_line.to_a).each do |array|
-      array.each do |change|
-        print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
-      end
-    end
+    # Diff::LCS.diff(files_src2md()[:sample_md_gfm].each_line.to_a, dst_md["gfm"].each_line.to_a).each do |array|
+    #   array.each do |change|
+    #     print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
+    #   end
+    # end
     # Diff::LCS.diff(files()[:sample_md_latex].each_line.to_a, dst_md["latex"].each_line.to_a).each do |array|
     #   array.each do |change|
     #     print "#{change.action}  #{change.position.to_s.chomp}: #{change.element.to_s.chomp}\n"
@@ -891,22 +896,8 @@ class Test_lib_src_file < Minitest::Test
     assert_equal files_src2md()[:sample_md_gfm], dst_md["gfm"]
     assert_equal files_src2md()[:sample_md_html], dst_md["html"]
     assert_equal files_src2md()[:sample_md_latex], dst_md["latex"]
-
-    temp = "temp"+Time.now.to_f.to_s.gsub(/\./,'')
-    src_dir = "#{temp}/src"
-    dst_dir = "#{temp}/dst"
-    Dir.mkdir(temp) unless Dir.exist?(temp)
-    Dir.mkdir(src_dir) unless Dir.exist?(src_dir)
-    Dir.mkdir(dst_dir) unless Dir.exist?(dst_dir)
-    File.write("#{src_dir}/sample.src.md", "![image](image/image.png){width=8cm hight=6cm}\n")
-    ["gfm", "html", "latex"].each do |d|
-      src2md "#{src_dir}/sample.src.md", "#{dst_dir}/sample.md", d
-      dst_md[d] = File.read "#{dst_dir}/sample.md"
-    end
-    remove_entry_secure(temp)
-    assert_equal "![image](../src/image/image.png)\n", dst_md["gfm"]
-    assert_equal "![image](image/image.png)\n", dst_md["html"]
-    assert_equal "![image](../src/image/image.png){width=8cm hight=6cm}\n", dst_md["latex"]
+    assert_equal "![image](../src/image/image.png)\n", dst_md["gfm_image"]
+    assert_equal "![image](image/image.png)\n", dst_md["html_image"]
+    assert_equal "![image](../src/image/image.png){width=8cm hight=6cm}\n", dst_md["latex_image"]
   end
-
 end

@@ -1,6 +1,10 @@
 # lib_gen_main_tex.rb
 #  -- Library ruby script to generate main.tex.
 
+def basename(file, suffix=nil)
+  suffix ? File.basename(file, suffix) : File.basename(file)
+end
+
 def gen_main_tex directory, abstractfile, texfiles, appendixfiles=nil
   #  parameter: directory: the destination directory to put generated files.
   #             texfiles: an array of latex files. Each of them is "secXX.tex" where XX is digits.
@@ -76,21 +80,19 @@ EOS
   \\begin{center}
   \\textbf{abstract}
   \\end{center}
-  \\input{#{abstractfile}}
+  \\input{#{basename(abstractfile)}}
   \\newpage
   \\tableofcontents
   \\newpage
   EOS
 
   texfiles.each do |filename|
-    filename = filename.sub(/^#{directory}\//, "")
-    main += "  \\input{#{filename}}\n"
+    main += "  \\input{#{basename(filename)}}\n"
   end
   main += "\\newpage\n"
   main += "\\appendix\n" if appendixfiles
   appendixfiles.to_a.each do |filename|
-    filename = filename.sub(/^#{directory}\//, "")
-    main += "  \\input{#{filename}}\n"
+    main += "  \\input{#{basename(filename)}}\n"
   end
   main += "\\end{document}\n"
   IO.write("#{directory}/main.tex", main)

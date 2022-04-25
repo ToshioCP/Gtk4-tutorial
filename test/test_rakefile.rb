@@ -6,6 +6,9 @@ require 'fileutils'
 
 class Test_rakefile < Minitest::Test
   include FileUtils
+  def dirname(file)
+    File.dirname(file)
+  end
   def test_rakefile
     rakefile = File.read("../Rakefile")
     c_files = rakefile.match(/^def c_files.*?^end\n/m)[0]
