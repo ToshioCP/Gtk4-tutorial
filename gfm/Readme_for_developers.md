@@ -6,7 +6,7 @@
 2. download this repository and uncompress the file.
 3. change your current directory to the top directory of the source files.
 4. type `rake html` to create html files. The files are created under the `docs` directory.
-5. type `rake pdf` to create pdf file. The file is created under the `latex` directory.
+5. type `rake pdf` to create pdf a file. The file is created under the `latex` directory.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ Then, click "Download ZIP".
 - Ruby and rake.
 - Pandoc. It is used to convert markdown to html and/or latex.
 - Latex system. Texlive2020 or later version is recommended.
-It is used to generate pdf file.
+It is used to generate the pdf file.
 
 ## Github flavored markdown
 
@@ -41,9 +41,9 @@ This tutorial also uses another markdown -- 'pandoc's markdown'.
 Pandoc is a converter between markdown, html, latex, word docx and so on.
 This type of markdown is used to convert markdown to html and/or latex.
 
-## Src.md file
+## .Src.md file
 
-Src.md file has ".src.md" suffix.
+.Src.md file has ".src.md" suffix.
 The syntax of .src.md file is similar to markdown but it has a special command which isn't included in markdown syntax.
 It is @@@ command.
 The command starts with a line begins with "@@@" and ends with a line "@@@".
@@ -73,7 +73,7 @@ If a function list follows the filename, only the functions are read.
 The command above is replaced by the contents of `main` and `startup` functions in the file `tfeapplication.c`.
 
 Other language's source files are also possible.
-The following example shows that the ruby file 'lib_src2.rb' is inserted by the command.
+The following example shows that the ruby file 'lib_src2md.rb' is inserted by the command.
 
     @@@include
     lib_src2md.rb
@@ -100,7 +100,7 @@ The following example shows that the @@@ command includes a C source file `sampl
     sample.c
     @@@
       ... ...
-    $ ruby src2md.rb src/sample.src.md gfm/sample.md
+    $ ruby src2md.rb src/sample.src.md
     $ cat gfm/sample.md
       ... ...
     ~~~C
@@ -136,7 +136,7 @@ The following shows that the line numbers are inserted at the beginning of each 
     sample.c
     @@@
       ... ...
-    $ ruby src2md.rb src/sample.src.md gfm/sample.md
+    $ ruby src2md.rb src/sample.src.md
     $ cat gfm/sample.md
       ... ...
     ~~~C
@@ -147,7 +147,7 @@ The following shows that the line numbers are inserted at the beginning of each 
     ~~~
       ... ...
 
-If a markdown is an intermediate file to html, then another type of info string follows the fence.
+If a markdown is an intermediate file to html, another type of info string follows the fence.
 If @@@include command doesn't have -N option, then the generated markdown is:
 
     ~~~{.C .numberLines}
@@ -163,7 +163,7 @@ If the class is given, pandoc generates CSS to insert line numbers to the source
 That's why the fence code block in the markdown doesn't have line numbers, which is different from gfm markdown.
 If `-N` option is given, then the info string is `{.C}` only.
 
-If a markdown is an intermediate file to latex, then the same info string follows the beginning fence.
+If a markdown is an intermediate file to latex, the same info string follows the beginning fence.
 
     ~~~{.C .numberLines}
     int
@@ -172,7 +172,7 @@ If a markdown is an intermediate file to latex, then the same info string follow
     }
     ~~~
 
-Rake uses pandoc with --listings option when it converts markdown to latex.
+Rake uses pandoc with --listings option to convert the markdown to a latex file.
 The generated latex file uses 'listings package' to list source files instead of verbatim environment.
 The markdown above is converted to the following latex source file.
 
@@ -184,9 +184,9 @@ The markdown above is converted to the following latex source file.
     \end{lstlisting}
 
 Listing package can color or emphasize keywords, strings, comments and directives.
-But it doesn't really analyze the syntax of the language, so the emphasis tokens is limited.
+But it doesn't really analyze the syntax of the language, so the emphasis tokens are limited.
 
- @@@include command have two advantages.
+ @@@include command has two advantages.
 
 1. Less typing.
 2. You don't need to modify your .src.md file, even if the C source file is modified.
@@ -221,7 +221,7 @@ This is converted to:
 ### @@@if series
 
 This type of @@@ command starts with a line begins with "@@@if", and followed by "@@@elif", "@@@else" or "@@@end".
-This command is similar to "#if", "#elif", #else" and "#endif" directives in C preprocessor.
+This command is similar to "#if", "#elif", #else" and "#endif" directives in the C preprocessor.
 For example,
 
     @@@if gfm
@@ -237,7 +237,7 @@ They are `gfm`, `html` or `latex` so far.
 
 - gfm: if the target is GFM
 - html: if the target is html
-- latex: if the target is latex (or pdf).
+- latex: if the target is pdf.
 
 Other type of conditions may be available in the future version.
 
@@ -249,7 +249,7 @@ It is based on the state diagram below.
 ### @@@table
 
 This type of @@@ command starts with a line begins with "@@@table".
-The contents of this command is a table of GFM or pandoc's markdown.
+The contents of this command is a table of the GFM or pandoc's markdown.
 The command makes a table easy to read.
 For example, a text file `sample.md` has a table like this:
 
@@ -284,6 +284,7 @@ If you run the script like this:
 $ ruby mktbl.rb sample.md
 ~~~
 
+Then, the tables in 'sample.md' will be arranged.
 The script also makes a backup file `sample.md.bak`.
 
 The task of the script seems easy, but the program is not so simple.
@@ -303,8 +304,9 @@ This method converts `.src.md` file into `.md` file.
 In addition, some other conversions are made by `src2md` method.
 
 - Relative links are changed according to the change of the base directory.
-- Size option in image link is removed when the destination is GFM or html.
-- Relative link is removed when the destination is html and/or latex.
+- Size option in an image link is removed when the destination is GFM or html.
+- Relative link is removed except .src.md files when the destination is html.
+- Relative link is removed when the destination is latex.
 
 The order of the conversions are:
 
@@ -314,7 +316,7 @@ The order of the conversions are:
 4. @@@shell
 5. others
 
-There is `src2md.rb` file in the top directory of this repository.
+There is the `src2md.rb` file in the top directory of this repository.
 It just invokes the method `src2md`.
 In the same way, the method is called in the action in the `Rakefile`.
 
@@ -327,9 +329,9 @@ It is possible that these three directories don't exist before the conversion.
 
 - src: This directory contains .src.md files and C-related source files.
 - image: This directory contains image files like png or jpg.
-- gfm: `rake` converts src.md files to GFM files and store them in this directory.
-- docs: `rake html` will convert src.md files to html files and store them in this directory.
-- latex: `rake pdf` will convert src.md files to latex files and store them in this directory.
+- gfm: `rake` converts .src.md files to GFM files and store them in this directory.
+- docs: `rake html` will convert .src.md files to html files and store them in this directory.
+- latex: `rake pdf` will convert .src.md files to latex files and store them in this directory.
 Finally it creates a pdf file in `latex` directory.
 - lib: This directory includes ruby library files.
 - test: This directory contains test files.
@@ -347,11 +349,11 @@ Rake carries out the conversion according to the `Rakefile`.
 
 ## The name of files in src directory
 
-Each file in `src` directory is an abstract, sections of the whole document and other .src.md files.
+Files in `src` directory are an abstract, sections of the document and other .src.md files.
 An `abstract.src.md` contains the abstract of this tutorial.
 Each section filename is "sec", number of the section and ".src.md" suffix.
 For example, "sec1.src.md", "sec5.src.md" or "sec12.src.md".
-They are the files correspond to section 1, section 5 and section 12 respectively.
+They are the files correspond to the section 1, section 5 and section 12 respectively.
 
 ## C source file directory
 
@@ -368,27 +370,28 @@ It is because of renumbering, which will be explained in the next subsection.
 
 ## Renumbering
 
-Sometimes you might want to insert a section.
+Sometimes you might want to insert a new section.
 For example, you want to insert it between section 4 and section 5.
 You can make a temporary section 4.5, that is a rational number between 4 and 5.
 However, section numbers are usually integer so section 4.5 must be changed to section 5.
 And the numbers of the following sections must be increased by one.
 
-This renumbering is done by a method `renum!` of the class `Sec_files`.
-The method and class is written in `lib/lib_sec_file.rb`.
+This renumbering is done by the `renumber` method in the `lib/lib_renumber.rb` file.
 
 - It changes file names.
-- If there are references to sections in .src.md files, the section numbers will be automatically renumbered.
+- If there are references (links) to sections in .src.md files, the section numbers will be automatically renumbered.
 
 ## Rakefile
 
-Rakefile is a similar file to Makefile but controlled by rake, which is a make-like program written in ruby.
+Rakefile is similar to Makefile but controlled by rake, which is a ruby script.
 Rakefile in this tutorial has the following tasks.
 
 - md: generate GFM markdown files. This is the default.
 - html: generate html files.
 - pdf: generate latex files and a pdf file, which is compiled by lualatex.
 - all: generate md, html and pdf files.
+- clean: delete latex intermediate files.
+- clobber: delete all the generated files.
 
 Rake does renumbering before the tasks above.
 
@@ -410,8 +413,9 @@ For example,
 The size between left brace and right brace is used in latex file and it is not fit to GFM syntax.
 So the size will be removed in the conversion.
 
-If a .src.md file has relative URL link, it will be changed by conversion.
-Because .src.md files are located under `src` directory and GFM files are located under `gfm` directory, base URL of GFM files is different from base URL of .src.md files.
+If a .src.md file has relative URL links, they will be changed by conversion.
+Because .src.md files are located under the `src` directory and GFM files are located under the `gfm` directory.
+That means the base directory of the relative link are different.
 For example, `[src/sample.c](sample.c)` is translated to `[src/sample.c](../src/sample.c)`.
 
 If a link points another .src.md file, then the target filename will be changed to .md file.
@@ -460,7 +464,7 @@ Image files are copied to `docs/image` direcotiry and links to them will be conv
 Other relative links will be removed.
 
 `index.html` is the top html file.
-If you want to clean html files, type `rake clobber`
+If you want to clean html files, type `rake clobber` or `cleanhtml`.
 
     $ rake clobber
 
@@ -505,8 +509,8 @@ You can customize `helper.tex` by modifying `lib/lib_gen_main_tex.rb`.
 
 Finally, lualatex compiles the `main.tex` into a pdf file.
 
-If you want to clean `latex` directory, type `rake cleanlatex`
+If you want to clean `latex` directory, type `rake clobber` or `rake cleanlatex`
 
-    $ rake cleanlatex
+    $ rake clobber
 
 This removes all the latex source files and a pdf file.
