@@ -111,33 +111,76 @@
         </div>
       </div>
     </nav>
-<h1 id="installation-of-gtk4-to-linux-distributions">Installation of Gtk4 to Linux distributions</h1>
+<h1 id="installing-gtk4-into-linux-distributions">Installing Gtk4 into Linux distributions</h1>
 <p>This section describes how to install Gtk4 into Linux distributions.</p>
-<p>This tutorial including this section is without any warranty. If you install Gtk4 to your computer, do it at your own risk.</p>
-<p>This section is written on 12/August/2021. “At present” means 12/August/2021 in this section.</p>
+<p>This tutorial is without any warranty. If you want to install Gtk4 to your computer, do it at your own risk.</p>
+<p>The information in this section is the one on April/27/2022. The words ‘at present’ and/or ‘now’ in this section means ‘April/27/2022’.</p>
 <p>There are three possible way to install Gtk4.</p>
 <ul>
 <li>Install it from the distribution packages.</li>
 <li>Build it from the source file.</li>
-<li>Install Gnome 40 distribution.</li>
+<li>Install a Gnome 40 distribution with the gnome-boxes.</li>
 </ul>
 <h2 id="installation-from-the-distribution-packages">Installation from the distribution packages</h2>
-<p>The first way is easy to install. It is a recommended way. I’ve installed Gtk4 packages in Ubuntu 21.04.</p>
+<p>The first way is easy to install. It is a recommended way. I’ve installed Gtk4 packages in Ubuntu 21.04. (Now, my Ubuntu version is 21.10).</p>
 <pre><code>$ sudo apt-get install libgtk-4-bin libgtk-4-common libgtk-4-dev libgtk-4-doc</code></pre>
-<p>Arch, Debian and Fedora are also possible. See <a href="https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages">Installing GTK from packages</a>. If you’ve installed Gtk4 from the packages, you don’t need to read the rest of this section.</p>
+<p>Fedora, Arch, Debian and OpenSUSE are also possible. See <a href="https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages">Installing GTK from packages</a>. The following table shows the distributions which support Gtk4.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Distribution</th>
+<th style="text-align: center;">version</th>
+<th style="text-align: center;">Gtk4</th>
+<th style="text-align: center;">Gnome40</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Fedora</td>
+<td style="text-align: center;">35</td>
+<td style="text-align: center;">4.4.2</td>
+<td style="text-align: center;">Gnome41</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Ubuntu</td>
+<td style="text-align: center;">21.10</td>
+<td style="text-align: center;">4.4</td>
+<td style="text-align: center;">Gnome40(40.4.0)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Debian</td>
+<td style="text-align: center;">bookworm(testing)</td>
+<td style="text-align: center;">4.6.2</td>
+<td style="text-align: center;">Gnome40(40.4)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Arch</td>
+<td style="text-align: center;">rolling release</td>
+<td style="text-align: center;">4.6.3</td>
+<td style="text-align: center;">Gnome42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">OpenSUSE</td>
+<td style="text-align: center;">Tumbleweed(rolling release)</td>
+<td style="text-align: center;">4.6.2</td>
+<td style="text-align: center;">Gnome42</td>
+</tr>
+</tbody>
+</table>
+<p>If you’ve installed Gtk4 from the packages, you don’t need to read the rest of this section.</p>
 <h2 id="installation-from-the-source-file">Installation from the source file</h2>
-<p>If your operating system doesn’t have Gtk4 packages, you need to build it from the source. Or, if you want the latest version of Gtk4, you also need to build it from the source. At present, the version of Gtk4 on Ubuntu 21.04 is 4.0.3.</p>
-<p>I installed Gtk4 in January 2021. So, the following is old information, especially for the version of each software. For the latest information, see <a href="https://docs.gtk.org/gtk4/building.html">Gtk API Reference, Building GTK</a>.</p>
+<p>If your operating system doesn’t have Gtk4 packages, you need to build it from the source. Or, if you want the latest version of Gtk4 (4.6.3), you also need to build it from the source.</p>
+<p>I installed Gtk4 from the source in January 2021. So, the following information is old, especially for the version of each software. For the latest information, see <a href="https://docs.gtk.org/gtk4/building.html">Gtk API Reference, Building GTK</a>.</p>
 <h3 id="prerequisites-for-gtk4-installation">Prerequisites for Gtk4 installation</h3>
 <ul>
 <li>Linux operating system. For example, Ubuntu 20.10 or 20.04LTS. Other distributions might be OK.</li>
 <li>Packages for development such as gcc, meson, ninja, git, wget and so on.</li>
-<li>Dev packages necessary for each software below.</li>
+<li>Dev package is necessary for each software below.</li>
 </ul>
 <h3 id="installation-target">Installation target</h3>
 <p>I installed Gtk4 under the directory <code>$HOME/local</code>. This is a private user area.</p>
 <p>If you want to install it in the system area, <code>/opt/gtk4</code> is one of good choices. <a href="https://docs.gtk.org/gtk4/building.html">Gtk API Reference, Building GTK</a> gives an installation example to <code>/opt/gtk4</code>.</p>
-<p>Don’t install it to <code>/usr/local</code> which is the default. It is used by Ubuntu applications, which are not build on Gtk4. Therefore, the risk is high and probably bad things will happen. Actually I did it and I needed to reinstall Ubuntu.</p>
+<p>Don’t install it to <code>/usr/local</code> which is the default. It is used by Ubuntu applications which are not build on Gtk4. Therefore, the risk is high and probably bad things will happen. Actually I did it and I needed to reinstall Ubuntu.</p>
 <h3 id="installation-to-ubuntu-20.10">Installation to Ubuntu 20.10</h3>
 <p>Most of the necessary libraries are included by Ubuntu 20.10. Therefore, they can be installed with <code>apt-get</code> command. You don’t need to install them from the source tarballs. You can skip the subsections below about prerequisite library installation (Glib, Pango, Gdk-pixbuf and Gtk-doc).</p>
 <h3 id="glib-installation">Glib installation</h3>
@@ -231,23 +274,18 @@ export GI_TYPELIB_PATH=$HOME/local/lib/x86_64-linux-gnu/girepository-1.0</code><
 <pre><code>$ gcc `pkg-config --cflags gtk4` sample.c `pkg-config --libs gtk4`</code></pre>
 <p>To know how to compile Gtk4 applications, refer to the section 3 (GtkApplication and GtkApplicationWindow) and after.</p>
 <h2 id="installing-fedora-34-with-gnome-boxes">Installing Fedora 34 with gnome-boxes</h2>
-<p>The last part of this section is about Gnome40. Gnome 40 is a new version of Gnome desktop system. And Gtk4 is installed in the distribution. See <a href="https://forty.gnome.org/">Gnome 40 website</a> first.</p>
+<p>The last part of this section is about Gnome40 and gnome-boxes. Gnome 40 is a new version of Gnome desktop system. And Gtk4 is installed in the distribution. See <a href="https://forty.gnome.org/">Gnome 40 website</a> first.</p>
 <p><em>However, Gnome40 is not necessary to compile and run Gtk4 applications.</em></p>
-<p>There are only three choices at present.</p>
+<p>There are six choices at present.</p>
 <ul>
 <li>Gnome OS</li>
 <li>Arch Linux</li>
-<li>Fedora 34+</li>
-<li>openSUSE</li>
-<li>Ubuntu 21.04+</li>
+<li>Fedora 35</li>
+<li>openSUSE Tumbleweed</li>
+<li>Ubuntu 21.10</li>
+<li>Debian bookworm</li>
 </ul>
-<p>I’ve tried installing Fedora 34 with gnome-boxes.</p>
-<p>There are two ways to install them.</p>
-<ul>
-<li>Install them to a hard disk. This is a usual installation.</li>
-<li>Install them to a virtual machine.</li>
-</ul>
-<p>I’ve chosen the second way. I’ve tried installing Fedora 34 with gnome-boxes. My OS was Ubuntu 21.04 at that time. Gnome-boxes creates a virtual machine in Ubuntu and Fedora will be installed to that virtual machine.</p>
+<p>I’ve installed Fedora 34 with gnome-boxes. My OS was Ubuntu 21.04 at that time. Gnome-boxes creates a virtual machine in Ubuntu and Fedora will be installed to that virtual machine.</p>
 <p>The instruction is as follows.</p>
 <ol type="1">
 <li>Download Fedora 34 iso file. There is an link at the end of <a href="https://forty.gnome.org/">Gnome 40 website</a>.</li>
@@ -257,14 +295,14 @@ export GI_TYPELIB_PATH=$HOME/local/lib/x86_64-linux-gnu/girepository-1.0</code><
 <ol start="3" type="1">
 <li>Run gnome-boxes.</li>
 <li>Click on <code>+</code> button on the top left corner and launch a box creation wizard by clicking <code>Create a Virtual Machine ...</code>. Then a dialog appears. Click on <code>Operationg System Image File</code> and select the iso file you have downloaded.</li>
-<li>Then, the installer of Fedora is executed. Follow the instructions by the installer. At the end of the installation, the installer instructs to reboot the system. Click on the right of the title bar and select reboot or shutdown.</li>
+<li>Then, the Fedora’s installer is executed. Follow the instructions by the installer. At the end of the installation, the installer instructs to reboot the system. Click on the right of the title bar and select reboot or shutdown.</li>
 <li>Your display is back to the initial window of gnome-boxes, but there is a button <code>Fedora 34 Workstation</code> on the upper left of the window. Click on the button then Fedora will be executed.</li>
 <li>A setup dialog appears. Setup Fedora according to the wizard.</li>
 </ol>
 <p>Now you can use Fedora. It includes Gtk4 libraries already. But you need to install the Gtk4 development package. Use <code>dnf</code> to install <code>gtk4.x86_64</code> package.</p>
 <pre><code>$ sudo dnf install gtk4.x86_64</code></pre>
-<h3 id="test-for-compiling-a-gtk4-application">Test for compiling a Gtk4 application</h3>
-<p>You can test the Gtk4 development package by compiling files which are based on Gtk4. I’ve tried compiling <code>tfe</code> text editor, which is written in section 21.</p>
+<h3 id="gtk4-compilation-test">Gtk4 compilation test</h3>
+<p>You can test the Gtk4 development packages by compiling files which are based on Gtk4. I’ve tried compiling <code>tfe</code> text editor, which is written in section 21.</p>
 <ol type="1">
 <li>Run Firefox.</li>
 <li>Open this website (<a href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4-Tutorial</a>).</li>
@@ -307,9 +345,9 @@ Program glib-compile-resources found: YES (/usr/bin/glib-compile-resources)
 Program glib-compile-schemas found: YES (/usr/bin/glib-compile-schemas)
 Program glib-compile-schemas found: YES (/usr/bin/glib-compile-schemas)
 Build targets in project: 4
- 
+
 Found ninja-1.10.2 at /usr/bin/ninja
- 
+
 $ ninja -C _build
 ninja: Entering directory `_build&#39;
 [12/12] Linking target tfe

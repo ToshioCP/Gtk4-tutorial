@@ -51,7 +51,7 @@ There is a documentation \("[How to build Gtk4 Tutorial](gfm/Readme_for_develope
 ## Table of contents
 
 1. [Prerequisite and License](gfm/sec1.md)
-1. [Installation of Gtk4 to Linux distributions](gfm/sec2.md)
+1. [Installing Gtk4 into Linux distributions](gfm/sec2.md)
 1. [GtkApplication and GtkApplicationWindow](gfm/sec3.md)
 1. [Widgets (1)](gfm/sec4.md)
 1. [Widgets (2)](gfm/sec5.md)
