@@ -1,6 +1,6 @@
 # Widgets (1)
 
-## GtkLabel, GtkButton and Gtkbox
+## GtkLabel, GtkButton and GtkBox
 
 ### GtkLabel
 
