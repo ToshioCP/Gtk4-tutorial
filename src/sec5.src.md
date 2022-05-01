@@ -1,10 +1,10 @@
 # Widgets (2)
 
-## GtkTextView, GtkTextbuffer and GtkScrolledWindow
+## GtkTextView, GtkTextBuffer and GtkScrolledWindow
 
 ### GtkTextView and GtkTextBuffer
 
-GtkTextview is a widget for multi-line text editing.
+GtkTextView is a widget for multi-line text editing.
 GtkTextBuffer is a text buffer which is connected to GtkTextView.
 See the sample program `tfv1.c` below.
 
@@ -29,7 +29,7 @@ Now compile and run it.
 ![GtkTextView](../image/screenshot_tfv1.png){width=6.3cm height=5.325cm}
 
 There's an I-beam pointer in the window.
-You can add or delete any characters on the GtkTextview,
+You can add or delete any characters on the GtkTextView,
 and your changes are kept in the GtkTextBuffer.
 If you add more characters beyond the limit of the window, the height increases and the window extends.
 If the height gets bigger than the height of the display screen, you won't be
