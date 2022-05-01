@@ -304,7 +304,7 @@ GtkApplicationWindow is a child object of GtkWindow.
 It has some extra functionality for better integration with GtkApplication.
 It is recommended to use it instead of GtkWindow when you use GtkApplication.
 
-Now rewrite the program and use GtkAppliction Window.
+Now rewrite the program and use GtkApplicationWindow.
 
 ~~~C
 1 static void

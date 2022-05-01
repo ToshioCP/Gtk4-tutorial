@@ -2,7 +2,7 @@ Up: [Readme.md](../Readme.md),  Prev: [Section 3](sec3.md), Next: [Section 5](se
 
 # Widgets (1)
 
-## GtkLabel, GtkButton and Gtkbox
+## GtkLabel, GtkButton and GtkBox
 
 ### GtkLabel
 
