@@ -132,7 +132,7 @@
 <img src="image/child.png" alt="" /><figcaption>Child object of GtkTextView</figcaption>
 </figure>
 <p>We will define TfeTextView as a child object of GtkTextView. It has everything that GtkTextView has. Specifically, TfeTextView has a GtkTextbuffer which corresponds to the GtkTextView inside TfeTextView. The additional important thing is that TfeTextView can also keep an additional pointer to GFile.</p>
-<p>In general, this is how GObjects work. Understanding the general theory about Gobject’s is difficult, particularly for beginners. So, I will just show you the way how to write the code and avoid the theoretical side. If you want to know about GObject system, refer to the separate tutorial](https://github.com/ToshioCP/Gobject-tutorial).</p>
+<p>In general, this is how GObjects work. Understanding the general theory about Gobject’s is difficult, particularly for beginners. So, I will just show you the way how to write the code and avoid the theoretical side. If you want to know about GObject system, refer to another <a href="https://github.com/ToshioCP/Gobject-tutorial">tutorial</a>.</p>
 <h2 id="how-to-define-a-child-object-of-gtktextview">How to Define a Child Object of GtkTextView</h2>
 <p>Let’s define the TfeTextView object, which is a child object of GtkTextView. First, look at the program below.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()</span></span>

@@ -52,7 +52,7 @@ The additional important thing is that TfeTextView can also keep an additional p
 In general, this is how GObjects work. Understanding the general theory about Gobject's is difficult,
 particularly for beginners.
 So, I will just show you the way how to write the code and avoid the theoretical side.
-If you want to know about GObject system, refer to the separate tutorial](https://github.com/ToshioCP/Gobject-tutorial).
+If you want to know about GObject system, refer to another [tutorial](https://github.com/ToshioCP/Gobject-tutorial).
 
 ## How to Define a Child Object of GtkTextView
 
