@@ -74,6 +74,7 @@ imagefiles = srcfiles.map do |file|
   end.flatten.sort.uniq
 
 ["gfm", "docs", "latex"].each{|d| Dir.mkdir(d) unless Dir.exist?(d)}
+Dir.mkdir('docs/image') unless Dir.exist?('docs/image')
 
 CLEAN.append(FileList["latex/*.tex", "latex/*.aux", "latex/*.log", "latex/*.toc"])
 CLOBBER.append("Readme.md").append(FileList["gfm/*.md"])
