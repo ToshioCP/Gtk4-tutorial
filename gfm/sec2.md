@@ -33,11 +33,13 @@ The following table shows the distributions which support Gtk4.
 
 |Distribution|          version          |Gtk4 |    Gnome40    |
 |:----------:|:-------------------------:|:---:|:-------------:|
-|   Fedora   |            35             |4.4.2|    Gnome41    |
-|   Ubuntu   |           21.10           | 4.4 |Gnome40(40.4.0)|
-|   Debian   |     bookworm(testing)     |4.6.2| Gnome40(40.4) |
-|    Arch    |      rolling release      |4.6.3|    Gnome42    |
-|  OpenSUSE  |Tumbleweed(rolling release)|4.6.2|    Gnome42    |
+|   Fedora   |            36             |4.4.2|    Gnome42    |
+|   Ubuntu   |           22.04 (lts)     | 4.4 | Gnome41(4.6.2)|
+|   Debian   |     bookworm(testing)     |4.6.5|    Gnome42    |
+|   Debian   |     sid(rolling release)  |4.6.5|    Gnome42    |
+|    Arch    |      rolling release      |4.6.5|    Gnome42    |
+|   Gentoo   |      rolling release      |4.6.5|    Gnome42    |
+|  OpenSUSE  |Tumbleweed(rolling release)|4.6.5|    Gnome42    |
 
 If you've installed Gtk4 from the packages, you don't need to read the rest of this section.
 
@@ -256,9 +258,10 @@ There are six choices at present.
 
   - Gnome OS
   - Arch Linux
-  - Fedora 35
+  - Gentoo Linux
+  - Fedora 36
   - openSUSE Tumbleweed
-  - Ubuntu 21.10
+  - Ubuntu 22.04
   - Debian bookworm
 
 I've installed Fedora 34 with gnome-boxes.
