@@ -31,13 +31,14 @@ Fedora, Arch, Debian and OpenSUSE are also possible.
 See [Installing GTK from packages](https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages).
 The following table shows the distributions which support Gtk4.
 
-|Distribution|          version          |Gtk4 |    Gnome40    |
-|:----------:|:-------------------------:|:---:|:-------------:|
-|   Fedora   |            35             |4.4.2|    Gnome41    |
-|   Ubuntu   |           21.10           | 4.4 |Gnome40(40.4.0)|
-|   Debian   |     bookworm(testing)     |4.6.2| Gnome40(40.4) |
-|    Arch    |      rolling release      |4.6.3|    Gnome42    |
-|  OpenSUSE  |Tumbleweed(rolling release)|4.6.2|    Gnome42    |
+|Distribution|          version          |Gtk4 |   Gnome40    |
+|:----------:|:-------------------------:|:---:|:------------:|
+|   Fedora   |            36             |4.4.2|   Gnome42    |
+|   Ubuntu   |         22.04lts          | 4.4 |Gnome41(4.6.2)|
+|   Debian   |     bookworm(testing)     |4.6.5|   Gnome42    |
+|    Arch    |      rolling release      |4.6.5|   Gnome42    |
+|   Gentoo   |      rolling release      |4.6.5|   Gnome42    |
+|  OpenSUSE  |Tumbleweed(rolling release)|4.6.5|   Gnome42    |
 
 If you've installed Gtk4 from the packages, you don't need to read the rest of this section.
 
@@ -252,13 +253,14 @@ See [Gnome 40 website](https://forty.gnome.org/) first.
 
 *However, Gnome40 is not necessary to compile and run Gtk4 applications.*
 
-There are six choices at present.
+There are seven choices at present.
 
   - Gnome OS
   - Arch Linux
-  - Fedora 35
+  - Gentoo Linux
+  - Fedora 36
   - openSUSE Tumbleweed
-  - Ubuntu 21.10
+  - Ubuntu 22.04
   - Debian bookworm
 
 I've installed Fedora 34 with gnome-boxes.
