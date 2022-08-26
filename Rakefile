@@ -125,7 +125,7 @@ srcfiles.each_with_index do |src, i|
   end
 end
 
-task html: %W[docs/index.html] + hdsts(srcfiles) + idsts(imagefiles)
+task html: %W[docs/index.html docs/.nojekyll] + hdsts(srcfiles) + idsts(imagefiles)
 
 file "docs/index.html" => [abstract] + secfiles do
   abstract_md = "docs/#{to_md(abstract)}"
@@ -144,6 +144,10 @@ file "docs/index.html" => [abstract] + secfiles do
   sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o docs/index.html docs/index.md"
   File.delete "docs/index.md"
   File.delete "docs/template.html"
+end
+
+file "docs/.nojekyll" do |t|
+  touch t.name
 end
 
 srcfiles.each_with_index do |src, i|
