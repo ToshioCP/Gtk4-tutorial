@@ -3,8 +3,7 @@ def renumber secfiles
   secfiles.sort!{|f,g| f.match(/\d+(\.\d+)?\.src\.md$/).to_a[0].to_f <=> g.match(/\d+(\.\d+)?\.src\.md$/).to_a[0].to_f}
   rename_rule = []
   secfiles.each_with_index do |file, i|
-    # rule: sec_file, filename_old, temporary_file, filename_new, number_old, number_new
-    # Be careful that the sec_file will change from filename_old to filename_new. String is mutable!
+    # rule: filename_old, temporary_file, filename_new
     rename_rule << [file, file+temp_name, file.gsub(/\d+(\.\d+)?\.src\.md$/,"#{i+1}.src.md")]
   end
   rename_rule.each do |rule|

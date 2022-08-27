@@ -1,64 +1,48 @@
 require 'rake/clean'
-require 'fileutils'
 require_relative 'lib/lib_renumber.rb'
 require_relative 'lib/lib_src2md.rb'
 require_relative 'lib/lib_gen_main_tex.rb'
 require_relative 'lib/lib_mk_html_template.rb'
 require_relative 'lib/lib_change_relative_link.rb'
 
-def basename(file, suffix=nil)
-  suffix ? File.basename(file, suffix) : File.basename(file)
-end
-def dirname(file)
-  File.dirname(file)
-end
-# Get dstination file(s) from source file(s).
-def mdst src
-  "gfm/#{basename(src, ".src.md")}.md"
-end
-def hdst src
-  "docs/#{basename(src, ".src.md")}.html"
-end
-def tdst src
-  "latex/#{basename(src, ".src.md")}.tex"
-end
-def idst src
-  "docs/image/#{basename(src)}"
-end
-def mdsts srcs
-  srcs.map{|src| mdst(src)}
-end
-def hdsts srcs
-  srcs.map{|src| hdst(src)}
-end
-def tdsts srcs
-  srcs.map{|src| tdst(src)}
-end
-def idsts(srcs)
-  srcs.map{|src| idst(src)}
+# Usually, the suffix of xxx.src.md is .md because a suffix/extension is the part after the last period.
+# But, we want the Rakefile to recognize that the suffix of xxx.src.md is .src.md.
+# So we define some methods for that.
+
+# Redefine String#ext and FileList#ext
+class String
+  alias :_org_ext :ext
+  def ext suffix
+    file = self.sub(/\.src\.md\Z/, "")._org_ext(suffix)
+  end
 end
 
-def to_md file
-  basename(file).sub(/\..*$/,'.md')
+class FileList
+  def ext suffix
+    self.map{|fl| fl.ext(suffix)}
+  end
 end
-def to_html file
-  basename(file).sub(/\..*$/,'.html')
+
+# get section number from src/secXX.src.md
+def get_sec_num(src)
+  src.match(/sec(\d+)\.src\.md$/).to_a[1].to_i # no number => 0
 end
+
 # get C file names in the .src.md file.
 def c_files path
-  dir = dirname(path)
+  dir = path.pathmap("%d")
   File.read(path).scan(/^@@@include\n(.*?)@@@\n/m).flatten\
                  .map{|s| s.each_line.to_a}.flatten\
                  .map{|line| "#{dir}/#{(line.match(/^\S*/)[0])}"}
-end
-def is_secfile?(file)
-  file =~ /sec\d+\.src\.md$/
 end
 
 # source files
 secfiles = FileList['src/sec*.src.md']
 renumber(secfiles)
-otherfiles = ["src/turtle/turtle_doc.src.md",
+# Some files may be renamed. Redefine sectiles.
+secfiles = FileList['src/sec*.src.md']
+secfiles.sort!{|f,g| f.match(/\d+\.src\.md$/).to_a[0].to_i <=> g.match(/\d+\.src\.md$/).to_a[0].to_i}
+otherfiles = FileList["src/turtle/turtle_doc.src.md",
               "src/tfetextview/tfetextview_doc.src.md",
               "src/Readme_for_developers.src.md"]
 srcfiles = secfiles + otherfiles
@@ -66,15 +50,13 @@ abstract = "src/abstract.src.md"
 # imagesrcfiles are the image files used in the srcfiles.
 # They are absolute paths.
 imagefiles = srcfiles.map do |file|
-    d = dirname(file)
+    d = file.pathmap("%d")
     File.read(file)\
         .gsub(/^~~~.*?^~~~\n/m,'').gsub(/^    .*\n/,'')\
         .scan(/!\[.*?\]\((.*?)\)/).flatten.sort.uniq\
         .map{|img| File.absolute_path("#{d}/#{img}")}
   end.flatten.sort.uniq
-
-["gfm", "docs", "latex"].each{|d| Dir.mkdir(d) unless Dir.exist?(d)}
-Dir.mkdir('docs/image') unless Dir.exist?('docs/image')
+imagefiles = FileList[*imagefiles]
 
 CLEAN.append(FileList["latex/*.tex", "latex/*.aux", "latex/*.log", "latex/*.toc"])
 CLOBBER.append("Readme.md").append(FileList["gfm/*.md"])
@@ -87,56 +69,61 @@ CLOBBER.append(FileList["latex/*.pdf"])
 task default: :md
 task all: [:md, :html, :pdf]
 
-task md: %w[Readme.md] + mdsts(srcfiles)
+mdfiles = srcfiles.pathmap("%f").ext(".md").map{|f| "gfm/#{f}"}
+task md: %w[Readme.md] + mdfiles
 
-file "Readme.md" => [abstract] + secfiles do
-  abstract_md = mdst(abstract)
+file "Readme.md" => [abstract] + secfiles do |t|
+  abstract_md = "gfm/"+abstract.pathmap("%f").ext(".md")
   src2md(abstract, "gfm")
   buf = ["# Gtk4 Tutorial for beginners\n\nThe github page of this tutorial is also available. Click [here](https://toshiocp.github.io/Gtk4-tutorial/).\n\n"]\
         + File.readlines(abstract_md)\
         + ["\n## Table of contents\n\n"]
   File.delete(abstract_md)
-  secfiles.each_with_index do |secfile, i|
+  secfiles.each do |secfile|
     h = File.open(secfile){|file| file.readline}.sub(/^#* */,"").chomp
-    buf << "1. [#{h}](#{to_md(secfile)})\n"
+    buf << "1. [#{h}](#{secfile.ext(".md")})\n"
   end
   readme_md = buf.join
   readme_md = change_relative_link(readme_md, "gfm", ".")
-  File.write("Readme.md", readme_md)
+  File.write(t.name, readme_md)
 end
 
 # srcfiles => mdfiles
-srcfiles.each_with_index do |src, i|
-  dst = mdst(src)
-  file dst => [src] + c_files(src) do
-    src2md(src, "gfm")
-    if is_secfile?(src)
+srcfiles.each do |src|
+  dst = "gfm/"+src.pathmap("%f").ext(".md")
+  file dst => [src] + c_files(src) + ["gfm"] do |t|
+    src2md(t.source, "gfm")
+    if secfiles.include?(t.source)
+      i = get_sec_num(src)
       if secfiles.size == 1
         nav = "Up: [Readme.md](../Readme.md)\n"
-      elsif i == 0
+      elsif i == 1
         nav = "Up: [Readme.md](../Readme.md),  Next: [Section 2](sec2.md)\n"
-      elsif i == secfiles.size - 1
-        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](sec#{i}.md)\n"
+      elsif i == secfiles.size
+        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i-1}](sec#{i-1}.md)\n"
       else
-        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i}](sec#{i}.md), Next: [Section #{i+2}](sec#{i+2}.md)\n"
+        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i-1}](sec#{i-1}.md), Next: [Section #{i+1}](sec#{i+1}.md)\n"
       end
-      File.write(dst, nav + "\n" + File.read(dst) + "\n" + nav)
+      File.write(t.name, nav + "\n" + File.read(t.name) + "\n" + nav)
     end
   end
 end
 
-task html: %W[docs/index.html docs/.nojekyll] + hdsts(srcfiles) + idsts(imagefiles)
+htmlfiles =  srcfiles.pathmap("%f").ext(".html").map{|f| "docs/#{f}"}
+htmlimagefiles = imagefiles.pathmap("%f").map{|f| "docs/image/#{f}"}
 
-file "docs/index.html" => [abstract] + secfiles do
-  abstract_md = "docs/#{to_md(abstract)}"
-  src2md(abstract, "html")
+task html: %W[docs/index.html docs/.nojekyll] + htmlfiles + htmlimagefiles
+
+file "docs/index.html" => [abstract, "docs"] + secfiles do
+  abstract_md = "docs/"+abstract.pathmap("%f").ext(".md")
+    src2md(abstract, "html")
   buf = [ "# Gtk4 Tutorial for beginners\n\n" ]\
         + File.readlines(abstract_md)\
         + ["\n## Table of contents\n\n"]
   File.delete(abstract_md)
-  secfiles.each_with_index do |secfile, i|
+  secfiles.each do |secfile|
     h = File.open(secfile){|file| file.readline}.sub(/^#* */,"").chomp
-    buf << "1. [#{h}](#{to_html(secfile)})\n"
+    buf << "1. [#{h}](#{secfile.pathmap('%f').ext('.html')})\n"
   end
   buf << "\nThis website uses [Bootstrap](https://getbootstrap.jp/)."
   File.write("docs/index.md", buf.join)
@@ -146,37 +133,38 @@ file "docs/index.html" => [abstract] + secfiles do
   File.delete "docs/template.html"
 end
 
-file "docs/.nojekyll" do |t|
+file "docs/.nojekyll" => "docs" do |t|
   touch t.name
 end
 
-srcfiles.each_with_index do |src, i|
-  dst = hdst(src)
-  file dst => [src] + c_files(src) do
-    html_md = "docs/#{to_md(src)}"
+srcfiles.each do |src|
+  dst = "docs/"+src.pathmap("%f").ext(".html")
+  file dst => [src, "docs"] + c_files(src) do |t|
+    html_md = "docs/"+src.pathmap("%f").ext(".md")
     src2md(src, "html")
-    if is_secfile?(src)
+    if secfiles.include?(t.source)
+      i = get_sec_num(src)
       if secfiles.size == 1
         mk_html_template("index.html", nil, nil)
-      elsif i == 0
+      elsif i == 1
         mk_html_template("index.html", nil, "sec2.html")
-      elsif i == secfiles.size - 1
-        mk_html_template("index.html", "sec#{i}.html", nil)
+      elsif i == secfiles.size
+        mk_html_template("index.html", "sec#{i-1}.html", nil)
       else
-        mk_html_template("index.html", "sec#{i}.html", "sec#{i+2}.html")
+        mk_html_template("index.html", "sec#{i-1}.html", "sec#{i+1}.html")
       end
     else
       mk_html_template("index.html", nil, nil)
     end
-    sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o #{dst} #{html_md}"
+    sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o #{t.name} #{html_md}"
     File.delete(html_md)
     File.delete "docs/template.html"
   end
 end
 
 imagefiles.each do |src|
-  dst = idst(src)
-  file dst => src do
+  dst = "docs/image/"+src.pathmap("%f")
+  file dst => [src, "docs/image"] do
     cp src, dst
   end
 end
@@ -187,29 +175,38 @@ task pdf: %w[latex/main.tex] do
   sh "mv latex/main.pdf latex/gtk4_tutorial.pdf"
 end
 
-file "latex/main.tex" => [tdst(abstract)] + tdsts(srcfiles) do
-  gen_main_tex "latex", tdst(abstract), tdsts(secfiles), tdsts(otherfiles)
+texfiles =  srcfiles.pathmap("%f").ext(".tex").map{|f| "latex/#{f}"}
+sec_texfiles = secfiles.pathmap("%f").ext(".tex").map{|f| "latex/#{f}"}
+other_texfiles = otherfiles.pathmap("%f").ext(".tex").map{|f| "latex/#{f}"}
+abstract_tex = "latex/"+abstract.pathmap("%f").ext(".tex")
+
+file "latex/main.tex" => [abstract_tex] + texfiles do
+  gen_main_tex "latex", abstract_tex, sec_texfiles, other_texfiles
 end
 
-file tdst(abstract) => abstract do
-  abstract_md = "latex/#{to_md(abstract)}"
+file abstract_tex => abstract do |t|
+  abstract_md = "latex/"+abstract.pathmap("%f").ext(".md")
   src2md(abstract, "latex")
-  sh "pandoc --listings -o #{tdst(abstract)} #{abstract_md}"
+  sh "pandoc --listings -o #{t.name} #{abstract_md}"
   File.delete(abstract_md)
 end
 
 srcfiles.each do |src|
-  dst = tdst(src)
-  file dst => [src] + c_files(src) do
-    tex_md = "latex/#{to_md(src)}"
+  dst = "latex/"+src.pathmap("%f").ext(".tex")
+  file dst => [src] + c_files(src) do |t|
+    tex_md = "latex/"+src.pathmap("%f").ext(".md")
     src2md(src, "latex")
     if src == "src/Readme_for_developers.src.md"
-      sh "pandoc -o #{dst} #{tex_md}"
+      sh "pandoc -o #{t.name} #{tex_md}"
     else
-      sh "pandoc --listings -o #{dst} #{tex_md}"
+      sh "pandoc --listings -o #{t.name} #{tex_md}"
     end
     File.delete(tex_md)
   end
+end
+
+["gfm", "docs", "docs/image", "latex"].each do |d|
+  directory d
 end
 
 task :clean
