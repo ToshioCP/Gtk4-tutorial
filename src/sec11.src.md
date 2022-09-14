@@ -35,8 +35,8 @@ After that I will explain:
 
 GObject and its children are objects, which have both class and instance.
 First, think about instance of objects.
-Instance is structured memory.
-THe structure is described as C language structure.
+Instance is structured memories.
+The structure is described as C language structure.
 The following is a structure of TfeTextView.
 
 ~~~C
@@ -107,7 +107,7 @@ The function `tfe_text_view_new` creates a new TfeTextView instance.
 tfetextview/tfetextview.c tfe_text_view_new
 @@@
 
-When this function is involed, a TfeTextView instance is created and initialized.
+When this function is invoked, a TfeTextView instance is created and initialized.
 The initialization process is as follows.
 
 1. Initializes GObject (GInitiallyUnowned) part in TfeTextView instance.

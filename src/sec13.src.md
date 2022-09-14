@@ -70,7 +70,7 @@ The pointer is assigned to `tb`
 - 15: Assigns the contents read from the file to GtkTextBuffer pointed by `tb`.
 - 16: Duplicates `file` and sets `tv->file` to point it.
 - 17: The function `gtk_text_buffer_set_modified (tb, FALSE)` sets the modification flag of `tb` to FALSE.
-The modification flag indicates that the contents of the buffer is modified.
+The modification flag indicates that the contents of the buffer has been modified.
 It is used when the contents are saved.
 If the modification flag is FALSE, it doesn't need to save the contents.
 - 19: Frees the memories pointed by `contents`.

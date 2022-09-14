@@ -81,7 +81,7 @@ file "Readme.md" => [abstract] + secfiles do |t|
   File.delete(abstract_md)
   secfiles.each do |secfile|
     h = File.open(secfile){|file| file.readline}.sub(/^#* */,"").chomp
-    buf << "1. [#{h}](#{secfile.ext(".md")})\n"
+    buf << "1. [#{h}](#{secfile.pathmap('%f').ext(".md")})\n"
   end
   readme_md = buf.join
   readme_md = change_relative_link(readme_md, "gfm", ".")
@@ -212,6 +212,7 @@ end
 task :clean
 task :clobber
 task :cleangfm do
+  rm 'Readme.md'
   remove_entry_secure("gfm")
 end
 task :cleanhtml do

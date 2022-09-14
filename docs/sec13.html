@@ -204,7 +204,7 @@
 <li>14: Gets the pointer to GtkTextBuffer corresponds to <code>tv</code>. The pointer is assigned to <code>tb</code></li>
 <li>15: Assigns the contents read from the file to GtkTextBuffer pointed by <code>tb</code>.</li>
 <li>16: Duplicates <code>file</code> and sets <code>tv-&gt;file</code> to point it.</li>
-<li>17: The function <code>gtk_text_buffer_set_modified (tb, FALSE)</code> sets the modification flag of <code>tb</code> to FALSE. The modification flag indicates that the contents of the buffer is modified. It is used when the contents are saved. If the modification flag is FALSE, it doesn’t need to save the contents.</li>
+<li>17: The function <code>gtk_text_buffer_set_modified (tb, FALSE)</code> sets the modification flag of <code>tb</code> to FALSE. The modification flag indicates that the contents of the buffer has been modified. It is used when the contents are saved. If the modification flag is FALSE, it doesn’t need to save the contents.</li>
 <li>19: Frees the memories pointed by <code>contents</code>.</li>
 <li>20: Returns <code>tv</code>, which is a pointer to the newly created TfeTextView instance. If an error happens, NULL is returned.</li>
 </ul>

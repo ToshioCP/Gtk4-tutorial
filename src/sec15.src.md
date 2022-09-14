@@ -65,7 +65,7 @@ It is easy to find the application id, and better than the id is embedded in `gt
 ## startup signal handler
 
 Startup signal is emitted just after the GtkApplication instance is initialized.
-What the signal handler needs to do is initialization of the application.
+What the signal handler needs to do is the initialization of the application.
 
 - Builds the widgets using ui file.
 - Connects button signals and their handlers.
