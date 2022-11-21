@@ -16,13 +16,13 @@ It also describes GtkExpression.
 The latest version of the tutorial is located at [Gtk4-tutorial github repository](https://github.com/ToshioCP/Gtk4-tutorial).
 You can read it from there directly without having to download anything.
 
-#### Gtk4 Documentation
+#### GTK 4 Documentation
 
 Please refer to [GTK API Reference](https://docs.gtk.org/gtk4/index.html)
 and [GNOME Developer Documentation Website](https://developer.gnome.org/) for further information.
 
 These websites are newly opened lately (Aug/2021).
-The old documentation is located at [Gtk Reference Manual](https://developer-old.gnome.org/gtk4/stable/) and [Gnome Developer Center](https://developer-old.gnome.org/).
+The old documentation is located at [GTK Reference Manual](https://developer-old.gnome.org/gtk4/stable/) and [GNOME Developer Center](https://developer-old.gnome.org/).
 The new website is in progress at present, so you might need to refer to the old version.
 
 If you want to know about GObject and the type system, please refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
@@ -33,7 +33,7 @@ The GObject details are easy to understand and also necessary to know when writi
 This tutorial is under development and unstable.
 Even though the codes of the examples have been tested on GTK version 4.0, bugs may still exist.
 If you find any bugs, errors or mistakes in the tutorial and C examples, please let me know.
-You can post it to [github issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
+You can post it to [GitHub issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
 You can also post corrected files as a commit to [pull request](https://github.com/ToshioCP/Gtk4-tutorial/pulls).
 When you make corrections, correct the source files, which are under the 'src' directory,
 then run `rake` to create to create the output file. The GFM files under the 'gfm' directory are automatically updated.
@@ -57,7 +57,7 @@ There is a documentation \("[How to build Gtk4 Tutorial](gfm/Readme_for_develope
 1. [Widgets (2)](gfm/sec5.md)
 1. [String and memory management](gfm/sec6.md)
 1. [Widgets (3)](gfm/sec7.md)
-1. [Defining a Child object](gfm/sec8.md)
+1. [Defining a child object](gfm/sec8.md)
 1. [The User Interface (UI) file and GtkBuilder](gfm/sec9.md)
 1. [Build system](gfm/sec10.md)
 1. [Initialization and destruction of instances](gfm/sec11.md)
