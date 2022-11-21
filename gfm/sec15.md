@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
+Up: [README.md](../README.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
 
 # tfeapplication.c
 
@@ -124,7 +124,7 @@ textview {color: yellow; ...}
 ~~~
 
 Class, ID and some other things can be applied to the selector like Web CSS.
-Refer to [Gtk4 API Reference, CSS in Gtk](https://docs.gtk.org/gtk4/css-overview.html) for further information.
+Refer to [GTK 4 API Reference, CSS in Gtk](https://docs.gtk.org/gtk4/css-overview.html) for further information.
 
 In line 30, the CSS is a string.
 
@@ -321,4 +321,4 @@ If you use git, run the terminal and type the following.
 
 The source files are under [/src/tfe5](../src/tfe5) directory.
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)
+Up: [README.md](../README.md),  Prev: [Section 14](sec14.md), Next: [Section 16](sec16.md)

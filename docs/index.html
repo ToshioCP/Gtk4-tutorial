@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -102,37 +102,74 @@
         </div>
       </div>
     </nav>
-<h1 id="gtk4-tutorial-for-beginners">Gtk4 Tutorial for beginners</h1>
+<h1 id="gtk-4-tutorial-for-beginners">GTK 4 Tutorial for beginners</h1>
 <h4 id="contents-of-this-repository">Contents of this Repository</h4>
-<p>This tutorial illustrates how to write C programs with the Gtk4 library. It focuses on beginners so the contents are limited to the basics. The table of contents is at the end of this abstract.</p>
+<p>This tutorial illustrates how to write C programs with the GTK 4
+library. It focuses on beginners so the contents are limited to the
+basics. The table of contents is at the end of this abstract.</p>
 <ul>
-<li>Section 3 to 21 describes the basics, with the example of a simple editor <code>tfe</code> (Text File Editor).</li>
+<li>Section 3 to 21 describes the basics, with the example of a simple
+editor <code>tfe</code> (Text File Editor).</li>
 <li>Section 22 to 25 describes GtkDrawingArea.</li>
-<li>Section 26 to 29 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView). It also describes GtkExpression.</li>
+<li>Section 26 to 29 describes the list model and the list view
+(GtkListView, GtkGridView and GtkColumnView). It also describes
+GtkExpression.</li>
 </ul>
-<p>The latest version of the tutorial is located at <a href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4-tutorial github repository</a>. You can read it from there directly without having to download anything.</p>
-<h4 id="gtk4-documentation">Gtk4 Documentation</h4>
-<p>Please refer to <a href="https://docs.gtk.org/gtk4/index.html">Gtk API Reference</a> and <a href="https://developer.gnome.org/">Gnome Developer Documentation Website</a> for further information.</p>
-<p>These websites are newly opened lately (Aug/2021). The old documentation is located at <a href="https://developer-old.gnome.org/gtk4/stable/">Gtk Reference Manual</a> and <a href="https://developer-old.gnome.org/">Gnome Developer Center</a>. The new website is in progress at present, so you might need to refer to the old version.</p>
-<p>If you want to know about GObject and the type system, please refer to <a href="https://github.com/ToshioCP/Gobject-tutorial">GObject tutorial</a>. The GObject details are easy to understand and also necessary to know when writing Gtk4 programs.</p>
+<p>The latest version of the tutorial is located at <a
+href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4-tutorial GitHub
+repository</a>. You can read it from there directly without having to
+download anything.</p>
+<h4 id="gtk-4-documentation">GTK 4 Documentation</h4>
+<p>Please refer to <a href="https://docs.gtk.org/gtk4/index.html">GTK
+API Reference</a> and <a href="https://developer.gnome.org/">GNOME
+Developer Documentation Website</a> for further information.</p>
+<p>These websites are newly opened lately (Aug/2021). The old
+documentation is located at <a
+href="https://developer-old.gnome.org/gtk4/stable/">GTK Reference
+Manual</a> and <a href="https://developer-old.gnome.org/">GNOME
+Developer Center</a>. The new website is in progress at present, so you
+might need to refer to the old version.</p>
+<p>If you want to know about GObject and the type system, please refer
+to <a href="https://github.com/ToshioCP/Gobject-tutorial">GObject
+tutorial</a>. The GObject details are easy to understand and also
+necessary to know when writing GTK 4 programs.</p>
 <h4 id="contribution">Contribution</h4>
-<p>This tutorial is under development and unstable. Even though the codes of the examples have been tested on Gtk4 version 4.0, bugs may still exist. If you find any bugs, errors or mistakes in the tutorial and C examples, please let me know. You can post it to <a href="https://github.com/ToshioCP/Gtk4-tutorial/issues">github issues</a>. You can also post corrected files as a commit to <a href="https://github.com/ToshioCP/Gtk4-tutorial/pulls">pull request</a>. When you make corrections, correct the source files, which are under the ‘src’ directory, then run <code>rake</code> to create to create the output file. The GFM files under the ‘gfm’ directory are automatically updated.</p>
-<p>If you have a question, feel free to post it as an issue. All questions are helpful and will make this tutorial get better.</p>
-<h4 id="how-to-get-a-html-or-pdf-version">How to get a HTML or PDF version</h4>
-<p>If you want to get a HTML or PDF version, you can make them with <code>rake</code>, which is a ruby version of make. Type <code>rake html</code> for HTML. Type <code>rake pdf</code> for PDF. There is a documentation (“<a href="Readme_for_developers.html">How to build Gtk4 Tutorial</a>”) that describes how to make them.</p>
+<p>This tutorial is under development and unstable. Even though the
+codes of the examples have been tested on GTK 4 (version 4.0), bugs may
+still exist. If you find any bugs, errors or mistakes in the tutorial
+and C examples, please let me know. You can post it to <a
+href="https://github.com/ToshioCP/Gtk4-tutorial/issues">GitHub
+issues</a>. You can also post corrected files as a commit to <a
+href="https://github.com/ToshioCP/Gtk4-tutorial/pulls">pull request</a>.
+When you make corrections, correct the source files, which are under the
+‘src’ directory, then run <code>rake</code> to create to create the
+output file. The GFM files under the ‘gfm’ directory are automatically
+updated.</p>
+<p>If you have a question, feel free to post it as an issue. All
+questions are helpful and will make this tutorial get better.</p>
+<h4 id="how-to-get-a-html-or-pdf-version">How to get a HTML or PDF
+version</h4>
+<p>If you want to get a HTML or PDF version, you can make them with
+<code>rake</code>, which is a ruby version of make. Type
+<code>rake html</code> for HTML. Type <code>rake pdf</code> for PDF.
+There is a documentation (“<a href="Readme_for_developers.html">How to
+build GTK 4 Tutorial</a>”) that describes how to make them.</p>
 <h2 id="table-of-contents">Table of contents</h2>
 <ol type="1">
 <li><a href="sec1.html">Prerequisite and License</a></li>
-<li><a href="sec2.html">Installing Gtk4 into Linux distributions</a></li>
+<li><a href="sec2.html">Installing GTK 4 into Linux
+distributions</a></li>
 <li><a href="sec3.html">GtkApplication and GtkApplicationWindow</a></li>
 <li><a href="sec4.html">Widgets (1)</a></li>
 <li><a href="sec5.html">Widgets (2)</a></li>
 <li><a href="sec6.html">String and memory management</a></li>
 <li><a href="sec7.html">Widgets (3)</a></li>
-<li><a href="sec8.html">Defining a Child object</a></li>
-<li><a href="sec9.html">The User Interface (UI) file and GtkBuilder</a></li>
+<li><a href="sec8.html">Defining a child object</a></li>
+<li><a href="sec9.html">The User Interface (UI) file and
+GtkBuilder</a></li>
 <li><a href="sec10.html">Build system</a></li>
-<li><a href="sec11.html">Initialization and destruction of instances</a></li>
+<li><a href="sec11.html">Initialization and destruction of
+instances</a></li>
 <li><a href="sec12.html">Signals</a></li>
 <li><a href="sec13.html">Functions in TfeTextView</a></li>
 <li><a href="sec14.html">Functions in GtkNotebook</a></li>
@@ -141,7 +178,8 @@
 <li><a href="sec17.html">Menu and action</a></li>
 <li><a href="sec18.html">Stateful action</a></li>
 <li><a href="sec19.html">Ui file for menu and action entries</a></li>
-<li><a href="sec20.html">GtkMenuButton, accelerators, font, pango and gsettings</a></li>
+<li><a href="sec20.html">GtkMenuButton, accelerators, font, pango and
+gsettings</a></li>
 <li><a href="sec21.html">Template XML and composite widget</a></li>
 <li><a href="sec22.html">GtkDrawingArea and Cairo</a></li>
 <li><a href="sec23.html">Periodic Events</a></li>
@@ -152,7 +190,8 @@
 <li><a href="sec28.html">GtkExpression</a></li>
 <li><a href="sec29.html">GtkColumnView</a></li>
 </ol>
-<p>This website uses <a href="https://getbootstrap.jp/">Bootstrap</a>.</p>
+<p>This website uses <a
+href="https://getbootstrap.jp/">Bootstrap</a>.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

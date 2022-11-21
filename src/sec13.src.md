@@ -215,9 +215,9 @@ Then, it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_SUCC
 Now let's think about the whole process between the caller and TfeTextView.
 It is shown in the following diagram and you would think that it is really complicated.
 Because signal is the only way for GtkFileChooserDialog to communicate with others.
-In Gtk3, `gtk_dialog_run` function is available.
+In GTK 3, `gtk_dialog_run` function is available.
 It simplifies the process.
-However, in Gtk4, `gtk_dialog_run` is unavailable any more.
+However, in GTK 4, `gtk_dialog_run` is unavailable any more.
 
 ![Caller and TfeTextView](../image/open.png){width=12.405cm height=9.225cm}
 

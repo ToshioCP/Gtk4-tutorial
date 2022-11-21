@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 19](sec19.md), Next: [Section 21](sec21.md)
+Up: [README.md](../README.md),  Prev: [Section 19](sec19.md), Next: [Section 21](sec21.md)
 
 # GtkMenuButton, accelerators, font, pango and gsettings
 
@@ -183,7 +183,7 @@ You can define more than one accelerator keys and the list must ends with NULL (
 If you want to do so, the array length needs to be three or more.
 The parser recognizes "\<control\>o", "\<Shift\>\<Alt\>F2", "\<Ctrl\>minus" and so on.
 If you want to use symbol key like "\<Ctrl\>-", use "\<Ctrl\>minus" instead.
-Such relation between lower case and symbol (its character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the Gtk4 source code.
+Such relation between lower case and symbol (its character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the GTK 4 source code.
 
 ## Saveas handler
 
@@ -276,7 +276,7 @@ Transient-for specifies a temporary parent window, which the dialog's location i
 - internal-child attribute is used in the child tag above.
 GtkDialog has a GtkBox child widget.
 Its id is "content_area" in `gtkdialog.ui`, which is the ui file of GtkDialog.
-(It is in the Gtk4 source files.)
+(It is in the GTK 4 source files.)
 This box is provided for users to add content widgets in it.
 The tag `<child internal-child="content_area">` is put at the top of the contents.
 Then you need to specify an object tag and define its class as GtkBox and its id as content_area.
@@ -936,7 +936,7 @@ Other common types are:
   - "i": gint32.
   - "d": double.
 
-Further information is in [Glib API Reference, VarientType](https://docs.gtk.org/glib/struct.VariantType.html).
+Further information is in [GLib API Reference, VarientType](https://docs.gtk.org/glib/struct.VariantType.html).
 
 ### gsettings
 
@@ -1006,7 +1006,7 @@ org.gnome.calculator number-format 'automatic'
 org.gnome.calculator show-zeroes false
 ~~~
 
-This schema is used by Gnome Calculator.
+This schema is used by GNOME Calculator.
 Run the calculator and change the mode, then check the schema again.
 
 ~~~
@@ -1033,7 +1033,7 @@ org.gnome.calculator button-mode 'advanced'
 
 ~~~
 
-Now we know that Gnome Calculator used gsettings and it has set `button-mode` key to "advanced".
+Now we know that GNOME Calculator used gsettings and it has set `button-mode` key to "advanced".
 The value remains even the calculator quits.
 So when the calculator is run again, it will appear as an advanced mode calculator.
 
@@ -1165,14 +1165,14 @@ Just create a GSettings object and bind it to a property of an object.
 
 ## Installation
 
-It is a good idea to install your application in `$HOME/local/bin` directory if you have installed Gtk4 from the source (See Section 2).
+It is a good idea to install your application in `$HOME/local/bin` directory if you have installed GTK 4 from the source (See Section 2).
 Then you need to put `--prefix=$HOME/local` option to meson like this.
 
 ~~~
 $ meson --prefix=$HOME/local _build
 ~~~
 
-If you've installed Gtk4 from the distribution package, `--prefix` option isn't necessary.
+If you've installed GTK 4 from the distribution package, `--prefix` option isn't necessary.
 You just install `tfe` to the default bin directory like `/usr/local/bin`.
 
 Modify `meson.build` and add install option and set it true in executable function.
@@ -1256,4 +1256,4 @@ The screenshot is as follows.
 ![tfe6](../image/tfe6.png)
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 19](sec19.md), Next: [Section 21](sec21.md)
+Up: [README.md](../README.md),  Prev: [Section 19](sec19.md), Next: [Section 21](sec21.md)

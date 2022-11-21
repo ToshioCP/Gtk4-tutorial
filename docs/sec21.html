@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -111,249 +111,309 @@
         </div>
       </div>
     </nav>
-<h1 id="template-xml-and-composite-widget">Template XML and composite widget</h1>
-<p>The tfe program in the previous section is not so good because many things are crammed into <code>tfepplication.c</code>. Many static variables in <code>tfepplication.c</code> shows that.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dt">static</span> GtkDialog *pref;</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="dt">static</span> GtkFontButton *fontbtn;</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="dt">static</span> GSettings *settings;</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="dt">static</span> GtkDialog *alert;</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="dt">static</span> GtkLabel *lb_alert;</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="dt">static</span> GtkButton *btn_accept;</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="dt">static</span> gulong pref_close_request_handler_id = <span class="dv">0</span>;</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="dt">static</span> gulong alert_close_request_handler_id = <span class="dv">0</span>;</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="dt">static</span> gboolean is_quit;</span></code></pre></div>
-<p>Generally, if there are many global or static variables in the program, it is not a good program. Such programs are difficult to maintain.</p>
-<p>The file <code>tfeapplication.c</code> should be divided into several files.</p>
+<h1 id="template-xml-and-composite-widget">Template XML and composite
+widget</h1>
+<p>The tfe program in the previous section is not so good because many
+things are crammed into <code>tfepplication.c</code>. Many static
+variables in <code>tfepplication.c</code> shows that.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GtkDialog <span class="op">*</span>pref<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GtkFontButton <span class="op">*</span>fontbtn<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GtkDialog <span class="op">*</span>alert<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GtkLabel <span class="op">*</span>lb_alert<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> gulong pref_close_request_handler_id <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> gulong alert_close_request_handler_id <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> gboolean is_quit<span class="op">;</span></span></code></pre></div>
+<p>Generally, if there are many global or static variables in the
+program, it is not a good program. Such programs are difficult to
+maintain.</p>
+<p>The file <code>tfeapplication.c</code> should be divided into several
+files.</p>
 <ul>
-<li><code>tfeapplication.c</code> only has codes related to GtkApplication.</li>
+<li><code>tfeapplication.c</code> only has codes related to
+GtkApplication.</li>
 <li>A file for GtkApplicationWindow</li>
 <li>A file for a preference dialog</li>
 <li>A file for an alert dialog</li>
 </ul>
-<p>The preference dialog is defined by a ui file. And it has GtkBox, GtkLabel and GtkFontButton in it. Such widget is called composite widget. Composite widget is a child object (not child widget) of a widget. For example, the preference composite widget is a child object of GtkDialog. Composite widget can be built from template XML. Next subsection shows how to build a preference dialog.</p>
+<p>The preference dialog is defined by a ui file. And it has GtkBox,
+GtkLabel and GtkFontButton in it. Such widget is called composite
+widget. Composite widget is a child object (not child widget) of a
+widget. For example, the preference composite widget is a child object
+of GtkDialog. Composite widget can be built from template XML. Next
+subsection shows how to build a preference dialog.</p>
 <h2 id="preference-dialog">Preference dialog</h2>
 <p>First, write a template XML file.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">&lt;interface&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="kw">&lt;template</span><span class="ot"> class=</span><span class="st">&quot;TfePref&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkDialog&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>Preferences<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span><span class="kw">&gt;</span>FALSE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>    <span class="kw">&lt;child</span><span class="ot"> internal-child=</span><span class="st">&quot;content_area&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;content_area&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>        <span class="kw">&lt;child&gt;</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>          <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;pref_boxh&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span><span class="kw">&gt;</span>GTK_ORIENTATION_HORIZONTAL<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;fontlabel&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-19"><a href="#cb2-19"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Font:<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-20"><a href="#cb2-20"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span><span class="kw">&gt;</span>1<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb2-23"><a href="#cb2-23"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb2-24"><a href="#cb2-24"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;fontbtn&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-25"><a href="#cb2-25"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb2-26"><a href="#cb2-26"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb2-27"><a href="#cb2-27"></a>          <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a>        <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb2-29"><a href="#cb2-29"></a>      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb2-30"><a href="#cb2-30"></a>    <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb2-31"><a href="#cb2-31"></a>  <span class="kw">&lt;/template&gt;</span></span>
-<span id="cb2-32"><a href="#cb2-32"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfePref&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkDialog&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Preferences&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    &lt;<span class="kw">child</span><span class="ot"> internal-child=</span><span class="st">&quot;content_area&quot;</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;content_area&quot;</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb2-10"><a href="#cb2-10"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;pref_boxh&quot;</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-12"><a href="#cb2-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-14"><a href="#cb2-14"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-15"><a href="#cb2-15"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-16"><a href="#cb2-16"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-17"><a href="#cb2-17"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb2-18"><a href="#cb2-18"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;fontlabel&quot;</span>&gt;</span>
+<span id="cb2-19"><a href="#cb2-19"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Font:&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-20"><a href="#cb2-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;1&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-21"><a href="#cb2-21"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb2-22"><a href="#cb2-22"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb2-23"><a href="#cb2-23"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb2-24"><a href="#cb2-24"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;fontbtn&quot;</span>&gt;</span>
+<span id="cb2-25"><a href="#cb2-25"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb2-26"><a href="#cb2-26"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb2-27"><a href="#cb2-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb2-28"><a href="#cb2-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb2-29"><a href="#cb2-29"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb2-30"><a href="#cb2-30"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb2-31"><a href="#cb2-31"></a>  &lt;/<span class="kw">template</span>&gt;</span>
+<span id="cb2-32"><a href="#cb2-32"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
 <ul>
-<li>3: Template tag specifies a composite widget. The value of a class attribute is the object name of the composite widget. This XML file names the object “TfePref”. It is defined in a C source file and it will be shown later. A parent attribute specifies the direct parent object of the composite widget. <code>TfePref</code> is a child object of <code>GtkDialog</code>. Therefore the value of the attribute is “GtkDialog”. A parent attribute is optional but it is recommended to specify.</li>
+<li>3: Template tag specifies a composite widget. The value of a class
+attribute is the object name of the composite widget. This XML file
+names the object “TfePref”. It is defined in a C source file and it will
+be shown later. A parent attribute specifies the direct parent object of
+the composite widget. <code>TfePref</code> is a child object of
+<code>GtkDialog</code>. Therefore the value of the attribute is
+“GtkDialog”. A parent attribute is optional but it is recommended to
+specify.</li>
 </ul>
-<p>Other lines are the same as before. The object <code>TfePref</code> is defined in <code>tfepref.h</code> and <code>tfepref.c</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#ifndef __TFE_PREF_H__</span></span>
+<p>Other lines are the same as before. The object <code>TfePref</code>
+is defined in <code>tfepref.h</code> and <code>tfepref.c</code>.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#ifndef __TFE_PREF_H__</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="pp">#define __TFE_PREF_H__</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a></span>
 <span id="cb3-4"><a href="#cb3-4"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-5"><a href="#cb3-5"></a></span>
 <span id="cb3-6"><a href="#cb3-6"></a><span class="pp">#define TFE_TYPE_PREF tfe_pref_get_type ()</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>G_DECLARE_FINAL_TYPE (TfePref, tfe_pref, TFE, PREF, GtkDialog)</span>
+<span id="cb3-7"><a href="#cb3-7"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> TFE<span class="op">,</span> PREF<span class="op">,</span> GtkDialog<span class="op">)</span></span>
 <span id="cb3-8"><a href="#cb3-8"></a></span>
-<span id="cb3-9"><a href="#cb3-9"></a>GtkWidget *</span>
-<span id="cb3-10"><a href="#cb3-10"></a>tfe_pref_new (GtkWindow *win);</span>
+<span id="cb3-9"><a href="#cb3-9"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>tfe_pref_new <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">);</span></span>
 <span id="cb3-11"><a href="#cb3-11"></a></span>
 <span id="cb3-12"><a href="#cb3-12"></a><span class="pp">#endif </span><span class="co">/* __TFE_PREF_H__ */</span></span></code></pre></div>
 <ul>
-<li>6-7: When you define a new object, you need to write these two lines. Refer to <a href="sec8.html">Section 8</a>.</li>
-<li>9-10: <code>tfe_pref_new</code> creates a new TfePref object. It has a parameter <code>win</code> which is used as a transient parent window to show the dialog.</li>
+<li>6-7: When you define a new object, you need to write these two
+lines. Refer to <a href="sec8.html">Section 8</a>.</li>
+<li>9-10: <code>tfe_pref_new</code> creates a new TfePref object. It has
+a parameter <code>win</code> which is used as a transient parent window
+to show the dialog.</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="kw">struct</span> _TfePref</span>
-<span id="cb4-4"><a href="#cb4-4"></a>{</span>
-<span id="cb4-5"><a href="#cb4-5"></a>  GtkDialog parent;</span>
-<span id="cb4-6"><a href="#cb4-6"></a>  GSettings *settings;</span>
-<span id="cb4-7"><a href="#cb4-7"></a>  GtkFontButton *fontbtn;</span>
-<span id="cb4-8"><a href="#cb4-8"></a>};</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="op">{</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  GtkDialog parent<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  GtkFontButton <span class="op">*</span>fontbtn<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="op">};</span></span>
 <span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a>G_DEFINE_TYPE (TfePref, tfe_pref, GTK_TYPE_DIALOG);</span>
+<span id="cb4-10"><a href="#cb4-10"></a>G_DEFINE_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_DIALOG<span class="op">);</span></span>
 <span id="cb4-11"><a href="#cb4-11"></a></span>
 <span id="cb4-12"><a href="#cb4-12"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a>tfe_pref_dispose (GObject *gobject) {</span>
-<span id="cb4-14"><a href="#cb4-14"></a>  TfePref *pref = TFE_PREF (gobject);</span>
+<span id="cb4-13"><a href="#cb4-13"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
 <span id="cb4-15"><a href="#cb4-15"></a></span>
-<span id="cb4-16"><a href="#cb4-16"></a>  g_clear_object (&amp;pref-&gt;settings);</span>
-<span id="cb4-17"><a href="#cb4-17"></a>  G_OBJECT_CLASS (tfe_pref_parent_class)-&gt;dispose (gobject);</span>
-<span id="cb4-18"><a href="#cb4-18"></a>}</span>
+<span id="cb4-16"><a href="#cb4-16"></a>  g_clear_object <span class="op">(&amp;</span>pref<span class="op">-&gt;</span>settings<span class="op">);</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="op">}</span></span>
 <span id="cb4-19"><a href="#cb4-19"></a></span>
 <span id="cb4-20"><a href="#cb4-20"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>tfe_pref_init (TfePref *pref) {</span>
-<span id="cb4-22"><a href="#cb4-22"></a>  gtk_widget_init_template (GTK_WIDGET (pref));</span>
-<span id="cb4-23"><a href="#cb4-23"></a>  pref-&gt;settings = g_settings_new (<span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>);</span>
-<span id="cb4-24"><a href="#cb4-24"></a>  g_settings_bind (pref-&gt;settings, <span class="st">&quot;font&quot;</span>, pref-&gt;fontbtn, <span class="st">&quot;font&quot;</span>, G_SETTINGS_BIND_DEFAULT);</span>
-<span id="cb4-25"><a href="#cb4-25"></a>}</span>
+<span id="cb4-21"><a href="#cb4-21"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>  pref<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>  g_settings_bind <span class="op">(</span>pref<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">,</span> pref<span class="op">-&gt;</span>fontbtn<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">);</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a><span class="op">}</span></span>
 <span id="cb4-26"><a href="#cb4-26"></a></span>
 <span id="cb4-27"><a href="#cb4-27"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>tfe_pref_class_init (TfePrefClass *class) {</span>
-<span id="cb4-29"><a href="#cb4-29"></a>  GObjectClass *object_class = G_OBJECT_CLASS (class);</span>
+<span id="cb4-28"><a href="#cb4-28"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
 <span id="cb4-30"><a href="#cb4-30"></a></span>
-<span id="cb4-31"><a href="#cb4-31"></a>  object_class-&gt;dispose = tfe_pref_dispose;</span>
-<span id="cb4-32"><a href="#cb4-32"></a>  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span>);</span>
-<span id="cb4-33"><a href="#cb4-33"></a>  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, fontbtn);</span>
-<span id="cb4-34"><a href="#cb4-34"></a>}</span>
+<span id="cb4-31"><a href="#cb4-31"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
+<span id="cb4-32"><a href="#cb4-32"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span><span class="op">);</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> fontbtn<span class="op">);</span></span>
+<span id="cb4-34"><a href="#cb4-34"></a><span class="op">}</span></span>
 <span id="cb4-35"><a href="#cb4-35"></a></span>
-<span id="cb4-36"><a href="#cb4-36"></a>GtkWidget *</span>
-<span id="cb4-37"><a href="#cb4-37"></a>tfe_pref_new (GtkWindow *win) {</span>
-<span id="cb4-38"><a href="#cb4-38"></a>  <span class="cf">return</span> GTK_WIDGET (g_object_new (TFE_TYPE_PREF, <span class="st">&quot;transient-for&quot;</span>, win, NULL));</span>
-<span id="cb4-39"><a href="#cb4-39"></a>}</span></code></pre></div>
+<span id="cb4-36"><a href="#cb4-36"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb4-37"><a href="#cb4-37"></a>tfe_pref_new <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-38"><a href="#cb4-38"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> <span class="st">&quot;transient-for&quot;</span><span class="op">,</span> win<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb4-39"><a href="#cb4-39"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>3-8: The structure of an instance of this object. It has two variables, settings and fontbtn.</li>
-<li>10: <code>G_DEFINE_TYPE</code> macro. This macro registers the TfePref type.</li>
-<li>12-18: Dispose handler. This handler is called when the instance is destroyed. The destruction process has two stages, disposing and finalizing. When disposing, the instance releases all the references (to the other instances). TfePref object holds a reference to the GSettings instance. It is released in line 16. After that parents dispose handler is called in line 17. For further information about destruction process, refer to <a href="sec11.html">Section 11</a>.</li>
+<li>3-8: The structure of an instance of this object. It has two
+variables, settings and fontbtn.</li>
+<li>10: <code>G_DEFINE_TYPE</code> macro. This macro registers the
+TfePref type.</li>
+<li>12-18: Dispose handler. This handler is called when the instance is
+destroyed. The destruction process has two stages, disposing and
+finalizing. When disposing, the instance releases all the references (to
+the other instances). TfePref object holds a reference to the GSettings
+instance. It is released in line 16. After that parents dispose handler
+is called in line 17. For further information about destruction process,
+refer to <a href="sec11.html">Section 11</a>.</li>
 <li>27-34: Class initialization function.</li>
 <li>31: Set the dispose handler.</li>
-<li>32: <code>gtk_widget_class_set_template_from_resource</code> function associates the description in the XML file (<code>tfepref.ui</code>) with the widget. At this moment no instance is created. It just make the class to know the structure of the object. That’s why the top level tag is not <code>&lt;object&gt;</code> but <code>&lt;template&gt;</code> in the XML file.</li>
-<li>33: <code>gtk_widget_class_bind_template_child</code> function binds a private variable of the object with a child object in the template. This function is a macro. The name of the private variable (<code>fontbtn</code> in line 7) and the id <code>fontbtn</code> in the XML file (line 24) must be the same. The pointer to the instance will be assigned to the variable <code>fontbtn</code> when the instance is created.</li>
+<li>32: <code>gtk_widget_class_set_template_from_resource</code>
+function associates the description in the XML file
+(<code>tfepref.ui</code>) with the widget. At this moment no instance is
+created. It just make the class to know the structure of the object.
+That’s why the top level tag is not <code>&lt;object&gt;</code> but
+<code>&lt;template&gt;</code> in the XML file.</li>
+<li>33: <code>gtk_widget_class_bind_template_child</code> function binds
+a private variable of the object with a child object in the template.
+This function is a macro. The name of the private variable
+(<code>fontbtn</code> in line 7) and the id <code>fontbtn</code> in the
+XML file (line 24) must be the same. The pointer to the instance will be
+assigned to the variable <code>fontbtn</code> when the instance is
+created.</li>
 <li>20-25: Instance initialization function.</li>
-<li>22: Creates the instance based on the template in the class. The template has been made during the class initialization process.</li>
-<li>23: Create GSettings instance with the id “com.github.ToshioCP.tfe”.</li>
-<li>24: Bind the font key in the GSettings object to the font property in the GtkFontButton.</li>
-<li>36-39: The function <code>tfe_pref_new</code> creates an instance of TfePref. The parameter <code>win</code> is a transient parent.</li>
+<li>22: Creates the instance based on the template in the class. The
+template has been made during the class initialization process.</li>
+<li>23: Create GSettings instance with the id
+“com.github.ToshioCP.tfe”.</li>
+<li>24: Bind the font key in the GSettings object to the font property
+in the GtkFontButton.</li>
+<li>36-39: The function <code>tfe_pref_new</code> creates an instance of
+TfePref. The parameter <code>win</code> is a transient parent.</li>
 </ul>
-<p>Now, It is very simple to use this dialog. A caller just creates this object and shows it.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>TfePref *pref;</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>pref = tfe_pref_new (win) <span class="co">/* win is the top-level window */</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>gtk_widget_show (GTK_WINDOW (win));</span></code></pre></div>
-<p>This instance is automatically destroyed when a user clicks on the close button. That’s all. If you want to show the dialog again, just create and show it.</p>
+<p>Now, It is very simple to use this dialog. A caller just creates this
+object and shows it.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>TfePref <span class="op">*</span>pref<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pref <span class="op">=</span> tfe_pref_new <span class="op">(</span>win<span class="op">)</span> <span class="co">/* win is the top-level window */</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>gtk_widget_show <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span></code></pre></div>
+<p>This instance is automatically destroyed when a user clicks on the
+close button. That’s all. If you want to show the dialog again, just
+create and show it.</p>
 <h2 id="alert-dialog">Alert dialog</h2>
 <p>It is almost same as preference dialog.</p>
 <p>Its XML file is:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">&lt;interface&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a>  <span class="kw">&lt;template</span><span class="ot"> class=</span><span class="st">&quot;TfeAlert&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkDialog&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>Are you sure?<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span><span class="kw">&gt;</span>FALSE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>    <span class="kw">&lt;child</span><span class="ot"> internal-child=</span><span class="st">&quot;content_area&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a>        <span class="kw">&lt;child&gt;</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>          <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span><span class="kw">&gt;</span>GTK_ORIENTATION_HORIZONTAL<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span><span class="kw">&gt;</span>12<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-19"><a href="#cb6-19"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span><span class="kw">&gt;</span>dialog-warning<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-20"><a href="#cb6-20"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;icon-size&quot;</span><span class="kw">&gt;</span>GTK_ICON_SIZE_LARGE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-21"><a href="#cb6-21"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb6-22"><a href="#cb6-22"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb6-23"><a href="#cb6-23"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb6-24"><a href="#cb6-24"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;lb_alert&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb6-26"><a href="#cb6-26"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb6-27"><a href="#cb6-27"></a>          <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb6-28"><a href="#cb6-28"></a>        <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb6-29"><a href="#cb6-29"></a>      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb6-30"><a href="#cb6-30"></a>    <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb6-31"><a href="#cb6-31"></a>    <span class="kw">&lt;child</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-32"><a href="#cb6-32"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_cancel&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-33"><a href="#cb6-33"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Cancel<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-34"><a href="#cb6-34"></a>      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb6-35"><a href="#cb6-35"></a>    <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb6-36"><a href="#cb6-36"></a>    <span class="kw">&lt;child</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-37"><a href="#cb6-37"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_accept&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb6-38"><a href="#cb6-38"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Close<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb6-39"><a href="#cb6-39"></a>      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb6-40"><a href="#cb6-40"></a>    <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb6-41"><a href="#cb6-41"></a>    <span class="kw">&lt;action-widgets&gt;</span></span>
-<span id="cb6-42"><a href="#cb6-42"></a>      <span class="kw">&lt;action-widget</span><span class="ot"> response=</span><span class="st">&quot;cancel&quot;</span><span class="ot"> default=</span><span class="st">&quot;true&quot;</span><span class="kw">&gt;</span>btn_cancel<span class="kw">&lt;/action-widget&gt;</span></span>
-<span id="cb6-43"><a href="#cb6-43"></a>      <span class="kw">&lt;action-widget</span><span class="ot"> response=</span><span class="st">&quot;accept&quot;</span><span class="kw">&gt;</span>btn_accept<span class="kw">&lt;/action-widget&gt;</span></span>
-<span id="cb6-44"><a href="#cb6-44"></a>    <span class="kw">&lt;/action-widgets&gt;</span></span>
-<span id="cb6-45"><a href="#cb6-45"></a>  <span class="kw">&lt;/template&gt;</span></span>
-<span id="cb6-46"><a href="#cb6-46"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeAlert&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkDialog&quot;</span>&gt;</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Are you sure?&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-6"><a href="#cb6-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-7"><a href="#cb6-7"></a>    &lt;<span class="kw">child</span><span class="ot"> internal-child=</span><span class="st">&quot;content_area&quot;</span>&gt;</span>
+<span id="cb6-8"><a href="#cb6-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb6-9"><a href="#cb6-9"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb6-10"><a href="#cb6-10"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb6-11"><a href="#cb6-11"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-12"><a href="#cb6-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-13"><a href="#cb6-13"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-14"><a href="#cb6-14"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-15"><a href="#cb6-15"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-16"><a href="#cb6-16"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-17"><a href="#cb6-17"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb6-18"><a href="#cb6-18"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
+<span id="cb6-19"><a href="#cb6-19"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;dialog-warning&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-20"><a href="#cb6-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-size&quot;</span>&gt;GTK_ICON_SIZE_LARGE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-21"><a href="#cb6-21"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb6-22"><a href="#cb6-22"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb6-23"><a href="#cb6-23"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb6-24"><a href="#cb6-24"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;lb_alert&quot;</span>&gt;</span>
+<span id="cb6-25"><a href="#cb6-25"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb6-26"><a href="#cb6-26"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb6-27"><a href="#cb6-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb6-28"><a href="#cb6-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb6-29"><a href="#cb6-29"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb6-30"><a href="#cb6-30"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb6-31"><a href="#cb6-31"></a>    &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span>&gt;</span>
+<span id="cb6-32"><a href="#cb6-32"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_cancel&quot;</span>&gt;</span>
+<span id="cb6-33"><a href="#cb6-33"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Cancel&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-34"><a href="#cb6-34"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb6-35"><a href="#cb6-35"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb6-36"><a href="#cb6-36"></a>    &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span>&gt;</span>
+<span id="cb6-37"><a href="#cb6-37"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_accept&quot;</span>&gt;</span>
+<span id="cb6-38"><a href="#cb6-38"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-39"><a href="#cb6-39"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb6-40"><a href="#cb6-40"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb6-41"><a href="#cb6-41"></a>    &lt;<span class="kw">action-widgets</span>&gt;</span>
+<span id="cb6-42"><a href="#cb6-42"></a>      &lt;<span class="kw">action-widget</span><span class="ot"> response=</span><span class="st">&quot;cancel&quot;</span><span class="ot"> default=</span><span class="st">&quot;true&quot;</span>&gt;btn_cancel&lt;/<span class="kw">action-widget</span>&gt;</span>
+<span id="cb6-43"><a href="#cb6-43"></a>      &lt;<span class="kw">action-widget</span><span class="ot"> response=</span><span class="st">&quot;accept&quot;</span>&gt;btn_accept&lt;/<span class="kw">action-widget</span>&gt;</span>
+<span id="cb6-44"><a href="#cb6-44"></a>    &lt;/<span class="kw">action-widgets</span>&gt;</span>
+<span id="cb6-45"><a href="#cb6-45"></a>  &lt;/<span class="kw">template</span>&gt;</span>
+<span id="cb6-46"><a href="#cb6-46"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
 <p>The header file is:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#ifndef __TFE_ALERT_H__</span></span>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#ifndef __TFE_ALERT_H__</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="pp">#define __TFE_ALERT_H__</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a></span>
 <span id="cb7-4"><a href="#cb7-4"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb7-5"><a href="#cb7-5"></a></span>
 <span id="cb7-6"><a href="#cb7-6"></a><span class="pp">#define TFE_TYPE_ALERT tfe_alert_get_type ()</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a>G_DECLARE_FINAL_TYPE (TfeAlert, tfe_alert, TFE, ALERT, GtkDialog)</span>
+<span id="cb7-7"><a href="#cb7-7"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> TFE<span class="op">,</span> ALERT<span class="op">,</span> GtkDialog<span class="op">)</span></span>
 <span id="cb7-8"><a href="#cb7-8"></a></span>
 <span id="cb7-9"><a href="#cb7-9"></a><span class="dt">void</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>tfe_alert_set_message (TfeAlert *alert, <span class="dt">const</span> <span class="dt">char</span> *message);</span>
+<span id="cb7-10"><a href="#cb7-10"></a>tfe_alert_set_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">);</span></span>
 <span id="cb7-11"><a href="#cb7-11"></a></span>
 <span id="cb7-12"><a href="#cb7-12"></a><span class="dt">void</span></span>
-<span id="cb7-13"><a href="#cb7-13"></a>tfe_alert_set_button_label (TfeAlert *alert, <span class="dt">const</span> <span class="dt">char</span> *label);</span>
+<span id="cb7-13"><a href="#cb7-13"></a>tfe_alert_set_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>label<span class="op">);</span></span>
 <span id="cb7-14"><a href="#cb7-14"></a></span>
-<span id="cb7-15"><a href="#cb7-15"></a>GtkWidget *</span>
-<span id="cb7-16"><a href="#cb7-16"></a>tfe_alert_new (GtkWindow *win);</span>
+<span id="cb7-15"><a href="#cb7-15"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>tfe_alert_new <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">);</span></span>
 <span id="cb7-17"><a href="#cb7-17"></a></span>
 <span id="cb7-18"><a href="#cb7-18"></a><span class="pp">#endif </span><span class="co">/* __TFE_ALERT_H__ */</span></span></code></pre></div>
-<p>There are three public functions. The functions <code>tfe_alert_set_message</code> and <code>tfe_alert_set_button_label</code> sets the label and button name of the alert dialog. For example, if you want to show an alert that the user tries to close without saving the content, set them like:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>tfe_alert_set_message (alert, <span class="st">&quot;Are you really close without saving?&quot;</span>); <span class="co">/* alert points to a TfeAlert instance */</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>tfe_alert_set_button_label (alert, <span class="st">&quot;Close&quot;</span>);</span></code></pre></div>
-<p>The function <code>tfe_alert_new</code> creates a TfeAlert dialog.</p>
+<p>There are three public functions. The functions
+<code>tfe_alert_set_message</code> and
+<code>tfe_alert_set_button_label</code> sets the label and button name
+of the alert dialog. For example, if you want to show an alert that the
+user tries to close without saving the content, set them like:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tfe_alert_set_message <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Are you really close without saving?&quot;</span><span class="op">);</span> <span class="co">/* alert points to a TfeAlert instance */</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tfe_alert_set_button_label <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span></code></pre></div>
+<p>The function <code>tfe_alert_new</code> creates a TfeAlert
+dialog.</p>
 <p>The C source file is:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="kw">struct</span> _TfeAlert</span>
-<span id="cb9-4"><a href="#cb9-4"></a>{</span>
-<span id="cb9-5"><a href="#cb9-5"></a>  GtkDialog parent;</span>
-<span id="cb9-6"><a href="#cb9-6"></a>  GtkLabel *lb_alert;</span>
-<span id="cb9-7"><a href="#cb9-7"></a>  GtkButton *btn_accept;</span>
-<span id="cb9-8"><a href="#cb9-8"></a>};</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="op">{</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  GtkDialog parent<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  GtkLabel <span class="op">*</span>lb_alert<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>  GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="op">};</span></span>
 <span id="cb9-9"><a href="#cb9-9"></a></span>
-<span id="cb9-10"><a href="#cb9-10"></a>G_DEFINE_TYPE (TfeAlert, tfe_alert, GTK_TYPE_DIALOG);</span>
+<span id="cb9-10"><a href="#cb9-10"></a>G_DEFINE_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> GTK_TYPE_DIALOG<span class="op">);</span></span>
 <span id="cb9-11"><a href="#cb9-11"></a></span>
 <span id="cb9-12"><a href="#cb9-12"></a><span class="dt">void</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a>tfe_alert_set_message (TfeAlert *alert, <span class="dt">const</span> <span class="dt">char</span> *message) {</span>
-<span id="cb9-14"><a href="#cb9-14"></a>  gtk_label_set_text (alert-&gt;lb_alert, message);</span>
-<span id="cb9-15"><a href="#cb9-15"></a>}</span>
+<span id="cb9-13"><a href="#cb9-13"></a>tfe_alert_set_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a>  gtk_label_set_text <span class="op">(</span>alert<span class="op">-&gt;</span>lb_alert<span class="op">,</span> message<span class="op">);</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="op">}</span></span>
 <span id="cb9-16"><a href="#cb9-16"></a></span>
 <span id="cb9-17"><a href="#cb9-17"></a><span class="dt">void</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a>tfe_alert_set_button_label (TfeAlert *alert, <span class="dt">const</span> <span class="dt">char</span> *label) {</span>
-<span id="cb9-19"><a href="#cb9-19"></a>  gtk_button_set_label (alert-&gt;btn_accept, label);</span>
-<span id="cb9-20"><a href="#cb9-20"></a>}</span>
+<span id="cb9-18"><a href="#cb9-18"></a>tfe_alert_set_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>label<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  gtk_button_set_label <span class="op">(</span>alert<span class="op">-&gt;</span>btn_accept<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="op">}</span></span>
 <span id="cb9-21"><a href="#cb9-21"></a></span>
 <span id="cb9-22"><a href="#cb9-22"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-23"><a href="#cb9-23"></a>tfe_alert_init (TfeAlert *alert) {</span>
-<span id="cb9-24"><a href="#cb9-24"></a>  gtk_widget_init_template (GTK_WIDGET (alert));</span>
-<span id="cb9-25"><a href="#cb9-25"></a>}</span>
+<span id="cb9-23"><a href="#cb9-23"></a>tfe_alert_init <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb9-25"><a href="#cb9-25"></a><span class="op">}</span></span>
 <span id="cb9-26"><a href="#cb9-26"></a></span>
 <span id="cb9-27"><a href="#cb9-27"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-28"><a href="#cb9-28"></a>tfe_alert_class_init (TfeAlertClass *class) {</span>
-<span id="cb9-29"><a href="#cb9-29"></a>  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span>);</span>
-<span id="cb9-30"><a href="#cb9-30"></a>  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_alert);</span>
-<span id="cb9-31"><a href="#cb9-31"></a>  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);</span>
-<span id="cb9-32"><a href="#cb9-32"></a>}</span>
+<span id="cb9-28"><a href="#cb9-28"></a>tfe_alert_class_init <span class="op">(</span>TfeAlertClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-29"><a href="#cb9-29"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span><span class="op">);</span></span>
+<span id="cb9-30"><a href="#cb9-30"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_alert<span class="op">);</span></span>
+<span id="cb9-31"><a href="#cb9-31"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_accept<span class="op">);</span></span>
+<span id="cb9-32"><a href="#cb9-32"></a><span class="op">}</span></span>
 <span id="cb9-33"><a href="#cb9-33"></a></span>
-<span id="cb9-34"><a href="#cb9-34"></a>GtkWidget *</span>
-<span id="cb9-35"><a href="#cb9-35"></a>tfe_alert_new (GtkWindow *win) {</span>
-<span id="cb9-36"><a href="#cb9-36"></a>  <span class="cf">return</span> GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, <span class="st">&quot;transient-for&quot;</span>, win, NULL));</span>
-<span id="cb9-37"><a href="#cb9-37"></a>}</span></code></pre></div>
+<span id="cb9-34"><a href="#cb9-34"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb9-35"><a href="#cb9-35"></a>tfe_alert_new <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-36"><a href="#cb9-36"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> <span class="st">&quot;transient-for&quot;</span><span class="op">,</span> win<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb9-37"><a href="#cb9-37"></a><span class="op">}</span></span></code></pre></div>
 <p>The program is almost same as <code>tfepref.c</code>.</p>
 <p>The instruction how to use this object is as follows.</p>
 <ol type="1">
@@ -361,410 +421,468 @@
 <li>Create a TfeAlert object.</li>
 <li>Connect “response” signal to a handler</li>
 <li>Show the dialog</li>
-<li>In the signal handler, do something with regard to the response-id. Then destroy the dialog.</li>
+<li>In the signal handler, do something with regard to the response-id.
+Then destroy the dialog.</li>
 </ol>
 <h2 id="top-level-window">Top-level window</h2>
-<p>In the same way, create a child object of GtkApplicationWindow. The object name is “TfeWindow”.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">&lt;interface&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a>  <span class="kw">&lt;template</span><span class="ot"> class=</span><span class="st">&quot;TfeWindow&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>file editor<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span><span class="kw">&gt;</span>600<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span><span class="kw">&gt;</span>400<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a>    <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxv&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span><span class="kw">&gt;</span>GTK_ORIENTATION_VERTICAL<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a>        <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a>          <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxh&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span><span class="kw">&gt;</span>GTK_ORIENTATION_HORIZONTAL<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-14"><a href="#cb10-14"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy1&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-15"><a href="#cb10-15"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span><span class="kw">&gt;</span>10<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-16"><a href="#cb10-16"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-18"><a href="#cb10-18"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-19"><a href="#cb10-19"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btno&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-20"><a href="#cb10-20"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Open<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-21"><a href="#cb10-21"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span><span class="kw">&gt;</span>win.open<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-22"><a href="#cb10-22"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-23"><a href="#cb10-23"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-24"><a href="#cb10-24"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-25"><a href="#cb10-25"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btns&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-26"><a href="#cb10-26"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Save<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-27"><a href="#cb10-27"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span><span class="kw">&gt;</span>win.save<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-28"><a href="#cb10-28"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-29"><a href="#cb10-29"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-30"><a href="#cb10-30"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-31"><a href="#cb10-31"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy2&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-32"><a href="#cb10-32"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-33"><a href="#cb10-33"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-34"><a href="#cb10-34"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-35"><a href="#cb10-35"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-36"><a href="#cb10-36"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnc&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-37"><a href="#cb10-37"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Close<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-38"><a href="#cb10-38"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span><span class="kw">&gt;</span>win.close<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-39"><a href="#cb10-39"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-40"><a href="#cb10-40"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-41"><a href="#cb10-41"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-42"><a href="#cb10-42"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-43"><a href="#cb10-43"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span><span class="kw">&gt;</span>down<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-44"><a href="#cb10-44"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;halign&quot;</span><span class="kw">&gt;</span>start<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-45"><a href="#cb10-45"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span><span class="kw">&gt;</span>open-menu-symbolic<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-46"><a href="#cb10-46"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-47"><a href="#cb10-47"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-48"><a href="#cb10-48"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-49"><a href="#cb10-49"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy3&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-50"><a href="#cb10-50"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span><span class="kw">&gt;</span>10<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-51"><a href="#cb10-51"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-52"><a href="#cb10-52"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-53"><a href="#cb10-53"></a>          <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-54"><a href="#cb10-54"></a>        <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-55"><a href="#cb10-55"></a>        <span class="kw">&lt;child&gt;</span></span>
-<span id="cb10-56"><a href="#cb10-56"></a>          <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkNotebook&quot;</span><span class="ot"> id=</span><span class="st">&quot;nb&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb10-57"><a href="#cb10-57"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scrollable&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-58"><a href="#cb10-58"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-59"><a href="#cb10-59"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb10-60"><a href="#cb10-60"></a>          <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-61"><a href="#cb10-61"></a>        <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-62"><a href="#cb10-62"></a>      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb10-63"><a href="#cb10-63"></a>    <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb10-64"><a href="#cb10-64"></a>  <span class="kw">&lt;/template&gt;</span></span>
-<span id="cb10-65"><a href="#cb10-65"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
-<p>This XML file is almost same as before except template tag and “action-name” property in buttons.</p>
-<p>GtkButton implements GtkActionable interface, which has “action-name” property. If this property is set, GtkButton activates the action when it is clicked. For example, if an open button is clicked, “win.open” action will be activated and <code>open_activated</code> handler will be invoked.</p>
-<p>This action is also used by “&lt;Control&gt;o” accelerator (See the source code of <code>tfewindow.c</code> below). If you use “clicked” signal for the button, you need its signal handler. Then, there are two handlers:</p>
+<p>In the same way, create a child object of GtkApplicationWindow. The
+object name is “TfeWindow”.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeWindow&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkApplicationWindow&quot;</span>&gt;</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;file editor&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-6"><a href="#cb10-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-7"><a href="#cb10-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-8"><a href="#cb10-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxv&quot;</span>&gt;</span>
+<span id="cb10-9"><a href="#cb10-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-10"><a href="#cb10-10"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-11"><a href="#cb10-11"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxh&quot;</span>&gt;</span>
+<span id="cb10-12"><a href="#cb10-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-13"><a href="#cb10-13"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-14"><a href="#cb10-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy1&quot;</span>&gt;</span>
+<span id="cb10-15"><a href="#cb10-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-16"><a href="#cb10-16"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-17"><a href="#cb10-17"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-18"><a href="#cb10-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-19"><a href="#cb10-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btno&quot;</span>&gt;</span>
+<span id="cb10-20"><a href="#cb10-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-21"><a href="#cb10-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-22"><a href="#cb10-22"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-23"><a href="#cb10-23"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-24"><a href="#cb10-24"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-25"><a href="#cb10-25"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btns&quot;</span>&gt;</span>
+<span id="cb10-26"><a href="#cb10-26"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-27"><a href="#cb10-27"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.save&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-28"><a href="#cb10-28"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-29"><a href="#cb10-29"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-30"><a href="#cb10-30"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-31"><a href="#cb10-31"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy2&quot;</span>&gt;</span>
+<span id="cb10-32"><a href="#cb10-32"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-33"><a href="#cb10-33"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-34"><a href="#cb10-34"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-35"><a href="#cb10-35"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-36"><a href="#cb10-36"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnc&quot;</span>&gt;</span>
+<span id="cb10-37"><a href="#cb10-37"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-38"><a href="#cb10-38"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.close&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-39"><a href="#cb10-39"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-40"><a href="#cb10-40"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-41"><a href="#cb10-41"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-42"><a href="#cb10-42"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
+<span id="cb10-43"><a href="#cb10-43"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;down&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-44"><a href="#cb10-44"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;halign&quot;</span>&gt;start&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-45"><a href="#cb10-45"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;open-menu-symbolic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-46"><a href="#cb10-46"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-47"><a href="#cb10-47"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-48"><a href="#cb10-48"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-49"><a href="#cb10-49"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy3&quot;</span>&gt;</span>
+<span id="cb10-50"><a href="#cb10-50"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-51"><a href="#cb10-51"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-52"><a href="#cb10-52"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-53"><a href="#cb10-53"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-54"><a href="#cb10-54"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-55"><a href="#cb10-55"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb10-56"><a href="#cb10-56"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNotebook&quot;</span><span class="ot"> id=</span><span class="st">&quot;nb&quot;</span>&gt;</span>
+<span id="cb10-57"><a href="#cb10-57"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;scrollable&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-58"><a href="#cb10-58"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-59"><a href="#cb10-59"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-60"><a href="#cb10-60"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-61"><a href="#cb10-61"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-62"><a href="#cb10-62"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb10-63"><a href="#cb10-63"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb10-64"><a href="#cb10-64"></a>  &lt;/<span class="kw">template</span>&gt;</span>
+<span id="cb10-65"><a href="#cb10-65"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<p>This XML file is almost same as before except template tag and
+“action-name” property in buttons.</p>
+<p>GtkButton implements GtkActionable interface, which has “action-name”
+property. If this property is set, GtkButton activates the action when
+it is clicked. For example, if an open button is clicked, “win.open”
+action will be activated and <code>open_activated</code> handler will be
+invoked.</p>
+<p>This action is also used by “&lt;Control&gt;o” accelerator (See the
+source code of <code>tfewindow.c</code> below). If you use “clicked”
+signal for the button, you need its signal handler. Then, there are two
+handlers:</p>
 <ul>
 <li>a handler for the “clicked” signal on the button</li>
-<li>a handler for the “activate” signal on the “win.open” action, to which “&lt;Control&gt;o” accelerator is connected</li>
+<li>a handler for the “activate” signal on the “win.open” action, to
+which “&lt;Control&gt;o” accelerator is connected</li>
 </ul>
-<p>These two handlers do almost same thing. It is inefficient. Connecting buttons to actions is a good way to reduce unnecessary codes.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#ifndef __TFE_WINDOW_H__</span></span>
+<p>These two handlers do almost same thing. It is inefficient.
+Connecting buttons to actions is a good way to reduce unnecessary
+codes.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#ifndef __TFE_WINDOW_H__</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="pp">#define __TFE_WINDOW_H__</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a></span>
 <span id="cb11-4"><a href="#cb11-4"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb11-5"><a href="#cb11-5"></a></span>
 <span id="cb11-6"><a href="#cb11-6"></a><span class="pp">#define TFE_TYPE_WINDOW tfe_window_get_type ()</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>G_DECLARE_FINAL_TYPE (TfeWindow, tfe_window, TFE, WINDOW, GtkApplicationWindow)</span>
+<span id="cb11-7"><a href="#cb11-7"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> TFE<span class="op">,</span> WINDOW<span class="op">,</span> GtkApplicationWindow<span class="op">)</span></span>
 <span id="cb11-8"><a href="#cb11-8"></a></span>
 <span id="cb11-9"><a href="#cb11-9"></a><span class="dt">void</span></span>
-<span id="cb11-10"><a href="#cb11-10"></a>tfe_window_notebook_page_new (TfeWindow *win);</span>
+<span id="cb11-10"><a href="#cb11-10"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">);</span></span>
 <span id="cb11-11"><a href="#cb11-11"></a></span>
 <span id="cb11-12"><a href="#cb11-12"></a><span class="dt">void</span></span>
-<span id="cb11-13"><a href="#cb11-13"></a>tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, <span class="dt">int</span> n_files);</span>
+<span id="cb11-13"><a href="#cb11-13"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">);</span></span>
 <span id="cb11-14"><a href="#cb11-14"></a></span>
-<span id="cb11-15"><a href="#cb11-15"></a>GtkWidget *</span>
-<span id="cb11-16"><a href="#cb11-16"></a>tfe_window_new (GtkApplication *app);</span>
+<span id="cb11-15"><a href="#cb11-15"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">);</span></span>
 <span id="cb11-17"><a href="#cb11-17"></a></span>
 <span id="cb11-18"><a href="#cb11-18"></a><span class="pp">#endif </span><span class="co">/* __TFE_WINDOW_H__ */</span></span></code></pre></div>
-<p>There are three public functions. The function <code>tfe_window_notebook_page_new</code> creates a new notebook page. This is a wrapper function for <code>notebook_page_new</code>. It is called by GtkApplication object. The function <code>tfe_window_notebook_page_new_with_files</code> creates notebook pages with a contents read from the given files. The function <code>tfe_window_new</code> creates a TfeWindow instance.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
+<p>There are three public functions. The function
+<code>tfe_window_notebook_page_new</code> creates a new notebook page.
+This is a wrapper function for <code>notebook_page_new</code>. It is
+called by GtkApplication object. The function
+<code>tfe_window_notebook_page_new_with_files</code> creates notebook
+pages with a contents read from the given files. The function
+<code>tfe_window_new</code> creates a TfeWindow instance.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a><span class="pp">#include </span><span class="im">&quot;tfenotebook.h&quot;</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
 <span id="cb12-5"><a href="#cb12-5"></a><span class="pp">#include </span><span class="im">&quot;css.h&quot;</span></span>
 <span id="cb12-6"><a href="#cb12-6"></a></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="kw">struct</span> _TfeWindow {</span>
-<span id="cb12-8"><a href="#cb12-8"></a>  GtkApplicationWindow parent;</span>
-<span id="cb12-9"><a href="#cb12-9"></a>  GtkMenuButton *btnm;</span>
-<span id="cb12-10"><a href="#cb12-10"></a>  GtkNotebook *nb;</span>
-<span id="cb12-11"><a href="#cb12-11"></a>  GSettings *settings;</span>
-<span id="cb12-12"><a href="#cb12-12"></a>  gboolean is_quit;</span>
-<span id="cb12-13"><a href="#cb12-13"></a>};</span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>  gboolean is_quit<span class="op">;</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="op">};</span></span>
 <span id="cb12-14"><a href="#cb12-14"></a></span>
-<span id="cb12-15"><a href="#cb12-15"></a>G_DEFINE_TYPE (TfeWindow, tfe_window, GTK_TYPE_APPLICATION_WINDOW);</span>
+<span id="cb12-15"><a href="#cb12-15"></a>G_DEFINE_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> GTK_TYPE_APPLICATION_WINDOW<span class="op">);</span></span>
 <span id="cb12-16"><a href="#cb12-16"></a></span>
 <span id="cb12-17"><a href="#cb12-17"></a><span class="co">/* alert response signal handler */</span></span>
 <span id="cb12-18"><a href="#cb12-18"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-19"><a href="#cb12-19"></a>alert_response_cb (GtkDialog *alert, <span class="dt">int</span> response_id, gpointer user_data) {</span>
-<span id="cb12-20"><a href="#cb12-20"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
+<span id="cb12-19"><a href="#cb12-19"></a>alert_response_cb <span class="op">(</span>GtkDialog <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response_id<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-21"><a href="#cb12-21"></a></span>
-<span id="cb12-22"><a href="#cb12-22"></a>  <span class="cf">if</span> (response_id == GTK_RESPONSE_ACCEPT) {</span>
-<span id="cb12-23"><a href="#cb12-23"></a>    <span class="cf">if</span> (win-&gt;is_quit)</span>
-<span id="cb12-24"><a href="#cb12-24"></a>      gtk_window_destroy(GTK_WINDOW (win));</span>
+<span id="cb12-22"><a href="#cb12-22"></a>  <span class="cf">if</span> <span class="op">(</span>response_id <span class="op">==</span> GTK_RESPONSE_ACCEPT<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a>    <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>is_quit<span class="op">)</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a>      gtk_window_destroy<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb12-25"><a href="#cb12-25"></a>    <span class="cf">else</span></span>
-<span id="cb12-26"><a href="#cb12-26"></a>      notebook_page_close (win-&gt;nb);</span>
-<span id="cb12-27"><a href="#cb12-27"></a>  }</span>
-<span id="cb12-28"><a href="#cb12-28"></a>  gtk_window_destroy (GTK_WINDOW (alert));</span>
-<span id="cb12-29"><a href="#cb12-29"></a>}</span>
+<span id="cb12-26"><a href="#cb12-26"></a>      notebook_page_close <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb12-27"><a href="#cb12-27"></a>  <span class="op">}</span></span>
+<span id="cb12-28"><a href="#cb12-28"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb12-29"><a href="#cb12-29"></a><span class="op">}</span></span>
 <span id="cb12-30"><a href="#cb12-30"></a></span>
 <span id="cb12-31"><a href="#cb12-31"></a><span class="co">/* ----- action activated handlers ----- */</span></span>
 <span id="cb12-32"><a href="#cb12-32"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-33"><a href="#cb12-33"></a>open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-34"><a href="#cb12-34"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
+<span id="cb12-33"><a href="#cb12-33"></a>open_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-34"><a href="#cb12-34"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-35"><a href="#cb12-35"></a></span>
-<span id="cb12-36"><a href="#cb12-36"></a>  notebook_page_open (GTK_NOTEBOOK (win-&gt;nb));</span>
-<span id="cb12-37"><a href="#cb12-37"></a>}</span>
+<span id="cb12-36"><a href="#cb12-36"></a>  notebook_page_open <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
+<span id="cb12-37"><a href="#cb12-37"></a><span class="op">}</span></span>
 <span id="cb12-38"><a href="#cb12-38"></a></span>
 <span id="cb12-39"><a href="#cb12-39"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-40"><a href="#cb12-40"></a>save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-41"><a href="#cb12-41"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
+<span id="cb12-40"><a href="#cb12-40"></a>save_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-41"><a href="#cb12-41"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-42"><a href="#cb12-42"></a></span>
-<span id="cb12-43"><a href="#cb12-43"></a>  notebook_page_save (GTK_NOTEBOOK (win-&gt;nb));</span>
-<span id="cb12-44"><a href="#cb12-44"></a>}</span>
+<span id="cb12-43"><a href="#cb12-43"></a>  notebook_page_save <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
+<span id="cb12-44"><a href="#cb12-44"></a><span class="op">}</span></span>
 <span id="cb12-45"><a href="#cb12-45"></a></span>
 <span id="cb12-46"><a href="#cb12-46"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-47"><a href="#cb12-47"></a>close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-48"><a href="#cb12-48"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
-<span id="cb12-49"><a href="#cb12-49"></a>  TfeAlert *alert;</span>
+<span id="cb12-47"><a href="#cb12-47"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-48"><a href="#cb12-48"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb12-49"><a href="#cb12-49"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
 <span id="cb12-50"><a href="#cb12-50"></a></span>
-<span id="cb12-51"><a href="#cb12-51"></a>  <span class="cf">if</span> (has_saved (win-&gt;nb))</span>
-<span id="cb12-52"><a href="#cb12-52"></a>    notebook_page_close (win-&gt;nb);</span>
-<span id="cb12-53"><a href="#cb12-53"></a>  <span class="cf">else</span> {</span>
-<span id="cb12-54"><a href="#cb12-54"></a>    win-&gt;is_quit = false;</span>
-<span id="cb12-55"><a href="#cb12-55"></a>    alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));</span>
-<span id="cb12-56"><a href="#cb12-56"></a>    tfe_alert_set_message (alert, <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span>);</span>
-<span id="cb12-57"><a href="#cb12-57"></a>    tfe_alert_set_button_label (alert, <span class="st">&quot;Close&quot;</span>);</span>
-<span id="cb12-58"><a href="#cb12-58"></a>    g_signal_connect (GTK_DIALOG (alert), <span class="st">&quot;response&quot;</span>, G_CALLBACK (alert_response_cb), win);</span>
-<span id="cb12-59"><a href="#cb12-59"></a>    gtk_widget_show (GTK_WIDGET (alert));</span>
-<span id="cb12-60"><a href="#cb12-60"></a>  }</span>
-<span id="cb12-61"><a href="#cb12-61"></a>}</span>
+<span id="cb12-51"><a href="#cb12-51"></a>  <span class="cf">if</span> <span class="op">(</span>has_saved <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">))</span></span>
+<span id="cb12-52"><a href="#cb12-52"></a>    notebook_page_close <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb12-53"><a href="#cb12-53"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb12-54"><a href="#cb12-54"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> false<span class="op">;</span></span>
+<span id="cb12-55"><a href="#cb12-55"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">)));</span></span>
+<span id="cb12-56"><a href="#cb12-56"></a>    tfe_alert_set_message <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">);</span></span>
+<span id="cb12-57"><a href="#cb12-57"></a>    tfe_alert_set_button_label <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span>
+<span id="cb12-58"><a href="#cb12-58"></a>    g_signal_connect <span class="op">(</span>GTK_DIALOG <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb12-59"><a href="#cb12-59"></a>    gtk_widget_show <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb12-60"><a href="#cb12-60"></a>  <span class="op">}</span></span>
+<span id="cb12-61"><a href="#cb12-61"></a><span class="op">}</span></span>
 <span id="cb12-62"><a href="#cb12-62"></a></span>
 <span id="cb12-63"><a href="#cb12-63"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-64"><a href="#cb12-64"></a>new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-65"><a href="#cb12-65"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
+<span id="cb12-64"><a href="#cb12-64"></a>new_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-65"><a href="#cb12-65"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-66"><a href="#cb12-66"></a></span>
-<span id="cb12-67"><a href="#cb12-67"></a>  notebook_page_new (GTK_NOTEBOOK (win-&gt;nb));</span>
-<span id="cb12-68"><a href="#cb12-68"></a>}</span>
+<span id="cb12-67"><a href="#cb12-67"></a>  notebook_page_new <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
+<span id="cb12-68"><a href="#cb12-68"></a><span class="op">}</span></span>
 <span id="cb12-69"><a href="#cb12-69"></a></span>
 <span id="cb12-70"><a href="#cb12-70"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-71"><a href="#cb12-71"></a>saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-72"><a href="#cb12-72"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
+<span id="cb12-71"><a href="#cb12-71"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-72"><a href="#cb12-72"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-73"><a href="#cb12-73"></a></span>
-<span id="cb12-74"><a href="#cb12-74"></a>  notebook_page_saveas (GTK_NOTEBOOK (win-&gt;nb));</span>
-<span id="cb12-75"><a href="#cb12-75"></a>}</span>
+<span id="cb12-74"><a href="#cb12-74"></a>  notebook_page_saveas <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
+<span id="cb12-75"><a href="#cb12-75"></a><span class="op">}</span></span>
 <span id="cb12-76"><a href="#cb12-76"></a></span>
 <span id="cb12-77"><a href="#cb12-77"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-78"><a href="#cb12-78"></a>pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-79"><a href="#cb12-79"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
-<span id="cb12-80"><a href="#cb12-80"></a>  GtkWidget *pref;</span>
+<span id="cb12-78"><a href="#cb12-78"></a>pref_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-79"><a href="#cb12-79"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb12-80"><a href="#cb12-80"></a>  GtkWidget <span class="op">*</span>pref<span class="op">;</span></span>
 <span id="cb12-81"><a href="#cb12-81"></a></span>
-<span id="cb12-82"><a href="#cb12-82"></a>  pref = tfe_pref_new (GTK_WINDOW (win));</span>
-<span id="cb12-83"><a href="#cb12-83"></a>  gtk_widget_show (pref);</span>
-<span id="cb12-84"><a href="#cb12-84"></a>}</span>
+<span id="cb12-82"><a href="#cb12-82"></a>  pref <span class="op">=</span> tfe_pref_new <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb12-83"><a href="#cb12-83"></a>  gtk_widget_show <span class="op">(</span>pref<span class="op">);</span></span>
+<span id="cb12-84"><a href="#cb12-84"></a><span class="op">}</span></span>
 <span id="cb12-85"><a href="#cb12-85"></a></span>
 <span id="cb12-86"><a href="#cb12-86"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-87"><a href="#cb12-87"></a>quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb12-88"><a href="#cb12-88"></a>  TfeWindow *win = TFE_WINDOW (user_data);</span>
+<span id="cb12-87"><a href="#cb12-87"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-88"><a href="#cb12-88"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-89"><a href="#cb12-89"></a></span>
-<span id="cb12-90"><a href="#cb12-90"></a>  TfeAlert *alert;</span>
+<span id="cb12-90"><a href="#cb12-90"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
 <span id="cb12-91"><a href="#cb12-91"></a></span>
-<span id="cb12-92"><a href="#cb12-92"></a>  <span class="cf">if</span> (has_saved_all (GTK_NOTEBOOK (win-&gt;nb)))</span>
-<span id="cb12-93"><a href="#cb12-93"></a>    gtk_window_destroy (GTK_WINDOW (win));</span>
-<span id="cb12-94"><a href="#cb12-94"></a>  <span class="cf">else</span> {</span>
-<span id="cb12-95"><a href="#cb12-95"></a>    win-&gt;is_quit = true;</span>
-<span id="cb12-96"><a href="#cb12-96"></a>    alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));</span>
-<span id="cb12-97"><a href="#cb12-97"></a>    tfe_alert_set_message (alert, <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span>);</span>
-<span id="cb12-98"><a href="#cb12-98"></a>    tfe_alert_set_button_label (alert, <span class="st">&quot;Quit&quot;</span>);</span>
-<span id="cb12-99"><a href="#cb12-99"></a>    g_signal_connect (GTK_DIALOG (alert), <span class="st">&quot;response&quot;</span>, G_CALLBACK (alert_response_cb), win);</span>
-<span id="cb12-100"><a href="#cb12-100"></a>    gtk_widget_show (GTK_WIDGET (alert));</span>
-<span id="cb12-101"><a href="#cb12-101"></a>  }</span>
-<span id="cb12-102"><a href="#cb12-102"></a>}</span>
+<span id="cb12-92"><a href="#cb12-92"></a>  <span class="cf">if</span> <span class="op">(</span>has_saved_all <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)))</span></span>
+<span id="cb12-93"><a href="#cb12-93"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb12-94"><a href="#cb12-94"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb12-95"><a href="#cb12-95"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> true<span class="op">;</span></span>
+<span id="cb12-96"><a href="#cb12-96"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">)));</span></span>
+<span id="cb12-97"><a href="#cb12-97"></a>    tfe_alert_set_message <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span><span class="op">);</span></span>
+<span id="cb12-98"><a href="#cb12-98"></a>    tfe_alert_set_button_label <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Quit&quot;</span><span class="op">);</span></span>
+<span id="cb12-99"><a href="#cb12-99"></a>    g_signal_connect <span class="op">(</span>GTK_DIALOG <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb12-100"><a href="#cb12-100"></a>    gtk_widget_show <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb12-101"><a href="#cb12-101"></a>  <span class="op">}</span></span>
+<span id="cb12-102"><a href="#cb12-102"></a><span class="op">}</span></span>
 <span id="cb12-103"><a href="#cb12-103"></a></span>
 <span id="cb12-104"><a href="#cb12-104"></a><span class="co">/* gsettings changed::font signal handler */</span></span>
 <span id="cb12-105"><a href="#cb12-105"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-106"><a href="#cb12-106"></a>changed_font_cb (GSettings *settings, <span class="dt">char</span> *key, gpointer user_data) {</span>
-<span id="cb12-107"><a href="#cb12-107"></a>  GtkWindow *win = GTK_WINDOW (user_data); </span>
-<span id="cb12-108"><a href="#cb12-108"></a>  <span class="dt">char</span> *font;</span>
-<span id="cb12-109"><a href="#cb12-109"></a>  PangoFontDescription *pango_font_desc;</span>
+<span id="cb12-106"><a href="#cb12-106"></a>changed_font_cb <span class="op">(</span>GSettings <span class="op">*</span>settings<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>key<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-107"><a href="#cb12-107"></a>  GtkWindow <span class="op">*</span>win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>user_data<span class="op">);</span> </span>
+<span id="cb12-108"><a href="#cb12-108"></a>  <span class="dt">char</span> <span class="op">*</span>font<span class="op">;</span></span>
+<span id="cb12-109"><a href="#cb12-109"></a>  PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">;</span></span>
 <span id="cb12-110"><a href="#cb12-110"></a></span>
-<span id="cb12-111"><a href="#cb12-111"></a>  font = g_settings_get_string (settings, <span class="st">&quot;font&quot;</span>);</span>
-<span id="cb12-112"><a href="#cb12-112"></a>  pango_font_desc = pango_font_description_from_string (font);</span>
-<span id="cb12-113"><a href="#cb12-113"></a>  g_free (font);</span>
-<span id="cb12-114"><a href="#cb12-114"></a>  set_font_for_display_with_pango_font_desc (win, pango_font_desc);</span>
-<span id="cb12-115"><a href="#cb12-115"></a>}</span>
+<span id="cb12-111"><a href="#cb12-111"></a>  font <span class="op">=</span> g_settings_get_string <span class="op">(</span>settings<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">);</span></span>
+<span id="cb12-112"><a href="#cb12-112"></a>  pango_font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>font<span class="op">);</span></span>
+<span id="cb12-113"><a href="#cb12-113"></a>  g_free <span class="op">(</span>font<span class="op">);</span></span>
+<span id="cb12-114"><a href="#cb12-114"></a>  set_font_for_display_with_pango_font_desc <span class="op">(</span>win<span class="op">,</span> pango_font_desc<span class="op">);</span></span>
+<span id="cb12-115"><a href="#cb12-115"></a><span class="op">}</span></span>
 <span id="cb12-116"><a href="#cb12-116"></a></span>
 <span id="cb12-117"><a href="#cb12-117"></a><span class="co">/* --- public functions --- */</span></span>
 <span id="cb12-118"><a href="#cb12-118"></a></span>
 <span id="cb12-119"><a href="#cb12-119"></a><span class="dt">void</span></span>
-<span id="cb12-120"><a href="#cb12-120"></a>tfe_window_notebook_page_new (TfeWindow *win) {</span>
-<span id="cb12-121"><a href="#cb12-121"></a>  notebook_page_new (win-&gt;nb);</span>
-<span id="cb12-122"><a href="#cb12-122"></a>}</span>
+<span id="cb12-120"><a href="#cb12-120"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-121"><a href="#cb12-121"></a>  notebook_page_new <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb12-122"><a href="#cb12-122"></a><span class="op">}</span></span>
 <span id="cb12-123"><a href="#cb12-123"></a></span>
 <span id="cb12-124"><a href="#cb12-124"></a><span class="dt">void</span></span>
-<span id="cb12-125"><a href="#cb12-125"></a>tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, <span class="dt">int</span> n_files) {</span>
-<span id="cb12-126"><a href="#cb12-126"></a>  <span class="dt">int</span> i;</span>
+<span id="cb12-125"><a href="#cb12-125"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-126"><a href="#cb12-126"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb12-127"><a href="#cb12-127"></a></span>
-<span id="cb12-128"><a href="#cb12-128"></a>  <span class="cf">for</span> (i = <span class="dv">0</span>; i &lt; n_files; i++)</span>
-<span id="cb12-129"><a href="#cb12-129"></a>    notebook_page_new_with_file (win-&gt;nb, files[i]);</span>
-<span id="cb12-130"><a href="#cb12-130"></a>  <span class="cf">if</span> (gtk_notebook_get_n_pages (win-&gt;nb) == <span class="dv">0</span>)</span>
-<span id="cb12-131"><a href="#cb12-131"></a>    notebook_page_new (win-&gt;nb);</span>
-<span id="cb12-132"><a href="#cb12-132"></a>}</span>
+<span id="cb12-128"><a href="#cb12-128"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb12-129"><a href="#cb12-129"></a>    notebook_page_new_with_file <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> files<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb12-130"><a href="#cb12-130"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb12-131"><a href="#cb12-131"></a>    notebook_page_new <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb12-132"><a href="#cb12-132"></a><span class="op">}</span></span>
 <span id="cb12-133"><a href="#cb12-133"></a></span>
 <span id="cb12-134"><a href="#cb12-134"></a><span class="co">/* --- TfeWindow object construction/destruction --- */</span> </span>
 <span id="cb12-135"><a href="#cb12-135"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-136"><a href="#cb12-136"></a>tfe_window_dispose (GObject *gobject) {</span>
-<span id="cb12-137"><a href="#cb12-137"></a>  TfeWindow *window = TFE_WINDOW (gobject);</span>
+<span id="cb12-136"><a href="#cb12-136"></a>tfe_window_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-137"><a href="#cb12-137"></a>  TfeWindow <span class="op">*</span>window <span class="op">=</span> TFE_WINDOW <span class="op">(</span>gobject<span class="op">);</span></span>
 <span id="cb12-138"><a href="#cb12-138"></a></span>
-<span id="cb12-139"><a href="#cb12-139"></a>  g_clear_object (&amp;window-&gt;settings);</span>
-<span id="cb12-140"><a href="#cb12-140"></a>  G_OBJECT_CLASS (tfe_window_parent_class)-&gt;dispose (gobject);</span>
-<span id="cb12-141"><a href="#cb12-141"></a>}</span>
+<span id="cb12-139"><a href="#cb12-139"></a>  g_clear_object <span class="op">(&amp;</span>window<span class="op">-&gt;</span>settings<span class="op">);</span></span>
+<span id="cb12-140"><a href="#cb12-140"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_window_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb12-141"><a href="#cb12-141"></a><span class="op">}</span></span>
 <span id="cb12-142"><a href="#cb12-142"></a></span>
 <span id="cb12-143"><a href="#cb12-143"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-144"><a href="#cb12-144"></a>tfe_window_init (TfeWindow *win) {</span>
-<span id="cb12-145"><a href="#cb12-145"></a>  GtkBuilder *build;</span>
-<span id="cb12-146"><a href="#cb12-146"></a>  GMenuModel *menu;</span>
+<span id="cb12-144"><a href="#cb12-144"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-145"><a href="#cb12-145"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb12-146"><a href="#cb12-146"></a>  GMenuModel <span class="op">*</span>menu<span class="op">;</span></span>
 <span id="cb12-147"><a href="#cb12-147"></a></span>
-<span id="cb12-148"><a href="#cb12-148"></a>  gtk_widget_init_template (GTK_WIDGET (win));</span>
+<span id="cb12-148"><a href="#cb12-148"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb12-149"><a href="#cb12-149"></a></span>
-<span id="cb12-150"><a href="#cb12-150"></a>  build = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/tfe/menu.ui&quot;</span>);</span>
-<span id="cb12-151"><a href="#cb12-151"></a>  menu = G_MENU_MODEL (gtk_builder_get_object (build, <span class="st">&quot;menu&quot;</span>));</span>
-<span id="cb12-152"><a href="#cb12-152"></a>  gtk_menu_button_set_menu_model (win-&gt;btnm, menu);</span>
-<span id="cb12-153"><a href="#cb12-153"></a>  g_object_unref(build);</span>
+<span id="cb12-150"><a href="#cb12-150"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/menu.ui&quot;</span><span class="op">);</span></span>
+<span id="cb12-151"><a href="#cb12-151"></a>  menu <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;menu&quot;</span><span class="op">));</span></span>
+<span id="cb12-152"><a href="#cb12-152"></a>  gtk_menu_button_set_menu_model <span class="op">(</span>win<span class="op">-&gt;</span>btnm<span class="op">,</span> menu<span class="op">);</span></span>
+<span id="cb12-153"><a href="#cb12-153"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
 <span id="cb12-154"><a href="#cb12-154"></a></span>
-<span id="cb12-155"><a href="#cb12-155"></a>  win-&gt;settings = g_settings_new (<span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>);</span>
-<span id="cb12-156"><a href="#cb12-156"></a>  g_signal_connect (win-&gt;settings, <span class="st">&quot;changed::font&quot;</span>, G_CALLBACK (changed_font_cb), win);</span>
+<span id="cb12-155"><a href="#cb12-155"></a>  win<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
+<span id="cb12-156"><a href="#cb12-156"></a>  g_signal_connect <span class="op">(</span>win<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;changed::font&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>changed_font_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb12-157"><a href="#cb12-157"></a></span>
 <span id="cb12-158"><a href="#cb12-158"></a><span class="co">/* ----- action ----- */</span></span>
-<span id="cb12-159"><a href="#cb12-159"></a>  <span class="dt">const</span> GActionEntry win_entries[] = {</span>
-<span id="cb12-160"><a href="#cb12-160"></a>    { <span class="st">&quot;open&quot;</span>, open_activated, NULL, NULL, NULL },</span>
-<span id="cb12-161"><a href="#cb12-161"></a>    { <span class="st">&quot;save&quot;</span>, save_activated, NULL, NULL, NULL },</span>
-<span id="cb12-162"><a href="#cb12-162"></a>    { <span class="st">&quot;close&quot;</span>, close_activated, NULL, NULL, NULL },</span>
-<span id="cb12-163"><a href="#cb12-163"></a>    { <span class="st">&quot;new&quot;</span>, new_activated, NULL, NULL, NULL },</span>
-<span id="cb12-164"><a href="#cb12-164"></a>    { <span class="st">&quot;saveas&quot;</span>, saveas_activated, NULL, NULL, NULL },</span>
-<span id="cb12-165"><a href="#cb12-165"></a>    { <span class="st">&quot;pref&quot;</span>, pref_activated, NULL, NULL, NULL },</span>
-<span id="cb12-166"><a href="#cb12-166"></a>    { <span class="st">&quot;close-all&quot;</span>, quit_activated, NULL, NULL, NULL }</span>
-<span id="cb12-167"><a href="#cb12-167"></a>  };</span>
-<span id="cb12-168"><a href="#cb12-168"></a>  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);</span>
+<span id="cb12-159"><a href="#cb12-159"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb12-160"><a href="#cb12-160"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb12-161"><a href="#cb12-161"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb12-162"><a href="#cb12-162"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb12-163"><a href="#cb12-163"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb12-164"><a href="#cb12-164"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb12-165"><a href="#cb12-165"></a>    <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb12-166"><a href="#cb12-166"></a>    <span class="op">{</span> <span class="st">&quot;close-all&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb12-167"><a href="#cb12-167"></a>  <span class="op">};</span></span>
+<span id="cb12-168"><a href="#cb12-168"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb12-169"><a href="#cb12-169"></a></span>
-<span id="cb12-170"><a href="#cb12-170"></a>  changed_font_cb(win-&gt;settings, <span class="st">&quot;font&quot;</span>, win);</span>
-<span id="cb12-171"><a href="#cb12-171"></a>}</span>
+<span id="cb12-170"><a href="#cb12-170"></a>  changed_font_cb<span class="op">(</span>win<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">,</span> win<span class="op">);</span></span>
+<span id="cb12-171"><a href="#cb12-171"></a><span class="op">}</span></span>
 <span id="cb12-172"><a href="#cb12-172"></a></span>
 <span id="cb12-173"><a href="#cb12-173"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-174"><a href="#cb12-174"></a>tfe_window_class_init (TfeWindowClass *class) {</span>
-<span id="cb12-175"><a href="#cb12-175"></a>  GObjectClass *object_class = G_OBJECT_CLASS (class);</span>
+<span id="cb12-174"><a href="#cb12-174"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-175"><a href="#cb12-175"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
 <span id="cb12-176"><a href="#cb12-176"></a></span>
-<span id="cb12-177"><a href="#cb12-177"></a>  object_class-&gt;dispose = tfe_window_dispose;</span>
-<span id="cb12-178"><a href="#cb12-178"></a>  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), <span class="st">&quot;/com/github/ToshioCP/tfe/tfewindow.ui&quot;</span>);</span>
-<span id="cb12-179"><a href="#cb12-179"></a>  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);</span>
-<span id="cb12-180"><a href="#cb12-180"></a>  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);</span>
-<span id="cb12-181"><a href="#cb12-181"></a>}</span>
+<span id="cb12-177"><a href="#cb12-177"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_window_dispose<span class="op">;</span></span>
+<span id="cb12-178"><a href="#cb12-178"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfewindow.ui&quot;</span><span class="op">);</span></span>
+<span id="cb12-179"><a href="#cb12-179"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span></span>
+<span id="cb12-180"><a href="#cb12-180"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span></span>
+<span id="cb12-181"><a href="#cb12-181"></a><span class="op">}</span></span>
 <span id="cb12-182"><a href="#cb12-182"></a></span>
-<span id="cb12-183"><a href="#cb12-183"></a>GtkWidget *</span>
-<span id="cb12-184"><a href="#cb12-184"></a>tfe_window_new (GtkApplication *app) {</span>
-<span id="cb12-185"><a href="#cb12-185"></a>  <span class="cf">return</span> GTK_WIDGET (g_object_new (TFE_TYPE_WINDOW, <span class="st">&quot;application&quot;</span>, app, NULL));</span>
-<span id="cb12-186"><a href="#cb12-186"></a>}</span></code></pre></div>
+<span id="cb12-183"><a href="#cb12-183"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb12-184"><a href="#cb12-184"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-185"><a href="#cb12-185"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb12-186"><a href="#cb12-186"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>17-29: <code>alert_response_cb</code> is a call back function of the “response” signal of TfeAlert dialog. This is the same as before except <code>gtk_window_destroy(GTK_WINDOW (win))</code> is used instead of <code>tfe_application_quit</code>.</li>
-<li>31-102: Handlers of action activated signal. The <code>user_data</code> is a pointer to TfeWindow instance.</li>
-<li>104-115: A handler of “changed::font” signal of GSettings object.</li>
+<li>17-29: <code>alert_response_cb</code> is a call back function of the
+“response” signal of TfeAlert dialog. This is the same as before except
+<code>gtk_window_destroy(GTK_WINDOW (win))</code> is used instead of
+<code>tfe_application_quit</code>.</li>
+<li>31-102: Handlers of action activated signal. The
+<code>user_data</code> is a pointer to TfeWindow instance.</li>
+<li>104-115: A handler of “changed::font” signal of GSettings
+object.</li>
 <li>111: Gets the font from GSettings data.</li>
-<li>112: Gets a PangoFontDescription from the font. In the previous version, the program gets the font description from the GtkFontButton. The button data and GSettings data are the same. Therefore, the data got here is the same as the data in the GtkFontButton. In addition, we don’t need to worry about the preference dialog is alive or not thanks to the GSettings.</li>
+<li>112: Gets a PangoFontDescription from the font. In the previous
+version, the program gets the font description from the GtkFontButton.
+The button data and GSettings data are the same. Therefore, the data got
+here is the same as the data in the GtkFontButton. In addition, we don’t
+need to worry about the preference dialog is alive or not thanks to the
+GSettings.</li>
 <li>114: Sets CSS on the display with the font description.</li>
 <li>117-132: Public functions.</li>
-<li>134-141: Dispose handler. The GSettings object needs to be released.</li>
+<li>134-141: Dispose handler. The GSettings object needs to be
+released.</li>
 <li>143-171: Instance initialization function.</li>
 <li>148: Creates a composite widget instance with the template.</li>
 <li>151-153: Insert <code>menu</code> to the menu button.</li>
-<li>155-156: Creates a GSettings instance with the id “com.github.ToshioCP.tfe”. Connects “changed::font” signal to the handler <code>changed_font_cb</code>. This signal emits when the GSettings data is changed. The second part “font” of the signal name “changed::font” is called details. Signals can have details. If a GSettings instance has more than one key, “changed” signal emits only if the key, which has the same name as the detail, changes its value. For example, Suppose a GSettings object has three keys “a”, “b” and “c”.
+<li>155-156: Creates a GSettings instance with the id
+“com.github.ToshioCP.tfe”. Connects “changed::font” signal to the
+handler <code>changed_font_cb</code>. This signal emits when the
+GSettings data is changed. The second part “font” of the signal name
+“changed::font” is called details. Signals can have details. If a
+GSettings instance has more than one key, “changed” signal emits only if
+the key, which has the same name as the detail, changes its value. For
+example, Suppose a GSettings object has three keys “a”, “b” and “c”.
 <ul>
-<li>“changed::a” is emitted when the value of the key “a” is changed. It isn’t emitted when the value of “b” or “c” is changed.</li>
-<li>“changed::b” is emitted when the value of the key “b” is changed. It isn’t emitted when the value of “a” or “c” is changed.</li>
-<li>“changed::c” is emitted when the value of the key “c” is changed. It isn’t emitted when the value of “a” or “b” is changed. In this version of tfe, there is only one key (“font”). So, even if the signal doesn’t have a detail, the result is the same. But in the future version, it will probably need details.</li>
+<li>“changed::a” is emitted when the value of the key “a” is changed. It
+isn’t emitted when the value of “b” or “c” is changed.</li>
+<li>“changed::b” is emitted when the value of the key “b” is changed. It
+isn’t emitted when the value of “a” or “c” is changed.</li>
+<li>“changed::c” is emitted when the value of the key “c” is changed. It
+isn’t emitted when the value of “a” or “b” is changed. In this version
+of tfe, there is only one key (“font”). So, even if the signal doesn’t
+have a detail, the result is the same. But in the future version, it
+will probably need details.</li>
 </ul></li>
 <li>158-168: Creates actions.</li>
 <li>170: Sets CSS font.</li>
 <li>173-181: Class initialization function.</li>
 <li>177: Sets the dispose handler.</li>
 <li>178: Sets the composite widget template</li>
-<li>179-180: Binds private variable with child objects in the template.</li>
-<li>183-186: <code>tfe_window_new</code>. This function creates TfeWindow instance.</li>
+<li>179-180: Binds private variable with child objects in the
+template.</li>
+<li>183-186: <code>tfe_window_new</code>. This function creates
+TfeWindow instance.</li>
 </ul>
 <h2 id="tfeapplication">TfeApplication</h2>
 <p>The file <code>tfeapplication.c</code> is now very simple.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a></span>
 <span id="cb13-3"><a href="#cb13-3"></a><span class="co">/* ----- activate, open, startup handlers ----- */</span></span>
 <span id="cb13-4"><a href="#cb13-4"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a>app_activate (GApplication *application) {</span>
-<span id="cb13-6"><a href="#cb13-6"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb13-7"><a href="#cb13-7"></a>  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));</span>
+<span id="cb13-5"><a href="#cb13-5"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_application_get_active_window <span class="op">(</span>app<span class="op">));</span></span>
 <span id="cb13-8"><a href="#cb13-8"></a></span>
-<span id="cb13-9"><a href="#cb13-9"></a>  tfe_window_notebook_page_new (TFE_WINDOW (win));</span>
-<span id="cb13-10"><a href="#cb13-10"></a>  gtk_widget_show (GTK_WIDGET (win));</span>
-<span id="cb13-11"><a href="#cb13-11"></a>}</span>
+<span id="cb13-9"><a href="#cb13-9"></a>  tfe_window_notebook_page_new <span class="op">(</span>TFE_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a>  gtk_widget_show <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="op">}</span></span>
 <span id="cb13-12"><a href="#cb13-12"></a></span>
 <span id="cb13-13"><a href="#cb13-13"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a>app_open (GApplication *application, GFile ** files, gint n_files, <span class="dt">const</span> gchar *hint) {</span>
-<span id="cb13-15"><a href="#cb13-15"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb13-16"><a href="#cb13-16"></a>  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));</span>
+<span id="cb13-14"><a href="#cb13-14"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">,</span> GFile <span class="op">**</span> files<span class="op">,</span> gint n_files<span class="op">,</span> <span class="dt">const</span> gchar <span class="op">*</span>hint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb13-16"><a href="#cb13-16"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_application_get_active_window <span class="op">(</span>app<span class="op">));</span></span>
 <span id="cb13-17"><a href="#cb13-17"></a></span>
-<span id="cb13-18"><a href="#cb13-18"></a>  tfe_window_notebook_page_new_with_files (TFE_WINDOW (win), files, n_files);</span>
-<span id="cb13-19"><a href="#cb13-19"></a>  gtk_widget_show (win);</span>
-<span id="cb13-20"><a href="#cb13-20"></a>}</span>
+<span id="cb13-18"><a href="#cb13-18"></a>  tfe_window_notebook_page_new_with_files <span class="op">(</span>TFE_WINDOW <span class="op">(</span>win<span class="op">),</span> files<span class="op">,</span> n_files<span class="op">);</span></span>
+<span id="cb13-19"><a href="#cb13-19"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb13-20"><a href="#cb13-20"></a><span class="op">}</span></span>
 <span id="cb13-21"><a href="#cb13-21"></a></span>
 <span id="cb13-22"><a href="#cb13-22"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-23"><a href="#cb13-23"></a>app_startup (GApplication *application) {</span>
-<span id="cb13-24"><a href="#cb13-24"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb13-25"><a href="#cb13-25"></a>  <span class="dt">int</span> i;</span>
+<span id="cb13-23"><a href="#cb13-23"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-24"><a href="#cb13-24"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb13-25"><a href="#cb13-25"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb13-26"><a href="#cb13-26"></a></span>
-<span id="cb13-27"><a href="#cb13-27"></a>  tfe_window_new (app);</span>
+<span id="cb13-27"><a href="#cb13-27"></a>  tfe_window_new <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb13-28"><a href="#cb13-28"></a></span>
 <span id="cb13-29"><a href="#cb13-29"></a><span class="co">/* ----- accelerator ----- */</span> </span>
-<span id="cb13-30"><a href="#cb13-30"></a>  <span class="kw">struct</span> {</span>
-<span id="cb13-31"><a href="#cb13-31"></a>    <span class="dt">const</span> <span class="dt">char</span> *action;</span>
-<span id="cb13-32"><a href="#cb13-32"></a>    <span class="dt">const</span> <span class="dt">char</span> *accels[<span class="dv">2</span>];</span>
-<span id="cb13-33"><a href="#cb13-33"></a>  } action_accels[] = {</span>
-<span id="cb13-34"><a href="#cb13-34"></a>    { <span class="st">&quot;win.open&quot;</span>, { <span class="st">&quot;&lt;Control&gt;o&quot;</span>, NULL } },</span>
-<span id="cb13-35"><a href="#cb13-35"></a>    { <span class="st">&quot;win.save&quot;</span>, { <span class="st">&quot;&lt;Control&gt;s&quot;</span>, NULL } },</span>
-<span id="cb13-36"><a href="#cb13-36"></a>    { <span class="st">&quot;win.close&quot;</span>, { <span class="st">&quot;&lt;Control&gt;w&quot;</span>, NULL } },</span>
-<span id="cb13-37"><a href="#cb13-37"></a>    { <span class="st">&quot;win.new&quot;</span>, { <span class="st">&quot;&lt;Control&gt;n&quot;</span>, NULL } },</span>
-<span id="cb13-38"><a href="#cb13-38"></a>    { <span class="st">&quot;win.saveas&quot;</span>, { <span class="st">&quot;&lt;Shift&gt;&lt;Control&gt;s&quot;</span>, NULL } },</span>
-<span id="cb13-39"><a href="#cb13-39"></a>    { <span class="st">&quot;win.close-all&quot;</span>, { <span class="st">&quot;&lt;Control&gt;q&quot;</span>, NULL } },</span>
-<span id="cb13-40"><a href="#cb13-40"></a>  };</span>
+<span id="cb13-30"><a href="#cb13-30"></a>  <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb13-31"><a href="#cb13-31"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>action<span class="op">;</span></span>
+<span id="cb13-32"><a href="#cb13-32"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>accels<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb13-33"><a href="#cb13-33"></a>  <span class="op">}</span> action_accels<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb13-34"><a href="#cb13-34"></a>    <span class="op">{</span> <span class="st">&quot;win.open&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;o&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb13-35"><a href="#cb13-35"></a>    <span class="op">{</span> <span class="st">&quot;win.save&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb13-36"><a href="#cb13-36"></a>    <span class="op">{</span> <span class="st">&quot;win.close&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;w&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb13-37"><a href="#cb13-37"></a>    <span class="op">{</span> <span class="st">&quot;win.new&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;n&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb13-38"><a href="#cb13-38"></a>    <span class="op">{</span> <span class="st">&quot;win.saveas&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Shift&gt;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb13-39"><a href="#cb13-39"></a>    <span class="op">{</span> <span class="st">&quot;win.close-all&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;q&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb13-40"><a href="#cb13-40"></a>  <span class="op">};</span></span>
 <span id="cb13-41"><a href="#cb13-41"></a></span>
-<span id="cb13-42"><a href="#cb13-42"></a>  <span class="cf">for</span> (i = <span class="dv">0</span>; i &lt; G_N_ELEMENTS(action_accels); i++)</span>
-<span id="cb13-43"><a href="#cb13-43"></a>    gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);</span>
-<span id="cb13-44"><a href="#cb13-44"></a>}</span>
+<span id="cb13-42"><a href="#cb13-42"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> G_N_ELEMENTS<span class="op">(</span>action_accels<span class="op">);</span> i<span class="op">++)</span></span>
+<span id="cb13-43"><a href="#cb13-43"></a>    gtk_application_set_accels_for_action<span class="op">(</span>GTK_APPLICATION<span class="op">(</span>app<span class="op">),</span> action_accels<span class="op">[</span>i<span class="op">].</span>action<span class="op">,</span> action_accels<span class="op">[</span>i<span class="op">].</span>accels<span class="op">);</span></span>
+<span id="cb13-44"><a href="#cb13-44"></a><span class="op">}</span></span>
 <span id="cb13-45"><a href="#cb13-45"></a></span>
 <span id="cb13-46"><a href="#cb13-46"></a><span class="co">/* ----- main ----- */</span></span>
 <span id="cb13-47"><a href="#cb13-47"></a></span>
 <span id="cb13-48"><a href="#cb13-48"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
 <span id="cb13-49"><a href="#cb13-49"></a></span>
 <span id="cb13-50"><a href="#cb13-50"></a><span class="dt">int</span></span>
-<span id="cb13-51"><a href="#cb13-51"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
-<span id="cb13-52"><a href="#cb13-52"></a>  GtkApplication *app;</span>
-<span id="cb13-53"><a href="#cb13-53"></a>  <span class="dt">int</span> stat;</span>
+<span id="cb13-51"><a href="#cb13-51"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-52"><a href="#cb13-52"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb13-53"><a href="#cb13-53"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb13-54"><a href="#cb13-54"></a></span>
-<span id="cb13-55"><a href="#cb13-55"></a>  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);</span>
+<span id="cb13-55"><a href="#cb13-55"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
 <span id="cb13-56"><a href="#cb13-56"></a></span>
-<span id="cb13-57"><a href="#cb13-57"></a>  g_signal_connect (app, <span class="st">&quot;startup&quot;</span>, G_CALLBACK (app_startup), NULL);</span>
-<span id="cb13-58"><a href="#cb13-58"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
-<span id="cb13-59"><a href="#cb13-59"></a>  g_signal_connect (app, <span class="st">&quot;open&quot;</span>, G_CALLBACK (app_open), NULL);</span>
+<span id="cb13-57"><a href="#cb13-57"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb13-58"><a href="#cb13-58"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb13-59"><a href="#cb13-59"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb13-60"><a href="#cb13-60"></a></span>
-<span id="cb13-61"><a href="#cb13-61"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
-<span id="cb13-62"><a href="#cb13-62"></a>  g_object_unref (app);</span>
-<span id="cb13-63"><a href="#cb13-63"></a>  <span class="cf">return</span> stat;</span>
-<span id="cb13-64"><a href="#cb13-64"></a>}</span></code></pre></div>
+<span id="cb13-61"><a href="#cb13-61"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb13-62"><a href="#cb13-62"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb13-63"><a href="#cb13-63"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb13-64"><a href="#cb13-64"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>4-11: Activate signal handler. It uses <code>tfe_window_notebook_page_new</code> instead of <code>notebook_page_new</code>.</li>
-<li>13-20: Open signal handler. Thanks to <code>tfe_window_notebook_page_new_with_files</code>, this handler becomes very simple.</li>
-<li>22-44: Startup signal handler. Most of the tasks are moved to TfeWindow, the remaining tasks are creating a window and setting accelerations.</li>
+<li>4-11: Activate signal handler. It uses
+<code>tfe_window_notebook_page_new</code> instead of
+<code>notebook_page_new</code>.</li>
+<li>13-20: Open signal handler. Thanks to
+<code>tfe_window_notebook_page_new_with_files</code>, this handler
+becomes very simple.</li>
+<li>22-44: Startup signal handler. Most of the tasks are moved to
+TfeWindow, the remaining tasks are creating a window and setting
+accelerations.</li>
 <li>48-64: A function <code>main</code>.</li>
 </ul>
 <h2 id="other-files">Other files</h2>
 <p>Resource XML file.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">&lt;gresources&gt;</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a>  <span class="kw">&lt;gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>    <span class="kw">&lt;file&gt;</span>tfewindow.ui<span class="kw">&lt;/file&gt;</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>    <span class="kw">&lt;file&gt;</span>tfepref.ui<span class="kw">&lt;/file&gt;</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a>    <span class="kw">&lt;file&gt;</span>tfealert.ui<span class="kw">&lt;/file&gt;</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a>    <span class="kw">&lt;file&gt;</span>menu.ui<span class="kw">&lt;/file&gt;</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a>  <span class="kw">&lt;/gresource&gt;</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="kw">&lt;/gresources&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
+<span id="cb14-3"><a href="#cb14-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe&quot;</span>&gt;</span>
+<span id="cb14-4"><a href="#cb14-4"></a>    &lt;<span class="kw">file</span>&gt;tfewindow.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb14-5"><a href="#cb14-5"></a>    &lt;<span class="kw">file</span>&gt;tfepref.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb14-6"><a href="#cb14-6"></a>    &lt;<span class="kw">file</span>&gt;tfealert.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb14-7"><a href="#cb14-7"></a>    &lt;<span class="kw">file</span>&gt;menu.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb14-8"><a href="#cb14-8"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
+<span id="cb14-9"><a href="#cb14-9"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
 <p>GSchema XML file</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">&lt;schemalist&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a>  <span class="kw">&lt;schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb15-4"><a href="#cb15-4"></a>    <span class="kw">&lt;key</span><span class="ot"> name=</span><span class="st">&quot;font&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a>      <span class="kw">&lt;default&gt;</span>&#39;Monospace 12&#39;<span class="kw">&lt;/default&gt;</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a>      <span class="kw">&lt;summary&gt;</span>Font<span class="kw">&lt;/summary&gt;</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a>      <span class="kw">&lt;description&gt;</span>The font to be used for textview.<span class="kw">&lt;/description&gt;</span></span>
-<span id="cb15-8"><a href="#cb15-8"></a>    <span class="kw">&lt;/key&gt;</span></span>
-<span id="cb15-9"><a href="#cb15-9"></a>  <span class="kw">&lt;/schema&gt;</span></span>
-<span id="cb15-10"><a href="#cb15-10"></a><span class="kw">&lt;/schemalist&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
+<span id="cb15-3"><a href="#cb15-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
+<span id="cb15-4"><a href="#cb15-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
+<span id="cb15-5"><a href="#cb15-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Monospace 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
+<span id="cb15-6"><a href="#cb15-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
+<span id="cb15-7"><a href="#cb15-7"></a>      &lt;<span class="kw">description</span>&gt;The font to be used for textview.&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb15-8"><a href="#cb15-8"></a>    &lt;/<span class="kw">key</span>&gt;</span>
+<span id="cb15-9"><a href="#cb15-9"></a>  &lt;/<span class="kw">schema</span>&gt;</span>
+<span id="cb15-10"><a href="#cb15-10"></a>&lt;/<span class="kw">schemalist</span>&gt;</span></code></pre></div>
 <p>Meson.build</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb16-1"><a href="#cb16-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb16-1"><a href="#cb16-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
 <span id="cb16-2"><a href="#cb16-2"></a></span>
 <span id="cb16-3"><a href="#cb16-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
 <span id="cb16-4"><a href="#cb16-4"></a></span>
@@ -779,17 +897,26 @@
 <span id="cb16-13"><a href="#cb16-13"></a>schema_dir = get_option(&#39;prefix&#39;) / get_option(&#39;datadir&#39;) / &#39;glib-2.0/schemas/&#39;</span>
 <span id="cb16-14"><a href="#cb16-14"></a>install_data(&#39;com.github.ToshioCP.tfe.gschema.xml&#39;, install_dir: schema_dir)</span>
 <span id="cb16-15"><a href="#cb16-15"></a>meson.add_install_script(&#39;glib-compile-schemas&#39;, schema_dir)</span></code></pre></div>
-<h2 id="compilation-and-installation.">Compilation and installation.</h2>
-<p>If you build Gtk4 from the source, use <code>--prefix</code> option.</p>
+<h2 id="compilation-and-installation.">Compilation and
+installation.</h2>
+<p>If you build GTK 4 from the source, use <code>--prefix</code>
+option.</p>
 <pre><code>$ meson --prefix=$HOME/local _build
 $ ninja -C _build
 $ ninja -C _build install</code></pre>
-<p>If you install Gtk4 from the distribution packages, you don’t need the prefix option. Maybe you need root privilege to install it.</p>
+<p>If you install GTK 4 from the distribution packages, you don’t need
+the prefix option. Maybe you need root privilege to install it.</p>
 <pre><code>$ meson _build
 $ ninja -C _build
 $ ninja -C _build install  # or &#39;sudo ninja -C _build install&#39;</code></pre>
 <p>Source files are in src/tfe7 directory.</p>
-<p>We made a very small text editor. You can add features to this editor. When you add a new feature, care about the structure of the program. Maybe you need to divide a file into several files like this section. It isn’t good to put many things into one file. And it is important to think about the relationship between source files and widget structures. It is appropriate that they correspond to each other in many cases.</p>
+<p>We made a very small text editor. You can add features to this
+editor. When you add a new feature, care about the structure of the
+program. Maybe you need to divide a file into several files like this
+section. It isn’t good to put many things into one file. And it is
+important to think about the relationship between source files and
+widget structures. It is appropriate that they correspond to each other
+in many cases.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

@@ -1,4 +1,4 @@
-# How to build Gtk4 Tutorial
+# How to build Gtk4-Tutorial
 
 ## Quick start guide
 
@@ -24,16 +24,16 @@ Then, click "Download ZIP".
 - Latex system. Texlive2020 or later version is recommended.
 It is used to generate the pdf file.
 
-## Github flavored markdown
+## GitHub Flavored Markdown
 
-When you see [gtk4_tutorial github repository](https://github.com/ToshioCP/Gtk4-tutorial), you'll find the contents of the `Readme.md` file.
+When you see [gtk4_tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial), you'll find the contents of the `Readme.md` file.
 This file is written in markdown language.
 Markdown files have `.md` suffix.
 
 There are several kinds of markdown language.
-`Readme.md` uses 'github flavored markdown', which is often shortened as GFM.
+`Readme.md` uses 'GitHub Flavored Markdown', which is often shortened as GFM.
 Markdown files in the `gfm` directory are written in GFM.
-If you are not familiar with it, refer to the page [github flavor markdown spec](https://github.github.com/gfm/).
+If you are not familiar with it, refer to the page [GitHub Flavor Markdown spec](https://github.github.com/gfm/).
 
 ## Pandoc's markdown
 
@@ -435,7 +435,7 @@ Because the navigation of the previous section of the newly added section needs 
 If you don't do `rake clobber`, then it won't be updated because the the timestamp of .md file in gfm is newer than the one of .src.md file.
 In this case, using `touch` to the previous section .src.md also works to update the file.
 
-If you see the github repository (ToshioCP/Gtk4-tutorial), `Readme.md` is shown below the code.
+If you see the GitHub repository (ToshioCP/Gtk4-tutorial), `Readme.md` is shown below the code.
 And `Readme.md` includes links to each markdown files.
 The repository not only stores source files but also shows the whole tutorial.
 
@@ -475,7 +475,7 @@ Rake uses `lib/lib_mk_html_template.rb` to create its own template.
 The template inserts bootstrap CSS and Javascript through `jsDelivr`.
 
 The `docs` directory contains all the necessary html files.
-They are used in the [github pages](https://ToshioCP.github.io/Gtk4-tutorial) of this repository.
+They are used in the [GitHub pages](https://ToshioCP.github.io/Gtk4-tutorial) of this repository.
 
 So if you want to publish this tutorial on your own web site, just upload the files in the `docs` directory to your site.
 

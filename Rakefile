@@ -59,7 +59,7 @@ imagefiles = srcfiles.map do |file|
 imagefiles = FileList[*imagefiles]
 
 CLEAN.append(FileList["latex/*.tex", "latex/*.aux", "latex/*.log", "latex/*.toc"])
-CLOBBER.append("Readme.md").append(FileList["gfm/*.md"])
+CLOBBER.append("README.md").append(FileList["gfm/*.md"])
 CLOBBER.append(FileList["docs/*.html"])
 CLOBBER.append(FileList["docs/image/*"])
 CLOBBER.append(FileList["latex/*.pdf"])
@@ -70,12 +70,12 @@ task default: :md
 task all: [:md, :html, :pdf]
 
 mdfiles = srcfiles.pathmap("%f").ext(".md").map{|f| "gfm/#{f}"}
-task md: %w[Readme.md] + mdfiles
+task md: %w[README.md] + mdfiles
 
-file "Readme.md" => [abstract] + secfiles do |t|
+file "README.md" => [abstract] + secfiles do |t|
   abstract_md = "gfm/"+abstract.pathmap("%f").ext(".md")
   src2md(abstract, "gfm")
-  buf = ["# Gtk4 Tutorial for beginners\n\nThe github page of this tutorial is also available. Click [here](https://toshiocp.github.io/Gtk4-tutorial/).\n\n"]\
+  buf = ["# GTK 4 Tutorial for beginners\n\nThe GitHub page of this tutorial is also available. Click [here](https://toshiocp.github.io/Gtk4-tutorial/).\n\n"]\
         + File.readlines(abstract_md)\
         + ["\n## Table of contents\n\n"]
   File.delete(abstract_md)
@@ -96,13 +96,13 @@ srcfiles.each do |src|
     if secfiles.include?(t.source)
       i = get_sec_num(src)
       if secfiles.size == 1
-        nav = "Up: [Readme.md](../Readme.md)\n"
+        nav = "Up: [README.md](../README.md)\n"
       elsif i == 1
-        nav = "Up: [Readme.md](../Readme.md),  Next: [Section 2](sec2.md)\n"
+        nav = "Up: [README.md](../README.md),  Next: [Section 2](sec2.md)\n"
       elsif i == secfiles.size
-        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i-1}](sec#{i-1}.md)\n"
+        nav = "Up: [README.md](../README.md),  Prev: [Section #{i-1}](sec#{i-1}.md)\n"
       else
-        nav = "Up: [Readme.md](../Readme.md),  Prev: [Section #{i-1}](sec#{i-1}.md), Next: [Section #{i+1}](sec#{i+1}.md)\n"
+        nav = "Up: [README.md](../README.md),  Prev: [Section #{i-1}](sec#{i-1}.md), Next: [Section #{i+1}](sec#{i+1}.md)\n"
       end
       File.write(t.name, nav + "\n" + File.read(t.name) + "\n" + nav)
     end
@@ -117,7 +117,7 @@ task html: %W[docs/index.html docs/.nojekyll] + htmlfiles + htmlimagefiles
 file "docs/index.html" => [abstract, "docs"] + secfiles do
   abstract_md = "docs/"+abstract.pathmap("%f").ext(".md")
     src2md(abstract, "html")
-  buf = [ "# Gtk4 Tutorial for beginners\n\n" ]\
+  buf = [ "# GTK 4 Tutorial for beginners\n\n" ]\
         + File.readlines(abstract_md)\
         + ["\n## Table of contents\n\n"]
   File.delete(abstract_md)
@@ -128,7 +128,7 @@ file "docs/index.html" => [abstract, "docs"] + secfiles do
   buf << "\nThis website uses [Bootstrap](https://getbootstrap.jp/)."
   File.write("docs/index.md", buf.join)
   mk_html_template(nil, nil, nil)
-  sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o docs/index.html docs/index.md"
+  sh "pandoc -s --template=docs/template.html --metadata=title:\"GTK 4 tutorial\" -o docs/index.html docs/index.md"
   File.delete "docs/index.md"
   File.delete "docs/template.html"
 end
@@ -156,7 +156,7 @@ srcfiles.each do |src|
     else
       mk_html_template("index.html", nil, nil)
     end
-    sh "pandoc -s --template=docs/template.html --metadata=title:\"Gtk4 tutorial\" -o #{t.name} #{html_md}"
+    sh "pandoc -s --template=docs/template.html --metadata=title:\"GTK 4 tutorial\" -o #{t.name} #{html_md}"
     File.delete(html_md)
     File.delete "docs/template.html"
   end
@@ -212,7 +212,7 @@ end
 task :clean
 task :clobber
 task :cleangfm do
-  rm 'Readme.md'
+  rm 'README.md'
   remove_entry_secure("gfm")
 end
 task :cleanhtml do

@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 20](sec20.md), Next: [Section 22](sec22.md)
+Up: [README.md](../README.md),  Prev: [Section 20](sec20.md), Next: [Section 22](sec22.md)
 
 # Template XML and composite widget
 
@@ -825,7 +825,7 @@ Meson.build
 
 ## Compilation and installation.
 
-If you build Gtk4 from the source, use `--prefix` option.
+If you build GTK 4 from the source, use `--prefix` option.
 
 ~~~
 $ meson --prefix=$HOME/local _build
@@ -833,7 +833,7 @@ $ ninja -C _build
 $ ninja -C _build install
 ~~~
 
-If you install Gtk4 from the distribution packages, you don't need the prefix option.
+If you install GTK 4 from the distribution packages, you don't need the prefix option.
 Maybe you need root privilege to install it.
 
 ~~~
@@ -852,4 +852,4 @@ It isn't good to put many things into one file.
 And it is important to think about the relationship between source files and widget structures.
 It is appropriate that they correspond to each other in many cases.
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 20](sec20.md), Next: [Section 22](sec22.md)
+Up: [README.md](../README.md),  Prev: [Section 20](sec20.md), Next: [Section 22](sec22.md)

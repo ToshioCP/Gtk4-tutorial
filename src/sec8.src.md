@@ -1,6 +1,6 @@
-# Defining a Child object
+# Defining a child object
 
-## A Very Simple Editor
+## A very simple editor
 
 In the previous section we made a very simple file viewer.
 Now we go on to rewrite it and turn it into very simple editor.
@@ -52,7 +52,7 @@ particularly for beginners.
 So, I will just show you the way how to write the code and avoid the theoretical side.
 If you want to know about GObject system, refer to another [tutorial](https://github.com/ToshioCP/Gobject-tutorial).
 
-## How to Define a Child Object of GtkTextView
+## How to define a child object of GtkTextView
 
 Let's define the TfeTextView object, which is a child object of GtkTextView.
 First, look at the program below.

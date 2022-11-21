@@ -274,7 +274,7 @@ tfe7/meson.build
 
 ## Compilation and installation.
 
-If you build Gtk4 from the source, use `--prefix` option.
+If you build GTK 4 from the source, use `--prefix` option.
 
 ~~~
 $ meson --prefix=$HOME/local _build
@@ -282,7 +282,7 @@ $ ninja -C _build
 $ ninja -C _build install
 ~~~
 
-If you install Gtk4 from the distribution packages, you don't need the prefix option.
+If you install GTK 4 from the distribution packages, you don't need the prefix option.
 Maybe you need root privilege to install it.
 
 ~~~

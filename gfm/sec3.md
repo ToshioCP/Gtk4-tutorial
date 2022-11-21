@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)
+Up: [README.md](../README.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)
 
 # GtkApplication and GtkApplicationWindow
 
@@ -10,7 +10,7 @@ Usually people write programming code to make an application.
 What are applications?
 Applications are software that runs using libraries, which includes the
 OS, frameworks and so on.
-In Gtk4 programming, the GtkApplication is a program (or executable) that runs
+In GTK 4 programming, the GtkApplication is a program (or executable) that runs
 using Gtk libraries.
 
 The basic way to write a GtkApplication is as follows.
@@ -280,7 +280,7 @@ As it destroys itself, the GtkWindow is also destroyed.
 
 The function `gtk_widget_show` is used to show the window.
 
-Gtk4 changes the default widget visibility to on, so every widget doesn't need this function to show itself.
+GTK 4 changes the default widget visibility to on, so every widget doesn't need this function to show itself.
 But, there's an exception.
 Top window (this term will be explained later) isn't visible when it is created.
 So you need to use the function above to show the window.
@@ -327,4 +327,4 @@ Compile it and run `a.out`, then you will see a bigger window with its title "pr
 
 ![Screenshot of the window](../image/screenshot_pr4.png)
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)
+Up: [README.md](../README.md),  Prev: [Section 2](sec2.md), Next: [Section 4](sec4.md)

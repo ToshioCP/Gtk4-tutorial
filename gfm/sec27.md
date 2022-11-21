@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 26](sec26.md), Next: [Section 28](sec28.md)
+Up: [README.md](../README.md),  Prev: [Section 26](sec26.md), Next: [Section 28](sec28.md)
 
 # GtkGridView and activate signal
 
@@ -475,7 +475,7 @@ The third parameter is GAppLaunchContext, but this program gives NULL instead.
 The last parameter is the pointer to the pointer to a GError.
 - 34: `g_list_free_full` frees the memories used by the list and items.
 
-If your distribution supports Gtk4, using `g_app_info_launch_default_for_uri` is convenient.
+If your distribution supports GTK 4, using `g_app_info_launch_default_for_uri` is convenient.
 The function automatically determines the default application from the file and launches it.
 For example, if the file is text, then it launches gedit with the file.
 Such functionality comes from desktop.
@@ -569,4 +569,4 @@ If you feel some difficulty, it is better for you to separate the ui file.
 A directory [src/list5](../src/list5) includes the ui file above.
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 26](sec26.md), Next: [Section 28](sec28.md)
+Up: [README.md](../README.md),  Prev: [Section 26](sec26.md), Next: [Section 28](sec28.md)

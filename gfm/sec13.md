@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
+Up: [README.md](../README.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
 
 # Functions in TfeTextView
 
@@ -406,9 +406,9 @@ Then, it emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_SUCC
 Now let's think about the whole process between the caller and TfeTextView.
 It is shown in the following diagram and you would think that it is really complicated.
 Because signal is the only way for GtkFileChooserDialog to communicate with others.
-In Gtk3, `gtk_dialog_run` function is available.
+In GTK 3, `gtk_dialog_run` function is available.
 It simplifies the process.
-However, in Gtk4, `gtk_dialog_run` is unavailable any more.
+However, in GTK 4, `gtk_dialog_run` is unavailable any more.
 
 ![Caller and TfeTextView](../image/open.png)
 
@@ -450,4 +450,4 @@ All the source files are listed in [Section 16](sec16.md).
 You can find them under [src/tfe5](../src/tfe5) and [src/tfetextview](../src/tfetextview) directories.
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
+Up: [README.md](../README.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)

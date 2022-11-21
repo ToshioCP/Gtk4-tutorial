@@ -137,7 +137,7 @@ The array `b` is created on the stack then the function is called, disappears wh
 You can also get, use and release memory from the heap area.
 The standard C library provides `malloc` to get memory and `free` to put back memory.
 GLib provides the functions `g_new` and `g_free` to do the same thing, with support for
-some additional Glib functionality.
+some additional GLib functionality.
 
 ~~~C
 g_new (struct_type, n_struct)
@@ -186,7 +186,7 @@ g_free (t);
 
 If the argument doesn't point allocated memory it will cause an error, specifically, a segmentation fault.
 
-Some Glib functions allocate memory.
+Some GLib functions allocate memory.
 For example, `g_strdup` allocates memory and copies a string given as an argument.
 
 ~~~C

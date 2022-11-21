@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)
+Up: [README.md](../README.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)
 
 # Combine GtkDrawingArea and TfeTextView
 
@@ -349,8 +349,8 @@ An argument "export_dynamic: true" is added to executable function.
 
 ## Compile and execute it
 
-First you need to export some variables (refer to [Section 2](sec2.md)) if you've installed Gtk4 from the source.
-If you've installed Gtk4 from the distribution packages, you don't need to do this.
+First you need to export some variables (refer to [Section 2](sec2.md)) if you've installed GTK 4 from the source.
+If you've installed GTK 4 from the distribution packages, you don't need to do this.
 
     $ . env.sh
 
@@ -374,4 +374,4 @@ Probably it is more appropriate.
 Using textview is unnatural.
 It is a good practice to make such application by yourself.
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)
+Up: [README.md](../README.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)

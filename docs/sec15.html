@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -112,7 +112,8 @@
       </div>
     </nav>
 <h1 id="tfeapplication.c">tfeapplication.c</h1>
-<p><code>tfeapplication.c</code> includes all the code other than <code>tfetxtview.c</code> and <code>tfenotebook.c</code>. It does:</p>
+<p><code>tfeapplication.c</code> includes all the code other than
+<code>tfetxtview.c</code> and <code>tfenotebook.c</code>. It does:</p>
 <ul>
 <li>Application support, mainly handling command line arguments.</li>
 <li>Builds widgets using ui file.</li>
@@ -120,191 +121,269 @@
 <li>Manages CSS.</li>
 </ul>
 <h2 id="main">main</h2>
-<p>The function <code>main</code> is the first invoked function in C language. It connects the command line given by the user and Gtk application.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
+<p>The function <code>main</code> is the first invoked function in C
+language. It connects the command line given by the user and Gtk
+application.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  GtkApplication *app;</span>
-<span id="cb1-6"><a href="#cb1-6"></a>  <span class="dt">int</span> stat;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a>  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);</span>
+<span id="cb1-8"><a href="#cb1-8"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a></span>
-<span id="cb1-10"><a href="#cb1-10"></a>  g_signal_connect (app, <span class="st">&quot;startup&quot;</span>, G_CALLBACK (app_startup), NULL);</span>
-<span id="cb1-11"><a href="#cb1-11"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
-<span id="cb1-12"><a href="#cb1-12"></a>  g_signal_connect (app, <span class="st">&quot;open&quot;</span>, G_CALLBACK (app_open), NULL);</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb1-13"><a href="#cb1-13"></a></span>
-<span id="cb1-14"><a href="#cb1-14"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
-<span id="cb1-15"><a href="#cb1-15"></a>  g_object_unref (app);</span>
-<span id="cb1-16"><a href="#cb1-16"></a>  <span class="cf">return</span> stat;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>}</span></code></pre></div>
+<span id="cb1-14"><a href="#cb1-14"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>1: Defines the application id. It is easy to find the application id, and better than the id is embedded in <code>gtk_application_new</code>.</li>
+<li>1: Defines the application id. It is easy to find the application
+id, and better than the id is embedded in
+<code>gtk_application_new</code>.</li>
 <li>8: Creates GtkApplication object.</li>
-<li>10-12: Connects “startup”, “activate” and “open” signals to their handlers.</li>
+<li>10-12: Connects “startup”, “activate” and “open” signals to their
+handlers.</li>
 <li>14: Runs the application.</li>
-<li>15-16: releases the reference to the application and returns the status.</li>
+<li>15-16: releases the reference to the application and returns the
+status.</li>
 </ul>
 <h2 id="startup-signal-handler">startup signal handler</h2>
-<p>Startup signal is emitted just after the GtkApplication instance is initialized. What the signal handler needs to do is the initialization of the application.</p>
+<p>Startup signal is emitted just after the GtkApplication instance is
+initialized. What the signal handler needs to do is the initialization
+of the application.</p>
 <ul>
 <li>Builds the widgets using ui file.</li>
 <li>Connects button signals and their handlers.</li>
 <li>Sets CSS.</li>
 </ul>
 <p>The handler is as follows.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>app_startup (GApplication *application) {</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb2-4"><a href="#cb2-4"></a>  GtkBuilder *build;</span>
-<span id="cb2-5"><a href="#cb2-5"></a>  GtkApplicationWindow *win;</span>
-<span id="cb2-6"><a href="#cb2-6"></a>  GtkNotebook *nb;</span>
-<span id="cb2-7"><a href="#cb2-7"></a>  GtkButton *btno;</span>
-<span id="cb2-8"><a href="#cb2-8"></a>  GtkButton *btnn;</span>
-<span id="cb2-9"><a href="#cb2-9"></a>  GtkButton *btns;</span>
-<span id="cb2-10"><a href="#cb2-10"></a>  GtkButton *btnc;</span>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  GtkApplicationWindow <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>  GtkButton <span class="op">*</span>btno<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  GtkButton <span class="op">*</span>btnn<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>  GtkButton <span class="op">*</span>btns<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>  GtkButton <span class="op">*</span>btnc<span class="op">;</span></span>
 <span id="cb2-11"><a href="#cb2-11"></a></span>
-<span id="cb2-12"><a href="#cb2-12"></a>  build = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/tfe/tfe.ui&quot;</span>);</span>
-<span id="cb2-13"><a href="#cb2-13"></a>  win = GTK_APPLICATION_WINDOW (gtk_builder_get_object (build, <span class="st">&quot;win&quot;</span>));</span>
-<span id="cb2-14"><a href="#cb2-14"></a>  nb = GTK_NOTEBOOK (gtk_builder_get_object (build, <span class="st">&quot;nb&quot;</span>));</span>
-<span id="cb2-15"><a href="#cb2-15"></a>  gtk_window_set_application (GTK_WINDOW (win), app);</span>
-<span id="cb2-16"><a href="#cb2-16"></a>  btno = GTK_BUTTON (gtk_builder_get_object (build, <span class="st">&quot;btno&quot;</span>));</span>
-<span id="cb2-17"><a href="#cb2-17"></a>  btnn = GTK_BUTTON (gtk_builder_get_object (build, <span class="st">&quot;btnn&quot;</span>));</span>
-<span id="cb2-18"><a href="#cb2-18"></a>  btns = GTK_BUTTON (gtk_builder_get_object (build, <span class="st">&quot;btns&quot;</span>));</span>
-<span id="cb2-19"><a href="#cb2-19"></a>  btnc = GTK_BUTTON (gtk_builder_get_object (build, <span class="st">&quot;btnc&quot;</span>));</span>
-<span id="cb2-20"><a href="#cb2-20"></a>  g_signal_connect_swapped (btno, <span class="st">&quot;clicked&quot;</span>, G_CALLBACK (open_cb), nb);</span>
-<span id="cb2-21"><a href="#cb2-21"></a>  g_signal_connect_swapped (btnn, <span class="st">&quot;clicked&quot;</span>, G_CALLBACK (new_cb), nb);</span>
-<span id="cb2-22"><a href="#cb2-22"></a>  g_signal_connect_swapped (btns, <span class="st">&quot;clicked&quot;</span>, G_CALLBACK (save_cb), nb);</span>
-<span id="cb2-23"><a href="#cb2-23"></a>  g_signal_connect_swapped (btnc, <span class="st">&quot;clicked&quot;</span>, G_CALLBACK (close_cb), nb);</span>
-<span id="cb2-24"><a href="#cb2-24"></a>  g_object_unref(build);</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/tfe.ui&quot;</span><span class="op">);</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>  win <span class="op">=</span> GTK_APPLICATION_WINDOW <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>  nb <span class="op">=</span> GTK_NOTEBOOK <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;nb&quot;</span><span class="op">));</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>  btno <span class="op">=</span> GTK_BUTTON <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;btno&quot;</span><span class="op">));</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a>  btnn <span class="op">=</span> GTK_BUTTON <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;btnn&quot;</span><span class="op">));</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a>  btns <span class="op">=</span> GTK_BUTTON <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;btns&quot;</span><span class="op">));</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>  btnc <span class="op">=</span> GTK_BUTTON <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;btnc&quot;</span><span class="op">));</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>  g_signal_connect_swapped <span class="op">(</span>btno<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_cb<span class="op">),</span> nb<span class="op">);</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>  g_signal_connect_swapped <span class="op">(</span>btnn<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>new_cb<span class="op">),</span> nb<span class="op">);</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  g_signal_connect_swapped <span class="op">(</span>btns<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>save_cb<span class="op">),</span> nb<span class="op">);</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>  g_signal_connect_swapped <span class="op">(</span>btnc<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_cb<span class="op">),</span> nb<span class="op">);</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
 <span id="cb2-25"><a href="#cb2-25"></a></span>
-<span id="cb2-26"><a href="#cb2-26"></a>GdkDisplay *display;</span>
+<span id="cb2-26"><a href="#cb2-26"></a>GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
 <span id="cb2-27"><a href="#cb2-27"></a></span>
-<span id="cb2-28"><a href="#cb2-28"></a>  display = gtk_widget_get_display (GTK_WIDGET (win));</span>
-<span id="cb2-29"><a href="#cb2-29"></a>  GtkCssProvider *provider = gtk_css_provider_new ();</span>
-<span id="cb2-30"><a href="#cb2-30"></a>  gtk_css_provider_load_from_data (provider, <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span>, -<span class="dv">1</span>);</span>
-<span id="cb2-31"><a href="#cb2-31"></a>  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);</span>
-<span id="cb2-32"><a href="#cb2-32"></a>}</span></code></pre></div>
+<span id="cb2-28"><a href="#cb2-28"></a>  display <span class="op">=</span> gtk_widget_get_display <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>12-15: Builds widgets using ui file (resource). Connects the top-level window and the application with <code>gtk_window_set_application</code>.</li>
+<li>12-15: Builds widgets using ui file (resource). Connects the
+top-level window and the application with
+<code>gtk_window_set_application</code>.</li>
 <li>16-23: Gets buttons and connects their signals and handlers.</li>
 <li>24: Releases the reference to GtkBuilder.</li>
-<li>26-31: Sets CSS. CSS in Gtk is similar to CSS in HTML. You can set margin, border, padding, color, font and so on with CSS. In this program CSS is in line 30. It sets padding, font-family and font size of GtkTextView.</li>
-<li>26-28: GdkDisplay is used to set CSS. CSS will be explained in the next subsection.</li>
+<li>26-31: Sets CSS. CSS in Gtk is similar to CSS in HTML. You can set
+margin, border, padding, color, font and so on with CSS. In this program
+CSS is in line 30. It sets padding, font-family and font size of
+GtkTextView.</li>
+<li>26-28: GdkDisplay is used to set CSS. CSS will be explained in the
+next subsection.</li>
 </ul>
 <h2 id="css-in-gtk">CSS in Gtk</h2>
-<p>CSS is an abbreviation of Cascading Style Sheet. It is originally used with HTML to describe the presentation semantics of a document. You might have found that the widgets in Gtk is similar to a window in a browser. It implies that CSS can also be applied to Gtk windowing system.</p>
+<p>CSS is an abbreviation of Cascading Style Sheet. It is originally
+used with HTML to describe the presentation semantics of a document. You
+might have found that the widgets in Gtk is similar to a window in a
+browser. It implies that CSS can also be applied to Gtk windowing
+system.</p>
 <h3 id="css-nodes-selectors">CSS nodes, selectors</h3>
 <p>The syntax of CSS is as follows.</p>
 <pre><code>selector { color: yellow; padding-top: 10px; ...}</code></pre>
-<p>Every widget has CSS node. For example GtkTextView has <code>textview</code> node. If you want to set style to GtkTextView, substitute “textview” for the selector.</p>
+<p>Every widget has CSS node. For example GtkTextView has
+<code>textview</code> node. If you want to set style to GtkTextView,
+substitute “textview” for the selector.</p>
 <pre><code>textview {color: yellow; ...}</code></pre>
-<p>Class, ID and some other things can be applied to the selector like Web CSS. Refer to <a href="https://docs.gtk.org/gtk4/css-overview.html">Gtk4 API Reference, CSS in Gtk</a> for further information.</p>
+<p>Class, ID and some other things can be applied to the selector like
+Web CSS. Refer to <a
+href="https://docs.gtk.org/gtk4/css-overview.html">GTK 4 API Reference,
+CSS in Gtk</a> for further information.</p>
 <p>In line 30, the CSS is a string.</p>
 <pre><code>textview {padding: 10px; font-family: monospace; font-size: 12pt;}</code></pre>
 <ul>
-<li>padding is a space between the border and contents. This space makes the textview easier to read.</li>
-<li>font-family is a name of font. “monospace” is one of the generic family font keywords.</li>
+<li>padding is a space between the border and contents. This space makes
+the textview easier to read.</li>
+<li>font-family is a name of font. “monospace” is one of the generic
+family font keywords.</li>
 <li>font-size is set to 12pt.</li>
 </ul>
-<h3 id="gtkstylecontext-gtkcssprovider-and-gdkdisplay">GtkStyleContext, GtkCSSProvider and GdkDisplay</h3>
-<p>GtkStyleContext is an object that stores styling information affecting a widget. Each widget is connected to the corresponding GtkStyleContext. You can get the context by <code>gtk_widget_get_style_context</code>.</p>
-<p>GtkCssProvider is an object which parses CSS in order to style widgets.</p>
-<p>To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext. However, instead, you can add it to GdkDisplay of the window (usually top-level window).</p>
+<h3 id="gtkstylecontext-gtkcssprovider-and-gdkdisplay">GtkStyleContext,
+GtkCSSProvider and GdkDisplay</h3>
+<p>GtkStyleContext is an object that stores styling information
+affecting a widget. Each widget is connected to the corresponding
+GtkStyleContext. You can get the context by
+<code>gtk_widget_get_style_context</code>.</p>
+<p>GtkCssProvider is an object which parses CSS in order to style
+widgets.</p>
+<p>To apply your CSS to widgets, you need to add GtkStyleProvider (the
+interface of GtkCSSProvider) to GtkStyleContext. However, instead, you
+can add it to GdkDisplay of the window (usually top-level window).</p>
 <p>Look at the source file of <code>startup</code> handler again.</p>
 <ul>
-<li>28: The display is obtained by <code>gtk_widget_get_display</code>.</li>
+<li>28: The display is obtained by
+<code>gtk_widget_get_display</code>.</li>
 <li>29: Creates a GtkCssProvider instance.</li>
 <li>30: Puts the CSS into the provider.</li>
-<li>31: Adds the provider to the display. The last argument of <code>gtk_style_context_add_provider_for_display</code> is the priority of the style provider. <code>GTK_STYLE_PROVIDER_PRIORITY_APPLICATION</code> is a priority for application-specific style information. <code>GTK_STYLE_PROVIDER_PRIORITY_USER</code> is also often used and it is the highest priority. So, <code>GTK_STYLE_PROVIDER_PRIORITY_USER</code> is often used to a specific widget.</li>
+<li>31: Adds the provider to the display. The last argument of
+<code>gtk_style_context_add_provider_for_display</code> is the priority
+of the style provider.
+<code>GTK_STYLE_PROVIDER_PRIORITY_APPLICATION</code> is a priority for
+application-specific style information.
+<code>GTK_STYLE_PROVIDER_PRIORITY_USER</code> is also often used and it
+is the highest priority. So,
+<code>GTK_STYLE_PROVIDER_PRIORITY_USER</code> is often used to a
+specific widget.</li>
 </ul>
-<p>It is possible to add the provider to the context of GtkTextView instead of GdkDiplay. To do so, rewrite <code>tfe_text_view_new</code>. First, get the GtkStyleContext object of a TfeTextView object. Then adds the CSS provider to the context.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>GtkWidget *</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>tfe_text_view_new (<span class="dt">void</span>) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>  GtkWidget *tv;</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  tv = gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>  GtkStyleContext *context;</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>  context = gtk_widget_get_style_context (GTK_WIDGET (tv));</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>  GtkCssProvider *provider = gtk_css_provider_new ();</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>  gtk_css_provider_load_from_data (provider, <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span>, -<span class="dv">1</span>);</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>  gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>  <span class="cf">return</span> tv;</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>}</span></code></pre></div>
+<p>It is possible to add the provider to the context of GtkTextView
+instead of GdkDiplay. To do so, rewrite <code>tfe_text_view_new</code>.
+First, get the GtkStyleContext object of a TfeTextView object. Then adds
+the CSS provider to the context.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  tv <span class="op">=</span> gtk_widget_new <span class="op">(</span>TFE_TYPE_TEXT_VIEW<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  GtkStyleContext <span class="op">*</span>context<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  context <span class="op">=</span> gtk_widget_get_style_context <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  gtk_style_context_add_provider <span class="op">(</span>context<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_USER<span class="op">);</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> tv<span class="op">;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>CSS in the context takes precedence over CSS in the display.</p>
 <h2 id="activate-and-open-handler">activate and open handler</h2>
-<p>The handler of “activate” and “open” signal are <code>app_activate</code> and <code>app_open</code> respectively. They just create a new GtkNotebookPage.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>app_activate (GApplication *application) {</span>
-<span id="cb7-3"><a href="#cb7-3"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb7-4"><a href="#cb7-4"></a>  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));</span>
-<span id="cb7-5"><a href="#cb7-5"></a>  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));</span>
-<span id="cb7-6"><a href="#cb7-6"></a>  GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));</span>
+<p>The handler of “activate” and “open” signal are
+<code>app_activate</code> and <code>app_open</code> respectively. They
+just create a new GtkNotebookPage.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_application_get_active_window <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  GtkWidget <span class="op">*</span>boxv <span class="op">=</span> gtk_window_get_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  GtkNotebook <span class="op">*</span>nb <span class="op">=</span> GTK_NOTEBOOK <span class="op">(</span>gtk_widget_get_last_child <span class="op">(</span>boxv<span class="op">));</span></span>
 <span id="cb7-7"><a href="#cb7-7"></a></span>
-<span id="cb7-8"><a href="#cb7-8"></a>  notebook_page_new (nb);</span>
-<span id="cb7-9"><a href="#cb7-9"></a>  gtk_widget_show (GTK_WIDGET (win));</span>
-<span id="cb7-10"><a href="#cb7-10"></a>}</span>
+<span id="cb7-8"><a href="#cb7-8"></a>  notebook_page_new <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>  gtk_widget_show <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="op">}</span></span>
 <span id="cb7-11"><a href="#cb7-11"></a></span>
 <span id="cb7-12"><a href="#cb7-12"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb7-13"><a href="#cb7-13"></a>app_open (GApplication *application, GFile ** files, gint n_files, <span class="dt">const</span> gchar *hint) {</span>
-<span id="cb7-14"><a href="#cb7-14"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb7-15"><a href="#cb7-15"></a>  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));</span>
-<span id="cb7-16"><a href="#cb7-16"></a>  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));</span>
-<span id="cb7-17"><a href="#cb7-17"></a>  GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));</span>
-<span id="cb7-18"><a href="#cb7-18"></a>  <span class="dt">int</span> i;</span>
+<span id="cb7-13"><a href="#cb7-13"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">,</span> GFile <span class="op">**</span> files<span class="op">,</span> gint n_files<span class="op">,</span> <span class="dt">const</span> gchar <span class="op">*</span>hint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_application_get_active_window <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>  GtkWidget <span class="op">*</span>boxv <span class="op">=</span> gtk_window_get_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a>  GtkNotebook <span class="op">*</span>nb <span class="op">=</span> GTK_NOTEBOOK <span class="op">(</span>gtk_widget_get_last_child <span class="op">(</span>boxv<span class="op">));</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb7-19"><a href="#cb7-19"></a></span>
-<span id="cb7-20"><a href="#cb7-20"></a>  <span class="cf">for</span> (i = <span class="dv">0</span>; i &lt; n_files; i++)</span>
-<span id="cb7-21"><a href="#cb7-21"></a>    notebook_page_new_with_file (nb, files[i]);</span>
-<span id="cb7-22"><a href="#cb7-22"></a>  <span class="cf">if</span> (gtk_notebook_get_n_pages (nb) == <span class="dv">0</span>)</span>
-<span id="cb7-23"><a href="#cb7-23"></a>    notebook_page_new (nb);</span>
-<span id="cb7-24"><a href="#cb7-24"></a>  gtk_widget_show (win);</span>
-<span id="cb7-25"><a href="#cb7-25"></a>}</span></code></pre></div>
+<span id="cb7-20"><a href="#cb7-20"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a>    notebook_page_new_with_file <span class="op">(</span>nb<span class="op">,</span> files<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a>    notebook_page_new <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>1-10: <code>app_activate</code>.</li>
 <li>8-10: Creates a new page and shows the window.</li>
 <li>12-25: <code>app_open</code>.</li>
 <li>20-21: Creates notebook pages with files.</li>
-<li>22-23: If no page has created, maybe because of read error, then it creates an empty page.</li>
+<li>22-23: If no page has created, maybe because of read error, then it
+creates an empty page.</li>
 <li>24: Shows the window.</li>
 </ul>
-<p>These codes have become really simple thanks to tfenotebook.c and tfetextview.c.</p>
+<p>These codes have become really simple thanks to tfenotebook.c and
+tfetextview.c.</p>
 <h2 id="primary-instance">Primary instance</h2>
-<p>Only one GApplication instance can be run at a time per session. The session is a bit difficult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login. When you use your PC, you probably login first, then your desktop appears until you log off. This is the session.</p>
-<p>However, Linux is multi process OS and you can run two or more instances of the same application. Isn’t it a contradiction?</p>
-<p>When first instance is launched, then it registers itself with its application ID (for example, <code>com.github.ToshioCP.tfe</code>). Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance’s main loop runs. I wrote “startup signal is emitted just after the application instance is initialized” in the prior subsection. More precisely, it is emitted just after the registration.</p>
-<p>If another instance which has the same application ID is invoked, it also tries to register itself. Because this is the second instance, the registration of the ID has already done, so it fails. Because of the failure startup signal isn’t emitted. After that, activate or open signal is emitted in the primary instance, not the second instance. The primary instance receives the signal and its handler is invoked. On the other hand, the second instance doesn’t receive the signal and it immediately quits.</p>
+<p>Only one GApplication instance can be run at a time per session. The
+session is a bit difficult concept and also platform-dependent, but
+roughly speaking, it corresponds to a graphical desktop login. When you
+use your PC, you probably login first, then your desktop appears until
+you log off. This is the session.</p>
+<p>However, Linux is multi process OS and you can run two or more
+instances of the same application. Isn’t it a contradiction?</p>
+<p>When first instance is launched, then it registers itself with its
+application ID (for example, <code>com.github.ToshioCP.tfe</code>). Just
+after the registration, startup signal is emitted, then activate or open
+signal is emitted and the instance’s main loop runs. I wrote “startup
+signal is emitted just after the application instance is initialized” in
+the prior subsection. More precisely, it is emitted just after the
+registration.</p>
+<p>If another instance which has the same application ID is invoked, it
+also tries to register itself. Because this is the second instance, the
+registration of the ID has already done, so it fails. Because of the
+failure startup signal isn’t emitted. After that, activate or open
+signal is emitted in the primary instance, not the second instance. The
+primary instance receives the signal and its handler is invoked. On the
+other hand, the second instance doesn’t receive the signal and it
+immediately quits.</p>
 <p>Try to run two instances in a row.</p>
 <pre><code>$ ./_build/tfe &amp;
 [1] 84453
 $ ./build/tfe tfeapplication.c
 $</code></pre>
-<p>First, the primary instance opens a window. Then, after the second instance is run, a new notebook page with the contents of <code>tfeapplication.c</code> appears in the primary instance’s window. This is because the open signal is emitted in the primary instance. The second instance immediately quits so shell prompt soon appears.</p>
-<h2 id="a-series-of-handlers-correspond-to-the-button-signals">a series of handlers correspond to the button signals</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>open_cb (GtkNotebook *nb) {</span>
-<span id="cb9-3"><a href="#cb9-3"></a>  notebook_page_open (nb);</span>
-<span id="cb9-4"><a href="#cb9-4"></a>}</span>
+<p>First, the primary instance opens a window. Then, after the second
+instance is run, a new notebook page with the contents of
+<code>tfeapplication.c</code> appears in the primary instance’s window.
+This is because the open signal is emitted in the primary instance. The
+second instance immediately quits so shell prompt soon appears.</p>
+<h2 id="a-series-of-handlers-correspond-to-the-button-signals">a series
+of handlers correspond to the button signals</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>open_cb <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  notebook_page_open <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="op">}</span></span>
 <span id="cb9-5"><a href="#cb9-5"></a></span>
 <span id="cb9-6"><a href="#cb9-6"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a>new_cb (GtkNotebook *nb) {</span>
-<span id="cb9-8"><a href="#cb9-8"></a>  notebook_page_new (nb);</span>
-<span id="cb9-9"><a href="#cb9-9"></a>}</span>
+<span id="cb9-7"><a href="#cb9-7"></a>new_cb <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a>  notebook_page_new <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="op">}</span></span>
 <span id="cb9-10"><a href="#cb9-10"></a></span>
 <span id="cb9-11"><a href="#cb9-11"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a>save_cb (GtkNotebook *nb) {</span>
-<span id="cb9-13"><a href="#cb9-13"></a>  notebook_page_save (nb);</span>
-<span id="cb9-14"><a href="#cb9-14"></a>}</span>
+<span id="cb9-12"><a href="#cb9-12"></a>save_cb <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a>  notebook_page_save <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="op">}</span></span>
 <span id="cb9-15"><a href="#cb9-15"></a></span>
 <span id="cb9-16"><a href="#cb9-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a>close_cb (GtkNotebook *nb) {</span>
-<span id="cb9-18"><a href="#cb9-18"></a>  notebook_page_close (GTK_NOTEBOOK (nb));</span>
-<span id="cb9-19"><a href="#cb9-19"></a>}</span></code></pre></div>
-<p><code>open_cb</code>, <code>new_cb</code>, <code>save_cb</code> and <code>close_cb</code> just call corresponding notebook page functions.</p>
+<span id="cb9-17"><a href="#cb9-17"></a>close_cb <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a>  notebook_page_close <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="op">}</span></span></code></pre></div>
+<p><code>open_cb</code>, <code>new_cb</code>, <code>save_cb</code> and
+<code>close_cb</code> just call corresponding notebook page
+functions.</p>
 <h2 id="meson.build">meson.build</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
 <span id="cb10-2"><a href="#cb10-2"></a></span>
 <span id="cb10-3"><a href="#cb10-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
 <span id="cb10-4"><a href="#cb10-4"></a></span>
@@ -314,13 +393,20 @@ $</code></pre>
 <span id="cb10-8"><a href="#cb10-8"></a>sourcefiles=files(&#39;tfeapplication.c&#39;, &#39;tfenotebook.c&#39;, &#39;../tfetextview/tfetextview.c&#39;)</span>
 <span id="cb10-9"><a href="#cb10-9"></a></span>
 <span id="cb10-10"><a href="#cb10-10"></a>executable(&#39;tfe&#39;, sourcefiles, resources, dependencies: gtkdep)</span></code></pre></div>
-<p>In this file, just the source file names are modified from the prior version.</p>
+<p>In this file, just the source file names are modified from the prior
+version.</p>
 <h2 id="source-files">source files</h2>
-<p>The source files of the text editor <code>tfe</code> will be shown in the next section.</p>
-<p>You can also download the files from the <a href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>. There are two options.</p>
+<p>The source files of the text editor <code>tfe</code> will be shown in
+the next section.</p>
+<p>You can also download the files from the <a
+href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>. There
+are two options.</p>
 <ul>
 <li>Use git and clone.</li>
-<li>Run your browser and open the <a href="https://github.com/ToshioCP/Gtk4-tutorial">top page</a>. Then click on “Code” button and click “Download ZIP” in the popup menu. After that, unzip the archive file.</li>
+<li>Run your browser and open the <a
+href="https://github.com/ToshioCP/Gtk4-tutorial">top page</a>. Then
+click on “Code” button and click “Download ZIP” in the popup menu. After
+that, unzip the archive file.</li>
 </ul>
 <p>If you use git, run the terminal and type the following.</p>
 <pre><code>$ git clone https://github.com/ToshioCP/Gtk4-tutorial.git</code></pre>

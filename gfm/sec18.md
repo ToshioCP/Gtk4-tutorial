@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 17](sec17.md), Next: [Section 19](sec19.md)
+Up: [README.md](../README.md),  Prev: [Section 17](sec17.md), Next: [Section 19](sec19.md)
 
 # Stateful action
 
@@ -381,7 +381,7 @@ Useless GMenuItem are freed.
 - 79-80: GMenuModel `menubar` is inserted to `app`.
 Sets show menubar property of `win` to `TRUE`.
 Note: `gtk_application_window_set_show_menubar` creates GtkPopoverMenubar from GMenuModel.
-This is a different point between Gtk3 and Gtk4.
+This is a different point between GTK 3 and GTK 4.
 And you can use GtkPopoverMenubar directly and set it as a descendant widget of the window.
 You may use GtkBox as a child widget of the window and insert GtkPopoverMenubar as the first child of the box.
 - 82-87: Sets CSS.
@@ -400,4 +400,4 @@ The provider is added to GdkDisplay.
 - 90: Shows the window.
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 17](sec17.md), Next: [Section 19](sec19.md)
+Up: [README.md](../README.md),  Prev: [Section 17](sec17.md), Next: [Section 19](sec19.md)

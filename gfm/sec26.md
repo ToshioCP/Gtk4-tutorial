@@ -1,12 +1,12 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)
+Up: [README.md](../README.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)
 
 # GtkListView
 
-Gtk4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
+GTK 4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
 The new feature is described in [Gtk API Reference, List Widget Overview](https://docs.gtk.org/gtk4/section-list-widget.html).
 
-Gtk4 has other means to implement lists.
-They are GtkListBox and GtkTreeView which are took over from Gtk3.
+GTK 4 has other means to implement lists.
+They are GtkListBox and GtkTreeView which are took over from GTK 3.
 There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
 He described why GtkListView are developed to replace GtkListBox and GtkTreeView.
 
@@ -59,7 +59,7 @@ There are functions to add items to the list or remove items from the list.
 - `gtk_string_list_remove` removes an item from the list
 - `gtk_string_list_get_string` gets a string in the list
 
-See [Gtk4 API Reference, GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html) for further information.
+See [GTK 4 API Reference, GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html) for further information.
 
 I'll explain the other list objects later.
 
@@ -201,7 +201,7 @@ GtkNoSelection is used, so user can't select any item.
 
 The file `list1.c` is located under the directory [src/misc](../src/misc).
 Make a shell script below and save it to your bin directory.
-(If you've installed Gtk4 from the source to $HOME/local, then your bin directory is $Home/local/bin.
+(If you've installed GTK 4 from the source to $HOME/local, then your bin directory is $Home/local/bin.
 Otherwise, $Home/bin is your private bin directory.)
 
 ~~~Shell
@@ -547,4 +547,4 @@ $ ./a.out
 ![screenshot list3](../image/list3.png)
 
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)
+Up: [README.md](../README.md),  Prev: [Section 25](sec25.md), Next: [Section 27](sec27.md)

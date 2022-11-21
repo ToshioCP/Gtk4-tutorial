@@ -256,7 +256,7 @@ The third parameter is GAppLaunchContext, but this program gives NULL instead.
 The last parameter is the pointer to the pointer to a GError.
 - 34: `g_list_free_full` frees the memories used by the list and items.
 
-If your distribution supports Gtk4, using `g_app_info_launch_default_for_uri` is convenient.
+If your distribution supports GTK 4, using `g_app_info_launch_default_for_uri` is convenient.
 The function automatically determines the default application from the file and launches it.
 For example, if the file is text, then it launches gedit with the file.
 Such functionality comes from desktop.
