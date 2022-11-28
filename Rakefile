@@ -51,10 +51,11 @@ abstract = "src/abstract.src.md"
 # They are absolute paths.
 imagefiles = srcfiles.map do |file|
     d = file.pathmap("%d")
-    File.read(file)\
-        .gsub(/^~~~.*?^~~~\n/m,'').gsub(/^    .*\n/,'')\
-        .scan(/!\[.*?\]\((.*?)\)/).flatten.sort.uniq\
-        .map{|img| File.absolute_path("#{d}/#{img}")}
+    s = File.read(file)
+    at_if_else(s, "html")\
+      .gsub(/^~~~.*?^~~~\n/m,'').gsub(/^    .*\n/,'')\
+      .scan(/!\[.*?\]\((.*?)\)/).flatten.sort.uniq\
+      .map{|img| File.absolute_path("#{d}/#{img}")}
   end.flatten.sort.uniq
 imagefiles = FileList[*imagefiles]
 
