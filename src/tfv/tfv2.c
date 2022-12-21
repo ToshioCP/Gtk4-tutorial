@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app) {
   GtkWidget *win;
   GtkWidget *scr;
   GtkWidget *tv;
@@ -16,7 +16,7 @@ app_activate (GApplication *app, gpointer user_data) {
       "He cut it, then there was a small cute baby girl in it. "
       "The girl was shining faintly. "
       "He thought this baby girl is a gift from Heaven and took her home.\n"
-      "His wife was surprized at his tale. "
+      "His wife was surprized at his story. "
       "They were very happy because they had no children. "
       ;
   win = gtk_application_window_new (GTK_APPLICATION (app));
@@ -41,7 +41,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
   stat = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

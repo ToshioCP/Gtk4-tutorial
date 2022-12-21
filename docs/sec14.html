@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -112,30 +112,43 @@
       </div>
     </nav>
 <h1 id="functions-in-gtknotebook">Functions in GtkNotebook</h1>
-<p>GtkNotebook is a very important object in the text file editor <code>tfe</code>. It connects the application and TfeTextView objects. A set of public functions are declared in <code>tfenotebook.h</code>. The word “tfenotebook” is used only in filenames. There’s no “TfeNotebook” object.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">void</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>notebook_page_save(GtkNotebook *nb);</span>
+<p>GtkNotebook is a very important object in the text file editor
+<code>tfe</code>. It connects the application and TfeTextView objects. A
+set of public functions are declared in <code>tfenotebook.h</code>. The
+word “tfenotebook” is used only in filenames. There’s no “TfeNotebook”
+object.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">void</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>notebook_page_save<span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">);</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>
 <span id="cb1-4"><a href="#cb1-4"></a><span class="dt">void</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>notebook_page_close (GtkNotebook *nb);</span>
+<span id="cb1-5"><a href="#cb1-5"></a>notebook_page_close <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">);</span></span>
 <span id="cb1-6"><a href="#cb1-6"></a></span>
 <span id="cb1-7"><a href="#cb1-7"></a><span class="dt">void</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>notebook_page_open (GtkNotebook *nb);</span>
+<span id="cb1-8"><a href="#cb1-8"></a>notebook_page_open <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">);</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a></span>
 <span id="cb1-10"><a href="#cb1-10"></a><span class="dt">void</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>notebook_page_new_with_file (GtkNotebook *nb, GFile *file);</span>
+<span id="cb1-11"><a href="#cb1-11"></a>notebook_page_new_with_file <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">);</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a></span>
 <span id="cb1-13"><a href="#cb1-13"></a><span class="dt">void</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>notebook_page_new (GtkNotebook *nb);</span></code></pre></div>
-<p>This header file describes the public functions in <code>tfenotebook.c</code>.</p>
+<span id="cb1-14"><a href="#cb1-14"></a>notebook_page_new <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">);</span></span></code></pre></div>
+<p>This header file describes the public functions in
+<code>tfenotebook.c</code>.</p>
 <ul>
-<li>1-2: <code>notebook_page_save</code> saves the current page to the file of which the name specified in the tab. If the name is <code>untitled</code> or <code>untitled</code> followed by digits, FileChooserDialog appears and a user can choose or specify a filename.</li>
+<li>1-2: <code>notebook_page_save</code> saves the current page to the
+file of which the name specified in the tab. If the name is
+<code>untitled</code> or <code>untitled</code> followed by digits,
+FileChooserDialog appears and a user can choose or specify a
+filename.</li>
 <li>4-5: <code>notebook_page_close</code> closes the current page.</li>
-<li>7-8: <code>notebook_page_open</code> shows a file chooser dialog and a user can choose a file. The file is inserted to a new page.</li>
-<li>10-11: <code>notebook_page_new_with_file</code> creates a new page and the file given as an argument is read and inserted into the page.</li>
+<li>7-8: <code>notebook_page_open</code> shows a file chooser dialog and
+a user can choose a file. The file is inserted to a new page.</li>
+<li>10-11: <code>notebook_page_new_with_file</code> creates a new page
+and a file given as an argument is read and inserted into the page.</li>
 <li>13-14: <code>notebook_page_new</code> creates a new empty page.</li>
 </ul>
-<p>You probably find that the functions except <code>notebook_page_close</code> are higher level functions of</p>
+<p>You probably find that the functions except
+<code>notebook_page_close</code> are higher level functions of</p>
 <ul>
 <li><code>tfe_text_view_save</code></li>
 <li><code>tef_text_view_open</code></li>
@@ -143,199 +156,298 @@
 <li><code>tfe_text_view_new</code></li>
 </ul>
 <p>respectively.</p>
-<p>There are two layers. One of them is <code>tfe_text_view ...</code>, which is the lower level layer. The other is <code>note_book ...</code>, which is the higher level layer.</p>
+<p>There are two layers. One of them is <code>tfe_text_view ...</code>,
+which is the lower level layer. The other is <code>note_book ...</code>,
+which is the higher level layer.</p>
 <p>Now let’s look at the program of each function.</p>
 <h2 id="notebook_page_new">notebook_page_new</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> gchar*</span>
-<span id="cb2-2"><a href="#cb2-2"></a>get_untitled () {</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="dt">static</span> <span class="dt">int</span> c = -<span class="dv">1</span>;</span>
-<span id="cb2-4"><a href="#cb2-4"></a>  <span class="cf">if</span> (++c == <span class="dv">0</span>) </span>
-<span id="cb2-5"><a href="#cb2-5"></a>    <span class="cf">return</span> g_strdup_printf(<span class="st">&quot;Untitled&quot;</span>);</span>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>get_untitled <span class="op">()</span> <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="dt">static</span> <span class="dt">int</span> c <span class="op">=</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="cf">if</span> <span class="op">(++</span>c <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> </span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="cf">return</span> g_strdup_printf<span class="op">(</span><span class="st">&quot;Untitled&quot;</span><span class="op">);</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>  <span class="cf">else</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>    <span class="cf">return</span> g_strdup_printf (<span class="st">&quot;Untitled%u&quot;</span>, c);</span>
-<span id="cb2-8"><a href="#cb2-8"></a>}</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;Untitled%u&quot;</span><span class="op">,</span> c<span class="op">);</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="op">}</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a></span>
 <span id="cb2-10"><a href="#cb2-10"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>notebook_page_build (GtkNotebook *nb, GtkWidget *tv, <span class="dt">char</span> *filename) {</span>
-<span id="cb2-12"><a href="#cb2-12"></a>  GtkWidget *scr = gtk_scrolled_window_new ();</span>
-<span id="cb2-13"><a href="#cb2-13"></a>  GtkNotebookPage *nbp;</span>
-<span id="cb2-14"><a href="#cb2-14"></a>  GtkWidget *lab;</span>
-<span id="cb2-15"><a href="#cb2-15"></a>  <span class="dt">int</span> i;</span>
+<span id="cb2-11"><a href="#cb2-11"></a>notebook_page_build <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">,</span> GtkWidget <span class="op">*</span>tv<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>  GtkNotebookPage <span class="op">*</span>nbp<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>  GtkWidget <span class="op">*</span>lab<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb2-16"><a href="#cb2-16"></a></span>
-<span id="cb2-17"><a href="#cb2-17"></a>  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);</span>
-<span id="cb2-18"><a href="#cb2-18"></a>  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);</span>
-<span id="cb2-19"><a href="#cb2-19"></a>  lab = gtk_label_new (filename);</span>
-<span id="cb2-20"><a href="#cb2-20"></a>  i = gtk_notebook_append_page (nb, scr, lab);</span>
-<span id="cb2-21"><a href="#cb2-21"></a>  nbp = gtk_notebook_get_page (nb, scr);</span>
-<span id="cb2-22"><a href="#cb2-22"></a>  g_object_set (nbp, <span class="st">&quot;tab-expand&quot;</span>, TRUE, NULL);</span>
-<span id="cb2-23"><a href="#cb2-23"></a>  gtk_notebook_set_current_page (nb, i);</span>
-<span id="cb2-24"><a href="#cb2-24"></a>  g_signal_connect (GTK_TEXT_VIEW (tv), <span class="st">&quot;change-file&quot;</span>, G_CALLBACK (file_changed_cb), nb);</span>
-<span id="cb2-25"><a href="#cb2-25"></a>}</span>
-<span id="cb2-26"><a href="#cb2-26"></a></span>
-<span id="cb2-27"><a href="#cb2-27"></a><span class="dt">void</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a>notebook_page_new (GtkNotebook *nb) {</span>
-<span id="cb2-29"><a href="#cb2-29"></a>  g_return_if_fail(GTK_IS_NOTEBOOK (nb));</span>
-<span id="cb2-30"><a href="#cb2-30"></a></span>
-<span id="cb2-31"><a href="#cb2-31"></a>  GtkWidget *tv;</span>
-<span id="cb2-32"><a href="#cb2-32"></a>  <span class="dt">char</span> *filename;</span>
-<span id="cb2-33"><a href="#cb2-33"></a></span>
-<span id="cb2-34"><a href="#cb2-34"></a>  <span class="cf">if</span> ((tv = tfe_text_view_new ()) == NULL)</span>
-<span id="cb2-35"><a href="#cb2-35"></a>    <span class="cf">return</span>;</span>
-<span id="cb2-36"><a href="#cb2-36"></a>  filename = get_untitled ();</span>
-<span id="cb2-37"><a href="#cb2-37"></a>  notebook_page_build (nb, tv, filename);</span>
-<span id="cb2-38"><a href="#cb2-38"></a>}</span></code></pre></div>
+<span id="cb2-17"><a href="#cb2-17"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a>  lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>  i <span class="op">=</span> gtk_notebook_append_page <span class="op">(</span>nb<span class="op">,</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>  nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>nb<span class="op">,</span> scr<span class="op">);</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>  g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  gtk_notebook_set_current_page <span class="op">(</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>  g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> nb<span class="op">);</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a><span class="op">}</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a></span>
+<span id="cb2-26"><a href="#cb2-26"></a><span class="dt">void</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>notebook_page_new <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a></span>
+<span id="cb2-30"><a href="#cb2-30"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a></span>
+<span id="cb2-33"><a href="#cb2-33"></a>  <span class="cf">if</span> <span class="op">((</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">())</span> <span class="op">==</span> NULL<span class="op">)</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb2-35"><a href="#cb2-35"></a>  filename <span class="op">=</span> get_untitled <span class="op">();</span></span>
+<span id="cb2-36"><a href="#cb2-36"></a>  notebook_page_build <span class="op">(</span>nb<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb2-37"><a href="#cb2-37"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb2-38"><a href="#cb2-38"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>27-38: <code>notebook_page_new</code> function.</li>
-<li>29: <code>g_return_if_fail</code> is used to check the argument.</li>
-<li>34: Creates TfeTextView object. If it fails, it returns to the caller.</li>
-<li>36: Creates filename, which is “Untitled”, “Untitled1”, … .</li>
+<li>26-38: <code>notebook_page_new</code> function.</li>
+<li>28: <code>g_return_if_fail</code> is used to check the
+argument.</li>
+<li>33-34: Creates TfeTextView object. If it fails, no notebook page is
+created and the function returns to the caller.</li>
+<li>35: Creates filename, which is “Untitled”, “Untitled1”, … .</li>
 <li>1-8: <code>get_untitled</code> function.</li>
-<li>3: Static variable <code>c</code> is initialized at the first call of this function. After that <code>c</code> keeps its value unless it is changed explicitly.</li>
-<li>4-7: Increases <code>c</code> by one and if it is zero then it returns “Untitled”. If it is a positive integer then it returns “Untitled&lt;the integer&gt;”, for example, “Untitled1”, “Untitled2”, and so on. The function <code>g_strdup_printf</code> creates a string and it should be freed by <code>g_free</code> when it becomes useless. The caller of <code>get_untitled</code> is in charge of freeing the string.</li>
-<li>37: calls <code>notebook_page_build</code> to build the contents of the page.</li>
-<li>10- 25: <code>notebook_page_build</code> function.</li>
+<li>3: Static variable <code>c</code> is initialized at the first call
+of this function. After that <code>c</code> keeps its value unless it is
+changed explicitly.</li>
+<li>4-7: Increases <code>c</code> by one and if it is zero, it returns
+“Untitled”. If it is a positive integer, it returns “Untitled&lt;the
+integer&gt;”, for example, “Untitled1”, “Untitled2”, and so on. The
+function <code>g_strdup_printf</code> creates a string and it should be
+freed by <code>g_free</code> when it becomes useless. The caller of
+<code>get_untitled</code> is in charge of freeing the string.</li>
+<li>36: calls <code>notebook_page_build</code> to build the contents of
+the page.</li>
+<li>37: frees <code>filename</code>.</li>
+<li>10- 24: <code>notebook_page_build</code> function. A parameter with
+<code>const</code> qualifier doesn’t change in the function. It means
+that the argument <code>filename</code> is owned by the caller. The
+caller needs to free it when it becomes useless.</li>
 <li>12: Creates GtkScrolledWindow.</li>
-<li>17: Sets the wrap mode of <code>tv</code> to GTK_WRAP_WORD_CHAR so that lines are broken between words or graphemes.</li>
-<li>18: Inserts <code>tv</code> to GtkscrolledWindow as a child.</li>
-<li>19-20: Creates GtkLabel, then appends <code>scr</code> and <code>lab</code> to the GtkNotebook instance <code>nb</code>.</li>
-<li>21-22: Sets “tab-expand” property to TRUE. The function <code>g_object_set</code> sets properties on an object. The object is any object derived from GObject. In many cases, an object has its own function to set its properties, but sometimes not. In that case, use <code>g_object_set</code> to set the property.</li>
-<li>23: Sets the current page of <code>nb</code> to the newly created page.</li>
-<li>24: Connects “change-file” signal and <code>file_changed_cb</code> handler.</li>
+<li>17: Inserts <code>tv</code> to GtkscrolledWindow as a child.</li>
+<li>18-19: Creates GtkLabel, then appends <code>scr</code> and
+<code>lab</code> to the GtkNotebook instance <code>nb</code>.</li>
+<li>20-21: Sets “tab-expand” property to TRUE. The function
+<code>g_object_set</code> sets properties on an object. The object is
+any object derived from GObject. In many cases, an object has its own
+function to set its properties, but sometimes not. In that case, use
+<code>g_object_set</code> to set the property.</li>
+<li>22: Sets the current page to the newly created page.</li>
+<li>23: Connects “change-file” signal and <code>file_changed_cb</code>
+handler.</li>
 </ul>
 <h2 id="notebook_page_new_with_file">notebook_page_new_with_file</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  g_return_if_fail(GTK_IS_NOTEBOOK (nb));</span>
-<span id="cb3-4"><a href="#cb3-4"></a>  g_return_if_fail(G_IS_FILE (file));</span>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>notebook_page_new_with_file <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  g_return_if_fail<span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">));</span></span>
 <span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  GtkWidget *tv;</span>
-<span id="cb3-7"><a href="#cb3-7"></a>  <span class="dt">char</span> *filename;</span>
+<span id="cb3-6"><a href="#cb3-6"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
 <span id="cb3-8"><a href="#cb3-8"></a></span>
-<span id="cb3-9"><a href="#cb3-9"></a>  <span class="cf">if</span> ((tv = tfe_text_view_new_with_file (file)) == NULL)</span>
-<span id="cb3-10"><a href="#cb3-10"></a>    <span class="cf">return</span>; <span class="co">/* read error */</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  filename = g_file_get_basename (file);</span>
-<span id="cb3-12"><a href="#cb3-12"></a>  notebook_page_build (nb, tv, filename);</span>
-<span id="cb3-13"><a href="#cb3-13"></a>}</span></code></pre></div>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="cf">if</span> <span class="op">((</span>tv <span class="op">=</span> tfe_text_view_new_with_file <span class="op">(</span>file<span class="op">))</span> <span class="op">==</span> NULL<span class="op">)</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="cf">return</span><span class="op">;</span> <span class="co">/* read error */</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>  notebook_page_build <span class="op">(</span>nb<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>9-10: Calls <code>tfe_text_view_new_with_file</code>. If the function returns NULL, an error has happend. Then, it does nothing and returns.</li>
-<li>11-12: Gets the filename and builds the contents of the page.</li>
+<li>9-10: Calls <code>tfe_text_view_new_with_file</code>. If the
+function returns NULL, an error has happend. Then, it does nothing and
+returns.</li>
+<li>11-13: Gets the filename, builds the contents of the page and frees
+<code>filename</code>.</li>
 </ul>
 <h2 id="notebook_page_open">notebook_page_open</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>open_response (TfeTextView *tv, <span class="dt">int</span> response, GtkNotebook *nb) {</span>
-<span id="cb4-3"><a href="#cb4-3"></a>  GFile *file;</span>
-<span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">char</span> *filename;</span>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>open_response <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
 <span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a>  <span class="cf">if</span> (response != TFE_OPEN_RESPONSE_SUCCESS || ! G_IS_FILE (file = tfe_text_view_get_file (tv))) {</span>
-<span id="cb4-7"><a href="#cb4-7"></a>    g_object_ref_sink (tv);</span>
-<span id="cb4-8"><a href="#cb4-8"></a>    g_object_unref (tv);</span>
-<span id="cb4-9"><a href="#cb4-9"></a>  }<span class="cf">else</span> {</span>
-<span id="cb4-10"><a href="#cb4-10"></a>    filename = g_file_get_basename (file);</span>
-<span id="cb4-11"><a href="#cb4-11"></a>    g_object_unref (file);</span>
-<span id="cb4-12"><a href="#cb4-12"></a>    notebook_page_build (nb, GTK_WIDGET (tv), filename);</span>
-<span id="cb4-13"><a href="#cb4-13"></a>  }</span>
-<span id="cb4-14"><a href="#cb4-14"></a>}</span>
-<span id="cb4-15"><a href="#cb4-15"></a></span>
-<span id="cb4-16"><a href="#cb4-16"></a><span class="dt">void</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a>notebook_page_open (GtkNotebook *nb) {</span>
-<span id="cb4-18"><a href="#cb4-18"></a>  g_return_if_fail(GTK_IS_NOTEBOOK (nb));</span>
-<span id="cb4-19"><a href="#cb4-19"></a></span>
-<span id="cb4-20"><a href="#cb4-20"></a>  GtkWidget *tv;</span>
+<span id="cb4-6"><a href="#cb4-6"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">!=</span> TFE_OPEN_RESPONSE_SUCCESS<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>    g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>    g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>  <span class="op">}</span><span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>    file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>    filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    notebook_page_build <span class="op">(</span>nb<span class="op">,</span> GTK_WIDGET <span class="op">(</span>tv<span class="op">),</span> filename<span class="op">);</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>  <span class="op">}</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="op">}</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="dt">void</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>notebook_page_open <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
 <span id="cb4-21"><a href="#cb4-21"></a></span>
-<span id="cb4-22"><a href="#cb4-22"></a>  <span class="cf">if</span> ((tv = tfe_text_view_new ()) == NULL)</span>
-<span id="cb4-23"><a href="#cb4-23"></a>    <span class="cf">return</span>;</span>
-<span id="cb4-24"><a href="#cb4-24"></a>  g_signal_connect (TFE_TEXT_VIEW (tv), <span class="st">&quot;open-response&quot;</span>, G_CALLBACK (open_response), nb);</span>
-<span id="cb4-25"><a href="#cb4-25"></a>  tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));</span>
-<span id="cb4-26"><a href="#cb4-26"></a>}</span></code></pre></div>
+<span id="cb4-22"><a href="#cb4-22"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a></span>
+<span id="cb4-24"><a href="#cb4-24"></a>  <span class="cf">if</span> <span class="op">((</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">())</span> <span class="op">==</span> NULL<span class="op">)</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response<span class="op">),</span> nb<span class="op">);</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>gtk_widget_get_ancestor <span class="op">(</span>GTK_WIDGET <span class="op">(</span>nb<span class="op">),</span> GTK_TYPE_WINDOW<span class="op">)));</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>16-26: <code>notebook_page_open</code> function.</li>
-<li>22-23: Creates TfeTextView object. If NULL is returned, an error has happened. Then, it returns to the caller.</li>
-<li>24: Connects the signal “open-response” and the handler <code>open_response</code>.</li>
-<li>25: Calls <code>tfe_text_view_open</code>. The “open-response” signal will be emitted later to inform the result of opening and reading a file.</li>
-<li>1-14: <code>open_response</code> handler.</li>
-<li>6-8: If the response code is NOT <code>TFE_OPEN_RESPONSE_SUCCESS</code> or <code>tfe_text_view_get_file</code> doesn’t return the pointer to a GFile, it has failed to open and read a new file. Then, what <code>notebook_page_open</code> did in advance need to be canceled. The instance <code>tv</code> hasn’t been a child widget of GtkScrolledWindow yet. Such instance has floating reference. Floating reference will be explained later in this subsection. You need to call <code>g_object_ref_sink</code> first. Then the floating reference is converted into an ordinary reference. Now you call <code>g_object_unref</code> to decrease the reference count by one.</li>
-<li>9-13: Otherwise, everything is okay. Gets the filename, builds the contents of the page.</li>
+<li>18-28: <code>notebook_page_open</code> function.</li>
+<li>24-25: Creates TfeTextView object. If NULL is returned, an error has
+happened. Then, it returns to the caller.</li>
+<li>26: Connects the signal “open-response” and the handler
+<code>open_response</code>.</li>
+<li>27: Calls <code>tfe_text_view_open</code>. The “open-response”
+signal will be emitted later to inform the result of opening and reading
+a file.</li>
+<li>1-16: <code>open_response</code> handler.</li>
+<li>6-8: If the response code is not
+<code>TFE_OPEN_RESPONSE_SUCCESS</code>, it has failed to open and read a
+new file. Then, what <code>notebook_page_open</code> did in advance need
+to be canceled. The instance <code>tv</code> hasn’t been a child widget
+of GtkScrolledWindow yet. Such instance has floating reference. Floating
+reference will be explained later. You need to call
+<code>g_object_ref_sink</code> first. Then the floating reference is
+converted into an ordinary reference. Now you call
+<code>g_object_unref</code> to decrease the reference count by one.</li>
+<li>9-15: Otherwise, everything is okay. Gets the filename, builds the
+contents of the page and frees <code>filename</code>.</li>
 </ul>
-<p>All the widgets are derived from GInitiallyUnowned. When an instance of GInitiallyUnowned or its descendant is created, the instance has a floating reference. The function <code>g_object_ref_sink</code> converts the floating reference into an ordinary reference. If the instance doesn’t have a floating reference, <code>g_object_ref_sink</code> simply increases the reference count by one. On the other hand, when an instance of GObject (not GInitiallyUnowned) is created, no floating reference is given. And the instance has a normal reference count instead of floating reference.</p>
-<p>If you use <code>g_object_unref</code> to an instance that has a floating reference, you need to convert the floating reference to a normal reference in advance. See <a href="https://developer-old.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html#gobject-The-Base-Object-Type.description">GObject Reference Manual</a> for further information.</p>
+<h2 id="floating-reference">Floating reference</h2>
+<p>All the widgets are derived from GInitiallyUnowned. GObject and
+GInitiallyUnowned are almost the same. The difference is like this. When
+an instance of GInitiallyUnowned is created, the instance has a floating
+reference and its reference count is zero. On the other hand, when an
+instance of GObject (not GInitiallyUnowned) is created, no floating
+reference is given. And the instance has a normal reference count
+instead of floating reference. Their descendants inherits them, so every
+widget has a floating reference at first. Non-widget class, for example,
+GtkTextBuffer is a direct sub class of GObject and it doesn’t have
+floating reference. Its reference count is one when it is created.</p>
+<p>The function <code>g_object_ref_sink</code> converts the floating
+reference into an ordinary reference. If the instance doesn’t have a
+floating reference, <code>g_object_ref_sink</code> simply increases the
+reference count by one. It is used when an widget is added to another
+widget as a child.</p>
+<pre><code>GtkTextView *tv = gtk_text_view_new (); // floating reference
+GtkScrolledWindow *scr = gtk_scrolled_window_new ();
+gtk_scrolled_window_set_child (scr, tv); // tv&#39;s reference count is one</code></pre>
+<p>When <code>tv</code> is added to <code>scr</code> as a child,
+<code>g_object_ref_sink</code> is used.</p>
+<pre><code>g_object_ref_sink (tv);</code></pre>
+<p>So, the floating reference is converted into an ordinary reference.
+That is to say, floating reference is deleted, and reference count turns
+to one. Thanks to this, the caller doesn’t need to decrease tv’s
+reference count. If an Object_A is not a descendant of
+GInitiallyUnowned, the program is like this:</p>
+<pre><code>Object_A *obj_a = object_a_new (); // reference count is one
+GtkScrolledWindow *scr = gtk_scrolled_window_new ();
+gtk_scrolled_window_set_child (scr, obj_a); // obj_a&#39;s reference count is two
+// obj_a is referred by the caller (this program) and scrolled window
+g_object_unref (obj_a); // obj_a&#39;s reference count is one because the caller no longer refers obj_a.</code></pre>
+<p>This example tells us that the caller needs to unref
+<code>obj_a</code>.</p>
+<p>If you use <code>g_object_unref</code> to an instance that has a
+floating reference, you need to convert the floating reference to a
+normal reference in advance. See <a
+href="https://docs.gtk.org/gobject/floating-refs.html">GObject API
+reference</a> for further information.</p>
 <h2 id="notebook_page_close">notebook_page_close</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">void</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>notebook_page_close (GtkNotebook *nb) {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  g_return_if_fail(GTK_IS_NOTEBOOK (nb));</span>
-<span id="cb5-4"><a href="#cb5-4"></a></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  GtkWidget *win;</span>
-<span id="cb5-6"><a href="#cb5-6"></a>  <span class="dt">int</span> i;</span>
-<span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a>  <span class="cf">if</span> (gtk_notebook_get_n_pages (nb) == <span class="dv">1</span>) {</span>
-<span id="cb5-9"><a href="#cb5-9"></a>    win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);</span>
-<span id="cb5-10"><a href="#cb5-10"></a>    gtk_window_destroy(GTK_WINDOW (win));</span>
-<span id="cb5-11"><a href="#cb5-11"></a>  } <span class="cf">else</span> {</span>
-<span id="cb5-12"><a href="#cb5-12"></a>    i = gtk_notebook_get_current_page (nb);</span>
-<span id="cb5-13"><a href="#cb5-13"></a>    gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);</span>
-<span id="cb5-14"><a href="#cb5-14"></a>  }</span>
-<span id="cb5-15"><a href="#cb5-15"></a>}</span></code></pre></div>
-<p>This function closes the current page. If the page is the only page the notebook has, then the function destroys the top-level window and quits the application.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">void</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>notebook_page_close <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>    win <span class="op">=</span> gtk_widget_get_ancestor <span class="op">(</span>GTK_WIDGET <span class="op">(</span>nb<span class="op">),</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>    gtk_window_destroy<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>    i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>    gtk_notebook_remove_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> i<span class="op">);</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="op">}</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="op">}</span></span></code></pre></div>
+<p>This function closes the current page. If the page is the only page
+the notebook has, then the function destroys the top-level window and
+quits the application.</p>
 <ul>
-<li>8-10: If the page is the only page the notebook has, it calls <code>gtk_window_destroy</code> to destroys the top-level window.</li>
-<li>11-13: Otherwise, removes the current page.</li>
+<li>8-10: If the page is the only page the notebook has, it calls
+<code>gtk_window_destroy</code> to destroys the top-level window.</li>
+<li>11-13: Otherwise, removes the current page. The child widget
+(TfeTextView) is also destroyed.</li>
 </ul>
 <h2 id="notebook_page_save">notebook_page_save</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> TfeTextView *</span>
-<span id="cb6-2"><a href="#cb6-2"></a>get_current_textview (GtkNotebook *nb) {</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  <span class="dt">int</span> i;</span>
-<span id="cb6-4"><a href="#cb6-4"></a>  GtkWidget *scr;</span>
-<span id="cb6-5"><a href="#cb6-5"></a>  GtkWidget *tv;</span>
-<span id="cb6-6"><a href="#cb6-6"></a></span>
-<span id="cb6-7"><a href="#cb6-7"></a>  i = gtk_notebook_get_current_page (nb);</span>
-<span id="cb6-8"><a href="#cb6-8"></a>  scr = gtk_notebook_get_nth_page (nb, i);</span>
-<span id="cb6-9"><a href="#cb6-9"></a>  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));</span>
-<span id="cb6-10"><a href="#cb6-10"></a>  <span class="cf">return</span> TFE_TEXT_VIEW (tv);</span>
-<span id="cb6-11"><a href="#cb6-11"></a>}</span>
-<span id="cb6-12"><a href="#cb6-12"></a></span>
-<span id="cb6-13"><a href="#cb6-13"></a><span class="dt">void</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a>notebook_page_save (GtkNotebook *nb) {</span>
-<span id="cb6-15"><a href="#cb6-15"></a>  g_return_if_fail(GTK_IS_NOTEBOOK (nb));</span>
-<span id="cb6-16"><a href="#cb6-16"></a></span>
-<span id="cb6-17"><a href="#cb6-17"></a>  TfeTextView *tv;</span>
-<span id="cb6-18"><a href="#cb6-18"></a></span>
-<span id="cb6-19"><a href="#cb6-19"></a>  tv = get_current_textview (nb);</span>
-<span id="cb6-20"><a href="#cb6-20"></a>  tfe_text_view_save (TFE_TEXT_VIEW (tv));</span>
-<span id="cb6-21"><a href="#cb6-21"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>get_current_textview <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a></span>
+<span id="cb9-7"><a href="#cb9-7"></a>  i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a>  scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="cf">return</span> TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="op">}</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="dt">void</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a>notebook_page_save <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a></span>
+<span id="cb9-17"><a href="#cb9-17"></a>  TfeTextView <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  tv <span class="op">=</span> get_current_textview <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a>  tfe_text_view_save <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>13-21: <code>notebook_page_save</code>.</li>
 <li>19: Gets TfeTextView belongs to the current page.</li>
 <li>20: Calls <code>tfe_text_view_save</code>.</li>
-<li>1-11: <code>get_current_textview</code>. This function gets the TfeTextView object belongs to the current page.</li>
+<li>1-11: <code>get_current_textview</code>. This function gets the
+TfeTextView object belongs to the current page.</li>
 <li>7: Gets the page number of the current page.</li>
-<li>8: Gets the child widget <code>scr</code>, which is a GtkScrolledWindow instance, of the current page.</li>
-<li>9-10: Gets the child widget of <code>scr</code>, which is a TfeTextView instance, and returns it.</li>
+<li>8: Gets the child widget <code>scr</code>, which is a
+GtkScrolledWindow instance, of the current page.</li>
+<li>9-10: Gets the child widget of <code>scr</code>, which is a
+TfeTextView instance, and returns it.</li>
 </ul>
 <h2 id="file_changed_cb-handler">file_changed_cb handler</h2>
-<p>The function <code>file_changed_cb</code> is a handler connected to “change-file” signal. If a file in a TfeTextView instance is changed, it emits this signal. This handler changes the label of GtkNotebookPage.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>file_changed_cb (TfeTextView *tv, GtkNotebook *nb) {</span>
-<span id="cb7-3"><a href="#cb7-3"></a>  GtkWidget *scr;</span>
-<span id="cb7-4"><a href="#cb7-4"></a>  GtkWidget *label;</span>
-<span id="cb7-5"><a href="#cb7-5"></a>  GFile *file;</span>
-<span id="cb7-6"><a href="#cb7-6"></a>  <span class="dt">char</span> *filename;</span>
-<span id="cb7-7"><a href="#cb7-7"></a></span>
-<span id="cb7-8"><a href="#cb7-8"></a>  file = tfe_text_view_get_file (tv);</span>
-<span id="cb7-9"><a href="#cb7-9"></a>  scr = gtk_widget_get_parent (GTK_WIDGET (tv));</span>
-<span id="cb7-10"><a href="#cb7-10"></a>  <span class="cf">if</span> (G_IS_FILE (file)) {</span>
-<span id="cb7-11"><a href="#cb7-11"></a>    filename = g_file_get_basename (file);</span>
-<span id="cb7-12"><a href="#cb7-12"></a>    g_object_unref (file);</span>
-<span id="cb7-13"><a href="#cb7-13"></a>  } <span class="cf">else</span></span>
-<span id="cb7-14"><a href="#cb7-14"></a>    filename = get_untitled ();</span>
-<span id="cb7-15"><a href="#cb7-15"></a>  label = gtk_label_new (filename);</span>
-<span id="cb7-16"><a href="#cb7-16"></a>  g_free (filename);</span>
-<span id="cb7-17"><a href="#cb7-17"></a>  gtk_notebook_set_tab_label (nb, scr, label);</span>
-<span id="cb7-18"><a href="#cb7-18"></a>}</span></code></pre></div>
+<p>The function <code>file_changed_cb</code> is a handler connected to
+“change-file” signal. If a file in a TfeTextView instance is changed, it
+emits this signal. This handler changes the label of the
+GtkNotebookPage.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>file_changed_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>  scr <span class="op">=</span> gtk_widget_get_parent <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  <span class="cf">if</span> <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a>    filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a>    g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>  <span class="op">}</span> <span class="cf">else</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a>    filename <span class="op">=</span> get_untitled <span class="op">();</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a>  label <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  gtk_notebook_set_tab_label <span class="op">(</span>nb<span class="op">,</span> scr<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>8: Gets the GFile instance from <code>tv</code>.</li>
-<li>9: Gets the GkScrolledWindow instance which is the parent widget of <code>tv</code>.</li>
-<li>10-12: If <code>file</code> points GFile, then assigns the filename of the GFile into <code>filename</code>. Then, unref the GFile object <code>file</code>.</li>
-<li>13-14: Otherwise (file is NULL), assigns untitled string to <code>filename</code>.</li>
-<li>15-16: Creates a GtkLabel instance <code>label</code> with the filename and set the label of the GtkNotebookPage with <code>label</code>.</li>
+<li>9: Gets the GkScrolledWindow instance which is the parent widget of
+<code>tv</code>.</li>
+<li>10-12: If <code>file</code> points GFile, then assigns the filename
+of the GFile into <code>filename</code>. Then, unref the GFile object
+<code>file</code>.</li>
+<li>13-14: Otherwise (file is NULL), assigns untitled string to
+<code>filename</code>.</li>
+<li>15-16: Creates a GtkLabel instance <code>label</code> with the
+filename and set the label of the GtkNotebookPage with
+<code>label</code>.</li>
 </ul>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

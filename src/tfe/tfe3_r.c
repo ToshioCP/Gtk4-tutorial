@@ -39,12 +39,12 @@ tfe_text_view_new (void) {
 /* ---------- end of the definition of TfeTextView ---------- */
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app) {
   g_print ("You need a filename argument.\n");
 }
 
 static void
-app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   GtkWidget *win;
   GtkWidget *nb;
   GtkWidget *lab;

@@ -102,8 +102,8 @@ struct _GtkTextViewClass
   void (* toggle_overwrite)      (GtkTextView      *text_view);
   GtkTextBuffer * (* create_buffer) (GtkTextView   *text_view);
   void (* snapshot_layer)        (GtkTextView      *text_view,
-                                  GtkTextViewLayer  layer,
-                                  GtkSnapshot      *snapshot);
+			          GtkTextViewLayer  layer,
+			          GtkSnapshot      *snapshot);
   gboolean (* extend_selection)  (GtkTextView            *text_view,
                                   GtkTextExtendSelection  granularity,
                                   const GtkTextIter      *location,

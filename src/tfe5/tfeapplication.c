@@ -1,4 +1,7 @@
-#include "tfe.h"
+#include <gtk/gtk.h>
+
+#include "../tfetextview/tfetextview.h"
+#include "tfenotebook.h"
 
 static void
 open_cb (GtkNotebook *nb) {
@@ -96,4 +99,3 @@ main (int argc, char **argv) {
   g_object_unref (app);
   return stat;
 }
-

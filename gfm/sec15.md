@@ -124,7 +124,7 @@ textview {color: yellow; ...}
 ~~~
 
 Class, ID and some other things can be applied to the selector like Web CSS.
-Refer to [GTK 4 API Reference, CSS in Gtk](https://docs.gtk.org/gtk4/css-overview.html) for further information.
+Refer to [GTK 4 API Reference -- CSS in Gtk](https://docs.gtk.org/gtk4/css-overview.html) for further information.
 
 In line 30, the CSS is a string.
 
@@ -306,9 +306,7 @@ In this file, just the source file names are modified from the prior version.
 
 ## source files
 
-The [source files](../src/tfe5) of the text editor `tfe` will be shown in the next section.
-
-You can also download the files from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+You can download the files from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 There are two options.
 
 - Use git and clone.

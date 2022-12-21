@@ -1,7 +1,9 @@
-#include "tfe.h"
+#include <gtk/gtk.h>
+
+#include "../tfetextview/tfetextview.h"
 
 /* The returned string should be freed with g_free() when no longer needed. */
-static gchar*
+static char*
 get_untitled () {
   static int c = -1;
   if (++c == 0) 
@@ -67,14 +69,14 @@ notebook_page_close (GtkNotebook *nb) {
   }
 }
 
+// filename is owned by the caller.
 static void
-notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
+notebook_page_build (GtkNotebook *nb, GtkWidget *tv, const char *filename) {
   GtkWidget *scr = gtk_scrolled_window_new ();
   GtkNotebookPage *nbp;
   GtkWidget *lab;
   int i;
 
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
   lab = gtk_label_new (filename);
   i = gtk_notebook_append_page (nb, scr, lab);
@@ -89,13 +91,15 @@ open_response (TfeTextView *tv, int response, GtkNotebook *nb) {
   GFile *file;
   char *filename;
 
-  if (response != TFE_OPEN_RESPONSE_SUCCESS || ! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
+  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
     g_object_ref_sink (tv);
     g_object_unref (tv);
   }else {
+    file = tfe_text_view_get_file (tv);
     filename = g_file_get_basename (file);
     g_object_unref (file);
     notebook_page_build (nb, GTK_WIDGET (tv), filename);
+    g_free (filename);
   }
 }
 
@@ -123,6 +127,7 @@ notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
     return; /* read error */
   filename = g_file_get_basename (file);
   notebook_page_build (nb, tv, filename);
+  g_free (filename);
 }
 
 void
@@ -136,5 +141,5 @@ notebook_page_new (GtkNotebook *nb) {
     return;
   filename = get_untitled ();
   notebook_page_build (nb, tv, filename);
+  g_free (filename);
 }
-

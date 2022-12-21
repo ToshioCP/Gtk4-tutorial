@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
+Up: [README.md](../README.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
 
 # Widgets (2)
 
@@ -14,7 +14,7 @@ See the sample program `tfv1.c` below.
  1 #include <gtk/gtk.h>
  2 
  3 static void
- 4 app_activate (GApplication *app, gpointer user_data) {
+ 4 app_activate (GApplication *app) {
  5   GtkWidget *win;
  6   GtkWidget *tv;
  7   GtkTextBuffer *tb;
@@ -28,7 +28,7 @@ See the sample program `tfv1.c` below.
 15       "He cut it, then there was a small cute baby girl in it. "
 16       "The girl was shining faintly. "
 17       "He thought this baby girl is a gift from Heaven and took her home.\n"
-18       "His wife was surprized at his tale. "
+18       "His wife was surprized at his story. "
 19       "They were very happy because they had no children. "
 20       ;
 21   win = gtk_application_window_new (GTK_APPLICATION (app));
@@ -50,7 +50,7 @@ See the sample program `tfv1.c` below.
 37   GtkApplication *app;
 38   int stat;
 39 
-40   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_FLAGS_NONE);
+40   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_DEFAULT_FLAGS);
 41   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 42   stat = g_application_run (G_APPLICATION (app), argc, argv);
 43   g_object_unref (app);
@@ -62,15 +62,25 @@ Look at line 25.
 A GtkTextView instance is created and its pointer is assigned to `tv`.
 When the GtkTextView instance is created, a GtkTextBuffer instance is also created and connected to the GtkTextView automatically.
 "GtkTextBuffer instance" will be referred to simply as "GtkTextBuffer" or "buffer".
-In the next line, the pointer to the buffer is got and assigned to `tb`.
+In the next line, the pointer to the buffer is assigned to `tb`.
 Then, the text from line 10 to 20 is assigned to the buffer.
+If the third argument of `gtk_text_buffer_set_text` is a positive integer, it is the length of the text.
+It it is -1, the string terminates with NULL.
 
 GtkTextView has a wrap mode.
 When it is set to `GTK_WRAP_WORD_CHAR`, text wraps in between words, or if that is not enough, also between graphemes.
 
+Wrap mode is written in [Gtk\_WrapMode](https://docs.gtk.org/gtk4/enum.WrapMode.html) in the GTK 4 API document.
+
 In line 30, `tv` is added to `win` as a child.
 
 Now compile and run it.
+
+```
+$ cd src/tfv
+$ comp tfv1
+$ ./a.out
+```
 
 ![GtkTextView](../image/screenshot_tfv1.png)
 
@@ -79,19 +89,19 @@ You can add or delete any characters on the GtkTextView,
 and your changes are kept in the GtkTextBuffer.
 If you add more characters beyond the limit of the window, the height increases and the window extends.
 If the height gets bigger than the height of the display screen, you won't be
-able to control the size of the window, and change it back to the original size.
-This is a problem and shows that there is a bug in our program.
-This can solve it by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
+able to control the size of the window or change it back to the original size.
+This is a problem, that is to say a bug.
+This can be solved by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
 
 ### GtkScrolledWindow
 
 What we need to do is:
 
-- Create a GtkScrolledWindow and insert it as a child of the GtkApplicationWindow; and
+- Create a GtkScrolledWindow and insert it as a child of the GtkApplicationWindow
 - Insert the GtkTextView widget to the GtkScrolledWindow as a child.
 
 Modify `tfv1.c` and save it as `tfv2.c`.
-The difference between these two files is small.
+There is only a few difference between these two files.
 
 ~~~
 $ cd tfv; diff tfv1.c tfv2.c
@@ -106,18 +116,18 @@ $ cd tfv; diff tfv1.c tfv2.c
 ---
 >   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
 40c44
-<   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_FLAGS_NONE);
+<   app = gtk_application_new ("com.github.ToshioCP.tfv1", G_APPLICATION_DEFAULT_FLAGS);
 ---
->   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
+>   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_DEFAULT_FLAGS);
 ~~~
 
-Here is the complete code of `tfv2.c`.
+The whole code of `tfv2.c` is as follows.
 
 ~~~C
  1 #include <gtk/gtk.h>
  2 
  3 static void
- 4 app_activate (GApplication *app, gpointer user_data) {
+ 4 app_activate (GApplication *app) {
  5   GtkWidget *win;
  6   GtkWidget *scr;
  7   GtkWidget *tv;
@@ -132,7 +142,7 @@ Here is the complete code of `tfv2.c`.
 16       "He cut it, then there was a small cute baby girl in it. "
 17       "The girl was shining faintly. "
 18       "He thought this baby girl is a gift from Heaven and took her home.\n"
-19       "His wife was surprized at his tale. "
+19       "His wife was surprized at his story. "
 20       "They were very happy because they had no children. "
 21       ;
 22   win = gtk_application_window_new (GTK_APPLICATION (app));
@@ -157,7 +167,7 @@ Here is the complete code of `tfv2.c`.
 41   GtkApplication *app;
 42   int stat;
 43 
-44   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_FLAGS_NONE);
+44   app = gtk_application_new ("com.github.ToshioCP.tfv2", G_APPLICATION_DEFAULT_FLAGS);
 45   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 46   stat = g_application_run (G_APPLICATION (app), argc, argv);
 47   g_object_unref (app);
@@ -166,7 +176,8 @@ Here is the complete code of `tfv2.c`.
 ~~~
 
 Compile and run it.
-Notice how this time the window doesn't extend when you type a lot of characters,
-it just scrolls and displays a slider.
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)
+Now, the window doesn't extend even if you type a lot of characters,
+it just scrolls.
+
+Up: [README.md](../README.md),  Prev: [Section 4](sec4.md), Next: [Section 6](sec6.md)

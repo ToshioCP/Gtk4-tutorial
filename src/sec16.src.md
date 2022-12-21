@@ -1,24 +1,19 @@
-# tfe5 source files
+# How to build tfe (text file editor)
 
 ## How to compile and execute the text editor 'tfe'.
 
-First, source files are shown in the later subsections.
+First, source files are in the [Gtk4-tutorila repository](https://github.com/ToshioCP/Gtk4-tutorial).
 How to download them is written at the end of the [previous section](sec15.src.md).
 
 The following is the instruction of compilation and execution.
 
 - You need meson and ninja.
-- Set environment variables if necessary.
-If you have installed gtk4 from the source and you preferred the option `--prefix $HOME/local` (see [Section 2](sec2.src.md)), type `. env.sh` to set the environment variables.
-
-~~~
-$ . env.sh
-~~~
-- change your current directory to `src/tfe5` directory.
-- type `meson _build` for configuration.
-- type `ninja -C _build` for compilation.
+- If you have installed gtk4 from the source, you need to set environment variables to suit your installation.
+- Change your current directory to `src/tfe5` directory.
+- Type `meson _build` for configuration.
+- Type `ninja -C _build` for compilation.
 Then the application `tfe` is built under the `_build` directory.
-- type `_build/tfe` to execute it.
+- Type `_build/tfe` to execute it.
 
 Then the window appears.
 There are four buttons, `New`, `Open`, `Save` and `Close`.
@@ -33,63 +28,9 @@ Then the file is read and a new Notebook Page appears.
 This is a very simple editor.
 It is a good practice for you to add more features.
 
-## meson.build
-
-@@@include
-tfe5/meson.build
-@@@
-
-## tfe.gresource.xml
-
-@@@include
-tfe5/tfe.gresource.xml
-@@@
-
-## tfe.ui
-
-@@@include
-tfe5/tfe.ui
-@@@
-
-## tfe.h
-
-@@@include
-tfe5/tfe.h
-@@@
-
-## tfeapplication.c
-
-@@@include
-tfe5/tfeapplication.c
-@@@
-
-## tfenotebook.h
-
-@@@include
-tfe5/tfenotebook.h
-@@@
-
-## tfenotebook.c
-
-@@@include
-tfe5/tfenotebook.c
-@@@
-
-## tfetextview.h
-
-@@@include
-tfetextview/tfetextview.h
-@@@
-
-## tfetextview.c
-
-@@@include
-tfetextview/tfetextview.c
-@@@
-
 ## Total number of lines, words and characters
 
 @@@shell
-LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfe.h tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
+LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
 @@@
 

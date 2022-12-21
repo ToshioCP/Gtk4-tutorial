@@ -1,11 +1,11 @@
 # Build system
 
-## What do we need to think about to manage big source files?
+## Managing big source files
 
 We've compiled a small editor so far.
 But Some bad signs are beginning to appear.
 
-- We've had only one C source file and put everything into it.
+- We've had only one C source file and put everything in it.
 We need to sort it out.
 - There are two compilers, `gcc` and `glib-compile-resources`.
 We should control them by one building tool. 
@@ -14,7 +14,7 @@ These ideas are useful to manage big source files.
 
 ## Divide a C source file into two parts.
 
-When you divide C source file into several parts, each file should contain only one thing.
+When you divide C source file into several parts, each file should contain one thing.
 For example, our source has two things, the definition of TfeTextView and functions related to GtkApplication and GtkApplicationWindow.
 It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
 
@@ -64,10 +64,8 @@ The ui file `tfe.ui` is the same as `tfe3.ui` in the previous section.
 tfe4/tfe.gresource.xml
 @@@
 
-## Make
-
 Dividing a file makes it easy to maintain source files.
-But now we are faced with a new problem.
+But now we face a new problem.
 The building step increases.
 
 - Compiling the ui file `tfe.ui` into `resources.c`.
@@ -76,99 +74,18 @@ The building step increases.
 - Compiling `resources.c` into `resources.o`.
 - Linking all the object files into application `tfe`.
 
-Now build tool is necessary to manage it.
-Make is one of the build tools.
-It was created in 1976.
-It is an old and widely used program.
+Build tools manage the steps.
+I'll show you three build tools, Meson and Ninja, Make and Rake.
+Meson and Ninja is recommended as a C build tool, but others are also fine.
+It's your choice.
 
-Make analyzes Makefile and executes compilers.
-All instructions are written in Makefile.
+## Meson and Ninja
 
-~~~makefile
-sample.o: sample.c
-    gcc -o sample.o sample.c
-~~~
+Meson and Ninja is one of the most popular building tool to build C language program.
+Many developers use Meson and Ninja lately.
+For example, GTK 4 uses them.
 
-The sample of Malefile above consists of three elements, `sample.o`, `sample.c` and `gcc -o sample.o sample.c`.
-
-- `sample.o` is called target.
-- `sample.c` is prerequisite.
-- `gcc -o sample.o sample.c` is recipe.
-Recipes follow tab characters, not spaces.
-(It is very important. Use tab not space, or make won't work as you expected).
-
-The rule is:
-
-If a prerequisite modified later than a target, then make executes the recipe.
-
-In the example above, if `sample.c` is modified after the generation of `sample.o`, then make executes gcc and compile `sample.c` into `sample.o`.
-If the modification time of `sample.c` is older then the generation of `sample.o`, then no compiling is necessary, so make does nothing.
-
-The Makefile for `tfe` is as follows.
-
-@@@include
-tfe4/Makefile
-@@@
-
-You only need to type `make`.
-
-    $ make
-    gcc -c -o tfe.o `pkg-config --cflags gtk4` tfe.c
-    gcc -c -o tfetextview.o `pkg-config --cflags gtk4` tfetextview.c
-    glib-compile-resources tfe.gresource.xml --target=resources.c --generate-source
-    gcc -c -o resources.o `pkg-config --cflags gtk4` resources.c
-    gcc -o tfe tfe.o tfetextview.o resources.o `pkg-config --libs gtk4`
-
-I used only very basic rules to write this Makefile.
-There are many more convenient methods to make it more compact.
-But it will be long to explain it.
-So I want to finish explaining make and move on to the next topic.
-
-## Rake
-
-Rake is a similar program to make.
-It is written in Ruby code.
-If you don't use Ruby, you don't need to read this subsection.
-However, Ruby is really sophisticated and recommendable script language.
-
-- Rakefile controls the behavior of `rake`.
-- You can write any Ruby code in Rakefile.
-
-Rake has task and file task, which is similar to target, prerequisite and recipe in make.
-
-@@@include
-tfe4/Rakefile
-@@@
-
-The contents of the `Rakefile` is almost same as the `Makefile` in the previous subsection. 
-
-- 3-6: Defines target file, source file and so on.
-- 1, 8: Loads clean library. And defines CLEAN file list.
-The files included by CLEAN will be removed when `rake clean` is typed on the command line.
-- 10: The default target depends on `targetfile`.
-The task `default` is the final goal of tasks.
-- 12-14: `targetfile` depends on `objfiles`.
-The variable `t` is a task object.
-  - `t.name` is a target name
-  - `t.prerequisites` is an array of prerequisites.
-  - `t.source` is the first element of prerequisites.
-- `sh` is a method to give the following string to shell as an argument and executes the shell.
-- 16-21: There's a loop by each element of the array of `objfiles`. Each object depends on corresponding source file.
-- 23-25: Resource file depends on xml file and ui file.
-
-Rakefile might seem to be difficult for beginners.
-But, you can use any Ruby syntax in Rakefile, so it is really flexible.
-If you practice Ruby and Rakefile, it will be highly productive tools.
-
-## Meson and ninja
-
-Meson is one of the most popular building tool despite the developing version.
-And ninja is similar to make but much faster than make.
-Several years ago, most of the C developers used autotools and make.
-But now the situation has changed.
-Many developers are using meson and ninja now.
-
-To use meson, you first need to write `meson.build` file.
+You need to make `meson.build` file first.
 
 @@@include
 tfe4/meson.build
@@ -199,13 +116,100 @@ Then, the executable file `tfe` is generated under the directory `_build`.
 
     $ _build/tfe tfe.c tfetextview.c
 
-Then the window appears.
-And two notebook pages are in the window.
-One notebook is `tfe.c` and the other is `tfetextview.c`.
+A window appears.
+It includes a notebook with two pages.
+One is `tfe.c` and the other is `tfetextview.c`.
 
-I've shown you three build tools.
-I think meson and ninja is the best choice for the present.
+For further information, see [The Meson Build system](https://mesonbuild.com/).
 
-We divided a file into some categorized files and used a build tool.
-This method is used by many developers.
+## Make
 
+Make is a build tool created in 1976.
+It was a standard build tool for C compiling, but lately it is replaced by Meson and Ninja.
+
+Make analyzes Makefile and executes compilers.
+All instructions are written in Makefile.
+
+For example,
+
+~~~makefile
+sample.o: sample.c
+    gcc -o sample.o sample.c
+~~~
+
+Malefile above consists of three elements, `sample.o`, `sample.c` and `gcc -o sample.o sample.c`.
+
+- `sample.o` is a target.
+- `sample.c` is a prerequisite.
+- `gcc -o sample.o sample.c` is a recipe.
+Recipes follow tab characters, not spaces.
+(It is very important. Use tab, or make won't work as you expected).
+
+The rule is:
+
+If a prerequisite modified later than a target, then make executes the recipe.
+
+In the example above, if `sample.c` is modified after the generation of `sample.o`, then make executes gcc and compile `sample.c` into `sample.o`.
+If the modification time of `sample.c` is older then the generation of `sample.o`, then no compiling is necessary, so make does nothing.
+
+The Makefile for `tfe` is as follows.
+
+@@@include
+tfe4/Makefile
+@@@
+
+You just type `make` and everything will be done.
+
+~~~
+$ make
+gcc -c -o tfe.o `pkg-config --cflags gtk4` tfe.c
+gcc -c -o tfetextview.o `pkg-config --cflags gtk4` tfetextview.c
+glib-compile-resources tfe.gresource.xml --target=resources.c --generate-source
+gcc -c -o resources.o `pkg-config --cflags gtk4` resources.c
+gcc -o tfe tfe.o tfetextview.o resources.o `pkg-config --libs gtk4`
+~~~
+
+I used only very basic rules to write this Makefile.
+There are many more convenient methods to make it more compact.
+But it will be long to explain it.
+So I want to finish with make and move on to the next topic.
+
+You can download "Gnu Make Manual" from [GNU website](https://www.gnu.org/software/make/manual/).
+
+## Rake
+
+Rake is a similar program to make.
+It is written in Ruby language.
+If you don't use Ruby, you don't need to read this subsection.
+However, Ruby is really sophisticated and recommendable script language.
+
+- Rakefile controls the behavior of `rake`.
+- You can write any Ruby code in Rakefile.
+
+Rake has task and file task, which is similar to target, prerequisite and recipe in make.
+
+@@@include
+tfe4/Rakefile
+@@@
+
+The contents of the `Rakefile` is almost same as the `Makefile` in the previous subsection. 
+
+- 3-8: Defines target file, source files and so on.
+- 1, 10 Requires  rake/clean library. And clean files are added to CLEAN.
+The files included by CLEAN will be removed when `rake clean` is typed on the command line.
+- 12: The default target depends on `targetfile`.
+The task `default` is the final goal of tasks.
+- 14-16: `targetfile` depends on `objfiles`.
+The variable `t` is a task object.
+  - `t.name` is a target name
+  - `t.prerequisites` is an array of prerequisites.
+  - `t.source` is the first element of prerequisites.
+- `sh` is a method to give the following string to shell as an argument and executes the shell.
+- 18-23: An each iterator of the array `objfiles`. Each object depends on corresponding source file.
+- 25-27: Resource file depends on ui file.
+
+Rakefile might seem to be difficult for beginners.
+But, you can use any Ruby syntax in the Rakefile, so it is really flexible.
+If you practice Ruby and Rakefile, it will be highly productive tools.
+
+For further information, see [Rake tutorial for beginners](https://toshiocp.github.io/Rake-tutorial-for-beginners-en/LearningRake.html).

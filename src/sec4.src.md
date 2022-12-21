@@ -32,6 +32,8 @@ cd misc; diff pr4.c lb1.c
 
 This tells us:
 
+- A signal handler `app_activate` doesn't have `user_data` parameter.
+If the fourth argument of `g_signal_connect` is NULL, you can leave out `user_data`.
 - The definition of a new variable `lab` is added.
 - The title of the window is changed.
 - A label is created and connected to the window as a child.
@@ -53,11 +55,11 @@ An application can have more than one top-level window.
 
 ### GtkButton
 
-The next widget to introduce is GtkButton.
+The next widget is GtkButton.
 It displays a button on the screen with a label or icon on it.
 In this subsection, we will make a button with a label.
 When the button is clicked, it emits a "clicked" signal.
-The following program shows how to catch the signal to then do something.
+The following program shows how to catch the signal and do something.
 
 @@@include
 misc/lb2.c
@@ -66,7 +68,7 @@ misc/lb2.c
 Look at the line 17 to 19.
 First, it creates a GtkButton instance `btn` with a label "Click me".
 Then, adds the button to the window `win` as a child.
-Finally, connects a "clicked" signal of the button to a handler (function) `click_cb`.
+Finally, connects a "clicked" signal of the button to the handler `click_cb`.
 So, if `btn` is clicked, the function `click_cb` is invoked.
 The suffix "cb" means "call back".
 
@@ -80,7 +82,7 @@ Click the button (it is a large button, you can click everywhere in the window),
 It shows the handler was invoked by clicking the button.
 
 It's good that we make sure that the clicked signal was caught and the handler was invoked by using `g_print`.
-However, using g_print is out of harmony with Gtk which is a GUI library.
+However, using `g_print` is out of harmony with GTK, which is a GUI library.
 So, we will change the handler.
 The following code is `lb3.c`.
 
@@ -96,15 +98,19 @@ cd misc; diff lb2.c lb3.c
 
 The changes are:
 
-- The function `g_print` in `lb2.c` was deleted and the two lines above are inserted instead.
-- The label of `btn` is changed from "Click me" to "Quit".
+- The function `g_print` in `lb2.c` was deleted and two lines are inserted.
+  - `click_cb` has the second parameter, which comes from the fourth argument of the `g_signal_connect` at the line 19.
+One thing to be careful is the types are different between the second parameter of `click_cb` and the fourth argument of `g_signal_connect`.
+The former is `GtkWindow *` and the latter is `GtkWidget *`.
+The compiler doesn't complain because `g_signal_connect` uses gpointer (general type of pointer).
+In this program the instance pointed by `win` is a GtkApplicationWindow object.
+It is a descendant of GtkWindow and GtkWidget class, so both `GtkWindow *` and `GtkWidget *` are correct types for the instance.
+  - `gtk_destroy (win)` destroys the top-level window. Then the application quits.
+- The label of `btn` is changed from "Click me" to "Close".
 - The fourth argument of `g_signal_connect` is changed from `NULL` to `win`.
 
-The most important change is the fourth argument of `g_signal_connect`.
-This argument is described as "data to pass to handler" in the definition of `g_signal_connect` in [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
-Therefore, `win` which is a pointer to GtkApplicationWindow is passed to the handler as a second parameter `user_data`.
-The handler then casts it to a pointer to GtkWindow and calls `gtk_window_destroy` to destroy the top-level window.
-The application then quits.
+The most important change is the fourth argument of the `g_signal_connect`.
+This argument is described as "data to pass to handler" in the definition of [`g_signal_connect`](https://docs.gtk.org/gobject/func.signal_connect.html).
 
 ### GtkBox
 
@@ -123,8 +129,7 @@ After this, the Widgets are connected as the following diagram.
 
 ![Parent-child relationship](../image/box.png){width=7.725cm height=2.055cm}
 
-The program `lb4.c` includes these widgets.
-It is as follows.
+The program `lb4.c` is as follows.
 
 @@@include
 misc/lb4.c
@@ -134,15 +139,35 @@ Look at the function `app_activate`.
 
 After the creation of a GtkApplicationWindow instance, a GtkBox instance is created.
 
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    gtk_box_set_homogeneous (GTK_BOX (box), TRUE);
+~~~C
+box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+gtk_box_set_homogeneous (GTK_BOX (box), TRUE);
+~~~
 
 The first argument arranges the children of the box vertically.
+The orientation constants are defined like this: 
+
+- GTK\_ORIENTATION\_VERTICAL: the children widgets are arranged vertically
+- GTK\_ORIENTATION\_HORIZONTAL: the children widgets are arranged horizontally
+
 The second argument is the size between the children.
+The unit of the length is pixel.
+
 The next function fills the box with the children, giving them the same space.
 
 After that, two buttons `btn1` and `btn2` are created and the signal handlers are set.
 Then, these two buttons are appended to the box.
+
+@@@include
+misc/lb4.c click1.cb
+@@@
+
+The function `gtk_button_get_lable` returns a text from the label.
+The string is owned by the button and you can't modify or free it.
+The `const` qualifier is necessary for the string `s`.
+If you change the string, your compiler will give you a waring.
+
+You always need to be careful with the const qualifier when you see the GTK 4 API reference.
 
 ![Screenshot of the box](../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
 

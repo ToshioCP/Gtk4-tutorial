@@ -1,8 +1,8 @@
 #include <gtk/gtk.h>
 
 static void
-click1_cb (GtkButton *btn, gpointer user_data) {
-  const gchar *s;
+click1_cb (GtkButton *btn) {
+  const char *s;
 
   s = gtk_button_get_label (btn);
   if (g_strcmp0 (s, "Hello.") == 0)
@@ -12,13 +12,12 @@ click1_cb (GtkButton *btn, gpointer user_data) {
 }
 
 static void
-click2_cb (GtkButton *btn, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
+click2_cb (GtkButton *btn, GtkWindow *win) {
   gtk_window_destroy (win);
 }
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app) {
   GtkWidget *win;
   GtkWidget *box;
   GtkWidget *btn1;
@@ -35,7 +34,7 @@ app_activate (GApplication *app, gpointer user_data) {
   btn1 = gtk_button_new_with_label ("Hello.");
   g_signal_connect (btn1, "clicked", G_CALLBACK (click1_cb), NULL);
 
-  btn2 = gtk_button_new_with_label ("Quit");
+  btn2 = gtk_button_new_with_label ("Close");
   g_signal_connect (btn2, "clicked", G_CALLBACK (click2_cb), win);
 
   gtk_box_append (GTK_BOX (box), btn1);
@@ -49,7 +48,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new ("com.github.ToshioCP.lb4", G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new ("com.github.ToshioCP.lb4", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);

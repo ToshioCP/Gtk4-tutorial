@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 
-/* Define TfeTextView Widget which is the child object of GtkTextView */
+/* Define TfeTextView Widget which is the child class of GtkTextView */
 
 #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
 G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
@@ -15,6 +15,7 @@ G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
+  tv->file = NULL;
 }
 
 static void
@@ -23,7 +24,7 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
 
 void
 tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
-  tv -> file = f;
+  tv->file = f;
 }
 
 GFile *
@@ -39,8 +40,7 @@ tfe_text_view_new (void) {
 /* ---------- end of the definition of TfeTextView ---------- */
 
 static gboolean
-before_close (GtkWindow *win, gpointer user_data) {
-  GtkWidget *nb = GTK_WIDGET (user_data);
+before_close (GtkWindow *win, GtkWidget *nb) {
   GtkWidget *scr;
   GtkWidget *tv;
   GFile *file;
@@ -61,22 +61,25 @@ before_close (GtkWindow *win, gpointer user_data) {
     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
     if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL)) {
-      pathname = g_file_get_path (file);
-      g_print ("ERROR : Can't save %s.", pathname);
-      g_free (pathname);
+      if ((pathname = g_file_get_path (file)) != NULL) {
+        g_printerr ("Can't save %s.", pathname);
+        g_free (pathname);
+      } else
+        g_printerr ("Pathname not exist.\n");
     }
     g_free (contents);
+    g_object_unref (file);
   }
   return FALSE;
 }
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app) {
   g_print ("You need to give filenames as arguments.\n");
 }
 
 static void
-app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   GtkWidget *win;
   GtkWidget *nb;
   GtkWidget *lab;
@@ -91,7 +94,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-  gtk_window_maximize (GTK_WINDOW (win));
+  gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
 
   nb = gtk_notebook_new ();
   gtk_window_set_child (GTK_WINDOW (win), nb);

@@ -1,12 +1,12 @@
 #include <gtk/gtk.h>
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
-  g_print ("You need a filename argument.\n");
+app_activate (GApplication *app) {
+  g_printerr ("You need a filename argument.\n");
 }
 
 static void
-app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, int n_files, char *hint) {
   GtkWidget *win;
   GtkWidget *scr;
   GtkWidget *tv;
@@ -37,9 +37,10 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer
     gtk_widget_show (win);
   } else {
     if ((filename = g_file_get_path (files[0])) != NULL) {
-      g_print ("No such file: %s.\n", filename);
+      g_printerr ("No such file: %s.\n", filename);
       g_free (filename);
-    }
+    } else
+      g_printerr ("File can't be opened.\n");
     gtk_window_destroy (GTK_WINDOW (win));
   }
 }

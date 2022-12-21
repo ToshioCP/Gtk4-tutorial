@@ -1,6 +1,6 @@
 # TfeTextView API reference
 
-TfeTextView -- Child object of GtkTextView. It holds GFile which the contents of GtkTextBuffer correponds to.
+TfeTextView -- Child object of GtkTextView. It is connected to a certain file.
 
 ## Functions
 - GFile *[tfe_text_view_get_file ()](#tfe_text_view_get_file)
@@ -39,8 +39,8 @@ GObject
 
 ## Description
 
-TfeTextView holds GFile which the contents of GtkTextBuffer corresponds to.
-File manipulation functions are added to this object.
+TfeTextView holds GFile corresponds to the contents of GtkTextBuffer.
+It has some file manipulation functions.
 
 ## Functions
 
@@ -67,7 +67,7 @@ tfe_text_view_open (TfeTextView *tv, GtkWidget *win);
 Just shows a GtkFileChooserDialog so that a user can choose a file to read.
 This function doesn't do any I/O operations.
 They are done by the signal handler connected to the `response` signal emitted by GtkFileChooserDialog.
-Therefore the caller can't know the I/O status directly from the function.
+Therefore the caller can't know the I/O status directly from `tfe_text_view_open`.
 Instead, the status is informed by `open-response` signal.
 The caller needs to set a handler to this signal in advance.
 
@@ -83,9 +83,9 @@ void
 tfe_text_view_save (TfeTextView *tv);
 ~~~
 
-Saves the contents of a TfeTextView to a file.
+Saves the contents of the TfeTextView to a file.
 If `tv` holds a GFile, it is used.
-Otherwise, this function shows GtkFileChosserDialog so that a user can choose a file to save.
+Otherwise, this function shows GtkFileChooserDialog so that the user can choose a file to save.
 
 Parameters
 
@@ -99,7 +99,7 @@ tfe_text_view_saveas (TfeTextView *tv);
 ~~~
 
 Saves the content of a TfeTextView to a file.
-This function shows GtkFileChosserDialog so that a user can choose a file to save.
+This function shows GtkFileChooserDialog so that a user can choose a file to save.
 
 Parameters
 
@@ -173,6 +173,13 @@ Members:
 - TFE_OPEN_RESPONSE_SUCCESS: The file is successfully opened.
 - TFE_OPEN_RESPONSE_CANCEL: Reading file is canceled by the user.
 - TFE_OPEN_RESPONSE_ERROR: An error happened during the opening or reading process.
+
+## Properties
+
+### wrap-mode
+
+The property "wrap-mode" belongs to GtkTextView.
+TfeTextView inherits it and the value is set to GTK\_WRAP\_WORD\_CHAR as a default.
 
 ## Signals
 

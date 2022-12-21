@@ -111,18 +111,17 @@
         </div>
       </div>
     </nav>
-<h1 id="string-and-memory-management">String and memory management</h1>
+<h1 id="strings-and-memory-management">Strings and memory
+management</h1>
 <p>GtkTextView and GtkTextBuffer have functions that use string
 parameters or return a string. The knowledge of strings and memory
 management is useful to understand how to use these functions.</p>
 <h2 id="string-and-memory">String and memory</h2>
 <p>A String is an array of characters that is terminated with ‘\0’.
-Strings are not a C type such as char, int, float or double, but exist
-as a pointer to a character array. They behaves like a string type which
-you may be familiar from other languages. So, this pointer is often
-called ‘a string’.</p>
-<p>In the following, <code>a</code> and <code>b</code> defined as
-character arrays, and are strings.</p>
+String is not a C type such as char, int, float or double, but a
+character array. It behaves like a string in other languages. So, the
+pointer is often called ‘a string’.</p>
+<p>The following is a sample program.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> a<span class="op">[</span><span class="dv">10</span><span class="op">],</span> <span class="op">*</span>b<span class="op">;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>a<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;H&#39;</span><span class="op">;</span></span>
@@ -135,97 +134,101 @@ character arrays, and are strings.</p>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> a<span class="op">;</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">/* *b is &#39;H&#39; */</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">/* *(++b) is &#39;e&#39; */</span></span></code></pre></div>
-<p>The array <code>a</code> has <code>char</code> elements and the size
-of ten. The first six elements are ‘H’, ‘e’, ‘l’, ‘l’, ‘o’ and ‘\0’.
-This array represents the string “Hello”. The first five elements are
-character codes that correspond to the characters. The sixth element is
-‘\0’, which is the same as zero, and indicates that the string ends
-there. The size of the array is 10, so 4 bytes aren’t used, but that’s
-OK, they are just ignored.</p>
-<p>The variable ‘b’ is a pointer to a character. Because <code>b</code>
-is assigned to be <code>a</code>, <code>a</code> and <code>b</code>
-point the same character (‘H’). The variable <code>a</code> is defined
-as an array and it can’t be changed. It always point the top address of
-the array. On the other hand, ‘b’ is a pointer, which is mutable, so
-<code>b</code> can be change. It is then possible to write statements
-like <code>++b</code>, which means take the value in b (n address),
-increase it by one, and store that back in <code>b</code>.</p>
-<p>If a pointer is NULL, it points to nothing. So, the pointer is not a
-string. A NULL string on the other hand will be a pointer which points
-to a location that contains <code>\0</code>, which is a string of length
-0 (or ““). Programs that use strings will include bugs if you aren’t
-careful when using NULL pointers.</p>
-<p>Another annoying problem is the memory that a string is allocated.
-There are four cases:</p>
+<p>An array <code>a</code> is defined as a <code>char</code> type array
+and its size is ten. The first five elements are ‘H’, ‘e’, ‘l’, ‘l’,
+‘o’. They are character codes. For example, ‘H’ is the same as 0x48 or
+72. The sixth element is ‘\0’, which is the same as zero, and indicates
+that the sequence of the data ends there. The array represents the
+string “Hello”.</p>
+<p>The size of the array is 10, so 4 bytes aren’t used. But it’s OK.
+They are just ignored. (If ‘a’ is defined out of functions or its class
+is static, they are assigned with zero. Otherwise, that is to say, the
+class is auto or register, they are undefined.)</p>
+<p>The variable ‘b’ is a pointer to a character. It is assigned with
+<code>a</code>, so <code>b</code> points the first element of
+<code>a</code> (character ‘H’). The array <code>a</code> is immutable.
+So <code>a=a+1</code> causes syntax error.</p>
+<p>On the other hand, ‘b’ is a pointer type variable, which is mutable.
+So, <code>++b</code>, which increases <code>b</code> by one, is
+allowed.</p>
+<p>If a pointer is NULL, it points nothing. So, the pointer is not a
+string. It is different from empty string. Empty string is a pointer
+points <code>\0</code>.</p>
+<p>There are four cases:</p>
 <ul>
-<li>The string is read only;</li>
-<li>The string is in static memory area;</li>
-<li>The string is in stack; and</li>
-<li>The string is in memory allocated from the heap area.</li>
+<li>The string is read only</li>
+<li>The string is in static memory area</li>
+<li>The string is in stack</li>
+<li>The string is in memory allocated from the heap area</li>
 </ul>
 <h2 id="read-only-string">Read only string</h2>
-<p>A string literal in a C program is surrounded by double quotes and
-written as the following:</p>
+<p>A string literal is surrounded by double quotes like this:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="st">&quot;Hello&quot;</span></span></code></pre></div>
-<p>“Hello” is a string literal, and is stored in program memory. A
-string literal is read only. In the program above, <code>s</code> points
-the string literal.</p>
-<p>So, the following program is illegal.</p>
+<p>“Hello” is a string literal, and is read only. So, the following
+program is illegal.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">*(</span>s<span class="op">+</span><span class="dv">1</span><span class="op">)</span> <span class="op">=</span> <span class="ch">&#39;a&#39;</span><span class="op">;</span></span></code></pre></div>
 <p>The result is undefined. Probably a bad thing will happen, for
 example, a segmentation fault.</p>
 <p>NOTE: The memory of the literal string is allocated when the program
-is compiled. It is possible to view all the literal strings defined in
-your program by using the <code>string</code> command.</p>
+is compiled. It is possible to see the literal strings with
+<code>strings</code> command.</p>
+<pre><code>$ strings src/tvf/a.out
+/lib64/ld-linux-x86-64.so.2
+cN&lt;5
+... ... ...
+... ... ...
+Once upon a time, there was an old man who was called Taketori-no-Okina. It is a japanese word that means a man whose work is making bamboo baskets.
+One day, he went into a mountain and found a shining bamboo. &quot;What a mysterious bamboo it is!,&quot; he said. He cut it, then there was a small cute baby girl in it. The girl was shining faintly. He thought this baby girl is a gift from Heaven and took her home.
+His wife was surprized at his story. They were very happy because they had no children. 
+... ... ...
+... ... ...</code></pre>
+<p>It tells us that literal strings are embedded in program binary
+codes.</p>
 <h2 id="strings-defined-as-arrays">Strings defined as arrays</h2>
-<p>If a string is defined as an array, it’s in either stored in the
-static memory area or stack. This depends on the class of the array. If
-the array’s class is <code>static</code>, then it’s placed in static
-memory area. This allocation and memory address is fixed for the life of
-the program. This area can be changed and is writable.</p>
-<p>If the array’s class is <code>auto</code>, then it’s placed in stack.
-If the array is defined inside a function, its default class is
-<code>auto</code>. The stack area will disappear when the function exits
-and returns to the caller. Arrays defined on the stack are writable.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">char</span> a<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="ch">&#39;H&#39;</span><span class="op">,</span> <span class="ch">&#39;e&#39;</span><span class="op">,</span> <span class="ch">&#39;l&#39;</span><span class="op">,</span> <span class="ch">&#39;l&#39;</span><span class="op">,</span> <span class="ch">&#39;o&#39;</span><span class="op">,</span> <span class="ch">&#39;\0&#39;</span><span class="op">};</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>print_strings <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> b<span class="op">[]</span> <span class="op">=</span> <span class="st">&quot;Hello&quot;</span><span class="op">;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  a<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;a&#39;</span><span class="op">;</span> <span class="co">/* Because the array is static, it&#39;s writable. */</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  b<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;a&#39;</span><span class="op">;</span> <span class="co">/* Because the array is auto, it&#39;s writable. */</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  printf <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> a<span class="op">);</span> <span class="co">/* Hallo */</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  printf <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> b<span class="op">);</span> <span class="co">/* Hallo */</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>The array <code>a</code> is defined externally to a function and is
-global in its scope. Such variables are placed in static memory area
-even if the <code>static</code> class is left out. The compiler
-calculates the number of the elements in the right hand side (six), and
-then creates code that allocates six bytes in the static memory area and
-copies the data to this memory.</p>
-<p>The array <code>b</code> is defined inside the function so its class
+<p>If a string is defined as an array, it’s stored in static memory area
+or stack. It depends on the class of the array. If the array’s class is
+<code>static</code>, then it’s placed in static memory area. The
+allocated memory lives for the life of the program. This area is
+writable.</p>
+<p>If the array’s class is <code>auto</code>, it’s placed in stack. If
+the array is defined inside a function, its default class is
+<code>auto</code>. The stack area will disappear when the function
+returns to the caller. Arrays defined on the stack are writable.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">char</span> a<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="ch">&#39;H&#39;</span><span class="op">,</span> <span class="ch">&#39;e&#39;</span><span class="op">,</span> <span class="ch">&#39;l&#39;</span><span class="op">,</span> <span class="ch">&#39;l&#39;</span><span class="op">,</span> <span class="ch">&#39;o&#39;</span><span class="op">,</span> <span class="ch">&#39;\0&#39;</span><span class="op">};</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>print_strings <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> b<span class="op">[]</span> <span class="op">=</span> <span class="st">&quot;Hello&quot;</span><span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  a<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;a&#39;</span><span class="op">;</span> <span class="co">/* Because the array is static, it&#39;s writable. */</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  b<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="ch">&#39;a&#39;</span><span class="op">;</span> <span class="co">/* Because the array is auto, it&#39;s writable. */</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  printf <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> a<span class="op">);</span> <span class="co">/* Hallo */</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  printf <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> b<span class="op">);</span> <span class="co">/* Hallo */</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The array <code>a</code> is defined out of functions. It is placed in
+the static memory area even if the <code>static</code> class is left
+out. The compiler calculates the number of the elements (six) and
+allocates six bytes in the static memory area. Then, it copies “Hello”
+literal string data to the memory.</p>
+<p>The array <code>b</code> is defined inside the function, so its class
 is <code>auto</code>. The compiler calculates the number of the elements
-in the string literal. It has six elements as the zero termination
-character is also included. The compiler creates code which allocates
-six bytes memory in the stack and copies the data to the memory.</p>
+in the string literal. It is six because it has ‘\0’ terminator. The
+compiler allocates six bytes in the stack and copies “Hello” litaral
+string to the stack memory.</p>
 <p>Both <code>a</code> and <code>b</code> are writable.</p>
-<p>The memory is managed by the executable program. You don’t need your
-program to allocate or free the memory for <code>a</code> and
-<code>b</code>. The array <code>a</code> is created then the program is
-first run and remains for the life of the program. The array
-<code>b</code> is created on the stack then the function is called,
-disappears when the function returns.</p>
+<p>The memory is allocated and freed by the program automatically so you
+don’t need to allocate or free. The array <code>a</code> is alive during
+the program’s life time. The array <code>b</code> is alive when the
+function is called until the function returns to the caller.</p>
 <h2 id="strings-in-the-heap-area">Strings in the heap area</h2>
-<p>You can also get, use and release memory from the heap area. The
-standard C library provides <code>malloc</code> to get memory and
+<p>You can get, use and release memory from the heap area. The standard
+C library provides <code>malloc</code> to get memory and
 <code>free</code> to put back memory. GLib provides the functions
-<code>g_new</code> and <code>g_free</code> to do the same thing, with
-support for some additional GLib functionality.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g_new <span class="op">(</span>struct_type<span class="op">,</span> n_struct<span class="op">)</span></span></code></pre></div>
+<code>g_new</code> and <code>g_free</code>. They are similar to
+<code>malloc</code> and <code>free</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g_new <span class="op">(</span>struct_type<span class="op">,</span> n_struct<span class="op">)</span></span></code></pre></div>
 <p><code>g_new</code> is a macro to allocate memory for an array.</p>
 <ul>
 <li><code>struct_type</code> is the type of the element of the
@@ -235,37 +238,37 @@ array.</li>
 <code>struct_type</code>.</li>
 </ul>
 <p>For example,</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> g_new <span class="op">(</span><span class="dt">char</span><span class="op">,</span> <span class="dv">10</span><span class="op">);</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">/* s points an array of char. The size of the array is 10. */</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> tuple <span class="op">{</span><span class="dt">int</span> x<span class="op">,</span> y<span class="op">;}</span> <span class="op">*</span>t<span class="op">;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> g_new <span class="op">(</span><span class="kw">struct</span> tuple<span class="op">,</span> <span class="dv">5</span><span class="op">);</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">/* t points an array of struct tuple. */</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">/* The size of the array is 5. */</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> g_new <span class="op">(</span><span class="dt">char</span><span class="op">,</span> <span class="dv">10</span><span class="op">);</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">/* s points an array of char. The size of the array is 10. */</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> tuple <span class="op">{</span><span class="dt">int</span> x<span class="op">,</span> y<span class="op">;}</span> <span class="op">*</span>t<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> g_new <span class="op">(</span><span class="kw">struct</span> tuple<span class="op">,</span> <span class="dv">5</span><span class="op">);</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">/* t points an array of struct tuple. */</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">/* The size of the array is 5. */</span></span></code></pre></div>
 <p><code>g_free</code> frees memory.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>gpointer mem<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>gpointer mem<span class="op">);</span></span></code></pre></div>
 <p>If <code>mem</code> is NULL, <code>g_free</code> does nothing.
 <code>gpointer</code> is a type of general pointer. It is the same as
 <code>void *</code>. This pointer can be casted to any pointer type.
 Conversely, any pointer type can be casted to <code>gpointer</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>s<span class="op">);</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">/* Frees the memory allocated to s. */</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>t<span class="op">);</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">/* Frees the memory allocated to t. */</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">/* Frees the memory allocated to s. */</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>t<span class="op">);</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">/* Frees the memory allocated to t. */</span></span></code></pre></div>
 <p>If the argument doesn’t point allocated memory it will cause an
 error, specifically, a segmentation fault.</p>
 <p>Some GLib functions allocate memory. For example,
 <code>g_strdup</code> allocates memory and copies a string given as an
 argument.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> g_strdup <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>s<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> g_strdup <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>g_free <span class="op">(</span>s<span class="op">);</span></span></code></pre></div>
 <p>The string literal “Hello” has 6 bytes because the string has ‘\0’ at
-the end it. <code>g_strdup</code> gets 6 bytes from the heap area and
-copies the string to the memory. <code>s</code> is assigned the top
+the end. <code>g_strdup</code> gets 6 bytes from the heap area and
+copies the string to the memory. <code>s</code> is assigned the start
 address of the memory. <code>g_free</code> returns the memory to the
 heap area.</p>
 <p><code>g_strdup</code> is described in <a
@@ -275,26 +278,31 @@ Reference</a>. The following is extracted from the reference.</p>
 <p>The returned string should be freed with <code>g_free()</code> when
 no longer needed.</p>
 </blockquote>
-<p>The function reference will describe if the returned value needs to
-be freed. If you forget to free the allocated memory it will remain
-allocated. Repeated use will cause more memory to be allocated to the
-program, which will grow over time. This is called a memory leak, and
-the only way to address this bug is to close the program (and restart
-it), which will automatically release all of the programs memory back to
-the system.</p>
-<p>Some GLib functions return a string which mustn’t be freed by the
-caller.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>g_quark_to_string <span class="op">(</span>GQuark quark<span class="op">);</span></span></code></pre></div>
-<p>This function returns <code>const char*</code> type. The qualifier
-<code>const</code> means that the returned value is immutable. The
-characters pointed by the returned value aren’t be allowed to be changed
-or freed.</p>
-<p>If a variable is qualified with <code>const</code>, the variable
-can’t be assigned except during initialization.</p>
+<p>If you forget to free the allocated memory it will remain until the
+program ends. Repeated allocation and no freeing cause memory leak. It
+is a bug and may bring a serious problem.</p>
+<h2 id="const-qualifier">const qualifier</h2>
+<p>A <code>const</code> qualified variable can be assigned to initialize
+it. Once it is initialized, it is never allowed to change or free.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">int</span> x <span class="op">=</span> <span class="dv">10</span><span class="op">;</span> <span class="co">/* initialization is OK. */</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="dv">20</span><span class="op">;</span> <span class="co">/* This is illegal because x is qualified with const */</span></span></code></pre></div>
+<p>If a function returns <code>const char*</code> type, the string can’t
+be changed or freed. If a function has a <code>const char *</code> type
+parameter, it ensures that the parameter is not changed in the
+function.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">// You never change or free the returned string.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>gtk_label_get_text <span class="op">(</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  GtkLabel<span class="op">*</span> self</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Str keeps itself during the function runs</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>gtk_label_set_text <span class="op">(</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  GtkLabel<span class="op">*</span> self<span class="op">,</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> str</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

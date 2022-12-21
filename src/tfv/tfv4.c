@@ -1,12 +1,12 @@
 #include <gtk/gtk.h>
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
-  g_print ("You need a filename argument.\n");
+app_activate (GApplication *app) {
+  g_printerr ("You need a filename argument.\n");
 }
 
 static void
-app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer user_data) {
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   GtkWidget *win;
   GtkWidget *nb;
   GtkWidget *lab;
@@ -21,8 +21,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file viewer");
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-  gtk_window_maximize (GTK_WINDOW (win));
+  gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
 
   nb = gtk_notebook_new ();
   gtk_window_set_child (GTK_WINDOW (win), nb);
@@ -47,10 +46,10 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint, gpointer
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);
     } else if ((filename = g_file_get_path (files[i])) != NULL) {
-        g_print ("No such file: %s.\n", filename);
+        g_printerr ("No such file: %s.\n", filename);
         g_free (filename);
     } else
-        g_print ("No valid file is given\n");
+        g_printerr ("No valid file is given\n");
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0)
     gtk_widget_show (win);

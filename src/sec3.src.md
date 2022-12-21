@@ -4,7 +4,7 @@
 
 ### GtkApplication and g\_application\_run
 
-Usually people write programming code to make an application.
+People write programming code to make an application.
 What are applications?
 Applications are software that runs using libraries, which includes the
 OS, frameworks and so on.
@@ -25,7 +25,7 @@ misc/pr1.c
 @@@
 
 The first line says that this program includes the header files of the Gtk libraries.
-The function `main` above is a startup function in C language.
+The function `main` is a startup function in C language.
 The variable `app` is defined as a pointer to a GtkApplication instance.
 The function `gtk_application_new` creates a GtkApplication instance and returns a pointer to the instance.
 The GtkApplication instance is a C structure data in which the information about the application is stored.
@@ -34,6 +34,16 @@ The function `g_application_run` runs an application that the instance defined.
 (We often say that the function runs `app`.
 Actually, `app` is not an application but a pointer to the instance of the application.
 However, it is simple and short, and probably no confusion occurs.)
+
+Here I used the word `instance`.
+Instance, class and object are terminologies in Object Oriented Programming.
+I use these words in the same way.
+But, I will often use "object" instead of "instance" in this tutorial.
+That means "object" and "instance" is the same.
+Object is a bit ambiguous word.
+In a broad sense, object has wider meaning than instance.
+So, readers should be careful of the contexts to find the meaning of "object".
+In many cases, object and instance are the same.
 
 To compile this, the following command needs to be run.
 The string `pr1.c` is the filename of the C source code above.
@@ -71,7 +81,8 @@ So, I will explain that to you first.
 
 A signal is emitted when something happens.
 For example, a window is created, a window is destroyed and so on.
-The signal "activate" is emitted when the application is activated, or started.
+The signal "activate" is emitted when the application is activated.
+(Activated is a bit different from started, but you can think the both are almost same so far.)
 If the signal is connected to a function, which is called a signal handler or
 simply handler, then the function is invoked when the signal emits.
 
@@ -79,7 +90,7 @@ The flow is like this:
 
 1. Something happens.
 2. If it's related to a certain signal, then the signal is emitted.
-3. If the signal as been connected to a handler, then the handler is invoked.
+3. If the signal has been connected to a handler in advance, then the handler is invoked.
 
 Signals are defined in objects.
 For example, the "activate" signal belongs to the GApplication object, which is
@@ -105,6 +116,7 @@ misc/pr2.c
 @@@
 
 First, we define the handler `app_activate` which simply displays a message.
+The function `g_print` is defined in GLib and it's like a printf in the C standard library.
 In the function `main`, we add `g_signal_connect` before `g_application_run`.
 The function `g_signal_connect` has four arguments.
 
@@ -113,14 +125,39 @@ The function `g_signal_connect` has four arguments.
 3. A handler function (also called callback), which needs to be casted by `G_CALLBACK`.
 4. Data to pass to the handler. If no data is necessary, NULL should be given.
 
-You can find the description of each signal in the API reference manual.
-For example, "activate" signal is in GApplication section in [GIO API Reference](https://docs.gtk.org/gio/signal.Application.activate.html).
-The handler function is described in it.
+It is described in the [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
+Correctly, `g_signal_connect` is a macro (not a C function).
 
-In addition, `g_signal_connect` is described in [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
+~~~c
+#define g_signal_connect (
+  instance,
+  detailed_signal,
+  c_handler,
+  data
+)
+~~~
+
+You can find the description of each signal in the API reference manual.
+For example, "activate" signal is in [GApplication section](https://docs.gtk.org/gio/signal.Application.activate.html) in the GIO API Reference.
+
+~~~c
+void
+activate (
+  GApplication* self,
+  gpointer user_data
+)
+~~~
+
+This is a declaration of the "activate" signal handler.
+You can use any name instead of "activate" in the declaration above.
+The parameters are:
+
+- self is an instance to which the signal belongs.
+- user\_data is a data defined in the fourth argument of the `g_signal_connect` function.
+If it is NULL, then you can ignore and left out the second parameter.
+
 API reference manual is very important.
-You should see and understand it to write Gtk applications.
-They are located in ['GTK Documentation'](https://docs.gtk.org/).
+You should see and understand it.
 
 Let's compile the source file above (`pr2.c`) and run it.
 
@@ -207,19 +244,20 @@ By this definition, it returns a pointer to GtkWidget, not GtkWindow.
 It actually creates a new GtkWindow instance (not GtkWidget) but returns a pointer to GtkWidget.
 However,the pointer points the GtkWidget and at the same time it also points GtkWindow that contains GtkWidget in it.
 
-If you want to use `win` as a pointer to the GtkWindow, you need to cast it.
+If you want to use `win` as a pointer to a GtkWindow type instance, you need to cast it.
 
 ~~~C
 (GtkWindow *) win
 ~~~
 
-Or you can use `GTK_WINDOW` macro that performs a similar function.
+It works, but isn't usually used.
+Instead, `GTK_WINDOW` macro is used.
 
 ~~~C
 GTK_WINDOW (win)
 ~~~
 
-This is a recommended way.
+The macro is recommended because it does not only cast but also check the type.
 
 #### Connect it to GtkApplication.
 
@@ -229,8 +267,7 @@ The function `gtk_window_set_application` is used to connect GtkWindow to GtkApp
 gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
 ~~~
 
-You need to cast `win` to GtkWindow and `app` to GtkApplication.
-`GTK_WINDOW` and `GTK_APPLICATION` macro is appropriate for that.
+You need to cast `win` to GtkWindow and `app` to GtkApplication with `GTK_WINDOW` and `GTK_APPLICATION` macro.
 
 GtkApplication continues to run until the related window is destroyed.
 If you didn't connect GtkWindow and GtkApplication, GtkApplication destroys itself immediately.
@@ -246,7 +283,7 @@ But, there's an exception.
 Top window (this term will be explained later) isn't visible when it is created.
 So you need to use the function above to show the window.
 
-Save the program as `pr3.c` and compile and run it.
+Save the program as `pr3.c`, then compile and run it.
 
 ~~~
 $ comp pr3
@@ -262,8 +299,8 @@ Click on the close button then the window disappears and the program finishes.
 ### GtkApplicationWindow
 
 GtkApplicationWindow is a child object of GtkWindow.
-It has some extra functionality for better integration with GtkApplication.
-It is recommended to use it instead of GtkWindow when you use GtkApplication.
+It has some extra feature for better integration with GtkApplication.
+It is recommended to use it as the top-level window of the application instead of GtkWindow.
 
 Now rewrite the program and use GtkApplicationWindow.
 

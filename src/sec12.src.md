@@ -2,14 +2,14 @@
 
 ## Signals
 
-In Gtk programming, each object is encapsulated.
-And it is not recommended to use global variables because they tend to make the program complicated.
+Each object is encapsulated in Gtk programming.
+And it is not recommended to use global variables because they are prone to make the program complicated.
 So, we need something to communicate between objects.
 There are two ways to do so.
 
 - Functions.
 For example, `tb = gtk_text_view_get_buffer (tv)`.
-The caller requests `tv` to give `tb`, which is a GtkTextBuffer instance connected to `tv` to the caller.
+The caller requests `tv` to give `tb`, which is a GtkTextBuffer instance connected to `tv`.
 - Signals.
 For example, `activate` signal on GApplication object.
 When the application is activated, the signal is emitted.
@@ -27,7 +27,7 @@ The registration is done usually when the object class is initialized.
 2. Signals are connected to handlers by `g_connect_signal` or its family functions.
 The connection is usually done out of the object.
 3. When Signals are emitted, the connected handlers are invoked.
-Signal is emitted on the instance of the object.
+Signals are emitted on the instance of the object.
 
 ## Signal registration
 
@@ -39,8 +39,7 @@ This signal is emitted when `tv->file` is changed.
 `tfe_text_view_open` function is not able to return the status because it uses GtkFileChooserDialog.
 This signal is emitted instead of the return value of the function.
 
-A static variable or array is used to store the signal ID.
-A static array is used to register two or more signals.
+A static variable or array is used to store signal ID.
 
 ~~~C
 enum {
@@ -60,10 +59,10 @@ tfetextview/tfetextview.c tfe_text_view_class_init
 
 - 6-15: Registers "change-file" signal.
 `g_signal_new` function is used.
-The signal "change-file" has no default handler (object method handler).
-You usually don't need to set a default handler.
-If you need it, use `g_signal_new_class_handler` function.
-See [GObject API Reference, g\_signal\_new\_class\_handler](https://docs.gtk.org/gobject/func.signal_new_class_handler.html) for further information.
+The signal "change-file" has no default handler (object method handler) so the offset (the line 9) is set to zero.
+You usually don't need a default handler.
+If you need it, use `g_signal_new_class_handler` function instead of `g_signal_new`.
+See [GObject API Reference](https://docs.gtk.org/gobject/func.signal_new_class_handler.html) for further information.
 - The return value of `g_signal_new` is the signal id.
 The type of signal id is guint, which is the same as unsigned int.
 It is used in the function `g_signal_emit`.
