@@ -1,4 +1,7 @@
-#include "tfe.h"
+#include <gtk/gtk.h>
+#include "tfenotebook.h"
+#include "../tfetextview/tfetextview.h"
+
 
 /* The returned string should be freed with g_free() when no longer needed. */
 static gchar*
@@ -128,7 +131,7 @@ notebook_page_close (GtkNotebook *nb) {
 
   if (gtk_notebook_get_n_pages (nb) == 1) {
     win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
-    tfe_application_quit (GTK_WINDOW (win));
+    gtk_window_destroy (GTK_WINDOW (win));
   } else {
     i = gtk_notebook_get_current_page (nb);
     gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);

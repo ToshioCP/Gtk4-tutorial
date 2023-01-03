@@ -34,7 +34,7 @@ app_open (GApplication *app, GFile ** files, int n_files, char *hint) {
       gtk_window_set_title (GTK_WINDOW (win), filename);
       g_free (filename);
     }
-    gtk_widget_show (win);
+    gtk_window_present (GTK_WINDOW (win));
   } else {
     if ((filename = g_file_get_path (files[0])) != NULL) {
       g_printerr ("No such file: %s.\n", filename);

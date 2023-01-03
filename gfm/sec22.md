@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)
+Up: [README.md](../README.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)
 
 # GtkDrawingArea and Cairo
 
@@ -160,7 +160,7 @@ The following is a very simple example.
 25   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (area), draw_function, NULL, NULL);
 26   gtk_window_set_child (GTK_WINDOW (win), area);
 27 
-28   gtk_widget_show (win);
+28   gtk_window_present (GTK_WINDOW (win));
 29 }
 30 
 31 #define APPLICATION_ID "com.github.ToshioCP.da1"
@@ -170,7 +170,7 @@ The following is a very simple example.
 35   GtkApplication *app;
 36   int stat;
 37 
-38   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+38   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 39   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 40   stat =g_application_run (G_APPLICATION (app), argc, argv);
 41   g_object_unref (app);
@@ -216,4 +216,4 @@ The square always appears at the center of the window because the drawing functi
 
 ![Square in the window](../image/da1.png)
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)
+Up: [README.md](../README.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)

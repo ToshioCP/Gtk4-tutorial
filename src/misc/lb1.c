@@ -12,7 +12,7 @@ app_activate (GApplication *app) {
   lab = gtk_label_new ("Hello.");
   gtk_window_set_child (GTK_WINDOW (win), lab);
 
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 int

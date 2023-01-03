@@ -7,7 +7,7 @@
 G_DECLARE_FINAL_TYPE (TfePref, tfe_pref, TFE, PREF, GtkDialog)
 
 GtkWidget *
-tfe_pref_new (GtkWindow *win);
+tfe_pref_new (void);
 
 #endif /* __TFE_PREF_H__ */
 

@@ -153,7 +153,7 @@ All the source files are listed below.
 50         g_print ("No valid file is given\n");
 51   }
 52   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-53     gtk_widget_show (win);
+53     gtk_window_present (GTK_WINDOW (win));
 54   } else
 55     gtk_window_destroy (GTK_WINDOW (win));
 56 }

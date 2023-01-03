@@ -1,8 +1,6 @@
 #ifndef __TFE_NOTEBOOK_H__
 #define __TFE_NOTEBOOK_H__
 
-#include <gtk/gtk.h>
-
 gboolean
 has_saved (GtkNotebook *nb);
 
@@ -28,4 +26,3 @@ void
 notebook_page_new (GtkNotebook *nb);
 
 #endif /* __TFE_NOTEBOOK_H__ */
-

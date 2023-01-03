@@ -40,7 +40,7 @@ app_activate (GApplication *app) {
   gtk_box_append (GTK_BOX (box), btn1);
   gtk_box_append (GTK_BOX (box), btn2);
 
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 int

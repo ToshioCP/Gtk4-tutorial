@@ -237,7 +237,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-34"><a href="#cb5-34"></a>      gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> filename<span class="op">);</span></span>
 <span id="cb5-35"><a href="#cb5-35"></a>      g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb5-36"><a href="#cb5-36"></a>    <span class="op">}</span></span>
-<span id="cb5-37"><a href="#cb5-37"></a>    gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb5-37"><a href="#cb5-37"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb5-38"><a href="#cb5-38"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
 <span id="cb5-39"><a href="#cb5-39"></a>    <span class="cf">if</span> <span class="op">((</span>filename <span class="op">=</span> g_file_get_path <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-40"><a href="#cb5-40"></a>      g_printerr <span class="op">(</span><span class="st">&quot;No such file: %s.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
@@ -402,7 +402,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-52"><a href="#cb8-52"></a>        g_printerr <span class="op">(</span><span class="st">&quot;No valid file is given</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb8-53"><a href="#cb8-53"></a>  <span class="op">}</span></span>
 <span id="cb8-54"><a href="#cb8-54"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb8-55"><a href="#cb8-55"></a>    gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb8-55"><a href="#cb8-55"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb8-56"><a href="#cb8-56"></a>  <span class="cf">else</span></span>
 <span id="cb8-57"><a href="#cb8-57"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb8-58"><a href="#cb8-58"></a><span class="op">}</span></span>

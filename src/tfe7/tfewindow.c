@@ -1,14 +1,13 @@
+#include <gtk/gtk.h>
 #include "tfewindow.h"
 #include "tfenotebook.h"
 #include "tfepref.h"
 #include "tfealert.h"
-#include "css.h"
 
 struct _TfeWindow {
   GtkApplicationWindow parent;
   GtkMenuButton *btnm;
   GtkNotebook *nb;
-  GSettings *settings;
   gboolean is_quit;
 };
 
@@ -19,13 +18,31 @@ static void
 alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
   TfeWindow *win = TFE_WINDOW (user_data);
 
+  gtk_window_destroy (GTK_WINDOW (alert));
   if (response_id == GTK_RESPONSE_ACCEPT) {
     if (win->is_quit)
       gtk_window_destroy(GTK_WINDOW (win));
     else
       notebook_page_close (win->nb);
   }
-  gtk_window_destroy (GTK_WINDOW (alert));
+}
+
+static gboolean
+close_request_cb (TfeWindow *win) {
+  TfeAlert *alert;
+
+  if (has_saved_all (GTK_NOTEBOOK (win->nb)))
+    return false;
+  else {
+    win->is_quit = true;
+    alert = TFE_ALERT (tfe_alert_new ());
+    gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
+    tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to quit?");
+    tfe_alert_set_button_label (alert, "Quit");
+    g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
+    gtk_window_present (GTK_WINDOW (alert));
+    return true;
+  }
 }
 
 /* ----- action activated handlers ----- */
@@ -52,7 +69,8 @@ close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
     notebook_page_close (win->nb);
   else {
     win->is_quit = false;
-    alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
+    alert = TFE_ALERT (tfe_alert_new ());
+    gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
     tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to close?");
     tfe_alert_set_button_label (alert, "Close");
     g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
@@ -79,39 +97,17 @@ pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) 
   TfeWindow *win = TFE_WINDOW (user_data);
   GtkWidget *pref;
 
-  pref = tfe_pref_new (GTK_WINDOW (win));
-  gtk_widget_show (pref);
+  pref = tfe_pref_new ();
+  gtk_window_set_transient_for (GTK_WINDOW (pref), GTK_WINDOW (win));
+  gtk_window_present (GTK_WINDOW (pref));
 }
 
 static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+close_all_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
   TfeWindow *win = TFE_WINDOW (user_data);
 
-  TfeAlert *alert;
-
-  if (has_saved_all (GTK_NOTEBOOK (win->nb)))
+  if (close_request_cb (win) == false)
     gtk_window_destroy (GTK_WINDOW (win));
-  else {
-    win->is_quit = true;
-    alert = TFE_ALERT (tfe_alert_new (GTK_WINDOW (win)));
-    tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to quit?");
-    tfe_alert_set_button_label (alert, "Quit");
-    g_signal_connect (GTK_DIALOG (alert), "response", G_CALLBACK (alert_response_cb), win);
-    gtk_widget_show (GTK_WIDGET (alert));
-  }
-}
-
-/* gsettings changed::font signal handler */
-static void
-changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data); 
-  char *font;
-  PangoFontDescription *pango_font_desc;
-
-  font = g_settings_get_string (settings, "font");
-  pango_font_desc = pango_font_description_from_string (font);
-  g_free (font);
-  set_font_for_display_with_pango_font_desc (win, pango_font_desc);
 }
 
 /* --- public functions --- */
@@ -131,15 +127,6 @@ tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_fi
     notebook_page_new (win->nb);
 }
 
-/* --- TfeWindow object construction/destruction --- */ 
-static void
-tfe_window_dispose (GObject *gobject) {
-  TfeWindow *window = TFE_WINDOW (gobject);
-
-  g_clear_object (&window->settings);
-  G_OBJECT_CLASS (tfe_window_parent_class)->dispose (gobject);
-}
-
 static void
 tfe_window_init (TfeWindow *win) {
   GtkBuilder *build;
@@ -152,9 +139,6 @@ tfe_window_init (TfeWindow *win) {
   gtk_menu_button_set_menu_model (win->btnm, menu);
   g_object_unref(build);
 
-  win->settings = g_settings_new ("com.github.ToshioCP.tfe");
-  g_signal_connect (win->settings, "changed::font", G_CALLBACK (changed_font_cb), win);
-
 /* ----- action ----- */
   const GActionEntry win_entries[] = {
     { "open", open_activated, NULL, NULL, NULL },
@@ -163,18 +147,15 @@ tfe_window_init (TfeWindow *win) {
     { "new", new_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
     { "pref", pref_activated, NULL, NULL, NULL },
-    { "close-all", quit_activated, NULL, NULL, NULL }
+    { "close-all", close_all_activated, NULL, NULL, NULL }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
-  changed_font_cb(win->settings, "font", win);
+  g_signal_connect (GTK_WINDOW (win), "close-request", G_CALLBACK (close_request_cb), NULL);
 }
 
 static void
 tfe_window_class_init (TfeWindowClass *class) {
-  GObjectClass *object_class = G_OBJECT_CLASS (class);
-
-  object_class->dispose = tfe_window_dispose;
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfewindow.ui");
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);
@@ -184,4 +165,3 @@ GtkWidget *
 tfe_window_new (GtkApplication *app) {
   return GTK_WIDGET (g_object_new (TFE_TYPE_WINDOW, "application", app, NULL));
 }
-

@@ -1,70 +1,71 @@
 #include <gtk/gtk.h>
 
 static void
-new_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-open_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-save_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-close_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkWindow *win = GTK_WINDOW (user_data);
+
+  gtk_window_destroy (win);
 }
 
 static void
-cut_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+cut_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-copy_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+copy_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-paste_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+paste_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {
+selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 }
 
 static void
-fullscreen_changed (GSimpleAction *action, GVariant *state, gpointer win) {
+fullscreen_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
+  GtkWindow *win = GTK_WINDOW (user_data);
+
   if (g_variant_get_boolean (state))
-    gtk_window_maximize (GTK_WINDOW (win));
+    gtk_window_maximize (win);
   else
-    gtk_window_unmaximize (GTK_WINDOW (win));
+    gtk_window_unmaximize (win);
   g_simple_action_set_state (action, state);
 }
 
 static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer app)
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
 {
-  g_application_quit (G_APPLICATION(app));
+  GApplication *app = G_APPLICATION (user_data);
+
+  g_application_quit (app);
 }
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *app) {
   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
 
   const GActionEntry win_entries[] = {
-    { "new", new_activated, NULL, NULL, NULL },
-    { "open", open_activated, NULL, NULL, NULL },
     { "save", save_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
     { "close", close_activated, NULL, NULL, NULL },
-    { "cut", cut_activated, NULL, NULL, NULL },
-    { "copy", copy_activated, NULL, NULL, NULL },
-    { "paste", paste_activated, NULL, NULL, NULL },
-    { "selectall", selectall_activated, NULL, NULL, NULL },
     { "fullscreen", NULL, NULL, "false", fullscreen_changed }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
@@ -77,7 +78,7 @@ app_activate (GApplication *app, gpointer user_data) {
 }
 
 static void
-app_startup (GApplication *app, gpointer user_data) {
+app_startup (GApplication *app) {
   GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
   GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
 
@@ -85,6 +86,12 @@ app_startup (GApplication *app, gpointer user_data) {
   g_object_unref (builder);
 
   const GActionEntry app_entries[] = {
+    { "new", new_activated, NULL, NULL, NULL },
+    { "open", open_activated, NULL, NULL, NULL },
+    { "cut", cut_activated, NULL, NULL, NULL },
+    { "copy", copy_activated, NULL, NULL, NULL },
+    { "paste", paste_activated, NULL, NULL, NULL },
+    { "selectall", selectall_activated, NULL, NULL, NULL },
     { "quit", quit_activated, NULL, NULL, NULL }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
@@ -97,7 +104,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 

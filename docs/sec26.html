@@ -287,7 +287,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-52"><a href="#cb2-52"></a></span>
 <span id="cb2-53"><a href="#cb2-53"></a>  GtkWidget <span class="op">*</span>lv <span class="op">=</span> gtk_list_view_new <span class="op">(</span>GTK_SELECTION_MODEL <span class="op">(</span>ns<span class="op">),</span> factory<span class="op">);</span></span>
 <span id="cb2-54"><a href="#cb2-54"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> lv<span class="op">);</span></span>
-<span id="cb2-55"><a href="#cb2-55"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb2-55"><a href="#cb2-55"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb2-56"><a href="#cb2-56"></a><span class="op">}</span></span>
 <span id="cb2-57"><a href="#cb2-57"></a></span>
 <span id="cb2-58"><a href="#cb2-58"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -302,7 +302,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-67"><a href="#cb2-67"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
 <span id="cb2-68"><a href="#cb2-68"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb2-69"><a href="#cb2-69"></a></span>
-<span id="cb2-70"><a href="#cb2-70"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_FLAGS_NONE<span class="op">);</span></span>
+<span id="cb2-70"><a href="#cb2-70"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb2-71"><a href="#cb2-71"></a></span>
 <span id="cb2-72"><a href="#cb2-72"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb2-73"><a href="#cb2-73"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
@@ -409,7 +409,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-35"><a href="#cb7-35"></a></span>
 <span id="cb7-36"><a href="#cb7-36"></a>  GtkWidget <span class="op">*</span>lv <span class="op">=</span> gtk_list_view_new <span class="op">(</span>GTK_SELECTION_MODEL <span class="op">(</span>ss<span class="op">),</span> factory<span class="op">);</span></span>
 <span id="cb7-37"><a href="#cb7-37"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> lv<span class="op">);</span></span>
-<span id="cb7-38"><a href="#cb7-38"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb7-38"><a href="#cb7-38"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb7-39"><a href="#cb7-39"></a><span class="op">}</span></span>
 <span id="cb7-40"><a href="#cb7-40"></a></span>
 <span id="cb7-41"><a href="#cb7-41"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -424,7 +424,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-50"><a href="#cb7-50"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
 <span id="cb7-51"><a href="#cb7-51"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb7-52"><a href="#cb7-52"></a></span>
-<span id="cb7-53"><a href="#cb7-53"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_FLAGS_NONE<span class="op">);</span></span>
+<span id="cb7-53"><a href="#cb7-53"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb7-54"><a href="#cb7-54"></a></span>
 <span id="cb7-55"><a href="#cb7-55"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb7-56"><a href="#cb7-56"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
@@ -594,7 +594,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-42"><a href="#cb11-42"></a></span>
 <span id="cb11-43"><a href="#cb11-43"></a>  GtkWidget <span class="op">*</span>lv <span class="op">=</span> gtk_list_view_new <span class="op">(</span>GTK_SELECTION_MODEL <span class="op">(</span>ns<span class="op">),</span> factory<span class="op">);</span></span>
 <span id="cb11-44"><a href="#cb11-44"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> lv<span class="op">);</span></span>
-<span id="cb11-45"><a href="#cb11-45"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb11-45"><a href="#cb11-45"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb11-46"><a href="#cb11-46"></a><span class="op">}</span></span>
 <span id="cb11-47"><a href="#cb11-47"></a></span>
 <span id="cb11-48"><a href="#cb11-48"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -609,7 +609,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-57"><a href="#cb11-57"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
 <span id="cb11-58"><a href="#cb11-58"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb11-59"><a href="#cb11-59"></a></span>
-<span id="cb11-60"><a href="#cb11-60"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_FLAGS_NONE<span class="op">);</span></span>
+<span id="cb11-60"><a href="#cb11-60"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb11-61"><a href="#cb11-61"></a></span>
 <span id="cb11-62"><a href="#cb11-62"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb11-63"><a href="#cb11-63"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>

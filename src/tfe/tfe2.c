@@ -125,7 +125,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
         g_print ("No valid file is given\n");
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-    gtk_widget_show (win);
+    gtk_window_present (GTK_WINDOW (win));
   } else
     gtk_window_destroy (GTK_WINDOW (win));
 }

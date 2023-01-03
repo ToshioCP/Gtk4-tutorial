@@ -98,7 +98,7 @@ The function `app_open` in the source code `tfe2.c` is as follows.
 80         g_print ("No valid file is given\n");
 81   }
 82   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-83     gtk_widget_show (win);
+83     gtk_window_present (GTK_WINDOW (win));
 84   } else
 85     gtk_window_destroy (GTK_WINDOW (win));
 86 }
@@ -363,7 +363,7 @@ Now I'll show you `app_open` function in the C file `tfe3.c`.
 42         g_print ("No valid file is given\n");
 43   }
 44   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-45     gtk_widget_show (win);
+45     gtk_window_present (GTK_WINDOW (win));
 46   } else
 47     gtk_window_destroy (GTK_WINDOW (win));
 48 }

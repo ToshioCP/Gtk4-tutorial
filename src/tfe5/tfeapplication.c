@@ -24,6 +24,12 @@ close_cb (GtkNotebook *nb) {
 }
 
 static void
+before_destroy (GtkWidget *win, GtkCssProvider *provider) {
+  GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (win));
+  gtk_style_context_remove_provider_for_display (display, GTK_STYLE_PROVIDER (provider));
+}
+
+static void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
@@ -31,7 +37,7 @@ app_activate (GApplication *application) {
   GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
 
   notebook_page_new (nb);
-  gtk_widget_show (GTK_WIDGET (win));
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
@@ -46,7 +52,7 @@ app_open (GApplication *application, GFile ** files, gint n_files, const gchar *
     notebook_page_new_with_file (nb, files[i]);
   if (gtk_notebook_get_n_pages (nb) == 0)
     notebook_page_new (nb);
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
@@ -80,6 +86,9 @@ GdkDisplay *display;
   GtkCssProvider *provider = gtk_css_provider_new ();
   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+  g_signal_connect (win, "destroy", G_CALLBACK (before_destroy), provider);
+  g_object_unref (provider);
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.tfe"

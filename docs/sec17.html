@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -113,44 +113,75 @@
     </nav>
 <h1 id="menu-and-action">Menu and action</h1>
 <h2 id="menu">Menu</h2>
-<p>Users often use menus to tell a command to the computer. It is like this:</p>
+<p>Users often use menus to tell a command to the computer. It is like
+this:</p>
 <figure>
-<img src="image/menu.png" alt="" /><figcaption>Menu</figcaption>
+<img src="image/menu.png" alt="Menu" />
+<figcaption aria-hidden="true">Menu</figcaption>
 </figure>
 <p>Now let’s analyze the menu above. There are two types of object.</p>
 <ul>
-<li>“File”, “Edit”, “View”, “Cut”, “Copy”, “Paste” and “Select All”. They are called “menu item” or simply “item”. When the user clicks one of these items, then something will happen.</li>
-<li>Menubar, submenu referenced by “Edit” item and two sections. They are called “menu”. Menu is an ordered list of items. They are similar to arrays.</li>
+<li>“File”, “Edit”, “View”, “Cut”, “Copy”, “Paste” and “Select All”.
+They are called “menu item” or simply “item”. When the user clicks one
+of these items, then something will happen.</li>
+<li>Menubar, submenu referenced by “Edit” item and two sections. They
+are called “menu”. Menu is an ordered list of items. They are similar to
+arrays.</li>
 </ul>
 <figure>
-<img src="image/menu_structure.png" alt="" /><figcaption>Menu structure</figcaption>
+<img src="image/menu_structure.png" alt="Menu structure" />
+<figcaption aria-hidden="true">Menu structure</figcaption>
 </figure>
 <ul>
-<li>Menubar is a menu which has three items, which are “File”, “Edit” and “View”.</li>
-<li>The menu item labeled “Edit” has a link to the submenu which has two items. These two items don’t have labels. Each item refers to a section.</li>
-<li>The first section is a menu which has three items – “Cut”, “Copy” and “Paste”.</li>
+<li>Menubar is a menu which has three items, which are “File”, “Edit”
+and “View”.</li>
+<li>The menu item labeled “Edit” has a link to the submenu which has two
+items. These two items don’t have labels. Each item refers to a
+section.</li>
+<li>The first section is a menu which has three items – “Cut”, “Copy”
+and “Paste”.</li>
 <li>The second section is a menu which has one item – “Select All”.</li>
 </ul>
-<p>Menus can build a complicated structure thanks to the links of menu items.</p>
-<h2 id="gmenumodel-gmenu-and-gmenuitem">GMenuModel, GMenu and GMenuItem</h2>
-<p>GMenuModel is an abstract object which represents a menu. GMenu is a simple implementation of GMenuModel and a child object of GMenuModel.</p>
+<p>Menus can build a complicated structure thanks to the links of menu
+items.</p>
+<h2 id="gmenumodel-gmenu-and-gmenuitem">GMenuModel, GMenu and
+GMenuItem</h2>
+<p>GMenuModel is an abstract object which represents a menu. GMenu is a
+simple implementation of GMenuModel and a child object of
+GMenuModel.</p>
 <pre><code>GObject -- GMenuModel -- GMenu</code></pre>
-<p>Because GMenuModel is an abstract object, it isn’t instantiatable. Therefore, it doesn’t have any functions to create its instance. If you want to create a menu, use <code>g_menu_new</code> to create a GMenu instance. GMenu inherits all the functions of GMenuModel because of the child object.</p>
-<p>GMenuItem is an object directly derived from GObject. GMenuItem and Gmenu (or GMenuModel) don’t have a parent-child relationship.</p>
+<p>Because GMenuModel is an abstract object, it isn’t instantiatable.
+Therefore, it doesn’t have any functions to create its instance. If you
+want to create a menu, use <code>g_menu_new</code> to create a GMenu
+instance. GMenu inherits all the functions of GMenuModel.</p>
+<p>GMenuItem is an object directly derived from GObject. GMenuItem and
+Gmenu (or GMenuModel) don’t have a parent-child relationship.</p>
 <pre><code>GObject -- GMenuModel -- GMenu
 GObject -- GMenuItem</code></pre>
-<p>GMenuItem has attributes. One of the attributes is label. For example, there is a menu item which has “Edit” label in the first diagram in this section. “Cut”, “Copy”, “Paste” and “Select All” are also the labels of the menu items. Other attributes will be explained later.</p>
-<p>Some menu items have a link to another GMenu. There are two types of links, submenu and section.</p>
-<p>GMenuItem can be inserted, appended or prepended to GMenu. When it is inserted, all of the attributes and link values of the item are copied and used to form a new item within the menu. The GMenuItem itself is not really inserted. Therefore, after the insertion, GMenuItem is useless and it should be freed. The same goes for appending or prepending.</p>
+<p>GMenuItem has attributes. One of the attributes is label. For
+example, there is a menu item which has “Edit” label in the first
+diagram. “Cut”, “Copy”, “Paste” and “Select All” are also the labels of
+the menu items. Other attributes will be explained later.</p>
+<p>Some menu items have a link to another GMenu. There are two types of
+links, submenu and section.</p>
+<p>GMenuItem can be inserted, appended or prepended to GMenu. When it is
+inserted, all of the attributes and link values are copied and stored in
+the menu. The GMenuItem itself is not really inserted. Therefore, after
+the insertion, GMenuItem is useless and it should be freed. The same
+goes for appending or prepending.</p>
 <p>The following code shows how to append GMenuItem to GMenu.</p>
 <pre><code>GMenu *menu = g_menu_new ();
 GMenuItem *menu_item_quit = g_menu_item_new (&quot;Quit&quot;, &quot;app.quit&quot;);
 g_menu_append_item (menu, menu_item_quit);
 g_object_unref (menu_item_quit);</code></pre>
 <h2 id="menu-and-action-1">Menu and action</h2>
-<p>One of the attributes of menu items is an action. This attribute points an action object.</p>
-<p>There are two action objects, GSimpleAction and GPropertyAction. GSimpleAction is often used. And it is used with a menu item. Only GSimpleAction is described in this section.</p>
-<p>An action corresponds to a menu item will be activated when the menu item is clicked. Then the action emits an activate signal.</p>
+<p>One of the attributes of menu items is an action. This attribute
+points an action object.</p>
+<p>There are two action objects, GSimpleAction and GPropertyAction.
+GSimpleAction is often used. And it is used with a menu item. Only
+GSimpleAction is described in this section.</p>
+<p>An action corresponds to a menu item will be activated when the menu
+item is clicked. Then the action emits an activate signal.</p>
 <ol type="1">
 <li>menu item is clicked.</li>
 <li>The corresponding action is activated.</li>
@@ -158,97 +189,242 @@ g_object_unref (menu_item_quit);</code></pre>
 <li>The connected handler is invoked.</li>
 </ol>
 <p>The following code is an example.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app) { ... ... ...}</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>GSimpleAction *act_quit = g_simple_action_new (<span class="st">&quot;quit&quot;</span>, NULL);</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>g_signal_connect (act_quit, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (quit_activated), app);</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>GMenuItem *menu_item_quit = g_menu_item_new (<span class="st">&quot;Quit&quot;</span>, <span class="st">&quot;app.quit&quot;</span>);</span></code></pre></div>
-<ol type="1">
-<li><code>menu_item_quit</code> is a menu item. It has a label “Quit” and is connected to an action “app.quit”. “app” is a prefix and “quit” is a name of the action. The prefix “app” means that the action belongs to a GtkApplication instance. If the menu is clicked, then the corresponding action “quit” which belongs to the GtkApplication will be activated.</li>
-<li><code>act_quit</code> is an action. It has a name “quit”. The function <code>g_simple_action_new</code> creates a stateless action. So, <code>act_quit</code> is stateless. The meaning of stateless will be explained later. The argument <code>NULL</code> means that the action doesn’t have an parameter. Most of the actions are stateless and have no parameter.</li>
-<li>The action <code>act_quit</code> is added to the GtkApplication instance with <code>g_action_map_add_action</code>. When <code>act_quit</code> is activated, it will emit “activate” signal.</li>
-<li>“activate” signal of the action is connected to the handler <code>quit_activated</code>. So, if the action is activated, the handler will be invoked.</li>
-</ol>
-<h2 id="simple-example">Simple example</h2>
-<p>The following is a simple example of menus and actions.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>quit_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {</span>
-<span id="cb5-5"><a href="#cb5-5"></a>  GApplication *app = G_APPLICATION (user_data);</span>
-<span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  g_application_quit (app);</span>
-<span id="cb5-8"><a href="#cb5-8"></a>}</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>app_activate (GApplication *app, gpointer user_data) {</span>
-<span id="cb5-12"><a href="#cb5-12"></a>  GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));</span>
-<span id="cb5-13"><a href="#cb5-13"></a>  gtk_window_set_title (GTK_WINDOW (win), <span class="st">&quot;menu1&quot;</span>);</span>
-<span id="cb5-14"><a href="#cb5-14"></a>  gtk_window_set_default_size (GTK_WINDOW (win), <span class="dv">400</span>, <span class="dv">300</span>);</span>
-<span id="cb5-15"><a href="#cb5-15"></a></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  GSimpleAction *act_quit = g_simple_action_new (<span class="st">&quot;quit&quot;</span>, NULL);</span>
-<span id="cb5-17"><a href="#cb5-17"></a>  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));</span>
-<span id="cb5-18"><a href="#cb5-18"></a>  g_signal_connect (act_quit, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (quit_activated), app);</span>
-<span id="cb5-19"><a href="#cb5-19"></a></span>
-<span id="cb5-20"><a href="#cb5-20"></a>  GMenu *menubar = g_menu_new ();</span>
-<span id="cb5-21"><a href="#cb5-21"></a>  GMenuItem *menu_item_menu = g_menu_item_new (<span class="st">&quot;Menu&quot;</span>, NULL);</span>
-<span id="cb5-22"><a href="#cb5-22"></a>  GMenu *menu = g_menu_new ();</span>
-<span id="cb5-23"><a href="#cb5-23"></a>  GMenuItem *menu_item_quit = g_menu_item_new (<span class="st">&quot;Quit&quot;</span>, <span class="st">&quot;app.quit&quot;</span>);</span>
-<span id="cb5-24"><a href="#cb5-24"></a>  g_menu_append_item (menu, menu_item_quit);</span>
-<span id="cb5-25"><a href="#cb5-25"></a>  g_object_unref (menu_item_quit);</span>
-<span id="cb5-26"><a href="#cb5-26"></a>  g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));</span>
-<span id="cb5-27"><a href="#cb5-27"></a>  g_menu_append_item (menubar, menu_item_menu);</span>
-<span id="cb5-28"><a href="#cb5-28"></a>  g_object_unref (menu_item_menu);</span>
-<span id="cb5-29"><a href="#cb5-29"></a></span>
-<span id="cb5-30"><a href="#cb5-30"></a>  gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));</span>
-<span id="cb5-31"><a href="#cb5-31"></a>  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);</span>
-<span id="cb5-32"><a href="#cb5-32"></a>  gtk_window_present (GTK_WINDOW (win));</span>
-<span id="cb5-33"><a href="#cb5-33"></a><span class="co">/*  gtk_widget_show (win); is also OKay instead of gtk_window_present. */</span></span>
-<span id="cb5-34"><a href="#cb5-34"></a>}</span>
-<span id="cb5-35"><a href="#cb5-35"></a></span>
-<span id="cb5-36"><a href="#cb5-36"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu1&quot;</span></span>
-<span id="cb5-37"><a href="#cb5-37"></a></span>
-<span id="cb5-38"><a href="#cb5-38"></a><span class="dt">int</span></span>
-<span id="cb5-39"><a href="#cb5-39"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
-<span id="cb5-40"><a href="#cb5-40"></a>  GtkApplication *app;</span>
-<span id="cb5-41"><a href="#cb5-41"></a>  <span class="dt">int</span> stat;</span>
-<span id="cb5-42"><a href="#cb5-42"></a></span>
-<span id="cb5-43"><a href="#cb5-43"></a>  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);</span>
-<span id="cb5-44"><a href="#cb5-44"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
-<span id="cb5-45"><a href="#cb5-45"></a></span>
-<span id="cb5-46"><a href="#cb5-46"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
-<span id="cb5-47"><a href="#cb5-47"></a>  g_object_unref (app);</span>
-<span id="cb5-48"><a href="#cb5-48"></a>  <span class="cf">return</span> stat;</span>
-<span id="cb5-49"><a href="#cb5-49"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>quit_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer app<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">...</span> <span class="op">...}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_quit <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_quit<span class="op">));</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>quit_activated<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span></code></pre></div>
 <ul>
-<li>3-8: <code>quit_activated</code> is a handler of the “activate” signal on the action <code>act_quit</code>. Handlers of the “activate” signal have three parameters.
+<li>The variable <code>menu_item_quit</code> points a menu item. It is
+actually a pointer, but we often say that <code>menu_item_quit</code>
+<em>is</em> a menu item. It has a label “Quit” and is connected to an
+action “app.quit”. “app” is a prefix and “quit” is the name of the
+action. The prefix “app” means that the action belongs to the
+GtkApplication instance.</li>
+<li><code>act_quit</code> is an action. It has a name “quit”. The
+function <code>g_simple_action_new</code> creates a stateless action.
+So, <code>act_quit</code> is stateless. The meaning of stateless will be
+explained later. The argument <code>NULL</code> means that the action
+doesn’t have an parameter. Most of the actions are stateless and have no
+parameter.</li>
+<li>The action <code>act_quit</code> is added to the GtkApplication
+instance with <code>g_action_map_add_action</code>. So, the action’s
+scope is application. The prefix of <code>app.quit</code> indicates the
+scope.</li>
+<li>“activate” signal of the action is connected to the handler
+<code>quit_activated</code>.</li>
+</ul>
+<p>If the menu is clicked, the corresponding action “quit” will be
+activated and emits an “activate” signal. Then, the handler
+<code>quit_activated</code> is called.</p>
+<h2 id="menu-bar">Menu bar</h2>
+<p>A menu bar and menus are traditional style. Menu buttons are often
+used instead of a menu bar lately, but the old style is still used
+widely.</p>
+<p>Applications have only one menu bar. If an application has two or
+more windows which have menu bars, the menu bars are exactly the same.
+Because every window refers to the same menubar instance in the
+application.</p>
+<p>An application’s menu bar is usually unchanged once it is set. So, it
+is appropriate to set it in the “startup” handler. Because it is called
+only once in the primary application instance.</p>
+<p>I think it is good for readers to clarify how applications
+behave.</p>
+<ul>
+<li>When an application is run for the first time, the instance is
+called primary.</li>
+<li>The primary instance registers itself to the system. If it succeeds,
+it emits “startup” signal.</li>
+<li>When the instance is activated, an “activate” or “open” signal is
+emitted.</li>
+<li>If the application is run for the second time or later and there
+exists a primary instance, the instance is called a remote
+instance.</li>
+<li>A remote instance doesn’t emit “startup signal.</li>
+<li>If it tries to emit an “activate” or “open” signal, the signals are
+not emitted on the remote instance but primary instance.</li>
+<li>The remote instance quits.</li>
+</ul>
+<p>Therefore, an “activate” or “open” handler can be called twice or
+more. On the other hand, a “startup” handler is called once. So, setting
+a menubar should be done in the “startup” handler.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="simple-example">Simple example</h2>
+<p>The following is a simple example of menus and actions. The source
+file <code>menu1.c</code> is located at src/menu directory.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>quit_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  g_application_quit <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="op">}</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;menu1&quot;</span><span class="op">);</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a></span>
+<span id="cb6-15"><a href="#cb6-15"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="op">}</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a></span>
+<span id="cb6-23"><a href="#cb6-23"></a>  GSimpleAction <span class="op">*</span>act_quit <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb6-24"><a href="#cb6-24"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_quit<span class="op">));</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>  g_signal_connect <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>quit_activated<span class="op">),</span> application<span class="op">);</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a></span>
+<span id="cb6-27"><a href="#cb6-27"></a>  GMenu <span class="op">*</span>menubar <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb6-28"><a href="#cb6-28"></a>  GMenuItem <span class="op">*</span>menu_item_menu <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Menu&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb6-29"><a href="#cb6-29"></a>  GMenu <span class="op">*</span>menu <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb6-30"><a href="#cb6-30"></a>  GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span>
+<span id="cb6-31"><a href="#cb6-31"></a>  g_menu_append_item <span class="op">(</span>menu<span class="op">,</span> menu_item_quit<span class="op">);</span></span>
+<span id="cb6-32"><a href="#cb6-32"></a>  g_object_unref <span class="op">(</span>menu_item_quit<span class="op">);</span></span>
+<span id="cb6-33"><a href="#cb6-33"></a>  g_menu_item_set_submenu <span class="op">(</span>menu_item_menu<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>menu<span class="op">));</span></span>
+<span id="cb6-34"><a href="#cb6-34"></a>  g_menu_append_item <span class="op">(</span>menubar<span class="op">,</span> menu_item_menu<span class="op">);</span></span>
+<span id="cb6-35"><a href="#cb6-35"></a>  g_object_unref <span class="op">(</span>menu_item_menu<span class="op">);</span></span>
+<span id="cb6-36"><a href="#cb6-36"></a></span>
+<span id="cb6-37"><a href="#cb6-37"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
+<span id="cb6-38"><a href="#cb6-38"></a><span class="op">}</span></span>
+<span id="cb6-39"><a href="#cb6-39"></a></span>
+<span id="cb6-40"><a href="#cb6-40"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu1&quot;</span></span>
+<span id="cb6-41"><a href="#cb6-41"></a></span>
+<span id="cb6-42"><a href="#cb6-42"></a><span class="dt">int</span></span>
+<span id="cb6-43"><a href="#cb6-43"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-44"><a href="#cb6-44"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb6-45"><a href="#cb6-45"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb6-46"><a href="#cb6-46"></a></span>
+<span id="cb6-47"><a href="#cb6-47"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb6-48"><a href="#cb6-48"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb6-49"><a href="#cb6-49"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb6-50"><a href="#cb6-50"></a></span>
+<span id="cb6-51"><a href="#cb6-51"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb6-52"><a href="#cb6-52"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb6-53"><a href="#cb6-53"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb6-54"><a href="#cb6-54"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li>3-6: <code>quit_activated</code> is a handler of the “activate”
+signal on the action <code>act_quit</code>. Handlers of the “activate”
+signal have three parameters.
 <ol type="1">
 <li>The action instance on which the signal is emitted.</li>
-<li>Parameter. In this example it is <code>NULL</code> because the second argument of <code>g_simple_action_new</code> (line 15) is <code>NULL</code>. You don’ t need to care about it.</li>
-<li>User data. It is the fourth parameter in the <code>g_signal_connect</code> (line 18) that connects the action and the handler.</li>
+<li>Parameter. In this example it is <code>NULL</code> because the
+second argument of <code>g_simple_action_new</code> (line 23) is
+<code>NULL</code>. You don’ t need to care about it.</li>
+<li>User data. It is the fourth parameter in the
+<code>g_signal_connect</code> (line 25) that connects the action and the
+handler.</li>
 </ol></li>
-<li>7: A function <code>g_application_quit</code> immediately quits the application.</li>
-<li>10-34: <code>app_activate</code> is a handler of “activate” signal on the GtkApplication instance.</li>
-<li>12-14: Creates a GtkApplicationWindow <code>win</code>. And sets the title and the default size.</li>
-<li>16: Creates GSimpleAction <code>act_quit</code>. It is stateless. The first argument of <code>g_simple_action_new</code> is a name of the action and the second argument is a parameter. If you don’t need the parameter, pass <code>NULL</code>. Therefore, <code>act_quit</code> has a name “quit” and no parameter.</li>
-<li>17: Adds the action to GtkApplication <code>app</code>. GtkApplication implements an interface GActionMap and GActionGroup. GtkApplication (GActionMap) can have a group of actions and the actions are added with the function <code>g_action_map_add_action</code>. This function is described in <a href="https://docs.gtk.org/gio/method.ActionMap.add_action.html">Gio API Reference, g_action_map_add_action</a>.</li>
-<li>18: Connects “activate” signal of the action and the handler <code>quit_activated</code>.</li>
-<li>20-23: Creates GMenu and GMenuItem instances. <code>menubar</code> and <code>menu</code> are GMenu. <code>menu_item_menu</code> and <code>menu_item_quit</code> are GMenuItem. <code>menu_item_menu</code> has a label “Menu” and no action. <code>menu_item_quit</code> has a label “Quit” and an action “app.quit”. The action “app.quit” is a combination of “app” and “quit”. “app” is a prefix and it means that the action belongs to GtkApplication. “quit” is the name of the action. Therefore, “app.quit” points the action which belongs to the GtkApplication instance and is named “quit”.</li>
-<li>24-25: Appends <code>menu_item_quit</code> to <code>menu</code>. As I mentioned before, all the attributes and links are copied and used to form a new item in <code>menu</code>. Therefore after the appending, <code>menu_item_quit</code> is no longer needed. It is freed by <code>g_object_unref</code>.</li>
-<li>26: Sets the submenu link in <code>menu_item_menu</code> to point <code>menu</code>.</li>
-<li>27-28: Appends <code>menu_item_menu</code> to <code>menubar</code>. Then frees <code>menu_item_menu</code>. GMenu and GMenuItem are connected and finally a menu is made up. The structure of the menu is shown in the diagram below.</li>
-<li>30: The menu is inserted to GtkApplication.</li>
-<li>31: Sets GtkApplicationWindow to show the menubar.</li>
-<li>32: Shows the window.</li>
+<li>5: The function <code>g_application_quit</code> immediately quits
+the application.</li>
+<li>8-17: <code>app_activate</code> is an “activate” signal
+handler.</li>
+<li>11-13: Creates a GtkApplicationWindow <code>win</code>. And sets the
+title and the default size.</li>
+<li>15: Sets GtkApplicationWindow to show the menubar.</li>
+<li>16: Shows the window.</li>
+<li>19-38: <code>app_startup</code> is a “startup” signal handler</li>
+<li>23: Creates GSimpleAction <code>act_quit</code>. It is stateless.
+The first argument of <code>g_simple_action_new</code> is a name of the
+action and the second argument is a parameter. If you don’t need the
+parameter, pass <code>NULL</code>. Therefore, <code>act_quit</code> has
+a name “quit” and no parameter.</li>
+<li>24: Adds the action to GtkApplication <code>app</code>.
+GtkApplication implements an interface GActionMap and GActionGroup.
+GtkApplication (GActionMap) can have a group of actions and the actions
+are added with the function <code>g_action_map_add_action</code>. This
+function is described in <a
+href="https://docs.gtk.org/gio/method.ActionMap.add_action.html">Gio API
+Reference – g_action_map_add_action</a>. Because this action belongs to
+GtkApplication, its scope is “app” and it is referred with “app.quit” if
+the prefix (scope) is necessary.</li>
+<li>25: Connects “activate” signal of the action and the handler
+<code>quit_activated</code>.</li>
+<li>27-30: Creates GMenu and GMenuItem instances. <code>menubar</code>
+and <code>menu</code> are GMenu. <code>menu_item_menu</code> and
+<code>menu_item_quit</code> are GMenuItem. <code>menu_item_menu</code>
+has a label “Menu” and no action. <code>menu_item_quit</code> has a
+label “Quit” and an action “app.quit”.</li>
+<li>31-32: Appends <code>menu_item_quit</code> to <code>menu</code>. As
+I mentioned before, all the attributes and links are copied and used to
+form a new item in <code>menu</code>. Therefore after the addition,
+<code>menu_item_quit</code> is no longer needed. It is freed by
+<code>g_object_unref</code>.</li>
+<li>33: Sets the submenu link in <code>menu_item_menu</code> to point
+<code>menu</code>.</li>
+<li>34-35: Appends <code>menu_item_menu</code> to <code>menubar</code>.
+Then frees <code>menu_item_menu</code>. GMenu and GMenuItem are
+connected and finally a menu is made up. The structure of the menu is
+shown in the diagram below.</li>
+<li>37: The menubar is inserted to the application.</li>
 </ul>
 <figure>
-<img src="image/menu1.png" alt="" /><figcaption>menu and action</figcaption>
+<img src="image/menu1.png" alt="menu and action" />
+<figcaption aria-hidden="true">menu and action</figcaption>
 </figure>
+<h2 id="compiling">Compiling</h2>
+<p>Change your current directory to <code>src/menu</code>. Use comp to
+compile <code>menu1.c</code>.</p>
+<pre><code>$ comp menu1
+$ ./a.out</code></pre>
+<p>Then, a window appears. Click on “Menu” on the menubar, then a menu
+appears. Click on “Quit” menu, then the application quits.</p>
 <figure>
-<img src="image/menu1_screenshot.png" alt="" /><figcaption>Screenshot of menu1</figcaption>
+<img src="image/menu1_screenshot.png" alt="Screenshot of menu1" />
+<figcaption aria-hidden="true">Screenshot of menu1</figcaption>
 </figure>
+<h2 id="primary-and-remote-application-instances">Primary and remote
+application instances</h2>
+<p>Let’s try running the application twice. Use <code>&amp;</code> in
+your shell command line, then the application runs concurrently.</p>
+<pre><code>$ ./a.out &amp;
+[1] 70969
+$ ./a.out
+$ </code></pre>
+<p>Then, two windows appear.</p>
+<ul>
+<li>The first <code>./a.out</code> calls the application and a primary
+instance is created. It calls “startup” and “activate” handlers and
+shows a window.</li>
+<li>The second<code>./a.out</code> calls the the application again and
+the created instance is a remote one. It doesn’t emit “startup” signal.
+And it activates the application but the “activate” signal is emitted on
+the primary instance. The remote instance quits.</li>
+<li>The primary instance called “activate” handler. The handler creates
+a new window. It adds a menu bar to the window with
+<code>gtk_application_window_set_show_menubar</code> function.</li>
+</ul>
+<p>Both the windows have menu bars. And they are exactly the same. The
+two windows belong to the primary instance.</p>
+<p>If you click on the “Quit” menu, the application (the primary
+instance) quits.</p>
+<figure>
+<img src="image/menu1_two_windows.png" alt="menu1 – two windows" />
+<figcaption aria-hidden="true">menu1 – two windows</figcaption>
+</figure>
+<p>The second run makes a new window. However, it depends on the
+“activate” handler. If you create your window in the startup handler and
+the activate handler just presents the window, no new window is created
+at the second run. For example, tfe (text file editor) doesn’t create a
+second window. It just creates a new notebook page. Because its activate
+handler doesn’t create any window but just creates a new notebook
+page.</p>
+<p>Second or more executions often happen on the desktop applications.
+If you double-click the icon twice or more, the application is run
+multiple times. Therefore, you need to think about your startup and
+activate (open) handler carefully.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

@@ -355,7 +355,7 @@ The following is the whole source code of `tfe1.c`.
 124   }
 125   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
 126     g_signal_connect (win, "close-request", G_CALLBACK (before_close), nb);
-127     gtk_widget_show (win);
+127     gtk_window_present (GTK_WINDOW (win));
 128   } else
 129     gtk_window_destroy (GTK_WINDOW (win));
 130 }

@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -111,288 +111,361 @@
         </div>
       </div>
     </nav>
-<h1 id="ui-file-for-menu-and-action-entries">Ui file for menu and action entries</h1>
+<h1 id="ui-file-for-menu-and-action-entries">Ui file for menu and action
+entries</h1>
 <h2 id="ui-file-for-menu">Ui file for menu</h2>
-<p>You might have thought that building menus is really bothersome. Yes, the program was complicated and it needs lots of time to code it. The situation is similar to building widgets. When we built widgets, using ui file was a good way to avoid such complicated coding. The same goes for menus.</p>
-<p>The ui file for menus has interface, menu tags. The file starts and ends with interface tag.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">&lt;interface&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="kw">&lt;menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="kw">&lt;/menu&gt;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
-<p><code>menu</code> tag corresponds to GMenu object. <code>id</code> attribute defines the name of the object. It will be referred by GtkBuilder.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;submenu&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>File<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    <span class="kw">&lt;item&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>      <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>New<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>      <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.new<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>    <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="kw">&lt;/submenu&gt;</span></span></code></pre></div>
-<p><code>item</code> tag corresponds to item in GMenu which has the same structure as GMenuItem. The item above has a label attribute. Its value is “New”. The item also has an action attribute and its value is “win.new”. “win” is a prefix and “new” is an action name. <code>submenu</code> tag corresponds to both GMenuItem and GMenu. The GMenuItem has a link to GMenu.</p>
+<p>You may have thought that building menus was really bothersome. Yes,
+the program was complicated and it needs lots of time to code them. The
+situation is similar to building widgets. When we built widgets, using
+ui file was a good way to avoid such complication. The same goes for
+menus.</p>
+<p>The ui file for menus has interface and menu tags. The file starts
+and ends with interface tags.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<p><code>menu</code> tag corresponds to GMenu object. <code>id</code>
+attribute defines the name of the object. It will be referred by
+GtkBuilder.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.new&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">submenu</span>&gt;</span></code></pre></div>
+<p><code>item</code> tag corresponds to an item in the GMenu which has
+the same structure as GMenuItem. The item above has a label attribute.
+Its value is “New”. The item also has an action attribute and its value
+is “win.new”. “win” is a prefix and “new” is an action name.
+<code>submenu</code> tag corresponds to both GMenuItem and GMenu. The
+GMenuItem has a link to GMenu.</p>
 <p>The ui file above can be described as follows.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;item&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>File<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    <span class="kw">&lt;link</span><span class="ot"> name=</span><span class="st">&quot;submenu&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>      <span class="kw">&lt;item&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>        <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>New<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>        <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.new<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>      <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>    <span class="kw">&lt;/link&gt;</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a><span class="kw">&lt;/item&gt;</span></span></code></pre></div>
-<p><code>link</code> tag expresses the link to submenu. And at the same time it also expresses the submenu itself. This file illustrates the relationship between the menus and items better than the prior ui file. But <code>submenu</code> tag is simple and easy to understand. So, we usually prefer the former ui file style.</p>
-<p>The following is a screenshot of the sample program in this section. Its name is <code>menu3</code>.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">item</span>&gt;</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">link</span><span class="ot"> name=</span><span class="st">&quot;submenu&quot;</span>&gt;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.new&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">link</span>&gt;</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">item</span>&gt;</span></code></pre></div>
+<p><code>link</code> tag expresses the link to submenu. And at the same
+time it also expresses the submenu itself. This file illustrates the
+relationship between the menus and items better than the prior ui file.
+But <code>submenu</code> tag is simple and easy to understand. So, we
+usually prefer the former ui style.</p>
+<p>For further information, see <a
+href="https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models">GTK
+4 API reference – PopoverMenu</a>.</p>
+<p>The following is a screenshot of the sample program
+<code>menu3</code>. It is located in the directory src/menu3.</p>
 <figure>
-<img src="image/menu3.png" alt="" /><figcaption>menu3</figcaption>
+<img src="image/menu3.png" alt="menu3" />
+<figcaption aria-hidden="true">menu3</figcaption>
 </figure>
-<p>The following is the ui file of the menu in <code>menu3</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">&lt;interface&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="kw">&lt;menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>    <span class="kw">&lt;submenu&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>      <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>File<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>New<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.new<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Open<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.open<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Save<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.save<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Save As…<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.saveas<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Close<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.close<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Quit<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>app.quit<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-37"><a href="#cb4-37"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-38"><a href="#cb4-38"></a>    <span class="kw">&lt;/submenu&gt;</span></span>
-<span id="cb4-39"><a href="#cb4-39"></a>    <span class="kw">&lt;submenu&gt;</span></span>
-<span id="cb4-40"><a href="#cb4-40"></a>      <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Edit<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-42"><a href="#cb4-42"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-43"><a href="#cb4-43"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Cut<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-44"><a href="#cb4-44"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.cut<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-45"><a href="#cb4-45"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-46"><a href="#cb4-46"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-47"><a href="#cb4-47"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Copy<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-48"><a href="#cb4-48"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.copy<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-49"><a href="#cb4-49"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-50"><a href="#cb4-50"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-51"><a href="#cb4-51"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Paste<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-52"><a href="#cb4-52"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.paste<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-53"><a href="#cb4-53"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-54"><a href="#cb4-54"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-55"><a href="#cb4-55"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-56"><a href="#cb4-56"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-57"><a href="#cb4-57"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Select All<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-58"><a href="#cb4-58"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.selectall<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-59"><a href="#cb4-59"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-60"><a href="#cb4-60"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-61"><a href="#cb4-61"></a>    <span class="kw">&lt;/submenu&gt;</span></span>
-<span id="cb4-62"><a href="#cb4-62"></a>    <span class="kw">&lt;submenu&gt;</span></span>
-<span id="cb4-63"><a href="#cb4-63"></a>      <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>View<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-64"><a href="#cb4-64"></a>      <span class="kw">&lt;section&gt;</span></span>
-<span id="cb4-65"><a href="#cb4-65"></a>        <span class="kw">&lt;item&gt;</span></span>
-<span id="cb4-66"><a href="#cb4-66"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="kw">&gt;</span>Full Screen<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-67"><a href="#cb4-67"></a>          <span class="kw">&lt;attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>win.fullscreen<span class="kw">&lt;/attribute&gt;</span></span>
-<span id="cb4-68"><a href="#cb4-68"></a>        <span class="kw">&lt;/item&gt;</span></span>
-<span id="cb4-69"><a href="#cb4-69"></a>      <span class="kw">&lt;/section&gt;</span></span>
-<span id="cb4-70"><a href="#cb4-70"></a>    <span class="kw">&lt;/submenu&gt;</span></span>
-<span id="cb4-71"><a href="#cb4-71"></a>  <span class="kw">&lt;/menu&gt;</span></span>
-<span id="cb4-72"><a href="#cb4-72"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
-<p>The ui file is converted to the resource by the resource compiler <code>glib-compile-resouces</code> with xml file below.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">&lt;gresources&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>  <span class="kw">&lt;gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/menu3&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>    <span class="kw">&lt;file&gt;</span>menu3.ui<span class="kw">&lt;/file&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  <span class="kw">&lt;/gresource&gt;</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">&lt;/gresources&gt;</span></span></code></pre></div>
+<p>The following is the ui file for <code>menu3</code>.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb4-5"><a href="#cb4-5"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-6"><a href="#cb4-6"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-7"><a href="#cb4-7"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-8"><a href="#cb4-8"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-9"><a href="#cb4-9"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.new&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-10"><a href="#cb4-10"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-11"><a href="#cb4-11"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-12"><a href="#cb4-12"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-13"><a href="#cb4-13"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.open&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-14"><a href="#cb4-14"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-15"><a href="#cb4-15"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-16"><a href="#cb4-16"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-17"><a href="#cb4-17"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-18"><a href="#cb4-18"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-19"><a href="#cb4-19"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.save&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-20"><a href="#cb4-20"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-21"><a href="#cb4-21"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-22"><a href="#cb4-22"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save As…&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-23"><a href="#cb4-23"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.saveas&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-24"><a href="#cb4-24"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-25"><a href="#cb4-25"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-26"><a href="#cb4-26"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-27"><a href="#cb4-27"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-28"><a href="#cb4-28"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-29"><a href="#cb4-29"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.close&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-30"><a href="#cb4-30"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-31"><a href="#cb4-31"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-32"><a href="#cb4-32"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-33"><a href="#cb4-33"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-34"><a href="#cb4-34"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-35"><a href="#cb4-35"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-36"><a href="#cb4-36"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-37"><a href="#cb4-37"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-38"><a href="#cb4-38"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb4-39"><a href="#cb4-39"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb4-40"><a href="#cb4-40"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Edit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-41"><a href="#cb4-41"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-42"><a href="#cb4-42"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-43"><a href="#cb4-43"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Cut&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-44"><a href="#cb4-44"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.cut&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-45"><a href="#cb4-45"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-46"><a href="#cb4-46"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-47"><a href="#cb4-47"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-48"><a href="#cb4-48"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-49"><a href="#cb4-49"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-50"><a href="#cb4-50"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-51"><a href="#cb4-51"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-52"><a href="#cb4-52"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-53"><a href="#cb4-53"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-54"><a href="#cb4-54"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-55"><a href="#cb4-55"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-56"><a href="#cb4-56"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-57"><a href="#cb4-57"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Select All&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-58"><a href="#cb4-58"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.selectall&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-59"><a href="#cb4-59"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-60"><a href="#cb4-60"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-61"><a href="#cb4-61"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb4-62"><a href="#cb4-62"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb4-63"><a href="#cb4-63"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;View&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-64"><a href="#cb4-64"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb4-65"><a href="#cb4-65"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-66"><a href="#cb4-66"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Full Screen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-67"><a href="#cb4-67"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-68"><a href="#cb4-68"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-69"><a href="#cb4-69"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb4-70"><a href="#cb4-70"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb4-71"><a href="#cb4-71"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
+<span id="cb4-72"><a href="#cb4-72"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<p>The ui file is converted to the resource by the resource compiler
+<code>glib-compile-resouces</code> with xml file.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/menu3&quot;</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">file</span>&gt;menu3.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
 <p>GtkBuilder builds menus from the resource.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>GtkBuilder *builder = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/menu3/menu3.ui&quot;</span>);</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, <span class="st">&quot;menubar&quot;</span>));</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>gtk_application_set_menubar (GTK_APPLICATION (app), menubar);</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>g_object_unref (builder);</span></code></pre></div>
-<p>It is important that <code>builder</code> is unreferred after the GMenuModel <code>menubar</code> is inserted to the application. If you do it before setting, bad thing will happen – your computer might freeze.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>GtkBuilder <span class="op">*</span>builder <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/menu3/menu3.ui&quot;</span><span class="op">);</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>GMenuModel <span class="op">*</span>menubar <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>builder<span class="op">,</span> <span class="st">&quot;menubar&quot;</span><span class="op">));</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> menubar<span class="op">);</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>builder<span class="op">);</span></span></code></pre></div>
+<p>The builder instance is freed after the GMenuModel
+<code>menubar</code> is inserted to the application. If you do it before
+the insertion, bad thing will happen – your computer might freeze.</p>
 <h2 id="action-entry">Action entry</h2>
-<p>The coding for building actions and signal handlers is bothersome work as well. Therefore, it should be automated. You can implement them easily with GActionEntry structure and <code>g_action_map_add_action_entries</code> function.</p>
-<p>GActionEntry contains action name, signal handlers, parameter and state.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GActionEntry GActionEntry;</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">struct</span> _GActionEntry</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>{</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>  <span class="co">/* action name */</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>  <span class="dt">const</span> gchar *name;</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>  <span class="co">/* activate handler */</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>  <span class="dt">void</span> (* activate) (GSimpleAction *action, GVariant *parameter, gpointer user_data);</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>  <span class="co">/* the type of the parameter given as a single GVariant type string */</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>  <span class="dt">const</span> gchar *parameter_type;</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>  <span class="co">/* initial state given in GVariant text format */</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>  <span class="dt">const</span> gchar *state;</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>  <span class="co">/* change-state handler */</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a>  <span class="dt">void</span> (* change_state) (GSimpleAction *action, GVariant *value, gpointer user_data);</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a>  <span class="co">/*&lt; private &gt;*/</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a>  gsize padding[<span class="dv">3</span>];</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a>};</span></code></pre></div>
+<p>The coding for building actions and signal handlers is bothersome
+work as well. Therefore, it should be automated. You can implement them
+easily with GActionEntry structure and
+<code>g_action_map_add_action_entries</code> function.</p>
+<p>GActionEntry contains action name, signal handlers, parameter and
+state.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GActionEntry GActionEntry<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _GActionEntry</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* action name */</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>name<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* activate handler */</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="op">(*</span> activate<span class="op">)</span> <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* the type of the parameter given as a single GVariant type string */</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>parameter_type<span class="op">;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* initial state given in GVariant text format */</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>state<span class="op">;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* change-state handler */</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="op">(*</span> change_state<span class="op">)</span> <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> gpointer user_data<span class="op">);</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">/*&lt; private &gt;*/</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  gsize padding<span class="op">[</span><span class="dv">3</span><span class="op">];</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
 <p>For example, the actions in the previous section are:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>{ <span class="st">&quot;fullscreen&quot;</span>, NULL, NULL, <span class="st">&quot;false&quot;</span>, fullscreen_changed }</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>{ <span class="st">&quot;color&quot;</span>, color_activated, <span class="st">&quot;s&quot;</span>, <span class="st">&quot;red&quot;</span>, NULL }</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>{ <span class="st">&quot;quit&quot;</span>, quit_activated, NULL, NULL, NULL },</span></code></pre></div>
-<p>And <code>g_action_map_add_action_entries</code> does all the process instead of the functions you have needed.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="dt">const</span> GActionEntry app_entries[] = {</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  { <span class="st">&quot;quit&quot;</span>, quit_activated, NULL, NULL, NULL }</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>};</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>                                 G_N_ELEMENTS (app_entries), app);</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;color&quot;</span><span class="op">,</span> color_activated<span class="op">,</span> <span class="st">&quot;s&quot;</span><span class="op">,</span> <span class="st">&quot;&#39;red&#39;&quot;</span><span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span></code></pre></div>
+<ul>
+<li>Fullscreen action is stateful, but doesn’t have parameters. So, the
+third element (parameter type) is NULL. <a
+href="https://docs.gtk.org/glib/gvariant-text.html">GVariant text
+format</a> provides “true” and “false” as boolean GVariant values. The
+initial state of the action is false (the fourth element). It doesn’t
+have activate handler, so the second element is NULL. Instead, it has
+change-state handler. The fifth element <code>fullscreen_changed</code>
+is the handler.</li>
+<li>Color action is stateful and has a parameter. The parameter type is
+string. <a
+href="https://docs.gtk.org/glib/gvariant-format-strings.html">GVariant
+format strings</a> provides string formats to represent GVariant types.
+The third element “s” means GVariant string type. GVariant text format
+defines that strings are surrounded by single or double quotes. So, the
+string red is ‘red’ or “red”. The fourth element is
+<code>"'red'"</code>, which is a C string format and the string is
+‘red’. You can write <code>"\"red\""</code> instead. The second element
+color_activated is the activate handler. The action doesn’t have
+change-state handler, so the fifth element is NULL.</li>
+<li>Quit action is non-stateful and has no parameter. So, the third and
+fourth elements are NULL. The second element quit_activated is the
+activate handler. The action doesn’t have change-state handler, so the
+fifth element is NULL.</li>
+</ul>
+<p>The function <code>g_action_map_add_action_entries</code> does
+everything to create GSimpleAction instances and add them to a
+GActionMap (an application or window).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> GActionEntry app_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;color&quot;</span><span class="op">,</span> color_activated<span class="op">,</span> <span class="st">&quot;s&quot;</span><span class="op">,</span> <span class="st">&quot;&#39;red&#39;&quot;</span><span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> app_entries<span class="op">,</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                 G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span></code></pre></div>
 <p>The code above does:</p>
 <ul>
-<li>Builds the “quit” action</li>
-<li>Connects the action and the “activate” signal handler <code>quit_activated</code></li>
-<li>Adds the action to the action map <code>app</code>.</li>
+<li>Builds the “color” and “quit” actions</li>
+<li>Connects the action and the “activate” signal handlers
+(color_activated and quit_activated).</li>
+<li>Adds the actions to the action map <code>app</code>.</li>
 </ul>
-<p>The same goes for the other actions.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="dt">const</span> GActionEntry win_entries[] = {</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>  { <span class="st">&quot;fullscreen&quot;</span>, NULL, NULL, <span class="st">&quot;false&quot;</span>, fullscreen_changed },</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>  { <span class="st">&quot;color&quot;</span>, color_activated, <span class="st">&quot;s&quot;</span>, <span class="st">&quot;red&quot;</span>, NULL }</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>};</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>                                 G_N_ELEMENTS (win_entries), win);</span></code></pre></div>
+<p>The same goes for the other action.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                 G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
 <p>The code above does:</p>
 <ul>
-<li>Builds a “fullscreen” action and “color” action.</li>
-<li>Connects the “fullscreen” action and the “change-state” signal handler <code>fullscreen_changed</code></li>
-<li>Its initial state is set to FALSE.</li>
-<li>Connects the “color” action and the “activate” signal handler <code>color_activated</code></li>
-<li>Its parameter type is string and the initial value is “red”.</li>
-<li>Adds the actions to the action map <code>win</code>.</li>
+<li>Builds the “fullscreen” action.</li>
+<li>Connects the action and the signal handler
+<code>fullscreen_changed</code></li>
+<li>Its initial state is set to false.</li>
+<li>Adds the action to the action map <code>win</code>.</li>
 </ul>
-<h2 id="example-code">Example code</h2>
-<p>The C source code of <code>menu3</code> and <code>meson.build</code> is as follows.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<h2 id="example">Example</h2>
+<p>Source files are <code>menu3.c</code>, <code>menu3.ui</code>,
+<code>menu3.gresource.xml</code> and <code>meson.build</code>. They are
+in the directory src/menu3. The following are <code>menu3.c</code> and
+<code>meson.build</code>.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>new_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-5"><a href="#cb11-5"></a>}</span>
+<span id="cb11-4"><a href="#cb11-4"></a>new_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="op">}</span></span>
 <span id="cb11-6"><a href="#cb11-6"></a></span>
 <span id="cb11-7"><a href="#cb11-7"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-8"><a href="#cb11-8"></a>open_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-9"><a href="#cb11-9"></a>}</span>
+<span id="cb11-8"><a href="#cb11-8"></a>open_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="op">}</span></span>
 <span id="cb11-10"><a href="#cb11-10"></a></span>
 <span id="cb11-11"><a href="#cb11-11"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a>save_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-13"><a href="#cb11-13"></a>}</span>
+<span id="cb11-12"><a href="#cb11-12"></a>save_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="op">}</span></span>
 <span id="cb11-14"><a href="#cb11-14"></a></span>
 <span id="cb11-15"><a href="#cb11-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-16"><a href="#cb11-16"></a>saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-17"><a href="#cb11-17"></a>}</span>
+<span id="cb11-16"><a href="#cb11-16"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="op">}</span></span>
 <span id="cb11-18"><a href="#cb11-18"></a></span>
 <span id="cb11-19"><a href="#cb11-19"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-20"><a href="#cb11-20"></a>close_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-21"><a href="#cb11-21"></a>}</span>
+<span id="cb11-20"><a href="#cb11-20"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-21"><a href="#cb11-21"></a>  GtkWindow <span class="op">*</span>win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb11-22"><a href="#cb11-22"></a></span>
-<span id="cb11-23"><a href="#cb11-23"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-24"><a href="#cb11-24"></a>cut_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-25"><a href="#cb11-25"></a>}</span>
-<span id="cb11-26"><a href="#cb11-26"></a></span>
-<span id="cb11-27"><a href="#cb11-27"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-28"><a href="#cb11-28"></a>copy_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-29"><a href="#cb11-29"></a>}</span>
-<span id="cb11-30"><a href="#cb11-30"></a></span>
-<span id="cb11-31"><a href="#cb11-31"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-32"><a href="#cb11-32"></a>paste_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-33"><a href="#cb11-33"></a>}</span>
-<span id="cb11-34"><a href="#cb11-34"></a></span>
-<span id="cb11-35"><a href="#cb11-35"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-36"><a href="#cb11-36"></a>selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer win) {</span>
-<span id="cb11-37"><a href="#cb11-37"></a>}</span>
-<span id="cb11-38"><a href="#cb11-38"></a></span>
-<span id="cb11-39"><a href="#cb11-39"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-40"><a href="#cb11-40"></a>fullscreen_changed (GSimpleAction *action, GVariant *state, gpointer win) {</span>
-<span id="cb11-41"><a href="#cb11-41"></a>  <span class="cf">if</span> (g_variant_get_boolean (state))</span>
-<span id="cb11-42"><a href="#cb11-42"></a>    gtk_window_maximize (GTK_WINDOW (win));</span>
-<span id="cb11-43"><a href="#cb11-43"></a>  <span class="cf">else</span></span>
-<span id="cb11-44"><a href="#cb11-44"></a>    gtk_window_unmaximize (GTK_WINDOW (win));</span>
-<span id="cb11-45"><a href="#cb11-45"></a>  g_simple_action_set_state (action, state);</span>
-<span id="cb11-46"><a href="#cb11-46"></a>}</span>
-<span id="cb11-47"><a href="#cb11-47"></a></span>
-<span id="cb11-48"><a href="#cb11-48"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-49"><a href="#cb11-49"></a>quit_activated (GSimpleAction *action, GVariant *parameter, gpointer app)</span>
-<span id="cb11-50"><a href="#cb11-50"></a>{</span>
-<span id="cb11-51"><a href="#cb11-51"></a>  g_application_quit (G_APPLICATION(app));</span>
-<span id="cb11-52"><a href="#cb11-52"></a>}</span>
-<span id="cb11-53"><a href="#cb11-53"></a></span>
-<span id="cb11-54"><a href="#cb11-54"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-55"><a href="#cb11-55"></a>app_activate (GApplication *app, gpointer user_data) {</span>
-<span id="cb11-56"><a href="#cb11-56"></a>  GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));</span>
+<span id="cb11-23"><a href="#cb11-23"></a>  gtk_window_destroy <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb11-24"><a href="#cb11-24"></a><span class="op">}</span></span>
+<span id="cb11-25"><a href="#cb11-25"></a></span>
+<span id="cb11-26"><a href="#cb11-26"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-27"><a href="#cb11-27"></a>cut_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-28"><a href="#cb11-28"></a><span class="op">}</span></span>
+<span id="cb11-29"><a href="#cb11-29"></a></span>
+<span id="cb11-30"><a href="#cb11-30"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-31"><a href="#cb11-31"></a>copy_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-32"><a href="#cb11-32"></a><span class="op">}</span></span>
+<span id="cb11-33"><a href="#cb11-33"></a></span>
+<span id="cb11-34"><a href="#cb11-34"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-35"><a href="#cb11-35"></a>paste_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-36"><a href="#cb11-36"></a><span class="op">}</span></span>
+<span id="cb11-37"><a href="#cb11-37"></a></span>
+<span id="cb11-38"><a href="#cb11-38"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-39"><a href="#cb11-39"></a>selectall_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-40"><a href="#cb11-40"></a><span class="op">}</span></span>
+<span id="cb11-41"><a href="#cb11-41"></a></span>
+<span id="cb11-42"><a href="#cb11-42"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-43"><a href="#cb11-43"></a>fullscreen_changed <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>state<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-44"><a href="#cb11-44"></a>  GtkWindow <span class="op">*</span>win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb11-45"><a href="#cb11-45"></a></span>
+<span id="cb11-46"><a href="#cb11-46"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>state<span class="op">))</span></span>
+<span id="cb11-47"><a href="#cb11-47"></a>    gtk_window_maximize <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb11-48"><a href="#cb11-48"></a>  <span class="cf">else</span></span>
+<span id="cb11-49"><a href="#cb11-49"></a>    gtk_window_unmaximize <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb11-50"><a href="#cb11-50"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> state<span class="op">);</span></span>
+<span id="cb11-51"><a href="#cb11-51"></a><span class="op">}</span></span>
+<span id="cb11-52"><a href="#cb11-52"></a></span>
+<span id="cb11-53"><a href="#cb11-53"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-54"><a href="#cb11-54"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span></span>
+<span id="cb11-55"><a href="#cb11-55"></a><span class="op">{</span></span>
+<span id="cb11-56"><a href="#cb11-56"></a>  GApplication <span class="op">*</span>app <span class="op">=</span> G_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb11-57"><a href="#cb11-57"></a></span>
-<span id="cb11-58"><a href="#cb11-58"></a>  <span class="dt">const</span> GActionEntry win_entries[] = {</span>
-<span id="cb11-59"><a href="#cb11-59"></a>    { <span class="st">&quot;new&quot;</span>, new_activated, NULL, NULL, NULL },</span>
-<span id="cb11-60"><a href="#cb11-60"></a>    { <span class="st">&quot;open&quot;</span>, open_activated, NULL, NULL, NULL },</span>
-<span id="cb11-61"><a href="#cb11-61"></a>    { <span class="st">&quot;save&quot;</span>, save_activated, NULL, NULL, NULL },</span>
-<span id="cb11-62"><a href="#cb11-62"></a>    { <span class="st">&quot;saveas&quot;</span>, saveas_activated, NULL, NULL, NULL },</span>
-<span id="cb11-63"><a href="#cb11-63"></a>    { <span class="st">&quot;close&quot;</span>, close_activated, NULL, NULL, NULL },</span>
-<span id="cb11-64"><a href="#cb11-64"></a>    { <span class="st">&quot;cut&quot;</span>, cut_activated, NULL, NULL, NULL },</span>
-<span id="cb11-65"><a href="#cb11-65"></a>    { <span class="st">&quot;copy&quot;</span>, copy_activated, NULL, NULL, NULL },</span>
-<span id="cb11-66"><a href="#cb11-66"></a>    { <span class="st">&quot;paste&quot;</span>, paste_activated, NULL, NULL, NULL },</span>
-<span id="cb11-67"><a href="#cb11-67"></a>    { <span class="st">&quot;selectall&quot;</span>, selectall_activated, NULL, NULL, NULL },</span>
-<span id="cb11-68"><a href="#cb11-68"></a>    { <span class="st">&quot;fullscreen&quot;</span>, NULL, NULL, <span class="st">&quot;false&quot;</span>, fullscreen_changed }</span>
-<span id="cb11-69"><a href="#cb11-69"></a>  };</span>
-<span id="cb11-70"><a href="#cb11-70"></a>  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);</span>
-<span id="cb11-71"><a href="#cb11-71"></a></span>
-<span id="cb11-72"><a href="#cb11-72"></a>  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);</span>
-<span id="cb11-73"><a href="#cb11-73"></a></span>
-<span id="cb11-74"><a href="#cb11-74"></a>  gtk_window_set_title (GTK_WINDOW (win), <span class="st">&quot;menu3&quot;</span>);</span>
-<span id="cb11-75"><a href="#cb11-75"></a>  gtk_window_set_default_size (GTK_WINDOW (win), <span class="dv">400</span>, <span class="dv">300</span>);</span>
-<span id="cb11-76"><a href="#cb11-76"></a>  gtk_widget_show (win);</span>
-<span id="cb11-77"><a href="#cb11-77"></a>}</span>
-<span id="cb11-78"><a href="#cb11-78"></a></span>
-<span id="cb11-79"><a href="#cb11-79"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-80"><a href="#cb11-80"></a>app_startup (GApplication *app, gpointer user_data) {</span>
-<span id="cb11-81"><a href="#cb11-81"></a>  GtkBuilder *builder = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/menu3/menu3.ui&quot;</span>);</span>
-<span id="cb11-82"><a href="#cb11-82"></a>  GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, <span class="st">&quot;menubar&quot;</span>));</span>
-<span id="cb11-83"><a href="#cb11-83"></a></span>
-<span id="cb11-84"><a href="#cb11-84"></a>  gtk_application_set_menubar (GTK_APPLICATION (app), menubar);</span>
-<span id="cb11-85"><a href="#cb11-85"></a>  g_object_unref (builder);</span>
-<span id="cb11-86"><a href="#cb11-86"></a></span>
-<span id="cb11-87"><a href="#cb11-87"></a>  <span class="dt">const</span> GActionEntry app_entries[] = {</span>
-<span id="cb11-88"><a href="#cb11-88"></a>    { <span class="st">&quot;quit&quot;</span>, quit_activated, NULL, NULL, NULL }</span>
-<span id="cb11-89"><a href="#cb11-89"></a>  };</span>
-<span id="cb11-90"><a href="#cb11-90"></a>  g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);</span>
-<span id="cb11-91"><a href="#cb11-91"></a>}</span>
-<span id="cb11-92"><a href="#cb11-92"></a></span>
-<span id="cb11-93"><a href="#cb11-93"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu3&quot;</span></span>
-<span id="cb11-94"><a href="#cb11-94"></a></span>
-<span id="cb11-95"><a href="#cb11-95"></a><span class="dt">int</span></span>
-<span id="cb11-96"><a href="#cb11-96"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
-<span id="cb11-97"><a href="#cb11-97"></a>  GtkApplication *app;</span>
-<span id="cb11-98"><a href="#cb11-98"></a>  <span class="dt">int</span> stat;</span>
+<span id="cb11-58"><a href="#cb11-58"></a>  g_application_quit <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb11-59"><a href="#cb11-59"></a><span class="op">}</span></span>
+<span id="cb11-60"><a href="#cb11-60"></a></span>
+<span id="cb11-61"><a href="#cb11-61"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-62"><a href="#cb11-62"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-63"><a href="#cb11-63"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb11-64"><a href="#cb11-64"></a></span>
+<span id="cb11-65"><a href="#cb11-65"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb11-66"><a href="#cb11-66"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-67"><a href="#cb11-67"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-68"><a href="#cb11-68"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-69"><a href="#cb11-69"></a>    <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+<span id="cb11-70"><a href="#cb11-70"></a>  <span class="op">};</span></span>
+<span id="cb11-71"><a href="#cb11-71"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb11-72"><a href="#cb11-72"></a></span>
+<span id="cb11-73"><a href="#cb11-73"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
+<span id="cb11-74"><a href="#cb11-74"></a></span>
+<span id="cb11-75"><a href="#cb11-75"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;menu3&quot;</span><span class="op">);</span></span>
+<span id="cb11-76"><a href="#cb11-76"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
+<span id="cb11-77"><a href="#cb11-77"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb11-78"><a href="#cb11-78"></a><span class="op">}</span></span>
+<span id="cb11-79"><a href="#cb11-79"></a></span>
+<span id="cb11-80"><a href="#cb11-80"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-81"><a href="#cb11-81"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-82"><a href="#cb11-82"></a>  GtkBuilder <span class="op">*</span>builder <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/menu3/menu3.ui&quot;</span><span class="op">);</span></span>
+<span id="cb11-83"><a href="#cb11-83"></a>  GMenuModel <span class="op">*</span>menubar <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>builder<span class="op">,</span> <span class="st">&quot;menubar&quot;</span><span class="op">));</span></span>
+<span id="cb11-84"><a href="#cb11-84"></a></span>
+<span id="cb11-85"><a href="#cb11-85"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> menubar<span class="op">);</span></span>
+<span id="cb11-86"><a href="#cb11-86"></a>  g_object_unref <span class="op">(</span>builder<span class="op">);</span></span>
+<span id="cb11-87"><a href="#cb11-87"></a></span>
+<span id="cb11-88"><a href="#cb11-88"></a>  <span class="dt">const</span> GActionEntry app_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb11-89"><a href="#cb11-89"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-90"><a href="#cb11-90"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-91"><a href="#cb11-91"></a>    <span class="op">{</span> <span class="st">&quot;cut&quot;</span><span class="op">,</span> cut_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-92"><a href="#cb11-92"></a>    <span class="op">{</span> <span class="st">&quot;copy&quot;</span><span class="op">,</span> copy_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-93"><a href="#cb11-93"></a>    <span class="op">{</span> <span class="st">&quot;paste&quot;</span><span class="op">,</span> paste_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-94"><a href="#cb11-94"></a>    <span class="op">{</span> <span class="st">&quot;selectall&quot;</span><span class="op">,</span> selectall_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-95"><a href="#cb11-95"></a>    <span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb11-96"><a href="#cb11-96"></a>  <span class="op">};</span></span>
+<span id="cb11-97"><a href="#cb11-97"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> app_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb11-98"><a href="#cb11-98"></a><span class="op">}</span></span>
 <span id="cb11-99"><a href="#cb11-99"></a></span>
-<span id="cb11-100"><a href="#cb11-100"></a>  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);</span>
-<span id="cb11-101"><a href="#cb11-101"></a>  g_signal_connect (app, <span class="st">&quot;startup&quot;</span>, G_CALLBACK (app_startup), NULL);</span>
-<span id="cb11-102"><a href="#cb11-102"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
-<span id="cb11-103"><a href="#cb11-103"></a></span>
-<span id="cb11-104"><a href="#cb11-104"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
-<span id="cb11-105"><a href="#cb11-105"></a>  g_object_unref (app);</span>
-<span id="cb11-106"><a href="#cb11-106"></a>  <span class="cf">return</span> stat;</span>
-<span id="cb11-107"><a href="#cb11-107"></a>}</span></code></pre></div>
+<span id="cb11-100"><a href="#cb11-100"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu3&quot;</span></span>
+<span id="cb11-101"><a href="#cb11-101"></a></span>
+<span id="cb11-102"><a href="#cb11-102"></a><span class="dt">int</span></span>
+<span id="cb11-103"><a href="#cb11-103"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-104"><a href="#cb11-104"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb11-105"><a href="#cb11-105"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb11-106"><a href="#cb11-106"></a></span>
+<span id="cb11-107"><a href="#cb11-107"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb11-108"><a href="#cb11-108"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb11-109"><a href="#cb11-109"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb11-110"><a href="#cb11-110"></a></span>
+<span id="cb11-111"><a href="#cb11-111"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb11-112"><a href="#cb11-112"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb11-113"><a href="#cb11-113"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb11-114"><a href="#cb11-114"></a><span class="op">}</span></span></code></pre></div>
 <p>meson.build</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb12-1"><a href="#cb12-1"></a>project(&#39;menu3&#39;, &#39;c&#39;)</span>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb12-1"><a href="#cb12-1"></a>project(&#39;menu3&#39;, &#39;c&#39;)</span>
 <span id="cb12-2"><a href="#cb12-2"></a></span>
 <span id="cb12-3"><a href="#cb12-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
 <span id="cb12-4"><a href="#cb12-4"></a></span>
@@ -402,6 +475,26 @@
 <span id="cb12-8"><a href="#cb12-8"></a>sourcefiles=files(&#39;menu3.c&#39;)</span>
 <span id="cb12-9"><a href="#cb12-9"></a></span>
 <span id="cb12-10"><a href="#cb12-10"></a>executable(&#39;menu3&#39;, sourcefiles, resources, dependencies: gtkdep)</span></code></pre></div>
+<p>Action handlers need to follow the following format.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>handler <span class="op">(</span>GSimpleAction <span class="op">*</span>action_name<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">...</span> <span class="op">...</span> <span class="op">}</span></span></code></pre></div>
+<p>You can’t write, for example, “GApplication *app” instead of
+“gpointer user_data”. Because
+<code>g_action_map_add_action_entries</code> expects that handlers
+follow the format above.</p>
+<p>There are <code>menu2_ui.c</code> and <code>menu2.ui</code> under the
+<code>menu</code> directory. They are other examples to show menu ui
+file and <code>g_action_map_add_action_entries</code>. It includes a
+stateful action with parameters.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">item</span>&gt;</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Red&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;red&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">item</span>&gt;</span></code></pre></div>
+<p>Action name and target are separated like this. Action attribute
+includes prefix and name only. You can’t write like
+<code>&lt;attribute name="action"&gt;app.color::red&lt;/attribute&gt;</code>.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

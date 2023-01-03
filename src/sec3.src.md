@@ -276,12 +276,24 @@ As it destroys itself, the GtkWindow is also destroyed.
 
 #### Show the window.
 
-The function `gtk_widget_show` is used to show the window.
+The function `gtk_window_present` presents the window to a user (shows it to the user).
 
-GTK 4 changes the default widget visibility to on, so every widget doesn't need this function to show itself.
+GTK 4 changes the default widget visibility to on, so every widget doesn't need to change it to on.
 But, there's an exception.
-Top window (this term will be explained later) isn't visible when it is created.
+Top level window (this term will be explained later) isn't visible when it is created.
 So you need to use the function above to show the window.
+
+You can use `gtk_widget_set_visible (win, true)` instead of `gtk_window_present`.
+But the behavior of these two is different.
+Suppose there are two windows win1 and win2 on the screen and win1 is behind win2.
+Both windows are visible.
+The function `gtk_widget_set_visible (win1, true)` does nothing because win1 is already visible.
+So, win1 is still behind win2.
+The other function `gtk_window_present (win1)` moves win1 to the top of the stack of the windows.
+Therefore, if you want to present the window, you should use `gtk_window_present`.
+
+Two functions `gtk_widget_show` and `gtk_widget_hide` is deprecated since GTK 4.10.
+You should use `gtk_widget_set_visible` instead.
 
 Save the program as `pr3.c`, then compile and run it.
 

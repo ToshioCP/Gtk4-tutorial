@@ -1,3 +1,4 @@
+#include <gtk/gtk.h>
 #include "tfealert.h"
 
 struct _TfeAlert
@@ -32,7 +33,7 @@ tfe_alert_class_init (TfeAlertClass *class) {
 }
 
 GtkWidget *
-tfe_alert_new (GtkWindow *win) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, "transient-for", win, NULL));
+tfe_alert_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
 }
 

@@ -134,7 +134,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-12"><a href="#cb1-12"></a>  lab <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;Hello.&quot;</span><span class="op">);</span></span>
 <span id="cb1-13"><a href="#cb1-13"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> lab<span class="op">);</span></span>
 <span id="cb1-14"><a href="#cb1-14"></a></span>
-<span id="cb1-15"><a href="#cb1-15"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb1-16"><a href="#cb1-16"></a><span class="op">}</span></span>
 <span id="cb1-17"><a href="#cb1-17"></a></span>
 <span id="cb1-18"><a href="#cb1-18"></a><span class="dt">int</span></span>
@@ -229,7 +229,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-18"><a href="#cb4-18"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> btn<span class="op">);</span></span>
 <span id="cb4-19"><a href="#cb4-19"></a>  g_signal_connect <span class="op">(</span>btn<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>click_cb<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-20"><a href="#cb4-20"></a></span>
-<span id="cb4-21"><a href="#cb4-21"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb4-22"><a href="#cb4-22"></a><span class="op">}</span></span>
 <span id="cb4-23"><a href="#cb4-23"></a></span>
 <span id="cb4-24"><a href="#cb4-24"></a><span class="dt">int</span></span>
@@ -283,7 +283,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-16"><a href="#cb5-16"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> btn<span class="op">);</span></span>
 <span id="cb5-17"><a href="#cb5-17"></a>  g_signal_connect <span class="op">(</span>btn<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>click_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb5-18"><a href="#cb5-18"></a></span>
-<span id="cb5-19"><a href="#cb5-19"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb5-20"><a href="#cb5-20"></a><span class="op">}</span></span></code></pre></div>
 <p>And the difference between <code>lb2.c</code> and <code>lb3.c</code>
 is as follows.</p>
@@ -402,7 +402,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-40"><a href="#cb7-40"></a>  gtk_box_append <span class="op">(</span>GTK_BOX <span class="op">(</span>box<span class="op">),</span> btn1<span class="op">);</span></span>
 <span id="cb7-41"><a href="#cb7-41"></a>  gtk_box_append <span class="op">(</span>GTK_BOX <span class="op">(</span>box<span class="op">),</span> btn2<span class="op">);</span></span>
 <span id="cb7-42"><a href="#cb7-42"></a></span>
-<span id="cb7-43"><a href="#cb7-43"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb7-43"><a href="#cb7-43"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb7-44"><a href="#cb7-44"></a><span class="op">}</span></span>
 <span id="cb7-45"><a href="#cb7-45"></a></span>
 <span id="cb7-46"><a href="#cb7-46"></a><span class="dt">int</span></span>

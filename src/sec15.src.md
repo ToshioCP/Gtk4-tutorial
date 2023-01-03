@@ -88,6 +88,11 @@ In this program CSS is in line 30.
 It sets padding, font-family and font size of GtkTextView.
 - 26-28: GdkDisplay is used to set CSS.
 CSS will be explained in the next subsection.
+- 33: Connects "destroy" signal on the main window and before\_destroy handler.
+This handler is explained in the next subsection.
+- 34: The provider is useless for the startup handler, so g\_object\_unref(provider) is called.
+Note: It doesn't mean the destruction of the provider.
+It is referred by the display so the reference count is not zero.
 
 ## CSS in Gtk
 
@@ -185,6 +190,17 @@ tfe_text_view_new (void) {
 ~~~
 
 CSS in the context takes precedence over CSS in the display.
+
+@@@include
+tfe5/tfeapplication.c before_destroy
+@@@
+
+When a widget is destroyed, or more precisely during its dispose process, a "destroy" signal is emitted.
+The "before\_destroy" handler connects to the signal on the main window.
+(See the program list of app\_startup.)
+So, it is called when the window is destroyed.
+
+The handler removes the CSS provider from the GdkDisplay.
 
 ## activate and open handler
 

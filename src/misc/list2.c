@@ -35,7 +35,7 @@ app_activate (GApplication *application) {
 
   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
@@ -50,7 +50,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 
   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);

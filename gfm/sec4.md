@@ -26,7 +26,7 @@ It is a widget with text in it.
 12   lab = gtk_label_new ("Hello.");
 13   gtk_window_set_child (GTK_WINDOW (win), lab);
 14 
-15   gtk_widget_show (win);
+15   gtk_window_present (GTK_WINDOW (win));
 16 }
 17 
 18 int
@@ -131,7 +131,7 @@ The following program shows how to catch the signal and do something.
 18   gtk_window_set_child (GTK_WINDOW (win), btn);
 19   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), NULL);
 20 
-21   gtk_widget_show (win);
+21   gtk_window_present (GTK_WINDOW (win));
 22 }
 23 
 24 int
@@ -188,7 +188,7 @@ The following code is `lb3.c`.
 16   gtk_window_set_child (GTK_WINDOW (win), btn);
 17   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), win);
 18 
-19   gtk_widget_show (win);
+19   gtk_window_present (GTK_WINDOW (win));
 20 }
 ~~~
 
@@ -300,7 +300,7 @@ The program `lb4.c` is as follows.
 40   gtk_box_append (GTK_BOX (box), btn1);
 41   gtk_box_append (GTK_BOX (box), btn2);
 42 
-43   gtk_widget_show (win);
+43   gtk_window_present (GTK_WINDOW (win));
 44 }
 45 
 46 int

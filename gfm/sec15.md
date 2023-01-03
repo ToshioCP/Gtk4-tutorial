@@ -85,7 +85,10 @@ The handler is as follows.
 29   GtkCssProvider *provider = gtk_css_provider_new ();
 30   gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
 31   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-32 }
+32 
+33   g_signal_connect (win, "destroy", G_CALLBACK (before_destroy), provider);
+34   g_object_unref (provider);
+35 }
 ~~~
 
 - 12-15: Builds widgets using ui file (resource).
@@ -99,6 +102,11 @@ In this program CSS is in line 30.
 It sets padding, font-family and font size of GtkTextView.
 - 26-28: GdkDisplay is used to set CSS.
 CSS will be explained in the next subsection.
+- 33: Connects "destroy" signal on the main window and before\_destroy handler.
+This handler is explained in the next subsection.
+- 34: The provider is useless for the startup handler, so g\_object\_unref(provider) is called.
+Note: It doesn't mean the destruction of the provider.
+It is referred by the display so the reference count is not zero.
 
 ## CSS in Gtk
 
@@ -185,6 +193,21 @@ tfe_text_view_new (void) {
 
 CSS in the context takes precedence over CSS in the display.
 
+~~~C
+1 static void
+2 before_destroy (GtkWidget *win, GtkCssProvider *provider) {
+3   GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (win));
+4   gtk_style_context_remove_provider_for_display (display, GTK_STYLE_PROVIDER (provider));
+5 }
+~~~
+
+When a widget is destroyed, or more precisely during its dispose process, a "destroy" signal is emitted.
+The "before\_destroy" handler connects to the signal on the main window.
+(See the program list of app\_startup.)
+So, it is called when the window is destroyed.
+
+The handler removes the CSS provider from the GdkDisplay.
+
 ## activate and open handler
 
 The handler of "activate" and "open" signal are `app_activate` and `app_open` respectively.
@@ -199,7 +222,7 @@ They just create a new GtkNotebookPage.
  6   GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
  7 
  8   notebook_page_new (nb);
- 9   gtk_widget_show (GTK_WIDGET (win));
+ 9   gtk_window_present (GTK_WINDOW (win));
 10 }
 11 
 12 static void
@@ -214,7 +237,7 @@ They just create a new GtkNotebookPage.
 21     notebook_page_new_with_file (nb, files[i]);
 22   if (gtk_notebook_get_n_pages (nb) == 0)
 23     notebook_page_new (nb);
-24   gtk_widget_show (win);
+24   gtk_window_present (GTK_WINDOW (win));
 25 }
 ~~~
 

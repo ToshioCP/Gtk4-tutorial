@@ -125,7 +125,7 @@ The program is shown below.
 34       gtk_window_set_title (GTK_WINDOW (win), filename);
 35       g_free (filename);
 36     }
-37     gtk_widget_show (win);
+37     gtk_window_present (GTK_WINDOW (win));
 38   } else {
 39     if ((filename = g_file_get_path (files[0])) != NULL) {
 40       g_printerr ("No such file: %s.\n", filename);
@@ -284,7 +284,7 @@ It is inserted as a child of GtkApplicationWindow and contains multiple GtkScrol
 52         g_printerr ("No valid file is given\n");
 53   }
 54   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0)
-55     gtk_widget_show (win);
+55     gtk_window_present (GTK_WINDOW (win));
 56   else
 57     gtk_window_destroy (GTK_WINDOW (win));
 58 }

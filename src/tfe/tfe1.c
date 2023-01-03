@@ -124,7 +124,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
     g_signal_connect (win, "close-request", G_CALLBACK (before_close), nb);
-    gtk_widget_show (win);
+    gtk_window_present (GTK_WINDOW (win));
   } else
     gtk_window_destroy (GTK_WINDOW (win));
 }

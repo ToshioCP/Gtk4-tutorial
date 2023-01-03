@@ -1,3 +1,4 @@
+#include <gtk/gtk.h>
 #include "tfenotebook.h"
 #include "../tfetextview/tfetextview.h"
 

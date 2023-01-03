@@ -1,3 +1,4 @@
+#include <gtk/gtk.h>
 #include "tfepref.h"
 
 struct _TfePref
@@ -34,7 +35,7 @@ tfe_pref_class_init (TfePrefClass *class) {
 }
 
 GtkWidget *
-tfe_pref_new (GtkWindow *win) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, "transient-for", win, NULL));
+tfe_pref_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
 }
 

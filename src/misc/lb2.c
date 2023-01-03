@@ -18,7 +18,7 @@ app_activate (GApplication *app) {
   gtk_window_set_child (GTK_WINDOW (win), btn);
   g_signal_connect (btn, "clicked", G_CALLBACK (click_cb), NULL);
 
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 int

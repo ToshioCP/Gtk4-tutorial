@@ -459,7 +459,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-124"><a href="#cb5-124"></a>  <span class="op">}</span></span>
 <span id="cb5-125"><a href="#cb5-125"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-126"><a href="#cb5-126"></a>    g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>before_close<span class="op">),</span> nb<span class="op">);</span></span>
-<span id="cb5-127"><a href="#cb5-127"></a>    gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb5-127"><a href="#cb5-127"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb5-128"><a href="#cb5-128"></a>  <span class="op">}</span> <span class="cf">else</span></span>
 <span id="cb5-129"><a href="#cb5-129"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb5-130"><a href="#cb5-130"></a><span class="op">}</span></span>

@@ -1,25 +1,55 @@
 # GtkMenuButton, accelerators, font, pango and gsettings
 
-Traditional menu structure is fine.
-However, buttons or menu items we often use are not so many.
-Some mightn't be clicked at all.
-Therefore, it's a good idea to put some frequently used buttons on the toolbar and put the rest of the less frequently used operations into the menu.
-Such menu are often connected to GtkMenuButton.
+Tfe text editor will be restructured in this section.
 
-We will restructure tfe text file editor in this section.
-It will be more practical.
-The buttons are changed to:
-
-- Put open, save and close buttons to the toolbar.
+- Open, save and close buttons are placed on the toolbar.
 In addition, GtkMenuButton is added to the toolbar.
 This button shows a popup menu when clicked on.
 Here, popup means widely, including pull-down menu.
-- Put new, save as, preference and quit items to the menu under the menu button.
+- New, save-as, preference and quit items are put into the menu.
 
-## Signal elements in ui files 
+This makes the most frequently used operation bound to the tool bar buttons.
+And the others are stored in behind the menus.
+So, it is more practical.
+
+In addition, the following features are added.
+
+- Accelerators. For example, Ctrl-O reads a file and creates a new page.
+- Preference dialog for font selection.
+- Alert dialog to confirm closing or quitting without saving contents.
+- GSettings to keep the font selection.
+
+![tfe6](../image/tfe6.png){width=9.06cm height=6.615cm}
+
+## Static variables shared by functions in tfeapplication.c
+
+The next version of `tfe` has static variables in `tfeapplication.c`.
+Static variables are convenient but not good for maintenance.
+So, the final version will remove them and take another way to cover the static variables.
+
+Anyway, the following is the code with regard to the static variables.
+
+~~~C
+static GtkDialog *pref; // preference dialog
+static GtkFontButton *fontbtn; // font button
+static GSettings *settings; // GSetting
+static GtkDialog *alert; // alert dialog
+static GtkLabel *lb_alert;  // label in the alert dialog
+static GtkButton *btn_accept; // accept button in the alert dialog
+static GtkCssProvider *provider0; //CSS provider for textview padding
+static GtkCssProvider *provider; // CSS provider for fonts
+
+static gulong pref_close_request_handler_id = 0;
+static gulong alert_close_request_handler_id = 0;
+static gboolean is_quit; // flag whether to quit or close
+~~~
+
+These variables can be referred by any functions in the file.
+
+## Signal tags in ui files 
 
 The four buttons are included in the ui file `tfe.ui`.
-The difference from prior sections is signal tag.
+A difference from prior sections is signal tags.
 The following is extracted from `tfe.ui` and it describes the open button.
 
 ~~~xml
@@ -30,15 +60,38 @@ The following is extracted from `tfe.ui` and it describes the open button.
 ~~~
 
 Signal tag specifies the name of the signal, handler and user_data object.
-They are the value of name, handler and object attributes.
-Swapped attribute has the same meaning as `g_signal_connect_swapped` function.
-So, the signal tag above works the same as the function below.
+
+- The signal name is "clicked".
+- The handler is "open\_cb".
+- The user data object is "nb" (GtkNoteBook instance).
+
+Swapped attribute has the same effect as `g_signal_connect_swapped` function.
+So, the signal tag above works the same as:
 
 ~~~C
 g_signal_connect_swapped (btno, "clicked", G_CALLBACK (open_cb), nb);
 ~~~
 
-You need to compile the source file with "-WI, --export-dynamic" options.
+This function swaps the button and the forth argument (`btno` and `nb`) in the handler.
+If `g_signal_connect` is used, the handler is like this:
+
+~~~C
+/* The parameter user_data is assigned with nb */
+static void
+open_cb (GtkButton *btno, gpointer user_data) { ... ... }
+~~~
+
+If `g_signal_connect_swapped` is used, the button and the user data are swapped.
+
+~~~C
+/* btno and user_data (nb) are exchanged */
+static void
+open_cb (GtkNoteBook *nb) { ... ... }
+~~~
+
+It is good if the button instance is useless in the handler.
+
+When you use a signal tag in your ui file, you need "-WI, --export-dynamic" options to compile.
 You can achieve this by adding "export_dynamic: true" argument to executable function in `meson.build`.
 And remove static class from the handler.
 
@@ -53,6 +106,12 @@ Then the signal tag can't find the function.
 
 ## Menu and GkMenuButton
 
+Traditional menu structure is fine.
+However, We don't use all the menus or buttons so often.
+Some mightn't be clicked at all.
+Therefore, it's a good idea to put some frequently used buttons on the toolbar and the rest into the menu.
+Such menu are often connected to GtkMenuButton.
+
 Menus are described in `menu.ui` file.
 
 @@@include
@@ -62,13 +121,17 @@ tfe6/menu.ui
 There are four items, "New", "Saveas", "Preference" and "Quit".
 
 - "New" menu creates a new empty page.
-- "Saveas" menu saves the current page as a new filename.
+- "Saveas" menu saves the current page as a different filename from the original one.
 - "Preference" menu sets preference items.
 This version of `tfe` has only font preference.
 - "Quit" menu quits the application.
 
 These four menus are not used so often.
-That's why they are put to the menu behind the menu button.
+That's why they are put into the menu behind the menu button.
+
+All the actions above have "win" scope.
+Tfe has only one window even if the second application runs.
+So, the scope "app" and "win" have very little difference in this application.
 
 The menus and the menu button are connected with `gtk_menu_button_set_menu_model` function.
 The variable `btnm` below points a GtkMenuButton object.
@@ -92,7 +155,7 @@ Actions are defined with an array and `g_action_map_add_action_entries` function
     { "new", new_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
     { "pref", pref_activated, NULL, NULL, NULL },
-    { "close-all", quit_activated, NULL, NULL, NULL }
+    { "close-all", close_all_activated, NULL, NULL, NULL }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), nb);
 ~~~
@@ -101,10 +164,10 @@ There are seven actions, open, save, close, new, saveas, pref and close-all.
 But there were only four menus.
 New, saveas, pref and close-all actions correspond to new, saveas, preference and quit menu respectively.
 The three actions open, save and close doesn't have corresponding menus.
-Are thy necessary?
-These actions are defined because of accelerators.
+Are they necessary?
+Yes, because they correspond to accelerators.
 
-Accelerators are a kind of short cut key function.
+Accelerators are kinds of short cut key functions.
 They are defined with arrays and `gtk_application_set_accels_for_action` function.
 
 ~~~C
@@ -155,12 +218,32 @@ You can define more than one accelerator keys and the list must ends with NULL (
 If you want to do so, the array length needs to be three or more.
 The parser recognizes "\<control\>o", "\<Shift\>\<Alt\>F2", "\<Ctrl\>minus" and so on.
 If you want to use symbol key like "\<Ctrl\>-", use "\<Ctrl\>minus" instead.
-Such relation between lower case and symbol (its character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the GTK 4 source code.
+Such relation between lower case and symbol (character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the GTK 4 source code.
+
+### Open, save and close handlers
+
+There are two open handlers.
+One is a handler for the clicked signal on the button.
+The other is for the activate signal on the action.
+
+~~~
+Open button ==(clicked)==> open.cb handler
+Ctrl-o key (accerelator) ==(key down)==> open action activated ==> open_activated handler
+~~~
+
+But the behavior of the two handlers are the same.
+So, `open_activate` just call `open.cb`.
+
+@@@include
+tfe6/tfeapplication.c open.cb open_activated
+@@@
+
+The same goes on with the save and close handlers.
 
 ## Saveas handler
 
-TfeTextView has already had a saveas function.
-So, only we need to write is the wrapper function in `tfenotebook.c`.
+TfeTextView has a saveas function.
+So we just write a wrapper function in `tfenotebook.c`.
 
 @@@include
 tfe6/tfenotebook.c get_current_textview notebook_page_saveas
@@ -215,32 +298,38 @@ Preference dialog xml definition is added to `tfe.ui`.
 ~~~
 
 - Preference dialog is an independent dialog.
-It is not a descendant widget of the top-level GtkApplicationwindow `win`.
+It is not a descendant widget of the top-level GtkApplicationwindow.
 Therefore, There's no child tag that surrounds the dialog object.
 - There are four properties of the dialog.
 GtkDialog is a child object (not child widget) of GtkWindow, so it inherits all the properties from GtkWindow.
 Title, resizable, modal and transient-for properties are inherited from GtkWindow.
 Transient-for specifies a temporary parent window, which the dialog's location is based on.
-- internal-child attribute is used in the child tag above.
-GtkDialog has a GtkBox child widget.
-Its id is "content_area" in `gtkdialog.ui`, which is the ui file of GtkDialog.
-(It is in the GTK 4 source files.)
-This box is provided for users to add content widgets in it.
-The tag `<child internal-child="content_area">` is put at the top of the contents.
-Then you need to specify an object tag and define its class as GtkBox and its id as content_area.
-This object is defined in `gtkdialog.ui` but you need to define it again in the child tag.
-- In the content area, defines GtkBox, GtkLabel and GtkFontButton.
+- The tag `<child internal-child="content_area">` is put at the top of the contents of the dialog.
+You need to specify a GtkBox object tag with content\_area id.
+This object is defined in `gtkdialog.ui` (composite widget) but you need to define it again in the child tag.
+Composite widget will be explained in the next section.
+For further information about GtkDialog ui tags, see:
+  - [GTK 4 API reference -- GtkBuilder](https://docs.gtk.org/gtk4/class.Builder.html#gtkbuilder-ui-definitions)
+  - [GTK 4 API reference -- GtkDialog](https://docs.gtk.org/gtk4/class.Dialog.html#gtkdialog-as-gtkbuildable)
+  - [GtkDialog ui file](https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gtk/ui/gtkdialog.ui)
+- There is a horizontal GtkBox in the content area.
+- GtkLabel and GtkFontButton are in the GtkBox.
 
 I want the preference dialog to keep alive during the application lives.
 So, it is necessary to catch "close-request" signal from the dialog and stop the signal propagation.
+(This signal is emitted when the close button, right upper x button of the window, is clicked.)
 This is accomplished by returning TRUE by the signal handler.
 
 ~~~C
-pref_close_cb (GtkDialog *pref, gpointer user_data) {
+static gboolean
+dialog_close_cb (GtkDialog *dialog) {
+  gtk_widget_set_visible (GTK_WIDGET (dialog), false);
   return TRUE;
 }
-
-g_signal_connect (GTK_DIALOG (pref), "close-request", G_CALLBACK (pref_close_cb), NULL);
+... ...
+( in app_startup function )
+pref_close_request_handler_id = g_signal_connect (GTK_DIALOG (pref), "close-request", G_CALLBACK (dialog_close_cb), NULL);
+... ...
 ~~~
 
 Generally, signal emission consists of five stages.
@@ -250,17 +339,16 @@ Default handler is set when a signal is registered.
 It is different from user signal handler, simply called signal handler, connected by `g_signal_connect`series function.
 Default handler can be invoked in either stage 1, 3 or 5.
 Most of the default handlers are `G_SIGNAL_RUN_FIRST` or `G_SIGNAL_RUN_LAST`.
-2. Signal handlers are invoked, unless it is connected by `g_signal_connect_after`.
-3. Default handler is invoked if the signal's flag is `G_SIGNAL_RUN_LAST`.
-4. Signal handlers are invoked, if it is connected by `g_signal_connect_after`.
-5. Default handler is invoked if the signal's flag is `G_SIGNAL_RUN_CLEANUP`.
+1. Signal handlers are invoked, unless it is connected by `g_signal_connect_after`.
+2. Default handler is invoked if the signal's flag is `G_SIGNAL_RUN_LAST`.
+3. Signal handlers are invoked, if it is connected by `g_signal_connect_after`.
+4. Default handler is invoked if the signal's flag is `G_SIGNAL_RUN_CLEANUP`.
 
-In the case of "close-request" signal, the default handler's flag is `G_SIGNAL_RUN_LAST`.
-The handler `pref_close_cb` is not connected by `g_signal_connect_after`.
-So the number of stages are two.
+The "close-request" signal is `G_SIGNAL_RUN_LAST`.
+So, the order of the invocation is:
 
-1. Signal handler `pref_close_cb` is invoked.
-2. Default handler is invoked.
+1. Signal handler `dialog_close_cb`
+2. Default handler
 
 And If the user signal handler returns TRUE, then other handlers will be stopped being invoked.
 Therefore, the program above prevents the invocation of the default handler and stop the closing process of the dialog.
@@ -270,58 +358,47 @@ The following codes are extracted from `tfeapplication.c`.
 ~~~C
 static gulong pref_close_request_handler_id = 0;
 static gulong alert_close_request_handler_id = 0;
-
 ... ...
-
 static gboolean
 dialog_close_cb (GtkDialog *dialog, gpointer user_data) {
-  gtk_widget_hide (GTK_WIDGET (dialog));
+  gtk_widget_set_visible (GTK_WIDGET (dialog), false);
   return TRUE;
 }
-
 ... ...
-
 static void
 pref_activated (GSimpleAction *action, GVariant *parameter, gpointer nb) {
-  gtk_widget_show (GTK_WIDGET (pref));
+  gtk_window_present (GTK_WINDOW (pref));
 }
-
 ... ...
-
-/* ----- quit application ----- */
 void
-tfe_application_quit (GtkWindow *win) {
+app_shutdown (GApplication *application) {
+   ... ... ...
   if (pref_close_request_handler_id > 0)
     g_signal_handler_disconnect (pref, pref_close_request_handler_id);
-  if (alert_close_request_handler_id > 0)
-    g_signal_handler_disconnect (alert, alert_close_request_handler_id);
-  g_clear_object (&settings);
-  gtk_window_destroy (GTK_WINDOW (alert));
   gtk_window_destroy (GTK_WINDOW (pref));
-  gtk_window_destroy (win);
+   ... ... ...
 }
-
 ... ...
-
 static void
 tfe_startup (GApplication *application) {
-
   ... ...
-
   pref = GTK_DIALOG (gtk_builder_get_object (build, "pref"));
   pref_close_request_handler_id = g_signal_connect (GTK_DIALOG (pref), "close-request", G_CALLBACK (dialog_close_cb), NULL);
-
   ... ... 
 }
 ~~~
 
-The function `tfe_application_quit` destroys top-level windows and quits the application.
-It first disconnects the handlers from the signal "close-request".
+- The close-requiest signal on the preference dialog is connected to the handler `dialog_close_cb`.
+It changes the close behavior of the dialog.
+When the signal is emitted, the visibility is set to false and the default handler is canceled.
+So, the dialog just disappears but exists.
+- A handler `pref_activate` shows the preference dialog.
+- The shutdown handler `app_shutdown` disconnects the handlers from the "close-request"signal and destroys `pref` window.
 
 ### Alert dialog
 
-If a user closes a page which hasn't been saved, it is advisable to show an alert to confirm it.
-Alert dialog is used in this application for such a situation.
+If a user closes a page without saving, it is advisable to show an alert for a user to confirm it.
+Alert dialog is used in such a situation.
 
 ~~~xml
   <object class="GtkDialog" id="alert">
@@ -384,7 +461,7 @@ You can see icons in the theme by `gtk4-icon-browser`.
 $ gtk4-icon-browser
 ~~~
 
-The icon named "dialog-warning" is something like this.
+The "dialog-warning" icon is something like this.
 
 ![dialog-warning icon is like ...](../image/dialog_warning.png){width=4.19cm height=1.62cm}
 
@@ -392,27 +469,46 @@ These are made by my hand.
 The real image on the alert dialog is nicer.
 
 The GtkLabel `lb_alert` has no text yet.
-An alert message will be inserted by the program later.
+An alert message will be inserted in the program.
 
 There are two child tags which have "action" type.
 They are button objects located in the action area.
 Action-widgets tag describes the actions of the buttons.
-`btn_cancel` button emits response signal with cancel response (`GTK_RESPONSE_CANCEL`) if it is clicked on.
-`btn_accept` button emits response signal with accept response (`GTK_RESPONSE_ACCEPT`) if it is clicked on.
+The button `btn_cancel` emits response signal with cancel response (`GTK_RESPONSE_CANCEL`) if it is clicked on.
+The button `btn_accept` emits response signal with accept response (`GTK_RESPONSE_ACCEPT`) if it is clicked on.
 The response signal is connected to `alert_response_cb` handler.
 
 The alert dialog keeps alive while the application lives.
 The "close-request" signal is stopped by the handler `dialog_close_cb` like the preference dialog.
 
-## Close and quit handlers
+### Alert dialog and close handlers
 
-If a user closes a page or quits the application without saving the contents, the application alerts.
+If a user closes a page or quits the application without saving the contents, the alert dialog appears.
+There are four handlers, close\_cb, close\_activated, win\_close\_request\_cb and close\_all\_activated.
+The first two are called when a notebook page is closed.
+The others are called when the main window is closed --- so, all the notebooks are closed.
+
+- close button => close\_cb (=> alert dialog)
+- Ctrl-W => close\_activated => close\_cb (=> alert dialog)
+- Close button (x button at the right top of the main window) => win\_close\_request\_cb (=> alert dialog)
+- Quit menu or Ctrl-Q => close\_all\_activated => win\_close\_request\_cb (=> alert dialog)
 
 ~~~C
 static gboolean is_quit;
-
 ... ...
-
+static gboolean
+win_close_request_cb (GtkWindow *win, GtkNotebook *nb) {
+  is_quit = true;
+  if (has_saved_all (nb))
+    return false;
+  else {
+    gtk_label_set_text (lb_alert, "Contents aren't saved yet.\nAre you sure to quit?");
+    gtk_button_set_label (btn_accept, "Quit");
+    gtk_window_present (GTK_WINDOW (alert));
+    return true;
+  }
+}
+... ...
 void
 close_cb (GtkNotebook *nb) {
   is_quit = false;
@@ -420,94 +516,83 @@ close_cb (GtkNotebook *nb) {
     notebook_page_close (GTK_NOTEBOOK (nb));
   else {
     gtk_label_set_text (lb_alert, "Contents aren't saved yet.\nAre you sure to close?");
-    gtk_button_set_label (close_btn_close, "Close");
-    gtk_widget_show (GTK_WIDGET (alert));
+    gtk_button_set_label (btn_accept, "Close");
+    gtk_window_present (GTK_WINDOW (alert));
   }
 }
-
 ... ...
-
 static void
 close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
   GtkNotebook *nb = GTK_NOTEBOOK (user_data);
   close_cb (nb);
 }
-
 ... ...
+static void
+close_all_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
 
+  if (! win_close_request_cb (GTK_WINDOW (win), nb)) // checks whether contents are saved
+    gtk_window_destroy (GTK_WINDOW (win));
+}
+... ...
 void
 alert_response_cb (GtkDialog *alert, int response_id, gpointer user_data) {
   GtkNotebook *nb = GTK_NOTEBOOK (user_data);
   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
 
-  gtk_widget_hide (GTK_WIDGET (alert));
+  gtk_widget_set_visible (GTK_WIDGET (alert), false);
   if (response_id == GTK_RESPONSE_ACCEPT) {
     if (is_quit)
-      tfe_application_quit (GTK_WINDOW (win));
+      gtk_window_destroy (GTK_WINDOW (win));
     else
       notebook_page_close (nb);
   }
 }
-
+... ...
 static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  GtkNotebook *nb = GTK_NOTEBOOK (user_data);
-  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
-
-  is_quit = true;
-  if (has_saved_all (nb))
-    tfe_application_quit (GTK_WINDOW (win));
-  else {
-    gtk_label_set_text (lb_alert, "Contents aren't saved yet.\nAre you sure to quit?");
-    gtk_button_set_label (btn_accept, "Quit");
-    gtk_widget_show (GTK_WIDGET (alert));
-  }
-}
-
-static void
-tfe_startup (GApplication *application) {
-
+app_startup (GApplication *application) {
   ... ...
-
-  alert = GTK_DIALOG (gtk_builder_get_object (build, "alert"));
-  alert_close_request_handler_id = g_signal_connect (GTK_DIALOG (alert), "close-request", G_CALLBACK (dialog_close_cb), NULL);
-  lb_alert = GTK_LABEL (gtk_builder_get_object (build, "lb_alert"));
-  btn_accept = GTK_BUTTON (gtk_builder_get_object (build, "btn_accept"));
-
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
+  win = GTK_APPLICATION_WINDOW (gtk_builder_get_object (build, "win"));
   ... ...
-
+  g_signal_connect (GTK_WINDOW (win), "close-request", G_CALLBACK (win_close_request_cb), nb);
+  ... ...
 }
 ~~~
 
 The static variable `is_quit` is true when user tries to quit the application and false otherwise.
-When user presses "Ctrl-w", `close_activated` handler is invoked.
-It just calls `close_cb`.
-When user clicks on the close button, `close_cb` handler is invoked.
 
+- When a user clicks on the close button, `close_cb` handler is invoked.
 The handler sets `is_quit` to false.
 The function `has_saved` returns true if the current page has been saved.
 If it is true, it calls `notebook_page_close` to close the current page.
-Otherwise, it sets the message of the dialog and the label of the button, then shows the alert dialog.
-
+Otherwise, it shows the alert dialog.
 The response signal of the dialog is connected to the handler `alert_response_cb`.
 It hides the dialog first.
 Then checks the `response_id`.
-If it is `GTK_RESPONSE_ACCEPT`, which means user clicked on the close button, then it closes the current page.
+If it is `GTK_RESPONSE_ACCEPT`, which means the user has clicked on the close button, then it closes the current page.
 Otherwise it does nothing.
+- When a user presses "Ctrl-w", `close_activated` handler is invoked.
+It just calls `close_cb`.
+- When a user clicks the close button of the main window, "close-request" signal is emitted on the window.
+The signal has been connected to the `win_close_request_cb` handler in advance.
+The connection is done in the start up handler on the application.
+The `win_close_request_cb` handler sets `is_quit` to be true.
+If `has_save_all` returns true, it returns false, which means the signal moves to the default handler and the main window will close.
+Otherwise, It shows the alert dialog and returns true.
+So, the signal stops and the default handler won't be called.
+But if the user clicked accept button in the alert dialog,
+the response handler `alert_response_cb` calls `gtk_window_destroy` and the main window will be closed.
+- When a user clicked on the quit menu or presses "Ctrl-q", then `close_all_activated` handler is invoked.
+It calls `win_close_request_cb`.
+If the return value is false, it destroys the main window.
+Otherwise it does nothing, but `win_close_request_cb` has shown the alert dialog.
 
-When user press "Ctrl-q" or clicked on the quit menu, then `quit_activated` handler is invoked.
-The handler sets `is_quit` to true.
-The function `has_saved_all` returns true if all the pages have been saved.
-If it is true, it calls `tfe_application_quit` to quit the application.
-Otherwise, it sets the message of the dialog and the label of the button, then shows the alert dialog.
+### Has\_saved and has\_saved\_all functions
 
-If the user clicked on the buttons on the alert dialog, `alert_resoponse_cb` is invoked.
-It hides the dialog and checks the `response_id`.
-If it is `GTK_RESPONSE_ACCEPT`, which means user clicked on the quit button, then it calls `tfe_application_quit` to quit the application.
-Otherwise it does nothing.
-
-The static variables `alert`, `lb_alert` and `btn_accept` are set in the startup handler.
-And the signal "close-request" and `dialog_close_cb` handler are connected.
+The two functions are defined in the file `tfenotebook.c`.
+They are public functions.
 
 @@@include
 tfe6/tfenotebook.c has_saved has_saved_all
@@ -519,9 +604,9 @@ The flag is set to false when:
   - the buffer is created.
   - the contents of the buffer is replaced
   - the contents of the buffer is saved to a file.
-- 11-13: This function returns true if the contents of the current page has been saved and no modification has been made.
+- 10-13: This function returns true if the contents of the current page has been saved and no modification has been made.
 It returns false, if the current page has been modified and hasn't been saved.
-- 16-33: `has_saved_all` function.
+- 16-34: `has_saved_all` function.
 This function is similar to `has_saved` function.
 It returns true if all the pages have been saved.
 It returns false if at least one page has been modified since it last had been saved.
@@ -547,112 +632,134 @@ When a page is built, connect "change-file" and "modified-changed" signals to `f
 tfe6/tfenotebook.c file_changed_cb modified_changed_cb
 @@@
 
+The `file_changed_cb` handler gives a new file name to the notebook page tag.
+The `modified_changed_cb` handler inserts an asterisk at the beginning of the filename.
+It is a sign that indicates the file has been modified but not saved yet.
+
 - 1-20: `file_changed_cb` handler.
 - 9-10: If the signal emits during the page is being built, it is possible that `tv` isn't a descendant of `nb`.
-That is, there's no page corresponds to `tv`.
-Then, it isn't necessary to change the name of the tab because no tab exists.
-- 13-15: If `file` is GFile, then it gets the filename and unrefs `file`.
-- 16-17: Otherwise, `file` is probably NULL and it assigns "Untitled" related name to `filename`
+That is to say, there's no page corresponds to `tv`.
+Then, it is unnecessary to change the name of the tab because no tab exists.
+- 13-15: If `file` is GFile, then it gets the filename and release the reference to `file`.
+- 16-17: Otherwise, it assigns "Untitled" (+ a number) to `filename`
 - 18-19: Creates GtkLabel with `filename` and sets the tab of the page with the GtkLabel.
 - 22-41: `modified_changed_cb` handler.
 - 31-32: If `tv` isn't a descendant of `nb`, then nothing needs to be done.
 - 33-35: If the content is modified, then it gets the text of the tab and adds asterisk at the beginning of the text.
-- 36-38: Sets the tab with the asterisk prepended text.
-- 39-40: Otherwise the modified bit is off.
-It is because content is saved.
-It calls `file_changed_cb` and resets the filename, that means it leaves out the asterisk.
+- 36-38: Sets the tab with the filename with the asterisk
+- 39-40: Otherwise it calls `file_changed_cb` and updates the filename (without an asterisk).
 
 ## Font
 
 ### GtkFontButton and GtkFontChooser
 
-The GtkFontButton is a button which displays the current font.
+GtkFontButton is a button class which displays the current font and a user can change the font with the button.
 It opens a font chooser dialog if a user clicked on the button.
 A user can change the font (family, style, weight and size) with the dialog.
 Then the button keeps the new font and displays it.
 
-The button and its signal "font-set" is initialized in the application startup process.
+The button is set with a builder in the application startup process.
+And the signal "font-set" is connected to the handler `font_set_cb`.
+The signal "font-set" is emitted when the user selects a font.
 
 ~~~C
 static void
-font_set_cb (GtkFontButton *fontbtn, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
+font_set_cb (GtkFontButton *fontbtn) {
   PangoFontDescription *pango_font_desc;
+  char *s, *css;
 
   pango_font_desc = gtk_font_chooser_get_font_desc (GTK_FONT_CHOOSER (fontbtn));
-  set_font_for_display_with_pango_font_desc (win, pango_font_desc);
+  s = pfd2css (pango_font_desc); // converts Pango Font Description into CSS style string
+  css = g_strdup_printf ("textview {%s}", s);
+  gtk_css_provider_load_from_data (provider, css, -1);
+  g_free (s);
+  g_free (css);
 }
-
+... ...
 static void
-tfe_startup (GApplication *application) {
-
+app_startup (GApplication *application) {
   ... ...
-
   fontbtn = GTK_FONT_BUTTON (gtk_builder_get_object (build, "fontbtn"));
-  g_signal_connect (fontbtn, "font-set", G_CALLBACK (font_set_cb), win);
-
   ... ...
-
+  g_signal_connect (fontbtn, "font-set", G_CALLBACK (font_set_cb), NULL);
+  ... ...
 }
 ~~~
 
-In the startup handler, set the variable `fontbtn` to point the GtkFontButton object.
-Then connect the "font-set" signal to `font_set_cb` handler.
-The signal "font-set" is emitted when the user selects a font.
-
 GtkFontChooser is an interface implemented by GtkFontButton.
 The function `gtk_font_chooser_get_font_desc` gets the PangoFontDescription of the currently selected font.
+PangoFontDescription includes font family, style, weight and size in it.
+The function `pfd2css` converts them to CSS style string.
+The following shows the conversion.
 
-Another function `gtk_font_chooser_get_font` returns a font name which includes family, style, weight and size.
-I thought it might be able to be applied to tfe editor.
-The font name can be used to the `font` property of GtkTextTag as it is.
-But it can't be used to the CSS without converting the string to fit.
-CSS is appropriate to change the font of entire text in all the buffers.
-I think GtkTextTag is less appropriate.
-If you know a good solution, please post it to [issue](https://github.com/ToshioCP/Gtk4-tutorial/issues) and let me know.
+~~~
+PangoFontDescription:
+  font-family: Monospace
+  font-style: normal
+  font-weight: normal
+  font-size: 12pt
+=>
+"font-family: Monospace; font-style: normal; font-weight: 400; font-size: 12pt;"
+~~~
 
-It takes many codes to set the CSS from the PangoFontDescription so the task is left to the function `set_font_for_display_with_pango_font_desc`.
+Then, `font_set_cb` creates a CSS string and put it into the `provider` instance.
+The provider has been added to the default display in advance.
+So, the handler effects the font for the contents of the textview immediately.  
 
 ### CSS and Pango
 
-A new file `css.c` is made for functions related to CSS.
+Convertors from PangoFontDescription to CSS are packed in `pfd2css.c`.
+The filename means:
+
+- pfd => PangoFontDescripter
+- 2 => to
+- css => CSS (Cascade Style Sheet)
+
+All the public functions in the file have "pdf2css" prefix.
 
 @@@include
-tfe6/css.c
+tfe6/pfd2css.c
 @@@
 
-- 3-11: `set_css_for_display`.
-This function sets CSS for GdkDisplay.
-The content of the function is the same as the part of startup handler in the previous version of `tfeapplication.c`.
-- 13-20: `set_font_for_display`.
-This function sets CSS with font-family, font-style, font-weight and font-size.
-  - font-family is a name of a font. For example, sans-serif, monospace, Helvetica and "Noto Sans" are font-family.
-It is recommended to quote font family names that contains white space, digits, or punctuation characters other than hyphens.
-  - font-style is one of normal, italic and oblique.
-  - font-weight specifies the thickness of a font.
-It is normal or bold.
-It can be specified with a number between 100 and 900.
-Normal is the same as 400.
-Bold is 700.
-  - font-size specifies the size of a font.
-Small, medium, large and 12pt are font-size.
-- 17: Makes CSS text.
-The function `g_strdup_printf` creates a new string with printf-like formatting.
-- 23-92: `set_font_for_display_with_pango_font_desc`.
-This function takes out font-family, font-style, font-weight and font-size from the PangoFontDescription object and calls `set_font`for_display`.
-- 32: Gets the font-family of `pango_font_desc`.
-- 33-47: Gets the font-style of `pango_font_desc`.
-The functions `pango_font_description_get_style` returns an enumerated value.
-- 48-89: Gets the font-weight of `pango_font_desc`.
-The function `pango_font_description_get_weight` returns an enumerated value.
-They corresponds to the numbers from 100 to 900.
-- 90: Gets the font-size of `pango_font_desc`.
-The function `pango_font_description_get_size` returns the size of a font.
-The unit of this size is (1/PANGO\_SCALE)pt.
-If the font size is 10pt, the function returns 10*PANGO\_SCALE.
-PANGO\_SCALE is defined as 1024.
-Therefore, 10*PANGO\_SCALE is 10240.
-- 91: calls `set_font_for_display` to set CSS for the GdkDisplay.
+- 1: Public functions, constants and structures for Pango is defined in `pango/pango.h`.
+- 2: Including `pdf2css.h` makes it possible to call public functions anywhere in the file `pdf2css.c`.
+Because the header file includes declarations of all the public functions.
+- 7-16: `pdf2css` function.
+This function gets font family, style, weight and size from a PangoFontDescription instance given as an argument.
+And it builds them to a string.
+The returned string is owned by caller.
+The caller should free the string when it is useless.
+- 20-23: `pfd2css_famili` function.
+This function gets font-family string from a PangoFontDescription instance.
+The string is owned by the PFD instance so caller can't modify or free the string.
+- 25-38: `pdf2css_style` function.
+This function gets font-style string from a PangoFontDescription instance.
+The string is static and caller can't modify or free it.
+- 40-71: `pfd2css_weight` function.
+This function gets font-weight integer value from a PangoFontDescription instance.
+The value is in between 100 to 900.
+It is defined in [CSS Fonts Module Level 3](CSS Fonts Module Level 3) specification.
+  - 100 - Thin
+  - 200 - Extra Light (Ultra Light)
+  - 300 - Light
+  - 400 - Normal
+  - 500 - Medium
+  - 600 - Semi Bold (Demi Bold)
+  - 700 - Bold
+  - 800 - Extra Bold (Ultra Bold)
+  - 900 - Black (Heavy)
+- 73-79: `pdf2css_size` function.
+This function gets font-size string from a PangoFontDescription instance.
+The string is owned by caller, so the caller should free it when it is useless.
+PangoFontDescription has absolute or non-absolute size.
+  - If it is absolute, the size is in device units.
+  - If it is non-absolute, the size is in points.
+- The definition of device units is dependent on the output device. It will typically be pixels for a screen, and points for a printer.
+- Pango holds the size as its own dimensions.
+The constant `PANGO_SCALE` is the scale between dimensions used for Pango distances and device units.
+`PANGO_SCALE` is currently 1024, but this may be changed in the future.
+When setting font sizes, device units are always considered to be points rather than pixels.
+If the font size is 12pt, the size in pango is `12*PANGO_SCALE=12*1024=12288`.
 
 For further information, see [Pango API Reference](https://docs.gtk.org/Pango/).
 
@@ -667,8 +774,7 @@ For example, a text file "~/.config/tfe/font.cfg" keeps font information.
 The basic idea of GSettings are similar to configuration file.
 Configuration information data is put into a database file.
 
-The coding with GSettings object is simple and easy.
-However, it is a bit hard to understand the concept.
+GSettings is simple and easy to use but a bit hard to understand the concept.
 This subsection describes the concept first and then how to program it.
 
 ### GSettings schema
@@ -692,7 +798,7 @@ And it is delimited by slashes.
 Key is a string begins with lower case characters followed by lower case, digit or dash (`-`) and ends with lower case or digit.
 No consecutive dashes are allowed.
 Values can be any type.
-GSettings stores values as GVariant type, which may contain, for example, integer, double, boolean, string or complex types like an array.
+GSettings stores values as GVariant type, which can be, for example, integer, double, boolean, string or complex types like an array.
 The type of values needs to be defined in the schema.
 - A default value needs to be set for each key.
 - A summery and description can be set for each key optionally.
@@ -705,13 +811,19 @@ tfe6/com.github.ToshioCP.tfe.gschema.xml
 @@@
 
 - 4: The type attribute is "s".
-It is [GLib API Reference, GVariant Type Strings](https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings).
+It is GVariant type string.
+For GVariant type string, see [GLib API Reference -- GVariant Type Strings](https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings).
 Other common types are:
   - "b": gboolean
   - "i": gint32.
   - "d": double.
 
-Further information is in [GLib API Reference, VarientType](https://docs.gtk.org/glib/struct.VariantType.html).
+Further information is in:
+
+- [GLib API Reference -- GVariant Format Strings](https://docs.gtk.org/glib/gvariant-format-strings.html)
+- [GLib API Reference -- GVariant Text Format](https://docs.gtk.org/glib/gvariant-text.html)
+- [GLib API Reference -- GVariant](https://docs.gtk.org/glib/struct.Variant.html)
+- [GLib API Reference -- VariantType](https://docs.gtk.org/glib/struct.VariantType.html)
 
 ### gsettings
 
@@ -791,11 +903,11 @@ $ gnome-calculator
 ![gnome-calculator basic mode](../image/gnome_calculator_basic.png){width=5.34cm height=5.97cm}
 
 
-Then, change the mode to advanced and quit.
+Change the mode to advanced and quit.
 
 ![gnome-calculator advanced mode](../image/gnome_calculator_advanced.png){width=10.74cm height=7.14cm}
 
-Run gsettings and check whether the value of `button-mode` changes.
+Run gsettings and check the value of `button-mode`.
 
 ~~~
 $ gsettings list-recursively org.gnome.calculator
@@ -810,7 +922,7 @@ org.gnome.calculator button-mode 'advanced'
 
 Now we know that GNOME Calculator used gsettings and it has set `button-mode` key to "advanced".
 The value remains even the calculator quits.
-So when the calculator is run again, it will appear as an advanced mode calculator.
+So when the calculator runs again, it will appear as an advanced mode.
 
 ### glib-compile-schemas
 
@@ -832,7 +944,7 @@ A path determines where the settings are stored in the conceptual global tree of
 An id identifies the schema.
 - 4: Key tag has two attributes.
 Name is the name of the key.
-Type is the type of the value of the key and specified with [GLib API Reference, VariantType](https://docs.gtk.org/glib/struct.VariantType.html).
+Type is the type of the value of the key and it is a GVariant Format String.
 - 5: default value of the key `font` is `Monospace 12`.
 - 6: Summery and description elements describes the key.
 They are optional, but it is recommended to add them in the XML file.
@@ -847,18 +959,16 @@ $ glib-compile-schemas tfe6
 ~~~
 
 Then, `gschemas.compiled` is generated under `tfe6`.
-When you test your application, set `GSETTINGS_SCHEMA_DIR` so that GSettings objet can find `gschemas.compiled`.
+When you test your application, set `GSETTINGS_SCHEMA_DIR` environment variable so that GSettings objet can find `gschemas.compiled`.
 
 ~~~
 $ GSETTINGS_SCHEMA_DIR=(the directory gschemas.compiled is located):$GSETTINGS_SCHEMA_DIR (your application name)
 ~~~
 
-This is because GSettings object searches `GSETTINGS_SCHEMA_DIR` for `gschemas.compiled`. 
-
 GSettings object looks for this file by the following process.
 
 - It searches `glib-2.0/schemas` subdirectories of all the directories specified in the environment variable `XDG_DATA_DIRS`.
-Most common directory is `/usr/share/glib-2.0/schemas`. 
+Common directores are `/usr/share/glib-2.0/schemas` and ``/usr/local/share/glib-2.0/schemas`. 
 - If `GSETTINGS_SCHEMA_DIR` environment variable is defined, it searches all the directories specified in the variable.
 `GSETTINGS_SCHEMA_DIR` can specify multiple directories delimited by colon (:).
 
@@ -868,8 +978,46 @@ Therefore, when you install your application, follow the instruction below to in
 1. Make `.gschema.xml` file.
 2. Copy it to one of the directories above. For example, `/usr/local/share/glib-2.0/schemas`.
 3. Run `glib-compile-schemas` on the directory above.
+You maybe need `sudo`.
 
-### Meson.build
+### GSettings object and g\_settings\_bind
+
+Now, we go on to the next topic --- how to program GSettings.
+
+~~~C
+... ...
+static GSettings *settings;
+... ...
+void
+app_shutdown (GApplication *application) {
+  ... ...
+  g_clear_object (&settings);
+  ... ...
+}
+... ...
+static void
+app_startup (GApplication *application) {
+  ... ...
+  settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_settings_bind (settings, "font", fontbtn, "font", G_SETTINGS_BIND_DEFAULT);
+  ... ...
+}
+~~~
+
+Static variable `settings` keeps a pointer to a GSettings instance.
+Before application quits, the application releases the GSettings instance.
+The function `g_clear_object` decreases the reference count of the GSettings instance and assigns NULL to the variable `settings`.
+
+Startup handler creates GSettings instance with the schema id "com.github.ToshioCP.tfe" and assigns the pointer to `settings`.
+The function `g_settings_bind` connects the settings keys (key and value) and the "font" property of `fontbtn`.
+Then the two values will be always the same.
+If one value changes then the other will automatically change.
+
+For further information, refer to [GIO API rference -- GSettings](https://docs.gtk.org/gio/class.Settings.html).
+
+## Build with Meson
+
+### Build and test
 
 Meson provides `gnome.compile_schemas` method to compile XML file in the build directory.
 This is used to test the application.
@@ -877,11 +1025,13 @@ Write the following to the `meson.build` file.
 
 @@@if gfm
 ~~~meson
-@@@else
-~~~
-@@@end
 gnome.compile_schemas(build_by_default: true, depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
 ~~~
+@@@else
+~~~
+gnome.compile_schemas(build_by_default: true, depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
+~~~
+@@@end
 
 - `build_by_default`: If it is true, the target will be build by default.
 - `depend_files`: XML files to be compiled.
@@ -896,129 +1046,97 @@ After compilation, you can test your application like this:
 $ GSETTINGS_SCHEMA_DIR=_build:$GSETTINGS_SCHEMA_DIR _build/tfe
 ~~~
 
-### GSettings object and g\_settings\_bind
+### installation
 
-Write gsettings related codes to `tfeapplication.c'.
-
-~~~C
-... ...
-static GSettings *settings;
-... ...
-
-void
-tfe_application_quit (GtkWindow *win) {
-  ... ...
-  g_clear_object (&settings);
-  ... ...
-}
-
-static void
-tfe_startup (GApplication *application) {
-  ... ...
-  settings = g_settings_new ("com.github.ToshioCP.tfe");
-  g_settings_bind (settings, "font", fontbtn, "font", G_SETTINGS_BIND_DEFAULT);
-  ... ...
-}
-~~~
-
-Static variable `settings` keeps a pointer to GSettings instance.
-Before application quits, the application releases the GSettings instance.
-The function `g_clear_object` is used.
-
-Startup handler creates GSettings instance with the schema id "com.github.ToshioCP.tfe" and assigns the pointer to `settings`.
-The function `g_settings_bind` connects the settings keys (key and value) and the "font" property of `fontbtn`.
-Then the two values will be always the same.
-If one value changes then the other will automatically change.
-
-You need to make an effort to understand GSettings concept, but coding is very simple.
-Just create a GSettings object and bind it to a property of an object.
-
-## Installation
-
-It is a good idea to install your application in `$HOME/local/bin` directory if you have installed GTK 4 from the source (See Section 2).
-Then you need to put `--prefix=$HOME/local` option to meson like this.
+It is a good idea to install your application in `$HOME/bin` or `$HOME/.local/bin` directory.
+They are local bin directories and work like system bin directories such as `/bin`, `/usr/bin` or `usr/local/bin`.
+You need to put `--prefix=$HOME` or `--prefix=$HOME/.local` option to meson.
 
 ~~~
-$ meson --prefix=$HOME/local _build
+$ meson --prefix=$HOME/.local _build
 ~~~
 
-If you've installed GTK 4 from the distribution package, `--prefix` option isn't necessary.
-You just install `tfe` to the default bin directory like `/usr/local/bin`.
+If you want to install your application to a system bin directory, for example `/usr/local/bin`, `--prefix` option isn't necessary.
 
-Modify `meson.build` and add install option and set it true in executable function.
+Meson recognizes options like this:
+
+|options|values (default)|values (--prefix=\$HOME/.local)|
+|:---|:---|:---|
+|prefix|/usr/local|\$HOME/.local|
+|bindir|bin|bin|
+|datadir|share|share|
+|install directory|/usr/local/bin|\$HOME/.local/bin|
+
+The function `executable` needs `install: true` to install your program.
 
 @@@if gfm
 ~~~meson
-@@@else
-~~~
-@@@end
 executable('tfe', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
 ~~~
-
-You can install your application by:
-
+@@@else
 ~~~
-$ ninja -C _build install
+executable('tfe', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
 ~~~
+@@@end
 
 However, you need to do one more thing.
-Copy your XML file to `$HOME/local/share/glib-2.0/schemas/`, which is specified in `GSETTINGS_SCHEMA_DIR` environment variable,
-and run `glib-compile-schemas` on that directory.
+Copy your XML file to your schema directory and execute `glib-compile-schemas` on the directory.
+
+- `install_data` function copies a file into a target directory.
+- `gnome.post_install` function executes 'glib-compile-schemas' with an argument `schema_dir` as post installation.
+This  function is available since Meson 0.57.0.
+If the version is earlier than that, use `meson.add_install_script` instead.
 
 @@@if gfm
 ~~~meson
-@@@else
-~~~
-@@@end
 schema_dir = get_option('prefix') / get_option('datadir') / 'glib-2.0/schemas/'
 install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
+gnome.post_install (glib_compile_schemas: true)
 ~~~
-
-- get_option: This function returns the value of build options.
-The default value of the option 'prefix' is "/usr/local", but it is "\$HOME/local" because we have run meson with prefix option.
-The default value of the option 'datadir' is "share".
-The operator '/' connects the strings with '/' separator.
-So, `$HOME/local/share/glib-2.0/schemas` is assigned to the variable `schema_dir`.
-- install_data: This function installs the data to the install directory.
-
-Meson can run a post compile script.
-
-@@@if gfm
-~~~meson
 @@@else
 ~~~
-@@@end
-meson.add_install_script('glib-compile-schemas', schema_dir)
+schema_dir = get_option('prefix') / get_option('datadir') / 'glib-2.0/schemas/'
+install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
+gnome.post_install (glib_compile_schemas: true)
 ~~~
+@@@end
 
-This method runs 'glib-compile-schemas' with an argument `schema_dir`.
-The following is `meson.build`.
+The function `get_option` returns the value of build options.
+See [Meson Reference Manual](https://mesonbuild.com/Reference-manual_functions.html#get_option).
+The operator '/' connects the strings with '/' separator.
+
+|options|values (default)|values (--prefix=\$HOME/.local)|
+|:---|:---|:---|
+|prefix|/usr/local|\$HOME/.local|
+|datadir|share|share|
+|schema\_dir|/usr/local/share/glib-2.0/schemas|\$HOME/.local/share/glib-2.0/schemas|
+
+The source code of `meson.build` is as follows.
 
 @@@include
 tfe6/meson.build
 @@@
 
 Source files of `tfe` is under [src/tfe6](tfe6) directory.
-Copy them to your temporary directory and try to compile and install.
+Copy them to your temporary directory and compile and install it.
 
 ~~~
-$ meson --prefix=$HOME/local _build
+$ meson --prefix=$HOME/.local _build
 $ ninja -C _build
-$ GSETTINGS_SCHEMA_DIR=_build:$GSETTINGS_SCHEMA_DIR _build/tfe
+$ GSETTINGS_SCHEMA_DIR=_build:$GSETTINGS_SCHEMA_DIR _build/tfe # test
 $ ninja -C _build install
-$ tfe
-$ ls $HOME/local/bin
+$ ls $HOME/.local/bin
 ... ...
 ... tfe
 ... ...
-$ ls $HOME/local/share/glib-2.0/schemas
+$ ls $HOME/.local/share/glib-2.0/schemas
 com.github.ToshioCP.tfe.gschema.xml
 gschema.dtd
 gschemas.compiled
 ... ...
+$ tfe
 ~~~
 
 The screenshot is as follows.
 
 ![tfe6](../image/tfe6.png){width=9.06cm height=6.615cm}
-

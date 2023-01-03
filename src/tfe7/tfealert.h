@@ -13,7 +13,7 @@ void
 tfe_alert_set_button_label (TfeAlert *alert, const char *label);
 
 GtkWidget *
-tfe_alert_new (GtkWindow *win);
+tfe_alert_new (void);
 
 #endif /* __TFE_ALERT_H__ */
 

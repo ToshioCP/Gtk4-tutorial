@@ -42,7 +42,7 @@ See the sample program `tfv1.c` below.
 29 
 30   gtk_window_set_child (GTK_WINDOW (win), tv);
 31 
-32   gtk_widget_show (win);
+32   gtk_window_present (GTK_WINDOW (win));
 33 }
 34 
 35 int
@@ -159,7 +159,7 @@ The whole code of `tfv2.c` is as follows.
 33 
 34   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
 35 
-36   gtk_widget_show (win);
+36   gtk_window_present (GTK_WINDOW (win));
 37 }
 38 
 39 int

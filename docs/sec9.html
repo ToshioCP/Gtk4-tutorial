@@ -210,7 +210,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-80"><a href="#cb1-80"></a>        g_print <span class="op">(</span><span class="st">&quot;No valid file is given</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb1-81"><a href="#cb1-81"></a>  <span class="op">}</span></span>
 <span id="cb1-82"><a href="#cb1-82"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-83"><a href="#cb1-83"></a>    gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb1-83"><a href="#cb1-83"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb1-84"><a href="#cb1-84"></a>  <span class="op">}</span> <span class="cf">else</span></span>
 <span id="cb1-85"><a href="#cb1-85"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb1-86"><a href="#cb1-86"></a><span class="op">}</span></span></code></pre></div>
@@ -467,7 +467,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-42"><a href="#cb5-42"></a>        g_print <span class="op">(</span><span class="st">&quot;No valid file is given</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb5-43"><a href="#cb5-43"></a>  <span class="op">}</span></span>
 <span id="cb5-44"><a href="#cb5-44"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-45"><a href="#cb5-45"></a>    gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb5-45"><a href="#cb5-45"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb5-46"><a href="#cb5-46"></a>  <span class="op">}</span> <span class="cf">else</span></span>
 <span id="cb5-47"><a href="#cb5-47"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb5-48"><a href="#cb5-48"></a><span class="op">}</span></span></code></pre></div>

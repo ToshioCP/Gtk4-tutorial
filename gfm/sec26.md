@@ -172,7 +172,7 @@ GtkNoSelection is used, so user can't select any item.
 52 
 53   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
 54   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-55   gtk_widget_show (win);
+55   gtk_window_present (GTK_WINDOW (win));
 56 }
 57 
 58 static void
@@ -187,7 +187,7 @@ GtkNoSelection is used, so user can't select any item.
 67   GtkApplication *app;
 68   int stat;
 69 
-70   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+70   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 71 
 72   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 73   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
@@ -308,7 +308,7 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 35 
 36   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
 37   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-38   gtk_widget_show (win);
+38   gtk_window_present (GTK_WINDOW (win));
 39 }
 40 
 41 static void
@@ -323,7 +323,7 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 50   GtkApplication *app;
 51   int stat;
 52 
-53   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+53   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 54 
 55   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 56   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
@@ -474,7 +474,7 @@ The program is located in [src/misc](../src/misc) directory.
 42 
 43   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
 44   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-45   gtk_widget_show (win);
+45   gtk_window_present (GTK_WINDOW (win));
 46 }
 47 
 48 static void
@@ -489,7 +489,7 @@ The program is located in [src/misc](../src/misc) directory.
 57   GtkApplication *app;
 58   int stat;
 59 
-60   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+60   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 61 
 62   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 63   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);

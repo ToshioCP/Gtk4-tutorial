@@ -1,21 +1,28 @@
 #include <gtk/gtk.h>
 
 static void
-quit_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  GApplication *app = G_APPLICATION (user_data);
-
-  g_application_quit (app);
+quit_activated(GSimpleAction *action, GVariant *parameter, GApplication *application) {
+  g_application_quit (application);
 }
 
 static void
-app_activate (GApplication *app, gpointer user_data) {
+app_activate (GApplication *application) {
+  GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "menu1");
   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
 
+  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
+  gtk_window_present (GTK_WINDOW (win));
+}
+
+static void
+app_startup (GApplication *application) {
+  GtkApplication *app = GTK_APPLICATION (application);
+
   GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
-  g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
+  g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), application);
 
   GMenu *menubar = g_menu_new ();
   GMenuItem *menu_item_menu = g_menu_item_new ("Menu", NULL);
@@ -28,9 +35,6 @@ app_activate (GApplication *app, gpointer user_data) {
   g_object_unref (menu_item_menu);
 
   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
-  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
-  gtk_window_present (GTK_WINDOW (win));
-/*  gtk_widget_show (win); is also OKay instead of gtk_window_present. */
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.menu1"
@@ -40,7 +44,8 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);

@@ -7,7 +7,7 @@ app_activate (GApplication *app, gpointer user_data) {
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "pr4");
   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 int

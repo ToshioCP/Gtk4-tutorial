@@ -33,7 +33,7 @@ app_activate (GApplication *app) {
 
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
 
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 int

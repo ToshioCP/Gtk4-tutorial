@@ -324,7 +324,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-4"><a href="#cb12-4"></a></span>
 <span id="cb12-5"><a href="#cb12-5"></a>  win <span class="op">=</span> gtk_window_new <span class="op">();</span></span>
 <span id="cb12-6"><a href="#cb12-6"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb12-8"><a href="#cb12-8"></a><span class="op">}</span></span></code></pre></div>
 <p>Widget is an abstract concept that includes all the GUI interfaces
 such as windows, dialogs, buttons, multi-line text, containers and so
@@ -367,12 +367,24 @@ GtkApplication destroys itself immediately. Because no window is
 connected to GtkApplication, GtkApplication doesn’t need to wait
 anything. As it destroys itself, the GtkWindow is also destroyed.</p>
 <h4 id="show-the-window.">Show the window.</h4>
-<p>The function <code>gtk_widget_show</code> is used to show the
-window.</p>
+<p>The function <code>gtk_window_present</code> presents the window to a
+user (shows it to the user).</p>
 <p>GTK 4 changes the default widget visibility to on, so every widget
-doesn’t need this function to show itself. But, there’s an exception.
-Top window (this term will be explained later) isn’t visible when it is
+doesn’t need to change it to on. But, there’s an exception. Top level
+window (this term will be explained later) isn’t visible when it is
 created. So you need to use the function above to show the window.</p>
+<p>You can use <code>gtk_widget_set_visible (win, true)</code> instead
+of <code>gtk_window_present</code>. But the behavior of these two is
+different. Suppose there are two windows win1 and win2 on the screen and
+win1 is behind win2. Both windows are visible. The function
+<code>gtk_widget_set_visible (win1, true)</code> does nothing because
+win1 is already visible. So, win1 is still behind win2. The other
+function <code>gtk_window_present (win1)</code> moves win1 to the top of
+the stack of the windows. Therefore, if you want to present the window,
+you should use <code>gtk_window_present</code>.</p>
+<p>Two functions <code>gtk_widget_show</code> and
+<code>gtk_widget_hide</code> is deprecated since GTK 4.10. You should
+use <code>gtk_widget_set_visible</code> instead.</p>
 <p>Save the program as <code>pr3.c</code>, then compile and run it.</p>
 <pre><code>$ comp pr3
 $ ./a.out</code></pre>
@@ -397,7 +409,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb19-5"><a href="#cb19-5"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
 <span id="cb19-6"><a href="#cb19-6"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;pr4&quot;</span><span class="op">);</span></span>
 <span id="cb19-7"><a href="#cb19-7"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb19-8"><a href="#cb19-8"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb19-9"><a href="#cb19-9"></a><span class="op">}</span></span></code></pre></div>
 <p>When you create GtkApplicationWindow, you need to give GtkApplication
 instance as an argument. Then it automatically connect these two

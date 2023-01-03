@@ -6,11 +6,11 @@
       <section>
         <item>
           <attribute name="label">New</attribute>
-          <attribute name="action">win.new</attribute>
+          <attribute name="action">app.new</attribute>
         </item>
         <item>
           <attribute name="label">Open</attribute>
-          <attribute name="action">win.open</attribute>
+          <attribute name="action">app.open</attribute>
         </item>
       </section>
       <section>
@@ -41,21 +41,21 @@
       <section>
         <item>
           <attribute name="label">Cut</attribute>
-          <attribute name="action">win.cut</attribute>
+          <attribute name="action">app.cut</attribute>
         </item>
         <item>
           <attribute name="label">Copy</attribute>
-          <attribute name="action">win.copy</attribute>
+          <attribute name="action">app.copy</attribute>
         </item>
         <item>
           <attribute name="label">Paste</attribute>
-          <attribute name="action">win.paste</attribute>
+          <attribute name="action">app.paste</attribute>
         </item>
       </section>
       <section>
         <item>
           <attribute name="label">Select All</attribute>
-          <attribute name="action">win.selectall</attribute>
+          <attribute name="action">app.selectall</attribute>
         </item>
       </section>
     </submenu>
