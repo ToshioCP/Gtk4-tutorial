@@ -7,17 +7,17 @@ This is called custom drawing.
 GtkDrawingArea provides a cairo drawing context so users can draw images by using cairo functions.
 In this section, I will explain:
 
-1. Cairo, but only briefly; and
+1. Cairo, but only briefly
 2. GtkDrawingArea, with a very simple example.
 
 ## Cairo
 
 Cairo is a set of two dimensional graphical drawing functions (or graphics library).
-There is a lot of documentation on [Cairo's website](https://www.cairographics.org/).
-If you aren't familiar with Cairo, it is worth reading their [tutorial](https://www.cairographics.org/tutorial/).
+There are a lot of documents on [Cairo's website](https://www.cairographics.org/).
+If you aren't familiar with Cairo, it is worth reading the [tutorial](https://www.cairographics.org/tutorial/).
 
-The following is a gentle introduction to the Cairo library and how to use it.
-Firstly, in order to use Cairo you need to know about surfaces, sources, masks, destinations, cairo context and transformations.
+The following is an introduction to the Cairo library and how to use it.
+First, you need to know about surfaces, sources, masks, destinations, cairo context and transformations.
 
 - A surface represents an image.
 It is like a canvas.
@@ -48,6 +48,7 @@ This will be the destination.
 6. Save the destination surface to a file if necessary.
 
 Here's a simple example program that draws a small square and saves it as a png file.
+The path of the file is `src/misc/cairo.c`.
 
 @@@include
 misc/cairo.c
@@ -66,7 +67,7 @@ Width and height are in pixels and given as integers.
 - 14: Creates cairo context.
 The surface given as an argument will be the destination of the context.
 - 18: `cairo_set_source_rgb` creates a source pattern, which in this case is a solid white paint.
-The second to fourth argument are red, green and blue color values respectively, and they are
+The second to fourth arguments are red, green and blue color values respectively, and they are
 of type float. The values are between zero (0.0) and one (1.0), with
 black being given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).
 - 19: `cairo_paint` copies everywhere in the source to destination.
@@ -83,13 +84,13 @@ The square is located at the center.
 - 28: Destroys the context. At the same time the source is destroyed.
 - 29: Destroys the surface.
 
-To compile this, type the following.
+To compile this, change your current directory to `src/misc` and type the following.
 
     $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
 
 ![rectangle.png](../image/rectangle.png)
 
-See the [Cairo's website](https://www.cairographics.org/) for more details.
+See the [Cairo's website](https://www.cairographics.org/) for further information.
 
 ## GtkDrawingArea
 
@@ -102,12 +103,12 @@ misc/da1.c
 The function `main` is almost same as before.
 The two functions `app_activate` and `draw_function` are important in this example.
 
-- 18: Creates a GtkDrawingArea instance; and
-- 21: Sets a drawing function of the widget.
+- 22: Creates a GtkDrawingArea instance.
+- 25: Sets a drawing function of the widget.
 GtkDrawingArea widget uses the function to draw the contents of itself whenever its necessary.
 For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
 Then, the whole window needs to be redrawn.
-For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference, gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
+For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference -- gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
 
 The drawing function has five parameters.
 
@@ -122,15 +123,16 @@ The second parameter is a cairo context given by the widget.
 The destination surface of the context is connected to the contents of the widget.
 What you draw to this surface will appear in the widget on the screen.
 The third and fourth parameters are the size of the destination surface.
-Now, look at the program example again.
+Now, look at the program again.
 
-- 3-13: The drawing function.
+- 3-17: The drawing function.
 - 7-8: Sets the source to be white and paint the destination white.
 - 9: Sets the line width to be 2.
 - 10: Sets the source to be black.
-- 11: Adds a rectangle to the mask.
-- 12: Draws the rectangle with black color to the destination.
+- 11-15: Adds a rectangle to the mask.
+- 16: Draws the rectangle with black color to the destination.
 
+The program is [src/misc/da1.c](misc/da1.c).
 Compile and run it, then a window with a black rectangle (square) appears.
 Try resizing the window.
 The square always appears at the center of the window because the drawing function is invoked each time the window is resized.

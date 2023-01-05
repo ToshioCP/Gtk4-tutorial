@@ -1,4 +1,7 @@
-#include "turtle.h"
+#include <gtk/gtk.h>
+#include "../tfetextview/tfetextview.h"
+#include "turtle_lex.h"
+#include "turtle_parser.h"
 
 static GtkWidget *win;
 static GtkWidget *tv;
@@ -13,10 +16,10 @@ run_cb (GtkWidget *btnr) {
   GtkTextIter end_iter;
   char *contents;
   int stat;
-  static gboolean busy = FALSE;
+  static gboolean busy = FALSE; /* initialized only once */
 
   /* yyparse() and run() are NOT thread safe. */
-  /* The variable busy avoids reentry. */
+  /* The variable busy avoids reentrance. */
   if (busy)
     return;
   busy = TRUE;
@@ -79,9 +82,11 @@ show_filename (TfeTextView *tv) {
 
 static void
 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
+
   if (surface)
     cairo_surface_destroy (surface);
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+  run_cb (NULL); // NULL is a fake (run button).
 }
 
 static void
@@ -128,7 +133,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 
   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
@@ -137,4 +142,3 @@ main (int argc, char **argv) {
   g_object_unref (app);
   return stat;
 }
-

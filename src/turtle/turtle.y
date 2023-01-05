@@ -12,7 +12,17 @@
   #include <stdarg.h>
   #include <setjmp.h>
   #include <math.h>
-  #include "turtle.h"
+  #include <glib.h>
+  #include <cairo.h>
+  #include "turtle_parser.h"
+
+  /* The following line defines 'debug' so that debug information is printed out during the run time. */
+  /* However it makes the program slow. */
+  /* If you want to debug on, uncomment the line. */
+
+  /* #define debug 1 */
+
+  extern cairo_surface_t *surface;
 
   /* error reporting */
   static void yyerror (char const *s) { /* for syntax error */
@@ -25,6 +35,7 @@
     N_PW,
     N_FD,
     N_TR,
+    N_TL, /* Turn Left version 0.5 */
     N_BC,
     N_FC,
     N_DP,
@@ -32,6 +43,7 @@
     N_IF,
     N_RT,
     N_RS,
+    N_RP, /* Repeat version 0.5 */
     N_NUM,
     N_ID,
     N_program,
@@ -59,6 +71,7 @@
     "N_PW",
     "N_FD",
     "N_TR",
+    "N_TL", /* ver o.5 */
     "N_BC",
     "N_FC",
     "N_DP",
@@ -66,6 +79,7 @@
     "N_IF",
     "N_RT",
     "N_RS",
+    "N_RP", /* ver 0.5 */
     "N_NUM",
     "N_ID",
     "N_program",
@@ -132,12 +146,14 @@
 %token PW
 %token FD
 %token TR
+%token TL /* ver 0.5 */
 %token BC
 %token FC
 %token DP
 %token IF
 %token RT
 %token RS
+%token RP /* ver 0.5 */
  /* constant */
 %token <double> NUM
  /* identirier */
@@ -180,6 +196,7 @@ primary_procedure:
 | PW expression    { $$ = tree1 (N_PW, $2, NULL, NULL); }
 | FD expression    { $$ = tree1 (N_FD, $2, NULL, NULL); }
 | TR expression    { $$ = tree1 (N_TR, $2, NULL, NULL); }
+| TL expression    { $$ = tree1 (N_TL, $2, NULL, NULL); } /* ver 0.5 */
 | BC '(' expression ',' expression ',' expression ')' { $$ = tree1 (N_BC, $3, $5, $7); }
 | FC '(' expression ',' expression ',' expression ')' { $$ = tree1 (N_FC, $3, $5, $7); }
  /* assignment */
@@ -188,6 +205,7 @@ primary_procedure:
 | IF '(' expression ')' '{' primary_procedure_list '}' { $$ = tree1 (N_IF, $3, $6, NULL); }
 | RT    { $$ = tree1 (N_RT, NULL, NULL, NULL); }
 | RS    { $$ = tree1 (N_RS, NULL, NULL, NULL); }
+| RP '(' expression ')' '{' primary_procedure_list '}'    { $$ = tree1 (N_RP, $3, $6, NULL); }
  /* user defined procedure call */
 | ID '(' ')'  { $$ = tree1 (N_procedure_call, tree3 (N_ID, $1), NULL, NULL); }
 | ID '(' argument_list ')'  { $$ = tree1 (N_procedure_call, tree3 (N_ID, $1), $3, NULL); }
@@ -614,6 +632,7 @@ execute (node_t *node) {
   double d, x, y;
   char *name;
   int n, i;
+  int counter; /* ver 0.5, for repeat procedure */
 
   if (node == NULL)
     runtime_error ("Node is NULL.\n");
@@ -677,6 +696,11 @@ g_print ("fd: New Y coordinate is %f.\n", cur_y);
       for (; angle < 0; angle += 360.0);
       for (; angle>360; angle -= 360.0);
       break;
+    case N_TL: /* ver 0.5 */
+      angle += eval (child1(node));
+      for (; angle < 0; angle += 360.0);
+      for (; angle>360; angle -= 360.0);
+      break;
     case N_BC:
       bc.red = eval (child1(node));
       bc.green = eval (child2(node));
@@ -721,6 +745,15 @@ g_print ("fc:  Foreground color is (%f, %f, %f).\n", fc.red, fc.green, fc.blue);
       line_width = 2.0;
       fc.red = 0.0; fc.green = 0.0; fc.blue = 0.0;
       /* To change background color, use bc. */
+      break;
+    case N_RP: /* ver 0.5 */
+      counter = (int) eval (child1(node));
+      if (counter < 0)
+        runtime_error ("Repeat number %d is negative.\n", counter);
+      if (counter > 100)
+        runtime_error ("Repeat number %d is too big.\n", counter);
+      for (i=0; i<counter; ++i)
+        execute (child2(node));
       break;
     case N_procedure_call:
       name = name(child1(node));

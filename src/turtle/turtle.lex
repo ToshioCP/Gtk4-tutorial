@@ -1,7 +1,8 @@
 %top{
 #include <string.h>
 #include <stdlib.h>
-#include "turtle.h"
+#include <glib.h>
+#include "turtle_parser.h"
 
   static int nline = 1;
   static int ncolumn = 1;
@@ -27,12 +28,14 @@ pd                get_location (yytext); return PD; /* pen down */
 pw                get_location (yytext); return PW; /* pen width = line width */
 fd                get_location (yytext); return FD; /* forward */
 tr                get_location (yytext); return TR; /* turn right */
+tl                get_location (yytext); return TL; /* turn left ver 0.5 */
 bc                get_location (yytext); return BC; /* background color */
 fc                get_location (yytext); return FC; /* foreground color */
 dp                get_location (yytext); return DP; /* define procedure */
 if                get_location (yytext); return IF; /* if statement */
 rt                get_location (yytext); return RT; /* return statement */
 rs                get_location (yytext); return RS; /* reset the status */
+rp                get_location (yytext); return RP; /* repeat ver 0.5 */
   /* constant */
 {REAL_NUMBER}     get_location (yytext); yylval.NUM = atof (yytext); return NUM;
   /* identifier */
@@ -73,4 +76,3 @@ void
 finalize_flex (void) {
   yy_delete_buffer (state);
 }
-

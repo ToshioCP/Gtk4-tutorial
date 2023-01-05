@@ -119,19 +119,18 @@ called custom drawing.</p>
 <p>GtkDrawingArea provides a cairo drawing context so users can draw
 images by using cairo functions. In this section, I will explain:</p>
 <ol type="1">
-<li>Cairo, but only briefly; and</li>
+<li>Cairo, but only briefly</li>
 <li>GtkDrawingArea, with a very simple example.</li>
 </ol>
 <h2 id="cairo">Cairo</h2>
 <p>Cairo is a set of two dimensional graphical drawing functions (or
-graphics library). There is a lot of documentation on <a
+graphics library). There are a lot of documents on <a
 href="https://www.cairographics.org/">Cairo’s website</a>. If you aren’t
-familiar with Cairo, it is worth reading their <a
+familiar with Cairo, it is worth reading the <a
 href="https://www.cairographics.org/tutorial/">tutorial</a>.</p>
-<p>The following is a gentle introduction to the Cairo library and how
-to use it. Firstly, in order to use Cairo you need to know about
-surfaces, sources, masks, destinations, cairo context and
-transformations.</p>
+<p>The following is an introduction to the Cairo library and how to use
+it. First, you need to know about surfaces, sources, masks,
+destinations, cairo context and transformations.</p>
 <ul>
 <li>A surface represents an image. It is like a canvas. We can draw
 shapes and images with different colors on surfaces.</li>
@@ -169,7 +168,8 @@ the paint in the source to the destination.</li>
 <li>Save the destination surface to a file if necessary.</li>
 </ol>
 <p>Here’s a simple example program that draws a small square and saves
-it as a png file.</p>
+it as a png file. The path of the file is
+<code>src/misc/cairo.c</code>.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;cairo.h&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -222,10 +222,10 @@ color depth. Width and height are in pixels and given as integers.</li>
 <li>14: Creates cairo context. The surface given as an argument will be
 the destination of the context.</li>
 <li>18: <code>cairo_set_source_rgb</code> creates a source pattern,
-which in this case is a solid white paint. The second to fourth argument
-are red, green and blue color values respectively, and they are of type
-float. The values are between zero (0.0) and one (1.0), with black being
-given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).</li>
+which in this case is a solid white paint. The second to fourth
+arguments are red, green and blue color values respectively, and they
+are of type float. The values are between zero (0.0) and one (1.0), with
+black being given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).</li>
 <li>19: <code>cairo_paint</code> copies everywhere in the source to
 destination. The destination is filled with white pixels with this
 command.</li>
@@ -244,14 +244,15 @@ through the rectangle in the mask.</li>
 destroyed.</li>
 <li>29: Destroys the surface.</li>
 </ul>
-<p>To compile this, type the following.</p>
+<p>To compile this, change your current directory to
+<code>src/misc</code> and type the following.</p>
 <pre><code>$ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`</code></pre>
 <figure>
 <img src="image/rectangle.png" alt="rectangle.png" />
 <figcaption aria-hidden="true">rectangle.png</figcaption>
 </figure>
 <p>See the <a href="https://www.cairographics.org/">Cairo’s website</a>
-for more details.</p>
+for further information.</p>
 <h2 id="gtkdrawingarea">GtkDrawingArea</h2>
 <p>The following is a very simple example.</p>
 <div class="sourceCode" id="cb3"><pre
@@ -302,15 +303,15 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 functions <code>app_activate</code> and <code>draw_function</code> are
 important in this example.</p>
 <ul>
-<li>18: Creates a GtkDrawingArea instance; and</li>
-<li>21: Sets a drawing function of the widget. GtkDrawingArea widget
+<li>22: Creates a GtkDrawingArea instance.</li>
+<li>25: Sets a drawing function of the widget. GtkDrawingArea widget
 uses the function to draw the contents of itself whenever its necessary.
 For example, when a user drag a mouse pointer and resize a top-level
 window, GtkDrawingArea also changes the size. Then, the whole window
 needs to be redrawn. For the information of
 <code>gtk_drawing_area_set_draw_func</code>, see <a
 href="https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html">Gtk
-API Reference, gtk_drawing_area_set_draw_func</a>.</li>
+API Reference – gtk_drawing_area_set_draw_func</a>.</li>
 </ul>
 <p>The drawing function has five parameters.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> drawing_function <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span></span>
@@ -322,20 +323,20 @@ cairo context given by the widget. The destination surface of the
 context is connected to the contents of the widget. What you draw to
 this surface will appear in the widget on the screen. The third and
 fourth parameters are the size of the destination surface. Now, look at
-the program example again.</p>
+the program again.</p>
 <ul>
-<li>3-13: The drawing function.</li>
+<li>3-17: The drawing function.</li>
 <li>7-8: Sets the source to be white and paint the destination
 white.</li>
 <li>9: Sets the line width to be 2.</li>
 <li>10: Sets the source to be black.</li>
-<li>11: Adds a rectangle to the mask.</li>
-<li>12: Draws the rectangle with black color to the destination.</li>
+<li>11-15: Adds a rectangle to the mask.</li>
+<li>16: Draws the rectangle with black color to the destination.</li>
 </ul>
-<p>Compile and run it, then a window with a black rectangle (square)
-appears. Try resizing the window. The square always appears at the
-center of the window because the drawing function is invoked each time
-the window is resized.</p>
+<p>The program is src/misc/da1.c. Compile and run it, then a window with
+a black rectangle (square) appears. Try resizing the window. The square
+always appears at the center of the window because the drawing function
+is invoked each time the window is resized.</p>
 <figure>
 <img src="image/da1.png" alt="Square in the window" />
 <figcaption aria-hidden="true">Square in the window</figcaption>

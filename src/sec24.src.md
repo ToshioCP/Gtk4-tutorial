@@ -7,6 +7,7 @@ If you write a name of a color in TfeTextView and click on the `run` button, the
 ![color](../image/color.png){width=7.0cm height=5.13cm}
 
 The following colors are available.
+(without new line charactor)
 
 - white
 - black
@@ -28,24 +29,23 @@ In this section, we focus on how to bind the two objects.
 ## Color.ui and color.gresource.xml
 
 First, We need to make the ui file of the widgets.
-The image in the previous subsection gives us the structure of the widgets.
-Title bar, four buttons in the tool bar and two widgets textview and drawing area.
+Title bar, four buttons in the tool bar, textview and drawing area.
 The ui file is as follows.
 
 @@@include
 color/color.ui
 @@@
 
-- 10-53: This part is the tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
-This is similar to the toolbar of tfe text editor in [Section 9](sec9.src.md).
+- 10-53: The horizontal box `boxh1` makes a tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
+This is similar to the `tfe` text editor in [Section 9](sec9.src.md).
 There are two differences.
 `Run` button replaces `New` button.
 A signal element is added to each button object.
-It has "name" attribute which is a signal name and "handler" attribute which is the name of its signal handler function.
+It has "name" attribute which is a signal name and "handler" attribute which is the name of its signal handler.
 Options "-WI, --export-dynamic" CFLAG is necessary when you compile the application.
-You can achieve this by adding "export_dynamic: true" argument to executable function in `meson.build`.
+You can achieve this by adding "export_dynamic: true" argument to the executable function in `meson.build`.
 And be careful that the handler must be defined without 'static' class.
-- 54-76: Puts GtkScrolledWindow and GtkDrawingArea into GtkBox.
+- 54-76: The horizontal box `boxh2` includes GtkScrolledWindow and GtkDrawingArea.
 GtkBox has "homogeneous property" with TRUE value, so the two children have the same width in the box.
 TfeTextView is a child of GtkScrolledWindow.
 
@@ -56,24 +56,70 @@ Just substitute "color" for "tfe".
 color/color.gresource.xml
 @@@
 
-## Tfetextview.h, tfetextview.c and color.h
+## Drawing function and surface
 
-First two files are the same as before.
-Color.h just includes tfetextview.h.
+The main point of this program is a drawing function.
 
 @@@include
-color/color.h
+color/colorapplication.c draw_func
 @@@
+
+The `surface` variable in line 3 is a static variable.
+
+~~~C
+static cairo_surface_t *surface = NULL;
+~~~
+
+The drawing function just copies the `surface` to its own surface with the `cairo_paint` function.
+The surface (pointed by the static variable `surface`) is built by the `run` function.
+
+@@@include
+color/colorapplication.c run
+@@@
+
+- 9-10: Gets the string in the GtkTextBuffer and inserts it to `contents`.
+- 11: If the variable `surface` points a surface instance, it is painted as follows.
+- 12- 30: The source is set based on the string `contents` and copied to the surface with `cairo_paint`.
+- 24,26: Alpha channel is used in "light" and "dark" procedure.
+
+The drawing area just reflects the `surface`.
+But one problem is resizing.
+If a user resizes the main window, the drawing area is also resized.
+It makes size difference between the surface and the drawing area.
+So, the surface needs to be resized to fit the drawing area.
+
+It is accomplished by connecting the "resize" signal on the drawing area to a handler.
+
+~~~C
+g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
+~~~
+
+The handler is as follows.
+
+@@@include
+color/colorapplication.c resize_cb
+@@@
+
+If the variable `surface` sets a surface instance, it is destroyed.
+A new surface is created and its size fits the drawing area.
+The surface is assigned to the variable `surface`.
+The function `run` is called and the surface is colored.
+
+The signal is emitted when:
+
+- The drawing area is realized (it appears on the display).
+- It is changed (resized) while realized
+
+So, the first surface is created when it is realized.
 
 ## Colorapplication.c
 
 This is the main file.
-It deals with:
 
-- Building widgets by GtkBuilder.
-- Setting a drawing function of GtkDrawingArea.
-And connecting a handler to "resize" signal on GtkDrawingArea.
-- Implementing each call back functions.
+- Builds widgets by GtkBuilder.
+- Sets a drawing function for GtkDrawingArea.
+And connects a handler to the "resize" signal on the GtkDrawingArea instance.
+- Implements each call back function.
 Particularly, `Run` signal handler is the point in this program.
 
 The following is `colorapplication.c`.
@@ -82,40 +128,26 @@ The following is `colorapplication.c`.
 color/colorapplication.c
 @@@
 
-- 109-124: The function `main` is almost same as before but there are some differences.
-The application ID is "com.github.ToshioCP.color".
-`G_APPLICATION_FLAGS_NONE` is specified so no open signal handler is necessary.
-- 87-107: Startup handler.
-- 92-97: Builds widgets.
-The pointers of the top window, TfeTextView and GtkDrawingArea objects are stored to static variables `win`, `tv` and `da` respectively.
-This is because these objects are often used in handlers.
-They never be rewritten so they're thread safe.
-- 98: connects "resize" signal and the handler.
-- 99: sets the drawing function.
-- 82-85: Activate handler, which just shows the widgets.
-- 74-80: The drawing function.
-It just copies `surface` to destination.
-- 66-72: Resize handler.
-Re-creates the surface to fit its width and height for the drawing area and paints by calling the function `run`.
-- 59-64: Close handler.
-It destroys `surface` if it exists.
-Then it destroys the top-level window and quits the application.
-- 49-57: Open and save handler.
-They just call the corresponding functions of TfeTextView.
-- 43-47: Run handler.
-It calls run function to paint the surface.
-After that `gtk_widget_queue_draw` is called.
-This function adds the widget (GtkDrawingArea) to the queue to be redrawn.
-It is important to know that the window is redrawn whenever it is necessary.
-For example, when another window is moved and uncovers part of the widget, or when the window containing it is resized.
-But repainting `surface` is not automatically notified to gtk.
-Therefore, you need to call `gtk_widget_queue_draw` to redraw the widget.
-- 9-41: Run function paints the surface.
-First, it gets the contents of GtkTextBuffer.
-Then it compares it to "red", "green" and so on.
-If it matches the color, then the surface is painted the color.
-If it matches "light" or "dark", then the color of the surface is lightened or darkened respectively.
-Alpha channel is used.
+- 4-8: Win, tv, da and surface are defined as static variables.
+- 10-42: Run function.
+- 44-63: Handlers for button signals.
+- 65-71: Resize handler.
+- 73-79: Drawing function.
+- 81-84: Application activate handler.
+It just shows the main window.
+- 86-105: Application startup handler.
+- 92- 97: It builds widgets according to the ui resource.
+The static variables win, tv and da are assigned instances.
+- 98: Connects "resize" signal and a handler.
+- 99: Drawing function is set.
+- 101-104: CSS for textview padding is set.
+- 107-111: Application shutdown handler.
+If there exists a surface instance, it will be destroyed.
+- 116-129: A function `main`.
+It creates a new application instance.
+And connects three signals startup, shutdown and activate to their handlers.
+It runs the application.
+It releases the reference to the application and returns with `stat` value.
 
 ## Meson.build
 
@@ -126,14 +158,9 @@ An argument "export_dynamic: true" is added to executable function.
 color/meson.build
 @@@
 
-## Compile and execute it
+## Build and try
 
-First you need to export some variables (refer to [Section 2](sec2.src.md)) if you've installed GTK 4 from the source.
-If you've installed GTK 4 from the distribution packages, you don't need to do this.
-
-    $ . env.sh
-
-Then type the following to compile it.
+Type the following to compile the program.
 
     $ meson _build
     $ ninja -C _build
@@ -144,7 +171,8 @@ Type the following to execute it.
     $ _build/color
 
 Type "red", "green", "blue", "white", black", "light" or "dark" in the TfeTextView.
-Then, click on `Run` button.
+No new line charactor is needed.
+Then, click on the `Run` button.
 Make sure the color of GtkDrawingArea changes.
 
 In this program TfeTextView is used to change the color.

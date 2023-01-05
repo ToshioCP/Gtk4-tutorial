@@ -121,7 +121,7 @@ of GtkDrawingArea changes to the color given by you.</p>
 <img src="image/color.png" alt="color" />
 <figcaption aria-hidden="true">color</figcaption>
 </figure>
-<p>The following colors are available.</p>
+<p>The following colors are available. (without new line charactor)</p>
 <ul>
 <li>white</li>
 <li>black</li>
@@ -141,10 +141,9 @@ turtle graphics language like Logo program language.</p>
 <p>In this section, we focus on how to bind the two objects.</p>
 <h2 id="color.ui-and-color.gresource.xml">Color.ui and
 color.gresource.xml</h2>
-<p>First, We need to make the ui file of the widgets. The image in the
-previous subsection gives us the structure of the widgets. Title bar,
-four buttons in the tool bar and two widgets textview and drawing area.
-The ui file is as follows.</p>
+<p>First, We need to make the ui file of the widgets. Title bar, four
+buttons in the tool bar, textview and drawing area. The ui file is as
+follows.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
@@ -227,21 +226,22 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb1-79"><a href="#cb1-79"></a>  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb1-80"><a href="#cb1-80"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
 <ul>
-<li>10-53: This part is the tool bar which has four buttons,
-<code>Run</code>, <code>Open</code>, <code>Save</code> and
-<code>Close</code>. This is similar to the toolbar of tfe text editor in
-<a href="sec9.html">Section 9</a>. There are two differences.
+<li>10-53: The horizontal box <code>boxh1</code> makes a tool bar which
+has four buttons, <code>Run</code>, <code>Open</code>, <code>Save</code>
+and <code>Close</code>. This is similar to the <code>tfe</code> text
+editor in <a href="sec9.html">Section 9</a>. There are two differences.
 <code>Run</code> button replaces <code>New</code> button. A signal
 element is added to each button object. It has “name” attribute which is
 a signal name and “handler” attribute which is the name of its signal
-handler function. Options “-WI, –export-dynamic” CFLAG is necessary when
-you compile the application. You can achieve this by adding
-“export_dynamic: true” argument to executable function in
-<code>meson.build</code>. And be careful that the handler must be
-defined without ‘static’ class.</li>
-<li>54-76: Puts GtkScrolledWindow and GtkDrawingArea into GtkBox. GtkBox
-has “homogeneous property” with TRUE value, so the two children have the
-same width in the box. TfeTextView is a child of GtkScrolledWindow.</li>
+handler. Options “-WI, –export-dynamic” CFLAG is necessary when you
+compile the application. You can achieve this by adding “export_dynamic:
+true” argument to the executable function in <code>meson.build</code>.
+And be careful that the handler must be defined without ‘static’
+class.</li>
+<li>54-76: The horizontal box <code>boxh2</code> includes
+GtkScrolledWindow and GtkDrawingArea. GtkBox has “homogeneous property”
+with TRUE value, so the two children have the same width in the box.
+TfeTextView is a child of GtkScrolledWindow.</li>
 </ul>
 <p>The xml file for the resource compiler is almost same as before. Just
 substitute “color” for “tfe”.</p>
@@ -252,216 +252,278 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">file</span>&gt;color.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb2-5"><a href="#cb2-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb2-6"><a href="#cb2-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-<h2 id="tfetextview.h-tfetextview.c-and-color.h">Tfetextview.h,
-tfetextview.c and color.h</h2>
-<p>First two files are the same as before. Color.h just includes
-tfetextview.h.</p>
+<h2 id="drawing-function-and-surface">Drawing function and surface</h2>
+<p>The main point of this program is a drawing function.</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&quot;../tfetextview/tfetextview.h&quot;</span></span></code></pre></div>
-<h2 id="colorapplication.c">Colorapplication.c</h2>
-<p>This is the main file. It deals with:</p>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>draw_func <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="op">}</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="op">}</span></span></code></pre></div>
+<p>The <code>surface</code> variable in line 3 is a static variable.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span></code></pre></div>
+<p>The drawing function just copies the <code>surface</code> to its own
+surface with the <code>cairo_paint</code> function. The surface (pointed
+by the static variable <code>surface</code>) is built by the
+<code>run</code> function.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>run <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  GtkTextIter start_iter<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  GtkTextIter end_iter<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="dt">char</span> <span class="op">*</span>contents<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a>  gtk_text_buffer_get_bounds <span class="op">(</span>tb<span class="op">,</span> <span class="op">&amp;</span>start_iter<span class="op">,</span> <span class="op">&amp;</span>end_iter<span class="op">);</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>  contents <span class="op">=</span> gtk_text_buffer_get_text <span class="op">(</span>tb<span class="op">,</span> <span class="op">&amp;</span>start_iter<span class="op">,</span> <span class="op">&amp;</span>end_iter<span class="op">,</span> FALSE<span class="op">);</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>    cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;green&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;blue&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;white&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;black&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-22"><a href="#cb5-22"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-23"><a href="#cb5-23"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;light&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-24"><a href="#cb5-24"></a>      cairo_set_source_rgba <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb5-25"><a href="#cb5-25"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;dark&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-26"><a href="#cb5-26"></a>      cairo_set_source_rgba <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb5-27"><a href="#cb5-27"></a>    <span class="cf">else</span></span>
+<span id="cb5-28"><a href="#cb5-28"></a>      cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-29"><a href="#cb5-29"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb5-30"><a href="#cb5-30"></a>    cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb5-31"><a href="#cb5-31"></a>  <span class="op">}</span></span>
+<span id="cb5-32"><a href="#cb5-32"></a>  g_free <span class="op">(</span>contents<span class="op">);</span></span>
+<span id="cb5-33"><a href="#cb5-33"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>Building widgets by GtkBuilder.</li>
-<li>Setting a drawing function of GtkDrawingArea. And connecting a
-handler to “resize” signal on GtkDrawingArea.</li>
-<li>Implementing each call back functions. Particularly,
-<code>Run</code> signal handler is the point in this program.</li>
+<li>9-10: Gets the string in the GtkTextBuffer and inserts it to
+<code>contents</code>.</li>
+<li>11: If the variable <code>surface</code> points a surface instance,
+it is painted as follows.</li>
+<li>12- 30: The source is set based on the string <code>contents</code>
+and copied to the surface with <code>cairo_paint</code>.</li>
+<li>24,26: Alpha channel is used in “light” and “dark” procedure.</li>
+</ul>
+<p>The drawing area just reflects the <code>surface</code>. But one
+problem is resizing. If a user resizes the main window, the drawing area
+is also resized. It makes size difference between the surface and the
+drawing area. So, the surface needs to be resized to fit the drawing
+area.</p>
+<p>It is accomplished by connecting the “resize” signal on the drawing
+area to a handler.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>da<span class="op">),</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span></code></pre></div>
+<p>The handler is as follows.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>resize_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_ARGB32<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  run <span class="op">();</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="op">}</span></span></code></pre></div>
+<p>If the variable <code>surface</code> sets a surface instance, it is
+destroyed. A new surface is created and its size fits the drawing area.
+The surface is assigned to the variable <code>surface</code>. The
+function <code>run</code> is called and the surface is colored.</p>
+<p>The signal is emitted when:</p>
+<ul>
+<li>The drawing area is realized (it appears on the display).</li>
+<li>It is changed (resized) while realized</li>
+</ul>
+<p>So, the first surface is created when it is realized.</p>
+<h2 id="colorapplication.c">Colorapplication.c</h2>
+<p>This is the main file.</p>
+<ul>
+<li>Builds widgets by GtkBuilder.</li>
+<li>Sets a drawing function for GtkDrawingArea. And connects a handler
+to the “resize” signal on the GtkDrawingArea instance.</li>
+<li>Implements each call back function. Particularly, <code>Run</code>
+signal handler is the point in this program.</li>
 </ul>
 <p>The following is <code>colorapplication.c</code>.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&quot;color.h&quot;</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="dt">static</span> GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="dt">static</span> GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="dt">static</span> GtkWidget <span class="op">*</span>da<span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>run <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>  GtkTextIter start_iter<span class="op">;</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a>  GtkTextIter end_iter<span class="op">;</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>  <span class="dt">char</span> <span class="op">*</span>contents<span class="op">;</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a></span>
-<span id="cb4-17"><a href="#cb4-17"></a>  gtk_text_buffer_get_bounds <span class="op">(</span>tb<span class="op">,</span> <span class="op">&amp;</span>start_iter<span class="op">,</span> <span class="op">&amp;</span>end_iter<span class="op">);</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a>  contents <span class="op">=</span> gtk_text_buffer_get_text <span class="op">(</span>tb<span class="op">,</span> <span class="op">&amp;</span>start_iter<span class="op">,</span> <span class="op">&amp;</span>end_iter<span class="op">,</span> FALSE<span class="op">);</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a>    cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>    <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;green&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;blue&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;white&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;black&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;light&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>      cairo_set_source_rgba <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;dark&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>      cairo_set_source_rgba <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a>    <span class="cf">else</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a>      cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb4-37"><a href="#cb4-37"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-38"><a href="#cb4-38"></a>    cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-39"><a href="#cb4-39"></a>  <span class="op">}</span></span>
-<span id="cb4-40"><a href="#cb4-40"></a>  g_free <span class="op">(</span>contents<span class="op">);</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a><span class="op">}</span></span>
-<span id="cb4-42"><a href="#cb4-42"></a></span>
-<span id="cb4-43"><a href="#cb4-43"></a><span class="dt">void</span></span>
-<span id="cb4-44"><a href="#cb4-44"></a>run_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btnr<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-45"><a href="#cb4-45"></a>  run <span class="op">();</span></span>
-<span id="cb4-46"><a href="#cb4-46"></a>  gtk_widget_queue_draw <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">));</span></span>
-<span id="cb4-47"><a href="#cb4-47"></a><span class="op">}</span></span>
-<span id="cb4-48"><a href="#cb4-48"></a></span>
-<span id="cb4-49"><a href="#cb4-49"></a><span class="dt">void</span></span>
-<span id="cb4-50"><a href="#cb4-50"></a>open_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btno<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-51"><a href="#cb4-51"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb4-52"><a href="#cb4-52"></a><span class="op">}</span></span>
-<span id="cb4-53"><a href="#cb4-53"></a></span>
-<span id="cb4-54"><a href="#cb4-54"></a><span class="dt">void</span></span>
-<span id="cb4-55"><a href="#cb4-55"></a>save_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btns<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-56"><a href="#cb4-56"></a>  tfe_text_view_save <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
-<span id="cb4-57"><a href="#cb4-57"></a><span class="op">}</span></span>
-<span id="cb4-58"><a href="#cb4-58"></a></span>
-<span id="cb4-59"><a href="#cb4-59"></a><span class="dt">void</span></span>
-<span id="cb4-60"><a href="#cb4-60"></a>close_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btnc<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-61"><a href="#cb4-61"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
-<span id="cb4-62"><a href="#cb4-62"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb4-63"><a href="#cb4-63"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb4-64"><a href="#cb4-64"></a><span class="op">}</span></span>
-<span id="cb4-65"><a href="#cb4-65"></a></span>
-<span id="cb4-66"><a href="#cb4-66"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-67"><a href="#cb4-67"></a>resize_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-68"><a href="#cb4-68"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
-<span id="cb4-69"><a href="#cb4-69"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb4-70"><a href="#cb4-70"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_ARGB32<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb4-71"><a href="#cb4-71"></a>  run <span class="op">();</span></span>
-<span id="cb4-72"><a href="#cb4-72"></a><span class="op">}</span></span>
-<span id="cb4-73"><a href="#cb4-73"></a></span>
-<span id="cb4-74"><a href="#cb4-74"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-75"><a href="#cb4-75"></a>draw_func <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-76"><a href="#cb4-76"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-77"><a href="#cb4-77"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb4-78"><a href="#cb4-78"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-79"><a href="#cb4-79"></a>  <span class="op">}</span></span>
-<span id="cb4-80"><a href="#cb4-80"></a><span class="op">}</span></span>
-<span id="cb4-81"><a href="#cb4-81"></a></span>
-<span id="cb4-82"><a href="#cb4-82"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-83"><a href="#cb4-83"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-84"><a href="#cb4-84"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb4-85"><a href="#cb4-85"></a><span class="op">}</span></span>
-<span id="cb4-86"><a href="#cb4-86"></a></span>
-<span id="cb4-87"><a href="#cb4-87"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-88"><a href="#cb4-88"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-89"><a href="#cb4-89"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb4-90"><a href="#cb4-90"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb4-91"><a href="#cb4-91"></a></span>
-<span id="cb4-92"><a href="#cb4-92"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/color/color.ui&quot;</span><span class="op">);</span></span>
-<span id="cb4-93"><a href="#cb4-93"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb4-94"><a href="#cb4-94"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> app<span class="op">);</span></span>
-<span id="cb4-95"><a href="#cb4-95"></a>  tv <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;tv&quot;</span><span class="op">));</span></span>
-<span id="cb4-96"><a href="#cb4-96"></a>  da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;da&quot;</span><span class="op">));</span></span>
-<span id="cb4-97"><a href="#cb4-97"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb4-98"><a href="#cb4-98"></a>  g_signal_connect <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>da<span class="op">),</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-99"><a href="#cb4-99"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>da<span class="op">),</span> draw_func<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb4-100"><a href="#cb4-100"></a></span>
-<span id="cb4-101"><a href="#cb4-101"></a>GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
-<span id="cb4-102"><a href="#cb4-102"></a></span>
-<span id="cb4-103"><a href="#cb4-103"></a>  display <span class="op">=</span> gtk_widget_get_display <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb4-104"><a href="#cb4-104"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb4-105"><a href="#cb4-105"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb4-106"><a href="#cb4-106"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_USER<span class="op">);</span></span>
-<span id="cb4-107"><a href="#cb4-107"></a><span class="op">}</span></span>
-<span id="cb4-108"><a href="#cb4-108"></a></span>
-<span id="cb4-109"><a href="#cb4-109"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.color&quot;</span></span>
-<span id="cb4-110"><a href="#cb4-110"></a></span>
-<span id="cb4-111"><a href="#cb4-111"></a><span class="dt">int</span></span>
-<span id="cb4-112"><a href="#cb4-112"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-113"><a href="#cb4-113"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb4-114"><a href="#cb4-114"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb4-115"><a href="#cb4-115"></a></span>
-<span id="cb4-116"><a href="#cb4-116"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_FLAGS_NONE<span class="op">);</span></span>
-<span id="cb4-117"><a href="#cb4-117"></a></span>
-<span id="cb4-118"><a href="#cb4-118"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-119"><a href="#cb4-119"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-120"><a href="#cb4-120"></a></span>
-<span id="cb4-121"><a href="#cb4-121"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb4-122"><a href="#cb4-122"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb4-123"><a href="#cb4-123"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb4-124"><a href="#cb4-124"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">#include </span><span class="im">&quot;../tfetextview/tfetextview.h&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="dt">static</span> GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="dt">static</span> GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="dt">static</span> GtkWidget <span class="op">*</span>da<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>run <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  GtkTextIter start_iter<span class="op">;</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  GtkTextIter end_iter<span class="op">;</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>  <span class="dt">char</span> <span class="op">*</span>contents<span class="op">;</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a>  gtk_text_buffer_get_bounds <span class="op">(</span>tb<span class="op">,</span> <span class="op">&amp;</span>start_iter<span class="op">,</span> <span class="op">&amp;</span>end_iter<span class="op">);</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  contents <span class="op">=</span> gtk_text_buffer_get_text <span class="op">(</span>tb<span class="op">,</span> <span class="op">&amp;</span>start_iter<span class="op">,</span> <span class="op">&amp;</span>end_iter<span class="op">,</span> FALSE<span class="op">);</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>    cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a>    <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;green&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;blue&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;white&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;black&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a>      cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;light&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a>      cairo_set_source_rgba <span class="op">(</span>cr<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>g_strcmp0 <span class="op">(</span><span class="st">&quot;dark&quot;</span><span class="op">,</span> contents<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a>      cairo_set_source_rgba <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb8-36"><a href="#cb8-36"></a>    <span class="cf">else</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a>      cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb8-38"><a href="#cb8-38"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-39"><a href="#cb8-39"></a>    cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-40"><a href="#cb8-40"></a>  <span class="op">}</span></span>
+<span id="cb8-41"><a href="#cb8-41"></a>  g_free <span class="op">(</span>contents<span class="op">);</span></span>
+<span id="cb8-42"><a href="#cb8-42"></a><span class="op">}</span></span>
+<span id="cb8-43"><a href="#cb8-43"></a></span>
+<span id="cb8-44"><a href="#cb8-44"></a><span class="dt">void</span></span>
+<span id="cb8-45"><a href="#cb8-45"></a>run_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btnr<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-46"><a href="#cb8-46"></a>  run <span class="op">();</span></span>
+<span id="cb8-47"><a href="#cb8-47"></a>  gtk_widget_queue_draw <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">));</span></span>
+<span id="cb8-48"><a href="#cb8-48"></a><span class="op">}</span></span>
+<span id="cb8-49"><a href="#cb8-49"></a></span>
+<span id="cb8-50"><a href="#cb8-50"></a><span class="dt">void</span></span>
+<span id="cb8-51"><a href="#cb8-51"></a>open_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btno<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-52"><a href="#cb8-52"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb8-53"><a href="#cb8-53"></a><span class="op">}</span></span>
+<span id="cb8-54"><a href="#cb8-54"></a></span>
+<span id="cb8-55"><a href="#cb8-55"></a><span class="dt">void</span></span>
+<span id="cb8-56"><a href="#cb8-56"></a>save_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btns<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-57"><a href="#cb8-57"></a>  tfe_text_view_save <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb8-58"><a href="#cb8-58"></a><span class="op">}</span></span>
+<span id="cb8-59"><a href="#cb8-59"></a></span>
+<span id="cb8-60"><a href="#cb8-60"></a><span class="dt">void</span></span>
+<span id="cb8-61"><a href="#cb8-61"></a>close_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btnc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-62"><a href="#cb8-62"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb8-63"><a href="#cb8-63"></a><span class="op">}</span></span>
+<span id="cb8-64"><a href="#cb8-64"></a></span>
+<span id="cb8-65"><a href="#cb8-65"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-66"><a href="#cb8-66"></a>resize_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-67"><a href="#cb8-67"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
+<span id="cb8-68"><a href="#cb8-68"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-69"><a href="#cb8-69"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_ARGB32<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb8-70"><a href="#cb8-70"></a>  run <span class="op">();</span></span>
+<span id="cb8-71"><a href="#cb8-71"></a><span class="op">}</span></span>
+<span id="cb8-72"><a href="#cb8-72"></a></span>
+<span id="cb8-73"><a href="#cb8-73"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-74"><a href="#cb8-74"></a>draw_func <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-75"><a href="#cb8-75"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-76"><a href="#cb8-76"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb8-77"><a href="#cb8-77"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-78"><a href="#cb8-78"></a>  <span class="op">}</span></span>
+<span id="cb8-79"><a href="#cb8-79"></a><span class="op">}</span></span>
+<span id="cb8-80"><a href="#cb8-80"></a></span>
+<span id="cb8-81"><a href="#cb8-81"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-82"><a href="#cb8-82"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-83"><a href="#cb8-83"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb8-84"><a href="#cb8-84"></a><span class="op">}</span></span>
+<span id="cb8-85"><a href="#cb8-85"></a></span>
+<span id="cb8-86"><a href="#cb8-86"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-87"><a href="#cb8-87"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-88"><a href="#cb8-88"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb8-89"><a href="#cb8-89"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb8-90"><a href="#cb8-90"></a>  GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
+<span id="cb8-91"><a href="#cb8-91"></a></span>
+<span id="cb8-92"><a href="#cb8-92"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/color/color.ui&quot;</span><span class="op">);</span></span>
+<span id="cb8-93"><a href="#cb8-93"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb8-94"><a href="#cb8-94"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb8-95"><a href="#cb8-95"></a>  tv <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;tv&quot;</span><span class="op">));</span></span>
+<span id="cb8-96"><a href="#cb8-96"></a>  da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;da&quot;</span><span class="op">));</span></span>
+<span id="cb8-97"><a href="#cb8-97"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb8-98"><a href="#cb8-98"></a>  g_signal_connect <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>da<span class="op">),</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb8-99"><a href="#cb8-99"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>da<span class="op">),</span> draw_func<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb8-100"><a href="#cb8-100"></a></span>
+<span id="cb8-101"><a href="#cb8-101"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
+<span id="cb8-102"><a href="#cb8-102"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb8-103"><a href="#cb8-103"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-104"><a href="#cb8-104"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_USER<span class="op">);</span></span>
+<span id="cb8-105"><a href="#cb8-105"></a><span class="op">}</span></span>
+<span id="cb8-106"><a href="#cb8-106"></a></span>
+<span id="cb8-107"><a href="#cb8-107"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-108"><a href="#cb8-108"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-109"><a href="#cb8-109"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
+<span id="cb8-110"><a href="#cb8-110"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-111"><a href="#cb8-111"></a><span class="op">}</span></span>
+<span id="cb8-112"><a href="#cb8-112"></a></span>
+<span id="cb8-113"><a href="#cb8-113"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.color&quot;</span></span>
+<span id="cb8-114"><a href="#cb8-114"></a></span>
+<span id="cb8-115"><a href="#cb8-115"></a><span class="dt">int</span></span>
+<span id="cb8-116"><a href="#cb8-116"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-117"><a href="#cb8-117"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb8-118"><a href="#cb8-118"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb8-119"><a href="#cb8-119"></a></span>
+<span id="cb8-120"><a href="#cb8-120"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb8-121"><a href="#cb8-121"></a></span>
+<span id="cb8-122"><a href="#cb8-122"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb8-123"><a href="#cb8-123"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb8-124"><a href="#cb8-124"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb8-125"><a href="#cb8-125"></a></span>
+<span id="cb8-126"><a href="#cb8-126"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb8-127"><a href="#cb8-127"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb8-128"><a href="#cb8-128"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb8-129"><a href="#cb8-129"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>109-124: The function <code>main</code> is almost same as before but
-there are some differences. The application ID is
-“com.github.ToshioCP.color”. <code>G_APPLICATION_FLAGS_NONE</code> is
-specified so no open signal handler is necessary.</li>
-<li>87-107: Startup handler.</li>
-<li>92-97: Builds widgets. The pointers of the top window, TfeTextView
-and GtkDrawingArea objects are stored to static variables
-<code>win</code>, <code>tv</code> and <code>da</code> respectively. This
-is because these objects are often used in handlers. They never be
-rewritten so they’re thread safe.</li>
-<li>98: connects “resize” signal and the handler.</li>
-<li>99: sets the drawing function.</li>
-<li>82-85: Activate handler, which just shows the widgets.</li>
-<li>74-80: The drawing function. It just copies <code>surface</code> to
-destination.</li>
-<li>66-72: Resize handler. Re-creates the surface to fit its width and
-height for the drawing area and paints by calling the function
-<code>run</code>.</li>
-<li>59-64: Close handler. It destroys <code>surface</code> if it exists.
-Then it destroys the top-level window and quits the application.</li>
-<li>49-57: Open and save handler. They just call the corresponding
-functions of TfeTextView.</li>
-<li>43-47: Run handler. It calls run function to paint the surface.
-After that <code>gtk_widget_queue_draw</code> is called. This function
-adds the widget (GtkDrawingArea) to the queue to be redrawn. It is
-important to know that the window is redrawn whenever it is necessary.
-For example, when another window is moved and uncovers part of the
-widget, or when the window containing it is resized. But repainting
-<code>surface</code> is not automatically notified to gtk. Therefore,
-you need to call <code>gtk_widget_queue_draw</code> to redraw the
-widget.</li>
-<li>9-41: Run function paints the surface. First, it gets the contents
-of GtkTextBuffer. Then it compares it to “red”, “green” and so on. If it
-matches the color, then the surface is painted the color. If it matches
-“light” or “dark”, then the color of the surface is lightened or
-darkened respectively. Alpha channel is used.</li>
+<li>4-8: Win, tv, da and surface are defined as static variables.</li>
+<li>10-42: Run function.</li>
+<li>44-63: Handlers for button signals.</li>
+<li>65-71: Resize handler.</li>
+<li>73-79: Drawing function.</li>
+<li>81-84: Application activate handler. It just shows the main
+window.</li>
+<li>86-105: Application startup handler.</li>
+<li>92- 97: It builds widgets according to the ui resource. The static
+variables win, tv and da are assigned instances.</li>
+<li>98: Connects “resize” signal and a handler.</li>
+<li>99: Drawing function is set.</li>
+<li>101-104: CSS for textview padding is set.</li>
+<li>107-111: Application shutdown handler. If there exists a surface
+instance, it will be destroyed.</li>
+<li>116-129: A function <code>main</code>. It creates a new application
+instance. And connects three signals startup, shutdown and activate to
+their handlers. It runs the application. It releases the reference to
+the application and returns with <code>stat</code> value.</li>
 </ul>
 <h2 id="meson.build">Meson.build</h2>
 <p>This file is almost same as before. An argument “export_dynamic:
 true” is added to executable function.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>project(&#39;color&#39;, &#39;c&#39;)</span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
-<span id="cb5-4"><a href="#cb5-4"></a></span>
-<span id="cb5-5"><a href="#cb5-5"></a>gnome=import(&#39;gnome&#39;)</span>
-<span id="cb5-6"><a href="#cb5-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;color.gresource.xml&#39;)</span>
-<span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a>sourcefiles=files(&#39;colorapplication.c&#39;, &#39;../tfetextview/tfetextview.c&#39;)</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>executable(&#39;color&#39;, sourcefiles, resources, dependencies: gtkdep, export_dynamic: true)</span></code></pre></div>
-<h2 id="compile-and-execute-it">Compile and execute it</h2>
-<p>First you need to export some variables (refer to <a
-href="sec2.html">Section 2</a>) if you’ve installed GTK 4 from the
-source. If you’ve installed GTK 4 from the distribution packages, you
-don’t need to do this.</p>
-<pre><code>$ . env.sh</code></pre>
-<p>Then type the following to compile it.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb9-1"><a href="#cb9-1"></a>project(&#39;color&#39;, &#39;c&#39;)</span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a>gnome=import(&#39;gnome&#39;)</span>
+<span id="cb9-6"><a href="#cb9-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;color.gresource.xml&#39;)</span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a>sourcefiles=files(&#39;colorapplication.c&#39;, &#39;../tfetextview/tfetextview.c&#39;)</span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a>executable(&#39;color&#39;, sourcefiles, resources, dependencies: gtkdep, export_dynamic: true)</span></code></pre></div>
+<h2 id="build-and-try">Build and try</h2>
+<p>Type the following to compile the program.</p>
 <pre><code>$ meson _build
 $ ninja -C _build</code></pre>
 <p>The application is made in <code>_build</code> directory. Type the
 following to execute it.</p>
 <pre><code>$ _build/color</code></pre>
 <p>Type “red”, “green”, “blue”, “white”, black”, “light” or “dark” in
-the TfeTextView. Then, click on <code>Run</code> button. Make sure the
-color of GtkDrawingArea changes.</p>
+the TfeTextView. No new line charactor is needed. Then, click on the
+<code>Run</code> button. Make sure the color of GtkDrawingArea
+changes.</p>
 <p>In this program TfeTextView is used to change the color. You can use
 buttons or menus instead of textview. Probably it is more appropriate.
 Using textview is unnatural. It is a good practice to make such
