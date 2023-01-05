@@ -7,18 +7,28 @@ Turtle is a simple interpreter for turtle graphics.
 Turtle is written in C language.
 You need:
 
-- Linux. Turtle is tested on ubuntu 20.10
+- Linux. Turtle is tested on ubuntu 22.10
 - gcc, meson and ninja
 - gtk4
 
 It is easy to compile the source file of turtle.
-If you have installed gtk4 with an option `--prefix=$HOME/local`, put the same option to meson so that you can install `turtle` under the directory `$HOME/local/bin`.
+If you want tp install it in your local area, put an option `--prefix=$HOME/.local` to your meson command line.
+Then, it will be installed under `$HOME/.local/bin`.
 The instruction is:
 
 ~~~
-$ meson --prefix=$HOME/local _build
+$ meson --prefix=$HOME/.local _build
 $ ninja -C _build
 $ ninja -C _build install
+~~~
+
+If you want to install it in the system area, no option is necessary.
+It will be installed under `/usr/local/bin`.
+
+~~~
+$ meson _build
+$ ninja -C _build
+$ sudo ninja -C _build install
 ~~~
 
 Type the following command then turtle shows the following window.
@@ -36,17 +46,18 @@ Write turtle language in the text editor and click on `run` button, then the pro
 
 ![Tree](../src/turtle/image/turtle_tree.png)
 
-If you add the following line in `turtle.h`, then codes to inform the status will also be compiled.
-However, the speed will be quite slow because of the output messages.
+If you uncomment the following line in `turtle.y`, then codes for debug will also be compiled.
+Turtle shows the status to the standard output, but the speed is quite slow.
+It is not recommended except you are developing the program.
 
 ~~~
-# define debug 1
+/* # define debug 1 */
 ~~~
 
 ## Example
 
 Imagine a turtle.
-The turtle has a pen and initially he is at the center of the screen, facing to the north (to the north means up on the screen).
+The turtle has a pen and initially it is at the center of the screen, facing to the north (to the north means up on the screen).
 You can let the turtle down the pen or up the pen.
 You can order the turtle to move forward.
 
@@ -55,7 +66,7 @@ pd
 fd 100
 ~~~
 
-- pd: Pen Down. The turtle put the pen down so that the turtle will draw a line if he/she moves.
+- pd: Pen Down. The turtle put the pen down so that the turtle will draw a line if it moves.
 - fd 100: move ForwarD 100. The turtle goes forward 100 pixels.
 
 If you click on `run` button, then a line segment appears on the screen.
@@ -87,6 +98,8 @@ If you click on the `run`button, then two line segments appears.
 One is vertical and the other is horizontal.
 
 ![Two line segments on the surface](../src/turtle/image/turtle2.png)
+
+You can use `tl` (Turn Left) as well.
 
 ## Background and foreground color
 
@@ -124,16 +137,16 @@ In addition, The command initialize the pen, line width (pen size), and foregrou
 The pen is down, the line width is 2 and the foreground color is black.
 
 An order such as `fd 100`, `pd` and so on is a statement.
-Statements are executed in the order from the top to the end
+Statements are executed in the order from the top to the end in the program.
 
 ## Comment and spaces
 
-Characters between `#` (hash mark) and `\n` (new line) inclusive are comment.
+Characters between `#` (hash mark) and `\n` (new line) are comment.
 If the comment is at the end of the file, the trailing new line can be left out.
 Comments are ignored.
 
 ~~~
-# draw a triangle
+# draw a triangle<NEW LINE>
 fd 100 # forward 100 pixels<NEW LINE>
 tr 120 # turn right by 90 degrees<NEW LINE>
 fd 100<NEW LINE>
@@ -150,8 +163,8 @@ Tabs are recognized as eight spaces to calculate the column number.
 
 ## Variables and expressions
 
-Variable begins alphabet followed by alphabet or digit.
-Key words like `fd`, `tr` can't be variables.
+Variables begin alphabet followed by alphabet or digit.
+Key words like `fd` or `tr` can't be variables.
 `Distance` and `angle5` are variables, but `1step` isn't a variable because the first character isn't alphabet.
 Variable names are case sensitive.
 Variables keep real numbers.
@@ -207,6 +220,20 @@ if (x > 50) {
 ~~~
 
 There is no else part.
+
+## Loop
+
+Turtle has very simple loop statement.
+It is `rp` (RePeat) statement.
+
+~~~
+rp (4) {
+  fd 100
+  tr 90
+}
+~~~
+
+The program repeats the statements in the brace four times.
 
 ## Procedures
 
@@ -267,7 +294,7 @@ A variable `a` is in its body.
 - 2: Assigns 100 to a variable `a`.
 - 3: Procedure `a` is called.
 
-However, using the same name to a procedure and variable makes confusing.
+However, using the same name to a procedure and variable makes confusion.
 You should avoid that.
 
 ## Recursive call
@@ -292,14 +319,12 @@ Repeat is called in the body of repeat.
 The call to itself is a recursive call.
 Parameters are created and set each time the procedure is called.
 So, parameter `n` is 4 at the first call but it is 3 at the second call.
-Each time the procedure is called, the parameter `n` decreases by one.
+Every time the procedure is called, the parameter `n` decreases by one.
 Finally, it becomes less than zero, then the procedures return.
 
 The program above draws a square.
 
-Turtle doesn't have any primary loop statements.
-It should probably be added to the future version.
-However, the program above shows that we can program loop with a recursive call.
+It shows that we can program loop with a recursive call.
 
 ## Fractal curves
 
@@ -336,11 +361,13 @@ Keywords:
 - pw: pen width = line width
 - fd: forward
 - tr: turn right
+- tl: turn left
 - bc: background color
 - fc: foreground color
 - if: if statement
 - rt: return
 - rs: reset
+- rp: repeat
 - dp: define procedure
 
 identifiers and numbers:
@@ -373,7 +400,7 @@ Delimiters
 
 Comments and spaces:
 
-- comment: This is characters between `#` and new line inclusive.
+- comment: This is characters between `#` and new line.
 If a comment is at the end of the file, the trailing new line can be left out.
 - white space:
 - horizontal tab: tab is recognized as eight spaces.
@@ -396,24 +423,26 @@ statement:
 ;
 
 primary_procedure:
-  PU
-| PD
-| PW expression
-| FD expression
-| TR expression
-| BC '(' expression ',' expression ',' expression ')'
-| FC '(' expression ',' expression ',' expression ')'
-| ID '=' expression
-| IF '(' expression ')' '{' primary_procedure_list '}'
-| RT
-| RS
-| ID '(' ')'
-| ID '(' argument_list ')'
+  pu
+| pd
+| pw expression
+| fd expression
+| tr expression
+| tl expression
+| bc '(' expression ',' expression ',' expression ')'
+| fc '(' expression ',' expression ',' expression ')'
+| ID '=' expression    /* ID is an identifier which is a name of variable */
+| if '(' expression ')' '{' primary_procedure_list '}'
+| rt
+| rs
+| rp '(' expression ')' '{' primary_procedure_list '}'
+| ID '(' ')'    /* ID is an identifier which is a name of procedure */
+| ID '(' argument_list ')'    /* the same as above */
 ;
 
 procedure_definition:
-  DP ID '('  ')' '{' primary_procedure_list '}'
-| DP ID '(' parameter_list ')' '{' primary_procedure_list '}'
+  dp ID '('  ')' '{' primary_procedure_list '}'
+| dp ID '(' parameter_list ')' '{' primary_procedure_list '}'
 ;
 
 parameter_list:
@@ -442,6 +471,6 @@ expression:
 | '-' expression %prec UMINUS
 | '(' expression ')'
 | ID
-| NUM
+| NUM    /* NUM is a number */
 ;
 ~~~

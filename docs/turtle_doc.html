@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -110,35 +110,63 @@
 <h2 id="prerequisite-and-compiling">Prerequisite and compiling</h2>
 <p>Turtle is written in C language. You need:</p>
 <ul>
-<li>Linux. Turtle is tested on ubuntu 20.10</li>
+<li>Linux. Turtle is tested on ubuntu 22.10</li>
 <li>gcc, meson and ninja</li>
 <li>gtk4</li>
 </ul>
-<p>It is easy to compile the source file of turtle. If you have installed gtk4 with an option <code>--prefix=$HOME/local</code>, put the same option to meson so that you can install <code>turtle</code> under the directory <code>$HOME/local/bin</code>. The instruction is:</p>
-<pre><code>$ meson --prefix=$HOME/local _build
+<p>It is easy to compile the source file of turtle. If you want tp
+install it in your local area, put an option
+<code>--prefix=$HOME/.local</code> to your meson command line. Then, it
+will be installed under <code>$HOME/.local/bin</code>. The instruction
+is:</p>
+<pre><code>$ meson --prefix=$HOME/.local _build
 $ ninja -C _build
 $ ninja -C _build install</code></pre>
-<p>Type the following command then turtle shows the following window.</p>
+<p>If you want to install it in the system area, no option is necessary.
+It will be installed under <code>/usr/local/bin</code>.</p>
+<pre><code>$ meson _build
+$ ninja -C _build
+$ sudo ninja -C _build install</code></pre>
+<p>Type the following command then turtle shows the following
+window.</p>
 <pre><code>$ turtle</code></pre>
 <figure>
-<img src="image/turtle1.png" alt="" /><figcaption>Screenshot just after it’s executed</figcaption>
+<img src="image/turtle1.png"
+alt="Screenshot just after it’s executed" />
+<figcaption aria-hidden="true">Screenshot just after it’s
+executed</figcaption>
 </figure>
-<p>The left half is a text editor and the right half is a surface. Surface is like a canvas to draw shapes.</p>
-<p>Write turtle language in the text editor and click on <code>run</code> button, then the program will be executed and it draws shapes on the surface.</p>
+<p>The left half is a text editor and the right half is a surface.
+Surface is like a canvas to draw shapes.</p>
+<p>Write turtle language in the text editor and click on
+<code>run</code> button, then the program will be executed and it draws
+shapes on the surface.</p>
 <figure>
-<img src="image/turtle_tree.png" alt="" /><figcaption>Tree</figcaption>
+<img src="image/turtle_tree.png" alt="Tree" />
+<figcaption aria-hidden="true">Tree</figcaption>
 </figure>
-<p>If you add the following line in <code>turtle.h</code>, then codes to inform the status will also be compiled. However, the speed will be quite slow because of the output messages.</p>
-<pre><code># define debug 1</code></pre>
+<p>If you uncomment the following line in <code>turtle.y</code>, then
+codes for debug will also be compiled. Turtle shows the status to the
+standard output, but the speed is quite slow. It is not recommended
+except you are developing the program.</p>
+<pre><code>/* # define debug 1 */</code></pre>
 <h2 id="example">Example</h2>
-<p>Imagine a turtle. The turtle has a pen and initially he is at the center of the screen, facing to the north (to the north means up on the screen). You can let the turtle down the pen or up the pen. You can order the turtle to move forward.</p>
+<p>Imagine a turtle. The turtle has a pen and initially it is at the
+center of the screen, facing to the north (to the north means up on the
+screen). You can let the turtle down the pen or up the pen. You can
+order the turtle to move forward.</p>
 <pre><code>pd
 fd 100</code></pre>
 <ul>
-<li>pd: Pen Down. The turtle put the pen down so that the turtle will draw a line if he/she moves.</li>
+<li>pd: Pen Down. The turtle put the pen down so that the turtle will
+draw a line if it moves.</li>
 <li>fd 100: move ForwarD 100. The turtle goes forward 100 pixels.</li>
 </ul>
-<p>If you click on <code>run</code> button, then a line segment appears on the screen. One of the endpoints of the line segment is at the center of the surface and the other is at 100 pixels up from the center. The point at the center is the start point of the turtle and the other endpoint is the end point of the movement.</p>
+<p>If you click on <code>run</code> button, then a line segment appears
+on the screen. One of the endpoints of the line segment is at the center
+of the surface and the other is at 100 pixels up from the center. The
+point at the center is the start point of the turtle and the other
+endpoint is the end point of the movement.</p>
 <p>If the turtle picks the pen up, then no line segment appears.</p>
 <pre><code>pu
 fd 100</code></pre>
@@ -148,12 +176,20 @@ fd 100</code></pre>
 fd 100
 tr 90
 fd 100</code></pre>
-<p>The command <code>tr</code> is “Turn Right”. The argument is angle with degrees. Therefore, <code>tr 90</code> means “Turn right by 90 degrees”. If you click on the <code>run</code>button, then two line segments appears. One is vertical and the other is horizontal.</p>
+<p>The command <code>tr</code> is “Turn Right”. The argument is angle
+with degrees. Therefore, <code>tr 90</code> means “Turn right by 90
+degrees”. If you click on the <code>run</code>button, then two line
+segments appears. One is vertical and the other is horizontal.</p>
 <figure>
-<img src="image/turtle2.png" alt="" /><figcaption>Two line segments on the surface</figcaption>
+<img src="image/turtle2.png" alt="Two line segments on the surface" />
+<figcaption aria-hidden="true">Two line segments on the
+surface</figcaption>
 </figure>
-<h2 id="background-and-foreground-color">Background and foreground color</h2>
-<p>Colors are specified with RGB. A vector (r, g, b) denotes RGB color. Each of the elements is a real number between 0 and 1.</p>
+<p>You can use <code>tl</code> (Turn Left) as well.</p>
+<h2 id="background-and-foreground-color">Background and foreground
+color</h2>
+<p>Colors are specified with RGB. A vector (r, g, b) denotes RGB color.
+Each of the elements is a real number between 0 and 1.</p>
 <ul>
 <li>Red is (1.0, 0.0, 0.0). You can write (1, 0, 0) instead.</li>
 <li>Green is (0.0, 1.0, 0.0)</li>
@@ -164,61 +200,106 @@ fd 100</code></pre>
 <p>You can express a variety of colors by changing each element.</p>
 <p>There are two commands to change colors.</p>
 <ul>
-<li>bc: Background Color. <code>bc (1,0,0)</code> changes the background color to red. This command clear the surface and change the background color. So, the shapes on the surface disappears.</li>
-<li>fc: Foreground Color. <code>fc (0,1,0)</code> changes the foreground color to green. This command changes the pen color. The prior shapes on the surface aren’t affected. After this command, the turtle draws lines with the new color.</li>
+<li>bc: Background Color. <code>bc (1,0,0)</code> changes the background
+color to red. This command clear the surface and change the background
+color. So, the shapes on the surface disappears.</li>
+<li>fc: Foreground Color. <code>fc (0,1,0)</code> changes the foreground
+color to green. This command changes the pen color. The prior shapes on
+the surface aren’t affected. After this command, the turtle draws lines
+with the new color.</li>
 </ul>
 <figure>
-<img src="image/turtle3.png" alt="" /><figcaption>Change the foreground color</figcaption>
+<img src="image/turtle3.png" alt="Change the foreground color" />
+<figcaption aria-hidden="true">Change the foreground color</figcaption>
 </figure>
 <h2 id="other-simple-commands">Other simple commands</h2>
 <ul>
-<li>pw: Pen Width. This is the same as pen size or line width. For example, <code>pw 5</code> makes lines thick and <code>pw 1</code> makes it thin.</li>
-<li>rs: ReSet. The turtle moves back to the initial position and direction. In addition, The command initialize the pen, line width (pen size), and foreground color. The pen is down, the line width is 2 and the foreground color is black.</li>
+<li>pw: Pen Width. This is the same as pen size or line width. For
+example, <code>pw 5</code> makes lines thick and <code>pw 1</code> makes
+it thin.</li>
+<li>rs: ReSet. The turtle moves back to the initial position and
+direction. In addition, The command initialize the pen, line width (pen
+size), and foreground color. The pen is down, the line width is 2 and
+the foreground color is black.</li>
 </ul>
-<p>An order such as <code>fd 100</code>, <code>pd</code> and so on is a statement. Statements are executed in the order from the top to the end</p>
+<p>An order such as <code>fd 100</code>, <code>pd</code> and so on is a
+statement. Statements are executed in the order from the top to the end
+in the program.</p>
 <h2 id="comment-and-spaces">Comment and spaces</h2>
-<p>Characters between <code>#</code> (hash mark) and <code>\n</code> (new line) inclusive are comment. If the comment is at the end of the file, the trailing new line can be left out. Comments are ignored.</p>
-<pre><code># draw a triangle
+<p>Characters between <code>#</code> (hash mark) and <code>\n</code>
+(new line) are comment. If the comment is at the end of the file, the
+trailing new line can be left out. Comments are ignored.</p>
+<pre><code># draw a triangle&lt;NEW LINE&gt;
 fd 100 # forward 100 pixels&lt;NEW LINE&gt;
 tr 120 # turn right by 90 degrees&lt;NEW LINE&gt;
 fd 100&lt;NEW LINE&gt;
 tr 120&lt;NEW LINE&gt;
 fd 100 # Now a triangle appears.&lt;EOF&gt;</code></pre>
-<p>&lt;NEW LINE&gt; and &lt;EOF&gt; indicate newline code and end of file respectively. The comments in the line 1, 2, 3 and 6 are correct syntactically.</p>
-<p>Spaces (white space, tab and new line) are ignored. They are used only as delimiters. Tabs are recognized as eight spaces to calculate the column number.</p>
+<p>&lt;NEW LINE&gt; and &lt;EOF&gt; indicate newline code and end of
+file respectively. The comments in the line 1, 2, 3 and 6 are correct
+syntactically.</p>
+<p>Spaces (white space, tab and new line) are ignored. They are used
+only as delimiters. Tabs are recognized as eight spaces to calculate the
+column number.</p>
 <h2 id="variables-and-expressions">Variables and expressions</h2>
-<p>Variable begins alphabet followed by alphabet or digit. Key words like <code>fd</code>, <code>tr</code> can’t be variables. <code>Distance</code> and <code>angle5</code> are variables, but <code>1step</code> isn’t a variable because the first character isn’t alphabet. Variable names are case sensitive. Variables keep real numbers. Their type is the same as <code>double</code> in C language. Integers are casted to real numbers automatically. So 1 and 1.0 are the same value. Numbers begin digits, not signs (<code>+</code> or <code>-</code>).</p>
+<p>Variables begin alphabet followed by alphabet or digit. Key words
+like <code>fd</code> or <code>tr</code> can’t be variables.
+<code>Distance</code> and <code>angle5</code> are variables, but
+<code>1step</code> isn’t a variable because the first character isn’t
+alphabet. Variable names are case sensitive. Variables keep real
+numbers. Their type is the same as <code>double</code> in C language.
+Integers are casted to real numbers automatically. So 1 and 1.0 are the
+same value. Numbers begin digits, not signs (<code>+</code> or
+<code>-</code>).</p>
 <ul>
 <li>100, 20.34 and 0.01 are numbers</li>
 <li>+100 isn’t a number. It causes syntax error. Use 100 instead.</li>
-<li>-100 isn’t a number. But turtle recognizes it unary minus and a number 100. So turtle calculate it and the result is -100.</li>
-<li>100 + -20: This is recognized 100 + (- 20). However, using bracket, 100 + (-20), is better for easy reading.</li>
+<li>-100 isn’t a number. But turtle recognizes it unary minus and a
+number 100. So turtle calculate it and the result is -100.</li>
+<li>100 + -20: This is recognized 100 + (- 20). However, using bracket,
+100 + (-20), is better for easy reading.</li>
 </ul>
 <pre><code>distance = 100
 fd distance</code></pre>
-<p>A value 100 is assigned to the variable <code>distance</code> in the first line. Assignment is a statement. Most of statements begin with commands like <code>fd</code>. Assignment is the only exception.</p>
+<p>A value 100 is assigned to the variable <code>distance</code> in the
+first line. Assignment is a statement. Most of statements begin with
+commands like <code>fd</code>. Assignment is the only exception.</p>
 <p>The example above draws a line segment of 100 pixels long.</p>
-<p>You can use variables in expressions. There are 8 kinds of calculations available.</p>
+<p>You can use variables in expressions. There are 8 kinds of
+calculations available.</p>
 <ul>
 <li>addition: x + y</li>
 <li>subtraction: x - y</li>
 <li>multiplication: x * y</li>
 <li>division: x / y</li>
 <li>unary minus: - x</li>
-<li>logical equal: x = y. This symbol <code>=</code> works as <code>==</code> in C language.</li>
+<li>logical equal: x = y. This symbol <code>=</code> works as
+<code>==</code> in C language.</li>
 <li>greater than: x &gt; y</li>
 <li>less than: x &lt; y</li>
 </ul>
-<p>The last three symbols are mainly used in the condition of if statement.</p>
-<p>Variables are registered to a symbol table when it is assigned a value for the first time. Evaluating a variable before the registration isn’t allowed and occurs an error.</p>
+<p>The last three symbols are mainly used in the condition of if
+statement.</p>
+<p>Variables are registered to a symbol table when it is assigned a
+value for the first time. Evaluating a variable before the registration
+isn’t allowed and occurs an error.</p>
 <h2 id="if-statement">If statement</h2>
 <p>Turtle language has very simple if statement.</p>
 <pre><code>if (x &gt; 50) {
   fd x
 }</code></pre>
 <p>There is no else part.</p>
+<h2 id="loop">Loop</h2>
+<p>Turtle has very simple loop statement. It is <code>rp</code> (RePeat)
+statement.</p>
+<pre><code>rp (4) {
+  fd 100
+  tr 90
+}</code></pre>
+<p>The program repeats the statements in the brace four times.</p>
 <h2 id="procedures">Procedures</h2>
-<p>Procedures are similar to functions in C language. The difference is that procedures don’t have return values.</p>
+<p>Procedures are similar to functions in C language. The difference is
+that procedures don’t have return values.</p>
 <pre><code>dp triangle (side) {
   fd side
   tr 120
@@ -228,27 +309,36 @@ fd distance</code></pre>
 }
 
 triangle (100)</code></pre>
-<p><code>dp</code> (Define Procedure) is a key word followed by procedure name, parameters, and body. Procedure names start alphabet followed by alphabet or digit. Parameters are a list of variables. For example</p>
+<p><code>dp</code> (Define Procedure) is a key word followed by
+procedure name, parameters, and body. Procedure names start alphabet
+followed by alphabet or digit. Parameters are a list of variables. For
+example</p>
 <pre><code>dp abc (a) { ... ... }
 dp abc (a, b) { ... ... }
 dp abc (a, b, c) { ... ... }</code></pre>
-<p>Body is a sequence of statements. The statements aren’t executed when the procedure is defined. They will be executed when the procedure is called later.</p>
+<p>Body is a sequence of statements. The statements aren’t executed when
+the procedure is defined. They will be executed when the procedure is
+called later.</p>
 <p>Procedures are called by the name followed by arguments.</p>
 <pre><code>dp proc (a, b, c) { ... ... }
 
 proc (100, 0, -20*3)</code></pre>
-<p>The number of parameters and arguments must be the same. Arguments can be any expressions. When you call a procedure, brackets following the procedure name must exist even if the procedure has no argument.</p>
+<p>The number of parameters and arguments must be the same. Arguments
+can be any expressions. When you call a procedure, brackets following
+the procedure name must exist even if the procedure has no argument.</p>
 <p>Procedure names and variable names don’t conflict.</p>
 <pre><code>dp a () {fd a}
 a=100
 a ()</code></pre>
 <p>This is a correct program.</p>
 <ul>
-<li>1: Defines a procedure <code>a</code>. A variable <code>a</code> is in its body.</li>
+<li>1: Defines a procedure <code>a</code>. A variable <code>a</code> is
+in its body.</li>
 <li>2: Assigns 100 to a variable <code>a</code>.</li>
 <li>3: Procedure <code>a</code> is called.</li>
 </ul>
-<p>However, using the same name to a procedure and variable makes confusing. You should avoid that.</p>
+<p>However, using the same name to a procedure and variable makes
+confusion. You should avoid that.</p>
 <h2 id="recursive-call">Recursive call</h2>
 <p>Procedures can be called recursively.</p>
 <pre><code>dp repeat (n) {
@@ -262,21 +352,37 @@ a ()</code></pre>
 }
 
 repeat (4)</code></pre>
-<p>Repeat is called in the body of repeat. The call to itself is a recursive call. Parameters are created and set each time the procedure is called. So, parameter <code>n</code> is 4 at the first call but it is 3 at the second call. Each time the procedure is called, the parameter <code>n</code> decreases by one. Finally, it becomes less than zero, then the procedures return.</p>
+<p>Repeat is called in the body of repeat. The call to itself is a
+recursive call. Parameters are created and set each time the procedure
+is called. So, parameter <code>n</code> is 4 at the first call but it is
+3 at the second call. Every time the procedure is called, the parameter
+<code>n</code> decreases by one. Finally, it becomes less than zero,
+then the procedures return.</p>
 <p>The program above draws a square.</p>
-<p>Turtle doesn’t have any primary loop statements. It should probably be added to the future version. However, the program above shows that we can program loop with a recursive call.</p>
+<p>It shows that we can program loop with a recursive call.</p>
 <h2 id="fractal-curves">Fractal curves</h2>
-<p>Recursive call can be applied to draw fractal curves. Fractal curves appear when a procedure is applied to it repeatedly. The procedure replaces a part of the curve with the contracted curve.</p>
+<p>Recursive call can be applied to draw fractal curves. Fractal curves
+appear when a procedure is applied to it repeatedly. The procedure
+replaces a part of the curve with the contracted curve.</p>
 <figure>
-<img src="image/turtle_tree.png" alt="" /><figcaption>Tree</figcaption>
+<img src="image/turtle_tree.png" alt="Tree" />
+<figcaption aria-hidden="true">Tree</figcaption>
 </figure>
-<p>This shape is called tree. The basic pattern of this shape is a line segment. It is the first stage. The second stage adds two shorter line segments at the endpoint of the original segment. The new segment has 70 percent length to the original segment and the orientation is +30 or -30 degrees different. The third stage adds two shorter line segments to the second stage line segments. And repeats it several times.</p>
-<p>This repeating is programmed by recursive call. Two more examples are shown here. They are Koch curve and Square Koch curve.</p>
+<p>This shape is called tree. The basic pattern of this shape is a line
+segment. It is the first stage. The second stage adds two shorter line
+segments at the endpoint of the original segment. The new segment has 70
+percent length to the original segment and the orientation is +30 or -30
+degrees different. The third stage adds two shorter line segments to the
+second stage line segments. And repeats it several times.</p>
+<p>This repeating is programmed by recursive call. Two more examples are
+shown here. They are Koch curve and Square Koch curve.</p>
 <figure>
-<img src="image/turtle_koch.png" alt="" /><figcaption>Koch curve</figcaption>
+<img src="image/turtle_koch.png" alt="Koch curve" />
+<figcaption aria-hidden="true">Koch curve</figcaption>
 </figure>
 <figure>
-<img src="image/turtle_square_koch.png" alt="" /><figcaption>Square Koch curve</figcaption>
+<img src="image/turtle_square_koch.png" alt="Square Koch curve" />
+<figcaption aria-hidden="true">Square Koch curve</figcaption>
 </figure>
 <h2 id="tokens-and-punctuations">Tokens and punctuations</h2>
 <p>The following is the list of tokens.</p>
@@ -287,17 +393,25 @@ repeat (4)</code></pre>
 <li>pw: pen width = line width</li>
 <li>fd: forward</li>
 <li>tr: turn right</li>
+<li>tl: turn left</li>
 <li>bc: background color</li>
 <li>fc: foreground color</li>
 <li>if: if statement</li>
 <li>rt: return</li>
 <li>rs: reset</li>
+<li>rp: repeat</li>
 <li>dp: define procedure</li>
 </ul>
 <p>identifiers and numbers:</p>
 <ul>
-<li>identifier: This is used for the name of variables, parameters and procedures. It is expressed <code>[a-zA-Z][a-zA-Z0-9]*</code> in regular expression.</li>
-<li>number: This is expressed <code>(0|[1-9][0-9]*)(\.[0-9]+)?</code> in regular expression. It doesn’t have <code>+</code> or <code>-</code> sign because they bring some syntactic confusion. However negative number such as <code>-10</code> can be recognized as unary minus and a number.</li>
+<li>identifier: This is used for the name of variables, parameters and
+procedures. It is expressed <code>[a-zA-Z][a-zA-Z0-9]*</code> in regular
+expression.</li>
+<li>number: This is expressed <code>(0|[1-9][0-9]*)(\.[0-9]+)?</code> in
+regular expression. It doesn’t have <code>+</code> or <code>-</code>
+sign because they bring some syntactic confusion. However negative
+number such as <code>-10</code> can be recognized as unary minus and a
+number.</li>
 </ul>
 <p>Symbols for expression</p>
 <ul>
@@ -321,12 +435,15 @@ repeat (4)</code></pre>
 </ul>
 <p>Comments and spaces:</p>
 <ul>
-<li>comment: This is characters between <code>#</code> and new line inclusive. If a comment is at the end of the file, the trailing new line can be left out.</li>
+<li>comment: This is characters between <code>#</code> and new line. If
+a comment is at the end of the file, the trailing new line can be left
+out.</li>
 <li>white space:</li>
 <li>horizontal tab: tab is recognized as eight spaces.</li>
 <li>new line: This is the end of a line.</li>
 </ul>
-<p>These characters are used to separate tokens explicitly. They doesn’t have any syntactic meaning and are ignored by the parser.</p>
+<p>These characters are used to separate tokens explicitly. They doesn’t
+have any syntactic meaning and are ignored by the parser.</p>
 <h2 id="grammar">Grammar</h2>
 <pre><code>program:
   statement
@@ -339,24 +456,26 @@ statement:
 ;
 
 primary_procedure:
-  PU
-| PD
-| PW expression
-| FD expression
-| TR expression
-| BC &#39;(&#39; expression &#39;,&#39; expression &#39;,&#39; expression &#39;)&#39;
-| FC &#39;(&#39; expression &#39;,&#39; expression &#39;,&#39; expression &#39;)&#39;
-| ID &#39;=&#39; expression
-| IF &#39;(&#39; expression &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
-| RT
-| RS
-| ID &#39;(&#39; &#39;)&#39;
-| ID &#39;(&#39; argument_list &#39;)&#39;
+  pu
+| pd
+| pw expression
+| fd expression
+| tr expression
+| tl expression
+| bc &#39;(&#39; expression &#39;,&#39; expression &#39;,&#39; expression &#39;)&#39;
+| fc &#39;(&#39; expression &#39;,&#39; expression &#39;,&#39; expression &#39;)&#39;
+| ID &#39;=&#39; expression    /* ID is an identifier which is a name of variable */
+| if &#39;(&#39; expression &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
+| rt
+| rs
+| rp &#39;(&#39; expression &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
+| ID &#39;(&#39; &#39;)&#39;    /* ID is an identifier which is a name of procedure */
+| ID &#39;(&#39; argument_list &#39;)&#39;    /* the same as above */
 ;
 
 procedure_definition:
-  DP ID &#39;(&#39;  &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
-| DP ID &#39;(&#39; parameter_list &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
+  dp ID &#39;(&#39;  &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
+| dp ID &#39;(&#39; parameter_list &#39;)&#39; &#39;{&#39; primary_procedure_list &#39;}&#39;
 ;
 
 parameter_list:
@@ -385,7 +504,7 @@ expression:
 | &#39;-&#39; expression %prec UMINUS
 | &#39;(&#39; expression &#39;)&#39;
 | ID
-| NUM
+| NUM    /* NUM is a number */
 ;</code></pre>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
