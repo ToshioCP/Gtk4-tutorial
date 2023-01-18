@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<interface>
+  <object class='GtkApplicationWindow' id='win'>
+    <property name='default-width'>600</property>
+    <child>
+      <object class='GtkBox'>
+        <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class='GtkLabel' id='label'>
+            <property name="label">10</property>
+          </object>
+        </child>
+        <child>
+          <object class='GtkScale'>
+            <property name='adjustment'>
+              <object class='GtkAdjustment' id='adjustment'>
+                <property name='upper'>20.0</property>
+                <property name='lower'>0.0</property>
+                <property name='value'>10.0</property>
+                <property name='step-increment'>1.0</property>
+                <property name='page-increment'>5.0</property>
+                <property name='page-size'>0.0</property>
+              </object>
+            </property>
+            <property name='digits'>0</property>
+            <property name='draw-value'>true</property>
+            <property name='has-origin'>true</property>
+            <property name='round-digits'>0</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

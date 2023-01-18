@@ -1,8 +1,14 @@
 #include <gtk/gtk.h>
 
-char *
-set_title (GtkWidget *win, int width, int height) {
-  return g_strdup_printf ("%d x %d", width, height);
+// This program check the "this" object.
+// It is usually the outer object of the expressions.
+
+char*
+test (GObject *object) {
+  if (object)
+    return g_strdup (G_OBJECT_TYPE_NAME (object));
+  else
+    return g_strdup ("error");
 }
 
 static void
@@ -17,13 +23,14 @@ app_startup (GApplication *application) {
   GtkBuilder *build;
   GtkWidget *win;
 
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp.ui");
+  build = gtk_builder_new_from_file ("exp_test.ui");
   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   gtk_window_set_application (GTK_WINDOW (win), app);
   g_object_unref (build);
+  g_object_ref (win); /* win is taken the ownership in the lookup tag in the ui file at line 25. */
 }
 
-#define APPLICATION_ID "com.github.ToshioCP.exp"
+#define APPLICATION_ID "com.github.ToshioCP.exp_watch"
 
 int
 main (int argc, char **argv) {

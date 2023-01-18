@@ -5,7 +5,7 @@
     <meta name="generator" content="pandoc" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gtk4 tutorial</title>
+    <title>GTK 4 tutorial</title>
     <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -110,58 +110,71 @@
     </nav>
 <h1 id="gtkcolumnview">GtkColumnView</h1>
 <h2 id="gtkcolumnview-1">GtkColumnView</h2>
-<p>GtkColumnView is like GtkListView, but it has multiple columns. Each column is GtkColumnViewColumn.</p>
+<p>GtkColumnView is like GtkListView, but it has multiple columns. Each
+column is GtkColumnViewColumn.</p>
 <figure>
-<img src="image/column_view.png" alt="" /><figcaption>Column View</figcaption>
+<img src="image/column_view.png" alt="Column View" />
+<figcaption aria-hidden="true">Column View</figcaption>
 </figure>
 <ul>
-<li>GtkColumnView has “model” property. The property points a GtkSelectionModel object.</li>
-<li>Each GtkColumnViewColumn has “factory” property. The property points a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).</li>
-<li>The factory connects GtkListItem, which belongs to GtkColumnViewColumn, and items of GtkSelectionModel. And the factory builds the descendants widgets of GtkColumnView to display the item on the display. This process is the same as the one in GtkListView.</li>
+<li>GtkColumnView has “model” property. The property points a
+GtkSelectionModel object.</li>
+<li>Each GtkColumnViewColumn has “factory” property. The property points
+a GtkListItemFactory (GtkSignalListItemFactory or
+GtkBuilderListItemFactory).</li>
+<li>The factory connects GtkListItem and items of GtkSelectionModel. And
+the factory builds the descendant widgets of GtkColumnView to display
+the item on the display. This process is the same as the one in
+GtkListView.</li>
 </ul>
-<p>The following diagram shows the image how it works.</p>
+<p>The following diagram shows how it works.</p>
 <figure>
-<img src="image/column.png" alt="" /><figcaption>ColumnView</figcaption>
+<img src="image/column.png" alt="ColumnView" />
+<figcaption aria-hidden="true">ColumnView</figcaption>
 </figure>
-<p>The example in this section is a window that displays information of files in a current directory. The information is the name, size and last modified datetime of files. So, there are three columns.</p>
-<p>In addition, the example uses GtkSortListModel and GtkSorter to sort the information.</p>
+<p>The example in this section is a window that displays information of
+files in a current directory. The information is the name, size and last
+modified datetime of files. So, there are three columns.</p>
+<p>In addition, the example uses GtkSortListModel and GtkSorter to sort
+the information.</p>
 <h2 id="column.ui">column.ui</h2>
-<p>Ui file specifies whole widgets and their structure.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">&lt;interface&gt;</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>file list<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span><span class="kw">&gt;</span>800<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span><span class="kw">&gt;</span>600<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    <span class="kw">&lt;child&gt;</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;scr&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>        <span class="kw">&lt;child&gt;</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>          <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnView&quot;</span><span class="ot"> id=</span><span class="st">&quot;columnview&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkSortListModel&quot;</span><span class="ot"> id=</span><span class="st">&quot;sortlist&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a>                      <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directorylist&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>                        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span><span class="kw">&gt;</span>standard::name,standard::icon,standard::size,time::modified<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a>                      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>                    <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a>                    <span class="kw">&lt;binding</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a>                      <span class="kw">&lt;lookup</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span>columnview<span class="kw">&lt;/lookup&gt;</span></span>
-<span id="cb1-24"><a href="#cb1-24"></a>                    <span class="kw">&lt;/binding&gt;</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-26"><a href="#cb1-26"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a>            <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-29"><a href="#cb1-29"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb1-30"><a href="#cb1-30"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnViewColumn&quot;</span><span class="ot"> id=</span><span class="st">&quot;column1&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>Name<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-32"><a href="#cb1-32"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expand&quot;</span><span class="kw">&gt;</span>TRUE<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-33"><a href="#cb1-33"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-34"><a href="#cb1-34"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-35"><a href="#cb1-35"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span></span>
+<p>Ui file specifies widgets and list item templates.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;file list&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;800&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnView&quot;</span><span class="ot"> id=</span><span class="st">&quot;columnview&quot;</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNoSelection&quot;</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSortListModel&quot;</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>                      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directorylist&quot;</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>                        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::size,time::modified&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-20"><a href="#cb1-20"></a>                      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21"></a>                    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-22"><a href="#cb1-22"></a>                    &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;</span>
+<span id="cb1-23"><a href="#cb1-23"></a>                      &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;columnview&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb1-24"><a href="#cb1-24"></a>                    &lt;/<span class="kw">binding</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-28"><a href="#cb1-28"></a>            &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-29"><a href="#cb1-29"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-30"><a href="#cb1-30"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnViewColumn&quot;</span>&gt;</span>
+<span id="cb1-31"><a href="#cb1-31"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Name&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-32"><a href="#cb1-32"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-33"><a href="#cb1-33"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span>&gt;</span>
+<span id="cb1-34"><a href="#cb1-34"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span>&gt;</span>
+<span id="cb1-35"><a href="#cb1-35"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span>&gt;<span class="bn">&lt;![CDATA[</span></span>
 <span id="cb1-36"><a href="#cb1-36"></a>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span id="cb1-37"><a href="#cb1-37"></a>&lt;interface&gt;</span>
 <span id="cb1-38"><a href="#cb1-38"></a>  &lt;template class=&quot;GtkListItem&quot;&gt;</span>
@@ -193,25 +206,25 @@
 <span id="cb1-64"><a href="#cb1-64"></a>    &lt;/property&gt;</span>
 <span id="cb1-65"><a href="#cb1-65"></a>  &lt;/template&gt;</span>
 <span id="cb1-66"><a href="#cb1-66"></a>&lt;/interface&gt;</span>
-<span id="cb1-67"><a href="#cb1-67"></a>                    <span class="bn">]]&gt;</span><span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-68"><a href="#cb1-68"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-69"><a href="#cb1-69"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-70"><a href="#cb1-70"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-71"><a href="#cb1-71"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkStringSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_name&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-72"><a href="#cb1-72"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-73"><a href="#cb1-73"></a>                      <span class="kw">&lt;closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-74"><a href="#cb1-74"></a>                      <span class="kw">&lt;/closure&gt;</span></span>
-<span id="cb1-75"><a href="#cb1-75"></a>                    <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-76"><a href="#cb1-76"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-77"><a href="#cb1-77"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-78"><a href="#cb1-78"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-79"><a href="#cb1-79"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb1-80"><a href="#cb1-80"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb1-81"><a href="#cb1-81"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnViewColumn&quot;</span><span class="ot"> id=</span><span class="st">&quot;column2&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-82"><a href="#cb1-82"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>Size<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-83"><a href="#cb1-83"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-84"><a href="#cb1-84"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-85"><a href="#cb1-85"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span></span>
+<span id="cb1-67"><a href="#cb1-67"></a>                    <span class="bn">]]&gt;</span>&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-68"><a href="#cb1-68"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-69"><a href="#cb1-69"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-70"><a href="#cb1-70"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;</span>
+<span id="cb1-71"><a href="#cb1-71"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkStringSorter&quot;</span>&gt;</span>
+<span id="cb1-72"><a href="#cb1-72"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span>&gt;</span>
+<span id="cb1-73"><a href="#cb1-73"></a>                      &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
+<span id="cb1-74"><a href="#cb1-74"></a>                      &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb1-75"><a href="#cb1-75"></a>                    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-76"><a href="#cb1-76"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-77"><a href="#cb1-77"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-78"><a href="#cb1-78"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-79"><a href="#cb1-79"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-80"><a href="#cb1-80"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-81"><a href="#cb1-81"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnViewColumn&quot;</span>&gt;</span>
+<span id="cb1-82"><a href="#cb1-82"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Size&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-83"><a href="#cb1-83"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span>&gt;</span>
+<span id="cb1-84"><a href="#cb1-84"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span>&gt;</span>
+<span id="cb1-85"><a href="#cb1-85"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span>&gt;<span class="bn">&lt;![CDATA[</span></span>
 <span id="cb1-86"><a href="#cb1-86"></a>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span id="cb1-87"><a href="#cb1-87"></a>&lt;interface&gt;</span>
 <span id="cb1-88"><a href="#cb1-88"></a>  &lt;template class=&quot;GtkListItem&quot;&gt;</span>
@@ -220,7 +233,7 @@
 <span id="cb1-91"><a href="#cb1-91"></a>        &lt;property name=&quot;hexpand&quot;&gt;TRUE&lt;/property&gt;</span>
 <span id="cb1-92"><a href="#cb1-92"></a>        &lt;property name=&quot;xalign&quot;&gt;0&lt;/property&gt;</span>
 <span id="cb1-93"><a href="#cb1-93"></a>        &lt;binding name=&quot;label&quot;&gt;</span>
-<span id="cb1-94"><a href="#cb1-94"></a>          &lt;closure type=&quot;gchararray&quot; function=&quot;get_file_size_factory&quot;&gt;</span>
+<span id="cb1-94"><a href="#cb1-94"></a>          &lt;closure type=&quot;gint64&quot; function=&quot;get_file_size_factory&quot;&gt;</span>
 <span id="cb1-95"><a href="#cb1-95"></a>            &lt;lookup name=&quot;item&quot;&gt;GtkListItem&lt;/lookup&gt;</span>
 <span id="cb1-96"><a href="#cb1-96"></a>          &lt;/closure&gt;</span>
 <span id="cb1-97"><a href="#cb1-97"></a>        &lt;/binding&gt;</span>
@@ -228,26 +241,26 @@
 <span id="cb1-99"><a href="#cb1-99"></a>    &lt;/property&gt;</span>
 <span id="cb1-100"><a href="#cb1-100"></a>  &lt;/template&gt;</span>
 <span id="cb1-101"><a href="#cb1-101"></a>&lt;/interface&gt;</span>
-<span id="cb1-102"><a href="#cb1-102"></a>                    <span class="bn">]]&gt;</span><span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-103"><a href="#cb1-103"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-104"><a href="#cb1-104"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-105"><a href="#cb1-105"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-106"><a href="#cb1-106"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_size&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-107"><a href="#cb1-107"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-108"><a href="#cb1-108"></a>                      <span class="kw">&lt;closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_size&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-109"><a href="#cb1-109"></a>                      <span class="kw">&lt;/closure&gt;</span></span>
-<span id="cb1-110"><a href="#cb1-110"></a>                    <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-111"><a href="#cb1-111"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span><span class="kw">&gt;</span>GTK_SORT_ASCENDING<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-112"><a href="#cb1-112"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-113"><a href="#cb1-113"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-114"><a href="#cb1-114"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-115"><a href="#cb1-115"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb1-116"><a href="#cb1-116"></a>            <span class="kw">&lt;child&gt;</span></span>
-<span id="cb1-117"><a href="#cb1-117"></a>              <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnViewColumn&quot;</span><span class="ot"> id=</span><span class="st">&quot;column3&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-118"><a href="#cb1-118"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="kw">&gt;</span>Date modified<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-119"><a href="#cb1-119"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-120"><a href="#cb1-120"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-121"><a href="#cb1-121"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span></span>
+<span id="cb1-102"><a href="#cb1-102"></a>                    <span class="bn">]]&gt;</span>&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-103"><a href="#cb1-103"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-104"><a href="#cb1-104"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-105"><a href="#cb1-105"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;</span>
+<span id="cb1-106"><a href="#cb1-106"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span>&gt;</span>
+<span id="cb1-107"><a href="#cb1-107"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span>&gt;</span>
+<span id="cb1-108"><a href="#cb1-108"></a>                      &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_size&quot;</span>&gt;</span>
+<span id="cb1-109"><a href="#cb1-109"></a>                      &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb1-110"><a href="#cb1-110"></a>                    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-111"><a href="#cb1-111"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span>&gt;GTK_SORT_ASCENDING&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-112"><a href="#cb1-112"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-113"><a href="#cb1-113"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-114"><a href="#cb1-114"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-115"><a href="#cb1-115"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-116"><a href="#cb1-116"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-117"><a href="#cb1-117"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkColumnViewColumn&quot;</span>&gt;</span>
+<span id="cb1-118"><a href="#cb1-118"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Date modified&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-119"><a href="#cb1-119"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span>&gt;</span>
+<span id="cb1-120"><a href="#cb1-120"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span>&gt;</span>
+<span id="cb1-121"><a href="#cb1-121"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span>&gt;<span class="bn">&lt;![CDATA[</span></span>
 <span id="cb1-122"><a href="#cb1-122"></a>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span id="cb1-123"><a href="#cb1-123"></a>&lt;interface&gt;</span>
 <span id="cb1-124"><a href="#cb1-124"></a>  &lt;template class=&quot;GtkListItem&quot;&gt;</span>
@@ -264,249 +277,282 @@
 <span id="cb1-135"><a href="#cb1-135"></a>    &lt;/property&gt;</span>
 <span id="cb1-136"><a href="#cb1-136"></a>  &lt;/template&gt;</span>
 <span id="cb1-137"><a href="#cb1-137"></a>&lt;/interface&gt;</span>
-<span id="cb1-138"><a href="#cb1-138"></a>                    <span class="bn">]]&gt;</span><span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-139"><a href="#cb1-139"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-140"><a href="#cb1-140"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-141"><a href="#cb1-141"></a>                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-142"><a href="#cb1-142"></a>                  <span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_datetime_modified&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-143"><a href="#cb1-143"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-144"><a href="#cb1-144"></a>                      <span class="kw">&lt;closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_unixtime_modified&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb1-145"><a href="#cb1-145"></a>                      <span class="kw">&lt;/closure&gt;</span></span>
-<span id="cb1-146"><a href="#cb1-146"></a>                    <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-147"><a href="#cb1-147"></a>                    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span><span class="kw">&gt;</span>GTK_SORT_ASCENDING<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-148"><a href="#cb1-148"></a>                  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-149"><a href="#cb1-149"></a>                <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb1-150"><a href="#cb1-150"></a>              <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-151"><a href="#cb1-151"></a>            <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb1-152"><a href="#cb1-152"></a>          <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-153"><a href="#cb1-153"></a>        <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb1-154"><a href="#cb1-154"></a>      <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-155"><a href="#cb1-155"></a>    <span class="kw">&lt;/child&gt;</span></span>
-<span id="cb1-156"><a href="#cb1-156"></a>  <span class="kw">&lt;/object&gt;</span></span>
-<span id="cb1-157"><a href="#cb1-157"></a><span class="kw">&lt;/interface&gt;</span></span></code></pre></div>
+<span id="cb1-138"><a href="#cb1-138"></a>                    <span class="bn">]]&gt;</span>&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-139"><a href="#cb1-139"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-140"><a href="#cb1-140"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-141"><a href="#cb1-141"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;</span>
+<span id="cb1-142"><a href="#cb1-142"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span>&gt;</span>
+<span id="cb1-143"><a href="#cb1-143"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span>&gt;</span>
+<span id="cb1-144"><a href="#cb1-144"></a>                      &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_unixtime_modified&quot;</span>&gt;</span>
+<span id="cb1-145"><a href="#cb1-145"></a>                      &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb1-146"><a href="#cb1-146"></a>                    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-147"><a href="#cb1-147"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span>&gt;GTK_SORT_ASCENDING&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-148"><a href="#cb1-148"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-149"><a href="#cb1-149"></a>                &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-150"><a href="#cb1-150"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-151"><a href="#cb1-151"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-152"><a href="#cb1-152"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-153"><a href="#cb1-153"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-154"><a href="#cb1-154"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-155"><a href="#cb1-155"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-156"><a href="#cb1-156"></a>  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-157"><a href="#cb1-157"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
 <ul>
-<li>3-12: Widget parent-child relationship is GtkApplicationWindow =&gt; GtkScrolledWindow =&gt; GtkColumnView.</li>
-<li>12-18: GtkColumnView has “model” property. It points GtkSelectionModel interface. In this ui file, GtkSingleSelection is used as GtkSelectionModel. GtkSingleSelection is an object that implements GtkSelectionModel. And again, it has “model” property. It points GtkSortListModel. This list model supports sorting the list. It will be explained in the later subsection. And it also has “model” property. It points GtkDirectoryList. Therefore, the chain is: GtkColumnView =&gt; GtkSingleSelection =&gt; GtkSortListModel =&gt; GtkDirectoryList.</li>
-<li>18-20: GtkDirectoryList. It is a list of GFileInfo, which holds information of files under a directory. It has “attributes” property. It specifies what attributes is kept in each GFileInfo.
+<li>3-12: GtkApplicationWindow has a child widget GtkScrolledWindow.
+GtkScrolledWindoww has a child widget GtkColumnView.</li>
+<li>12-18: GtkColumnView has “model” property. It points
+GtkSelectionModel interface. GtkNoSelection class is used as
+GtkSelectionModel. And again, it has “model” property. It points
+GtkSortListModel. This list model supports sorting the list. It will be
+explained in the later subsection. And it also has “model” property. It
+points GtkDirectoryList. Therefore, the chain is: GtkColumnView =&gt;
+GtkNoSelection =&gt; GtkSortListModel =&gt; GtkDirectoryList.</li>
+<li>18-20: GtkDirectoryList. It is a list of GFileInfo, which holds
+information of files under a directory. It has “attributes” property. It
+specifies what attributes is kept in each GFileInfo.
 <ul>
 <li>“standard::name” is a name of the file.</li>
 <li>“standard::icon” is a GIcon object of the file</li>
 <li>“standard::size” is the file size.</li>
-<li>“time::modified” is the date and time the file was last modified.</li>
+<li>“time::modified” is the date and time the file was last
+modified.</li>
 </ul></li>
-<li>29-79: The first GtkColumnViewColumn object. There are four properties, “title”, “expand”, factory" and “sorter”.</li>
-<li>31: Sets the “title” property with “Name”. This is the title on the header of the column.</li>
-<li>32: Sets the “expand” property to TRUE to allow the column to expand as much as possible. (See the image above).</li>
-<li>33- 69: Sets the “factory” property with GtkBuilderListItemFactory. The factory has “bytes” property which holds a ui string to define a template to build GtkListItem composite widget. The CDATA section (line 36-66) is the ui string to put into the “bytes” property. The contents are the same as the ui file <code>factory_list.ui</code> in the section 27.</li>
-<li>70-77: Sets the “sorter” property with GtkStringSorter object. This object provides a sorter that compares strings. It has “expression” property which is set with GtkExpression. A closure tag with a string type function <code>get_file_name</code> is used here. The function will be explained later.</li>
-<li>80-115: The second GtkColumnViewColumn object. Its “title”, “factory” and “sorter” properties are set. GtkNumericSorter is used.</li>
-<li>116-151: The third GtkColumnViewColumn object. Its “title”, “factory” and “sorter” properties are set. GtkNumericSorter is used.</li>
+<li>29-79: The first GtkColumnViewColumn object. There are four
+properties, “title”, “expand”, factory” and “sorter”.</li>
+<li>31: Sets the “title” property to “Name”. This is the title on the
+header of the column.</li>
+<li>32: Sets the “expand” property to TRUE to allow the column to expand
+as much as possible. (See the image above).</li>
+<li>33- 69: Sets the “factory” property to GtkBuilderListItemFactory.
+The factory has “bytes” property which holds a ui string to define a
+template to build GtkListItem composite widget. The CDATA section (line
+36-66) is the ui string to put into the “bytes” property. The contents
+are the same as the ui file <code>factory_list.ui</code> in the section
+27.</li>
+<li>70-77: Sets the “sorter” property to GtkStringSorter object. This
+object provides a sorter that compares strings. It has “expression”
+property. A closure tag with a string type function
+<code>get_file_name</code> is used here. The function will be explained
+later.</li>
+<li>80-115: The second GtkColumnViewColumn object. Its sorter property
+is set to GtkNumericSorter.</li>
+<li>116-151: The third GtkColumnViewColumn object. Its sorter property
+is set to GtkNumericSorter.</li>
 </ul>
-<h2 id="gtksortlistmodel-and-gtksorter">GtkSortListModel and GtkSorter</h2>
-<p>GtkSortListModel is a list model that sorts its elements according to a GtkSorter. It has “sorter” property that is set with GtkSorter. The property is bound to “sorter” property of GtkColumnView in line 22 to 24.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkSortListModel&quot;</span><span class="ot"> id=</span><span class="st">&quot;sortlist&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>... ... ...</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>  <span class="kw">&lt;binding</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>    <span class="kw">&lt;lookup</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span><span class="kw">&gt;</span>columnview<span class="kw">&lt;/lookup&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>  <span class="kw">&lt;/binding&gt;</span></span></code></pre></div>
-<p>Therefore, <code>columnview</code> determines the way how to sort the list model. The “sorter” property of GtkColumnView is read-only property and it is a special sorter. It reflects the user’s sorting choice. If a user clicks the header of a column, then the sorter (“sorter” property) of the column is referenced by “sorter” property of the GtkColumnView. If the user clicks the header of another column, then the “sorter” property of the GtkColumnView refers to the newly clicked column’s “sorter” property.</p>
-<p>The binding above makes a indirect connection between the “sorter” property of GtkSortListModel and the “sorter” property of each column.</p>
-<p>GtkSorter has several child objects.</p>
+<h2 id="gtksortlistmodel-and-gtksorter">GtkSortListModel and
+GtkSorter</h2>
+<p>GtkSortListModel is a list model that sorts its elements according to
+a GtkSorter instance assigned to the “sorter” property. The property is
+bound to “sorter” property of GtkColumnView in line 22 to 24.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSortListModel&quot;</span><span class="ot"> id=</span><span class="st">&quot;sortlist&quot;</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>... ... ...</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;columnview&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">binding</span>&gt;</span></code></pre></div>
+<p>Therefore, <code>columnview</code> determines the way how to sort the
+list model. The “sorter” property of GtkColumnView is read-only property
+and it is a special sorter. It reflects the user’s sorting choice. If a
+user clicks the header of a column, then the sorter (“sorter” property)
+of the column is referenced by “sorter” property of the GtkColumnView.
+If the user clicks the header of another column, then the “sorter”
+property of the GtkColumnView refers to the newly clicked column’s
+“sorter” property.</p>
+<p>The binding above makes a indirect connection between the “sorter”
+property of GtkSortListModel and the “sorter” property of each
+column.</p>
+<p>GtkSorter compares two items (GObject or its descendant). GtkSorter
+has several child objects.</p>
 <ul>
-<li>GtkStringSorter compares strings.</li>
-<li>GtkNumericSorter compares numbers.</li>
+<li>GtkStringSorter compares strings taken from the items.</li>
+<li>GtkNumericSorter compares numbers taken from the items.</li>
 <li>GtkCustomSorter uses a callback to compare.</li>
 <li>GtkMultiSorter combines multiple sorters.</li>
 </ul>
 <p>The example uses GtkStringSorter and GtkNumericSorter.</p>
-<p>GtkStringSorter uses GtkExpression to get the strings from the objects. The GtkExpression is stored in the “expression” property of GtkStringSorter. For example, in the ui file above, the GtkExpression is in the line 71 to 76.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkStringSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_name&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>  <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    <span class="kw">&lt;closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    <span class="kw">&lt;/closure&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>  <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="kw">&lt;/object&gt;</span></span></code></pre></div>
-<p>The GtkExpression calls <code>get_file_name</code> function when it is evaluated.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">char</span> *</span>
-<span id="cb4-2"><a href="#cb4-2"></a>get_file_name (GFileInfo *info) {</span>
-<span id="cb4-3"><a href="#cb4-3"></a>  g_return_val_if_fail (G_IS_FILE_INFO (info), NULL);</span>
-<span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a>  <span class="cf">return</span> g_strdup(g_file_info_get_name (info));</span>
-<span id="cb4-6"><a href="#cb4-6"></a>}</span></code></pre></div>
-<p>The function is given the item (GFileInfo) of the GtkSortListModel as an argument (<code>this</code> object). The function retrieves a filename from <code>info</code>. The string is owned by <code>info</code> so it is necessary to duplicate it. And it returns the copied string. The string will be owned by the expression.</p>
-<p>GtkNumericSorter compares numbers. It is used in the line 106 to 112 and line 142 to 148. The lines from 106 to 112 is:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_size&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>  <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    <span class="kw">&lt;closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_size&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    <span class="kw">&lt;/closure&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>  <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>  <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span><span class="kw">&gt;</span>GTK_SORT_ASCENDING<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="kw">&lt;/object&gt;</span></span></code></pre></div>
-<p>The closure tag specifies a callback function <code>get_file_size</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>goffset</span>
-<span id="cb6-2"><a href="#cb6-2"></a>get_file_size (GFileInfo *info) {</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  g_return_val_if_fail (G_IS_FILE_INFO (info), -<span class="dv">1</span>);</span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a>  <span class="cf">return</span> g_file_info_get_size (info);</span>
-<span id="cb6-6"><a href="#cb6-6"></a>}</span></code></pre></div>
-<p>It just returns the size of <code>info</code>. The type of the size is <code>goffset</code>. The type <code>goffset</code> is the same as <code>gint64</code>.</p>
+<p>GtkStringSorter uses GtkExpression to get the strings from the items
+(objects). The GtkExpression is stored in the “expression” property of
+the GtkStringSorter. When GtkStringSorter compares two items, it
+evaluates the expression by calling <code>gtk_expression_evaluate</code>
+function. It assigns each item to the second argument (‘this’ object) of
+the function.</p>
+<p>In the ui file above, the GtkExpression is in the line 71 to 76.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkStringSorter&quot;</span>&gt;</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+<p>The GtkExpression calls <code>get_file_name</code> function when it
+is evaluated.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>get_file_name <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup<span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="op">}</span></span></code></pre></div>
+<p>The function is given the item (GFileInfo) of the GtkSortListModel as
+an argument (<code>this</code> object). But you need to be careful that
+it can be NULL while the list item is being recycled. So,
+<code>G_IS_FILE_INFO (info)</code> is always necessary in callback
+functions. The function retrieves a filename from <code>info</code>. The
+string is owned by <code>info</code> so it is necessary to duplicate it.
+And it returns the copied string.</p>
+<p>GtkNumericSorter compares numbers. It is used in the line 106 to 112
+and line 142 to 148. The lines from 106 to 112 is:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_size&quot;</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span>&gt;GTK_SORT_ASCENDING&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+<p>The closure tag specifies a callback function
+<code>get_file_size</code>.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a>goffset</span>
+<span id="cb6-2"><a href="#cb6-2"></a>get_file_size <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_size <span class="op">(</span>info<span class="op">):</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="op">}</span></span></code></pre></div>
+<p>It just returns the size of <code>info</code>. The type of the size
+is <code>goffset</code>. The type <code>goffset</code> is the same as
+<code>gint64</code>.</p>
 <p>The lines from 142 to 148 is:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">&lt;object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_datetime_modified&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>  <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>    <span class="kw">&lt;closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_unixtime_modified&quot;</span><span class="kw">&gt;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>    <span class="kw">&lt;/closure&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>  <span class="kw">&lt;/property&gt;</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>  <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span><span class="kw">&gt;</span>GTK_SORT_ASCENDING<span class="kw">&lt;/property&gt;</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a><span class="kw">&lt;/object&gt;</span></span></code></pre></div>
-<p>The closure tag specifies a callback function <code>get_file_unixtime_modified</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a>gint64</span>
-<span id="cb8-2"><a href="#cb8-2"></a>get_file_unixtime_modified (GFileInfo *info) {</span>
-<span id="cb8-3"><a href="#cb8-3"></a>  g_return_val_if_fail (G_IS_FILE_INFO (info), -<span class="dv">1</span>);</span>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNumericSorter&quot;</span><span class="ot"> id=</span><span class="st">&quot;sorter_datetime_modified&quot;</span>&gt;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;expression&quot;</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gint64&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_unixtime_modified&quot;</span>&gt;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;sort-order&quot;</span>&gt;GTK_SORT_ASCENDING&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+<p>The closure tag specifies a callback function
+<code>get_file_unixtime_modified</code>.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a>gint64</span>
+<span id="cb8-2"><a href="#cb8-2"></a>get_file_unixtime_modified <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>  GDateTime <span class="op">*</span>dt<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  GDateTime *dt;</span>
-<span id="cb8-6"><a href="#cb8-6"></a></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  dt = g_file_info_get_modification_date_time (info);</span>
-<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">return</span> g_date_time_to_unix (dt);</span>
-<span id="cb8-9"><a href="#cb8-9"></a>}</span></code></pre></div>
-<p>It gets the modification date and time (GDateTime type) of <code>info</code>. Then it gets a unix time from <code>dt</code>. Unix time, sometimes called unix epoch, is the number of seconds that have elapsed since 00:00:00 UTC on 1 January 1970. It returns the unix time (gint64 type).</p>
+<span id="cb8-5"><a href="#cb8-5"></a>  dt <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_modification_date_time <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="cf">return</span> dt <span class="op">?</span> g_date_time_to_unix <span class="op">(</span>dt<span class="op">)</span> <span class="op">:</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="op">}</span></span></code></pre></div>
+<p>It gets the modification date and time (GDateTime type) of
+<code>info</code>. Then it gets a unix time from <code>dt</code>. Unix
+time, sometimes called unix epoch, is the number of seconds that have
+elapsed since 00:00:00 UTC on 1 January 1970. It returns the unix time
+(gint64 type).</p>
 <h2 id="column.c">column.c</h2>
-<p><code>column.c</code> is as follows.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<p><code>column.c</code> is as follows. It is simple and short thanks to
+<code>column.ui</code>.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="co">/* functions (closures) for GtkBuilderListItemFactory */</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>GIcon *</span>
-<span id="cb9-5"><a href="#cb9-5"></a>get_icon_factory (GtkListItem *item, GFileInfo *info) {</span>
-<span id="cb9-6"><a href="#cb9-6"></a>  GIcon *icon;</span>
-<span id="cb9-7"><a href="#cb9-7"></a>  <span class="cf">if</span> (! G_IS_FILE_INFO (info))</span>
-<span id="cb9-8"><a href="#cb9-8"></a>    <span class="cf">return</span> NULL;</span>
-<span id="cb9-9"><a href="#cb9-9"></a>  <span class="cf">else</span> {</span>
-<span id="cb9-10"><a href="#cb9-10"></a>    icon = g_file_info_get_icon (info);</span>
-<span id="cb9-11"><a href="#cb9-11"></a>    g_object_ref (icon);</span>
-<span id="cb9-12"><a href="#cb9-12"></a>    <span class="cf">return</span> icon;</span>
-<span id="cb9-13"><a href="#cb9-13"></a>  }</span>
-<span id="cb9-14"><a href="#cb9-14"></a>}</span>
-<span id="cb9-15"><a href="#cb9-15"></a></span>
-<span id="cb9-16"><a href="#cb9-16"></a><span class="dt">char</span> *</span>
-<span id="cb9-17"><a href="#cb9-17"></a>get_file_name_factory (GtkListItem *item, GFileInfo *info) {</span>
-<span id="cb9-18"><a href="#cb9-18"></a>  <span class="cf">if</span> (! G_IS_FILE_INFO (info))</span>
-<span id="cb9-19"><a href="#cb9-19"></a>    <span class="cf">return</span> NULL;</span>
-<span id="cb9-20"><a href="#cb9-20"></a>  <span class="cf">else</span></span>
-<span id="cb9-21"><a href="#cb9-21"></a>    <span class="cf">return</span> g_strdup (g_file_info_get_name (info));</span>
-<span id="cb9-22"><a href="#cb9-22"></a>}</span>
-<span id="cb9-23"><a href="#cb9-23"></a></span>
-<span id="cb9-24"><a href="#cb9-24"></a><span class="dt">char</span> *</span>
-<span id="cb9-25"><a href="#cb9-25"></a>get_file_size_factory (GtkListItem *item, GFileInfo *info) {</span>
-<span id="cb9-26"><a href="#cb9-26"></a>  <span class="co">/* goffset is gint64 */</span></span>
-<span id="cb9-27"><a href="#cb9-27"></a>  goffset size;</span>
+<span id="cb9-4"><a href="#cb9-4"></a>GIcon <span class="op">*</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>get_icon_factory <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  GIcon <span class="op">*</span>icon<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a>   <span class="co">/* g_file_info_get_icon can return NULL */</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  icon <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_icon <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="cf">return</span> icon <span class="op">?</span> g_object_ref <span class="op">(</span>icon<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="op">}</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a>get_file_name_factory <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a><span class="op">}</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">/* goffset is defined as gint64 */</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">/* It is used for file offsets. */</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a>goffset</span>
+<span id="cb9-21"><a href="#cb9-21"></a>get_file_size_factory <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_size <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-23"><a href="#cb9-23"></a><span class="op">}</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a></span>
+<span id="cb9-25"><a href="#cb9-25"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb9-26"><a href="#cb9-26"></a>get_file_time_modified_factory <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-27"><a href="#cb9-27"></a>  GDateTime <span class="op">*</span>dt<span class="op">;</span></span>
 <span id="cb9-28"><a href="#cb9-28"></a></span>
-<span id="cb9-29"><a href="#cb9-29"></a>  <span class="cf">if</span> (! G_IS_FILE_INFO (info))</span>
-<span id="cb9-30"><a href="#cb9-30"></a>    <span class="cf">return</span> NULL;</span>
-<span id="cb9-31"><a href="#cb9-31"></a>  <span class="cf">else</span> {</span>
-<span id="cb9-32"><a href="#cb9-32"></a>    size = g_file_info_get_size (info);</span>
-<span id="cb9-33"><a href="#cb9-33"></a>    <span class="cf">return</span> g_strdup_printf (<span class="st">&quot;%ld&quot;</span>, (<span class="dt">long</span> <span class="dt">int</span>) size);</span>
-<span id="cb9-34"><a href="#cb9-34"></a>  }</span>
-<span id="cb9-35"><a href="#cb9-35"></a>}</span>
-<span id="cb9-36"><a href="#cb9-36"></a></span>
-<span id="cb9-37"><a href="#cb9-37"></a><span class="dt">char</span> *</span>
-<span id="cb9-38"><a href="#cb9-38"></a>get_file_time_modified_factory (GtkListItem *item, GFileInfo *info) {</span>
-<span id="cb9-39"><a href="#cb9-39"></a>  GDateTime *dt;</span>
-<span id="cb9-40"><a href="#cb9-40"></a></span>
-<span id="cb9-41"><a href="#cb9-41"></a>  <span class="cf">if</span> (! G_IS_FILE_INFO (info))</span>
-<span id="cb9-42"><a href="#cb9-42"></a>    <span class="cf">return</span> NULL;</span>
-<span id="cb9-43"><a href="#cb9-43"></a>  <span class="cf">else</span> {</span>
-<span id="cb9-44"><a href="#cb9-44"></a>    dt = g_file_info_get_modification_date_time (info);</span>
-<span id="cb9-45"><a href="#cb9-45"></a>    <span class="cf">return</span> g_date_time_format (dt, <span class="st">&quot;%F&quot;</span>);</span>
-<span id="cb9-46"><a href="#cb9-46"></a>  }</span>
-<span id="cb9-47"><a href="#cb9-47"></a>}</span>
+<span id="cb9-29"><a href="#cb9-29"></a>   <span class="co">/* g_file_info_get_modification_date_time can return NULL */</span></span>
+<span id="cb9-30"><a href="#cb9-30"></a>  dt <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_modification_date_time <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-31"><a href="#cb9-31"></a>  <span class="cf">return</span> dt <span class="op">?</span> g_date_time_format <span class="op">(</span>dt<span class="op">,</span> <span class="st">&quot;%F&quot;</span><span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-32"><a href="#cb9-32"></a><span class="op">}</span></span>
+<span id="cb9-33"><a href="#cb9-33"></a></span>
+<span id="cb9-34"><a href="#cb9-34"></a><span class="co">/* Functions (closures) for GtkSorter */</span></span>
+<span id="cb9-35"><a href="#cb9-35"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb9-36"><a href="#cb9-36"></a>get_file_name <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-37"><a href="#cb9-37"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup<span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-38"><a href="#cb9-38"></a><span class="op">}</span></span>
+<span id="cb9-39"><a href="#cb9-39"></a></span>
+<span id="cb9-40"><a href="#cb9-40"></a>goffset</span>
+<span id="cb9-41"><a href="#cb9-41"></a>get_file_size <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-42"><a href="#cb9-42"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_size <span class="op">(</span>info<span class="op">):</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-43"><a href="#cb9-43"></a><span class="op">}</span></span>
+<span id="cb9-44"><a href="#cb9-44"></a></span>
+<span id="cb9-45"><a href="#cb9-45"></a>gint64</span>
+<span id="cb9-46"><a href="#cb9-46"></a>get_file_unixtime_modified <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-47"><a href="#cb9-47"></a>  GDateTime <span class="op">*</span>dt<span class="op">;</span></span>
 <span id="cb9-48"><a href="#cb9-48"></a></span>
-<span id="cb9-49"><a href="#cb9-49"></a><span class="co">/* Functions (closures) for GtkSorter */</span></span>
-<span id="cb9-50"><a href="#cb9-50"></a><span class="dt">char</span> *</span>
-<span id="cb9-51"><a href="#cb9-51"></a>get_file_name (GFileInfo *info) {</span>
-<span id="cb9-52"><a href="#cb9-52"></a>  g_return_val_if_fail (G_IS_FILE_INFO (info), NULL);</span>
-<span id="cb9-53"><a href="#cb9-53"></a></span>
-<span id="cb9-54"><a href="#cb9-54"></a>  <span class="cf">return</span> g_strdup(g_file_info_get_name (info));</span>
-<span id="cb9-55"><a href="#cb9-55"></a>}</span>
-<span id="cb9-56"><a href="#cb9-56"></a></span>
-<span id="cb9-57"><a href="#cb9-57"></a>goffset</span>
-<span id="cb9-58"><a href="#cb9-58"></a>get_file_size (GFileInfo *info) {</span>
-<span id="cb9-59"><a href="#cb9-59"></a>  g_return_val_if_fail (G_IS_FILE_INFO (info), -<span class="dv">1</span>);</span>
-<span id="cb9-60"><a href="#cb9-60"></a></span>
-<span id="cb9-61"><a href="#cb9-61"></a>  <span class="cf">return</span> g_file_info_get_size (info);</span>
-<span id="cb9-62"><a href="#cb9-62"></a>}</span>
-<span id="cb9-63"><a href="#cb9-63"></a></span>
-<span id="cb9-64"><a href="#cb9-64"></a>gint64</span>
-<span id="cb9-65"><a href="#cb9-65"></a>get_file_unixtime_modified (GFileInfo *info) {</span>
-<span id="cb9-66"><a href="#cb9-66"></a>  g_return_val_if_fail (G_IS_FILE_INFO (info), -<span class="dv">1</span>);</span>
+<span id="cb9-49"><a href="#cb9-49"></a>  dt <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_modification_date_time <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-50"><a href="#cb9-50"></a>  <span class="cf">return</span> dt <span class="op">?</span> g_date_time_to_unix <span class="op">(</span>dt<span class="op">)</span> <span class="op">:</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-51"><a href="#cb9-51"></a><span class="op">}</span></span>
+<span id="cb9-52"><a href="#cb9-52"></a></span>
+<span id="cb9-53"><a href="#cb9-53"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-54"><a href="#cb9-54"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-55"><a href="#cb9-55"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb9-56"><a href="#cb9-56"></a>  gtk_window_present <span class="op">(</span>gtk_application_get_active_window<span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb9-57"><a href="#cb9-57"></a><span class="op">}</span></span>
+<span id="cb9-58"><a href="#cb9-58"></a></span>
+<span id="cb9-59"><a href="#cb9-59"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-60"><a href="#cb9-60"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-61"><a href="#cb9-61"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb9-62"><a href="#cb9-62"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb9-63"><a href="#cb9-63"></a>  GtkBuilder <span class="op">*</span>build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/column/column.ui&quot;</span><span class="op">);</span></span>
+<span id="cb9-64"><a href="#cb9-64"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb9-65"><a href="#cb9-65"></a>  GtkDirectoryList <span class="op">*</span>directorylist <span class="op">=</span> GTK_DIRECTORY_LIST <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;directorylist&quot;</span><span class="op">));</span></span>
+<span id="cb9-66"><a href="#cb9-66"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
 <span id="cb9-67"><a href="#cb9-67"></a></span>
-<span id="cb9-68"><a href="#cb9-68"></a>  GDateTime *dt;</span>
+<span id="cb9-68"><a href="#cb9-68"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> app<span class="op">);</span></span>
 <span id="cb9-69"><a href="#cb9-69"></a></span>
-<span id="cb9-70"><a href="#cb9-70"></a>  dt = g_file_info_get_modification_date_time (info);</span>
-<span id="cb9-71"><a href="#cb9-71"></a>  <span class="cf">return</span> g_date_time_to_unix (dt);</span>
-<span id="cb9-72"><a href="#cb9-72"></a>}</span>
-<span id="cb9-73"><a href="#cb9-73"></a></span>
-<span id="cb9-74"><a href="#cb9-74"></a><span class="co">/* ----- activate, open, startup handlers ----- */</span></span>
-<span id="cb9-75"><a href="#cb9-75"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-76"><a href="#cb9-76"></a>app_activate (GApplication *application) {</span>
-<span id="cb9-77"><a href="#cb9-77"></a>  GtkApplication *app = GTK_APPLICATION (application);</span>
-<span id="cb9-78"><a href="#cb9-78"></a>  GFile *file;</span>
-<span id="cb9-79"><a href="#cb9-79"></a></span>
-<span id="cb9-80"><a href="#cb9-80"></a>  GtkBuilder *build = gtk_builder_new_from_resource (<span class="st">&quot;/com/github/ToshioCP/column/column.ui&quot;</span>);</span>
-<span id="cb9-81"><a href="#cb9-81"></a>  GtkWidget *win = GTK_WIDGET (gtk_builder_get_object (build, <span class="st">&quot;win&quot;</span>));</span>
-<span id="cb9-82"><a href="#cb9-82"></a>  GtkDirectoryList *directorylist = GTK_DIRECTORY_LIST (gtk_builder_get_object (build, <span class="st">&quot;directorylist&quot;</span>));</span>
-<span id="cb9-83"><a href="#cb9-83"></a>  g_object_unref (build);</span>
-<span id="cb9-84"><a href="#cb9-84"></a></span>
-<span id="cb9-85"><a href="#cb9-85"></a>  gtk_window_set_application (GTK_WINDOW (win), app);</span>
+<span id="cb9-70"><a href="#cb9-70"></a>  file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
+<span id="cb9-71"><a href="#cb9-71"></a>  gtk_directory_list_set_file <span class="op">(</span>directorylist<span class="op">,</span> file<span class="op">);</span></span>
+<span id="cb9-72"><a href="#cb9-72"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb9-73"><a href="#cb9-73"></a><span class="op">}</span></span>
+<span id="cb9-74"><a href="#cb9-74"></a></span>
+<span id="cb9-75"><a href="#cb9-75"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.columnview&quot;</span></span>
+<span id="cb9-76"><a href="#cb9-76"></a></span>
+<span id="cb9-77"><a href="#cb9-77"></a><span class="dt">int</span></span>
+<span id="cb9-78"><a href="#cb9-78"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-79"><a href="#cb9-79"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb9-80"><a href="#cb9-80"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb9-81"><a href="#cb9-81"></a></span>
+<span id="cb9-82"><a href="#cb9-82"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb9-83"><a href="#cb9-83"></a></span>
+<span id="cb9-84"><a href="#cb9-84"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb9-85"><a href="#cb9-85"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb9-86"><a href="#cb9-86"></a></span>
-<span id="cb9-87"><a href="#cb9-87"></a>  file = g_file_new_for_path (<span class="st">&quot;.&quot;</span>);</span>
-<span id="cb9-88"><a href="#cb9-88"></a>  gtk_directory_list_set_file (directorylist, file);</span>
-<span id="cb9-89"><a href="#cb9-89"></a>  g_object_unref (file);</span>
-<span id="cb9-90"><a href="#cb9-90"></a></span>
-<span id="cb9-91"><a href="#cb9-91"></a>  gtk_widget_show (win);</span>
-<span id="cb9-92"><a href="#cb9-92"></a>}</span>
-<span id="cb9-93"><a href="#cb9-93"></a></span>
-<span id="cb9-94"><a href="#cb9-94"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-95"><a href="#cb9-95"></a>app_startup (GApplication *application) {</span>
-<span id="cb9-96"><a href="#cb9-96"></a>}</span>
-<span id="cb9-97"><a href="#cb9-97"></a></span>
-<span id="cb9-98"><a href="#cb9-98"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.columnview&quot;</span></span>
-<span id="cb9-99"><a href="#cb9-99"></a></span>
-<span id="cb9-100"><a href="#cb9-100"></a><span class="dt">int</span></span>
-<span id="cb9-101"><a href="#cb9-101"></a>main (<span class="dt">int</span> argc, <span class="dt">char</span> **argv) {</span>
-<span id="cb9-102"><a href="#cb9-102"></a>  GtkApplication *app;</span>
-<span id="cb9-103"><a href="#cb9-103"></a>  <span class="dt">int</span> stat;</span>
-<span id="cb9-104"><a href="#cb9-104"></a></span>
-<span id="cb9-105"><a href="#cb9-105"></a>  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);</span>
-<span id="cb9-106"><a href="#cb9-106"></a></span>
-<span id="cb9-107"><a href="#cb9-107"></a>  g_signal_connect (app, <span class="st">&quot;startup&quot;</span>, G_CALLBACK (app_startup), NULL);</span>
-<span id="cb9-108"><a href="#cb9-108"></a>  g_signal_connect (app, <span class="st">&quot;activate&quot;</span>, G_CALLBACK (app_activate), NULL);</span>
-<span id="cb9-109"><a href="#cb9-109"></a><span class="co">/*  g_signal_connect (app, &quot;open&quot;, G_CALLBACK (app_open), NULL);*/</span></span>
-<span id="cb9-110"><a href="#cb9-110"></a></span>
-<span id="cb9-111"><a href="#cb9-111"></a>  stat =g_application_run (G_APPLICATION (app), argc, argv);</span>
-<span id="cb9-112"><a href="#cb9-112"></a>  g_object_unref (app);</span>
-<span id="cb9-113"><a href="#cb9-113"></a>  <span class="cf">return</span> stat;</span>
-<span id="cb9-114"><a href="#cb9-114"></a>}</span></code></pre></div>
-<ul>
-<li>4-47: Functions for the closure tag in the “bytes” property of GtkBuilderListItemFactory. These are almost same as the functions in section 26 and 26.</li>
-<li>50-72: Functions for the closure in the expression property of GtkStringSorter or GtkNumericSorter.</li>
-<li>75-92: <code>app_activate</code> is an “activate” handler of GApplication.</li>
-<li>80-83: Builds objects with ui resource and gets <code>win</code> and <code>directorylist</code>.</li>
-<li>85: Sets the application of the top level window with <code>app</code>.</li>
-<li>87-89: Sets the file of <code>directorylist</code> with “.” (current directory).</li>
-<li>94-96: Startup handler.</li>
-<li>98-114: <code>main</code> function.</li>
-</ul>
-<p><code>exp.c</code> is simple and short thanks to <code>exp.ui</code>.</p>
+<span id="cb9-87"><a href="#cb9-87"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb9-88"><a href="#cb9-88"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb9-89"><a href="#cb9-89"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb9-90"><a href="#cb9-90"></a><span class="op">}</span></span></code></pre></div>
 <h2 id="compilation-and-execution.">Compilation and execution.</h2>
-<p>All the source files are in src/column directory. Change your current directory to the directory and type the following.</p>
+<p>All the source files are in <code>src/column</code> directory. Change
+your current directory to the directory and type the following.</p>
 <pre><code>$ meson _build
 $ ninja -C _build
 $ _build/column</code></pre>
 <p>Then, a window appears.</p>
 <figure>
-<img src="image/column_view.png" alt="" /><figcaption>Column View</figcaption>
+<img src="image/column_view.png" alt="Column View" />
+<figcaption aria-hidden="true">Column View</figcaption>
 </figure>
-<p>If you click the header of a column, then the whole lists are sorted by the column. If you click the header of another column, then the whole lists are sorted by the newly selected column.</p>
-<p>GtkColumnView is very useful and it can manage very big GListModel. It is possible to use it for file list, application list, database frontend and so on.</p>
+<p>If you click the header of a column, then the whole lists are sorted
+by the column. If you click the header of another column, then the whole
+lists are sorted by the newly selected column.</p>
+<p>GtkColumnView is very useful and it can manage very big GListModel.
+It is possible to use it for file list, application list, database
+frontend and so on.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

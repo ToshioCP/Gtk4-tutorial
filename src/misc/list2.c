@@ -38,10 +38,6 @@ app_activate (GApplication *application) {
   gtk_window_present (GTK_WINDOW (win));
 }
 
-static void
-app_startup (GApplication *application) {
-}
-
 /* ----- main ----- */
 #define APPLICATION_ID "com.github.ToshioCP.list2"
 
@@ -52,7 +48,6 @@ main (int argc, char **argv) {
 
   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);

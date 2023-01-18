@@ -2,9 +2,7 @@
 <interface>
   <object class="GtkApplicationWindow" id="win">
     <binding name="title">
-      <closure type="gchararray" function="set_title">
-        <lookup name="default-width" type="GtkWindow"></lookup>
-        <lookup name="default-height" type="GtkWindow"></lookup>
+      <closure type="gchararray" function="test">
       </closure>
     </binding>
     <property name="default-width">600</property>
@@ -15,17 +13,17 @@
         <child>
           <object class="GtkLabel">
             <binding name="label">
-              <lookup name="text">
-                buffer
-              </lookup>
+              <closure type="gchararray" function="test">
+              </closure>
             </binding>
           </object>
         </child>
         <child>
-          <object class="GtkEntry">
-            <property name="buffer">
-              <object class="GtkEntryBuffer" id="buffer"></object>
-            </property>
+          <object class="GtkLabel">
+            <binding name="label" object ="win">
+              <closure type="gchararray" function="test">
+              </closure>
+            </binding>
           </object>
         </child>
       </object>

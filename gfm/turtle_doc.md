@@ -1,4 +1,4 @@
-# Turtle's manual
+# Turtle manual
 
 Turtle is a simple interpreter for turtle graphics.
 

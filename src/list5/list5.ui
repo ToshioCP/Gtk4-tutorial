@@ -59,7 +59,7 @@
     <property name="model">
       <object class="GtkSingleSelection" id="singleselection">
         <property name="model">
-          <object class="GtkDirectoryList" id="directorylist">
+          <object class="GtkDirectoryList" id="directory_list">
             <property name="attributes">standard::name,standard::icon,standard::content-type</property>
           </object>
         </property>

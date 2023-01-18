@@ -20,72 +20,75 @@ GtkExpression is a way to get a value.
 Evaluation is like a calculation.
 A value is got by evaluating the expression.
 
-First, I want to show you the C file of the example for GtkExpression.
-Its name is `exp.c` and located under [src/expression](expression) directory.
-You don't need to understand the details now, just look at it.
-It will be explained in the next subsection.
-
-@@@include
-expression/exp.c
-@@@
-
-`exp.c` consists of five functions.
-
-- `notify`
-- `set_title`
-- `app_activate`. This is a handler of "activate" signal on GtkApplication instance.
-- `app_startup`. This is a handler of "startup"signal. But nothing is done in this function.
-- `main`.
-
-The function `app_activate` is an actual main body in `exp.c`.
-
 ## Constant expression
 
-Constant expression provides constant value or instance when it is evaluated.
-
-- 72-80: A constant expression.
-It is extracted and put into here.
+A constant expression (GtkConstantExpression) provides constant value or instance when it is evaluated.
 
 ~~~C
+  GValue value = G_VALUE_INIT;
   expression = gtk_constant_expression_new (G_TYPE_INT,100);
-  if (gtk_expression_evaluate (expression, NULL, &value)) {
-    s = g_strdup_printf ("%d", g_value_get_int (&value));
-    gtk_label_set_text (GTK_LABEL (label1), s);
-    g_free (s);
-  } else
-    g_print ("The constant expression wasn't evaluated correctly.\n");
-  gtk_expression_unref (expression);
-  g_value_unset (&value);
+  gtk_expression_evaluate (expression, NULL, &value);
 ~~~
 
+- GtkExpression uses GValue to hold a value.
+GValue is a structure and container to hold a type and value.
+It must be initialized with `G_VALUE_INIT`, first.
+Be careful that `value` is a structure, not a pointer to a structure.
 - Constant expression is created with `gtk_constant_expression_new` function.
 The parameter of the function is a type (GType) and a value (or instance).
+This expression holds a constant value.
+`G_TYPE_INT` is a type that is registered to the type system.
+It is integer type.
+Some types are shown in the following table.
 - `gtk_expression_evaluate` evaluates the expression.
-It has three parameters, the expression to evaluate, `this` instance and GValue for being set with the value.
+It has three parameters, the expression to evaluate, `this` instance and a pointer to a GValue for being set with the value.
 `this` instance isn't necessary for constant expressions.
-Therefore the second argument is NULL.
+Therefore, the second argument is NULL.
 `gtk_expression_evaluate` returns TRUE if it successfully evaluates the expression.
 Otherwise it returns FALSE.
 - If it returns TRUE, the GValue `value` is set with the value of the expression.
 The type of the value is int.
-`g_strdup_printf` converts the value to a string `s`.
-- GtkLabel `label1` is set with `s`.
-The string `s` needs to be freed.
-- If the evaluation fails a message is outputted to stderr.
-- The expression and GValue are freed.
+
+|GType            |C type|type name |notes                  |
+|:----------------|:-----|:---------|:----------------------|
+|G\_TYPE\_CHAR    |char  |gchar     |                       |
+|G\_TYPE\_BOOLEAN |int   |gboolean  |                       |
+|G\_TYPE\_INT     |int   |gint      |                       |
+|G\_TYPE\_FLOAT   |float |gfloat    |                       |
+|G\_TYPE\_DOUBLE  |double|gdouble   |                       |
+|G\_TYPE\_POINTER |      |gpointer  |                       |
+|G\_TYPE\_STRING  |      |gchararray|null-terminated Cstring|
+|G\_TYPE\_OBJECT  |      |GObject   |                       |
+|GTK\_TYPE\_WINDOW|      |GtkWindow |                       |
+
+
+A sample program `exp_constant_simple.c` is in `src/expression` directory.
+
+@@@include
+expression/exp_constant_simple.c
+@@@
+
+- 9: A constant expression is created. It holds an int value 100. The variable `expression` points the expression.
+- 11-14: Evaluates the expression. If it successes, show the value to the stdout. Otherwise show an error message.
+- 15-16: Releases the expression and unsets the GValue.
 
 Constant expression is usually used to give a constant value or instance to another expression.
 
 ## Property expression
 
-Property expression looks up a property in a GObject object.
-For example, a property expression that refers "label" property in GtkLabel object is created like this.
+A property expression (GtkPropertyExpression) looks up a property in a GObject instance.
+For example, a property expression that refers "label" property in a GtkLabel object is created like this.
 
 ~~~C
 expression = gtk_property_expression_new (GTK_TYPE_LABEL, another_expression, "label");
 ~~~
 
-`another_expression` is expected to give a GtkLabel instance when it is evaluated.
+The second parameter `another_expression` is one of:
+
+- An expression that gives a GtkLabel instance when it is evaluated.
+- NULL. When NULL is given, a GtkLabel instance will be given when it is evaluated.
+The instance is called `this` object.
+
 For example,
 
 ~~~C
@@ -95,55 +98,50 @@ expression = gtk_property_expression_new (GTK_TYPE_LABEL, another_expression, "l
 ~~~
 
 If `expression` is evaluated, the second parameter `another_expression` is evaluated in advance.
-The value of `another_expression` is `label` (GtkLabel instance).
-Then, `expression` looks up "label" property of `label` and the evaluation result is "Hello".
+The value of `another_expression` is the `label` (GtkLabel instance).
+Then, `expression` looks up "label" property of the label and the evaluation results "Hello".
 
 In the example above, the second argument of `gtk_property_expression_new` is another expression.
 But the second argument can be NULL.
 If it is NULL, `this` instance is used instead.
-`this` is given by `gtk_expression_evaluate` function at the evaluation.
+`this` is given by `gtk_expression_evaluate` function.
 
-Now look at `exp.c`.
-The lines from 83 to 85 is extracted here.
+There's a simple program `exp_property_simple.c` in `src/expression` directory.
 
-~~~C
-  expression1 = gtk_property_expression_new (GTK_TYPE_ENTRY, NULL, "buffer");
-  expression2 = gtk_property_expression_new (GTK_TYPE_ENTRY_BUFFER, expression1, "text");
-  gtk_expression_bind (expression2, label2, "label", entry);
-~~~
+@@@include
+expression/exp_property_simple.c
+@@@
 
-- `expression1` looks up "buffer" property of `this` object, which is `GTK_TYPE_ENTRY` type.
-- `expression2` looks up "text" property of GtkEntryBuffer object given by `epression1`.
-- `gtk_expression_bind` binds a property to a value given by the expression.
-In this program, it binds a "label" property in `label2` to the value evaluated with `expresion2` with `entry` as `this` object.
-The evaluation process is as follows.
-  1. `expression2` is evaluated. But it includes `expression1` so `expression1` is evaluated in advance.
-  2. Because the second argument of `expression1` is NULL, `this` object is used.
-`this` is given by `gtk_expression_bind`.
-It is `entry` (GtkEntry instance).
-`expression1` looks up "buffer" property in `entry`.
-It is a GtkEntryBuffer instance `buffer`.
-(See line 64 in `exp.c`.)
-  3. Then, `expression2` looks up "text" property in `buffer`.
-It is a text held in `entry`.
-  4. The text is assigned to "label" property in `label2`.
-- `gtk_expression_bind` creates a GtkExpressionWatch.
-(But it isn't assigned to a variable in the program above.
-If you want to keep the GtkExpressionWatch instance, assign it to a variable.)
+- 9-10: `gtk_init` initializes GTK GUI toolkit.
+It isn't usually necessary because the GtkApplication default startup handler does the initialization.
+A GtkLabel instance is created with the text "Hello world.".
+- 12: A property expression is created.
+It looks a "label" property of a GtkLabel instance.
+But at the creation, no instance is given because the second argument is NULL.
+The expression just knows how to take the property from a future-given GtkLabel instance.
+- 14-17: The function `gtk_expression_evaluate` evaluates the expression with a 'this' instance `label`.
+The result is stored in the GValue `value`.
+The function `g_value_get_string` gets a string from the GValue.
+But the string is owned by the GValue so you must not free the string.
+- 18-19: Release the expression and unset the GValue.
+At the same time the string in the GValue is freed.
 
-~~~C
-  GtkExpressionWatch *watch;
-  watch = gtk_expression_bind (expression2, label2, "label", entry);
-~~~
-
-- Whenever the value from `expression2` changes, it evaluates `expression2` and set "label" property in `label2`.
-So, the change of the text in `entry` makes the "label" property reflect it immediately.
+If the second argument of `gtk_property_expression_new` isn't NULL, it is another expression.
+The expression is owned by a newly created property expression.
+So, when the expressions are useless, you just release the last expression.
+Then it releases another expression it has.
 
 ## Closure expression
 
-Closure expression calls closure when it is evaluated.
+A closure expression calls closure when it is evaluated.
 A closure is a generic representation of a callback (a pointer to a function).
-For information about closure, see [GObject API Reference, The GObject messaging system](https://docs.gtk.org/gobject/concepts.html#the-gobject-messaging-system).
+For information about closure, see [GObject API Reference -- The GObject messaging system](https://docs.gtk.org/gobject/concepts.html#the-gobject-messaging-system).
+There are simple closure example files `closure.c` and `closure_each.c` in the `src/expression` directory.
+
+There are two types of closure expressions, GtkCClosureExpression and GtkClosureExpression.
+They corresponds to GCClosure and GClosure respectively.
+When you program in C language, GtkCClosureExpression and GCClosure are appropriate.
+
 A closure expression is created with `gtk_cclosure_expression_new` function.
 
 ~~~C
@@ -165,6 +163,9 @@ It is a generic marshaller function implemented via libffi.
 - `n_params` is the number of parameters.
 - `params` points expressions for each parameter of the call back function.
 - `callback_func` is a callback function.
+It is given arguments `this` and parameters above.
+So, if `n_params` is 3, the number of arguments of the function is 4.
+(`this` and `params`. See below.)
 - `user_data` is user data.
 You can add it for the closure.
 It is like `user_data` in `g_signal_connect`.
@@ -173,277 +174,316 @@ If it is not necessary, assign NULL.
 It is called to destroy `user_data` when it is no longer needed.
 If NULL is assigned to `user_data`, assign NULL to `user_destroy`, too.
 
-The following is extracted from `exp.c`.
-It is from line 47 to line 56.
+Call back functions have the following format.
 
-~~~C
-expression = gtk_cclosure_expression_new (GTK_TYPE_APPLICATION_WINDOW, NULL, 0, NULL,
-               G_CALLBACK (gtk_application_window_new), NULL, NULL);
-if (gtk_expression_evaluate (expression, app, &value)) {
-  win1 = GTK_WIDGET (g_value_get_object (&value)); /* GtkApplicationWindow */
-  g_object_ref (win1);
-  g_print ("Got GtkApplicationWindow object.\n");
-}else
-  g_print ("The cclosure expression wasn't evaluated correctly.\n");
-gtk_expression_unref (expression);
-g_value_unset (&value);    /* At the same time, the reference count of win1 is decreased by one. */
+~~~
+C-type
+callback (this, param1, param2, ...)
 ~~~
 
-The callback function is `gtk_application_window_new`.
-This function has one parameter which is an instance of GtkApplication.
-And it returns newly created GtkApplicationWindow instance.
-So, the first argument is `GTK_TYPE_APPLICATION_WINDOW` which is the type of the return value.
-The second argument is NULL so general marshaller `g_cclosure_marshal_generic ()` will be used.
-I think assigning NULL works in most cases when you program in C language.
-
-The arguments given to the call back function are `this` object and parameters which are the fourth argument of `gtk_cclosure_expression_new`.
-So, the number of arguments is `n_params + 1`.
-Because `gtk_application_window_new` has one parameter, so `n_params` is zero and `**params` is NULL.
-No user data is necessary, so `user_data` and `user_destroy` are NULL.
-
-`gtk_expression_evaluate` evaluates the expression.
-`this` instance will be the first argument for `gtk_application_window_new`, so it is `app`.
-
-If the evaluation succeeds, the GValue `value` holds a newly created GtkApplicationWindow instance.
-It is assigned to `win1`.
-The GValue will be unset when it is no longer used.
-And when it is unset, the GtkApplicationWindow instance will be released and its reference count will be decreased by one.
-It is necessary to increase the reference count by one in advance to keep the instance.
-`gtk_expression_unref` frees `expression` and `value` is unset.
-
-As a result, we got a GtkApplicationWindow instance `win1`.
-We can do the same by:
+For example,
 
 ~~~C
-win1 = gtk_application_window_new (app);
+int
+callback (GObject *object, int x, const char *s)
 ~~~
 
-The example is more complicated and not practical than this one line code.
-The aim of the example is just to show how closure expression works.
+The following is `exp_closure_simple.c` in `src/expression`.
+
+@@@include
+expression/exp_closure_simple.c
+@@@
+
+- 3-11: A call back function.
+The parameter is only one and it is a 'this' object.
+It is a GtkLabel and its label is assumed to be "(number)+(number)".
+- 8-10: Retrieves two integers from the label and returns the sum of them.
+This function has no error report.
+If you want to return error report, change the return value type to be a pointer to a structure of gboolean and integer.
+One for error and the other for the sum.
+The first argument of `gtk_cclosure_expression_new` is `G_TYPE_POINTER`.
+There is a sample program `exp_closure_with_error_report` in `src/expression` directory.
+- 19: gtk\_init initializes GTK. It is necessary for GtkLabel.
+- 20: A GtkLabel instance is created with "123+456".
+- 21: The instance has floating reference. It is changed to an ordinary reference count.
+- 22-23: Create a closure expression. Its return value type is `G_TYPE_INT` and no parameters or 'this' object.
+- 24: Evaluates the expression with the label as a 'this' object.
+- 25: If the evaluation successes, show the sum of "123+456". It's 579.
+- 27: If it fails, show an error message.
+- 28-30: Releases the expression and the label. Unsets the value.
 
 Closure expression is flexible than other type of expression because you can specify your own callback function.
 
 ## GtkExpressionWatch
 
-GtkExpressionWatch watches an expression and if the value of the expression changes it calls its notify handler.
+GtkExpressionWatch is a structure, not an object.
+It represents a watched GtkExpression.
+Two functions create GtkExpressionWatch structure.
 
-The example uses GtkExpressionWatch in the line 103 to 106.
+### gtk\_expression\_bind function
+
+This function binds the target object's property to the expression.
+If the value of the expression changes, the property reflects the value immediately.
 
 ~~~C
-expression1 = gtk_property_expression_new (GTK_TYPE_WINDOW, NULL, "default-width");
-watch_width = gtk_expression_watch (expression1, win1, notify, NULL, NULL);
-expression2 = gtk_property_expression_new (GTK_TYPE_WINDOW, NULL, "default-height");
-watch_height = gtk_expression_watch (expression2, win1, notify, NULL, NULL);
+GtkExpressionWatch*
+gtk_expression_bind (
+  GtkExpression* self,
+  GObject* target,
+  const char* property,
+  GObject* this_
+)
 ~~~
 
-The expressions above refer to "default-width" and "default-height" properties of GtkWindow.
-The variable `watch_width` watches `expression1`.
-The second argument `win1` is `this` instance for `expression1`.
-So, `watch_width` watches the value of "default-width" property of `win1`.
-If the value changes, it calls `notify` handler.
-The fourth and fifth arguments are NULL because no user data is necessary.
+This function takes the ownership of the expression.
+So, if you want to own the expression, call `gtk_expression_ref ()` to increase the reference count of the expression.
+And you should unref it when it is useless.
+If you don't own the expression, you don't care about releasing the expression.
 
-The variable `watch_height` connects `notify` handler to `expression2`.
-So, `notiry` is also called when "default-height" changes.
+An example `exp_bind.c` and `exp_bind.ui` is in [`src/expression`](expression) directory.
 
-The handler `norify` is as follows.
+![exp\_bind](../image/exp_bind.png){width=9.2cm height=1.9cm}
+
+It includes a label and a scale.
+If you move the slider to the right, the scale value increases and the number on the label also increases.
+In the same way, if you move it to the left, the number on the label decreases.
+The label is bound to the scale value via an adjustment.
 
 @@@include
-expression/exp.c notify
+expression/exp_bind.ui
 @@@
 
-- 6-11: Evaluates `expression1` and `expression2` with `expression_watch_evaluate` function.
-- 12: Creates a string `title`.
-It contains the width and height, for example, "800 x 600".
-- 13: Sets the title of `win1` with the string `title`.
+The ui file describes the following parent-child relationship.
 
-The title of the window reflects the size of the window.
+~~~
+GtkApplicationWindow (win) -- GtkBox -+- GtkLabel (label)
+                                      +- GtkScale
+~~~
 
-## exp.ui
+Four GtkScale properties are defined.
 
-`exp.c` builds a GtkWindow instance `win2` with `exp.ui`.
-The ui file `exp.ui` includes tags to create GtkExpressions.
-The tags are:
+- adjustment. GtkAdjustment provides the followings.
+  - upper and lower: the range of the scale.
+  - value: current value of the scale. It reflects the value of the scale.
+  - step increment and page increment: When a user press an arrow key or page up/down key,
+the scale moves by the step increment or page increment respectively.
+  - page-size: When an adjustment is used with a scale, page-size is zero.
+- digits: The number of decimal places that are displayed in the value.
+- draw-value: Whether the value is displayed.
+- has-origin: Whether the scale has the origin. If it's true, an orange bar appears between the origin and the current point.
+- round-digits: The number of digits to round the value to when it changes.
+For example, if it is zero, the slider moves to an integer point.
 
-- constant tag to create constant expression
-- lookup tag to create property expression
-- closure tag to create closure expression
-- binding tag to bind a property to an expression
+@@@include
+expression/exp_bind.c
+@@@
 
-The window `win2` behaves like `win1`.
-Because similar expressions are built with the ui file.
+The point of the program is:
+
+- 41-42: Two expressions are defined.
+One is a property expression and the other is a closure expression.
+The property expression look up the "value"property of the adjustment instance.
+The closure expression just converts the double into an integer.
+- 43: `gtk_expression_bind` binds the label property of the GtkLabel instance to the integer returned by the closure expression.
+It creates a GtkExpressionWatch structure.
+The binding works during the watch lives.
+When the window is destroyed, the scale and adjustment are also destroyed.
+And the watch recognizes the value of the expression changes and tries to change the property of the label.
+Obviously, it is not a correct behavior.
+The watch should be unwatched before the window is destroyed.
+- 37: Connects the "close-request" signal on the window to a handler `close_request_cb`.
+This signal is emitted when the close button is clicked.
+The handler is called just before the window closes.
+It is the right moment to make the GtkExpressionWatch unwatched.
+- 10-14: "close-request" signal handler.
+`gtk_expression_watch_unwatch (watch)` makes the watch stop watching the expression.
+It releases the expression and calls `gtk_expression_watch_unref (watch)` in it.
+
+If you want to bind a property to an expression, `gtk_expression_bind` is the best choice.
+You can do it with `gtk_expression_watch` function, but it is less suitable.
+
+### gtk\_expression\_watch function
+
+~~~C
+GtkExpressionWatch*
+gtk_expression_watch (
+  GtkExpression* self,
+  GObject* this_,
+  GtkExpressionNotify notify,
+  gpointer user_data,
+  GDestroyNotify user_destroy
+)
+~~~
+
+The function doesn't take the ownership of the expression.
+It differs from `gtk_expression_bind`.
+So, you need to release the expression when it is useless.
+It creates a GtkExpressionWatch structure.
+The third parameter `notify` is a callback to invoke when the expression changes.
+You can set `user_data` to give it to the callback.
+The last parameter is a function to destroy the `user_data` when the watch is unwatched.
+Put NULL if you don't need them.
+
+Notify callback has the following format.
+
+~~~C
+void
+notify (
+  gpointer user_data
+)
+~~~
+
+This function is used to do something when the value of the expression changes.
+But if you want to bind a property to the value, use `gtk_expression_bind` instead.
+
+There's a sample program `exp_watch.c` in [`src/expression`](expression) directory.
+It outputs the width of the window to the standard output.
+
+![exp\_watch](../image/exp_watch.png){width=9.6cm height=6.9cm}
+
+When you resize the window, the width is displayed in the terminal.
+
+@@@include
+expression/exp_watch.c
+@@@
+
+- 37: A property expression looks up the "default-width" property of the window.
+- 38: Create a watch structure for the expression.
+The callback `notify` is called every time the value of the expression changes.
+The 'this' object is `win`, so the expression returns the default width of the window.
+- 6-14: The callback function `notify`.
+It uses `gtk_expression_watch_evaluate` to get the value of the expression.
+The 'this' object is given in advance (when the watch is created).
+It outputs the window width to the standard output.
+- 16-21: A handler for the "close-request"signal on the window.
+It stops the watch.
+In addition, it releases the reference to the expression.
+Because `gtk_expression_watch` doesn't take the ownership of the expression, you own it.
+So, the release is necessary.
+
+## Gtkexpression in ui files
+
+GtkBuilder supports GtkExpressions.
+There are four tags.
+
+- constant tag to create constant expression. Type attribute specifies the type name of the value.
+If no type is specified, the type is assumed to be an object.
+The content is the value of the expression.
+- lookup tag to create property expression. Type attribute specifies the type of the object.
+Name attribute specifies the property name.
+The content is an expression or object which has the property to look up.
+If there's no content, 'this' object is used.
+- closure tag to create closure expression. Type attribute specifies the type of the returned value.
+Function attribute specifies the callback function.
+The contents of the tag are arguments that are expressions.
+- binding tag to bind a property to an expression.
+It is put in the content of an object tag.
+Name attribute specifies the property name of the object.
+The content is an expression.
+
+~~~xml
+<constant type="gchararray">Hello world</constant>
+<lookup name="label" type="GtkLabel">label</lookup>
+<closure type="gint" function="callback_function"></closure>
+<bind name="label">
+  <lookup name="default-width">win</lookup>
+</bind>
+~~~
+
+These tags are usually used for GtkBuilderListItemFactory.
+
+~~~xml
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkLabel">
+        <binding name="label">
+          <lookup name="name" type="string">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
+      </object>
+    </property>
+  </template>
+</interface>
+~~~
+
+In the xml file above, "GtkListItem" is an instance of the GtkListItem template.
+It is the 'this' object given to the expressions.
+(The information is in the [GTK Development Blog](https://blog.gtk.org/2020/09/)).
+
+GtkBuilderListItemFactory uses GtkBuilder to build the XML data.
+It sets the current object of the GtkBuilder to the GtkListItem instance.
+
+GtkBuilder calls `gtk_expression_bind` function in the binding tag analysis.
+The function sets the 'this' object like this:
+
+1. If the binding tag has object attribute, the object will be the 'this' object.
+2. If the current object of the GtkBuilder exists, it will be the 'this' object.
+That's why a GtkListItem instance is the 'this' object of the XML data for a GtkBuilderListItemFactory.
+3. Otherwise, the target object of the binding tag will be the 'this' object.
+
+GTK 4 document doesn't describe information about "this" object when expressions are defined in a ui file.
+The information above is found from the GTK 4 source files and it is possible to include mistakes.
+If you have accurate information, please let me know.
+
+A sample program `exp.c` and a ui file `exp.ui` is in [`src/expression`](expression) directory.
+The ui file includes lookup, closure and bind tags.
+No constant tag is included.
+However, constant tags are not used so often.
+
+![exp.c](../image/exp.png){width=10.3cm height=7.6cm}
+
+If you resize the window, the size is shown at the title of the window.
+If you type characters in the entry, the same characters appear on the label.
+
+The ui file is as follows.
 
 @@@include
 expression/exp.ui
 @@@
 
-### Constant tag
+- 4-9: The title property of the main window is bound to a closure expression.
+Its callback function `set_title` is defined in the C source file.
+It returns a string because the type attribute of the tag is "gchararray".
+Two parameters are given to the function.
+They are width and height of the window.
+Lookup tags don't have contents, so 'this' object is used to look up the properties.
+The 'this' object is `win`, which is the target of the binding (`win` includes the binding tag).
+- 17-21: The "label" property of the GtkLabel instance is bound to the "text" property of `buffer`,
+which is the buffer of GtkEntry defined in line 25.
+If a user types characters in the entry, the same characters appear on the label.
 
-A constant tag corresponds to a constant expression.
+The C source file is as follows.
 
-- 18: Constant tag.
-The constant expression is created with the tag.
-It returns 100, the type is "gint", when it is evaluated.
-The type "gint" is a name of `G_TYPE_INT` type.
-Similarly, the types which is registered to the type system has type and name.
-For example, "gchararray" is a name of `G_TYPE_STRING` type.
-You need to use the name of types for the `type`attribute.
-See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue).
-- 17-19: Binding tag corresponds to `gtk_expression_bind` function.
-`name` attribute specifies the "label" property of the GtkLabel object just before the binding tag.
-The expression returns a int type GValue.
-On the other hand "label" property holds a string type GValue.
-When a GValue is copied to another GValue, the type is automatically converted if possible.
-In this case, an int `100` is converted to a string `"100"`.
+@@@include
+expression/exp.c
+@@@
 
-These binding and constant tag works.
-But they are not good.
-A property tag is more straightforward.
+- 4-6: The callback function.
+It returns a string (w)x(h), where the w and h are the width and height of the window.
+String duplication is necessary.
+
+The C source file is very simple because almost everything is done in the ui file.
+
+### Conversion between GValues
+
+If you bind different type properties, type conversion is automatically done.
+Suppose a label property (string) is bound to default-width property (int).
 
 ~~~xml
 <object class="GtkLabel">
-  <property name="label">100</property>
+  <binding name="label">
+    <lookup name="default-width">
+      win
+    </lookup>
+  </binding>
 </object>
 ~~~
 
-This example just shows the way how to use constant tag.
-Constant tag is mainly used to give a constant argument to a closure.
+The expression created by the lookup tag returns a int type GValue.
+On the other hand "label" property holds a string type GValue.
+When a GValue is copied to another GValue, the type is automatically converted if possible.
+If the current width is 100, an int `100` is converted to a string `"100"`.
 
-### Lookup tag
-
-A lookup tag corresponds to a property expression.
-Line 23 to 31 is copied here.
-
-~~~xml
-          <object class="GtkLabel">
-            <binding name="label">
-              <lookup name="text">
-                <lookup name="buffer">
-                  entry
-                </lookup>
-              </lookup>
-            </binding>
-          </object>
-~~~
-
-- binding tag binds a "label" property in GtkLabel to an expression.
-The expression is defined with a lookup tag.
-- The lookup tag defines a property expression looks up a "text" property in the instance which is defined in the next expression.
-The next expression is created with the lookup tag.
-The expression looks up the `buffer` property of the `entry` instance.
-The `entry` instance is defined in the line 43.
-It is a GtkEntry `entry`.
-A lookup tag takes an instance in some ways to look up for a property.
-  - If it has no contents, it takes `this` instance when it is evaluated.
-  - If it has a content of a tag for an expression, which is constant, lookup or closure tag, the value of the expression will be the instance to look up when it is evaluated.
-  - If it has a content of an id of an object, then the instance of the object will be taken as the instance to lookup.
-
-As a result, the label of the GtkLabel instance are bound to the text in the field of GtkEntry.
-If a user input a text in the field in the GtkEntry, GtkLabel displays the same text.
-
-Another lookup tag is in the lines from 34 to 40.
-
-~~~xml
-          <object class="GtkLabel">
-            <binding name="label">
-              <lookup name="application-id">
-                <lookup name="application">win2</lookup>
-              </lookup>
-            </binding>
-          </object>
-~~~
-
-- Two expressions are nested.
-- A lookup tag looks up "application-id" property of the next expression.
-- The next lookup tag looks up "application" property of `win2` instance.
-
-As a result, the "label" property in the GtkLabel instance is bound to the "application-id" property.
-The nested tag makes a chain like:
-
-~~~
-"label" <= "application-id" <= "application" <= `win2`
-~~~
-
-By the way, the application of `win2` is set after the objects in ui file are built.
-Look at `exp.c`.
-`gtk_window_set_application` is called after `gtk_build_new_from_resource`.
-
-~~~C
-build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp.ui");
-GtkWidget *win2 = GTK_WIDGET (gtk_builder_get_object (build, "win2"));
-gtk_window_set_application (GTK_WINDOW (win2), app);
-~~~
-
-Therefore, before the call for `gtk_window_set_application`, the "application" property of `win2` is *not* set.
-So, the evaluation of `<lookup name="application">win2</lookup>` fails.
-And the evaluation of `<lookup name="application-id">` also fails.
-A function `gtk_expression_bind ()`, which corresponds to `binding` tag, doesn't update the target property if the expression fails.
-So, the "label" property isn't updated at the first evaluation.
-
-Note that an evaluation can fail.
-The care is especially necessary when you write a callback for a closure tag which has contents of expressions like lookup tags.
-The expressions are given to the callback as an argument.
-If an expression fails the argument will be NULL.
-You need to check if the argument exactly points the instance that is expected by the callback.
-
-### Closure tag
-
-The lines from 3 to 9 include a closure tag.
-
-~~~xml
-  <object class="GtkWindow" id="win2">
-    <binding name="title">
-      <closure type="gchararray" function="set_title">
-        <lookup name="default-width" type="GtkWindow"></lookup>
-        <lookup name="default-height" type="GtkWindow"></lookup>
-      </closure>
-    </binding>
-~~~
-
-- A binding tag corresponds to a `gtk_expression_bind` function.
-`name` attribute specifies the "title" property of `win2`.
-Binding tag gives `win2` as the `this` instance to the expressions, which are the contents of the binding tag.
-So, closure tag and lookup tags use `win2` as the `this` object when they are evaluated.
-- A closure tag corresponds to a closure expression.
-Its callback function is `set_title` and it returns "gchararray" type, which is "an array of characters" i.e. a string.
-The contents of the closure tag are assigned to parameters of the function.
-So, `set_title` has three parameters, `win2` (`this` instance), default width and default height.
-- Lookup tags correspond to property expressions.
-They lookup "default-width" and "default-height" properties of `win2` (`this` instance).
-- Binding tab creates GtkExpressionWatch automatically, so "title" property reflects the changes of "default-width" and "default-height" properties.
-
-`set_title` function in `exp.c` is as follows.
-
-@@@include
-expression/exp.c set_title
-@@@
-
-It just creates a string, for example, "800 x 600", and returns it.
-
-You've probably been noticed that ui file is easier and clearer than the corresponding C program.
-One of the most useful case of GtkExpression is building GtkListItem instance with GtkBuilderListItemFatory.
-Such case has already been described in the prior two sections.
-
-It will be used in the next section to build GtkListItem in GtkColumnView, which is the most useful view object for GListModel.
-
-## Compilation and execution
-
-All the sources are in [src/expression](expression) directory.
-Change your current directory to the directory and run meson and ninja.
-Then, execute the application.
-
-~~~
-$ meson _build
-$ ninja -C _build
-$ build/exp
-~~~
-
-Then, two windows appear.
-
-![Expression](../image/expression.png){width=12cm height=9.1cm}
-
-If you put some text in the field of the entry, then the same text appears in the second GtkLabel.
-Because the "label" property of the second GtkLabel instance is bound to the text in the GtkEntryBuffer.
-
-If you resize the window, then the size appears in the title bar because the "title" property is bound to "default-width" and "default-height" properties.
-
+If you use `g_object_get` and `g_object_set` to copy properties, the value is automatically converted. 

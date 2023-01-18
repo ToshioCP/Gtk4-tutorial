@@ -5,15 +5,15 @@
     <property name="default-width">800</property>
     <property name="default-height">600</property>
     <child>
-      <object class="GtkScrolledWindow" id="scr">
+      <object class="GtkScrolledWindow">
         <property name="hexpand">TRUE</property>
         <property name="vexpand">TRUE</property>
         <child>
           <object class="GtkColumnView" id="columnview">
             <property name="model">
-              <object class="GtkSingleSelection" id="singleselection">
+              <object class="GtkNoSelection">
                 <property name="model">
-                  <object class="GtkSortListModel" id="sortlist">
+                  <object class="GtkSortListModel">
                     <property name="model">
                       <object class="GtkDirectoryList" id="directorylist">
                         <property name="attributes">standard::name,standard::icon,standard::size,time::modified</property>
@@ -27,7 +27,7 @@
               </object>
             </property>
             <child>
-              <object class="GtkColumnViewColumn" id="column1">
+              <object class="GtkColumnViewColumn">
                 <property name="title">Name</property>
                 <property name="expand">TRUE</property>
                 <property name="factory">
@@ -68,7 +68,7 @@
                   </object>
                 </property>
                 <property name="sorter">
-                  <object class="GtkStringSorter" id="sorter_name">
+                  <object class="GtkStringSorter">
                     <property name="expression">
                       <closure type="gchararray" function="get_file_name">
                       </closure>
@@ -78,7 +78,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkColumnViewColumn" id="column2">
+              <object class="GtkColumnViewColumn">
                 <property name="title">Size</property>
                 <property name="factory">
                   <object class="GtkBuilderListItemFactory">
@@ -91,7 +91,7 @@
         <property name="hexpand">TRUE</property>
         <property name="xalign">0</property>
         <binding name="label">
-          <closure type="gchararray" function="get_file_size_factory">
+          <closure type="gint64" function="get_file_size_factory">
             <lookup name="item">GtkListItem</lookup>
           </closure>
         </binding>
@@ -103,7 +103,7 @@
                   </object>
                 </property>
                 <property name="sorter">
-                  <object class="GtkNumericSorter" id="sorter_size">
+                  <object class="GtkNumericSorter">
                     <property name="expression">
                       <closure type="gint64" function="get_file_size">
                       </closure>
@@ -114,7 +114,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkColumnViewColumn" id="column3">
+              <object class="GtkColumnViewColumn">
                 <property name="title">Date modified</property>
                 <property name="factory">
                   <object class="GtkBuilderListItemFactory">
@@ -139,7 +139,7 @@
                   </object>
                 </property>
                 <property name="sorter">
-                  <object class="GtkNumericSorter" id="sorter_datetime_modified">
+                  <object class="GtkNumericSorter">
                     <property name="expression">
                       <closure type="gint64" function="get_file_unixtime_modified">
                       </closure>

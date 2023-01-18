@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
 static void
-setup_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+setup_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
   GtkWidget *lb = gtk_label_new (NULL);
   gtk_list_item_set_child (listitem, lb);
 }
@@ -9,6 +9,7 @@ setup_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data
 static void
 bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
   GtkWidget *lb = gtk_list_item_get_child (listitem);
+  /* Strobj is owned by the instance. Caller mustn't change or destroy it. */
   GtkStringObject *strobj = gtk_list_item_get_item (listitem);
   const char *text = gtk_string_object_get_string (strobj);
 
@@ -18,18 +19,14 @@ bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_da
 static void
 unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
   /* There's nothing to do here. */
-  /* If you does something like setting a signal in bind_cb, */
-  /* then disconnecting the signal is necessary in unbind_cb. */
 }
 
 static void
-teardown_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+teardown_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
   gtk_list_item_set_child (listitem, NULL);
-/*  When the child of listitem is set to NULL, the reference to GtkLabel will be released and lb will be destroyed. */
-/* Therefore, g_object_unref () for the GtkLabel object doesn't need in the user code. */
+  /* The previous child is destroyed automatically. */
 }
 
-/* ----- activate, open, startup handlers ----- */
 static void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
@@ -41,8 +38,11 @@ app_activate (GApplication *application) {
   char *array[] = {
     "one", "two", "three", "four", NULL
   };
-  GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
-  GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (sl));
+  /* sl is owned by ns */
+  /* ns and factory are owned by lv. */
+  /* Therefore, you don't need to care about their destruction. */
+  GtkStringList *sl =  gtk_string_list_new ((const char * const *) array);
+  GtkNoSelection *ns =  gtk_no_selection_new (G_LIST_MODEL (sl));
 
   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (factory, "setup", G_CALLBACK (setup_cb), NULL);
@@ -55,10 +55,6 @@ app_activate (GApplication *application) {
   gtk_window_present (GTK_WINDOW (win));
 }
 
-static void
-app_startup (GApplication *application) {
-}
-
 /* ----- main ----- */
 #define APPLICATION_ID "com.github.ToshioCP.list1"
 
@@ -69,11 +65,9 @@ main (int argc, char **argv) {
 
   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
 }
-
