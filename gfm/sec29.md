@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 28](sec28.md)
+Up: [README.md](../README.md),  Prev: [Section 28](sec28.md)
 
 # GtkColumnView
 
@@ -13,11 +13,11 @@ Each column is GtkColumnViewColumn.
 The property points a GtkSelectionModel object.
 - Each GtkColumnViewColumn has "factory" property.
 The property points a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).
-- The factory connects GtkListItem, which belongs to GtkColumnViewColumn, and items of GtkSelectionModel.
-And the factory builds the descendants widgets of GtkColumnView to display the item on the display.
+- The factory connects GtkListItem and items of GtkSelectionModel.
+And the factory builds the descendant widgets of GtkColumnView to display the item on the display.
 This process is the same as the one in GtkListView.
 
-The following diagram shows the image how it works.
+The following diagram shows how it works.
 
 ![ColumnView](../image/column.png)
 
@@ -29,7 +29,7 @@ In addition, the example uses GtkSortListModel and GtkSorter to sort the informa
 
 ## column.ui
 
-Ui file specifies whole widgets and their structure.
+Ui file specifies widgets and list item templates.
 
 ~~~xml
   1 <?xml version="1.0" encoding="UTF-8"?>
@@ -39,15 +39,15 @@ Ui file specifies whole widgets and their structure.
   5     <property name="default-width">800</property>
   6     <property name="default-height">600</property>
   7     <child>
-  8       <object class="GtkScrolledWindow" id="scr">
+  8       <object class="GtkScrolledWindow">
   9         <property name="hexpand">TRUE</property>
  10         <property name="vexpand">TRUE</property>
  11         <child>
  12           <object class="GtkColumnView" id="columnview">
  13             <property name="model">
- 14               <object class="GtkSingleSelection" id="singleselection">
+ 14               <object class="GtkNoSelection">
  15                 <property name="model">
- 16                   <object class="GtkSortListModel" id="sortlist">
+ 16                   <object class="GtkSortListModel">
  17                     <property name="model">
  18                       <object class="GtkDirectoryList" id="directorylist">
  19                         <property name="attributes">standard::name,standard::icon,standard::size,time::modified</property>
@@ -61,7 +61,7 @@ Ui file specifies whole widgets and their structure.
  27               </object>
  28             </property>
  29             <child>
- 30               <object class="GtkColumnViewColumn" id="column1">
+ 30               <object class="GtkColumnViewColumn">
  31                 <property name="title">Name</property>
  32                 <property name="expand">TRUE</property>
  33                 <property name="factory">
@@ -102,7 +102,7 @@ Ui file specifies whole widgets and their structure.
  68                   </object>
  69                 </property>
  70                 <property name="sorter">
- 71                   <object class="GtkStringSorter" id="sorter_name">
+ 71                   <object class="GtkStringSorter">
  72                     <property name="expression">
  73                       <closure type="gchararray" function="get_file_name">
  74                       </closure>
@@ -112,7 +112,7 @@ Ui file specifies whole widgets and their structure.
  78               </object>
  79             </child>
  80             <child>
- 81               <object class="GtkColumnViewColumn" id="column2">
+ 81               <object class="GtkColumnViewColumn">
  82                 <property name="title">Size</property>
  83                 <property name="factory">
  84                   <object class="GtkBuilderListItemFactory">
@@ -125,7 +125,7 @@ Ui file specifies whole widgets and their structure.
  91         <property name="hexpand">TRUE</property>
  92         <property name="xalign">0</property>
  93         <binding name="label">
- 94           <closure type="gchararray" function="get_file_size_factory">
+ 94           <closure type="gint64" function="get_file_size_factory">
  95             <lookup name="item">GtkListItem</lookup>
  96           </closure>
  97         </binding>
@@ -137,7 +137,7 @@ Ui file specifies whole widgets and their structure.
 103                   </object>
 104                 </property>
 105                 <property name="sorter">
-106                   <object class="GtkNumericSorter" id="sorter_size">
+106                   <object class="GtkNumericSorter">
 107                     <property name="expression">
 108                       <closure type="gint64" function="get_file_size">
 109                       </closure>
@@ -148,7 +148,7 @@ Ui file specifies whole widgets and their structure.
 114               </object>
 115             </child>
 116             <child>
-117               <object class="GtkColumnViewColumn" id="column3">
+117               <object class="GtkColumnViewColumn">
 118                 <property name="title">Date modified</property>
 119                 <property name="factory">
 120                   <object class="GtkBuilderListItemFactory">
@@ -173,7 +173,7 @@ Ui file specifies whole widgets and their structure.
 139                   </object>
 140                 </property>
 141                 <property name="sorter">
-142                   <object class="GtkNumericSorter" id="sorter_datetime_modified">
+142                   <object class="GtkNumericSorter">
 143                     <property name="expression">
 144                       <closure type="gint64" function="get_file_unixtime_modified">
 145                       </closure>
@@ -191,18 +191,18 @@ Ui file specifies whole widgets and their structure.
 157 </interface>
 ~~~
 
-- 3-12: Widget parent-child relationship is GtkApplicationWindow => GtkScrolledWindow => GtkColumnView.
+- 3-12: GtkApplicationWindow has a child widget GtkScrolledWindow.
+GtkScrolledWindoww has a child widget GtkColumnView.
 - 12-18: GtkColumnView has "model" property.
 It points GtkSelectionModel interface.
-In this ui file, GtkSingleSelection is used as GtkSelectionModel.
-GtkSingleSelection is an object that implements GtkSelectionModel.
+GtkNoSelection class is used as GtkSelectionModel.
 And again, it has "model" property.
 It points GtkSortListModel.
 This list model supports sorting the list.
 It will be explained in the later subsection.
 And it also has "model" property.
 It points GtkDirectoryList.
-Therefore, the chain is: GtkColumnView => GtkSingleSelection => GtkSortListModel => GtkDirectoryList.
+Therefore, the chain is: GtkColumnView => GtkNoSelection => GtkSortListModel => GtkDirectoryList.
 - 18-20: GtkDirectoryList.
 It is a list of GFileInfo, which holds information of files under a directory.
 It has "attributes" property.
@@ -213,30 +213,27 @@ It specifies what attributes is kept in each GFileInfo.
   - "time::modified" is the date and time the file was last modified.
 - 29-79: The first GtkColumnViewColumn object.
 There are four properties, "title", "expand", factory" and "sorter".
-- 31: Sets the "title" property with "Name".
+- 31: Sets the "title" property to "Name".
 This is the title on the header of the column.
 - 32: Sets the "expand" property to TRUE to allow the column to expand as much as possible.
 (See the image above).
-- 33- 69: Sets the "factory" property with GtkBuilderListItemFactory.
+- 33- 69: Sets the "factory" property to GtkBuilderListItemFactory.
 The factory has "bytes" property which holds a ui string to define a template to build GtkListItem composite widget.
 The CDATA section (line 36-66) is the ui string to put into the "bytes" property.
 The contents are the same as the ui file `factory_list.ui` in the section 27.
-- 70-77: Sets the "sorter" property with GtkStringSorter object.
+- 70-77: Sets the "sorter" property to GtkStringSorter object.
 This object provides a sorter that compares strings.
-It has "expression" property which is set with GtkExpression.
+It has "expression" property.
 A closure tag with a string type function `get_file_name` is used here.
 The function will be explained later.
 - 80-115: The second GtkColumnViewColumn object.
-Its "title", "factory" and "sorter" properties are set.
-GtkNumericSorter is used.
+Its sorter property is set to GtkNumericSorter.
 - 116-151: The third GtkColumnViewColumn object.
-Its "title", "factory" and "sorter" properties are set.
-GtkNumericSorter is used.
+Its sorter property is set to GtkNumericSorter.
 
 ## GtkSortListModel and GtkSorter
 
-GtkSortListModel is a list model that sorts its elements according to a GtkSorter.
-It has "sorter" property that is set with GtkSorter.
+GtkSortListModel is a list model that sorts its elements according to a GtkSorter instance assigned to the "sorter" property.
 The property is bound to "sorter" property of GtkColumnView in line 22 to 24.
 
 ~~~xml
@@ -255,21 +252,25 @@ If the user clicks the header of another column, then the "sorter" property of t
 
 The binding above makes a indirect connection between the "sorter" property of GtkSortListModel and the "sorter" property of each column.
 
+GtkSorter compares two items (GObject or its descendant).
 GtkSorter has several child objects.
 
-- GtkStringSorter compares strings.
-- GtkNumericSorter compares numbers.
+- GtkStringSorter compares strings taken from the items.
+- GtkNumericSorter compares numbers taken from the items.
 - GtkCustomSorter uses a callback to compare.
 - GtkMultiSorter combines multiple sorters.
 
 The example uses GtkStringSorter and GtkNumericSorter.
 
-GtkStringSorter uses GtkExpression to get the strings from the objects.
-The GtkExpression is stored in the "expression" property of GtkStringSorter.
-For example, in the ui file above, the GtkExpression is in the line 71 to 76.
+GtkStringSorter uses GtkExpression to get the strings from the items (objects).
+The GtkExpression is stored in the "expression" property of the GtkStringSorter.
+When GtkStringSorter compares two items, it evaluates the expression by calling `gtk_expression_evaluate` function.
+It assigns each item to the second argument ('this' object) of the function.
+
+In the ui file above, the GtkExpression is in the line 71 to 76.
 
 ~~~xml
-<object class="GtkStringSorter" id="sorter_name">
+<object class="GtkStringSorter">
   <property name="expression">
     <closure type="gchararray" function="get_file_name">
     </closure>
@@ -282,24 +283,23 @@ The GtkExpression calls `get_file_name` function when it is evaluated.
 ~~~C
 1 char *
 2 get_file_name (GFileInfo *info) {
-3   g_return_val_if_fail (G_IS_FILE_INFO (info), NULL);
-4 
-5   return g_strdup(g_file_info_get_name (info));
-6 }
+3   return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+4 }
 ~~~
 
 The function is given the item (GFileInfo) of the GtkSortListModel as an argument (`this` object).
+But you need to be careful that it can be NULL while the list item is being recycled.
+So, `G_IS_FILE_INFO (info)` is always necessary in callback functions.
 The function retrieves a filename from `info`.
 The string is owned by `info` so it is necessary to duplicate it.
 And it returns the copied string.
-The string will be owned by the expression.
 
 GtkNumericSorter compares numbers.
 It is used in the line 106 to 112 and line 142 to 148.
 The lines from 106 to 112 is:
 
 ~~~xml
-<object class="GtkNumericSorter" id="sorter_size">
+<object class="GtkNumericSorter">
   <property name="expression">
     <closure type="gint64" function="get_file_size">
     </closure>
@@ -313,10 +313,8 @@ The closure tag specifies a callback function `get_file_size`.
 ~~~C
 1 goffset
 2 get_file_size (GFileInfo *info) {
-3   g_return_val_if_fail (G_IS_FILE_INFO (info), -1);
-4 
-5   return g_file_info_get_size (info);
-6 }
+3   return G_IS_FILE_INFO (info) ? g_file_info_get_size (info): -1;
+4 }
 ~~~
 
 It just returns the size of `info`.
@@ -340,13 +338,11 @@ The closure tag specifies a callback function `get_file_unixtime_modified`.
 ~~~C
 1 gint64
 2 get_file_unixtime_modified (GFileInfo *info) {
-3   g_return_val_if_fail (G_IS_FILE_INFO (info), -1);
+3   GDateTime *dt;
 4 
-5   GDateTime *dt;
-6 
-7   dt = g_file_info_get_modification_date_time (info);
-8   return g_date_time_to_unix (dt);
-9 }
+5   dt = G_IS_FILE_INFO (info) ? g_file_info_get_modification_date_time (info) : NULL;
+6   return dt ? g_date_time_to_unix (dt) : -1;
+7 }
 ~~~
 
 It gets the modification date and time (GDateTime type) of `info`.
@@ -357,140 +353,106 @@ It returns the unix time (gint64 type).
 ## column.c
 
 `column.c` is as follows.
+It is simple and short thanks to `column.ui`.
 
 ~~~C
-  1 #include <gtk/gtk.h>
-  2 
-  3 /* functions (closures) for GtkBuilderListItemFactory */
-  4 GIcon *
-  5 get_icon_factory (GtkListItem *item, GFileInfo *info) {
-  6   GIcon *icon;
-  7   if (! G_IS_FILE_INFO (info))
-  8     return NULL;
-  9   else {
- 10     icon = g_file_info_get_icon (info);
- 11     g_object_ref (icon);
- 12     return icon;
- 13   }
- 14 }
- 15 
- 16 char *
- 17 get_file_name_factory (GtkListItem *item, GFileInfo *info) {
- 18   if (! G_IS_FILE_INFO (info))
- 19     return NULL;
- 20   else
- 21     return g_strdup (g_file_info_get_name (info));
- 22 }
- 23 
- 24 char *
- 25 get_file_size_factory (GtkListItem *item, GFileInfo *info) {
- 26   /* goffset is gint64 */
- 27   goffset size;
- 28 
- 29   if (! G_IS_FILE_INFO (info))
- 30     return NULL;
- 31   else {
- 32     size = g_file_info_get_size (info);
- 33     return g_strdup_printf ("%ld", (long int) size);
- 34   }
- 35 }
- 36 
- 37 char *
- 38 get_file_time_modified_factory (GtkListItem *item, GFileInfo *info) {
- 39   GDateTime *dt;
- 40 
- 41   if (! G_IS_FILE_INFO (info))
- 42     return NULL;
- 43   else {
- 44     dt = g_file_info_get_modification_date_time (info);
- 45     return g_date_time_format (dt, "%F");
- 46   }
- 47 }
- 48 
- 49 /* Functions (closures) for GtkSorter */
- 50 char *
- 51 get_file_name (GFileInfo *info) {
- 52   g_return_val_if_fail (G_IS_FILE_INFO (info), NULL);
- 53 
- 54   return g_strdup(g_file_info_get_name (info));
- 55 }
- 56 
- 57 goffset
- 58 get_file_size (GFileInfo *info) {
- 59   g_return_val_if_fail (G_IS_FILE_INFO (info), -1);
- 60 
- 61   return g_file_info_get_size (info);
- 62 }
- 63 
- 64 gint64
- 65 get_file_unixtime_modified (GFileInfo *info) {
- 66   g_return_val_if_fail (G_IS_FILE_INFO (info), -1);
- 67 
- 68   GDateTime *dt;
- 69 
- 70   dt = g_file_info_get_modification_date_time (info);
- 71   return g_date_time_to_unix (dt);
- 72 }
- 73 
- 74 /* ----- activate, open, startup handlers ----- */
- 75 static void
- 76 app_activate (GApplication *application) {
- 77   GtkApplication *app = GTK_APPLICATION (application);
- 78   GFile *file;
- 79 
- 80   GtkBuilder *build = gtk_builder_new_from_resource ("/com/github/ToshioCP/column/column.ui");
- 81   GtkWidget *win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
- 82   GtkDirectoryList *directorylist = GTK_DIRECTORY_LIST (gtk_builder_get_object (build, "directorylist"));
- 83   g_object_unref (build);
- 84 
- 85   gtk_window_set_application (GTK_WINDOW (win), app);
- 86 
- 87   file = g_file_new_for_path (".");
- 88   gtk_directory_list_set_file (directorylist, file);
- 89   g_object_unref (file);
- 90 
- 91   gtk_widget_show (win);
- 92 }
- 93 
- 94 static void
- 95 app_startup (GApplication *application) {
- 96 }
- 97 
- 98 #define APPLICATION_ID "com.github.ToshioCP.columnview"
- 99 
-100 int
-101 main (int argc, char **argv) {
-102   GtkApplication *app;
-103   int stat;
-104 
-105   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_FLAGS_NONE);
-106 
-107   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-108   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-109 /*  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);*/
-110 
-111   stat =g_application_run (G_APPLICATION (app), argc, argv);
-112   g_object_unref (app);
-113   return stat;
-114 }
-115 
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 /* functions (closures) for GtkBuilderListItemFactory */
+ 4 GIcon *
+ 5 get_icon_factory (GtkListItem *item, GFileInfo *info) {
+ 6   GIcon *icon;
+ 7 
+ 8    /* g_file_info_get_icon can return NULL */
+ 9   icon = G_IS_FILE_INFO (info) ? g_file_info_get_icon (info) : NULL;
+10   return icon ? g_object_ref (icon) : NULL;
+11 }
+12 
+13 char *
+14 get_file_name_factory (GtkListItem *item, GFileInfo *info) {
+15   return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+16 }
+17 
+18 /* goffset is defined as gint64 */
+19 /* It is used for file offsets. */
+20 goffset
+21 get_file_size_factory (GtkListItem *item, GFileInfo *info) {
+22   return G_IS_FILE_INFO (info) ? g_file_info_get_size (info) : -1;
+23 }
+24 
+25 char *
+26 get_file_time_modified_factory (GtkListItem *item, GFileInfo *info) {
+27   GDateTime *dt;
+28 
+29    /* g_file_info_get_modification_date_time can return NULL */
+30   dt = G_IS_FILE_INFO (info) ? g_file_info_get_modification_date_time (info) : NULL;
+31   return dt ? g_date_time_format (dt, "%F") : NULL;
+32 }
+33 
+34 /* Functions (closures) for GtkSorter */
+35 char *
+36 get_file_name (GFileInfo *info) {
+37   return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+38 }
+39 
+40 goffset
+41 get_file_size (GFileInfo *info) {
+42   return G_IS_FILE_INFO (info) ? g_file_info_get_size (info): -1;
+43 }
+44 
+45 gint64
+46 get_file_unixtime_modified (GFileInfo *info) {
+47   GDateTime *dt;
+48 
+49   dt = G_IS_FILE_INFO (info) ? g_file_info_get_modification_date_time (info) : NULL;
+50   return dt ? g_date_time_to_unix (dt) : -1;
+51 }
+52 
+53 static void
+54 app_activate (GApplication *application) {
+55   GtkApplication *app = GTK_APPLICATION (application);
+56   gtk_window_present (gtk_application_get_active_window(app));
+57 }
+58 
+59 static void
+60 app_startup (GApplication *application) {
+61   GtkApplication *app = GTK_APPLICATION (application);
+62   GFile *file;
+63   GtkBuilder *build = gtk_builder_new_from_resource ("/com/github/ToshioCP/column/column.ui");
+64   GtkWidget *win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+65   GtkDirectoryList *directorylist = GTK_DIRECTORY_LIST (gtk_builder_get_object (build, "directorylist"));
+66   g_object_unref (build);
+67 
+68   gtk_window_set_application (GTK_WINDOW (win), app);
+69 
+70   file = g_file_new_for_path (".");
+71   gtk_directory_list_set_file (directorylist, file);
+72   g_object_unref (file);
+73 }
+74 
+75 #define APPLICATION_ID "com.github.ToshioCP.columnview"
+76 
+77 int
+78 main (int argc, char **argv) {
+79   GtkApplication *app;
+80   int stat;
+81 
+82   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+83 
+84   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+85   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+86 
+87   stat =g_application_run (G_APPLICATION (app), argc, argv);
+88   g_object_unref (app);
+89   return stat;
+90 }
+91 
 ~~~
 
-- 4-47: Functions for the closure tag in the "bytes" property of GtkBuilderListItemFactory.
-These are almost same as the functions in section 26 and 26.
-- 50-72: Functions for the closure in the expression property of GtkStringSorter or GtkNumericSorter.
-- 75-92: `app_activate` is an "activate" handler of GApplication.
-- 80-83: Builds objects with ui resource and gets `win` and `directorylist`.
-- 85: Sets the application of the top level window with `app`. 
-- 87-89: Sets the file of `directorylist` with "." (current directory).
-- 94-96: Startup handler.
-- 98-114: `main` function.
-
-`exp.c` is simple and short thanks to `exp.ui`.
 
 ## Compilation and execution.
 
-All the source files are in [src/column](../src/column) directory.
+All the source files are in [`src/column`](../src/column) directory.
 Change your current directory to the directory and type the following.
 
 ~~~
@@ -509,5 +471,4 @@ If you click the header of another column, then the whole lists are sorted by th
 GtkColumnView is very useful and it can manage very big GListModel.
 It is possible to use it for file list, application list, database frontend and so on.
 
-
-Up: [Readme.md](../Readme.md),  Prev: [Section 28](sec28.md)
+Up: [README.md](../README.md),  Prev: [Section 28](sec28.md)

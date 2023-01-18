@@ -59,8 +59,26 @@ In a broad sense, object has wider meaning than instance.
 So, readers should be careful of the contexts to find the meaning of "object".
 In many cases, object and instance are the same.
 
+The function `gtk_application_new` has two parameters.
+
+- Application ID (com.github.ToshioCP.pr1).
+It is used to distinguish applications by the system.
+The format is reverse-DNS.
+See [GNOME Developer Documentation -- Application ID](https://developer.gnome.org/documentation/tutorials/application-id.html) for further information.
+
+- Application flag (G\_APPLICATION\_DEFAULT\_FLAGS).
+If the application runs without any arguments, the flag is G\_APPLICATION\_DEFAULT\_FLAGS.
+Otherwise, you need other flags.
+See [GIO API reference](https://docs.gtk.org/gio/flags.ApplicationFlags.html) for further information.
+
+
+
 To compile this, the following command needs to be run.
 The string `pr1.c` is the filename of the C source code above.
+
+Notice: If your GLib-2.0 version is older than 2.74, use `G_APPLICATION_FLAGS_NONE` instead of `G_APPLICATION_DEFAULT_FLAGS`.
+It is an old flag replaced by `G_APPLICATION_DEFAULT_FLAGS` and deprecated since version 2.74.
+However, many distributions use GLib-2.0 version 2.72 or older, for example, Ubuntu 22.04 LTS.
 
 ~~~
 $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
