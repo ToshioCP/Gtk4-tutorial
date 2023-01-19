@@ -22,12 +22,12 @@ There are two cases.
 One is the index starts from one (one-based) and the other is from zero (zero-based).
 
 Gio provides GListModel interface.
-It is a zero-based list of the same type of GObject descendants, or objects that implement the same interface.
+It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
 An object implements GListModel is not a widget.
 So, the list is not displayed on the screen directly.
 There's another object GtkListView which is a widget to display the list.
 The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory object maps items in the list to GListView.
+GtkListItemFactory instance maps items in the list to GListView.
 
 ![List](../image/list.png){width=10cm height=7.5cm}
 
@@ -79,8 +79,8 @@ GtkSelectionModel is an interface to support for selections.
 Thanks to this model, user can select items by clicking on them.
 It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
 These three objects are usually enough to build an application.
-They are created with GListModel.
-You can also create them alone and add GListModel later.
+They are created with another GListModel.
+You can also create them alone and add a GListModel later.
 
 - GtkMultiSelection supports multiple selection.
 - GtkNoSelection supports no selection. This is a wrapper to GListModel when GtkSelectionModel is needed.
@@ -102,7 +102,7 @@ This is very effective to restrain the growth of memory consumption so that GLis
 ## GtkListItemFactory
 
 GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
-There are two child objects of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
+There are two child classes of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
 
 ### GtkSignalListItemFactory
 
@@ -111,7 +111,7 @@ There are four signals.
 
 1. "setup" is emitted to set up GtkListItem object.
 A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of GtkListItem with it.
+For example, creates a GtkLabel widget and sets the child property of the GtkListItem to it.
 This setting is kept even the GtkListItem instance is recycled (to bind to another item of GListModel).
 2. "bind" is emitted to bind an item in the list model to the widget.
 For example, a user gets the item from "item" property of the GtkListItem instance.
@@ -193,18 +193,18 @@ And its child property is GtkLabel object.
 The factory sees this template and creates GtkLabel and sets the child property of GtkListItem.
 This is the same as what setup handler of GtkSignalListItemFactory did.
 
-Then, bind the label property of GtkLabel to string property of GtkStringObject.
-The string object is referred to by item property of GtkListItem.
+Then, bind the label property of the GtkLabel to the string property of a GtkStringObject.
+The string object refers to the item property of the GtkListItem.
 So, the lookup tag is like this:
 
 ~~~
-string <- GtkStringObject <- item <- GtkListItem
+label <- string <- GtkStringObject <- item <- GtkListItem
 ~~~
 
 The last lookup tag has a content `GtkListItem`.
 Usually, C type like `GtkListItem` doesn't appear in the content of tags.
 This is a special case.
-There is an explanation about it in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
+There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
 
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
@@ -267,12 +267,8 @@ Closure tag specifies a function and the type of the return value of the functio
 ~~~C
 const char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  if (! G_IS_FILE_INFO (info))
-    return NULL;
-  else
-    return g_strdup (g_file_info_get_name (info));
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
-
 ... ...
 ... ...
 
@@ -291,8 +287,8 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
 "</interface>"
 ~~~
 
-- The string "gchararray" is the type name of strings.
-The type "gchar" is the same as "char".
+- The string "gchararray" is a type name.
+The type "gchar" is a type name and it is the same as C type "char".
 Therefore, "gchararray" is "an array of char type", which is the same as string type.
 It is used to get the type of GValue object.
 GValue is a generic value and it can contain various type of values.
@@ -304,13 +300,15 @@ Function attribute specifies the function name and type attribute specifies the 
 The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
 `<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
 This will be the second argument of the function.
-The first parameter is always the GListItem instance.
-- `gtk_file_name` function first checks the `info` parameter.
+The first parameter is always the GListItem instance, which is a 'this' object.
+The 'this' object is explained in section 28.
+- `gtk_file_name` function is the callback function for the closure tag.
+It first checks the `info` parameter.
 Because it can be NULL when GListItem `item` is unbounded.
-If it's GFileInfo, it returns the filename.
-The filename is owned by GFileInfo object.
-So, the function `get_file_name` duplicates the string to own the newly created one.
-Closure tag binds the property of the outer tag (GtkLabel) to the filename.
+If it's GFileInfo, it returns the copied filename.
+Because the return value (filename) of `g_file_info_get_name` is owned by GFileInfo object.
+So, the the string needs to be duplicated to give the ownership to the caller.
+Binding tag binds the "label" property of the GtkLabel to the closure tag.
 
 The whole program (`list3.c`) is as follows.
 The program is located in [src/misc](misc) directory.
