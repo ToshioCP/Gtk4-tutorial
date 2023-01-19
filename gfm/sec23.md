@@ -1,4 +1,4 @@
-Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
+Up: [README.md](../README.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
 
 # Periodic Events
 
@@ -409,4 +409,4 @@ You can find the source files in the `tfc` directory. it can be compiled with `.
 2 gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm
 ~~~
 
-Up: [Readme.md](../Readme.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
+Up: [README.md](../README.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
