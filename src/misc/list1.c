@@ -4,6 +4,7 @@ static void
 setup_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
   GtkWidget *lb = gtk_label_new (NULL);
   gtk_list_item_set_child (listitem, lb);
+  /* Because gtk_list_item_set_child sunk the floating reference of lb, releasing (unref) isn't necessary for lb. */
 }
 
 static void
@@ -11,9 +12,8 @@ bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_da
   GtkWidget *lb = gtk_list_item_get_child (listitem);
   /* Strobj is owned by the instance. Caller mustn't change or destroy it. */
   GtkStringObject *strobj = gtk_list_item_get_item (listitem);
-  const char *text = gtk_string_object_get_string (strobj);
-
-  gtk_label_set_text (GTK_LABEL (lb), text);
+  /* The string returned by gtk_string_object_get_string is owned by the instance. */
+  gtk_label_set_text (GTK_LABEL (lb), gtk_string_object_get_string (strobj));
 }
 
 static void
@@ -23,8 +23,8 @@ unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_
 
 static void
 teardown_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
-  gtk_list_item_set_child (listitem, NULL);
-  /* The previous child is destroyed automatically. */
+  /* There's nothing to do here. */
+  /* GtkListItem instance will be destroyed soon. You don't need to set the child to NULL. */
 }
 
 static void
@@ -47,6 +47,7 @@ app_activate (GApplication *application) {
   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
   g_signal_connect (factory, "setup", G_CALLBACK (setup_cb), NULL);
   g_signal_connect (factory, "bind", G_CALLBACK (bind_cb), NULL);
+  /* The following two lines can be left out. The handlers do nothing. */
   g_signal_connect (factory, "unbind", G_CALLBACK (unbind_cb), NULL);
   g_signal_connect (factory, "teardown", G_CALLBACK (teardown_cb), NULL);
 

@@ -159,8 +159,7 @@ list4/list4.c get_icon get_file_name
 @@@
 
 One important thing is the ownership of the return values.
-When GtkExpression (closure tag creates a GtkCClosureExpression -- a child class of GtkExpression) is evaluated,
-the value is owned by the caller.
+The return value is owned by the caller.
 So, `g_obect_ref` or `g_strdup` is necessary.
 
 ## An activate signal handler of the button action

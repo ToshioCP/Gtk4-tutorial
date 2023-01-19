@@ -306,27 +306,19 @@ And a function `get_file_name` gets a filename from the GFileInfo object.
  2 get_icon (GtkListItem *item, GFileInfo *info) {
  3   GIcon *icon;
  4 
- 5   if (! G_IS_FILE_INFO (info))
- 6     return NULL;
- 7   else {
- 8     icon = g_file_info_get_icon (info);
- 9     g_object_ref (icon);
-10     return icon;
-11   }
-12 }
-13 
-14 char *
-15 get_file_name (GtkListItem *item, GFileInfo *info) {
-16   if (! G_IS_FILE_INFO (info))
-17     return NULL;
-18   else
-19     return g_strdup (g_file_info_get_name (info));
-20 }
+ 5    /* g_file_info_get_icon can return NULL */
+ 6   icon = G_IS_FILE_INFO (info) ? g_file_info_get_icon (info) : NULL;
+ 7   return icon ? g_object_ref (icon) : NULL;
+ 8 }
+ 9 
+10 char *
+11 get_file_name (GtkListItem *item, GFileInfo *info) {
+12   return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+13 }
 ~~~
 
 One important thing is the ownership of the return values.
-When GtkExpression (closure tag creates a GtkCClosureExpression -- a child class of GtkExpression) is evaluated,
-the value is owned by the caller.
+The return value is owned by the caller.
 So, `g_obect_ref` or `g_strdup` is necessary.
 
 ## An activate signal handler of the button action

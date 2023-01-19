@@ -38,6 +38,6 @@ The following table shows the distributions which support GTK 4.
 ## Installation from the source file
 
 If you want to install a developing version of GTK 4, you need to build it from the source.
-See [Compiling the GTK Libraries](https://docs.gtk.org/gtk4/building.html) secion in the GTK 4 API reference.
+See [Compiling the GTK Libraries](https://docs.gtk.org/gtk4/building.html) section in the GTK 4 API reference.
 
 Up: [README.md](../README.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)

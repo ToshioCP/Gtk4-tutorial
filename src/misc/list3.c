@@ -2,15 +2,17 @@
 
 char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  if (! G_IS_FILE_INFO (info))
-    return NULL;
-  else
-    return g_strdup (g_file_info_get_name (info));
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
 
-/* ----- activate, open, startup handlers ----- */
 static void
 app_activate (GApplication *application) {
+  GtkApplication *app = GTK_APPLICATION (application);
+  gtk_window_present (gtk_application_get_active_window(app));
+}
+
+static void
+app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = gtk_application_window_new (app);
   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -42,11 +44,6 @@ app_activate (GApplication *application) {
 
   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-  gtk_window_present (GTK_WINDOW (win));
-}
-
-static void
-app_startup (GApplication *application) {
 }
 
 /* ----- main ----- */

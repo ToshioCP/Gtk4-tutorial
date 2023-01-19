@@ -24,12 +24,12 @@ There are two cases.
 One is the index starts from one (one-based) and the other is from zero (zero-based).
 
 Gio provides GListModel interface.
-It is a zero-based list of the same type of GObject descendants, or objects that implement the same interface.
+It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
 An object implements GListModel is not a widget.
 So, the list is not displayed on the screen directly.
 There's another object GtkListView which is a widget to display the list.
 The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory object maps items in the list to GListView.
+GtkListItemFactory instance maps items in the list to GListView.
 
 ![List](../image/list.png)
 
@@ -64,8 +64,8 @@ GtkSelectionModel is an interface to support for selections.
 Thanks to this model, user can select items by clicking on them.
 It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
 These three objects are usually enough to build an application.
-They are created with GListModel.
-You can also create them alone and add GListModel later.
+They are created with another GListModel.
+You can also create them alone and add a GListModel later.
 
 - GtkMultiSelection supports multiple selection.
 - GtkNoSelection supports no selection. This is a wrapper to GListModel when GtkSelectionModel is needed.
@@ -87,7 +87,7 @@ This is very effective to restrain the growth of memory consumption so that GLis
 ## GtkListItemFactory
 
 GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
-There are two child objects of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
+There are two child classes of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
 
 ### GtkSignalListItemFactory
 
@@ -96,7 +96,7 @@ There are four signals.
 
 1. "setup" is emitted to set up GtkListItem object.
 A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of GtkListItem with it.
+For example, creates a GtkLabel widget and sets the child property of the GtkListItem to it.
 This setting is kept even the GtkListItem instance is recycled (to bind to another item of GListModel).
 2. "bind" is emitted to bind an item in the list model to the widget.
 For example, a user gets the item from "item" property of the GtkListItem instance.
@@ -119,16 +119,16 @@ GtkNoSelection is used, so user can't select any item.
  4 setup_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
  5   GtkWidget *lb = gtk_label_new (NULL);
  6   gtk_list_item_set_child (listitem, lb);
- 7 }
- 8 
- 9 static void
-10 bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
-11   GtkWidget *lb = gtk_list_item_get_child (listitem);
-12   /* Strobj is owned by the instance. Caller mustn't change or destroy it. */
-13   GtkStringObject *strobj = gtk_list_item_get_item (listitem);
-14   const char *text = gtk_string_object_get_string (strobj);
-15 
-16   gtk_label_set_text (GTK_LABEL (lb), text);
+ 7   /* Because gtk_list_item_set_child sunk the floating reference of lb, releasing (unref) isn't necessary for lb. */
+ 8 }
+ 9 
+10 static void
+11 bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+12   GtkWidget *lb = gtk_list_item_get_child (listitem);
+13   /* Strobj is owned by the instance. Caller mustn't change or destroy it. */
+14   GtkStringObject *strobj = gtk_list_item_get_item (listitem);
+15   /* The string returned by gtk_string_object_get_string is owned by the instance. */
+16   gtk_label_set_text (GTK_LABEL (lb), gtk_string_object_get_string (strobj));
 17 }
 18 
 19 static void
@@ -138,8 +138,8 @@ GtkNoSelection is used, so user can't select any item.
 23 
 24 static void
 25 teardown_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
-26   gtk_list_item_set_child (listitem, NULL);
-27   /* The previous child is destroyed automatically. */
+26   /* There's nothing to do here. */
+27   /* GtkListItem instance will be destroyed soon. You don't need to set the child to NULL. */
 28 }
 29 
 30 static void
@@ -162,30 +162,31 @@ GtkNoSelection is used, so user can't select any item.
 47   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
 48   g_signal_connect (factory, "setup", G_CALLBACK (setup_cb), NULL);
 49   g_signal_connect (factory, "bind", G_CALLBACK (bind_cb), NULL);
-50   g_signal_connect (factory, "unbind", G_CALLBACK (unbind_cb), NULL);
-51   g_signal_connect (factory, "teardown", G_CALLBACK (teardown_cb), NULL);
-52 
-53   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
-54   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-55   gtk_window_present (GTK_WINDOW (win));
-56 }
-57 
-58 /* ----- main ----- */
-59 #define APPLICATION_ID "com.github.ToshioCP.list1"
-60 
-61 int
-62 main (int argc, char **argv) {
-63   GtkApplication *app;
-64   int stat;
-65 
-66   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-67 
-68   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-69 
-70   stat =g_application_run (G_APPLICATION (app), argc, argv);
-71   g_object_unref (app);
-72   return stat;
-73 }
+50   /* The following two lines can be left out. The handlers do nothing. */
+51   g_signal_connect (factory, "unbind", G_CALLBACK (unbind_cb), NULL);
+52   g_signal_connect (factory, "teardown", G_CALLBACK (teardown_cb), NULL);
+53 
+54   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
+55   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+56   gtk_window_present (GTK_WINDOW (win));
+57 }
+58 
+59 /* ----- main ----- */
+60 #define APPLICATION_ID "com.github.ToshioCP.list1"
+61 
+62 int
+63 main (int argc, char **argv) {
+64   GtkApplication *app;
+65   int stat;
+66 
+67   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+68 
+69   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+70 
+71   stat =g_application_run (G_APPLICATION (app), argc, argv);
+72   g_object_unref (app);
+73   return stat;
+74 }
 ~~~
 
 The file `list1.c` is located under the directory [src/misc](../src/misc).
@@ -236,18 +237,18 @@ And its child property is GtkLabel object.
 The factory sees this template and creates GtkLabel and sets the child property of GtkListItem.
 This is the same as what setup handler of GtkSignalListItemFactory did.
 
-Then, bind the label property of GtkLabel to string property of GtkStringObject.
-The string object is referred to by item property of GtkListItem.
+Then, bind the label property of the GtkLabel to the string property of a GtkStringObject.
+The string object refers to the item property of the GtkListItem.
 So, the lookup tag is like this:
 
 ~~~
-string <- GtkStringObject <- item <- GtkListItem
+label <- string <- GtkStringObject <- item <- GtkListItem
 ~~~
 
 The last lookup tag has a content `GtkListItem`.
 Usually, C type like `GtkListItem` doesn't appear in the content of tags.
 This is a special case.
-There is an explanation about it in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
+There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
 
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
@@ -260,61 +261,66 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 ~~~C
  1 #include <gtk/gtk.h>
  2 
- 3 /* ----- activate, open, startup handlers ----- */
- 4 static void
- 5 app_activate (GApplication *application) {
- 6   GtkApplication *app = GTK_APPLICATION (application);
- 7   GtkWidget *win = gtk_application_window_new (app);
- 8   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
- 9   GtkWidget *scr = gtk_scrolled_window_new ();
-10   gtk_window_set_child (GTK_WINDOW (win), scr);
-11 
-12   char *array[] = {
-13     "one", "two", "three", "four", NULL
-14   };
-15   GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
-16   GtkSingleSelection *ss = gtk_single_selection_new (G_LIST_MODEL (sl));
-17 
-18   const char *ui_string =
-19 "<interface>"
-20   "<template class=\"GtkListItem\">"
-21     "<property name=\"child\">"
-22       "<object class=\"GtkLabel\">"
-23         "<binding name=\"label\">"
-24           "<lookup name=\"string\" type=\"GtkStringObject\">"
-25             "<lookup name=\"item\">GtkListItem</lookup>"
-26           "</lookup>"
-27         "</binding>"
-28       "</object>"
-29     "</property>"
-30   "</template>"
-31 "</interface>"
-32 ;
-33   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
-34   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
-35 
-36   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
-37   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-38   gtk_window_present (GTK_WINDOW (win));
-39 }
+ 3 static void
+ 4 app_activate (GApplication *application) {
+ 5   GtkApplication *app = GTK_APPLICATION (application);
+ 6   gtk_window_present (gtk_application_get_active_window(app));
+ 7 }
+ 8 
+ 9 static void
+10 app_startup (GApplication *application) {
+11   GtkApplication *app = GTK_APPLICATION (application);
+12   GtkWidget *win = gtk_application_window_new (app);
+13   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+14   GtkWidget *scr = gtk_scrolled_window_new ();
+15   gtk_window_set_child (GTK_WINDOW (win), scr);
+16 
+17   char *array[] = {
+18     "one", "two", "three", "four", NULL
+19   };
+20   GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
+21   GtkSingleSelection *ss = gtk_single_selection_new (G_LIST_MODEL (sl));
+22 
+23   const char *ui_string =
+24 "<interface>"
+25   "<template class=\"GtkListItem\">"
+26     "<property name=\"child\">"
+27       "<object class=\"GtkLabel\">"
+28         "<binding name=\"label\">"
+29           "<lookup name=\"string\" type=\"GtkStringObject\">"
+30             "<lookup name=\"item\">GtkListItem</lookup>"
+31           "</lookup>"
+32         "</binding>"
+33       "</object>"
+34     "</property>"
+35   "</template>"
+36 "</interface>"
+37 ;
+38   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
+39   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
 40 
-41 /* ----- main ----- */
-42 #define APPLICATION_ID "com.github.ToshioCP.list2"
-43 
-44 int
-45 main (int argc, char **argv) {
-46   GtkApplication *app;
-47   int stat;
-48 
-49   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-50 
-51   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+41   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
+42   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+43 }
+44 
+45 /* ----- main ----- */
+46 #define APPLICATION_ID "com.github.ToshioCP.list2"
+47 
+48 int
+49 main (int argc, char **argv) {
+50   GtkApplication *app;
+51   int stat;
 52 
-53   stat =g_application_run (G_APPLICATION (app), argc, argv);
-54   g_object_unref (app);
-55   return stat;
-56 }
+53   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+54 
+55   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+56   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 57 
+58   stat =g_application_run (G_APPLICATION (app), argc, argv);
+59   g_object_unref (app);
+60   return stat;
+61 }
+62 
 ~~~
 
 No signal handler is needed for GtkBulderListItemFactory.
@@ -366,12 +372,8 @@ Closure tag specifies a function and the type of the return value of the functio
 ~~~C
 const char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  if (! G_IS_FILE_INFO (info))
-    return NULL;
-  else
-    return g_strdup (g_file_info_get_name (info));
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
-
 ... ...
 ... ...
 
@@ -390,8 +392,8 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
 "</interface>"
 ~~~
 
-- The string "gchararray" is the type name of strings.
-The type "gchar" is the same as "char".
+- The string "gchararray" is a type name.
+The type "gchar" is a type name and it is the same as C type "char".
 Therefore, "gchararray" is "an array of char type", which is the same as string type.
 It is used to get the type of GValue object.
 GValue is a generic value and it can contain various type of values.
@@ -403,13 +405,15 @@ Function attribute specifies the function name and type attribute specifies the 
 The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
 `<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
 This will be the second argument of the function.
-The first parameter is always the GListItem instance.
-- `gtk_file_name` function first checks the `info` parameter.
+The first parameter is always the GListItem instance, which is a 'this' object.
+The 'this' object is explained in section 28.
+- `gtk_file_name` function is the callback function for the closure tag.
+It first checks the `info` parameter.
 Because it can be NULL when GListItem `item` is unbounded.
-If it's GFileInfo, it returns the filename.
-The filename is owned by GFileInfo object.
-So, the function `get_file_name` duplicates the string to own the newly created one.
-Closure tag binds the property of the outer tag (GtkLabel) to the filename.
+If it's GFileInfo, it returns the copied filename.
+Because the return value (filename) of `g_file_info_get_name` is owned by GFileInfo object.
+So, the the string needs to be duplicated to give the ownership to the caller.
+Binding tag binds the "label" property of the GtkLabel to the closure tag.
 
 The whole program (`list3.c`) is as follows.
 The program is located in [src/misc](../src/misc) directory.
@@ -419,70 +423,67 @@ The program is located in [src/misc](../src/misc) directory.
  2 
  3 char *
  4 get_file_name (GtkListItem *item, GFileInfo *info) {
- 5   if (! G_IS_FILE_INFO (info))
- 6     return NULL;
- 7   else
- 8     return g_strdup (g_file_info_get_name (info));
- 9 }
-10 
-11 /* ----- activate, open, startup handlers ----- */
-12 static void
-13 app_activate (GApplication *application) {
-14   GtkApplication *app = GTK_APPLICATION (application);
-15   GtkWidget *win = gtk_application_window_new (app);
-16   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-17   GtkWidget *scr = gtk_scrolled_window_new ();
-18   gtk_window_set_child (GTK_WINDOW (win), scr);
-19 
-20   GFile *file = g_file_new_for_path (".");
-21   GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
-22   g_object_unref (file);
-23   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (dl));
-24 
-25   const char *ui_string =
-26 "<interface>"
-27   "<template class=\"GtkListItem\">"
-28     "<property name=\"child\">"
-29       "<object class=\"GtkLabel\">"
-30         "<binding name=\"label\">"
-31           "<closure type=\"gchararray\" function=\"get_file_name\">"
-32             "<lookup name=\"item\">GtkListItem</lookup>"
-33           "</closure>"
-34         "</binding>"
-35       "</object>"
-36     "</property>"
-37   "</template>"
-38 "</interface>"
-39 ;
-40   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
-41   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
-42 
-43   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
-44   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
-45   gtk_window_present (GTK_WINDOW (win));
-46 }
-47 
-48 static void
-49 app_startup (GApplication *application) {
-50 }
+ 5   return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+ 6 }
+ 7 
+ 8 static void
+ 9 app_activate (GApplication *application) {
+10   GtkApplication *app = GTK_APPLICATION (application);
+11   gtk_window_present (gtk_application_get_active_window(app));
+12 }
+13 
+14 static void
+15 app_startup (GApplication *application) {
+16   GtkApplication *app = GTK_APPLICATION (application);
+17   GtkWidget *win = gtk_application_window_new (app);
+18   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+19   GtkWidget *scr = gtk_scrolled_window_new ();
+20   gtk_window_set_child (GTK_WINDOW (win), scr);
+21 
+22   GFile *file = g_file_new_for_path (".");
+23   GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+24   g_object_unref (file);
+25   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (dl));
+26 
+27   const char *ui_string =
+28 "<interface>"
+29   "<template class=\"GtkListItem\">"
+30     "<property name=\"child\">"
+31       "<object class=\"GtkLabel\">"
+32         "<binding name=\"label\">"
+33           "<closure type=\"gchararray\" function=\"get_file_name\">"
+34             "<lookup name=\"item\">GtkListItem</lookup>"
+35           "</closure>"
+36         "</binding>"
+37       "</object>"
+38     "</property>"
+39   "</template>"
+40 "</interface>"
+41 ;
+42   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
+43   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+44 
+45   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
+46   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+47 }
+48 
+49 /* ----- main ----- */
+50 #define APPLICATION_ID "com.github.ToshioCP.list3"
 51 
-52 /* ----- main ----- */
-53 #define APPLICATION_ID "com.github.ToshioCP.list3"
-54 
-55 int
-56 main (int argc, char **argv) {
-57   GtkApplication *app;
-58   int stat;
-59 
-60   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+52 int
+53 main (int argc, char **argv) {
+54   GtkApplication *app;
+55   int stat;
+56 
+57   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+58 
+59   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+60   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 61 
-62   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-63   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-64 
-65   stat =g_application_run (G_APPLICATION (app), argc, argv);
-66   g_object_unref (app);
-67   return stat;
-68 }
+62   stat =g_application_run (G_APPLICATION (app), argc, argv);
+63   g_object_unref (app);
+64   return stat;
+65 }
 ~~~
 
 The ui data (xml data above) is used to build the GListItem template at runtime.

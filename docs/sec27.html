@@ -396,26 +396,18 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-2"><a href="#cb8-2"></a>get_icon <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  GIcon <span class="op">*</span>icon<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  <span class="cf">if</span> <span class="op">(!</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">))</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>    <span class="cf">return</span> NULL<span class="op">;</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a>    icon <span class="op">=</span> g_file_info_get_icon <span class="op">(</span>info<span class="op">);</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>    g_object_ref <span class="op">(</span>icon<span class="op">);</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>    <span class="cf">return</span> icon<span class="op">;</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a>  <span class="op">}</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="op">}</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a>  <span class="cf">if</span> <span class="op">(!</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">))</span></span>
-<span id="cb8-17"><a href="#cb8-17"></a>    <span class="cf">return</span> NULL<span class="op">;</span></span>
-<span id="cb8-18"><a href="#cb8-18"></a>  <span class="cf">else</span></span>
-<span id="cb8-19"><a href="#cb8-19"></a>    <span class="cf">return</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">));</span></span>
-<span id="cb8-20"><a href="#cb8-20"></a><span class="op">}</span></span></code></pre></div>
-<p>One important thing is the ownership of the return values. When
-GtkExpression (closure tag creates a GtkCClosureExpression – a child
-class of GtkExpression) is evaluated, the value is owned by the caller.
-So, <code>g_obect_ref</code> or <code>g_strdup</code> is necessary.</p>
+<span id="cb8-5"><a href="#cb8-5"></a>   <span class="co">/* g_file_info_get_icon can return NULL */</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  icon <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_icon <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="cf">return</span> icon <span class="op">?</span> g_object_ref <span class="op">(</span>icon<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="op">}</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="op">}</span></span></code></pre></div>
+<p>One important thing is the ownership of the return values. The return
+value is owned by the caller. So, <code>g_obect_ref</code> or
+<code>g_strdup</code> is necessary.</p>
 <h2 id="an-activate-signal-handler-of-the-button-action">An activate
 signal handler of the button action</h2>
 <p>An activate signal handler <code>view_activate</code> switches the

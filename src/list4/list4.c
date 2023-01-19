@@ -88,21 +88,14 @@ GIcon *
 get_icon (GtkListItem *item, GFileInfo *info) {
   GIcon *icon;
 
-  if (! G_IS_FILE_INFO (info))
-    return NULL;
-  else {
-    icon = g_file_info_get_icon (info);
-    g_object_ref (icon);
-    return icon;
-  }
+   /* g_file_info_get_icon can return NULL */
+  icon = G_IS_FILE_INFO (info) ? g_file_info_get_icon (info) : NULL;
+  return icon ? g_object_ref (icon) : NULL;
 }
 
 char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  if (! G_IS_FILE_INFO (info))
-    return NULL;
-  else
-    return g_strdup (g_file_info_get_name (info));
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
 
 static void
