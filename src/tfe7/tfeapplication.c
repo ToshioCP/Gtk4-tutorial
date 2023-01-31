@@ -10,7 +10,7 @@ struct _TfeApplication {
   GtkCssProvider *provider;
 };
 
-G_DEFINE_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION);
+G_DEFINE_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
 
 /* gsettings changed::font signal handler */
 static void

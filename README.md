@@ -82,3 +82,4 @@ There is a document \("[How to build GTK 4 Tutorial](gfm/Readme_for_developers.m
 1. [GtkGridView and activate signal](gfm/sec27.md)
 1. [GtkExpression](gfm/sec28.md)
 1. [GtkColumnView](gfm/sec29.md)
+1. [GtkSignalListItemFactory](gfm/sec30.md)

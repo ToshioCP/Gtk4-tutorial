@@ -1,4 +1,4 @@
-Up: [README.md](../README.md),  Prev: [Section 28](sec28.md)
+Up: [README.md](../README.md),  Prev: [Section 28](sec28.md), Next: [Section 30](sec30.md)
 
 # GtkColumnView
 
@@ -471,4 +471,4 @@ If you click the header of another column, then the whole lists are sorted by th
 GtkColumnView is very useful and it can manage very big GListModel.
 It is possible to use it for file list, application list, database frontend and so on.
 
-Up: [README.md](../README.md),  Prev: [Section 28](sec28.md)
+Up: [README.md](../README.md),  Prev: [Section 28](sec28.md), Next: [Section 30](sec30.md)

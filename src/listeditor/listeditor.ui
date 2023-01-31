@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="LeWindow" parent="GtkApplicationWindow">
+    <property name="title">list editor</property>
+    <property name="default-width">600</property>
+    <property name="default-height">400</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="width-chars">10</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="position_label">
+                <property name="width-chars">8</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Append</property>
+                <signal name="clicked" handler="app_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Insert</property>
+                <signal name="clicked" handler="ins_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+             <child>
+              <object class="GtkButton">
+                <property name="label">Remove</property>
+                <signal name="clicked" handler="rm_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="width-chars">10</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Read</property>
+                <signal name="clicked" handler="read_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Write</property>
+                <signal name="clicked" handler="write_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="filename">
+                <property name="width-chars">10</property>
+                <property name='ellipsize'>PANGO_ELLIPSIZE_END</property>"
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Close</property>
+                <signal name="clicked" handler="close_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Quit</property>
+                <signal name="clicked" handler="quit_cb" swapped="false" object="LeWindow"></signal>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="hexpand">TRUE</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <child>
+              <object class="GtkColumnView" id="columnview">
+                <property name="hexpand">TRUE</property>
+                <property name="vexpand">TRUE</property>
+                <property name="focusable">FALSE</property>
+                <property name="model">
+                  <object class="GtkNoSelection">
+                    <property name="model">
+                      <object class="GListStore" id="liststore">
+                        <property name="item-type">LeData</property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+                <child>
+                  <object class="GtkColumnViewColumn">
+                    <property name="title">Select</property>
+                    <property name="factory">
+                      <object class="GtkSignalListItemFactory">
+                        <signal name="setup"  handler="setup1_cb"></signal>
+                        <signal name="bind"   handler="bind1_cb"></signal>
+                        <signal name="unbind" handler="unbind1_cb"></signal>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkColumnViewColumn">
+                    <property name="title">String</property>
+                    <property name="factory">
+                      <object class="GtkSignalListItemFactory">
+                        <signal name="setup"  handler="setup2_cb"></signal>
+                        <signal name="bind"   handler="bind2_cb"></signal>
+                        <signal name="unbind" handler="unbind2_cb"></signal>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
+

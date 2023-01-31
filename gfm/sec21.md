@@ -713,7 +713,7 @@ It defines the application and supports:
  10   GtkCssProvider *provider;
  11 };
  12 
- 13 G_DEFINE_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION);
+ 13 G_DEFINE_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
  14 
  15 /* gsettings changed::font signal handler */
  16 static void
