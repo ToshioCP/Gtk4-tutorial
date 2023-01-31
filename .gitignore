@@ -3,31 +3,25 @@
 src/img.rb
 src/imgsize.rb
 src/toi.rb
-src/misc/a.out
 src/misc/cairo2.c
 src/misc/cairo2.pdf
 src/misc/color_square.c
 src/misc/color_square.png
-src/tfv/a.out
-src/tfe/a.out
 src/tfe/hello.txt
 src/tfe/resources.c
-src/tfe4/_build
-src/tfe5/_build
 src/tfe5/hello.txt
-src/tfe6/_build
-src/tfe7/_build
-src/menu/a.out
-src/menu3/_build
-src/color/_build
-src/turtle/_build
 src/temp
 src/le
-src/list4/_build
-src/list5/_build
-src/expression/_build
-src/column/_build
 latex/*
+
+# build directory
+*_build
+
+# a.out
+*a.out
+
+# configuration file
+*.vscode
 
 # backup file
 *~
