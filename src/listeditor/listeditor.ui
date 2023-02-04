@@ -84,13 +84,11 @@
           <object class="GtkScrolledWindow">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
-<!--
             <property name="vadjustment">
               <object class="GtkAdjustment">
                 <signal name="value-changed" handler="adjustment_value_changed_cb" swapped="no" object="LeWindow"/>
               </object>
             </property>
--->
             <child>
               <object class="GtkColumnView" id="columnview">
                 <property name="hexpand">TRUE</property>

@@ -448,14 +448,38 @@ template children for the given widget. This is the opposite of
 version. If your GTK version is lower than 4.8, you need to modify the
 program.</p>
 <h2 id="a-waring-from-gtktext">A waring from GtkText</h2>
-<p>If the list has many items and it needs to be scrolled, a warning
-message can be issued.</p>
+<p>If your program has the following two, a warning message can be
+issued.</p>
+<ul>
+<li>The list has many items and it needs to be scrolled.</li>
+<li>A GtkText instance is the focus widget.</li>
+</ul>
 <pre><code>GtkText - unexpected blinking selection. Removing</code></pre>
-<p>I don’t have an idea why this happens. But if GtkText “focusable”
-property is FALSE, the warning doesn’t happen. So it probably come from
-focus and scroll. If you know the reason, please let me know.</p>
-<p>It is a warning message, not a fatal error. I think we can ignore
-it.</p>
+<p>I don’t have an exact idea why this happens. But if GtkText
+“focusable” property is FALSE, the warning doesn’t happen. So it
+probably comes from focus and scroll.</p>
+<p>You can avoid this by unsetting any focus widget under the main
+window. When scroll begins, the “value-changed” signal on the vertical
+adjustment of the scrolled window is emitted.</p>
+<p>The following is extracted from the ui file and C source file.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>... ... ...</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vadjustment&quot;</span>&gt;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkAdjustment&quot;</span>&gt;</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">signal</span><span class="ot"> name=</span><span class="st">&quot;value-changed&quot;</span><span class="ot"> handler=</span><span class="st">&quot;adjustment_value_changed_cb&quot;</span><span class="ot"> swapped=</span><span class="st">&quot;no&quot;</span><span class="ot"> object=</span><span class="st">&quot;LeWindow&quot;</span>/&gt;</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>... ... ...  </span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>adjustment_value_changed_cb <span class="op">(</span>GtkAdjustment <span class="op">*</span>adjustment<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  gtk_window_set_focus <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="op">}</span></span></code></pre></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

@@ -218,9 +218,12 @@ ins_cb (GtkButton *btn, LeWindow *win) {
 
 static void
 rm_cb (GtkButton *btn, LeWindow *win) {
+  int position;
+
   if (win->position >= 0) {
-    g_list_store_remove (win->liststore, win->position);
+    position = win->position;
     win->position = -1;
+    g_list_store_remove (win->liststore, position);
     update_current (win, -1);
   }
 }
@@ -453,12 +456,12 @@ unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   g_object_set_data (G_OBJECT (listitem), "bind", NULL);
 }
 
-// static void
-// adjustment_value_changed_cb (GtkAdjustment *adjustment, gpointer user_data) {
-//   GtkWidget *win = GTK_WIDGET (user_data);
+static void
+adjustment_value_changed_cb (GtkAdjustment *adjustment, gpointer user_data) {
+  GtkWidget *win = GTK_WIDGET (user_data);
 
-//   gtk_widget_set_can_focus (win, FALSE);
-// }
+  gtk_window_set_focus (GTK_WINDOW (win), NULL);
+}
 
 static void
 le_window_init (LeWindow *win) {
@@ -503,7 +506,7 @@ le_window_class_init (LeWindowClass *class) {
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), setup2_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), bind2_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), unbind2_cb);
-  // gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), adjustment_value_changed_cb);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), adjustment_value_changed_cb);
 }
 
 GtkWidget *

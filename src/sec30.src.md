@@ -221,16 +221,37 @@ If your GTK version is lower than 4.8, you need to modify the program.
 
 ## A waring from GtkText
 
-If the list has many items and it needs to be scrolled, a warning message can be issued.
+If your program has the following two, a warning message can be issued.
+
+- The list has many items and it needs to be scrolled.
+- A GtkText instance is the focus widget.
 
 ~~~
 GtkText - unexpected blinking selection. Removing
 ~~~
 
-I don't have an idea why this happens.
+I don't have an exact idea why this happens.
 But if GtkText "focusable" property is FALSE, the warning doesn't happen.
-So it probably come from focus and scroll.
-If you know the reason, please let me know.
+So it probably comes from focus and scroll.
 
-It is a warning message, not a fatal error.
-I think we can ignore it.
+You can avoid this by unsetting any focus widget under the main window.
+When scroll begins, the "value-changed" signal on the vertical adjustment of the scrolled window is emitted.
+
+The following is extracted from the ui file and C source file.
+
+~~~xml
+... ... ...
+<object class="GtkScrolledWindow">
+  <property name="hexpand">TRUE</property>
+  <property name="vexpand">TRUE</property>
+  <property name="vadjustment">
+    <object class="GtkAdjustment">
+      <signal name="value-changed" handler="adjustment_value_changed_cb" swapped="no" object="LeWindow"/>
+    </object>
+  </property>
+... ... ...  
+~~~
+
+@@@include
+listeditor/listeditor.c adjustment_value_changed_cb
+@@@
