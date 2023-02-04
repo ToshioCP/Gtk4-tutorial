@@ -101,12 +101,12 @@ le_data_take_string (LeData *self, char *string) {
 
 GtkListItem *
 le_data_get_listitem (LeData *self) {
-  return g_object_ref (self->listitem);
+  return self->listitem ? g_object_ref (self->listitem) : NULL;
 }
 
 GtkListItem *
 le_data_look_listitem (LeData *self) {
-  return self->listitem;
+  return self->listitem ? self->listitem : NULL;
 }
 
 char *
@@ -396,14 +396,25 @@ static void
 setup1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   GtkWidget *button = gtk_button_new ();
   gtk_list_item_set_child (listitem, button);
+  gtk_widget_set_focusable (GTK_WIDGET (button), FALSE);
   g_signal_connect (button, "clicked", G_CALLBACK (select_cb), listitem);
 }
 
 static void
-bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+  LeWindow *win = LE_WINDOW (user_data);
+  GtkWidget *button = gtk_list_item_get_child (listitem);
+  const char *non_current[1] = {NULL};
+  const char *current[2] = {"current", NULL};
   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-  if (data)
+
+  if (data) {
     le_data_set_listitem (data, listitem);
+    if (win->position == gtk_list_item_get_position (listitem))
+      gtk_widget_set_css_classes (GTK_WIDGET (button), current);
+    else
+      gtk_widget_set_css_classes (GTK_WIDGET (button), non_current);
+  }
 }
 
 static void
@@ -417,17 +428,19 @@ static void
 setup2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   GtkWidget *text = gtk_text_new ();
   gtk_list_item_set_child (listitem, GTK_WIDGET (text));
+  gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
 }
 
 static void
 bind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   GtkWidget *text = gtk_list_item_get_child (listitem);
+  GtkEntryBuffer *buffer = gtk_text_get_buffer (GTK_TEXT (text));
   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-  GtkEntryBuffer *buffer;
   GBinding *bind;
 
-  buffer = gtk_text_get_buffer (GTK_TEXT (text));
-  gtk_entry_buffer_set_text (buffer, le_data_look_string (data), -1);
+  gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
+  gtk_editable_set_position (GTK_EDITABLE (text), 0);
+
   bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
   g_object_set_data (G_OBJECT (listitem), "bind", bind);
 }
@@ -439,6 +452,13 @@ unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   g_binding_unbind(bind);
   g_object_set_data (G_OBJECT (listitem), "bind", NULL);
 }
+
+// static void
+// adjustment_value_changed_cb (GtkAdjustment *adjustment, gpointer user_data) {
+//   GtkWidget *win = GTK_WIDGET (user_data);
+
+//   gtk_widget_set_can_focus (win, FALSE);
+// }
 
 static void
 le_window_init (LeWindow *win) {
@@ -483,6 +503,7 @@ le_window_class_init (LeWindowClass *class) {
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), setup2_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), bind2_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), unbind2_cb);
+  // gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), adjustment_value_changed_cb);
 }
 
 GtkWidget *

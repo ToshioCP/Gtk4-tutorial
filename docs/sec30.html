@@ -186,53 +186,59 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-2"><a href="#cb2-2"></a>setup2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  GtkWidget <span class="op">*</span>text <span class="op">=</span> gtk_text_new <span class="op">();</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>  gtk_list_item_set_child <span class="op">(</span>listitem<span class="op">,</span> GTK_WIDGET <span class="op">(</span>text<span class="op">));</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="op">}</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>bind2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>  GtkWidget <span class="op">*</span>text <span class="op">=</span> gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">);</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>  GtkEntryBuffer <span class="op">*</span>buffer<span class="op">;</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>  GBinding <span class="op">*</span>bind<span class="op">;</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a></span>
-<span id="cb2-14"><a href="#cb2-14"></a>  buffer <span class="op">=</span> gtk_text_get_buffer <span class="op">(</span>GTK_TEXT <span class="op">(</span>text<span class="op">));</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a>  gtk_entry_buffer_set_text <span class="op">(</span>buffer<span class="op">,</span> le_data_look_string <span class="op">(</span>data<span class="op">),</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>  bind <span class="op">=</span> g_object_bind_property <span class="op">(</span>buffer<span class="op">,</span> <span class="st">&quot;text&quot;</span><span class="op">,</span> data<span class="op">,</span> <span class="st">&quot;string&quot;</span><span class="op">,</span> G_BINDING_DEFAULT<span class="op">);</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>  g_object_set_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">,</span> bind<span class="op">);</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="op">}</span></span>
-<span id="cb2-19"><a href="#cb2-19"></a></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a>unbind2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a>  GBinding <span class="op">*</span>bind <span class="op">=</span> G_BINDING <span class="op">(</span>g_object_get_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">));</span></span>
-<span id="cb2-23"><a href="#cb2-23"></a></span>
-<span id="cb2-24"><a href="#cb2-24"></a>  g_binding_unbind<span class="op">(</span>bind<span class="op">);</span></span>
-<span id="cb2-25"><a href="#cb2-25"></a>  g_object_set_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb2-26"><a href="#cb2-26"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5"></a>  gtk_editable_set_alignment <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="op">}</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>bind2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>  GtkWidget <span class="op">*</span>text <span class="op">=</span> gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">);</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>  GtkEntryBuffer <span class="op">*</span>buffer <span class="op">=</span> gtk_text_get_buffer <span class="op">(</span>GTK_TEXT <span class="op">(</span>text<span class="op">));</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>  GBinding <span class="op">*</span>bind<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a></span>
+<span id="cb2-15"><a href="#cb2-15"></a>  gtk_editable_set_text <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> le_data_look_string <span class="op">(</span>data<span class="op">));</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>  gtk_editable_set_position <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a></span>
+<span id="cb2-18"><a href="#cb2-18"></a>  bind <span class="op">=</span> g_object_bind_property <span class="op">(</span>buffer<span class="op">,</span> <span class="st">&quot;text&quot;</span><span class="op">,</span> data<span class="op">,</span> <span class="st">&quot;string&quot;</span><span class="op">,</span> G_BINDING_DEFAULT<span class="op">);</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>  g_object_set_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">,</span> bind<span class="op">);</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="op">}</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>unbind2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a>  GBinding <span class="op">*</span>bind <span class="op">=</span> G_BINDING <span class="op">(</span>g_object_get_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">));</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a></span>
+<span id="cb2-26"><a href="#cb2-26"></a>  g_binding_unbind<span class="op">(</span>bind<span class="op">);</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>  g_object_set_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>1-5: <code>setup2_cb</code> is a setup signal handler on the
+<li>1-6: <code>setup2_cb</code> is a setup signal handler on the
 GtkSignalListItemFactory. This factory is inserted to the factory
-property of the second GtkColumnViewColumn. Te handler just creates a
+property of the second GtkColumnViewColumn. The handler just creates a
 GtkText instance and sets the child of <code>listitem</code> to it. The
 instance will be destroyed automatically when the <code>listitem</code>
 is destroyed. So, teardown signal handler isn’t necessary.</li>
-<li>7-18: <code>bind2_cb</code> is a bind signal handler. It is called
+<li>8-20: <code>bind2_cb</code> is a bind signal handler. It is called
 when the <code>listitem</code> is bound to an item in the list. The list
 items are LeData instances. LeData is defined in the file
 <code>listeditor.c</code> (the C source file of the list editor). It is
 a child class of GObject and has two data. The one is
-<code>listitem</code> which points a GtkListItem instance when they are
-connected. If no GtkListItem is connected, it is NULL. The other is
-<code>string</code> which is a content of the line.
+<code>listitem</code> which points a first column GtkListItem instance
+when they are connected. Be careful that the GtkListItem instance is
+<em>not</em> the <code>listitem</code> in this handler. If no
+GtkListItem is connected, it is NULL. The other is <code>string</code>
+which is a content of the line.
 <ul>
-<li>9-10: <code>text</code> is a child of the <code>listitem</code> and
-it is a GtkText instance. <code>data</code> is an item pointed by the
-<code>listitem</code>. It is a LeData instance.</li>
-<li>14: Gets the buffer of the <code>text</code>.</li>
-<li>15: Sets the text of the buffer to
+<li>10-11: <code>text</code> is a child of the <code>listitem</code> and
+it is a GtkText instance. And <code>buffer</code> is a GtkTextBuffer
+instance of the <code>text</code>.</li>
+<li>12: The LeData instance <code>data</code> is an item pointed by the
+<code>listitem</code>.</li>
+<li>15-16: Sets the text of <code>text</code> to
 <code>le_data_look_string (data)</code>. le_data_look_string returns the
-string of the data and the ownership of the string is taken by the
-<code>data</code>. So, the caller don’t need to free the string.</li>
-<li>16: <code>g_object_bind_property</code> binds a property and another
+string of the <code>data</code> and the ownership of the string is still
+taken by the <code>data</code>. So, the caller don’t need to free the
+string.</li>
+<li>18: <code>g_object_bind_property</code> binds a property and another
 object property. This line binds the “text” property of the
 <code>buffer</code> (source) and the “string” property of the
 <code>data</code> (destination). It is a uni-directional binding
@@ -241,19 +247,19 @@ the same string is immediately put into the <code>data</code>. The
 function returns a GBinding instance. This binding is different from
 bindings of GtkExpression. This binding needs the existence of the two
 properties.</li>
-<li>17: GObjec has a table. The key is a string (or GQuark) and the
+<li>19: GObjec has a table. The key is a string (or GQuark) and the
 value is a gpointer (pointer to any type). The function
 <code>g_object_set_data</code> sets the association from the key to the
 value. This line sets the association from “bind” to <code>bind</code>
-instance on the <code>listitem</code> instance. It makes possible for
-the “unbind” handler to get the <code>bind</code> instance.</li>
+instance. It makes possible for the “unbind” handler to get the
+<code>bind</code> instance.</li>
 </ul></li>
-<li>20-26: <code>unbind2_cb</code> is a unbind signal handler.
+<li>22-28: <code>unbind2_cb</code> is a unbind signal handler.
 <ul>
-<li>22: Retrieves the <code>bind</code> instance from the table in the
+<li>24: Retrieves the <code>bind</code> instance from the table in the
 <code>listitem</code> instance.</li>
-<li>24: Unbind the binding.</li>
-<li>25: Removes the value corresponds to the “bind” key.</li>
+<li>26: Unbind the binding.</li>
+<li>27: Removes the value corresponds to the “bind” key.</li>
 </ul></li>
 </ul>
 <p>This technique is not so complicated. You can use it when you make a
@@ -271,6 +277,10 @@ moves.</p>
 <li>When the current line is deleted, no line will be current.</li>
 <li>When a button in the first column of GtkColumnView is clicked, the
 line will be current.</li>
+<li>It is necessary to set the line status (whether current or not) when
+a GtkListItem is bound to an item in the list. It is because GtkListItem
+is recycled. A GtkListItem was possibly current line before but not
+current after recycled. The opposite can also be happen.</li>
 </ul>
 <p>The button of the current line is colored with red and otherwise
 white.</p>
@@ -284,7 +294,7 @@ the item in the list. It is the opposite direction from
 <code>gtk_list_item_get_item</code> function. To accomplish this, we set
 a <code>listitem</code> element of LeData to point the corresponding
 GtkListItem instance. Therefore, items (LeData) in the list always know
-the GtkListItem. If there’s no GtkListItem binded to the item, NULL is
+the GtkListItem. If there’s no GtkListItem bound to the item, NULL is
 assigned.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
@@ -298,42 +308,56 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-9"><a href="#cb3-9"></a>setup1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-10"><a href="#cb3-10"></a>  GtkWidget <span class="op">*</span>button <span class="op">=</span> gtk_button_new <span class="op">();</span></span>
 <span id="cb3-11"><a href="#cb3-11"></a>  gtk_list_item_set_child <span class="op">(</span>listitem<span class="op">,</span> button<span class="op">);</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  g_signal_connect <span class="op">(</span>button<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>select_cb<span class="op">),</span> listitem<span class="op">);</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="op">}</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a></span>
-<span id="cb3-15"><a href="#cb3-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a>bind1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a>  <span class="cf">if</span> <span class="op">(</span>data<span class="op">)</span></span>
-<span id="cb3-19"><a href="#cb3-19"></a>    le_data_set_listitem <span class="op">(</span>data<span class="op">,</span> listitem<span class="op">);</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a><span class="op">}</span></span>
-<span id="cb3-21"><a href="#cb3-21"></a></span>
-<span id="cb3-22"><a href="#cb3-22"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a>unbind1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>  <span class="cf">if</span> <span class="op">(</span>data<span class="op">)</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>    le_data_set_listitem <span class="op">(</span>data<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb3-12"><a href="#cb3-12"></a>  gtk_widget_set_focusable <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> FALSE<span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>  g_signal_connect <span class="op">(</span>button<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>select_cb<span class="op">),</span> listitem<span class="op">);</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="op">}</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>bind1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>  LeWindow <span class="op">*</span>win <span class="op">=</span> LE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>  GtkWidget <span class="op">*</span>button <span class="op">=</span> gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">);</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>non_current<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span>NULL<span class="op">};</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>current<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;current&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a></span>
+<span id="cb3-24"><a href="#cb3-24"></a>  <span class="cf">if</span> <span class="op">(</span>data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>    le_data_set_listitem <span class="op">(</span>data<span class="op">,</span> listitem<span class="op">);</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>    <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>position <span class="op">==</span> gtk_list_item_get_position <span class="op">(</span>listitem<span class="op">))</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>      gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> current<span class="op">);</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a>    <span class="cf">else</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>      gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> non_current<span class="op">);</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a>  <span class="op">}</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="op">}</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a></span>
+<span id="cb3-33"><a href="#cb3-33"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a>unbind1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a>  <span class="cf">if</span> <span class="op">(</span>data<span class="op">)</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a>    le_data_set_listitem <span class="op">(</span>data<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>8-13: <code>setup1_cb</code> is a setup signal handler on the
+<li>8-14: <code>setup1_cb</code> is a setup signal handler on the
 GtkSignalListItemFactory. This factory is inserted to the factory
 property of the first GtkColumnViewColumn. It sets the child of
-<code>listitem</code> to a newly created GtkButton instance. The
-“clicked” signal on the button is connected to the handler
-<code>select_cb</code>. When the listitem is destroyed, the child
-(GtkButton) is also destroyed. At the same time, the connection of the
-signal and handler is also destroyed. So, you don’t need teardown signal
-handler.</li>
+<code>listitem</code> to a GtkButton instance. The “clicked” signal on
+the button is connected to the handler <code>select_cb</code>. When the
+listitem is destroyed, the child (GtkButton) is also destroyed. At the
+same time, the connection of the signal and the handler is also
+destroyed. So, you don’t need teardown signal handler.</li>
 <li>1-6: <code>select_cb</code> is a “clicked” signal handler. LeWindow
 is defined in <code>listeditor.c</code>. It’s a child class of
 GtkApplicationWindow. The handler just calls the
 <code>update_current</code> function. The function will be explained
 later.</li>
-<li>15-20: <code>bind1_cb</code> is a bind signal handler. It sets the
+<li>16-31: <code>bind1_cb</code> is a bind signal handler. It sets the
 “listitem” element of the item (LeData) to point the
 <code>listitem</code> (GtkListItem instance). It makes the item possible
-to find the corresponding GtkListItem instance.</li>
-<li>22-27: <code>unbind1_cb</code> is an unbind signal handler. It
+to find the corresponding GtkListItem instance. If the item is the
+current line, the CSS class of the button includes “current” class.
+Otherwise it has no CSS class. This is necessary because the button may
+be recycled and it has had former CSS class. The class need to be
+updated.</li>
+<li>33-38: <code>unbind1_cb</code> is an unbind signal handler. It
 removes the <code>listitem</code> instance from the “listitem” element
 of the item. The element becomes NULL, which tells no GtkListItem is
 bound. When referring GtkListItem, it needs to check the “listitem”
@@ -423,6 +447,15 @@ template children for the given widget. This is the opposite of
 <code>gtk_widget_init_template()</code>. It is a new function of GTK 4.8
 version. If your GTK version is lower than 4.8, you need to modify the
 program.</p>
+<h2 id="a-waring-from-gtktext">A waring from GtkText</h2>
+<p>If the list has many items and it needs to be scrolled, a warning
+message can be issued.</p>
+<pre><code>GtkText - unexpected blinking selection. Removing</code></pre>
+<p>I don’t have an idea why this happens. But if GtkText “focusable”
+property is FALSE, the warning doesn’t happen. So it probably come from
+focus and scroll. If you know the reason, please let me know.</p>
+<p>It is a warning message, not a fatal error. I think we can ignore
+it.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

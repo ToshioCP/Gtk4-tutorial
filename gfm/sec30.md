@@ -78,65 +78,68 @@ The following is their sgnal handlers.
  2 setup2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
  3   GtkWidget *text = gtk_text_new ();
  4   gtk_list_item_set_child (listitem, GTK_WIDGET (text));
- 5 }
- 6 
- 7 static void
- 8 bind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
- 9   GtkWidget *text = gtk_list_item_get_child (listitem);
-10   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-11   GtkEntryBuffer *buffer;
-12   GBinding *bind;
-13 
-14   buffer = gtk_text_get_buffer (GTK_TEXT (text));
-15   gtk_entry_buffer_set_text (buffer, le_data_look_string (data), -1);
-16   bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
-17   g_object_set_data (G_OBJECT (listitem), "bind", bind);
-18 }
-19 
-20 static void
-21 unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-22   GBinding *bind = G_BINDING (g_object_get_data (G_OBJECT (listitem), "bind"));
-23 
-24   g_binding_unbind(bind);
-25   g_object_set_data (G_OBJECT (listitem), "bind", NULL);
-26 }
+ 5   gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
+ 6 }
+ 7 
+ 8 static void
+ 9 bind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+10   GtkWidget *text = gtk_list_item_get_child (listitem);
+11   GtkEntryBuffer *buffer = gtk_text_get_buffer (GTK_TEXT (text));
+12   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
+13   GBinding *bind;
+14 
+15   gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
+16   gtk_editable_set_position (GTK_EDITABLE (text), 0);
+17 
+18   bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
+19   g_object_set_data (G_OBJECT (listitem), "bind", bind);
+20 }
+21 
+22 static void
+23 unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+24   GBinding *bind = G_BINDING (g_object_get_data (G_OBJECT (listitem), "bind"));
+25 
+26   g_binding_unbind(bind);
+27   g_object_set_data (G_OBJECT (listitem), "bind", NULL);
+28 }
 ~~~
 
-- 1-5: `setup2_cb` is a setup signal handler on the GtkSignalListItemFactory.
+- 1-6: `setup2_cb` is a setup signal handler on the GtkSignalListItemFactory.
 This factory is inserted to the factory property of the second GtkColumnViewColumn.
-Te handler just creates a GtkText instance and sets the child of `listitem` to it.
+The handler just creates a GtkText instance and sets the child of `listitem` to it.
 The instance will be destroyed automatically when the `listitem` is destroyed.
 So, teardown signal handler isn't necessary.
-- 7-18: `bind2_cb` is a bind signal handler.
+- 8-20: `bind2_cb` is a bind signal handler.
 It is called when the `listitem` is bound to an item in the list.
 The list items are LeData instances.
 LeData is defined in the file `listeditor.c` (the C source file of the list editor).
 It is a child class of GObject and has two data.
-The one is `listitem` which points a GtkListItem instance when they are connected.
+The one is `listitem` which points a first column GtkListItem instance when they are connected.
+Be careful that the GtkListItem instance is *not* the `listitem` in this handler.
 If no GtkListItem is connected, it is NULL.
 The other is `string` which is a content of the line. 
-  - 9-10: `text` is a child of the `listitem` and it is a GtkText instance.
-`data` is an item pointed by the `listitem`. It is a LeData instance.
-  - 14: Gets the buffer of the `text`.
-  - 15: Sets the text of the buffer to `le_data_look_string (data)`.
-le\_data\_look\_string returns the string of the data and the ownership of the string is taken by the `data`.
+  - 10-11: `text` is a child of the `listitem` and it is a GtkText instance.
+And `buffer` is a GtkTextBuffer instance of the `text`.
+  - 12: The LeData instance `data` is an item pointed by the `listitem`.
+  - 15-16: Sets the text of `text` to `le_data_look_string (data)`.
+le\_data\_look\_string returns the string of the `data` and the ownership of the string is still taken by the `data`.
 So, the caller don't need to free the string.
-  - 16: `g_object_bind_property` binds a property and another object property.
+  - 18: `g_object_bind_property` binds a property and another object property.
 This line binds the "text" property of the `buffer` (source) and the "string" property of the `data` (destination).
 It is a uni-directional binding (`G_BINDING_DEFAULT`).
 When a user changes the GtkText text, the same string is immediately put into the `data`. 
 The function returns a GBinding instance.
 This binding is different from bindings of GtkExpression.
 This binding needs the existence of the two properties.
-  - 17: GObjec has a table.
+  - 19: GObjec has a table.
 The key is a string (or GQuark) and the value is a gpointer (pointer to any type).
 The function `g_object_set_data` sets the association from the key to the value.
-This line sets the association from "bind" to `bind` instance on the `listitem` instance.
+This line sets the association from "bind" to `bind` instance.
 It makes possible for the "unbind" handler to get the `bind` instance.
-- 20-26: `unbind2_cb` is a unbind signal handler.
-  - 22: Retrieves the `bind` instance from the table in the `listitem` instance.
-  - 24: Unbind the binding.
-  - 25: Removes the value corresponds to the "bind" key.
+- 22-28: `unbind2_cb` is a unbind signal handler.
+  - 24: Retrieves the `bind` instance from the table in the `listitem` instance.
+  - 26: Unbind the binding.
+  - 27: Removes the value corresponds to the "bind" key.
 
 This technique is not so complicated.
 You can use it when you make a cell editable application.
@@ -152,6 +155,10 @@ The line editor has the current position of the list.
 - When a line is appended or inserted, the line is current.
 - When the current line is deleted, no line will be current.
 - When a button in the first column of GtkColumnView is clicked, the line will be current.
+- It is necessary to set the line status (whether current or not) when a GtkListItem is bound to an item in the list.
+It is because GtkListItem is recycled.
+A GtkListItem was possibly current line before but not current after recycled.
+The opposite can also be happen.
 
 The button of the current line is colored with red and otherwise white.
 
@@ -165,7 +172,7 @@ It is necessary to know the corresponding GtkListItem instance from the item in 
 It is the opposite direction from `gtk_list_item_get_item` function.
 To accomplish this, we set a `listitem` element of LeData to point the corresponding GtkListItem instance.
 Therefore, items (LeData) in the list always know the GtkListItem.
-If there's no GtkListItem binded to the item, NULL is assigned.
+If there's no GtkListItem bound to the item, NULL is assigned.
 
 ~~~C
  1 void
@@ -179,40 +186,55 @@ If there's no GtkListItem binded to the item, NULL is assigned.
  9 setup1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
 10   GtkWidget *button = gtk_button_new ();
 11   gtk_list_item_set_child (listitem, button);
-12   g_signal_connect (button, "clicked", G_CALLBACK (select_cb), listitem);
-13 }
-14 
-15 static void
-16 bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-17   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-18   if (data)
-19     le_data_set_listitem (data, listitem);
-20 }
-21 
-22 static void
-23 unbind1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-24   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-25   if (data)
-26     le_data_set_listitem (data, NULL);
-27 }
+12   gtk_widget_set_focusable (GTK_WIDGET (button), FALSE);
+13   g_signal_connect (button, "clicked", G_CALLBACK (select_cb), listitem);
+14 }
+15 
+16 static void
+17 bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+18   LeWindow *win = LE_WINDOW (user_data);
+19   GtkWidget *button = gtk_list_item_get_child (listitem);
+20   const char *non_current[1] = {NULL};
+21   const char *current[2] = {"current", NULL};
+22   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
+23 
+24   if (data) {
+25     le_data_set_listitem (data, listitem);
+26     if (win->position == gtk_list_item_get_position (listitem))
+27       gtk_widget_set_css_classes (GTK_WIDGET (button), current);
+28     else
+29       gtk_widget_set_css_classes (GTK_WIDGET (button), non_current);
+30   }
+31 }
+32 
+33 static void
+34 unbind1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+35   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
+36   if (data)
+37     le_data_set_listitem (data, NULL);
+38 }
 ~~~
 
-- 8-13: `setup1_cb` is a setup signal handler on the GtkSignalListItemFactory.
+- 8-14: `setup1_cb` is a setup signal handler on the GtkSignalListItemFactory.
 This factory is inserted to the factory property of the first GtkColumnViewColumn.
-It sets the child of `listitem` to a newly created GtkButton instance.
+It sets the child of `listitem` to a GtkButton instance.
 The "clicked" signal on the button is connected to the handler `select_cb`.
 When the listitem is destroyed, the child (GtkButton) is also destroyed.
-At the same time, the connection of the signal and handler is also destroyed.
+At the same time, the connection of the signal and the handler is also destroyed.
 So, you don't need teardown signal handler.
 - 1-6: `select_cb` is a "clicked" signal handler.
 LeWindow is defined in `listeditor.c`.
 It's a child class of GtkApplicationWindow.
 The handler just calls the `update_current` function.
 The function will be explained later.
-- 15-20: `bind1_cb` is a bind signal handler.
+- 16-31: `bind1_cb` is a bind signal handler.
 It sets the "listitem" element of the item (LeData) to point the `listitem` (GtkListItem instance).
 It makes the item possible to find the corresponding GtkListItem instance.
-- 22-27: `unbind1_cb` is an unbind signal handler.
+If the item is the current line, the CSS class of the button includes "current" class.
+Otherwise it has no CSS class.
+This is necessary because the button may be recycled and it has had former CSS class.
+The class need to be updated.
+- 33-38: `unbind1_cb` is an unbind signal handler.
 It removes the `listitem` instance from the "listitem" element of the item.
 The element becomes NULL, which tells no GtkListItem is bound.
 When referring GtkListItem, it needs to check the "listitem" element whether it points a GtkListItem or not (NULL).
@@ -258,7 +280,6 @@ Otherwise bad things will happen.
 37 }
 ~~~
 
-
 The function `update_current` does several things.
 
 - It has two parameters.
@@ -299,5 +320,21 @@ The function `gtk_widget_dispose_template` clears the template children for the 
 This is the opposite of `gtk_widget_init_template()`.
 It is a new function of GTK 4.8 version.
 If your GTK version is lower than 4.8, you need to modify the program.
+
+## A waring from GtkText
+
+If the list has many items and it needs to be scrolled, a warning message can be issued.
+
+~~~
+GtkText - unexpected blinking selection. Removing
+~~~
+
+I don't have an idea why this happens.
+But if GtkText "focusable" property is FALSE, the warning doesn't happen.
+So it probably come from focus and scroll.
+If you know the reason, please let me know.
+
+It is a warning message, not a fatal error.
+I think we can ignore it.
 
 Up: [README.md](../README.md),  Prev: [Section 29](sec29.md)

@@ -84,6 +84,13 @@
           <object class="GtkScrolledWindow">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
+<!--
+            <property name="vadjustment">
+              <object class="GtkAdjustment">
+                <signal name="value-changed" handler="adjustment_value_changed_cb" swapped="no" object="LeWindow"/>
+              </object>
+            </property>
+-->
             <child>
               <object class="GtkColumnView" id="columnview">
                 <property name="hexpand">TRUE</property>
@@ -104,7 +111,7 @@
                     <property name="factory">
                       <object class="GtkSignalListItemFactory">
                         <signal name="setup"  handler="setup1_cb"></signal>
-                        <signal name="bind"   handler="bind1_cb"></signal>
+                        <signal name="bind"   handler="bind1_cb" swapped="no" object="LeWindow"></signal>
                         <signal name="unbind" handler="unbind1_cb"></signal>
                       </object>
                     </property>
