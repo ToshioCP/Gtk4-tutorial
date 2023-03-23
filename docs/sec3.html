@@ -209,9 +209,10 @@ explain that to you first.</p>
 <p>A signal is emitted when something happens. For example, a window is
 created, a window is destroyed and so on. The signal “activate” is
 emitted when the application is activated. (Activated is a bit different
-from started, but you can think of them both as almost the same so far.) If the
-signal is connected to a function, which is called a signal handler or
-simply handler, then the function is invoked when the signal emits.</p>
+from started, but you can think of them both as almost the same so far.)
+If the signal is connected to a function, which is called a signal
+handler or simply handler, then the function is invoked when the signal
+emits.</p>
 <p>The flow is like this:</p>
 <ol type="1">
 <li>Something happens.</li>
@@ -371,8 +372,8 @@ instance, you need to cast it.</p>
 <p>It works, but isn’t usually used. Instead, <code>GTK_WINDOW</code>
 macro is used.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>GTK_WINDOW <span class="op">(</span>win<span class="op">)</span></span></code></pre></div>
-<p>The macro is recommended because it does not only cast the pointer but it also checks
-the type.</p>
+<p>The macro is recommended because it does not only cast the pointer
+but it also checks the type.</p>
 <h4 id="connect-it-to-gtkapplication.">Connect it to
 GtkApplication.</h4>
 <p>The function <code>gtk_window_set_application</code> is used to

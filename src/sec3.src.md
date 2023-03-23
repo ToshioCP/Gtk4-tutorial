@@ -100,7 +100,7 @@ So, I will explain that to you first.
 A signal is emitted when something happens.
 For example, a window is created, a window is destroyed and so on.
 The signal "activate" is emitted when the application is activated.
-(Activated is a bit different from started, but you can think the both are almost same so far.)
+(Activated is a bit different from started, but you can think of them both as almost the same so far.)
 If the signal is connected to a function, which is called a signal handler or
 simply handler, then the function is invoked when the signal emits.
 
@@ -172,7 +172,7 @@ The parameters are:
 
 - self is an instance to which the signal belongs.
 - user\_data is a data defined in the fourth argument of the `g_signal_connect` function.
-If it is NULL, then you can ignore and left out the second parameter.
+If it is NULL, then you can ignore and leave out the second parameter.
 
 API reference manual is very important.
 You should see and understand it.
@@ -275,7 +275,7 @@ Instead, `GTK_WINDOW` macro is used.
 GTK_WINDOW (win)
 ~~~
 
-The macro is recommended because it does not only cast but also check the type.
+The macro is recommended because it does not only cast the pointer but it also checks the type.
 
 #### Connect it to GtkApplication.
 

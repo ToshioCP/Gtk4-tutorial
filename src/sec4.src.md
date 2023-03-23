@@ -162,7 +162,7 @@ Then, these two buttons are appended to the box.
 misc/lb4.c click1.cb
 @@@
 
-The function `gtk_button_get_lable` returns a text from the label.
+The function `gtk_button_get_label` returns a text from the label.
 The string is owned by the button and you can't modify or free it.
 The `const` qualifier is necessary for the string `s`.
 If you change the string, your compiler will give you a waring.
@@ -171,5 +171,5 @@ You always need to be careful with the const qualifier when you see the GTK 4 AP
 
 ![Screenshot of the box](../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
 
-The handler corresponds to `btn1` toggles its label.
-The handler corresponds to `btn2` destroys the top-level window and the application quits.
+The handler corresponding to `btn1` toggles its label.
+The handler corresponding to `btn2` destroys the top-level window and the application quits.
