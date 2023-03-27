@@ -6,7 +6,7 @@ The table of contents is at the end of this abstract.
 
 - Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
 - Section 22 to 25 describes GtkDrawingArea.
-- Section 26 to 29 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 26 to 30 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [GTK4-tutorial GitHub repository](https://github.com/ToshioCP/GTK4-tutorial).
@@ -24,7 +24,7 @@ These websites were opened in August of 2021.
 The old documents are located at [GTK Reference Manual](https://developer-old.gnome.org/gtk4/stable/) and [GNOME Developer Center](https://developer-old.gnome.org/).
 
 If you want to know about GObject and the type system, please refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
-GObject is the base of GTK 4, so it is important for developers to understand GObject for writing GTK 4 programs.
+GObject is the base of GTK 4, so it is important for developers to understand GObject as well as GTK 4.
 
 #### Contribution
 
@@ -35,7 +35,7 @@ You can post it to [GitHub issues](https://github.com/ToshioCP/GTK4-tutorial/iss
 You can also post updated files to [pull request](https://github.com/ToshioCP/GTK4-tutorial/pulls).
 One thing you need to be careful is to correct the source files, which are under the 'src' directory.
 Don't modify the files under `gfm` or `html` directories.
-After modifying some source files (under `src` directory), run `rake` to create GFM (GitHub Flavoured Markdown) files or run `rake html` to create HTML files.
+After modifying some source files , run `rake` to create GFM (GitHub Flavoured Markdown) files and run `rake html` to create HTML files.
 
 If you have a question, feel free to post it to `issue`.
 All questions are helpful and will make this tutorial get better.
@@ -52,3 +52,10 @@ There is a document \("[How to build GTK 4 Tutorial](Readme_for_developers.src.m
 @@@elif latex
 An appendix "How to build GTK 4 Tutorial" describes how to make them.
 @@@end
+
+#### License
+
+The license of this repository is GPL and written in [Section1](sec1.src.md).
+
+But new licenses, one of which is GFDL1.3 for documents and the other is GPL3 for programs, are under consideration.
+The decision will be made on 15/April/2023.
