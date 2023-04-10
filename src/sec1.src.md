@@ -14,7 +14,7 @@ If you want to try the examples in the tutorial, you need:
 - GCC.
 - GTK 4.
 The stable version of GTK is 4.8.2 at present (13/Dec/2022), but older version (4.0 or higher) may work.
-See [Section 3](sec3.src.md) for the installation for GTK 4.
+See [Section 2](sec2.src.md) for the installation for GTK 4.
 
 ### Ruby and rake for making the document
 
