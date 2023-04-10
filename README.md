@@ -16,7 +16,7 @@ It also describes GtkExpression.
 The latest version of the tutorial is located at [GTK4-tutorial GitHub repository](https://github.com/ToshioCP/GTK4-tutorial).
 You can read it directly without download.
 
-There's a GitHub Page of this tutorial at [`https://toshiocp.github.io/GTK4-tutorial/`](https://toshiocp.github.io/GTK4-tutorial/).
+There's a GitHub Page of this tutorial at [`https://toshiocp.github.io/Gtk4-tutorial/`](https://toshiocp.github.io/Gtk4-tutorial/).
 It is easier to read than the repository.
 
 #### GTK 4 Documentation
