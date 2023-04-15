@@ -55,7 +55,8 @@ An appendix "How to build GTK 4 Tutorial" describes how to make them.
 
 #### License
 
-The license of this repository is GPL and written in [Section1](sec1.src.md).
+The license of this repository is written in [Section1](sec1.src.md).
+In short,
 
-But new licenses, one of which is GFDL1.3 for documents and the other is GPL3 for programs, are under consideration.
-The decision will be made on 15/April/2023.
+- GFDL1.3 for documents
+- GPL3 for programs

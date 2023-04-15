@@ -53,10 +53,11 @@ There is a document \("[How to build GTK 4 Tutorial](gfm/Readme_for_developers.m
 
 #### License
 
-The license of this repository is GPL and written in [Section1](gfm/sec1.md).
+The license of this repository is written in [Section1](gfm/sec1.md).
+In short,
 
-But new licenses, one of which is GFDL1.3 for documents and the other is GPL3 for programs, are under consideration.
-The decision will be made on 15/April/2023.
+- GFDL1.3 for documents
+- GPL3 for programs
 
 ## Table of contents
 
