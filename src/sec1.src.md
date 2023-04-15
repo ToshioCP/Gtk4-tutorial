@@ -44,11 +44,11 @@ GTK4-tutorial is free; you can redistribute it and/or modify it under terms of t
 
 - The license of documents in GTK4-tutorial is the GNU Free Documentation License as published by the Free Software Foundation; either version 1.3 of the License or, at your opinion, any later version.
 The documents are Markdown, HTML and image files.
-If you generate a PDF file by running `rake pdf`, it is also included the documents.
+If you generate a PDF file by running `rake pdf`, it is also included by the documents.
 - The license of programs in GTK4-tutorial is the GNU General Public License as published by the Free Software Foundation; either version 3 of the License or, at your option, any later version.
 The programs are written in C, Ruby and other languages.
 
-'GTK4-tutorial' is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+GTK4-tutorial is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU License web pages for more details.
 
 - [GNU Free Documentation License](https://www.gnu.org/licenses/fdl-1.3.html)
