@@ -23,7 +23,7 @@ It includes C header files.
 Otherwise, you can't compile any GTK 4 based programs.
 
 Fedora, Debian, Arch, Gentoo and OpenSUSE also have GTK 4 packages.
-Package information for Arch, Debian/Ubuntu and Fedra is described by [Installing GTK from packages](https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages).
+Package information for Arch, Debian/Ubuntu and Fedora is described by [Installing GTK from packages](https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages).
 The following table shows the distributions which support GTK 4.
 
 |Distribution|          version          | GTK 4 |  GNOME   |
