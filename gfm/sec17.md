@@ -1,16 +1,15 @@
 Up: [README.md](../README.md),  Prev: [Section 16](sec16.md), Next: [Section 18](sec18.md)
 
-# Menu and action
+# Menus and actions
 
-## Menu
+## Menus
 
-Users often use menus to tell a command to the computer.
+Users often use menus to tell a command to the application.
 It is like this:
 
 ![Menu](../image/menu.png)
 
-Now let's analyze the menu above.
-There are two types of object.
+There are two types of objects.
 
 - "File", "Edit", "View", "Cut", "Copy", "Paste" and "Select All".
 They are called "menu item" or simply "item".
@@ -124,7 +123,7 @@ Then, the handler `quit_activated` is called.
 
 ## Menu bar
 
-A menu bar and menus are traditional style.
+A menu bar and menus are traditional.
 Menu buttons are often used instead of a menu bar lately, but the old style is still used widely.
 
 Applications have only one menu bar.
@@ -133,21 +132,21 @@ Because every window refers to the same menubar instance in the application.
 
 An application's menu bar is usually unchanged once it is set.
 So, it is appropriate to set it in the "startup" handler.
-Because it is called only once in the primary application instance.
+Because the handler is called only once in the primary application instance.
 
 I think it is good for readers to clarify how applications behave.
 
-- When an application is run for the first time, the instance is called primary.
+- When an application runs for the first time, the instance is called primary.
 - The primary instance registers itself to the system. If it succeeds, it emits "startup" signal.
 - When the instance is activated, an "activate" or "open" signal is emitted.
 - If the application is run for the second time or later and there exists a primary instance, the instance is called a remote instance.
-- A remote instance doesn't emit "startup signal.
+- A remote instance doesn't emit "startup" signal.
 - If it tries to emit an "activate" or "open" signal, the signals are not emitted on the remote instance but primary instance.
 - The remote instance quits.
 
 Therefore, an "activate" or "open" handler can be called twice or more.
 On the other hand, a "startup" handler is called once.
-So, setting a menubar should be done in the "startup" handler.
+So, the menubar should be set in the "startup" handler.
 
 ~~~C
 static void
@@ -174,7 +173,7 @@ The source file `menu1.c` is located at [src/menu](../src/menu) directory.
  8 static void
  9 app_activate (GApplication *application) {
 10   GtkApplication *app = GTK_APPLICATION (application);
-11   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+11   GtkWidget *win = gtk_application_window_new (app);
 12   gtk_window_set_title (GTK_WINDOW (win), "menu1");
 13   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
 14 
@@ -197,28 +196,29 @@ The source file `menu1.c` is located at [src/menu](../src/menu) directory.
 31   g_menu_append_item (menu, menu_item_quit);
 32   g_object_unref (menu_item_quit);
 33   g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));
-34   g_menu_append_item (menubar, menu_item_menu);
-35   g_object_unref (menu_item_menu);
-36 
-37   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
-38 }
-39 
-40 #define APPLICATION_ID "com.github.ToshioCP.menu1"
-41 
-42 int
-43 main (int argc, char **argv) {
-44   GtkApplication *app;
-45   int stat;
-46 
-47   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-48   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-49   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-50 
-51   stat =g_application_run (G_APPLICATION (app), argc, argv);
-52   g_object_unref (app);
-53   return stat;
-54 }
-55 
+34   g_object_unref (menu);
+35   g_menu_append_item (menubar, menu_item_menu);
+36   g_object_unref (menu_item_menu);
+37 
+38   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
+39 }
+40 
+41 #define APPLICATION_ID "com.github.ToshioCP.menu1"
+42 
+43 int
+44 main (int argc, char **argv) {
+45   GtkApplication *app;
+46   int stat;
+47 
+48   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+49   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+50   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+51 
+52   stat =g_application_run (G_APPLICATION (app), argc, argv);
+53   g_object_unref (app);
+54   return stat;
+55 }
+56 
 ~~~
 
 - 3-6: `quit_activated` is a handler of the "activate" signal on the action `act_quit`.
@@ -230,11 +230,11 @@ You don' t need to care about it.
   3. User data.
 It is the fourth parameter in the `g_signal_connect` (line 25) that connects the action and the handler.
 - 5: The function `g_application_quit` immediately quits the application.
-- 8-17: `app_activate` is an "activate" signal handler.
+- 8-17: `app_activate` is an "activate" signal handler on the application.
 - 11-13: Creates a GtkApplicationWindow `win`. And sets the title and the default size.
 - 15: Sets GtkApplicationWindow to show the menubar.
 - 16: Shows the window.
-- 19-38: `app_startup` is a "startup" signal handler
+- 19-38: `app_startup` is a "startup" signal handler on the application.
 - 23: Creates GSimpleAction `act_quit`.
 It is stateless.
 The first argument of `g_simple_action_new` is a name of the action and the second argument is a parameter.
@@ -255,12 +255,13 @@ Because this action belongs to GtkApplication, its scope is "app" and it is refe
 As I mentioned before, all the attributes and links are copied and used to form a new item in `menu`.
 Therefore after the addition, `menu_item_quit` is no longer needed.
 It is freed by `g_object_unref`.
-- 33: Sets the submenu link in `menu_item_menu` to point `menu`.
-- 34-35: Appends `menu_item_menu` to `menubar`.
+- 33-34: Sets the submenu link in `menu_item_menu` to point `menu`.
+Then, `menu` is no more useful and it is freed.
+- 35-36: Appends `menu_item_menu` to `menubar`.
 Then frees `menu_item_menu`.
-GMenu and GMenuItem are connected and finally a menu is made up.
+GMenu and GMenuItem are built and finally connected to the variable `menubar`.
 The structure of the menu is shown in the diagram below.
-- 37: The menubar is inserted to the application.
+- 38: The menubar is inserted to the application.
 
 ![menu and action](../image/menu1.png)
 
@@ -312,9 +313,9 @@ If you click on the "Quit" menu, the application (the primary instance) quits.
 
 ![menu1 -- two windows](../image/menu1_two_windows.png)
 
-The second run makes a new window.
+The second execution makes a new window.
 However, it depends on the "activate" handler.
-If you create your window in the startup handler and the activate handler just presents the window, no new window is created at the second run.
+If you create your window in the startup handler and the activate handler just presents the window, no new window is created at the second execution.
 For example, tfe (text file editor) doesn't create a second window.
 It just creates a new notebook page.
 Because its activate handler doesn't create any window but just creates a new notebook page.

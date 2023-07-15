@@ -11,7 +11,7 @@ We've divided C source file into two parts.
 But it is not enough in terms of encapsulation.
 
 - `tfe.c` includes everything other than TfeTextView.
-It should be divided at least into two parts, `tfeapplication.c` and `tfenotebook.c`.
+It should be divided into at least two parts, `tfeapplication.c` and `tfenotebook.c`.
 - Header files also need to be organized.
 
 However, first of all, I'd like to focus on the object TfeTextView.
@@ -20,7 +20,7 @@ The important thing is to manage the Gfile object pointed by `file`.
 
 - What is necessary to GFile when creating (or initializing) TfeTextView?
 - What is necessary to GFile when destructing TfeTextView?
-- TfeTextView should read/write a file by itself or not?
+- Should TfeTextView read/write a file by itself or not?
 - How it communicates with objects outside?
 
 You need to know at least class, instance and signals before thinking about them.
@@ -28,7 +28,8 @@ I will explain them in this section and the next section.
 After that I will explain:
 
 - Organizing functions.
-- How to use GtkFileChooserDialog
+- How to use GtkFileDialog.
+It is a new class made in the version 4.10 and replaces GtkFileChooserDialog.
 
 ## GObject and its children
 
@@ -49,12 +50,13 @@ struct _TfeTextView {
 
 The members of the structure are:
 
-- The type of `parent` is GtkTextView which is C structure.
+- The member `parent` is a GtkTextView C structure.
 It is declared in `gtktextview.h`.
 GtkTextView is the parent of TfeTextView.
-- `file` is a pointer to a GFile. It can be NULL if no file corresponds to the TfeTextView instance.
+- The member `file` is a pointer to a GFile. It can be NULL if the TfeTextView instance has no file.
+The most common case is that the instance is newly created.
 
-You can find the declaration of the ancestors' object structures in the source files of GTK and GLib.
+You can find the declaration of the structures of the ancestors in the source files in GTK or GLib.
 The following is extracted from the source files (not exactly the same).
 
 ~~~C
@@ -140,7 +142,7 @@ The initialization process is as follows.
 
 The step two through four is done by `g_object_init`, `gtk_widget_init` and `gtk_text_view_init`.
 They are called by the system automatically and you don't need to care about them.
-Step four is done by the function `tfe_text_view_init` in `tfetextview.c`.
+Step five is done by the function `tfe_text_view_init` in `tfetextview.c`.
 
 @@@include
 tfetextview/tfetextview.c tfe_text_view_init
@@ -150,7 +152,7 @@ This function just initializes `tv->file` to be `NULL`.
 
 ## Functions and Classes
 
-In Gtk, all objects derived from GObject have class and instance (except abstract object).
+In Gtk, all objects derived from GObject have classes and instances (but abstract objects have only classes).
 Instances are memory of C structure, which are described in the previous two subsections.
 Each object can have more than one instance.
 Those instances have the same structure.
@@ -159,24 +161,32 @@ Therefore, it doesn't define object's behavior.
 We need at least two things.
 One is functions and the other is class methods.
 
+The latest GTK 4 document classifies functions into a constructor, functions and instance methods.
+
+- constructors: Their name are always `gtk_(objectname)_new`. They create the objects.
+- functions: Their first parameter (argument) is *NOT* the instance. Usually functions are utility functions for the class.
+- instance methods: Their first parameter (argument) is the instance. They do some task for the specific instance.
+
+This tutorial uses `functions` in two ways, broad or narrow sense.
+
 You've already seen many functions.
 For example,
 
-- `TfeTextView *tfe_text_view_new (void);` is a function to create a TfeTextView instance.
-- `GtkTextBuffer *gtk_text_view_get_buffer (GtkTextView *textview)` is a function to get a GtkTextBuffer from GtkTextView.
+- `TfeTextView *tfe_text_view_new (void);` is a function (constructor) to create a TfeTextView instance.
+- `GtkTextBuffer *gtk_text_view_get_buffer (GtkTextView *textview)` is a function (instance method) to get a GtkTextBuffer from GtkTextView.
 
 Functions are public, which means that they are expected to be used by other objects.
 They are similar to public methods in object oriented languages.
 
-Class (C structure) mainly consists of pointers to functions.
-The functions are called class methods and used by the object itself or its descendant objects.
+Class (C structure) mainly consists of pointers to C functions.
+They are called *class methods* and used by the object itself or its descendant objects.
 For example, GObject class is declared in `gobject.h` in GLib source files.
 
 @@@include
 class_gobject.c
 @@@
 
-There's a pointer to the function `dispose` in line 23.
+There's a pointer to the function `dispose` in line 25.
 
 ~~~C
 void (*dispose) (GObject *object);
@@ -185,7 +195,7 @@ void (*dispose) (GObject *object);
 The declaration is a bit complicated.
 The asterisk before the identifier `dispose` means pointer.
 So, the pointer `dispose` points to a function which has one parameter, which points a GObject structure, and returns no value.
-In the same way, line 24 says `finalize` is a pointer to the function which has one parameter, which points a GObject structure, and returns no value.
+In the same way, line 26 says `finalize` is a pointer to the function which has one parameter, which points a GObject structure, and returns no value.
 
 ~~~C
 void (*finalize) (GObject *object);
@@ -193,7 +203,7 @@ void (*finalize) (GObject *object);
 
 Look at the declaration of `_GObjectClass` so that you would find that most of the members are pointers to functions.
 
-- 13: A function pointed by `constructor` is called when the instance is generated. It completes the initialization of the instance.
+- 13: A function pointed by `constructor` is called when the instance is created. It completes the initialization of the instance.
 - 25: A function pointed by `dispose` is called when the instance destructs itself.
 Destruction process is divided into two phases.
 The first one is called disposing.
@@ -227,7 +237,7 @@ So, they are not written in either `tfe_text_view.h` or `tfe_text_view.c`.
 It is the same as instance structures.
 - Class members in ancestors are open to the descendant class.
 So, they can be changed in `tfe_text_view_class_init` function.
-For example, the `finalize` pointer in GObjectClass will be overridden later in `tfe_text_view_class_init`.
+For example, the `dispose` pointer in GObjectClass will be overridden later in `tfe_text_view_class_init`.
 (Override is an object oriented programming terminology.
 Override is rewriting ancestors' class methods in the descendant class.)
 - Some class methods are often overridden.
@@ -242,7 +252,7 @@ It is illustrated in the following diagram.
 
 Every Object derived from GObject has a reference count.
 If an object A refers to an object B, then A keeps a pointer to B in A and at the same time increases the reference count of B by one with the function `g_object_ref (B)`.
-If A doesn't need B any longer, then A discards the pointer to B (usually it is done by assigning NULL to the pointer) and decreases the reference count of B by one with the function `g_object_unref (B)`.
+If A doesn't need B any longer, A discards the pointer to B (usually it is done by assigning NULL to the pointer) and decreases the reference count of B by one with the function `g_object_unref (B)`.
 
 If two objects A and B refer to C, then the reference count of C is two.
 If A no longer needs C, A discards the pointer to C and decreases the reference count in C by one.
@@ -259,7 +269,6 @@ When the reference count drops to zero, the object starts its destruction proces
 The destruction process is split into two phases: disposing and finalizing.
 In the disposing process, the object invokes the function pointed by `dispose` in its class to release all references to other instances.
 After that, it invokes the function pointed by `finalize` in its class to complete the destruction process.
-For example, dispose handler or dispose method.
 
 In the destruction process, TfeTextView needs to unref the GFile pointed by `tv->file`.
 You must write the dispose handler `tfe_text_view_dispose`.
@@ -268,8 +277,8 @@ You must write the dispose handler `tfe_text_view_dispose`.
 tfetextview/tfetextview.c tfe_text_view_dispose
 @@@
 
-- 5,6: If `tv->file` points a GFile, decrease its reference count.
-`g_clear_object` decreases the reference count and assigns NULL to `tv->file`.
+- 5,6: If `tv->file` points a GFile, it decreases the reference count of the GFile instance.
+The function `g_clear_object` decreases the reference count and assigns NULL to `tv->file`.
 In dispose handlers, we usually use `g_clear_object` rather than `g_object_unref`.
 - 8: invokes parent's dispose handler. (This will be explained later.)
 
@@ -283,7 +292,6 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
   object_class->dispose = tfe_text_view_dispose;
-
 }
 ~~~
 
@@ -303,7 +311,7 @@ Then it invokes its parent's dispose handler in line 8.
 G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject);
 ~~~
 
-A variable `tfe_text_view_parent_class`, which is made by `G_DEFINE_TYPE` macro, is a pointer that points the parent object class.
+A variable `tfe_text_view_parent_class`, which is made by `G_DEFINE_FINAL_TYPE` macro, is a pointer that points the parent object class.
 The variable `gobject` is a pointer to TfeTextView instance which is casted as a GObject instance.
 Therefore, `G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose` points the handler `dh3` in the diagram above.
 The statement `G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject)` is the same as `dh3 (gobject)`, which means it releases all the reference to the other instances in the GtkTextViewPrivate in the TfeTextView instance.

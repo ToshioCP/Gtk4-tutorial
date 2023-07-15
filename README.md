@@ -8,16 +8,15 @@ This tutorial illustrates how to write C programs with the GTK 4 library.
 It focuses on beginners so the contents are limited to the basics.
 The table of contents is at the end of this abstract.
 
-- Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
-- Section 22 to 25 describes GtkDrawingArea.
-- Section 26 to 30 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 3 to 23 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
+- Section 24 to 27 describes GtkDrawingArea.
+- Section 28 to 32 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [GTK4-tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
 You can read it directly without download.
 
-There's a GitHub Page of this tutorial at [`https://toshiocp.github.io/Gtk4-tutorial/`](https://toshiocp.github.io/Gtk4-tutorial/).
-It is easier to read than the repository.
+There's a [GitHub Page](https://toshiocp.github.io/Gtk4-tutorial/) which is the HTML version of the tutorial.
 
 #### GTK 4 Documentation
 
@@ -28,12 +27,12 @@ These websites were opened in August of 2021.
 The old documents are located at [GTK Reference Manual](https://developer-old.gnome.org/gtk4/stable/) and [GNOME Developer Center](https://developer-old.gnome.org/).
 
 If you want to know about GObject and the type system, please refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
-GObject is the base of GTK 4, so it is important for developers to understand GObject as well as GTK 4.
+GObject is the base of GTK 4, so it is important for developers to understand it as well as GTK 4.
 
 #### Contribution
 
 This tutorial is still under development and unstable.
-Even though the codes of the examples have been tested on GTK 4 (version 4.8.1), bugs may still exist.
+Even though the codes of the examples have been tested on GTK 4 (version 4.10.1), bugs may still exist.
 If you find any bugs, errors or mistakes in the tutorial and C examples, please let me know.
 You can post it to [GitHub issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
 You can also post updated files to [pull request](https://github.com/ToshioCP/Gtk4-tutorial/pulls).
@@ -62,7 +61,7 @@ In short,
 ## Table of contents
 
 1. [Prerequisite and License](gfm/sec1.md)
-1. [Installing GTK 4 into Linux distributions](gfm/sec2.md)
+1. [Preparation (GTK 4 installation and the download of this repository)](gfm/sec2.md)
 1. [GtkApplication and GtkApplicationWindow](gfm/sec3.md)
 1. [Widgets (1)](gfm/sec4.md)
 1. [Widgets (2)](gfm/sec5.md)
@@ -73,21 +72,23 @@ In short,
 1. [Build system](gfm/sec10.md)
 1. [Instance Initialization and destruction](gfm/sec11.md)
 1. [Signals](gfm/sec12.md)
-1. [Functions in TfeTextView](gfm/sec13.md)
+1. [TfeTextView class](gfm/sec13.md)
 1. [Functions in GtkNotebook](gfm/sec14.md)
-1. [tfeapplication.c](gfm/sec15.md)
+1. [Tfe main program](gfm/sec15.md)
 1. [How to build tfe (text file editor)](gfm/sec16.md)
-1. [Menu and action](gfm/sec17.md)
+1. [Menus and actions](gfm/sec17.md)
 1. [Stateful action](gfm/sec18.md)
 1. [Ui file for menu and action entries](gfm/sec19.md)
-1. [GtkMenuButton, accelerators, font, pango and gsettings](gfm/sec20.md)
-1. [Template XML and composite widget](gfm/sec21.md)
-1. [GtkDrawingArea and Cairo](gfm/sec22.md)
-1. [Periodic Events](gfm/sec23.md)
-1. [Combine GtkDrawingArea and TfeTextView](gfm/sec24.md)
-1. [Tiny turtle graphics interpreter](gfm/sec25.md)
-1. [GtkListView](gfm/sec26.md)
-1. [GtkGridView and activate signal](gfm/sec27.md)
-1. [GtkExpression](gfm/sec28.md)
-1. [GtkColumnView](gfm/sec29.md)
-1. [GtkSignalListItemFactory](gfm/sec30.md)
+1. [Composite widgets and alert dialog](gfm/sec20.md)
+1. [GtkFontDialogButton and Gsettings](gfm/sec21.md)
+1. [TfeWindow](gfm/sec22.md)
+1. [Pango, CSS and Application](gfm/sec23.md)
+1. [GtkDrawingArea and Cairo](gfm/sec24.md)
+1. [Periodic Events](gfm/sec25.md)
+1. [Combine GtkDrawingArea and TfeTextView](gfm/sec26.md)
+1. [Tiny turtle graphics interpreter](gfm/sec27.md)
+1. [GtkListView](gfm/sec28.md)
+1. [GtkGridView and activate signal](gfm/sec29.md)
+1. [GtkExpression](gfm/sec30.md)
+1. [GtkColumnView](gfm/sec31.md)
+1. [GtkSignalListItemFactory](gfm/sec32.md)

@@ -6,12 +6,10 @@ Up: [README.md](../README.md),  Prev: [Section 2](sec2.md), Next: [Section 4](se
 
 ### GtkApplication and g\_application\_run
 
-People write programming code to make an application.
+People write programming codes to make an application.
 What are applications?
-Applications are software that runs using libraries, which includes the
-OS, frameworks and so on.
-In GTK 4 programming, the GtkApplication is a program (or executable) that runs
-using Gtk libraries.
+Applications are software that runs using libraries, which are the OS, frameworks and so on.
+In GTK 4 programming, the GtkApplication is a program (or executable) that runs using Gtk libraries.
 
 The basic way to write a GtkApplication is as follows.
 
@@ -42,8 +40,8 @@ The first line says that this program includes the header files of the Gtk libra
 The function `main` is a startup function in C language.
 The variable `app` is defined as a pointer to a GtkApplication instance.
 The function `gtk_application_new` creates a GtkApplication instance and returns a pointer to the instance.
-The GtkApplication instance is a C structure data in which the information about the application is stored.
-The meaning of the arguments will be explained later.
+The GtkApplication instance is a C structure data in which the information of the application is stored.
+The arguments will be explained later.
 The function `g_application_run` runs an application that the instance defined.
 (We often say that the function runs `app`.
 Actually, `app` is not an application but a pointer to the instance of the application.
@@ -57,7 +55,7 @@ That means "object" and "instance" is the same.
 Object is a bit ambiguous word.
 In a broad sense, object has wider meaning than instance.
 So, readers should be careful of the contexts to find the meaning of "object".
-In many cases, object and instance are the same.
+In many cases, object and instance are interchangeable.
 
 The function `gtk_application_new` has two parameters.
 
@@ -71,14 +69,15 @@ If the application runs without any arguments, the flag is G\_APPLICATION\_DEFAU
 Otherwise, you need other flags.
 See [GIO API reference](https://docs.gtk.org/gio/flags.ApplicationFlags.html) for further information.
 
-
-
-To compile this, the following command needs to be run.
-The string `pr1.c` is the filename of the C source code above.
-
 Notice: If your GLib-2.0 version is older than 2.74, use `G_APPLICATION_FLAGS_NONE` instead of `G_APPLICATION_DEFAULT_FLAGS`.
 It is an old flag replaced by `G_APPLICATION_DEFAULT_FLAGS` and deprecated since version 2.74.
-However, many distributions use GLib-2.0 version 2.72 or older, for example, Ubuntu 22.04 LTS.
+
+To compile this, run the following command.
+The string `pr1.c` is the filename of the C source code above.
+
+If you've downloaded this repository, you don't need to create the file.
+There's the same file at `src/misc/pr1.c` in your local repository.
+All the example codes are under the `src` directory as well.
 
 ~~~
 $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
@@ -90,33 +89,33 @@ Let's run it.
 ~~~
 $ ./a.out
 
-(a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
-g_application_activate() and has no handlers connected to the "activate" signal.
+(a.out:5084): GLib-GIO-WARNING **: 09:52:04.236: Your application does not implement
+g_application_activate() and has no handlers connected to the 'activate' signal.
 It should do one of these.
 $
 ~~~
 
 Oh, it just produces an error message.
-This error message means that the GtkApplication object ran, without a doubt.
+This error message shows that the GtkApplication object ran, without a doubt.
 Now, let's think about what this message means.
 
-### signal
+### Signals
 
 The message tells us that:
 
-1. The application GtkApplication doesn't implement `g_application_activate()`,
+1. The application doesn't implement `g_application_activate()`,
 2. It has no handlers connected to the "activate" signal, and
 3. You will need to solve at least one of these.
 
-These two causes of the error are related to signals.
-So, I will explain that to you first.
+These two problems are related to signals.
+So, I will explain that first.
 
 A signal is emitted when something happens.
 For example, a window is created, a window is destroyed and so on.
 The signal "activate" is emitted when the application is activated.
 (Activated is a bit different from started, but you can think of them both as almost the same so far.)
-If the signal is connected to a function, which is called a signal handler or
-simply handler, then the function is invoked when the signal emits.
+If the signal is connected to a function, which is called a signal handler or simply handler,
+then the function is invoked when the signal is emitted.
 
 The flow is like this:
 
@@ -125,8 +124,8 @@ The flow is like this:
 3. If the signal has been connected to a handler in advance, then the handler is invoked.
 
 Signals are defined in objects.
-For example, the "activate" signal belongs to the GApplication object, which is
-a parent object of GtkApplication object.
+For example, the "activate" signal belongs to the GApplication object,
+which is a parent object of GtkApplication object.
 
 The GApplication object is a child object of the GObject object.
 GObject is the top object in the hierarchy of all the objects.
@@ -173,7 +172,7 @@ The function `g_signal_connect` has four arguments.
 1. An instance to which the signal belongs.
 2. The name of the signal.
 3. A handler function (also called callback), which needs to be casted by `G_CALLBACK`.
-4. Data to pass to the handler. If no data is necessary, NULL should be given.
+4. Data to pass to the handler. If no data is necessary, NULL is given.
 
 It is described in the [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
 Correctly, `g_signal_connect` is a macro (not a C function).
@@ -188,7 +187,7 @@ Correctly, `g_signal_connect` is a macro (not a C function).
 ~~~
 
 You can find the description of each signal in the API reference manual.
-For example, "activate" signal is in [GApplication section](https://docs.gtk.org/gio/signal.Application.activate.html) in the GIO API Reference.
+For example, "activate" signal is in the [GApplication section](https://docs.gtk.org/gio/signal.Application.activate.html) in the GIO API Reference.
 
 ~~~c
 void
@@ -260,7 +259,7 @@ Now we go ahead with adding a window into this program.
 What we need to do is:
 
 1. Create a GtkWindow.
-2. Connect it to GtkApplication.
+2. Connect it to the GtkApplication.
 3. Show the window.
 
 Now rewrite the function `app_activate`.
@@ -278,7 +277,7 @@ Now rewrite the function `app_activate`.
 8 }
 ~~~
 
-Widget is an abstract concept that includes all the GUI interfaces such as windows, dialogs, buttons, multi-line text, containers and so on.
+Widget is an abstract concept that includes all the GUI interfaces such as windows, labels, buttons, multi-line text, boxes and so on.
 And GtkWidget is a base object from which all the GUI objects derive.
 
 ~~~
@@ -316,7 +315,7 @@ GTK_WINDOW (win)
 
 The macro is recommended because it does not only cast the pointer but it also checks the type.
 
-#### Connect it to GtkApplication.
+#### Connect it to the GtkApplication.
 
 The function `gtk_window_set_application` is used to connect GtkWindow to GtkApplication.
 
@@ -390,7 +389,7 @@ Then it automatically connect these two instances.
 So you don't need to call `gtk_window_set_application` any more.
 
 The program sets the title and the default size of the window.
-Compile it and run `a.out`, then you will see a bigger window with its title "pr4".
+Compile it and run `a.out`, then you will see a bigger window with the title "pr4".
 
 ![Screenshot of the window](../image/screenshot_pr4.png)
 

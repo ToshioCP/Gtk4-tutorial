@@ -118,37 +118,44 @@ recommended to use global variables because they are prone to make the
 program complicated. So, we need something to communicate between
 objects. There are two ways to do so.</p>
 <ul>
-<li>Functions. For example,
-<code>tb = gtk_text_view_get_buffer (tv)</code>. The caller requests
+<li>Instance methods: Instance methods are functions on instances. For
+example, <code>tb = gtk_text_view_get_buffer (tv)</code> is an instance
+method on the instance <code>tv</code>. The caller requests
 <code>tv</code> to give <code>tb</code>, which is a GtkTextBuffer
 instance connected to <code>tv</code>.</li>
-<li>Signals. For example, <code>activate</code> signal on GApplication
+<li>Signals: For example, <code>activate</code> signal on GApplication
 object. When the application is activated, the signal is emitted. Then
 the handler, which has been connected to the signal, is invoked.</li>
 </ul>
-<p>The caller of the function or the handler connected to the signal is
-usually out of the object. One of the difference between these two is
-that the object is active or passive. In functions the object passively
-responds to the caller. In signals the object actively sends a signal to
-the handler.</p>
+<p>The caller of methods or signals are usually out of the object. One
+of the difference between these two is that the object is active or
+passive. In methods, objects passively respond to the caller. In
+signals, objects actively send signals to handlers.</p>
 <p>GObject signals are registered, connected and emitted.</p>
 <ol type="1">
-<li>Signals are registered with the object type on which they are
-emitted. The registration is done usually when the object class is
-initialized.</li>
-<li>Signals are connected to handlers by <code>g_connect_signal</code>
-or its family functions. The connection is usually done out of the
-object.</li>
+<li>Signals are registered in the class. The registration is done
+usually when the class is initialized. Signals can have a default
+handler, which is sometimes called “object method handler”. It is not a
+user handler connected by <code>g_signal_connect</code> family
+functions. A default handler is always called on any instance of the
+class.</li>
+<li>Signals are connected to handlers by the macro
+<code>g_signal_connect</code> or its family functions. The connection is
+usually done out of the object. One important thing is that signals are
+connected on a certain instance. Suppose there exist two GtkButton
+instances A, B and a function C. Even if you connected the “clicked”
+signal on A to C, B and C are <em>not</em> connected.</li>
 <li>When Signals are emitted, the connected handlers are invoked.
-Signals are emitted on the instance of the object.</li>
+Signals are emitted on the instance of the class.</li>
 </ol>
 <h2 id="signal-registration">Signal registration</h2>
 <p>In TfeTextView, two signals are registered.</p>
 <ul>
 <li>“change-file” signal. This signal is emitted when
 <code>tv-&gt;file</code> is changed.</li>
-<li>“open-response” signal. <code>tfe_text_view_open</code> function is
-not able to return the status because it uses GtkFileChooserDialog. This
+<li>“open-response” signal. The function <code>tfe_text_view_open</code>
+doesn’t return the status because it can’t get the status from the file
+chooser dialog. (Instead, the call back function gets the status.) This
 signal is emitted instead of the return value of the function.</li>
 </ul>
 <p>A static variable or array is used to store signal ID.</p>
@@ -221,22 +228,22 @@ reference manual</a>.</li>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>               TfeTextViewOpenResponseType response<span class="op">-</span>id<span class="op">,</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>               gpointer user_data<span class="op">)</span></span></code></pre></div>
 <ul>
-<li>Because “change-file” signal doesn’t have parameter, the handler’s
-parameters are a TfeTextView instance and user data.</li>
-<li>Because “open-response” signal has one parameter, the handler’s
-parameters are a TfeTextView instance, the signal’s parameter and user
+<li>The signal “change-file” doesn’t have parameter, so the handler’s
+arguments are a TfeTextView instance and a user data.</li>
+<li>The signal “open-response” signal has one parameter and its
+arguments are a TfeTextView instance, the signal’s parameter and user
 data.</li>
-<li><code>tv</code> is the object instance on which the signal is
-emitted.</li>
-<li><code>user_data</code> comes from the fourth argument of
-<code>g_signal_connect</code>.</li>
-<li><code>parameter</code> comes from the fourth argument of
-<code>g_signal_emit</code>.</li>
+<li>The variable <code>tv</code> points the instance on which the signal
+is emitted.</li>
+<li>The last argument <code>user_data</code> comes from the fourth
+argument of <code>g_signal_connect</code>.</li>
+<li>The <code>parameter</code> (<code>response-id</code>) comes from the
+fourth argument of <code>g_signal_emit</code>.</li>
 </ul>
-<p>The values of the parameter is defined in <code>tfetextview.h</code>
-because they are public.</p>
+<p>The values of the type <code>TfeTextViewOpenResponseType</code> are
+defined in <code>tfetextview.h</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* &quot;open-response&quot; signal response */</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> TfeTextViewOpenResponseType</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  TFE_OPEN_RESPONSE_SUCCESS<span class="op">,</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  TFE_OPEN_RESPONSE_CANCEL<span class="op">,</span></span>
@@ -252,30 +259,26 @@ the user has canceled.</li>
 error has occurred.</li>
 </ul>
 <h2 id="signal-connection">Signal connection</h2>
-<p>A signal and a handler are connected by the function
-<code>g_signal_connect</code>. There are some similar functions like
-<code>g_signal_connect_after</code>,
+<p>A signal and a handler are connected by the function macro
+<code>g_signal_connect</code>. There are some similar function macros
+like <code>g_signal_connect_after</code>,
 <code>g_signal_connect_swapped</code> and so on. However,
-<code>g_signal_connect</code> is the most common. The signals
-“change-file” is connected to a callback function out of the TfeTextView
-object. In the same way, the signals “open-response” is connected to a
-callback function out of the TfeTextView object. Those callback
-functions are defined by users.</p>
-<p>In the program <code>tfe</code>, callback functions are defined in
-<code>tfenotebook.c</code>. And their names are
-<code>file_changed</code> and <code>open_response</code>. They will be
-explained later.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed<span class="op">),</span> nb<span class="op">);</span></span>
+<code>g_signal_connect</code> is used most often. The signals
+“change-file” and “open-response” are connected to their callback
+functions out of the TfeTextView object. Those callback functions are
+defined by users.</p>
+<p>For example, callback functions are defined in
+<code>src/tfe6/tfewindow.c</code> and their names are
+<code>file_changed_cb</code> and <code>open_response_cb</code>. They
+will be explained later.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> nb<span class="op">);</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response<span class="op">),</span> nb<span class="op">);</span></span></code></pre></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> nb<span class="op">);</span></span></code></pre></div>
 <h2 id="signal-emission">Signal emission</h2>
-<p>Signals are emitted on an instance. The type of the instance is the
-second argument of <code>g_signal_new</code>. The relationship between
-the signal and object type is determined when the signal is
-registered.</p>
-<p>A function <code>g_signal_emit</code> is used to emit the signal. The
-following lines are extracted from <code>tfetextview.c</code>. Each line
-comes from a different line.</p>
+<p>A signal is emitted on the instance. A function
+<code>g_signal_emit</code> is used to emit the signal. The following
+lines are extracted from <code>src/tfetextview/tfetextview.c</code>.
+Each line comes from a different line.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>g_signal_emit <span class="op">(</span>tv<span class="op">,</span> tfe_text_view_signals<span class="op">[</span>CHANGE_FILE<span class="op">],</span> <span class="dv">0</span><span class="op">);</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>g_signal_emit <span class="op">(</span>tv<span class="op">,</span> tfe_text_view_signals<span class="op">[</span>OPEN_RESPONSE<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> TFE_OPEN_RESPONSE_SUCCESS<span class="op">);</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>g_signal_emit <span class="op">(</span>tv<span class="op">,</span> tfe_text_view_signals<span class="op">[</span>OPEN_RESPONSE<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> TFE_OPEN_RESPONSE_CANCEL<span class="op">);</span></span>
@@ -284,12 +287,12 @@ comes from a different line.</p>
 <li>The first argument is the instance on which the signal is
 emitted.</li>
 <li>The second argument is the signal id.</li>
-<li>The third argument is the detail of the signal. “change-file” signal
-and “open-response” signal doesn’t have details and the argument is zero
-when no details.</li>
-<li>“change-file” signal doesn’t have parameter, so there’s no fourth
-parameter.</li>
-<li>“open-response” signal has one parameter. The fourth parameter is
+<li>The third argument is the detail of the signal. The signals
+“change-file” and “open-response” don’t have details and the arguments
+are zero.</li>
+<li>The signal “change-file” doesn’t have parameters, so there’s no
+fourth argument.</li>
+<li>The signal “open-response” has one parameter. The fourth argument is
 the parameter.</li>
 </ul>
     </div>

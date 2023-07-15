@@ -6,17 +6,19 @@ Up: [README.md](../README.md),  Next: [Section 2](sec2.md)
 
 ### GTK 4 on a Linux OS
 
-This tutorial is about GTK 4 libraries.
-It is originally used on Linux with C compiler, but now it is used more widely, on Windows and MacOS, with Vala, Python and so on.
+This tutorial describes GTK 4 libraries.
+It is originally used on Linux with C compiler, but now it is used more widely, on Windows and MacOS, with Vala, Python, Ruby and so on.
 However, this tutorial describes only *C programs on Linux*.
 
 If you want to try the examples in the tutorial, you need:
 
 - PC with Linux distribution like Ubuntu or Debian.
 - GCC.
-- GTK 4.
-The stable version of GTK is 4.8.2 at present (13/Dec/2022), but older version (4.0 or higher) may work.
-See [Section 2](sec2.md) for the installation for GTK 4.
+- GTK 4 (version 4.10.1 or later).
+
+The stable version of GTK is 4.10.1 at present (24/April/2023).
+The version 4.10 adds some new classes and functions and makes some classes and functions deprecated.
+Some example programs in this tutorial don't work on the older version.
 
 ### Ruby and rake for making the document
 
@@ -32,11 +34,10 @@ One is installing the distribution's package.
 The other is using rbenv and ruby-build.
 If you want to use the latest version of ruby, use rbenv.
 - Rake.
-You don't need to install it separately because it is a standard library of Ruby.
 
 ## License
 
-Copyright (C) 2020-2020,2023  ToshioCP (Toshio Sekiya)
+Copyright (C) 2020,2023  ToshioCP (Toshio Sekiya)
 
 GTK4-tutorial repository contains tutorial documents and programs such as converters, generators and controllers.
 All of them make up the 'GTK4-tutorial' package.

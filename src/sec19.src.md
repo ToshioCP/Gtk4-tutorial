@@ -91,6 +91,9 @@ g_object_unref (builder);
 
 The builder instance is freed after the GMenuModel `menubar` is inserted to the application.
 If you do it before the insertion, bad thing will happen -- your computer might freeze.
+It is because you don't own the `menubar` instance.
+The function `gtk_builder_get_object` just returns the pointer to `menubar` and doesn't increase the reference count of `menubar`.
+So, if you released `bulder` before `gtk_application_set_menubar`, `builder` would be destroyed and `menubar` as well.
 
 ## Action entry
 
@@ -142,11 +145,11 @@ GVariant text format defines that strings are surrounded by single or double quo
 So, the string red is 'red' or "red".
 The fourth element is `"'red'"`, which is a C string format and the string is 'red'.
 You can write `"\"red\""` instead.
-The second element color\_activated is the activate handler.
+The second element `color_activated` is the activate handler.
 The action doesn't have change-state handler, so the fifth element is NULL.
 - Quit action is non-stateful and has no parameter.
 So, the third and fourth elements are NULL.
-The second element quit\_activated is the activate handler.
+The second element `quit_activated` is the activate handler.
 The action doesn't have change-state handler, so the fifth element is NULL.
 
 The function `g_action_map_add_action_entries` does everything
@@ -164,7 +167,7 @@ g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
 The code above does:
 
 - Builds the "color" and "quit" actions
-- Connects the action and the "activate" signal handlers (color\_activated and quit\_activated).
+- Connects the action and the "activate" signal handlers (`color_activated` and `quit_activated`).
 - Adds the actions to the action map `app`.
 
 The same goes for the other action.

@@ -1,16 +1,20 @@
 #include <gtk/gtk.h>
 #include "../tfetextview.h"
 
-#define APPLICATION_ID "com.github.ToshioCP.testopen"
+#define APPLICATION_ID "com.github.ToshioCP.testtfetextviewopen"
 
 static void
 open_response_cb (TfeTextView *tv, int response) {
-  GFile *file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
-  char *filename = file ? g_file_get_basename (file) : NULL;
-  g_printerr ("New file is %s.\n", filename);
+  GFile *file;
+  char *filename;
   switch (response) {
   case TFE_OPEN_RESPONSE_SUCCESS:
     g_printerr ("Response is SUCCESS.\n");
+    file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
+    filename = file ? g_file_get_basename (file) : NULL;
+    g_printerr ("New file is %s.\n", filename);
+    if (filename)
+      g_free (filename);
     break;
   case TFE_OPEN_RESPONSE_CANCEL:
     g_printerr ("Response is CANCEL.\n");
@@ -24,7 +28,7 @@ open_response_cb (TfeTextView *tv, int response) {
 }
 
 static void
-change_file_cb (TfeTextView *tv, int response) {
+change_file_cb (TfeTextView *tv) {
   g_printerr ("File is changed.\n");
 }
 
@@ -50,7 +54,7 @@ app_activate (GApplication *application) {
   // - (2) => response signal with CANCEL
   // The test program outputs logs with regards to above and the user confirms the behavior.
   // The test doesn't assert.
-  gtk_widget_show (GTK_WIDGET (win));
+  gtk_window_present (GTK_WINDOW (win));
   g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), NULL);
   g_signal_connect (TFE_TEXT_VIEW (tv), "change-file", G_CALLBACK (change_file_cb), NULL);
 

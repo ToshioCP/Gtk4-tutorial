@@ -22,11 +22,8 @@ color_activated(GSimpleAction *action, GVariant *parameter) {
 }
 
 static void
-remove_provider (GApplication *app, GtkCssProvider *provider) {
-  GdkDisplay *display = gdk_display_get_default();
-  
-  gtk_style_context_remove_provider_for_display (display, GTK_STYLE_PROVIDER (provider));
-  g_object_unref (provider);
+app_shutdown (GApplication *app, GtkCssProvider *provider) {
+  gtk_style_context_remove_provider_for_display (gdk_display_get_default(), GTK_STYLE_PROVIDER (provider));
 }
 
 static void
@@ -51,13 +48,15 @@ app_activate (GApplication *app) {
 
 static void
 app_startup (GApplication *app) {
+  GVariantType *vtype = g_variant_type_new("n");
   GSimpleAction *act_color
-    = g_simple_action_new_stateful ("color", g_variant_type_new("n"), g_variant_new_int16 (0));
+    = g_simple_action_new_stateful ("color", vtype, g_variant_new_int16 (0));
+  g_variant_type_free (vtype);
   GSimpleAction *act_quit
     = g_simple_action_new ("quit", NULL);
   g_signal_connect (act_color, "activate", G_CALLBACK (color_activated), NULL);
- g_signal_connect_swapped (act_quit, "activate", G_CALLBACK (g_application_quit), app);
-   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_color));
+  g_signal_connect_swapped (act_quit, "activate", G_CALLBACK (g_application_quit), app);
+  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_color));
   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
 
   GMenu *menubar = g_menu_new ();
@@ -86,6 +85,10 @@ app_startup (GApplication *app) {
   g_menu_append_section (menu, "Color", G_MENU_MODEL (section2));
   g_menu_append_section (menu, NULL, G_MENU_MODEL (section3));
   g_menu_append_submenu (menubar, "Menu", G_MENU_MODEL (menu));
+  g_object_unref (section1);
+  g_object_unref (section2);
+  g_object_unref (section3);
+  g_object_unref (menu);
 
   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
 
@@ -93,10 +96,10 @@ app_startup (GApplication *app) {
   /* Initialize the css data */
   gtk_css_provider_load_from_data (provider, "label.lb {background-color: red;}", -1);
   /* Add CSS to the default GdkDisplay. */
-  GdkDisplay *display = gdk_display_get_default ();
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  g_signal_connect (app, "shutdown", G_CALLBACK (remove_provider), provider);
+  gtk_style_context_add_provider_for_display (gdk_display_get_default (),
+        GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), provider);
+  g_object_unref (provider); /* release provider, but it's still alive because the display owns it */
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.menu2_int16"

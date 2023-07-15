@@ -103,383 +103,815 @@
 <a class="nav-link" href="sec29.html">Prev: section29</a>
 </li>
 
-            
+            <li class="nav-item">
+<a class="nav-link" href="sec31.html">Next: section31</a>
+</li>
+
           </ul>
         </div>
       </div>
     </nav>
-<h1 id="gtksignallistitemfactory">GtkSignalListItemFactory</h1>
-<h2
-id="gtksignallistitemfactory-and-gtkbulderlistitemfactory">GtkSignalListItemFactory
-and GtkBulderListItemFactory</h2>
-<p>GtkBuilderlistItemFactory is convenient when GtkListView just shows
-the contents of a list. Its binding direction is always from an item of
-a list to a child of GtkListItem.</p>
-<p>When it comes to dynamic connection, it’s not enough. For example,
-you want to edit the contents of a list. You set a child of GtkListItem
-to a GtkText instance so a user can edit a text with it. You need to
-bind an item in the list with the buffer of the GtkText. The direction
-is opposite from the one with GtkBuilderListItemFactory. It is from the
-GtkText instance to the item in the list. You can implement this with
-GtkSignalListItemFactory, which is more flexible than
-GtkBuilderListItemFactory.</p>
-<p>Two things are shown in this section.</p>
+<h1 id="gtkexpression">GtkExpression</h1>
+<p>GtkExpression is a fundamental type. It is not a descendant of
+GObject. GtkExpression provides a way to describe references to values.
+GtkExpression needs to be evaluated to obtain a value.</p>
+<p>It is similar to arithmetic calculation.</p>
+<pre><code>1 + 2 = 3</code></pre>
+<p><code>1+2</code> is an expression. It shows the way how to calculate.
+<code>3</code> is the value comes from the expression. Evaluation is to
+calculate the expression and get the value.</p>
+<p>GtkExpression is a way to get a value. Evaluation is like a
+calculation. A value is got by evaluating the expression.</p>
+<h2 id="constant-expression">Constant expression</h2>
+<p>A constant expression (GtkConstantExpression) provides constant value
+or instance when it is evaluated.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  expression <span class="op">=</span> gtk_constant_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span><span class="dv">100</span><span class="op">);</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">);</span></span></code></pre></div>
 <ul>
-<li>Binding from a child of a GtkListItem instance to an item of a
-list.</li>
-<li>Access a child of GtkListItem dynamically. This direction is the
-same as the one with GtkBulderListItemFactory. But
-GtkBulderListItemFactory uses GtkExpression from the item property of
-the GtkListItem. So, it updates its child widget only when the item
-property changes. In this example the child reflects the change in the
-same item in the list dynamically.</li>
+<li>GtkExpression uses GValue to hold a value. GValue is a structure and
+container to hold a type and value. It must be initialized with
+<code>G_VALUE_INIT</code>, first. Be careful that <code>value</code> is
+a structure, not a pointer to a structure.</li>
+<li>Constant expression is created with
+<code>gtk_constant_expression_new</code> function. The parameter of the
+function is a type (GType) and a value (or instance). This expression
+holds a constant value. <code>G_TYPE_INT</code> is a type that is
+registered to the type system. It is integer type. Some types are shown
+in the following table.</li>
+<li><code>gtk_expression_evaluate</code> evaluates the expression. It
+has three parameters, the expression to evaluate, <code>this</code>
+instance and a pointer to a GValue for being set with the value.
+<code>this</code> instance isn’t necessary for constant expressions.
+Therefore, the second argument is NULL.
+<code>gtk_expression_evaluate</code> returns TRUE if it successfully
+evaluates the expression. Otherwise it returns FALSE.</li>
+<li>If it returns TRUE, the GValue <code>value</code> is set with the
+value of the expression. The type of the value is int.</li>
 </ul>
-<p>This section shows just a part of the source file
-<code>listeditor.c</code>. If you want to see the whole codes, see
-<code>src/listeditor</code> directory of the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial
-repository</a>.</p>
-<h2 id="a-list-editor">A list editor</h2>
-<p>The sample program is a list editor and data of the list are strings.
-It’s the same as a line editor. It reads a text file line by line. Each
-line is an item of the list. The list is displayed with GtkColumnView.
-There are two columns. The one is a button, which makes the line be a
-current line. If the line is the current line, the button is colored
-with red. The other is a string which is the contents of the
-corresponding item of the list.</p>
-<figure>
-<img src="image/listeditor.png" alt="List editor" />
-<figcaption aria-hidden="true">List editor</figcaption>
-</figure>
-<p>The source files are located at <code>src/listeditor</code>
-directory. You can compile end execute it as follows.</p>
-<ul>
-<li>Download the program from the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.</li>
-<li>Change your current directory to <code>src/listeditor</code>.</li>
-<li>Type the following on your commandline.</li>
-</ul>
-<pre><code>$ meson _build
-$ ninja -C _build
-$ _build/listeditor</code></pre>
-<ul>
-<li>Append button: appends a line after the current line, or at the last
-line if no current line exists.</li>
-<li>Insert button: inserts a line before the current line.</li>
-<li>Remove button: removes a current line.</li>
-<li>Read button: reads a file.</li>
-<li>Write button: writes the contents to a file.</li>
-<li>close button: close the contents.</li>
-<li>quit button: quit the application.</li>
-<li>Button on the select column: makes the line current.</li>
-<li>String column: GtkText. You can edit a string in the field.</li>
-</ul>
-<p>The current line number (zero-based) is shown at the left of the tool
-bar. The file name is shown at the right of the write button.</p>
-<h2 id="connect-a-gtktext-instance-and-an-item-in-the-list">Connect a
-GtkText instance and an item in the list</h2>
-<p>The second column (GtkColumnViewColumn) sets its factory property to
-GtkSignalListItemFactory. It uses three signals setup, bind and unbind.
-The following is their sgnal handlers.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>setup2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>  GtkWidget <span class="op">*</span>text <span class="op">=</span> gtk_text_new <span class="op">();</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>  gtk_list_item_set_child <span class="op">(</span>listitem<span class="op">,</span> GTK_WIDGET <span class="op">(</span>text<span class="op">));</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  gtk_editable_set_alignment <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> <span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="op">}</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>bind2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>  GtkWidget <span class="op">*</span>text <span class="op">=</span> gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">);</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>  GtkEntryBuffer <span class="op">*</span>buffer <span class="op">=</span> gtk_text_get_buffer <span class="op">(</span>GTK_TEXT <span class="op">(</span>text<span class="op">));</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>  GBinding <span class="op">*</span>bind<span class="op">;</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a></span>
-<span id="cb2-15"><a href="#cb2-15"></a>  gtk_editable_set_text <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> le_data_look_string <span class="op">(</span>data<span class="op">));</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>  gtk_editable_set_position <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a></span>
-<span id="cb2-18"><a href="#cb2-18"></a>  bind <span class="op">=</span> g_object_bind_property <span class="op">(</span>buffer<span class="op">,</span> <span class="st">&quot;text&quot;</span><span class="op">,</span> data<span class="op">,</span> <span class="st">&quot;string&quot;</span><span class="op">,</span> G_BINDING_DEFAULT<span class="op">);</span></span>
-<span id="cb2-19"><a href="#cb2-19"></a>  g_object_set_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">,</span> bind<span class="op">);</span></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="op">}</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-23"><a href="#cb2-23"></a>unbind2_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-24"><a href="#cb2-24"></a>  GBinding <span class="op">*</span>bind <span class="op">=</span> G_BINDING <span class="op">(</span>g_object_get_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">));</span></span>
-<span id="cb2-25"><a href="#cb2-25"></a></span>
-<span id="cb2-26"><a href="#cb2-26"></a>  g_binding_unbind<span class="op">(</span>bind<span class="op">);</span></span>
-<span id="cb2-27"><a href="#cb2-27"></a>  g_object_set_data <span class="op">(</span>G_OBJECT <span class="op">(</span>listitem<span class="op">),</span> <span class="st">&quot;bind&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>1-6: <code>setup2_cb</code> is a setup signal handler on the
-GtkSignalListItemFactory. This factory is inserted to the factory
-property of the second GtkColumnViewColumn. The handler just creates a
-GtkText instance and sets the child of <code>listitem</code> to it. The
-instance will be destroyed automatically when the <code>listitem</code>
-is destroyed. So, teardown signal handler isn’t necessary.</li>
-<li>8-20: <code>bind2_cb</code> is a bind signal handler. It is called
-when the <code>listitem</code> is bound to an item in the list. The list
-items are LeData instances. LeData is defined in the file
-<code>listeditor.c</code> (the C source file of the list editor). It is
-a child class of GObject and has two data. The one is
-<code>listitem</code> which points a first column GtkListItem instance
-when they are connected. Be careful that the GtkListItem instance is
-<em>not</em> the <code>listitem</code> in this handler. If no
-GtkListItem is connected, it is NULL. The other is <code>string</code>
-which is a content of the line.
-<ul>
-<li>10-11: <code>text</code> is a child of the <code>listitem</code> and
-it is a GtkText instance. And <code>buffer</code> is a GtkTextBuffer
-instance of the <code>text</code>.</li>
-<li>12: The LeData instance <code>data</code> is an item pointed by the
-<code>listitem</code>.</li>
-<li>15-16: Sets the text of <code>text</code> to
-<code>le_data_look_string (data)</code>. le_data_look_string returns the
-string of the <code>data</code> and the ownership of the string is still
-taken by the <code>data</code>. So, the caller don’t need to free the
-string.</li>
-<li>18: <code>g_object_bind_property</code> binds a property and another
-object property. This line binds the “text” property of the
-<code>buffer</code> (source) and the “string” property of the
-<code>data</code> (destination). It is a uni-directional binding
-(<code>G_BINDING_DEFAULT</code>). When a user changes the GtkText text,
-the same string is immediately put into the <code>data</code>. The
-function returns a GBinding instance. This binding is different from
-bindings of GtkExpression. This binding needs the existence of the two
-properties.</li>
-<li>19: GObjec has a table. The key is a string (or GQuark) and the
-value is a gpointer (pointer to any type). The function
-<code>g_object_set_data</code> sets the association from the key to the
-value. This line sets the association from “bind” to <code>bind</code>
-instance. It makes possible for the “unbind” handler to get the
-<code>bind</code> instance.</li>
-</ul></li>
-<li>22-28: <code>unbind2_cb</code> is a unbind signal handler.
-<ul>
-<li>24: Retrieves the <code>bind</code> instance from the table in the
-<code>listitem</code> instance.</li>
-<li>26: Unbind the binding.</li>
-<li>27: Removes the value corresponds to the “bind” key.</li>
-</ul></li>
-</ul>
-<p>This technique is not so complicated. You can use it when you make a
-cell editable application.</p>
-<h2 id="change-the-cell-of-gtkcolumnview-dynamically">Change the cell of
-GtkColumnView dynamically</h2>
-<p>Next topic is to change the GtkColumnView (or GtkListView) cells
-dynamically. The example changes the color of the buttons, which are
-children of GtkListItem instances, as the current line position
-moves.</p>
-<p>The line editor has the current position of the list.</p>
-<ul>
-<li>At first, no line is current.</li>
-<li>When a line is appended or inserted, the line is current.</li>
-<li>When the current line is deleted, no line will be current.</li>
-<li>When a button in the first column of GtkColumnView is clicked, the
-line will be current.</li>
-<li>It is necessary to set the line status (whether current or not) when
-a GtkListItem is bound to an item in the list. It is because GtkListItem
-is recycled. A GtkListItem was possibly current line before but not
-current after recycled. The opposite can also be happen.</li>
-</ul>
-<p>The button of the current line is colored with red and otherwise
-white.</p>
-<p>The current line has no relationship to GtkSingleSelection object.
-GtkSingleSelection selects a line on the display. The current line
-doesn’t need to be on the display. It is possible to be on the line out
-of the Window (GtkScrolledWindow). Actually, the program doesn’t use
-GtkSingleSelection.</p>
-<p>It is necessary to know the corresponding GtkListItem instance from
-the item in the list. It is the opposite direction from
-<code>gtk_list_item_get_item</code> function. To accomplish this, we set
-a <code>listitem</code> element of LeData to point the corresponding
-GtkListItem instance. Therefore, items (LeData) in the list always know
-the GtkListItem. If there’s no GtkListItem bound to the item, NULL is
-assigned.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">GType</th>
+<th style="text-align: left;">C type</th>
+<th style="text-align: left;">type name</th>
+<th style="text-align: left;">notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">G_TYPE_CHAR</td>
+<td style="text-align: left;">char</td>
+<td style="text-align: left;">gchar</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G_TYPE_BOOLEAN</td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">gboolean</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G_TYPE_INT</td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">gint</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G_TYPE_FLOAT</td>
+<td style="text-align: left;">float</td>
+<td style="text-align: left;">gfloat</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G_TYPE_DOUBLE</td>
+<td style="text-align: left;">double</td>
+<td style="text-align: left;">gdouble</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G_TYPE_POINTER</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">gpointer</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G_TYPE_STRING</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">gchararray</td>
+<td style="text-align: left;">null-terminated Cstring</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G_TYPE_OBJECT</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">GObject</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GTK_TYPE_WINDOW</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">GtkWindow</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>A sample program <code>exp_constant_simple.c</code> is in
+<code>src/expression</code> directory.</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>select_cb <span class="op">(</span>GtkButton <span class="op">*</span>btn<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>  LeWindow <span class="op">*</span>win <span class="op">=</span> LE_WINDOW <span class="op">(</span>gtk_widget_get_ancestor <span class="op">(</span>GTK_WIDGET <span class="op">(</span>btn<span class="op">),</span> LE_TYPE_WINDOW<span class="op">));</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a>  update_current <span class="op">(</span>win<span class="op">,</span> gtk_list_item_get_position <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="op">}</span></span>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="dt">int</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  GtkExpression <span class="op">*</span>expression<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a></span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>setup1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  GtkWidget <span class="op">*</span>button <span class="op">=</span> gtk_button_new <span class="op">();</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  gtk_list_item_set_child <span class="op">(</span>listitem<span class="op">,</span> button<span class="op">);</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  gtk_widget_set_focusable <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> FALSE<span class="op">);</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>  g_signal_connect <span class="op">(</span>button<span class="op">,</span> <span class="st">&quot;clicked&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>select_cb<span class="op">),</span> listitem<span class="op">);</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="op">}</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a></span>
-<span id="cb3-16"><a href="#cb3-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a>bind1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a>  LeWindow <span class="op">*</span>win <span class="op">=</span> LE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb3-19"><a href="#cb3-19"></a>  GtkWidget <span class="op">*</span>button <span class="op">=</span> gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">);</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>non_current<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span>NULL<span class="op">};</span></span>
-<span id="cb3-21"><a href="#cb3-21"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>current<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;current&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  <span class="cf">if</span> <span class="op">(</span>data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>    le_data_set_listitem <span class="op">(</span>data<span class="op">,</span> listitem<span class="op">);</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>    <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>position <span class="op">==</span> gtk_list_item_get_position <span class="op">(</span>listitem<span class="op">))</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>      gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> current<span class="op">);</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a>    <span class="cf">else</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a>      gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> non_current<span class="op">);</span></span>
-<span id="cb3-30"><a href="#cb3-30"></a>  <span class="op">}</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a><span class="op">}</span></span>
-<span id="cb3-32"><a href="#cb3-32"></a></span>
-<span id="cb3-33"><a href="#cb3-33"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>unbind1_cb <span class="op">(</span>GtkListItemFactory <span class="op">*</span>factory<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a>  LeData <span class="op">*</span>data <span class="op">=</span> LE_DATA <span class="op">(</span>gtk_list_item_get_item <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb3-36"><a href="#cb3-36"></a>  <span class="cf">if</span> <span class="op">(</span>data<span class="op">)</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>    le_data_set_listitem <span class="op">(</span>data<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb3-38"><a href="#cb3-38"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="co">/* Create an expression */</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  expression <span class="op">=</span> gtk_constant_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span><span class="dv">100</span><span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="co">/* Evaluate the expression */</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    g_print <span class="op">(</span><span class="st">&quot;The value is %d.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>  <span class="cf">else</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>    g_print <span class="op">(</span><span class="st">&quot;The constant expression wasn&#39;t evaluated correctly.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>  g_value_unset <span class="op">(&amp;</span>value<span class="op">);</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>8-14: <code>setup1_cb</code> is a setup signal handler on the
-GtkSignalListItemFactory. This factory is inserted to the factory
-property of the first GtkColumnViewColumn. It sets the child of
-<code>listitem</code> to a GtkButton instance. The “clicked” signal on
-the button is connected to the handler <code>select_cb</code>. When the
-listitem is destroyed, the child (GtkButton) is also destroyed. At the
-same time, the connection of the signal and the handler is also
-destroyed. So, you don’t need teardown signal handler.</li>
-<li>1-6: <code>select_cb</code> is a “clicked” signal handler. LeWindow
-is defined in <code>listeditor.c</code>. It’s a child class of
-GtkApplicationWindow. The handler just calls the
-<code>update_current</code> function. The function will be explained
-later.</li>
-<li>16-31: <code>bind1_cb</code> is a bind signal handler. It sets the
-“listitem” element of the item (LeData) to point the
-<code>listitem</code> (GtkListItem instance). It makes the item possible
-to find the corresponding GtkListItem instance. If the item is the
-current line, the CSS class of the button includes “current” class.
-Otherwise it has no CSS class. This is necessary because the button may
-be recycled and it has had former CSS class. The class need to be
-updated.</li>
-<li>33-38: <code>unbind1_cb</code> is an unbind signal handler. It
-removes the <code>listitem</code> instance from the “listitem” element
-of the item. The element becomes NULL, which tells no GtkListItem is
-bound. When referring GtkListItem, it needs to check the “listitem”
-element whether it points a GtkListItem or not (NULL). Otherwise bad
-things will happen.</li>
+<li>9: A constant expression is created. It holds an int value 100. The
+variable <code>expression</code> points the expression.</li>
+<li>11-14: Evaluates the expression. If it successes, show the value to
+the stdout. Otherwise show an error message.</li>
+<li>15-16: Releases the expression and unsets the GValue.</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>update_current <span class="op">(</span>LeWindow <span class="op">*</span>win<span class="op">,</span> <span class="dt">int</span> new<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>  LeData <span class="op">*</span>data<span class="op">;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>  GtkListItem <span class="op">*</span>listitem<span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>  GtkButton <span class="op">*</span>button<span class="op">;</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>non_current<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span>NULL<span class="op">};</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>current<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;current&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a>  <span class="cf">if</span> <span class="op">(</span>new <span class="op">&gt;=</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>    s <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%d&quot;</span><span class="op">,</span> new<span class="op">);</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>  <span class="cf">else</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a>    s <span class="op">=</span> <span class="st">&quot;&quot;</span><span class="op">;</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>  gtk_label_set_text <span class="op">(</span>GTK_LABEL <span class="op">(</span>win<span class="op">-&gt;</span>position_label<span class="op">),</span> s<span class="op">);</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>  <span class="cf">if</span> <span class="op">(*</span>s<span class="op">)</span> <span class="co">// s isn&#39;t an empty string</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>    g_free <span class="op">(</span>s<span class="op">);</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a></span>
-<span id="cb4-18"><a href="#cb4-18"></a>  <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>position <span class="op">&gt;=</span><span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a>    data <span class="op">=</span> LE_DATA <span class="op">(</span>g_list_model_get_item <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>win<span class="op">-&gt;</span>liststore<span class="op">),</span> win<span class="op">-&gt;</span>position<span class="op">));</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a>    <span class="cf">if</span> <span class="op">((</span>listitem <span class="op">=</span> le_data_get_listitem <span class="op">(</span>data<span class="op">))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>      button <span class="op">=</span> GTK_BUTTON <span class="op">(</span>gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a>      gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> non_current<span class="op">);</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a>      g_object_unref <span class="op">(</span>listitem<span class="op">);</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a>    <span class="op">}</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a>    g_object_unref <span class="op">(</span>data<span class="op">);</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a>  <span class="op">}</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>  win<span class="op">-&gt;</span>position <span class="op">=</span> new<span class="op">;</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>  <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>position <span class="op">&gt;=</span><span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>    data <span class="op">=</span> LE_DATA <span class="op">(</span>g_list_model_get_item <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>win<span class="op">-&gt;</span>liststore<span class="op">),</span> win<span class="op">-&gt;</span>position<span class="op">));</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a>    <span class="cf">if</span> <span class="op">((</span>listitem <span class="op">=</span> le_data_get_listitem <span class="op">(</span>data<span class="op">))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a>      button <span class="op">=</span> GTK_BUTTON <span class="op">(</span>gtk_list_item_get_child <span class="op">(</span>listitem<span class="op">));</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>      gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>button<span class="op">),</span> current<span class="op">);</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a>      g_object_unref <span class="op">(</span>listitem<span class="op">);</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>    <span class="op">}</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a>    g_object_unref <span class="op">(</span>data<span class="op">);</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a>  <span class="op">}</span></span>
-<span id="cb4-37"><a href="#cb4-37"></a><span class="op">}</span></span></code></pre></div>
-<p>The function <code>update_current</code> does several things.</p>
+<p>Constant expression is usually used to give a constant value or
+instance to another expression.</p>
+<h2 id="property-expression">Property expression</h2>
+<p>A property expression (GtkPropertyExpression) looks up a property in
+a GObject instance. For example, a property expression that refers
+“label” property in a GtkLabel object is created like this.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> another_expression<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span></code></pre></div>
+<p>The second parameter <code>another_expression</code> is one of:</p>
 <ul>
-<li>It has two parameters. The first one is <code>win</code>, which is
-an instance of LeWindow class. It has some elements.
+<li>An expression that gives a GtkLabel instance when it is
+evaluated.</li>
+<li>NULL. When NULL is given, a GtkLabel instance will be given when it
+is evaluated. The instance is called <code>this</code> object.</li>
+</ul>
+<p>For example,</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>another_expression <span class="op">=</span> gtk_constant_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> another_expression<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span></code></pre></div>
+<p>If <code>expression</code> is evaluated, the second parameter
+<code>another_expression</code> is evaluated in advance. The value of
+<code>another_expression</code> is the <code>label</code> (GtkLabel
+instance). Then, <code>expression</code> looks up “label” property of
+the label and the evaluation results “Hello”.</p>
+<p>In the example above, the second argument of
+<code>gtk_property_expression_new</code> is another expression. But the
+second argument can be NULL. If it is NULL, <code>this</code> instance
+is used instead. <code>this</code> is given by
+<code>gtk_expression_evaluate</code> function.</p>
+<p>There’s a simple program <code>exp_property_simple.c</code> in
+<code>src/expression</code> directory.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="dt">int</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  GtkExpression <span class="op">*</span>expression<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a>  gtk_init <span class="op">();</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>  label <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;Hello world.&quot;</span><span class="op">);</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>  <span class="co">/* Create an expression */</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>  expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>  <span class="co">/* Evaluate the expression */</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> label<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>    g_print <span class="op">(</span><span class="st">&quot;The value is %s.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_string <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>  <span class="cf">else</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>    g_print <span class="op">(</span><span class="st">&quot;The constant expression wasn&#39;t evaluated correctly.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb6-18"><a href="#cb6-18"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a>  g_value_unset <span class="op">(&amp;</span>value<span class="op">);</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a></span>
+<span id="cb6-21"><a href="#cb6-21"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>win-&gt;position: an Integer. it is the current position. If no
-current line exists, it is -1.</li>
-<li>win-&gt;position_label: GtkLabel. It shows the current
-position.</li>
+<li>9-10: <code>gtk_init</code> initializes GTK GUI toolkit. It isn’t
+usually necessary because the GtkApplication default startup handler
+does the initialization. A GtkLabel instance is created with the text
+“Hello world.”.</li>
+<li>12: A property expression is created. It looks a “label” property of
+a GtkLabel instance. But at the creation, no instance is given because
+the second argument is NULL. The expression just knows how to take the
+property from a future-given GtkLabel instance.</li>
+<li>14-17: The function <code>gtk_expression_evaluate</code> evaluates
+the expression with a ‘this’ instance <code>label</code>. The result is
+stored in the GValue <code>value</code>. The function
+<code>g_value_get_string</code> gets a string from the GValue. But the
+string is owned by the GValue so you must not free the string.</li>
+<li>18-19: Release the expression and unset the GValue. At the same time
+the string in the GValue is freed.</li>
+</ul>
+<p>If the second argument of <code>gtk_property_expression_new</code>
+isn’t NULL, it is another expression. The expression is owned by a newly
+created property expression. So, when the expressions are useless, you
+just release the last expression. Then it releases another expression it
+has.</p>
+<h2 id="closure-expression">Closure expression</h2>
+<p>A closure expression calls closure when it is evaluated. A closure is
+a generic representation of a callback (a pointer to a function). For
+information about closure, see <a
+href="https://docs.gtk.org/gobject/concepts.html#the-gobject-messaging-system">GObject
+API Reference – The GObject messaging system</a>. There are simple
+closure example files <code>closure.c</code> and
+<code>closure_each.c</code> in the <code>src/expression</code>
+directory.</p>
+<p>There are two types of closure expressions, GtkCClosureExpression and
+GtkClosureExpression. They corresponds to GCClosure and GClosure
+respectively. When you program in C language, GtkCClosureExpression and
+GCClosure are appropriate.</p>
+<p>A closure expression is created with
+<code>gtk_cclosure_expression_new</code> function.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>GtkExpression <span class="op">*</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gtk_cclosure_expression_new <span class="op">(</span>GType value_type<span class="op">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                             GClosureMarshal marshal<span class="op">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                             guint n_params<span class="op">,</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                             GtkExpression <span class="op">**</span>params<span class="op">,</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                             GCallback callback_func<span class="op">,</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                             gpointer user_data<span class="op">,</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                             GClosureNotify user_destroy<span class="op">);</span></span></code></pre></div>
+<ul>
+<li><code>value_type</code> is the type of the value when it is
+evaluated.</li>
+<li><code>marshal</code> is a marshaller. You can assign NULL. If it is
+NULL, then <code>g_cclosure_marshal_generic ()</code> is used as a
+marshaller. It is a generic marshaller function implemented via
+libffi.</li>
+<li><code>n_params</code> is the number of parameters.</li>
+<li><code>params</code> points expressions for each parameter of the
+call back function.</li>
+<li><code>callback_func</code> is a callback function. It is given
+arguments <code>this</code> and parameters above. So, if
+<code>n_params</code> is 3, the number of arguments of the function is
+4. (<code>this</code> and <code>params</code>. See below.)</li>
+<li><code>user_data</code> is user data. You can add it for the closure.
+It is like <code>user_data</code> in <code>g_signal_connect</code>. If
+it is not necessary, assign NULL.</li>
+<li><code>user_destroy</code> is a destroy notify for
+<code>user_data</code>. It is called to destroy <code>user_data</code>
+when it is no longer needed. If NULL is assigned to
+<code>user_data</code>, assign NULL to <code>user_destroy</code>,
+too.</li>
+</ul>
+<p>Call back functions have the following format.</p>
+<pre><code>C-type
+callback (this, param1, param2, ...)</code></pre>
+<p>For example,</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>callback <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">,</span> <span class="dt">int</span> x<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s<span class="op">)</span></span></code></pre></div>
+<p>The following is <code>exp_closure_simple.c</code> in
+<code>src/expression</code>.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="dt">static</span> <span class="dt">int</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>calc <span class="op">(</span>GtkLabel <span class="op">*</span>label<span class="op">)</span> <span class="op">{</span> <span class="co">/* this object */</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span> s<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="dt">int</span> i<span class="op">,</span> j<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  s <span class="op">=</span> gtk_label_get_text <span class="op">(</span>label<span class="op">);</span> <span class="co">/* s is owned by the label. */</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>  sscanf <span class="op">(</span>s<span class="op">,</span> <span class="st">&quot;%d+%d&quot;</span><span class="op">,</span> <span class="op">&amp;</span>i<span class="op">,</span> <span class="op">&amp;</span>j<span class="op">);</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  <span class="cf">return</span> i<span class="op">+</span>j<span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="op">}</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="dt">int</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a>  GtkExpression <span class="op">*</span>expression<span class="op">;</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  GtkLabel <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a></span>
+<span id="cb10-19"><a href="#cb10-19"></a>  gtk_init <span class="op">();</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a>  label <span class="op">=</span> GTK_LABEL <span class="op">(</span>gtk_label_new <span class="op">(</span><span class="st">&quot;123+456&quot;</span><span class="op">));</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a>  g_object_ref_sink <span class="op">(</span>label<span class="op">);</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a>  expression <span class="op">=</span> gtk_cclosure_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span> NULL<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> NULL<span class="op">,</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a>                 G_CALLBACK <span class="op">(</span>calc<span class="op">),</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> label<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span> <span class="co">/* &#39;this&#39; object is the label. */</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a>    g_print <span class="op">(</span><span class="st">&quot;%d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a>  <span class="cf">else</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a>    g_print <span class="op">(</span><span class="st">&quot;The closure expression wasn&#39;t evaluated correctly.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb10-28"><a href="#cb10-28"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a>  g_value_unset <span class="op">(&amp;</span>value<span class="op">);</span></span>
+<span id="cb10-30"><a href="#cb10-30"></a>  g_object_unref <span class="op">(</span>label<span class="op">);</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a>  </span>
+<span id="cb10-32"><a href="#cb10-32"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li>3-11: A call back function. The parameter is only one and it is a
+‘this’ object. It is a GtkLabel and its label is assumed to be
+“(number)+(number)”.</li>
+<li>8-10: Retrieves two integers from the label and returns the sum of
+them. This function has no error report. If you want to return error
+report, change the return value type to be a pointer to a structure of
+gboolean and integer. One for error and the other for the sum. The first
+argument of <code>gtk_cclosure_expression_new</code> is
+<code>G_TYPE_POINTER</code>. There is a sample program
+<code>exp_closure_with_error_report</code> in
+<code>src/expression</code> directory.</li>
+<li>19: gtk_init initializes GTK. It is necessary for GtkLabel.</li>
+<li>20: A GtkLabel instance is created with “123+456”.</li>
+<li>21: The instance has floating reference. It is changed to an
+ordinary reference count.</li>
+<li>22-23: Create a closure expression. Its return value type is
+<code>G_TYPE_INT</code> and no parameters or ‘this’ object.</li>
+<li>24: Evaluates the expression with the label as a ‘this’ object.</li>
+<li>25: If the evaluation successes, show the sum of “123+456”. It’s
+579.</li>
+<li>27: If it fails, show an error message.</li>
+<li>28-30: Releases the expression and the label. Unsets the value.</li>
+</ul>
+<p>Closure expression is flexible than other type of expression because
+you can specify your own callback function.</p>
+<h2 id="gtkexpressionwatch">GtkExpressionWatch</h2>
+<p>GtkExpressionWatch is a structure, not an object. It represents a
+watched GtkExpression. Two functions create GtkExpressionWatch
+structure.</p>
+<h3 id="gtk_expression_bind-function">gtk_expression_bind function</h3>
+<p>This function binds the target object’s property to the expression.
+If the value of the expression changes, the property reflects the value
+immediately.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>GtkExpressionWatch<span class="op">*</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>gtk_expression_bind <span class="op">(</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  GtkExpression<span class="op">*</span> self<span class="op">,</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> target<span class="op">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> property<span class="op">,</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> this_</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<p>This function takes the ownership of the expression. So, if you want
+to own the expression, call <code>gtk_expression_ref ()</code> to
+increase the reference count of the expression. And you should unref it
+when it is useless. If you don’t own the expression, you don’t care
+about releasing the expression.</p>
+<p>An example <code>exp_bind.c</code> and <code>exp_bind.ui</code> is in
+<code>src/expression</code> directory.</p>
+<figure>
+<img src="image/exp_bind.png" alt="exp_bind" />
+<figcaption aria-hidden="true">exp_bind</figcaption>
+</figure>
+<p>It includes a label and a scale. If you move the slider to the right,
+the scale value increases and the number on the label also increases. In
+the same way, if you move it to the left, the number on the label
+decreases. The label is bound to the scale value via an adjustment.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&#39;1.0&#39;</span><span class="ot"> encoding=</span><span class="st">&#39;UTF-8&#39;</span><span class="fu">?&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb12-3"><a href="#cb12-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&#39;GtkApplicationWindow&#39;</span><span class="ot"> id=</span><span class="st">&#39;win&#39;</span>&gt;</span>
+<span id="cb12-4"><a href="#cb12-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;default-width&#39;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-5"><a href="#cb12-5"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb12-6"><a href="#cb12-6"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&#39;GtkBox&#39;</span>&gt;</span>
+<span id="cb12-7"><a href="#cb12-7"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;orientation&#39;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-8"><a href="#cb12-8"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb12-9"><a href="#cb12-9"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&#39;GtkLabel&#39;</span><span class="ot"> id=</span><span class="st">&#39;label&#39;</span>&gt;</span>
+<span id="cb12-10"><a href="#cb12-10"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-11"><a href="#cb12-11"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb12-12"><a href="#cb12-12"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb12-13"><a href="#cb12-13"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb12-14"><a href="#cb12-14"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&#39;GtkScale&#39;</span>&gt;</span>
+<span id="cb12-15"><a href="#cb12-15"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;adjustment&#39;</span>&gt;</span>
+<span id="cb12-16"><a href="#cb12-16"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&#39;GtkAdjustment&#39;</span><span class="ot"> id=</span><span class="st">&#39;adjustment&#39;</span>&gt;</span>
+<span id="cb12-17"><a href="#cb12-17"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;upper&#39;</span>&gt;20.0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-18"><a href="#cb12-18"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;lower&#39;</span>&gt;0.0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-19"><a href="#cb12-19"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;value&#39;</span>&gt;10.0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-20"><a href="#cb12-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;step-increment&#39;</span>&gt;1.0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-21"><a href="#cb12-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;page-increment&#39;</span>&gt;5.0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-22"><a href="#cb12-22"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;page-size&#39;</span>&gt;0.0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-23"><a href="#cb12-23"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb12-24"><a href="#cb12-24"></a>            &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-25"><a href="#cb12-25"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;digits&#39;</span>&gt;0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-26"><a href="#cb12-26"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;draw-value&#39;</span>&gt;true&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-27"><a href="#cb12-27"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;has-origin&#39;</span>&gt;true&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-28"><a href="#cb12-28"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;round-digits&#39;</span>&gt;0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb12-29"><a href="#cb12-29"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb12-30"><a href="#cb12-30"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb12-31"><a href="#cb12-31"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb12-32"><a href="#cb12-32"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb12-33"><a href="#cb12-33"></a>  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb12-34"><a href="#cb12-34"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<p>The ui file describes the following parent-child relationship.</p>
+<pre><code>GtkApplicationWindow (win) -- GtkBox -+- GtkLabel (label)
+                                      +- GtkScale</code></pre>
+<p>Four GtkScale properties are defined.</p>
+<ul>
+<li>adjustment. GtkAdjustment provides the followings.
+<ul>
+<li>upper and lower: the range of the scale.</li>
+<li>value: current value of the scale. It reflects the value of the
+scale.</li>
+<li>step increment and page increment: When a user press an arrow key or
+page up/down key, the scale moves by the step increment or page
+increment respectively.</li>
+<li>page-size: When an adjustment is used with a scale, page-size is
+zero.</li>
 </ul></li>
-<li>The second parameter is <code>new</code>, which is the new current
-position. At the beginning of the function, win-&gt;position points the
-old position.</li>
-<li>10-16: Update the text of GtkLabel.</li>
-<li>18-26: If the old position (win-&gt;position) is not negative, the
-current line exists. It gets a GtkListItem instance via the item
-(LeData) of the list. And it gets the GtkButton instance which is the
-child of the GtkListItem. It clears the “css-classes” property of the
-button.</li>
-<li>27: Updates win-&gt;position.</li>
-<li>28-36: If the new position is not negative (It’s possible to be
-negative when the current line has been removed), the current line
-exists. It sets the “css-classes” property of the button to
-<code>{"current", NULL}</code>. It is a NULL-terminated array of
-strings. Each string is a CSS class. Now the button has “current” style
-class.</li>
+<li>digits: The number of decimal places that are displayed in the
+value.</li>
+<li>draw-value: Whether the value is displayed.</li>
+<li>has-origin: Whether the scale has the origin. If it’s true, an
+orange bar appears between the origin and the current point.</li>
+<li>round-digits: The number of digits to round the value to when it
+changes. For example, if it is zero, the slider moves to an integer
+point.</li>
 </ul>
-<p>The color of buttons are determined by the “background” CSS style.
-The following CSS is applied to the default GdkDisplay in advance (in
-the startup handler of the application).</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode css"><code class="sourceCode css"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>columnview listview row button<span class="fu">.current</span> {<span class="kw">background</span>: <span class="cn">red</span><span class="op">;</span>}</span></code></pre></div>
-<p>The selectors “columnview listview row” is needed before “button”
-selector. Otherwise the buttons in the GtkColumnview won’t be found. The
-button selector has “current” class. So, the only “current” class button
-is colored with red. Other buttons are not colored, which means they are
-white.</p>
-<h2
-id="gtk_widget_dispose_template-function">Gtk_widget_dispose_template
-function</h2>
-<p>The function <code>gtk_widget_dispose_template</code> clears the
-template children for the given widget. This is the opposite of
-<code>gtk_widget_init_template()</code>. It is a new function of GTK 4.8
-version. If your GTK version is lower than 4.8, you need to modify the
-program.</p>
-<h2 id="a-waring-from-gtktext">A waring from GtkText</h2>
-<p>If your program has the following two, a warning message can be
-issued.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>GtkExpressionWatch <span class="op">*</span>watch<span class="op">;</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="dt">static</span> <span class="dt">int</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>f2i <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">,</span> <span class="dt">double</span> d<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>  <span class="cf">return</span> <span class="op">(</span><span class="dt">int</span><span class="op">)</span> d<span class="op">;</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="op">}</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="dt">static</span> <span class="dt">int</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a>close_request_cb <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a>  gtk_expression_watch_unwatch <span class="op">(</span>watch<span class="op">);</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a>  <span class="cf">return</span> false<span class="op">;</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="op">}</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a></span>
+<span id="cb14-16"><a href="#cb14-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb14-17"><a href="#cb14-17"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-18"><a href="#cb14-18"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb14-19"><a href="#cb14-19"></a>  gtk_window_present <span class="op">(</span>gtk_application_get_active_window<span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb14-20"><a href="#cb14-20"></a><span class="op">}</span></span>
+<span id="cb14-21"><a href="#cb14-21"></a></span>
+<span id="cb14-22"><a href="#cb14-22"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb14-23"><a href="#cb14-23"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-24"><a href="#cb14-24"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb14-25"><a href="#cb14-25"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb14-26"><a href="#cb14-26"></a>  GtkWidget <span class="op">*</span>win<span class="op">,</span> <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb14-27"><a href="#cb14-27"></a>  GtkAdjustment <span class="op">*</span>adjustment<span class="op">;</span></span>
+<span id="cb14-28"><a href="#cb14-28"></a>  GtkExpression <span class="op">*</span>expression<span class="op">,</span> <span class="op">*</span>params<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb14-29"><a href="#cb14-29"></a></span>
+<span id="cb14-30"><a href="#cb14-30"></a>  <span class="co">/* Builds a window with exp.ui resource */</span></span>
+<span id="cb14-31"><a href="#cb14-31"></a>  build <span class="op">=</span> gtk_builder_new_from_file <span class="op">(</span><span class="st">&quot;exp_bind.ui&quot;</span><span class="op">);</span></span>
+<span id="cb14-32"><a href="#cb14-32"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb14-33"><a href="#cb14-33"></a>  label <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">));</span></span>
+<span id="cb14-34"><a href="#cb14-34"></a>  <span class="co">// scale = GTK_WIDGET (gtk_builder_get_object (build, &quot;scale&quot;));</span></span>
+<span id="cb14-35"><a href="#cb14-35"></a>  adjustment <span class="op">=</span> GTK_ADJUSTMENT <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;adjustment&quot;</span><span class="op">));</span></span>
+<span id="cb14-36"><a href="#cb14-36"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb14-37"><a href="#cb14-37"></a>  g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_request_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb14-38"><a href="#cb14-38"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb14-39"><a href="#cb14-39"></a></span>
+<span id="cb14-40"><a href="#cb14-40"></a>  <span class="co">/* GtkExpressionWatch */</span></span>
+<span id="cb14-41"><a href="#cb14-41"></a>  params<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_ADJUSTMENT<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">);</span></span>
+<span id="cb14-42"><a href="#cb14-42"></a>  expression <span class="op">=</span> gtk_cclosure_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span> NULL<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> params<span class="op">,</span> G_CALLBACK <span class="op">(</span>f2i<span class="op">),</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb14-43"><a href="#cb14-43"></a>  watch <span class="op">=</span> gtk_expression_bind <span class="op">(</span>expression<span class="op">,</span> label<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">,</span> adjustment<span class="op">);</span> <span class="co">/* watch takes the ownership of the expression. */</span></span>
+<span id="cb14-44"><a href="#cb14-44"></a><span class="op">}</span></span>
+<span id="cb14-45"><a href="#cb14-45"></a></span>
+<span id="cb14-46"><a href="#cb14-46"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.exp_watch&quot;</span></span>
+<span id="cb14-47"><a href="#cb14-47"></a></span>
+<span id="cb14-48"><a href="#cb14-48"></a><span class="dt">int</span></span>
+<span id="cb14-49"><a href="#cb14-49"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-50"><a href="#cb14-50"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb14-51"><a href="#cb14-51"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb14-52"><a href="#cb14-52"></a></span>
+<span id="cb14-53"><a href="#cb14-53"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb14-54"><a href="#cb14-54"></a></span>
+<span id="cb14-55"><a href="#cb14-55"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb14-56"><a href="#cb14-56"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb14-57"><a href="#cb14-57"></a></span>
+<span id="cb14-58"><a href="#cb14-58"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb14-59"><a href="#cb14-59"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb14-60"><a href="#cb14-60"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb14-61"><a href="#cb14-61"></a><span class="op">}</span></span></code></pre></div>
+<p>The point of the program is:</p>
 <ul>
-<li>The list has many items and it needs to be scrolled.</li>
-<li>A GtkText instance is the focus widget.</li>
+<li>41-42: Two expressions are defined. One is a property expression and
+the other is a closure expression. The property expression look up the
+“value”property of the adjustment instance. The closure expression just
+converts the double into an integer.</li>
+<li>43: <code>gtk_expression_bind</code> binds the label property of the
+GtkLabel instance to the integer returned by the closure expression. It
+creates a GtkExpressionWatch structure. The binding works during the
+watch lives. When the window is destroyed, the scale and adjustment are
+also destroyed. And the watch recognizes the value of the expression
+changes and tries to change the property of the label. Obviously, it is
+not a correct behavior. The watch should be unwatched before the window
+is destroyed.</li>
+<li>37: Connects the “close-request” signal on the window to a handler
+<code>close_request_cb</code>. This signal is emitted when the close
+button is clicked. The handler is called just before the window closes.
+It is the right moment to make the GtkExpressionWatch unwatched.</li>
+<li>10-14: “close-request” signal handler.
+<code>gtk_expression_watch_unwatch (watch)</code> makes the watch stop
+watching the expression. It releases the expression and calls
+<code>gtk_expression_watch_unref (watch)</code> in it.</li>
 </ul>
-<pre><code>GtkText - unexpected blinking selection. Removing</code></pre>
-<p>I don’t have an exact idea why this happens. But if GtkText
-“focusable” property is FALSE, the warning doesn’t happen. So it
-probably comes from focus and scroll.</p>
-<p>You can avoid this by unsetting any focus widget under the main
-window. When scroll begins, the “value-changed” signal on the vertical
-adjustment of the scrolled window is emitted.</p>
-<p>The following is extracted from the ui file and C source file.</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>... ... ...</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vadjustment&quot;</span>&gt;</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkAdjustment&quot;</span>&gt;</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">signal</span><span class="ot"> name=</span><span class="st">&quot;value-changed&quot;</span><span class="ot"> handler=</span><span class="st">&quot;adjustment_value_changed_cb&quot;</span><span class="ot"> swapped=</span><span class="st">&quot;no&quot;</span><span class="ot"> object=</span><span class="st">&quot;LeWindow&quot;</span>/&gt;</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>... ... ...  </span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>adjustment_value_changed_cb <span class="op">(</span>GtkAdjustment <span class="op">*</span>adjustment<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  gtk_window_set_focus <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="op">}</span></span></code></pre></div>
+<p>If you want to bind a property to an expression,
+<code>gtk_expression_bind</code> is the best choice. You can do it with
+<code>gtk_expression_watch</code> function, but it is less suitable.</p>
+<h3 id="gtk_expression_watch-function">gtk_expression_watch
+function</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>GtkExpressionWatch<span class="op">*</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>gtk_expression_watch <span class="op">(</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  GtkExpression<span class="op">*</span> self<span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> this_<span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  GtkExpressionNotify notify<span class="op">,</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  gpointer user_data<span class="op">,</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  GDestroyNotify user_destroy</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<p>The function doesn’t take the ownership of the expression. It differs
+from <code>gtk_expression_bind</code>. So, you need to release the
+expression when it is useless. It creates a GtkExpressionWatch
+structure. The third parameter <code>notify</code> is a callback to
+invoke when the expression changes. You can set <code>user_data</code>
+to give it to the callback. The last parameter is a function to destroy
+the <code>user_data</code> when the watch is unwatched. Put NULL if you
+don’t need them.</p>
+<p>Notify callback has the following format.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>notify <span class="op">(</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<p>This function is used to do something when the value of the
+expression changes. But if you want to bind a property to the value, use
+<code>gtk_expression_bind</code> instead.</p>
+<p>There’s a sample program <code>exp_watch.c</code> in
+<code>src/expression</code> directory. It outputs the width of the
+window to the standard output.</p>
+<figure>
+<img src="image/exp_watch.png" alt="exp_watch" />
+<figcaption aria-hidden="true">exp_watch</figcaption>
+</figure>
+<p>When you resize the window, the width is displayed in the
+terminal.</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a>GtkExpression <span class="op">*</span>expression<span class="op">;</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a>GtkExpressionWatch <span class="op">*</span>watch<span class="op">;</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>notify <span class="op">(</span>gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a></span>
+<span id="cb17-10"><a href="#cb17-10"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_watch_evaluate <span class="op">(</span>watch<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a>    g_print <span class="op">(</span><span class="st">&quot;width = %d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a>  <span class="cf">else</span></span>
+<span id="cb17-13"><a href="#cb17-13"></a>    g_print <span class="op">(</span><span class="st">&quot;evaluation failed.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a><span class="op">}</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a></span>
+<span id="cb17-16"><a href="#cb17-16"></a><span class="dt">static</span> <span class="dt">int</span></span>
+<span id="cb17-17"><a href="#cb17-17"></a>close_request_cb <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-18"><a href="#cb17-18"></a>  gtk_expression_watch_unwatch <span class="op">(</span>watch<span class="op">);</span></span>
+<span id="cb17-19"><a href="#cb17-19"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
+<span id="cb17-20"><a href="#cb17-20"></a>  <span class="cf">return</span> false<span class="op">;</span></span>
+<span id="cb17-21"><a href="#cb17-21"></a><span class="op">}</span></span>
+<span id="cb17-22"><a href="#cb17-22"></a></span>
+<span id="cb17-23"><a href="#cb17-23"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-24"><a href="#cb17-24"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-25"><a href="#cb17-25"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb17-26"><a href="#cb17-26"></a>  gtk_window_present <span class="op">(</span>gtk_application_get_active_window<span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb17-27"><a href="#cb17-27"></a><span class="op">}</span></span>
+<span id="cb17-28"><a href="#cb17-28"></a></span>
+<span id="cb17-29"><a href="#cb17-29"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-30"><a href="#cb17-30"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-31"><a href="#cb17-31"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb17-32"><a href="#cb17-32"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb17-33"><a href="#cb17-33"></a></span>
+<span id="cb17-34"><a href="#cb17-34"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_application_window_new <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb17-35"><a href="#cb17-35"></a>  g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_request_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb17-36"><a href="#cb17-36"></a></span>
+<span id="cb17-37"><a href="#cb17-37"></a>  expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_WINDOW<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;default-width&quot;</span><span class="op">);</span></span>
+<span id="cb17-38"><a href="#cb17-38"></a>  watch <span class="op">=</span> gtk_expression_watch <span class="op">(</span>expression<span class="op">,</span> win<span class="op">,</span> notify<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb17-39"><a href="#cb17-39"></a><span class="op">}</span></span>
+<span id="cb17-40"><a href="#cb17-40"></a></span>
+<span id="cb17-41"><a href="#cb17-41"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.exp_watch&quot;</span></span>
+<span id="cb17-42"><a href="#cb17-42"></a></span>
+<span id="cb17-43"><a href="#cb17-43"></a><span class="dt">int</span></span>
+<span id="cb17-44"><a href="#cb17-44"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-45"><a href="#cb17-45"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb17-46"><a href="#cb17-46"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb17-47"><a href="#cb17-47"></a></span>
+<span id="cb17-48"><a href="#cb17-48"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb17-49"><a href="#cb17-49"></a></span>
+<span id="cb17-50"><a href="#cb17-50"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb17-51"><a href="#cb17-51"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb17-52"><a href="#cb17-52"></a></span>
+<span id="cb17-53"><a href="#cb17-53"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb17-54"><a href="#cb17-54"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb17-55"><a href="#cb17-55"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb17-56"><a href="#cb17-56"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li>37: A property expression looks up the “default-width” property of
+the window.</li>
+<li>38: Create a watch structure for the expression. The callback
+<code>notify</code> is called every time the value of the expression
+changes. The ‘this’ object is <code>win</code>, so the expression
+returns the default width of the window.</li>
+<li>6-14: The callback function <code>notify</code>. It uses
+<code>gtk_expression_watch_evaluate</code> to get the value of the
+expression. The ‘this’ object is given in advance (when the watch is
+created). It outputs the window width to the standard output.</li>
+<li>16-21: A handler for the “close-request”signal on the window. It
+stops the watch. In addition, it releases the reference to the
+expression. Because <code>gtk_expression_watch</code> doesn’t take the
+ownership of the expression, you own it. So, the release is
+necessary.</li>
+</ul>
+<h2 id="gtkexpression-in-ui-files">Gtkexpression in ui files</h2>
+<p>GtkBuilder supports GtkExpressions. There are four tags.</p>
+<ul>
+<li>constant tag to create constant expression. Type attribute specifies
+the type name of the value. If no type is specified, the type is assumed
+to be an object. The content is the value of the expression.</li>
+<li>lookup tag to create property expression. Type attribute specifies
+the type of the object. Name attribute specifies the property name. The
+content is an expression or object which has the property to look up. If
+there’s no content, ‘this’ object is used.</li>
+<li>closure tag to create closure expression. Type attribute specifies
+the type of the returned value. Function attribute specifies the
+callback function. The contents of the tag are arguments that are
+expressions.</li>
+<li>binding tag to bind a property to an expression. It is put in the
+content of an object tag. Name attribute specifies the property name of
+the object. The content is an expression.</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">constant</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span>&gt;Hello world&lt;/<span class="kw">constant</span>&gt;</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="ot"> type=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;label&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gint&quot;</span><span class="ot"> function=</span><span class="st">&quot;callback_function&quot;</span>&gt;&lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">bind</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;win&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">bind</span>&gt;</span></code></pre></div>
+<p>These tags are usually used for GtkBuilderListItemFactory.</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span><span class="ot"> type=</span><span class="st">&quot;string&quot;</span>&gt;</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>          &lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">binding</span>&gt;</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">template</span>&gt;</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<p>In the xml file above, “GtkListItem” is an instance of the
+GtkListItem template. It is the ‘this’ object given to the expressions.
+(The information is in the <a href="https://blog.gtk.org/2020/09/">GTK
+Development Blog</a>).</p>
+<p>GtkBuilderListItemFactory uses GtkBuilder to build the XML data. It
+sets the current object of the GtkBuilder to the GtkListItem
+instance.</p>
+<p>GtkBuilder calls <code>gtk_expression_bind</code> function in the
+binding tag analysis. The function sets the ‘this’ object like this:</p>
+<ol type="1">
+<li>If the binding tag has object attribute, the object will be the
+‘this’ object.</li>
+<li>If the current object of the GtkBuilder exists, it will be the
+‘this’ object. That’s why a GtkListItem instance is the ‘this’ object of
+the XML data for a GtkBuilderListItemFactory.</li>
+<li>Otherwise, the target object of the binding tag will be the ‘this’
+object.</li>
+</ol>
+<p>GTK 4 document doesn’t describe information about “this” object when
+expressions are defined in a ui file. The information above is found
+from the GTK 4 source files and it is possible to include mistakes. If
+you have accurate information, please let me know.</p>
+<p>A sample program <code>exp.c</code> and a ui file <code>exp.ui</code>
+is in <code>src/expression</code> directory. The ui file includes
+lookup, closure and bind tags. No constant tag is included. However,
+constant tags are not used so often.</p>
+<figure>
+<img src="image/exp.png" alt="exp.c" />
+<figcaption aria-hidden="true">exp.c</figcaption>
+</figure>
+<p>If you resize the window, the size is shown at the title of the
+window. If you type characters in the entry, the same characters appear
+on the label.</p>
+<p>The ui file is as follows.</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb20-3"><a href="#cb20-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
+<span id="cb20-4"><a href="#cb20-4"></a>    &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;</span>
+<span id="cb20-5"><a href="#cb20-5"></a>      &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;set_title&quot;</span>&gt;</span>
+<span id="cb20-6"><a href="#cb20-6"></a>        &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span><span class="ot"> type=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb20-7"><a href="#cb20-7"></a>        &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span><span class="ot"> type=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb20-8"><a href="#cb20-8"></a>      &lt;/<span class="kw">closure</span>&gt;</span>
+<span id="cb20-9"><a href="#cb20-9"></a>    &lt;/<span class="kw">binding</span>&gt;</span>
+<span id="cb20-10"><a href="#cb20-10"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb20-11"><a href="#cb20-11"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb20-12"><a href="#cb20-12"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb20-13"><a href="#cb20-13"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb20-14"><a href="#cb20-14"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb20-15"><a href="#cb20-15"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb20-16"><a href="#cb20-16"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb20-17"><a href="#cb20-17"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb20-18"><a href="#cb20-18"></a>              &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;text&quot;</span>&gt;</span>
+<span id="cb20-19"><a href="#cb20-19"></a>                buffer</span>
+<span id="cb20-20"><a href="#cb20-20"></a>              &lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb20-21"><a href="#cb20-21"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
+<span id="cb20-22"><a href="#cb20-22"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb20-23"><a href="#cb20-23"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb20-24"><a href="#cb20-24"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb20-25"><a href="#cb20-25"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkEntry&quot;</span>&gt;</span>
+<span id="cb20-26"><a href="#cb20-26"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;buffer&quot;</span>&gt;</span>
+<span id="cb20-27"><a href="#cb20-27"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkEntryBuffer&quot;</span><span class="ot"> id=</span><span class="st">&quot;buffer&quot;</span>&gt;&lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb20-28"><a href="#cb20-28"></a>            &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb20-29"><a href="#cb20-29"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb20-30"><a href="#cb20-30"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb20-31"><a href="#cb20-31"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb20-32"><a href="#cb20-32"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb20-33"><a href="#cb20-33"></a>  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb20-34"><a href="#cb20-34"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<ul>
+<li>4-9: The title property of the main window is bound to a closure
+expression. Its callback function <code>set_title</code> is defined in
+the C source file. It returns a string because the type attribute of the
+tag is “gchararray”. Two parameters are given to the function. They are
+width and height of the window. Lookup tags don’t have contents, so
+‘this’ object is used to look up the properties. The ‘this’ object is
+<code>win</code>, which is the target of the binding (<code>win</code>
+includes the binding tag).</li>
+<li>17-21: The “label” property of the GtkLabel instance is bound to the
+“text” property of <code>buffer</code>, which is the buffer of GtkEntry
+defined in line 25. If a user types characters in the entry, the same
+characters appear on the label.</li>
+</ul>
+<p>The C source file is as follows.</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a>set_title <span class="op">(</span>GtkWidget <span class="op">*</span>win<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a>  <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%d x %d&quot;</span><span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="op">}</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a>  gtk_window_present <span class="op">(</span>gtk_application_get_active_window<span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="op">}</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb21-18"><a href="#cb21-18"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb21-19"><a href="#cb21-19"></a></span>
+<span id="cb21-20"><a href="#cb21-20"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/exp/exp.ui&quot;</span><span class="op">);</span></span>
+<span id="cb21-21"><a href="#cb21-21"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb21-23"><a href="#cb21-23"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb21-24"><a href="#cb21-24"></a><span class="op">}</span></span>
+<span id="cb21-25"><a href="#cb21-25"></a></span>
+<span id="cb21-26"><a href="#cb21-26"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.exp&quot;</span></span>
+<span id="cb21-27"><a href="#cb21-27"></a></span>
+<span id="cb21-28"><a href="#cb21-28"></a><span class="dt">int</span></span>
+<span id="cb21-29"><a href="#cb21-29"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-30"><a href="#cb21-30"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb21-31"><a href="#cb21-31"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb21-32"><a href="#cb21-32"></a></span>
+<span id="cb21-33"><a href="#cb21-33"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb21-34"><a href="#cb21-34"></a></span>
+<span id="cb21-35"><a href="#cb21-35"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb21-36"><a href="#cb21-36"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb21-37"><a href="#cb21-37"></a></span>
+<span id="cb21-38"><a href="#cb21-38"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb21-39"><a href="#cb21-39"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb21-40"><a href="#cb21-40"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb21-41"><a href="#cb21-41"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li>4-6: The callback function. It returns a string (w)x(h), where the w
+and h are the width and height of the window. String duplication is
+necessary.</li>
+</ul>
+<p>The C source file is very simple because almost everything is done in
+the ui file.</p>
+<h3 id="conversion-between-gvalues">Conversion between GValues</h3>
+<p>If you bind different type properties, type conversion is
+automatically done. Suppose a label property (string) is bound to
+default-width property (int).</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>      win</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">binding</span>&gt;</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+<p>The expression created by the lookup tag returns a int type GValue.
+On the other hand “label” property holds a string type GValue. When a
+GValue is copied to another GValue, the type is automatically converted
+if possible. If the current width is 100, an int <code>100</code> is
+converted to a string <code>"100"</code>.</p>
+<p>If you use <code>g_object_get</code> and <code>g_object_set</code> to
+copy properties, the value is automatically converted.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

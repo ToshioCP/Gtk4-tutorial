@@ -1,182 +1,143 @@
-# Combine GtkDrawingArea and TfeTextView
+# GtkDrawingArea and Cairo
 
-Now, we will make a new application which has GtkDrawingArea and TfeTextView in it.
-Its name is "color".
-If you write a name of a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
+This section and following sections are *not* updated yet and the programs were checked on the older GTK version than 4.10.
+They will be updated in the near future.
 
-![color](../image/color.png){width=7.0cm height=5.13cm}
+If you want to draw dynamically on the screen, like an image window of gimp graphics editor, the GtkDrawingArea widget is the most suitable widget.
+You can freely draw or redraw an image in this widget.
+This is called custom drawing.
 
-The following colors are available.
-(without new line charactor)
+GtkDrawingArea provides a cairo drawing context so users can draw images by using cairo functions.
+In this section, I will explain:
 
-- white
-- black
-- red
-- green
-- blue
+1. Cairo, but only briefly
+2. GtkDrawingArea, with a very simple example.
 
-In addition the following two options are also available.
+## Cairo
 
-- light: Make the color of the drawing area lighter.
-- dark: Make the color of the drawing area darker.
+Cairo is a set of two dimensional graphical drawing functions (or graphics library).
+There are a lot of documents on [Cairo's website](https://www.cairographics.org/).
+If you aren't familiar with Cairo, it is worth reading the [tutorial](https://www.cairographics.org/tutorial/).
 
-This application can only do very simple things.
-However, it tells us that if we add powerful parser to it, we will be able to make it more efficient.
-I want to show it to you in the later section by making a turtle graphics language like Logo program language.
+The following is an introduction to the Cairo library and how to use it.
+First, you need to know about surfaces, sources, masks, destinations, cairo context and transformations.
 
-In this section, we focus on how to bind the two objects.
+- A surface represents an image.
+It is like a canvas.
+We can draw shapes and images with different colors on surfaces.
+- The source pattern, or simply source, is like paint, which will be transferred to destination surface by cairo functions.
+- The mask describes the area to be used in the copy;
+- The destination is a target surface;
+- The cairo context manages the transfer from source to destination, through mask with its functions;
+For example, `cairo_stroke` is a function to draw a path to the destination by the transfer.
+- A transformation can be applied before the transfer completes.
+The transformation which is applied is called affine, which is a mathematical term meaning transofrmations
+that preserve straight lines.
+Scaling, rotating, reflecting, shearing and translating are all examples of affine transformations.
+They are mathematically represented by matrix multiplication and vector addition.
+In this section we don't use it, instead we will only use the identity transformation.
+This means that the coordinates in the source and mask are the same as the coordinates in destination.
 
-## Color.ui and color.gresource.xml
+![Stroke a rectangle](../image/cairo.png){width=9.0cm height=6.0cm}
 
-First, We need to make the ui file of the widgets.
-Title bar, four buttons in the tool bar, textview and drawing area.
-The ui file is as follows.
+The instruction is as follows:
 
-@@@include
-color/color.ui
-@@@
+1. Create a surface.
+This will be the destination.
+2. Create a cairo context with the surface, the surface will be the destination of the context.
+3. Create a source pattern within the context.
+4. Create paths, which are lines, rectangles, arcs, texts or more complicated shapes in the mask.
+5. Use a drawing operator such as `cairo_stroke` to transfer the paint in the source to the destination.
+6. Save the destination surface to a file if necessary.
 
-- 10-53: The horizontal box `boxh1` makes a tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
-This is similar to the `tfe` text editor in [Section 9](sec9.src.md).
-There are two differences.
-`Run` button replaces `New` button.
-A signal element is added to each button object.
-It has "name" attribute which is a signal name and "handler" attribute which is the name of its signal handler.
-Options "-WI, --export-dynamic" CFLAG is necessary when you compile the application.
-You can achieve this by adding "export_dynamic: true" argument to the executable function in `meson.build`.
-And be careful that the handler must be defined without 'static' class.
-- 54-76: The horizontal box `boxh2` includes GtkScrolledWindow and GtkDrawingArea.
-GtkBox has "homogeneous property" with TRUE value, so the two children have the same width in the box.
-TfeTextView is a child of GtkScrolledWindow.
-
-The xml file for the resource compiler is almost same as before.
-Just substitute "color" for "tfe".
-
-@@@include
-color/color.gresource.xml
-@@@
-
-## Drawing function and surface
-
-The main point of this program is a drawing function.
+Here's a simple example program that draws a small square and saves it as a png file.
+The path of the file is `src/misc/cairo.c`.
 
 @@@include
-color/colorapplication.c draw_func
+misc/cairo.c
 @@@
 
-The `surface` variable in line 3 is a static variable.
+- 1: Includes the header file of Cairo.
+- 6: `cairo_surface_t` is the type of a surface.
+- 7: `cairo_t` is the type of a cairo context.
+- 8-10: `width` and `height` are the size of `surface`.
+`square_size` is the size of a square to be drawn on the surface.
+- 13: `cairo_image_surface_create` creates an image surface.
+`CAIRO_FORMAT_RGB24` is a constant which means that each pixel has red, green and blue data,
+and each data point is an 8 bits number (for 24 bits in total).
+Modern displays have this type of color depth.
+Width and height are in pixels and given as integers.
+- 14: Creates cairo context.
+The surface given as an argument will be the destination of the context.
+- 18: `cairo_set_source_rgb` creates a source pattern, which in this case is a solid white paint.
+The second to fourth arguments are red, green and blue color values respectively, and they are
+of type float. The values are between zero (0.0) and one (1.0), with
+black being given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).
+- 19: `cairo_paint` copies everywhere in the source to destination.
+The destination is filled with white pixels with this command.
+- 21: Sets the source color to black.
+- 22: `cairo_set_line_width` set the width of lines.
+In this case, the line width is set to be two pixels and will end up that same size.
+(It is because the transformation is identity.
+If the transformation isn't identity, for example scaling with the factor three, the actual width in destination will be six (2x3=6) pixels.)
+- 23: Draws a rectangle (square) on the mask.
+The square is located at the center.
+- 24: `cairo_stroke` transfer the source to destination through the rectangle in the mask.
+- 27: Outputs the image to a png file `rectangle.png`.
+- 28: Destroys the context. At the same time the source is destroyed.
+- 29: Destroys the surface.
+
+To compile this, change your current directory to `src/misc` and type the following.
+
+    $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
+
+![rectangle.png](../image/rectangle.png)
+
+See the [Cairo's website](https://www.cairographics.org/) for further information.
+
+## GtkDrawingArea
+
+The following is a very simple example.
+
+@@@include
+misc/da1.c
+@@@
+
+The function `main` is almost same as before.
+The two functions `app_activate` and `draw_function` are important in this example.
+
+- 22: Creates a GtkDrawingArea instance.
+- 25: Sets a drawing function of the widget.
+GtkDrawingArea widget uses the function to draw the contents of itself whenever its necessary.
+For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
+Then, the whole window needs to be redrawn.
+For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference -- gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
+
+The drawing function has five parameters.
 
 ~~~C
-static cairo_surface_t *surface = NULL;
+void drawing_function (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height,
+                       gpointer user_data);
 ~~~
 
-The drawing function just copies the `surface` to its own surface with the `cairo_paint` function.
-The surface (pointed by the static variable `surface`) is built by the `run` function.
+The first parameter is the GtkDrawingArea widget.
+You can't change any properties, for example `content-width` or `content-height`, in this function.
+The second parameter is a cairo context given by the widget.
+The destination surface of the context is connected to the contents of the widget.
+What you draw to this surface will appear in the widget on the screen.
+The third and fourth parameters are the size of the destination surface.
+Now, look at the program again.
 
-@@@include
-color/colorapplication.c run
-@@@
+- 3-17: The drawing function.
+- 7-8: Sets the source to be white and paint the destination white.
+- 9: Sets the line width to be 2.
+- 10: Sets the source to be black.
+- 11-15: Adds a rectangle to the mask.
+- 16: Draws the rectangle with black color to the destination.
 
-- 9-10: Gets the string in the GtkTextBuffer and inserts it to `contents`.
-- 11: If the variable `surface` points a surface instance, it is painted as follows.
-- 12- 30: The source is set based on the string `contents` and copied to the surface with `cairo_paint`.
-- 24,26: Alpha channel is used in "light" and "dark" procedure.
+The program is [src/misc/da1.c](misc/da1.c).
+Compile and run it, then a window with a black rectangle (square) appears.
+Try resizing the window.
+The square always appears at the center of the window because the drawing function is invoked each time the window is resized.
 
-The drawing area just reflects the `surface`.
-But one problem is resizing.
-If a user resizes the main window, the drawing area is also resized.
-It makes size difference between the surface and the drawing area.
-So, the surface needs to be resized to fit the drawing area.
-
-It is accomplished by connecting the "resize" signal on the drawing area to a handler.
-
-~~~C
-g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
-~~~
-
-The handler is as follows.
-
-@@@include
-color/colorapplication.c resize_cb
-@@@
-
-If the variable `surface` sets a surface instance, it is destroyed.
-A new surface is created and its size fits the drawing area.
-The surface is assigned to the variable `surface`.
-The function `run` is called and the surface is colored.
-
-The signal is emitted when:
-
-- The drawing area is realized (it appears on the display).
-- It is changed (resized) while realized
-
-So, the first surface is created when it is realized.
-
-## Colorapplication.c
-
-This is the main file.
-
-- Builds widgets by GtkBuilder.
-- Sets a drawing function for GtkDrawingArea.
-And connects a handler to the "resize" signal on the GtkDrawingArea instance.
-- Implements each call back function.
-Particularly, `Run` signal handler is the point in this program.
-
-The following is `colorapplication.c`.
-
-@@@include
-color/colorapplication.c
-@@@
-
-- 4-8: Win, tv, da and surface are defined as static variables.
-- 10-42: Run function.
-- 44-63: Handlers for button signals.
-- 65-71: Resize handler.
-- 73-79: Drawing function.
-- 81-84: Application activate handler.
-It just shows the main window.
-- 86-105: Application startup handler.
-- 92- 97: It builds widgets according to the ui resource.
-The static variables win, tv and da are assigned instances.
-- 98: Connects "resize" signal and a handler.
-- 99: Drawing function is set.
-- 101-104: CSS for textview padding is set.
-- 107-111: Application shutdown handler.
-If there exists a surface instance, it will be destroyed.
-- 116-129: A function `main`.
-It creates a new application instance.
-And connects three signals startup, shutdown and activate to their handlers.
-It runs the application.
-It releases the reference to the application and returns with `stat` value.
-
-## Meson.build
-
-This file is almost same as before.
-An argument "export_dynamic: true" is added to executable function.
-
-@@@include
-color/meson.build
-@@@
-
-## Build and try
-
-Type the following to compile the program.
-
-    $ meson _build
-    $ ninja -C _build
-
-The application is made in `_build` directory.
-Type the following to execute it.
-
-    $ _build/color
-
-Type "red", "green", "blue", "white", black", "light" or "dark" in the TfeTextView.
-No new line charactor is needed.
-Then, click on the `Run` button.
-Make sure the color of GtkDrawingArea changes.
-
-In this program TfeTextView is used to change the color.
-You can use buttons or menus instead of textview.
-Probably it is more appropriate.
-Using textview is unnatural.
-It is a good practice to make such application by yourself.
+![Square in the window](../image/da1.png){width=8cm height=3.4cm}

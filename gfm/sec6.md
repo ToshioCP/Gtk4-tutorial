@@ -2,7 +2,7 @@ Up: [README.md](../README.md),  Prev: [Section 5](sec5.md), Next: [Section 7](se
 
 # Strings and memory management
 
-GtkTextView and GtkTextBuffer have functions that use string parameters or return a string.
+GtkTextView and GtkTextBuffer have functions that have string parameters or return a string.
 The knowledge of strings and memory management is useful to understand how to use these functions.
 
 ## String and memory
@@ -36,25 +36,25 @@ For example, 'H' is the same as 0x48 or 72.
 The sixth element is '\0', which is the same as zero, and indicates that the sequence of the data ends there.
 The array represents the string "Hello".
 
-The size of the array is 10, so 4 bytes aren't used.
+The size of the array is 10, so four bytes aren't used.
 But it's OK.
 They are just ignored.
-(If 'a' is defined out of functions or its class is static, they are assigned with zero.
+(If the variable `a` is defined out of functions or its class is static, the four bytes are assigned with zero.
 Otherwise, that is to say, the class is auto or register, they are undefined.)
 
-The variable 'b' is a pointer to a character.
+The variable `b` is a pointer to a character.
 It is assigned with `a`, so `b` points the first element of `a` (character 'H').
 The array `a` is immutable.
 So `a=a+1` causes syntax error.
 
-On the other hand, 'b' is a pointer type variable, which is mutable.
+On the other hand, `b` is a pointer type variable, which is mutable.
 So, `++b`, which increases `b` by one, is allowed.
 
 
 If a pointer is NULL, it points nothing.
 So, the pointer is not a string.
 It is different from empty string.
-Empty string is a pointer points `\0`.
+Empty string is a pointer points '\0'.
 
 There are four cases:
 
@@ -92,7 +92,7 @@ cN<5
 ... ... ...
 ... ... ...
 Once upon a time, there was an old man who was called Taketori-no-Okina. It is a japanese word that means a man whose work is making bamboo baskets.
-One day, he went into a mountain and found a shining bamboo. "What a mysterious bamboo it is!," he said. He cut it, then there was a small cute baby girl in it. The girl was shining faintly. He thought this baby girl is a gift from Heaven and took her home.
+One day, he went into a hill and found a shining bamboo. "What a mysterious bamboo it is!," he said. He cut it, then there was a small cute baby girl in it. The girl was shining faintly. He thought this baby girl is a gift from Heaven and took her home.
 His wife was surprized at his story. They were very happy because they had no children. 
 ... ... ...
 ... ... ...
@@ -249,8 +249,5 @@ gtk_label_set_text (
   const char* str
 )
 ~~~
-
-
-
 
 Up: [README.md](../README.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)

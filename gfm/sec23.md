@@ -1,412 +1,537 @@
 Up: [README.md](../README.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)
 
-# Periodic Events
+# Pango, CSS and Application
 
-This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
+## PangoFontDescription
 
-## How do we create an animation?
+PangoFontDescription is a C structure for a font.
+You can get font family, style, weight and size.
+You can also get a string that includes font attributes.
+For example, suppose that the PangoFontDescription has a font of "Noto Sans Mono", "Bold", "Italic" and 12 points of size.
+Then the string converted from the PangoFontDescription is "Noto Sans Mono Bold Italic 12".
 
-In this section we will continue to build on our previous work. We will create
-an analog clock application. By adding a function which periodically redraws
-GtkDrawingArea, the clock will be able to continuously display the time.
+- Font family is  "Noto Sans Mono".
+- Font style is "Italic".
+- Font weight is "Bold", or 700.
+- Font size is 12 pt.
 
-The application uses a compiled in 'resource' file, so if the GTK4 libraries and
-their dependencies are installed and available, the application will run from
-anywhere.
+The font in CSS is different from the string from PangoFontDescription.
 
-The program also makes use of some standard mathematical and time handling
-functions.
+- `font: bold italic 12pt "Noto Sans Mono"`
+- `Noto Sans Mono Bold Italic 12`
 
-The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
-[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
+So, it may be easier to use each property, i.e. font-family, font-style, font-weight and font-size, to convert a PangoFontDescription data to CSS.
 
-The complete code is at the end.
+Refer to
+[Pango document](https://docs.gtk.org/Pango/index.html)
+and [W3C CSS Fonts Module Level 3](https://www.w3.org/TR/css-fonts-3/) for further information.
 
-## Drawing the clock face, hour, minute and second hands
+## Converter from PangoFontDescription to CSS
 
-The `draw_clock()` function does all the work. See the in-file comments for an
-explanation of how the Cairo drawing works.
-
-For a detailed reference of what each of the Cairo functions does see the
-[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
+Two files `pfd2css.h` and `pfd2css.c` include the converter from PangoFontDescription to CSS.
 
 ~~~C
-  1 static void
-  2 draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
-  3 
-  4     // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
-  5     // the center of the window
-  6     cairo_scale(cr, width, height);
-  7     cairo_translate(cr, 0.5, 0.5);
-  8 
-  9     // Set the line width and save the cairo drawing state.
- 10     cairo_set_line_width(cr, m_line_width);
- 11     cairo_save(cr);
- 12 
- 13     // Set the background to a slightly transparent green.
- 14     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
- 15     cairo_paint(cr);
- 16 
- 17     // Resore back to precious drawing state and draw the circular path
- 18     // representing the clockface. Save this state (including the path) so we
- 19     // can reuse it.
- 20     cairo_restore(cr);
- 21     cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
- 22     cairo_save(cr);
- 23 
- 24     // Fill the clockface with white
- 25     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
- 26     cairo_fill_preserve(cr);
- 27     // Restore the path, paint the outside of the clock face.
- 28     cairo_restore(cr);
- 29     cairo_stroke_preserve(cr);
- 30     // Set the 'clip region' to the inside of the path (fill region).
- 31     cairo_clip(cr);
- 32 
- 33     // Clock ticks
- 34     for (int i = 0; i < 12; i++)
- 35     {
- 36         // Major tick size
- 37         double inset = 0.05;
- 38 
- 39         // Save the graphics state, restore after drawing tick to maintain pen
- 40         // size
- 41         cairo_save(cr);
- 42         cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
- 43 
- 44         // Minor ticks are shorter, and narrower.
- 45         if(i % 3 != 0)
- 46         {
- 47             inset *= 0.8;
- 48             cairo_set_line_width(cr, 0.03);
- 49         }
- 50 
- 51         // Draw tick mark
- 52         cairo_move_to(
- 53             cr,
- 54             (m_radius - inset) * cos (i * M_PI / 6.0),
- 55             (m_radius - inset) * sin (i * M_PI / 6.0));
- 56         cairo_line_to(
- 57             cr,
- 58             m_radius * cos (i * M_PI / 6.0),
- 59             m_radius * sin (i * M_PI / 6.0));
- 60         cairo_stroke(cr);
- 61         cairo_restore(cr); /* stack-pen-size */
- 62     }
- 63 
- 64     // Draw the analog hands
- 65 
- 66     // Get the current Unix time, convert to the local time and break into time
- 67     // structure to read various time parts.
- 68     time_t rawtime;
- 69     time(&rawtime);
- 70     struct tm * timeinfo = localtime (&rawtime);
- 71 
- 72     // Calculate the angles of the hands of our clock
- 73     double hours   = timeinfo->tm_hour * M_PI / 6.0;
- 74     double minutes = timeinfo->tm_min * M_PI / 30.0;
- 75     double seconds = timeinfo->tm_sec * M_PI / 30.0;
- 76 
- 77     // Save the graphics state
- 78     cairo_save(cr);
- 79     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
- 80 
- 81     cairo_save(cr);
- 82 
- 83     // Draw the seconds hand
- 84     cairo_set_line_width(cr, m_line_width / 3.0);
- 85     cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
- 86     cairo_move_to(cr, 0.0, 0.0);
- 87     cairo_line_to(cr,
- 88                   sin(seconds) * (m_radius * 0.9),
- 89                   -cos(seconds) * (m_radius * 0.9));
- 90     cairo_stroke(cr);
- 91     cairo_restore(cr);
- 92 
- 93     // Draw the minutes hand
- 94     cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
- 95     cairo_move_to(cr, 0, 0);
- 96     cairo_line_to(cr,
- 97                   sin(minutes + seconds / 60) * (m_radius * 0.8),
- 98                   -cos(minutes + seconds / 60) * (m_radius * 0.8));
- 99     cairo_stroke(cr);
-100 
-101     // draw the hours hand
-102     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
-103     cairo_move_to(cr, 0.0, 0.0);
-104     cairo_line_to(cr,
-105                   sin(hours + minutes / 12.0) * (m_radius * 0.5),
-106                   -cos(hours + minutes / 12.0) * (m_radius * 0.5));
-107     cairo_stroke(cr);
-108     cairo_restore(cr);
-109 
-110     // Draw a little dot in the middle
-111     cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
-112     cairo_fill(cr);
-113 }
+ 1 #pragma once
+ 2 
+ 3 #include <pango/pango.h>
+ 4 
+ 5 // Pango font description to CSS style string
+ 6 // Returned string is owned by the caller. The caller should free it when it becomes useless.
+ 7 
+ 8 char*
+ 9 pfd2css (PangoFontDescription *pango_font_desc);
+10 
+11 // Each element (family, style, weight and size)
+12 
+13 const char*
+14 pfd2css_family (PangoFontDescription *pango_font_desc);
+15 
+16 const char*
+17 pfd2css_style (PangoFontDescription *pango_font_desc);
+18 
+19 int
+20 pfd2css_weight (PangoFontDescription *pango_font_desc);
+21 
+22 // Returned string is owned by the caller. The caller should free it when it becomes useless.
+23 char *
+24 pfd2css_size (PangoFontDescription *pango_font_desc);
 ~~~
 
-In order for the clock to be drawn, the drawing function `draw_clock()` needs
-to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
+The five functions are public.
+The first function is a convenient function to set other four CSS at once.
 
-Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
+~~~C
+ 1 #include <pango/pango.h>
+ 2 #include "pfd2css.h"
+ 3 
+ 4 // Pango font description to CSS style string
+ 5 // Returned string is owned by caller. The caller should free it when it is useless.
+ 6 
+ 7 char*
+ 8 pfd2css (PangoFontDescription *pango_font_desc) {
+ 9   char *fontsize;
+10 
+11   fontsize = pfd2css_size (pango_font_desc);
+12   return g_strdup_printf ("font-family: \"%s\"; font-style: %s; font-weight: %d; font-size: %s;",
+13               pfd2css_family (pango_font_desc), pfd2css_style (pango_font_desc),
+14               pfd2css_weight (pango_font_desc), fontsize);
+15   g_free (fontsize); 
+16 }
+17 
+18 // Each element (family, style, weight and size)
+19 
+20 const char*
+21 pfd2css_family (PangoFontDescription *pango_font_desc) {
+22   return pango_font_description_get_family (pango_font_desc);
+23 }
+24 
+25 const char*
+26 pfd2css_style (PangoFontDescription *pango_font_desc) {
+27   PangoStyle pango_style = pango_font_description_get_style (pango_font_desc);
+28   switch (pango_style) {
+29   case PANGO_STYLE_NORMAL:
+30     return "normal";
+31   case PANGO_STYLE_ITALIC:
+32     return "italic";
+33   case PANGO_STYLE_OBLIQUE:
+34     return "oblique";
+35   default:
+36     return "normal";
+37   }
+38 }
+39 
+40 int
+41 pfd2css_weight (PangoFontDescription *pango_font_desc) {
+42   PangoWeight pango_weight = pango_font_description_get_weight (pango_font_desc);
+43   switch (pango_weight) {
+44   case PANGO_WEIGHT_THIN:
+45     return 100;
+46   case PANGO_WEIGHT_ULTRALIGHT:
+47     return 200;
+48   case PANGO_WEIGHT_LIGHT:
+49     return 300;
+50   case PANGO_WEIGHT_SEMILIGHT:
+51     return 350;
+52   case PANGO_WEIGHT_BOOK:
+53     return 380;
+54   case PANGO_WEIGHT_NORMAL:
+55     return 400; /* or "normal" */
+56   case PANGO_WEIGHT_MEDIUM:
+57     return 500;
+58   case PANGO_WEIGHT_SEMIBOLD:
+59     return 600;
+60   case PANGO_WEIGHT_BOLD:
+61     return 700; /* or "bold" */
+62   case PANGO_WEIGHT_ULTRABOLD:
+63     return 800;
+64   case PANGO_WEIGHT_HEAVY:
+65     return 900;
+66   case PANGO_WEIGHT_ULTRAHEAVY:
+67     return 900; /* 1000 is available since CSS Fonts level 4 but GTK currently supports level 3. */
+68   default:
+69     return 400; /* "normal" */
+70   }
+71 }
+72 
+73 char *
+74 pfd2css_size (PangoFontDescription *pango_font_desc) {
+75   if (pango_font_description_get_size_is_absolute (pango_font_desc))
+76     return g_strdup_printf ("%dpx", pango_font_description_get_size (pango_font_desc) / PANGO_SCALE);
+77   else
+78     return g_strdup_printf ("%dpt", pango_font_description_get_size (pango_font_desc) / PANGO_SCALE);
+79 }
+~~~
 
-There is still a problem though. In order to animate the clock we need to also
-tell the application that the clock needs to be redrawn every second. This
-process starts by registering (on the next line, line 15) a timeout function
-with `g_timeout_add()` that will wakeup and run another function `time_handler`,
-every second (or 1000ms).
+- The function `pfd2css_family` returns font family.
+- The function `pfd2css_style` returns font style which is one of "normal", "italic" or "oblique".
+- The function `pfd2css_weight` returns font weight in integer. See the list below.
+- The function `pfd2css_size` returns font size.
+  - If the font description size is absolute, it returns the size of device unit, which is pixel. Otherwise the unit is point.
+  - The function `pango_font_description_get_size` returns the integer of the size but it is multiplied by `PANGO_SCALE`.
+So, you need to divide it by `PANGO_SCALE`.
+The `PANGO_SCALE` is currently 1024, but this might be changed in the future.
+If the font size is 12pt, the size in pango is `12*PANGO_SCALE=12*1024=12288`.
+- The function `pfd2css` returns a string of the font.
+For example, if a font "Noto Sans Mono Bold Italic 12" is given,
+it returns "font-family: Noto Sans Mono; font-style: italic; font-weight: 700; font-size: 12pt;".
+
+The font weight number is one of:
+
+- 100 - Thin
+- 200 - Extra Light (Ultra Light)
+- 300 - Light
+- 400 - Normal
+- 500 - Medium
+- 600 - Semi Bold (Demi Bold)
+- 700 - Bold
+- 800 - Extra Bold (Ultra Bold)
+- 900 - Black (Heavy)
+
+## Application object
+
+### TfeApplication class
+
+TfeApplication class is a child of GtkApplication.
+It has some instance variables.
+The header file defines the type macro and a public function.
+
+~~~C
+1 #pragma once
+2 
+3 #include <gtk/gtk.h>
+4 
+5 #define TFE_TYPE_APPLICATION tfe_application_get_type ()
+6 G_DECLARE_FINAL_TYPE (TfeApplication, tfe_application, TFE, APPLICATION, GtkApplication)
+7 
+8 TfeApplication *
+9 tfe_application_new (const char* application_id, GApplicationFlags flag);
+~~~
+
+The following code is extracted from `tfeapplication.c`.
+It builds TfeApplication class and instance.
+
+```C
+#include <gtk/gtk.h>
+#include "tfeapplication.h"
+
+struct _TfeApplication {
+  GtkApplication parent;
+  TfeWindow *win;
+  GSettings *settings;
+  GtkCssProvider *provider;
+};
+
+G_DEFINE_FINAL_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
+
+static void
+tfe_application_dispose (GObject *gobject) {
+  TfeApplication *app = TFE_APPLICATION (gobject);
+
+  g_clear_object (&app->settings);
+  g_clear_object (&app->provider);
+  G_OBJECT_CLASS (tfe_application_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_application_init (TfeApplication *app) {
+  app->settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_signal_connect (app->settings, "changed::font-desc", G_CALLBACK (changed_font_cb), app);
+  app->provider = gtk_css_provider_new ();
+}
+
+static void
+tfe_application_class_init (TfeApplicationClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_application_dispose;
+  G_APPLICATION_CLASS (class)->startup = app_startup;
+  G_APPLICATION_CLASS (class)->activate = app_activate;
+  G_APPLICATION_CLASS (class)->open = app_open;
+}
+
+TfeApplication *
+tfe_application_new (const char* application_id, GApplicationFlags flag) {
+  return TFE_APPLICATION (g_object_new (TFE_TYPE_APPLICATION, "application-id", application_id, "flags", flag, NULL));
+}
+```
+
+- The structure `_TfeApplication` is defined.
+It has four members.
+One is its parents and the others are kinds of instance variables.
+The members are usually initialized in the instance initialization function.
+And they are released in the disposal function or freed in the finalization function.
+The members are:
+  - win: main window instance
+  - settings: GSettings instance.it is bound to "font-desc" item in the GSettings
+  - provider: a provider for the font of the textview.
+- The macro `G_DEFINE_FINAL_TYPE` defines `tfe_application_get_type` function and some other useful things.
+- The function `tfe_application_class_init` initializes the TfeApplication class.
+It overrides four class methods.
+Three class methods `startup`, `activate` and `open` points the default signal handlers.
+The overriding changes the default handlers.
+You can connect the handlers with `g_signal_connect` macro but the result is different.
+The macro connects a user handler to the signal.
+The default handler still exists and no change is made to them.
+- The function `tfe_application_init` initializes an instance.
+  - Creates a new GSettings instance and make `app->settings` point it. Then connects the handler `changed_font_cb` to the "changed::font-desc" signal.
+  - Creates a new GtkCssProvider instance and make `app->provider` point it.
+- The function `tfe_application_dispose` releases the GSettings and GtkCssProvider instances.
+Then, call the parent's dispose handler. It is called "chaining up".
+See [GObject document](https://docs.gtk.org/gobject/tutorial.html#chaining-up).
+
+### Startup signal handlers
 
 ~~~C
  1 static void
- 2 app_activate (GApplication *app, gpointer user_data) {
- 3     GtkWidget *win;
- 4     GtkWidget *clock;
- 5     GtkBuilder *build;
+ 2 app_startup (GApplication *application) {
+ 3   TfeApplication *app = TFE_APPLICATION (application);
+ 4   int i;
+ 5   GtkCssProvider *provider = gtk_css_provider_new ();
+ 6   GdkDisplay *display;
+ 7 
+ 8   G_APPLICATION_CLASS (tfe_application_parent_class)->startup (application);
+ 9 
+10   app->win = TFE_WINDOW (tfe_window_new (GTK_APPLICATION (app)));
+11 
+12   gtk_css_provider_load_from_data (provider, "textview {padding: 10px;}", -1);
+13   display = gdk_display_get_default ();
+14   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
+15                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+16   g_object_unref (provider);
+17   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (app->provider),
+18                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+19 
+20   changed_font_cb (app->settings, "font-desc", app); // Sets the text view font to the font from the gsettings data base.
+21 
+22 /* ----- accelerator ----- */ 
+23   struct {
+24     const char *action;
+25     const char *accels[2];
+26   } action_accels[] = {
+27     { "win.open", { "<Control>o", NULL } },
+28     { "win.save", { "<Control>s", NULL } },
+29     { "win.close", { "<Control>w", NULL } },
+30     { "win.new", { "<Control>n", NULL } },
+31     { "win.saveas", { "<Shift><Control>s", NULL } },
+32     { "win.close-all", { "<Control>q", NULL } },
+33   };
+34 
+35   for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
+36     gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
+37 }
+~~~
+
+The function `app_startup` replace the default signal handlers.
+It does five things.
+
+- Calls the parent's startup handler. It is called "chaining up".
+The "startup" default handler runs before user handlers.
+So the call for the parent's handler must be done at the beginning.
+- Creates the main window.
+This application has only one top level window.
+In that case, it is a good way to create the window in the startup handler, which is called only once.
+Activate or open handlers can be called twice or more.
+Therefore, if you create a window in the activate or open handler, two or more windows can be created.
+- Sets the default display CSS to "textview {padding: 10px;}".
+It sets the GtkTextView, or TfeTextView, padding to 10px and makes the text easier to read.
+This CSS is fixed and never changed through the application life.
+- Adds another CSS provider, which is pointed by `app->provider`, to the default display.
+This CSS depends on the GSettings "font-desc" value and it can be changed during the application life time.
+And calls `changed_font_cb` to update the font CSS setting.
+- Sets application accelerator with the function `gtk_application_set_accels_for_action`.
+Accelerators are kinds of short cut key functions.
+For example, `Ctrl+O` is an accelerator to activate "open" action.
+Accelerators are written in the array `action-accels[]`.
+Its element is a structure `struct {const char *action; const char *accels[2];}`.
+The member `action` is an action name.
+The member `accels` is an array of two pointers.
+For example, `{"win.open", { "<Control>o", NULL }}` tells that the accelerator `Ctrl+O` is connected to the "win.open" action.
+The second element of `accels` is NULL which is the end mark.
+You can define more than one accelerator keys and the list must ends with NULL (zero).
+If you want to do so, the array length needs to be three or more.
+For example, `{"win.open", { "<Control>o", "<Alt>o", NULL }}` means two accelerators `Ctrl+O` and `Alt+O` is connected to the "win.open" action.
+The parser recognizes "\<control\>o", "\<Shift\>\<Alt\>F2", "\<Ctrl\>minus" and so on.
+If you want to use symbol key like "\<Ctrl\>-", use "\<Ctrl\>minus" instead.
+Such relation between lower case and symbol (character code) is specified in [`gdkkeysyms.h`](https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h) in the GTK 4 source code.
+
+### Activate and open signal handlers
+
+Two functions `app_activate` and `app_open` replace the default signal handlers.
+
+~~~C
+ 1 static void
+ 2 app_activate (GApplication *application) {
+ 3   TfeApplication *app = TFE_APPLICATION (application);
+ 4 
+ 5   tfe_window_notebook_page_new (app->win);
+ 6   gtk_window_present (GTK_WINDOW (app->win));
+ 7 }
+ 8 
+ 9 static void
+10 app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+11   TfeApplication *app = TFE_APPLICATION (application);
+12 
+13   tfe_window_notebook_page_new_with_files (app->win, files, n_files);
+14   gtk_window_present (GTK_WINDOW (app->win));
+15 }
+~~~
+ 
+The original default handlers don't do useful works and you don't need to chain up to the parent's default handlers.
+They just create notebook pages and show the top level window.
+
+### CSS font setting
+
+~~~C
+ 1 static void
+ 2 changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
+ 3   TfeApplication *app = TFE_APPLICATION (user_data);
+ 4   char *font, *s, *css;
+ 5   PangoFontDescription *pango_font_desc;
  6 
- 7     build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
- 8     win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
- 9     gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-10 
-11     clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
-12     g_object_unref(build);
-13 
-14     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
-15     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-16     gtk_widget_show(win);
-17 
+ 7   if (g_strcmp0(key, "font-desc") != 0)
+ 8     return;
+ 9   font = g_settings_get_string (app->settings, "font-desc");
+10   pango_font_desc = pango_font_description_from_string (font);
+11   g_free (font);
+12   s = pfd2css (pango_font_desc); // converts Pango Font Description into CSS style string
+13   pango_font_description_free (pango_font_desc);
+14   css = g_strdup_printf ("textview {%s}", s);
+15   gtk_css_provider_load_from_data (app->provider, css, -1);
+16   g_free (s);
+17   g_free (css);
 18 }
 ~~~
 
-Our `time_handler()` function is very simple, as it just calls
-`gtk_widget_queue_draw()` which schedules a redraw of the widget.
+The function `changed_font_cb` is a handler for "changed::font-desc" signal on the GSettings instance.
+The signal name is "changed" and "font-desc" is a key name.
+This signal is emitted when the value of the "font-desc" key is changed.
+The value is bound to the "font-desc" property of the GtkFontDialogButton instance.
+Therefore, the handler `changed_font_cb` is called when the user selects and updates a font through the font dialog.
+
+A string is retrieved from the GSetting database and converts it into a pango font description.
+And a CSS string is made by the function `pfd2css` and `g_strdup_printf`.
+Then the css provider is set to the string.
+The provider has been inserted to the current display in advance.
+So, the font is applied to the display.
+
+## Other files
+
+main.c
 
 ~~~C
-1 gboolean
-2 time_handler(GtkWidget* widget) {
-3     gtk_widget_queue_draw(widget);
-4 
-5     return TRUE;
-6 }
+ 1 #include <gtk/gtk.h>
+ 2 #include "tfeapplication.h"
+ 3 
+ 4 #define APPLICATION_ID "com.github.ToshioCP.tfe"
+ 5 
+ 6 int
+ 7 main (int argc, char **argv) {
+ 8   TfeApplication *app;
+ 9   int stat;
+10 
+11   app = tfe_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+12   stat =g_application_run (G_APPLICATION (app), argc, argv);
+13   g_object_unref (app);
+14   return stat;
+15 }
+16 
 ~~~
 
-.. and that is all there is to it. If you compile and run the example you will
-get a ticking analog clock.
-
-If you get this working, you can try modifying some of the code in
-`draw_clock()` to tweak the application (such as change the color or size and
-length of the hands) or even add text, or create a digital clock.
-
-## The Complete code
-
-You can find the source files in the `tfc` directory. it can be compiled with `./comp tfc`.
-
-`tfc.c`
-
-~~~C
-  1 #include <gtk/gtk.h>
-  2 #include <math.h>
-  3 #include <time.h>
-  4 
-  5 float m_radius     = 0.42;
-  6 float m_line_width = 0.05;
-  7 
-  8 static void
-  9 draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
- 10 
- 11     // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
- 12     // the center of the window
- 13     cairo_scale(cr, width, height);
- 14     cairo_translate(cr, 0.5, 0.5);
- 15 
- 16     // Set the line width and save the cairo drawing state.
- 17     cairo_set_line_width(cr, m_line_width);
- 18     cairo_save(cr);
- 19 
- 20     // Set the background to a slightly transparent green.
- 21     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
- 22     cairo_paint(cr);
- 23 
- 24     // Resore back to precious drawing state and draw the circular path
- 25     // representing the clockface. Save this state (including the path) so we
- 26     // can reuse it.
- 27     cairo_restore(cr);
- 28     cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
- 29     cairo_save(cr);
- 30 
- 31     // Fill the clockface with white
- 32     cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
- 33     cairo_fill_preserve(cr);
- 34     // Restore the path, paint the outside of the clock face.
- 35     cairo_restore(cr);
- 36     cairo_stroke_preserve(cr);
- 37     // Set the 'clip region' to the inside of the path (fill region).
- 38     cairo_clip(cr);
- 39 
- 40     // Clock ticks
- 41     for (int i = 0; i < 12; i++)
- 42     {
- 43         // Major tick size
- 44         double inset = 0.05;
- 45 
- 46         // Save the graphics state, restore after drawing tick to maintain pen
- 47         // size
- 48         cairo_save(cr);
- 49         cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
- 50 
- 51         // Minor ticks are shorter, and narrower.
- 52         if(i % 3 != 0)
- 53         {
- 54             inset *= 0.8;
- 55             cairo_set_line_width(cr, 0.03);
- 56         }
- 57 
- 58         // Draw tick mark
- 59         cairo_move_to(
- 60             cr,
- 61             (m_radius - inset) * cos (i * M_PI / 6.0),
- 62             (m_radius - inset) * sin (i * M_PI / 6.0));
- 63         cairo_line_to(
- 64             cr,
- 65             m_radius * cos (i * M_PI / 6.0),
- 66             m_radius * sin (i * M_PI / 6.0));
- 67         cairo_stroke(cr);
- 68         cairo_restore(cr); /* stack-pen-size */
- 69     }
- 70 
- 71     // Draw the analog hands
- 72 
- 73     // Get the current Unix time, convert to the local time and break into time
- 74     // structure to read various time parts.
- 75     time_t rawtime;
- 76     time(&rawtime);
- 77     struct tm * timeinfo = localtime (&rawtime);
- 78 
- 79     // Calculate the angles of the hands of our clock
- 80     double hours   = timeinfo->tm_hour * M_PI / 6.0;
- 81     double minutes = timeinfo->tm_min * M_PI / 30.0;
- 82     double seconds = timeinfo->tm_sec * M_PI / 30.0;
- 83 
- 84     // Save the graphics state
- 85     cairo_save(cr);
- 86     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
- 87 
- 88     cairo_save(cr);
- 89 
- 90     // Draw the seconds hand
- 91     cairo_set_line_width(cr, m_line_width / 3.0);
- 92     cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
- 93     cairo_move_to(cr, 0.0, 0.0);
- 94     cairo_line_to(cr,
- 95                   sin(seconds) * (m_radius * 0.9),
- 96                   -cos(seconds) * (m_radius * 0.9));
- 97     cairo_stroke(cr);
- 98     cairo_restore(cr);
- 99 
-100     // Draw the minutes hand
-101     cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
-102     cairo_move_to(cr, 0, 0);
-103     cairo_line_to(cr,
-104                   sin(minutes + seconds / 60) * (m_radius * 0.8),
-105                   -cos(minutes + seconds / 60) * (m_radius * 0.8));
-106     cairo_stroke(cr);
-107 
-108     // draw the hours hand
-109     cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
-110     cairo_move_to(cr, 0.0, 0.0);
-111     cairo_line_to(cr,
-112                   sin(hours + minutes / 12.0) * (m_radius * 0.5),
-113                   -cos(hours + minutes / 12.0) * (m_radius * 0.5));
-114     cairo_stroke(cr);
-115     cairo_restore(cr);
-116 
-117     // Draw a little dot in the middle
-118     cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
-119     cairo_fill(cr);
-120 }
-121 
-122 
-123 gboolean
-124 time_handler(GtkWidget* widget) {
-125     gtk_widget_queue_draw(widget);
-126 
-127     return TRUE;
-128 }
-129 
-130 
-131 static void
-132 app_activate (GApplication *app, gpointer user_data) {
-133     GtkWidget *win;
-134     GtkWidget *clock;
-135     GtkBuilder *build;
-136 
-137     build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
-138     win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-139     gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-140 
-141     clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
-142     g_object_unref(build);
-143 
-144     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
-145     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-146     gtk_widget_show(win);
-147 
-148 }
-149 
-150 static void
-151 app_open (GApplication *app, GFile **files, gint n_files, gchar *hint, gpointer user_data) {
-152     app_activate(app,user_data);
-153 }
-154 
-155 int
-156 main (int argc, char **argv) {
-157     GtkApplication *app;
-158     int stat;
-159 
-160     app = gtk_application_new ("com.github.ToshioCP.tfc", G_APPLICATION_HANDLES_OPEN);
-161     g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-162     g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-163     stat = g_application_run (G_APPLICATION (app), argc, argv);
-164     g_object_unref (app);
-165     return stat;
-166 }
-~~~
-
-`tfc.ui`
-
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <object class="GtkApplicationWindow" id="win">
- 4     <property name="title">Clock</property>
- 5     <property name="default-width">200</property>
- 6     <property name="default-height">200</property>
- 7     <child>
- 8       <object class="GtkDrawingArea" id="clock">
- 9         <property name="hexpand">TRUE</property>
-10         <property name="vexpand">TRUE</property>
-11       </object>
-12     </child>
-13   </object>
-14 </interface>
-~~~
-
-`tfc.gresource.xml`
+Resource XML file.
 
 ~~~xml
 1 <?xml version="1.0" encoding="UTF-8"?>
 2 <gresources>
-3   <gresource prefix="/com/github/ToshioCP/tfc">
-4     <file>tfc.ui</file>
-5   </gresource>
-6 </gresources>
+3   <gresource prefix="/com/github/ToshioCP/tfe">
+4     <file>tfewindow.ui</file>
+5     <file>tfepref.ui</file>
+6     <file>tfealert.ui</file>
+7     <file>menu.ui</file>
+8   </gresource>
+9 </gresources>
 ~~~
 
-`comp`
+GSchema XML file
+
+~~~xml
+ 1 <?xml version="1.0" encoding="UTF-8"?>
+ 2 <schemalist>
+ 3   <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
+ 4     <key name="font-desc" type="s">
+ 5       <default>'Monospace 12'</default>
+ 6       <summary>Font</summary>
+ 7       <description>A font to be used for textview.</description>
+ 8     </key>
+ 9   </schema>
+10 </schemalist>
+~~~
+
+Meson.build
+
+~~~meson
+ 1 project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:' >=1.0.1', version: '0.5')
+ 2 
+ 3 gtkdep = dependency('gtk4')
+ 4 
+ 5 gnome = import('gnome')
+ 6 resources = gnome.compile_resources('resources','tfe.gresource.xml')
+ 7 gnome.compile_schemas(depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
+ 8 
+ 9 sourcefiles = files('main.c', 'tfeapplication.c', 'tfewindow.c', 'tfepref.c', 'tfealert.c', 'pfd2css.c', '../tfetextview/tfetextview.c')
+10 
+11 executable(meson.project_name(), sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
+12 
+13 schema_dir = get_option('prefix') / get_option('datadir') / 'glib-2.0/schemas/'
+14 install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
+15 gnome.post_install (glib_compile_schemas: true)
+~~~
+
+- The function `project` defines project and initialize meson.
+The first argument is the project name and the second is the language name.
+The other arguments are keyword arguments.
+- The function `dependency` defines the denpendent library.
+Tfe depends GTK4.
+This is used to create `pkg-config` option in the command line of C compiler to include header files and link libraries.
+The returned object `gtkdep` is used as an argument to the `executable` function later.
+- The function `import` imports an extension module.
+The GNOME module has some convenient methods like `gnome.compile_resources` and `gnome.compile_schemas`.
+- The method `gnome.compile_resources` compiles and creates resource files.
+The first argument is the resource name without extension and the second is the name of XML file.
+The returned value is an array `['resources,c', 'resources.h']`.
+- The function `gnome.compile_schemas` compiles the schema files in the current directory.
+This just creates `gschemas.compiled` in the build directory.
+It is used to test the executable binary in the build directory.
+The function doesn't install the schema file.
+- The function `files` creates a File Object.
+- The function `executable` defines the compilation elements such as target name, source files, dependencies and installation.
+The target name is "tfe".
+The source files are elements of 'sourcefiles' and `resources'.
+It uses GTK4 libraries.
+It can be installed.
+- The last three lines are post install work.
+The variable `schema_dir` is the directory stored the schema file.
+If meson runs with `--prefix=$HOME/.local` argument, it is `$HOME/.local/share/glib-2.9/schemas`.
+The function `install_data` copies the first argument file into the second argument directory.
+The method `gnome.post_install` runs `glib-compile-schemas` and updates `gschemas_compiled` file.
+
+## Compilation and installation.
+
+If you want to install it to your local area, use `--prefix=$HOME/.local` or `--prefix=$HOME` option.
+If you want to install it to the system area, no option is needed.
+It will be installed under `/user/local` directory.
 
 ~~~
-1 glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source
-2 gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm
+$ meson setup --prefix=$HOME/.local _build
+$ ninja -C _build
+$ ninja -C _build install
 ~~~
+
+You need root privilege to install it to the system area..
+
+~~~
+$ meson setup _build
+$ ninja -C _build
+$ sudo ninja -C _build install
+~~~
+
+Source files are in [src/tfe6](../src/tfe6) directory.
+
+We made a very small text editor.
+You can add features to this editor.
+When you add a new feature, be careful about the structure of the program.
+Maybe you need to divide a file into several files.
+It isn't good to put many things into one file.
+And it is important to think about the relationship between source files and widget structures.
+
+The source files are in the [Gtk4 tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
+Download it and see `src/tfe6` directory.
+
+Note: When the menu button is clicked, error messages are printed.
+
+```
+(tfe:31153): Gtk-CRITICAL **: 13:05:40.746: _gtk_css_corner_value_get_x: assertion 'corner->class == &GTK_CSS_VALUE_CORNER' failed
+```
+
+I found a [message](https://discourse.gnome.org/t/menu-button-gives-error-messages-with-latest-gtk4/15689) in the GNOME Discourse.
+The comment says that GTK 4.10 has a bug and it is fixed in the version 4.10.5.
+I haven't check 4.10.5 yet, where the UBUNTU GTK4 is still 4.10.4.
 
 Up: [README.md](../README.md),  Prev: [Section 22](sec22.md), Next: [Section 24](sec24.md)

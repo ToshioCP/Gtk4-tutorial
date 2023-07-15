@@ -51,8 +51,7 @@ fullscreen_changed (GSimpleAction *action, GVariant *state, gpointer user_data) 
 }
 
 static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
-{
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
   GApplication *app = G_APPLICATION (user_data);
 
   g_application_quit (app);
@@ -74,7 +73,7 @@ app_activate (GApplication *app) {
 
   gtk_window_set_title (GTK_WINDOW (win), "menu3");
   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 static void

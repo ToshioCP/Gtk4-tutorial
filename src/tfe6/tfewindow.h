@@ -1,5 +1,4 @@
-#ifndef __TFE_WINDOW_H__
-#define __TFE_WINDOW_H__
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -14,6 +13,3 @@ tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_fi
 
 GtkWidget *
 tfe_window_new (GtkApplication *app);
-
-#endif /* __TFE_WINDOW_H__ */
-

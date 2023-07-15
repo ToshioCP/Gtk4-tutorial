@@ -19,15 +19,16 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   gsize length;
   char *filename;
   int i;
+  GError *err = NULL;
   GtkBuilder *build;
 
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe3/tfe.ui");
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
   g_object_unref (build);
   for (i = 0; i < n_files; i++) {
-    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
+    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
       scr = gtk_scrolled_window_new ();
       tv = tfe_text_view_new ();
       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
@@ -43,11 +44,10 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);
       g_free (filename);
-    } else if ((filename = g_file_get_path (files[i])) != NULL) {
-        g_print ("No such file: %s.\n", filename);
-        g_free (filename);
-    } else
-        g_print ("No valid file is given\n");
+    } else {
+      g_printerr ("%s.\n", err->message);
+      g_clear_error (&err);
+    }
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
     gtk_window_present (GTK_WINDOW (win));

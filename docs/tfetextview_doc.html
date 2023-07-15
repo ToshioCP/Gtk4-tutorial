@@ -106,40 +106,64 @@
       </div>
     </nav>
 <h1 id="tfetextview-api-reference">TfeTextView API reference</h1>
-<p>TfeTextView – Child object of GtkTextView. It is connected to a
-certain file.</p>
-<h2 id="functions">Functions</h2>
+<h2 id="description">Description</h2>
+<p>TfeTextView is a child object of GtkTextView. If its contents comes
+from a file, it holds the pointer to the GFile. Otherwise, the pointer
+is NULL.</p>
+<h2 id="hierarchy">Hierarchy</h2>
+<pre><code>GObject -- GInitiallyUnowned -- GtkWidget -- GtkTextView -- TfeTextView</code></pre>
+<h2 id="ancestors">Ancestors</h2>
 <ul>
-<li>GFile *tfe_text_view_get_file ()</li>
-<li>void tfe_text_view_open ()</li>
-<li>void tfe_text_view_save ()</li>
-<li>void tfe_text_view_saveas ()</li>
-<li>GtkWidget *tfe_text_view_new_with_file ()</li>
-<li>GtkWidget *tfe_text_view_new ()</li>
+<li>GtkTextView</li>
+<li>GtkWidget</li>
+<li>GInitiallyUnowned</li>
+<li>GObject</li>
+</ul>
+<h2 id="constructors">Constructors</h2>
+<ul>
+<li>tfe_text_view_new ()</li>
+<li>tfe_text_view_new_with_file ()</li>
+</ul>
+<h2 id="instance-methods">Instance methods</h2>
+<ul>
+<li>tfe_text_view_get_file ()</li>
+<li>tfe_text_view_open ()</li>
+<li>tfe_text_view_save ()</li>
+<li>tfe_text_view_saveas ()</li>
 </ul>
 <h2 id="signals">Signals</h2>
 <ul>
-<li>void change-file</li>
-<li>void open-response</li>
+<li>Tfe.TextView::change-file</li>
+<li>Tfe.TextView::open-response</li>
 </ul>
-<h2 id="types-and-values">Types and Values</h2>
+<h2 id="api-for-constructors-instance-methods-and-signals">API for
+constructors, instance methods and signals</h2>
+<p><strong>constructors</strong></p>
+<h3 id="tfe_text_view_new">tfe_text_view_new()</h3>
+<pre><code>GtkWidget *
+tfe_text_view_new (void);</code></pre>
+<p>Creates a new TfeTextView instance and returns the pointer to it as
+GtkWidget. If an error happens, it returns <code>NULL</code>.</p>
+<p>Return value</p>
 <ul>
-<li>TfeTextView</li>
-<li>TfeTextViewClass</li>
-<li>TfeTextViewOpenResponseType</li>
+<li>a new TfeTextView.</li>
 </ul>
-<h2 id="object-hierarchy">Object Hierarchy</h2>
-<pre><code>GObject
-+--GInitiallyUnowned
-   +--GtkWidget
-      +--GtkTextView
-         +--TfeTextView</code></pre>
-<h2 id="includes">Includes</h2>
-<pre><code>#include &lt;gtk/gtk.h&gt;</code></pre>
-<h2 id="description">Description</h2>
-<p>TfeTextView holds GFile corresponds to the contents of GtkTextBuffer.
-It has some file manipulation functions.</p>
-<h2 id="functions-1">Functions</h2>
+<h3 id="tfe_text_view_new_with_file">tfe_text_view_new_with_file()</h3>
+<pre><code>GtkWidget *
+tfe_text_view_new_with_file (GFile *file);</code></pre>
+<p>Creates a new TfeTextView, reads the contents of the
+<code>file</code> and set it to the GtkTextBuffer corresponds to the
+newly created TfeTextView. Then returns the pointer to the TfeTextView
+as GtkWidget. If an error happens, it returns <code>NULL</code>.</p>
+<p>Parameters</p>
+<ul>
+<li>file: a GFile</li>
+</ul>
+<p>Return value</p>
+<ul>
+<li>a new TfeTextView.</li>
+</ul>
+<p><strong>Instance methods</strong></p>
 <h3 id="tfe_text_view_get_file">tfe_text_view_get_file()</h3>
 <pre><code>GFile *
 tfe_text_view_get_file (TfeTextView *tv);</code></pre>
@@ -148,16 +172,18 @@ tfe_text_view_get_file (TfeTextView *tv);</code></pre>
 <ul>
 <li>tv: a TfeTextView</li>
 </ul>
+<p>Return value</p>
+<ul>
+<li>the pointer to the GFile</li>
+</ul>
 <h3 id="tfe_text_view_open">tfe_text_view_open()</h3>
 <pre><code>void
 tfe_text_view_open (TfeTextView *tv, GtkWidget *win);</code></pre>
-<p>Just shows a GtkFileChooserDialog so that a user can choose a file to
-read. This function doesn’t do any I/O operations. They are done by the
-signal handler connected to the <code>response</code> signal emitted by
-GtkFileChooserDialog. Therefore the caller can’t know the I/O status
-directly from <code>tfe_text_view_open</code>. Instead, the status is
-informed by <code>open-response</code> signal. The caller needs to set a
-handler to this signal in advance.</p>
+<p>Shows a file chooser dialog so that a user can choose a file to read.
+Then, read the file and set the buffer with the contents. This function
+doesn’t return the I/O status. Instead, the status is informed by
+<code>open-response</code> signal. The caller needs to set a handler to
+this signal in advance.</p>
 <p>parameters</p>
 <ul>
 <li>tv: a TfeTextView</li>
@@ -166,9 +192,9 @@ handler to this signal in advance.</p>
 <h3 id="tfe_text_view_save">tfe_text_view_save()</h3>
 <pre><code>void
 tfe_text_view_save (TfeTextView *tv);</code></pre>
-<p>Saves the contents of the TfeTextView to a file. If <code>tv</code>
-holds a GFile, it is used. Otherwise, this function shows
-GtkFileChooserDialog so that the user can choose a file to save.</p>
+<p>Saves the contents of the buffer to the file. If <code>tv</code>
+holds a GFile, it is used. Otherwise, this function shows a file chooser
+dialog so that the user can choose a file to save.</p>
 <p>Parameters</p>
 <ul>
 <li>tv: a TfeTextView</li>
@@ -176,54 +202,33 @@ GtkFileChooserDialog so that the user can choose a file to save.</p>
 <h3 id="tfe_text_view_saveas">tfe_text_view_saveas()</h3>
 <pre><code>void
 tfe_text_view_saveas (TfeTextView *tv);</code></pre>
-<p>Saves the content of a TfeTextView to a file. This function shows
-GtkFileChooserDialog so that a user can choose a file to save.</p>
+<p>Saves the contents of the buffer to a file. This function shows file
+chooser dialog so that a user can choose a file to save.</p>
 <p>Parameters</p>
 <ul>
 <li>tv: a TfeTextView</li>
 </ul>
-<h3 id="tfe_text_view_new_with_file">tfe_text_view_new_with_file()</h3>
-<pre><code>GtkWidget *
-tfe_text_view_new_with_file (GFile *file);</code></pre>
-<p>Creates a new TfeTextView and reads the contents of the
-<code>file</code> and set it to the GtkTextBuffer corresponds to the
-newly created TfeTextView. Then returns the TfeTextView as GtkWidget. If
-an error happens, it returns <code>NULL</code>.</p>
-<p>Parameters</p>
+<p><strong>Signals</strong></p>
+<h3 id="change-file">change-file</h3>
+<pre><code>void
+user_function (TfeTextView *tv,
+               gpointer user_data)</code></pre>
+<p>Emitted when the GFile in the TfeTextView object is changed. The
+signal is emitted when:</p>
 <ul>
-<li>file: a GFile</li>
+<li>a new file is opened and read</li>
+<li>a user chooses a file with the file chooser dialog and save the
+contents.</li>
 </ul>
-<p>Returns</p>
-<ul>
-<li>a new TfeTextView.</li>
-</ul>
-<h3 id="tfe_text_view_new">tfe_text_view_new()</h3>
-<pre><code>GtkWidget *
-tfe_text_view_new (void);</code></pre>
-<p>Creates a new TfeTextView and returns the TfeTextView as GtkWidget.
-If an error happens, it returns <code>NULL</code>.</p>
-<p>Returns</p>
-<ul>
-<li>a new TfeTextView.</li>
-</ul>
-<h2 id="types-and-values-1">Types and Values</h2>
-<h3 id="tfetextview">TfeTextView</h3>
-<pre><code>typedef struct _TfeTextView TfeTextView
-struct _TfeTextView
-{
-  GtkTextView parent;
-  GFile *file;
-};</code></pre>
-<p>The members of this structure are not allowed to be accessed by any
-outer objects. If you want to obtain a copy of the GFile, use
-<code>tfe_text_view_get_file</code>.</p>
-<h3 id="tfetextviewclass">TfeTextViewClass</h3>
-<pre><code>typedef struct {
-  GtkTextViewClass parent_class;
-} TfeTextViewClass;</code></pre>
-<p>No member is added because TfeTextView is a final type object.</p>
-<h3 id="enum-tfetextviewopenresponsetype">enum
-TfeTextViewOpenResponseType</h3>
+<h3 id="open-response">open-response</h3>
+<pre><code>void
+user_function (TfeTextView *tv,
+               TfeTextViewOpenResponseType response-id,
+               gpointer user_data)</code></pre>
+<p>Emitted after the user calls <code>tfe_text_view_open</code>. This
+signal informs the status of file I/O operation.</p>
+<p><strong>Enumerations</strong></p>
+<h3 id="tfetextviewopenresponsetype">TfeTextViewOpenResponseType</h3>
 <p>Predefined values for the response id given by
 <code>open-response</code> signal.</p>
 <p>Members:</p>
@@ -233,31 +238,6 @@ TfeTextViewOpenResponseType</h3>
 <li>TFE_OPEN_RESPONSE_ERROR: An error happened during the opening or
 reading process.</li>
 </ul>
-<h2 id="properties">Properties</h2>
-<h3 id="wrap-mode">wrap-mode</h3>
-<p>The property “wrap-mode” belongs to GtkTextView. TfeTextView inherits
-it and the value is set to GTK_WRAP_WORD_CHAR as a default.</p>
-<h2 id="signals-1">Signals</h2>
-<h3 id="change-file">change-file</h3>
-<pre><code>void
-user_function (TfeTextView *tv,
-               gpointer user_data)</code></pre>
-<p>Emitted when the GFile in the TfeTextView object is changed. The
-signal is emitted when:</p>
-<ul>
-<li>a new file is opened and read</li>
-<li>a user choose a file with GtkFileChooserDialog and save the
-contents.</li>
-<li>an error occured during I/O operation, and GFile is removed as a
-result.</li>
-</ul>
-<h3 id="open-response">open-response</h3>
-<pre><code>void
-user_function (TfeTextView *tv,
-               TfeTextViewOpenResponseType response-id,
-               gpointer user_data)</code></pre>
-<p>Emitted after the user calls <code>tfe_text_view_open</code>. This
-signal informs the status of file opening and reading.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

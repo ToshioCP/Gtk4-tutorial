@@ -19,12 +19,12 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
 
 void
 tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
-  tv -> file = f;
+  tv->file = f;
 }
 
 GFile *
 tfe_text_view_get_file (TfeTextView *tv) {
-  return tv -> file;
+  return tv->file;
 }
 
 GtkWidget *

@@ -4,16 +4,15 @@ This tutorial illustrates how to write C programs with the GTK 4 library.
 It focuses on beginners so the contents are limited to the basics.
 The table of contents is at the end of this abstract.
 
-- Section 3 to 21 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
-- Section 22 to 25 describes GtkDrawingArea.
-- Section 26 to 30 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 3 to 23 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
+- Section 24 to 27 describes GtkDrawingArea.
+- Section 28 to 32 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [GTK4-tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
 You can read it directly without download.
 
-There's a GitHub Page of this tutorial at [`https://toshiocp.github.io/Gtk4-tutorial/`](https://toshiocp.github.io/Gtk4-tutorial/).
-It is easier to read than the repository.
+There's a [GitHub Page](https://toshiocp.github.io/Gtk4-tutorial/) which is the HTML version of the tutorial.
 
 #### GTK 4 Documentation
 
@@ -24,12 +23,12 @@ These websites were opened in August of 2021.
 The old documents are located at [GTK Reference Manual](https://developer-old.gnome.org/gtk4/stable/) and [GNOME Developer Center](https://developer-old.gnome.org/).
 
 If you want to know about GObject and the type system, please refer to [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
-GObject is the base of GTK 4, so it is important for developers to understand GObject as well as GTK 4.
+GObject is the base of GTK 4, so it is important for developers to understand it as well as GTK 4.
 
 #### Contribution
 
 This tutorial is still under development and unstable.
-Even though the codes of the examples have been tested on GTK 4 (version 4.8.1), bugs may still exist.
+Even though the codes of the examples have been tested on GTK 4 (version 4.10.1), bugs may still exist.
 If you find any bugs, errors or mistakes in the tutorial and C examples, please let me know.
 You can post it to [GitHub issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
 You can also post updated files to [pull request](https://github.com/ToshioCP/Gtk4-tutorial/pulls).

@@ -64,7 +64,7 @@ pfd2css_weight (PangoFontDescription *pango_font_desc) {
   case PANGO_WEIGHT_HEAVY:
     return 900;
   case PANGO_WEIGHT_ULTRAHEAVY:
-    return 900; /* In PangoWeight definition, the weight is 1000. But CSS allows the weight below 900. */
+    return 900; /* 1000 is available since CSS Fonts level 4 but GTK currently supports level 3. */
   default:
     return 400; /* "normal" */
   }

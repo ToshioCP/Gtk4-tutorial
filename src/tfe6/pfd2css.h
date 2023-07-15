@@ -3,7 +3,7 @@
 #include <pango/pango.h>
 
 // Pango font description to CSS style string
-// Returned string is owned by caller. The caller should free it when it is useless.
+// Returned string is owned by the caller. The caller should free it when it becomes useless.
 
 char*
 pfd2css (PangoFontDescription *pango_font_desc);
@@ -19,6 +19,6 @@ pfd2css_style (PangoFontDescription *pango_font_desc);
 int
 pfd2css_weight (PangoFontDescription *pango_font_desc);
 
-// Returned string is owned by caller. The caller should free it when it is useless.
+// Returned string is owned by the caller. The caller should free it when it becomes useless.
 char *
 pfd2css_size (PangoFontDescription *pango_font_desc);

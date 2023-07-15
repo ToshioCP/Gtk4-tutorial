@@ -1,5 +1,4 @@
-#ifndef __TFE_TEXT_VIEW_H__
-#define __TFE_TEXT_VIEW_H__
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -31,5 +30,3 @@ tfe_text_view_new_with_file (GFile *file);
 
 GtkWidget *
 tfe_text_view_new (void);
-
-#endif /* __TFE_TEXT_VIEW_H__ */

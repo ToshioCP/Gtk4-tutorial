@@ -111,962 +111,748 @@
         </div>
       </div>
     </nav>
-<h1 id="template-xml-and-composite-widget">Template XML and composite
-widget</h1>
-<p>The tfe program in the previous section is not so good because many
-things are crammed into <code>tfepplication.c</code>. And many static
-variables in <code>tfepplication.c</code>. The file
-<code>tfeapplication.c</code> should be divided into several files.</p>
-<ul>
-<li><code>tfeapplication.c</code> only has codes related to the
-application.</li>
-<li>A file for the main window</li>
-<li>A file for a preference dialog</li>
-<li>A file for an alert dialog</li>
-</ul>
-<p>The preference dialog is defined by a ui file. And it has GtkBox,
-GtkLabel and GtkFontButton in it. Such widget can be defined as a
-composite widget. Composite widget is:</p>
-<ul>
-<li>a child object (not child widget) of a widget. For example, the
-preference composite widget is a child object of GtkDialog.</li>
-<li>Composite widget can be built from template XML. The widget is
-defined with template tag, not object tag.</li>
-</ul>
-<p>Next subsection shows how to build a preference dialog.</p>
-<h2 id="preference-dialog">Preference dialog</h2>
-<p>First, write a template XML file.</p>
+<h1 id="gtkfontdialogbutton-and-gsettings">GtkFontDialogButton and
+Gsettings</h1>
+<h2 id="the-preference-dialog">The preference dialog</h2>
+<p>If the user clicks on the preference menu, a preference dialog
+appears.</p>
+<figure>
+<img src="image/pref_dialog.png" alt="Preference dialog" />
+<figcaption aria-hidden="true">Preference dialog</figcaption>
+</figure>
+<p>It has only one button, which is a GtkFontDialogButton widget. You
+can add more widgets on the dialog but this simple dialog isn’t so bad
+for the first example program.</p>
+<p>If the button is clicked, a FontDialog appears like this.</p>
+<figure>
+<img src="image/fontdialog.png" alt="Font dialog" />
+<figcaption aria-hidden="true">Font dialog</figcaption>
+</figure>
+<p>If the user chooses a font and clicks on the select button, the font
+is changed.</p>
+<p>GtkFontDialogButton and GtkFontDialog are available since GTK version
+4.10. They replace GtkFontButton and GtkFontChooserDialog, which are
+deprecated since 4.10.</p>
+<h2 id="a-composite-widget">A composite widget</h2>
+<p>The preference dialog has GtkBox, GtkLabel and GtkFontButton in it
+and is defined as a composite widget. The following is the template ui
+file for TfePref.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfePref&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkDialog&quot;</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfePref&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Preferences&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">child</span><span class="ot"> internal-child=</span><span class="st">&quot;content_area&quot;</span>&gt;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;content_area&quot;</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-10"><a href="#cb1-10"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;pref_boxh&quot;</span>&gt;</span>
-<span id="cb1-11"><a href="#cb1-11"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-12"><a href="#cb1-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-14"><a href="#cb1-14"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-16"><a href="#cb1-16"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-18"><a href="#cb1-18"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;fontlabel&quot;</span>&gt;</span>
-<span id="cb1-19"><a href="#cb1-19"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Font:&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-20"><a href="#cb1-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;1&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-21"><a href="#cb1-21"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-22"><a href="#cb1-22"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-23"><a href="#cb1-23"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-24"><a href="#cb1-24"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;fontbtn&quot;</span>&gt;</span>
-<span id="cb1-25"><a href="#cb1-25"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-26"><a href="#cb1-26"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;halign&quot;</span>&gt;GTK_ALIGN_CENTER&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Font:&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;1&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-20"><a href="#cb1-20"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-22"><a href="#cb1-22"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-23"><a href="#cb1-23"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontDialogButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;font_dialog_btn&quot;</span>&gt;</span>
+<span id="cb1-24"><a href="#cb1-24"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;dialog&quot;</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontDialog&quot;</span>/&gt;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>            &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-27"><a href="#cb1-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb1-28"><a href="#cb1-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb1-29"><a href="#cb1-29"></a>      &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb1-30"><a href="#cb1-30"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb1-31"><a href="#cb1-31"></a>  &lt;/<span class="kw">template</span>&gt;</span>
 <span id="cb1-32"><a href="#cb1-32"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>Template tag specifies a composite widget. The value of a class
-attribute is the object name. It is “TfePref”. A parent attribute
-specifies the direct parent class of the composite widget. Therefore.
-<code>TfePref</code> is a child class of <code>GtkDialog</code>. A
-parent attribute is optional. But it is recommended to specify it. Other
-lines are the same as before.</p>
-<p>The class <code>TfePref</code> is defined like TfeTextView. There are
-two files <code>tfepref.h</code> and <code>tfepref.c</code>.</p>
-<p>The file <code>tfepref.h</code> defines types and declares public
-functions. The definitions are public and open to any C files.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#ifndef __TFE_PREF_H__</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="pp">#define __TFE_PREF_H__</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="pp">#define TFE_TYPE_PREF tfe_pref_get_type ()</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> TFE<span class="op">,</span> PREF<span class="op">,</span> GtkDialog<span class="op">)</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a></span>
-<span id="cb2-9"><a href="#cb2-9"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="pp">#endif </span><span class="co">/* __TFE_PREF_H__ */</span></span></code></pre></div>
 <ul>
-<li>6: Defines a type <code>TFE_TYPE_PREF</code>, which is a macro
+<li>Template tag specifies a composite widget. The class attribute
+specifies the class name, which is “TfePref”. The parent attribute is
+<code>GtkWindow</code>. Therefore. <code>TfePref</code> is a child class
+of <code>GtkWindow</code>. A parent attribute is optional but it is
+recommended to write it explicitly. You can make TfePref as a child of
+<code>GtkDialog</code>, but <code>GtkDialog</code> is deprecated since
+version 4.10.</li>
+<li>There are three properties, title, resizable and modal.</li>
+<li>TfePref has a child widget GtkBox which is horizontal. The box has
+two children GtkLabel and GtkFontDialogButton.</li>
+</ul>
+<h2 id="the-header-file">The header file</h2>
+<p>The file <code>tfepref.h</code> defines types and declares a public
+function.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#pragma once</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="pp">#define TFE_TYPE_PREF tfe_pref_get_type ()</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> TFE<span class="op">,</span> PREF<span class="op">,</span> GtkWindow<span class="op">)</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div>
+<ul>
+<li>5: Defines the type <code>TFE_TYPE_PREF</code>, which is a macro
 replaced by <code>tfe_pref_get_type ()</code>.</li>
-<li>7: The macro <code>G_DECLAER_FINAL_TYPE</code> expands to:
+<li>6: The macro <code>G_DECLAER_FINAL_TYPE</code> expands to:
 <ul>
 <li>The function <code>tfe_pref_get_type ()</code> is declared.</li>
 <li>TfePrep type is defined as a typedef of
 <code>struct _TfePrep</code>.</li>
 <li>TfePrepClass type is defined as a typedef of
-<code>struct {GtkDialogClass *parent;}</code>.</li>
+<code>struct {GtkWindowClass *parent;}</code>.</li>
 <li>Two functions <code>TFE_PREF ()</code> and
 <code>TFE_IS_PREF ()</code> is defined.</li>
 </ul></li>
-<li>9-10: <code>tfe_pref_new</code> creates a new TfePref object.</li>
+<li>8-9:The function <code>tfe_pref_new</code> is declared. It creates a
+new TfePref instance.</li>
 </ul>
-<p>The file <code>tfepref.c</code> includes:</p>
+<h2 id="the-c-file-for-composite-widget">The C file for composite
+widget</h2>
+<p>The following codes are extracted from the file
+<code>tfepref.c</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfePref</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  GtkWindow parent<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  GtkFontDialogButton <span class="op">*</span>font_dialog_btn<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">),</span> TFE_TYPE_PREF<span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span><span class="op">);</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> font_dialog_btn<span class="op">);</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li><code>struct _TfePrep</code> structure</li>
-<li><code>G_DEFINE_TYPE</code> macro</li>
-<li>Initialize and dispose functions</li>
-<li>public functions</li>
+<li>The structure <code>_TfePref</code> has <code>font_dialog_btn</code>
+member. It points the GtkFontDialogButton object specified in the XML
+file “tfepref.ui”. The member name <code>font_dialog_btn</code> must be
+the same as the GtkFontDialogButton id attribute in the XML file.</li>
+<li><code>G_DEFINE_FINAL_TYPE</code> macro expands to:
+<ul>
+<li>The declaration of the functions <code>tfe_pref_init</code> and
+<code>tfe_pref_class_init</code>. They are defined in the following part
+of the program.</li>
+<li>The definition of the variable
+<code>tfe_pref_parent_class</code>.</li>
+<li>The definition of the function <code>tfe_pref_get_type</code>.</li>
+</ul></li>
+<li>The function <code>tfe_pref_class_init</code> initializes the
+TfePref class. The function
+<code>gtk_widget_class_set_template_from_resource</code> initializes the
+composite widget template from the XML resource. The function
+<code>gtk_widget_class_bind_template_child</code> connects the TfePref
+structure member <code>font_dialog_btn</code> and the
+GtkFontDialogButton in the XML. The member name and the id attribute
+value must be the same.</li>
+<li>The function <code>tfe_pref_init</code> initializes a newly created
+instance. The function <code>gtk_widget_init_template</code> creates and
+initializes child widgets.</li>
+<li>The function <code>tfe_pref_dispose</code> releases objects. The
+function <code>gtk_widget_dispose_template</code> releases child
+widgets.</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="kw">struct</span> _TfePref</span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="op">{</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  GtkDialog parent<span class="op">;</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  GtkFontButton <span class="op">*</span>fontbtn<span class="op">;</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="op">};</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a></span>
-<span id="cb3-11"><a href="#cb3-11"></a>G_DEFINE_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_DIALOG<span class="op">);</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a></span>
-<span id="cb3-17"><a href="#cb3-17"></a>  g_clear_object <span class="op">(&amp;</span>pref<span class="op">-&gt;</span>settings<span class="op">);</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb3-19"><a href="#cb3-19"></a><span class="op">}</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a></span>
-<span id="cb3-21"><a href="#cb3-21"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  pref<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>  g_settings_bind <span class="op">(</span>pref<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">,</span> pref<span class="op">-&gt;</span>fontbtn<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">);</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a><span class="op">}</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a></span>
-<span id="cb3-28"><a href="#cb3-28"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-30"><a href="#cb3-30"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a></span>
-<span id="cb3-32"><a href="#cb3-32"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
-<span id="cb3-33"><a href="#cb3-33"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span><span class="op">);</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> fontbtn<span class="op">);</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a><span class="op">}</span></span>
-<span id="cb3-36"><a href="#cb3-36"></a></span>
-<span id="cb3-37"><a href="#cb3-37"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb3-38"><a href="#cb3-38"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-39"><a href="#cb3-39"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb3-40"><a href="#cb3-40"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="gtkfontdialogbutton-and-pango">GtkFontDialogButton and
+Pango</h2>
+<p>If the GtkFontDialogButton button is clicked, the GtkFontDialog
+dialog appears. A user can choose a font on the dialog. If the user
+clicks on the “select” button, the dialog disappears. And the font
+information is given to the GtkFontDialogButton instance. The font data
+is taken with the method
+<code>gtk_font_dialog_button_get_font_desc</code>. It returns a pointer
+to the PangoFontDescription structure.</p>
+<p>Pango is a text layout engine. The <a
+href="https://docs.gtk.org/Pango/index.html">documentation</a> is on the
+internet.</p>
+<p>PangoFontDescription is a C structure and it isn’t allowed to access
+directly. The document is <a
+href="https://docs.gtk.org/Pango/struct.FontDescription.html">here</a>.
+If you want to retrieve the font information, there are several
+functions.</p>
 <ul>
-<li>4-9: The structure <code>struct _TfePref</code> is defined. Every
-TfePref instance has its own data of the structure. The structure has
-references to:
-<ul>
-<li>a GSettings instance</li>
-<li>a FontButton instance</li>
-</ul></li>
-<li>11: <code>G_DEFINE_TYPE</code> macro. The macro expands to:
-<ul>
-<li>the declaration of the class initialization function
-<code>tfe_pref_class_init</code></li>
-<li>the declaration of the instance initialization function
-<code>tfe_pref_init</code></li>
-<li>a static variable <code>tfe_pref_parent_class</code> that points the
-parent class (GtkDialogClass) structure.</li>
-<li>a definition of <code>tfe_pref_get_type ()</code> function</li>
-</ul></li>
-<li>13-19: <code>tfe_pref_dispose</code> function. It is called in the
-destruction process and releases all the reference to other objects. For
-further information about destruction process, refer to <a
-href="sec11.html">Section 11</a>.</li>
-<li>17: g_clear_object is often used in dispose handlers.
-<code>g_clear_object (&amp;pref-&gt;gsettings)</code> does:
-<ul>
-<li><code>g_object_unref (pref-&gt;gsettings)</code></li>
-<li><code>pref-&gt;settings =  NULL</code></li>
-</ul></li>
-<li>21-26: Instance initialization function. The argument
-<code>pref</code> points a newly created TfePref instance.</li>
-<li>23: The function <code>gtk_widget_init_template</code> creates and
-initializes the child widgets. The widgets are created based on the
-template which is created in the
-<code>gtk_widget_class_set_template_from_resource</code> function.</li>
-<li>24: Creates GSettings instance and assigns the pointer to it into
-<code>pref-&gt;settings</code>. The instance refers to a GSetting id
-<code>com.github.ToshioCP.tfe</code>.</li>
-<li>25: Binds the GSettings data <code>font</code> and the
-<code>font</code> property of <code>pref-&gt;fontbtn</code>
-(GtkFontButton). The element <code>pref-&gt;fontbtn</code> points the
-GtkFontButton, which is the instance of <code>fontbtn</code> in the ui
-file. The relation was made by the
-<code>gtk_widget_class_bind_template_child</code> function.</li>
-<li>28-35: Class initialization function.</li>
-<li>32: Sets the dispose handler.</li>
-<li>33: <code>gtk_widget_class_set_template_from_resource</code>
-function associates the description in the XML file
-(<code>tfepref.ui</code>) with the widget. At this moment no instance is
-created. It just makes the class recognize the structure of the object.
-That’s why the top level tag is not <code>&lt;object&gt;</code> but
-<code>&lt;template&gt;</code> in the XML file. The instance will be
-created in the <code>gtk_widget_init_template</code> function
-later.</li>
-<li>34: <code>gtk_widget_class_bind_template_child</code> macro binds
-the structure member (<code>fontbtn</code> in
-<code>struct _TfePref</code>) and the id <code>fontbtn</code> in the XML
-file. The two names must be the same. This binding is between the member
-and the template (not an instance).</li>
-<li>37-40: The function <code>tfe_pref_new</code> creates a TfePref
-instance.</li>
+<li><code>pango_font_description_to_string</code> returns a string like
+“Jamrul Bold Italic Semi-Expanded 12”.</li>
+<li><code>pango_font_description_get_family</code> returns a font family
+like “Jamrul”.</li>
+<li><code>pango_font_description_get_weight</code> returns a PangoWeight
+constant like <code>PANGO_WEIGHT_BOLD</code>.</li>
+<li><code>pango_font_description_get_style</code> returns a PangoStyle
+constant like <code>PANGO_STYLE_ITALIC</code>.</li>
+<li><code>pango_font_description_get_stretch</code> returns a
+PangoStretch constant like
+<code>PANGO_STRETCH_SEMI_EXPANDED</code>.</li>
+<li><code>pango_font_description_get_size</code> returns an integer like
+<code>12</code>. Its unit is point or pixel (device unit). The function
+<code>pango_font_description_get_size_is_absolute</code> returns TRUE if
+the unit is absolute that means device unit. Otherwise the unit is
+point.</li>
 </ul>
-<p>Now, It is very simple to use this dialog. A caller just creates this
-object and shows it.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>TfePref <span class="op">*</span>pref<span class="op">;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pref <span class="op">=</span> tfe_pref_new <span class="op">();</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">),</span> win<span class="op">);</span> <span class="co">/* win is the main window */</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">));</span></span></code></pre></div>
-<p>This instance is automatically destroyed when a user clicks on the
-close button. That’s all. If you want to show the dialog again, just
-create and show it.</p>
+<h2 id="gsettings">GSettings</h2>
+<p>We want to maintain the font data after the application quits. There
+are some ways to implement it.</p>
+<ul>
+<li>Make a configuration file. For example, a text file
+“~/.config/tfe/font_desc.cfg” keeps font information.</li>
+<li>Use GSettings object. The basic idea of GSettings are similar to
+configuration file. Configuration information data is put into a
+database file.</li>
+</ul>
+<p>GSettings is simple and easy to use but a bit hard to understand the
+concept. This subsection describes the concept first and then how to
+program it.</p>
+<h3 id="gsettings-schema">GSettings schema</h3>
+<p>GSettings schema describes a set of keys, value types and some other
+information. GSettings object uses this schema and it writes/reads the
+value of a key to/from the right place in the database.</p>
+<ul>
+<li>A schema has an id. The id must be unique. We often use the same
+string as application id, but schema id and application id are
+different. You can use different name from application id. Schema id is
+a string delimited by periods. For example, “com.github.ToshioCP.tfe” is
+a correct schema id.</li>
+<li>A schema usually has a path. The path is a location in the database.
+Each key is stored under the path. For example, if a key
+<code>font-desc</code> is defined with a path
+<code>/com/github/ToshioCP/tfe/</code>, the key’s location in the
+database is <code>/com/github/ToshioCP/tfe/font-desc</code>. Path is a
+string begins with and ends with a slash (<code>/</code>). And it is
+delimited by slashes.</li>
+<li>GSettings save information as key-value style. Key is a string
+begins with a lower case character followed by lower case, digit or dash
+(<code>-</code>) and ends with lower case or digit. No consecutive
+dashes are allowed. Values can be any type. GSettings stores values as
+GVariant type, which can be, for example, integer, double, boolean,
+string or complex types like an array. The type of values needs to be
+defined in the schema.</li>
+<li>A default value needs to be set for each key.</li>
+<li>A summery and description can be set for each key optionally.</li>
+</ul>
+<p>Schemas are described in an XML format. For example,</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font-desc&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
+<span id="cb4-5"><a href="#cb4-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Monospace 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
+<span id="cb4-6"><a href="#cb4-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
+<span id="cb4-7"><a href="#cb4-7"></a>      &lt;<span class="kw">description</span>&gt;A font to be used for textview.&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    &lt;/<span class="kw">key</span>&gt;</span>
+<span id="cb4-9"><a href="#cb4-9"></a>  &lt;/<span class="kw">schema</span>&gt;</span>
+<span id="cb4-10"><a href="#cb4-10"></a>&lt;/<span class="kw">schemalist</span>&gt;</span></code></pre></div>
+<ul>
+<li>4: The type attribute is “s”. It is GVariant type string. For
+GVariant type string, see <a
+href="https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings">GLib
+API Reference – GVariant Type Strings</a>. Other common types are:
+<ul>
+<li>“b”: gboolean</li>
+<li>“i”: gint32.</li>
+<li>“d”: double.</li>
+</ul></li>
+</ul>
+<p>Further information is in:</p>
+<ul>
+<li><a
+href="https://docs.gtk.org/glib/gvariant-format-strings.html">GLib API
+Reference – GVariant Format Strings</a></li>
+<li><a href="https://docs.gtk.org/glib/gvariant-text.html">GLib API
+Reference – GVariant Text Format</a></li>
+<li><a href="https://docs.gtk.org/glib/struct.Variant.html">GLib API
+Reference – GVariant</a></li>
+<li><a href="https://docs.gtk.org/glib/struct.VariantType.html">GLib API
+Reference – VariantType</a></li>
+</ul>
+<h3 id="gsettings-command">Gsettings command</h3>
+<p>First, let’s try <code>gsettings</code> application. It is a
+configuration tool for GSettings.</p>
+<pre><code>$ gsettings help
+Usage:
+  gsettings --version
+  gsettings [--schemadir SCHEMADIR] COMMAND [ARGS?]
+
+Commands:
+  help                      Show this information
+  list-schemas              List installed schemas
+  list-relocatable-schemas  List relocatable schemas
+  list-keys                 List keys in a schema
+  list-children             List children of a schema
+  list-recursively          List keys and values, recursively
+  range                     Queries the range of a key
+  describe                  Queries the description of a key
+  get                       Get the value of a key
+  set                       Set the value of a key
+  reset                     Reset the value of a key
+  reset-recursively         Reset all values in a given schema
+  writable                  Check if a key is writable
+  monitor                   Watch for changes
+
+Use &quot;gsettings help COMMAND&quot; to get detailed help.</code></pre>
+<p>List schemas.</p>
+<pre><code>$ gsettings list-schemas
+org.gnome.rhythmbox.podcast
+ca.desrt.dconf-editor.Demo.Empty
+org.gnome.gedit.preferences.ui
+org.gnome.evolution-data-server.calendar
+org.gnome.rhythmbox.plugins.generic-player
+
+... ...
+</code></pre>
+<p>Each line is an id of a schema. Each schema has a key-value
+configuration data. You can see them with list-recursively command.
+Let’s look at the keys and values of <code>org.gnome.calculator</code>
+schema.</p>
+<pre><code>$ gsettings list-recursively org.gnome.calculator
+org.gnome.calculator accuracy 9
+org.gnome.calculator angle-units &#39;degrees&#39;
+org.gnome.calculator base 10
+org.gnome.calculator button-mode &#39;basic&#39;
+org.gnome.calculator number-format &#39;automatic&#39;
+org.gnome.calculator precision 2000
+org.gnome.calculator refresh-interval 604800
+org.gnome.calculator show-thousands false
+org.gnome.calculator show-zeroes false
+org.gnome.calculator source-currency &#39;&#39;
+org.gnome.calculator source-units &#39;degree&#39;
+org.gnome.calculator target-currency &#39;&#39;
+org.gnome.calculator target-units &#39;radian&#39;
+org.gnome.calculator window-position (-1, -1)
+org.gnome.calculator word-size 64</code></pre>
+<p>This schema is used by GNOME Calculator. Run the calculator and
+change the mode, then check the schema again.</p>
+<pre><code>$ gnome-calculator</code></pre>
 <figure>
-<img src="image/pref_dialog.png" alt="Preference dialog" />
-<figcaption aria-hidden="true">Preference dialog</figcaption>
+<img src="image/gnome_calculator_basic.png"
+alt="gnome-calculator basic mode" />
+<figcaption aria-hidden="true">gnome-calculator basic mode</figcaption>
 </figure>
-<h2 id="alert-dialog">Alert dialog</h2>
-<p>It is almost same as preference dialog.</p>
-<p>Its ui file is:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeAlert&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkDialog&quot;</span>&gt;</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Are you sure?&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-6"><a href="#cb5-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    &lt;<span class="kw">child</span><span class="ot"> internal-child=</span><span class="st">&quot;content_area&quot;</span>&gt;</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb5-9"><a href="#cb5-9"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-10"><a href="#cb5-10"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb5-11"><a href="#cb5-11"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-12"><a href="#cb5-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-13"><a href="#cb5-13"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-14"><a href="#cb5-14"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-15"><a href="#cb5-15"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-16"><a href="#cb5-16"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-17"><a href="#cb5-17"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-18"><a href="#cb5-18"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb5-19"><a href="#cb5-19"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;dialog-warning&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-20"><a href="#cb5-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-size&quot;</span>&gt;GTK_ICON_SIZE_LARGE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-21"><a href="#cb5-21"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-22"><a href="#cb5-22"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-23"><a href="#cb5-23"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-24"><a href="#cb5-24"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;lb_alert&quot;</span>&gt;</span>
-<span id="cb5-25"><a href="#cb5-25"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-26"><a href="#cb5-26"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-27"><a href="#cb5-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-28"><a href="#cb5-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-29"><a href="#cb5-29"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-30"><a href="#cb5-30"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-31"><a href="#cb5-31"></a>    &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span>&gt;</span>
-<span id="cb5-32"><a href="#cb5-32"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_cancel&quot;</span>&gt;</span>
-<span id="cb5-33"><a href="#cb5-33"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Cancel&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-34"><a href="#cb5-34"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-35"><a href="#cb5-35"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-36"><a href="#cb5-36"></a>    &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span>&gt;</span>
-<span id="cb5-37"><a href="#cb5-37"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_accept&quot;</span>&gt;</span>
-<span id="cb5-38"><a href="#cb5-38"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-39"><a href="#cb5-39"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-40"><a href="#cb5-40"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-41"><a href="#cb5-41"></a>    &lt;<span class="kw">action-widgets</span>&gt;</span>
-<span id="cb5-42"><a href="#cb5-42"></a>      &lt;<span class="kw">action-widget</span><span class="ot"> response=</span><span class="st">&quot;cancel&quot;</span><span class="ot"> default=</span><span class="st">&quot;true&quot;</span>&gt;btn_cancel&lt;/<span class="kw">action-widget</span>&gt;</span>
-<span id="cb5-43"><a href="#cb5-43"></a>      &lt;<span class="kw">action-widget</span><span class="ot"> response=</span><span class="st">&quot;accept&quot;</span>&gt;btn_accept&lt;/<span class="kw">action-widget</span>&gt;</span>
-<span id="cb5-44"><a href="#cb5-44"></a>    &lt;/<span class="kw">action-widgets</span>&gt;</span>
-<span id="cb5-45"><a href="#cb5-45"></a>  &lt;/<span class="kw">template</span>&gt;</span>
-<span id="cb5-46"><a href="#cb5-46"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>The header file is:</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#ifndef __TFE_ALERT_H__</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="pp">#define __TFE_ALERT_H__</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="pp">#define TFE_TYPE_ALERT tfe_alert_get_type ()</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> TFE<span class="op">,</span> ALERT<span class="op">,</span> GtkDialog<span class="op">)</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="dt">void</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>tfe_alert_set_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">);</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a></span>
-<span id="cb6-12"><a href="#cb6-12"></a><span class="dt">void</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>tfe_alert_set_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>label<span class="op">);</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a></span>
-<span id="cb6-15"><a href="#cb6-15"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a></span>
-<span id="cb6-18"><a href="#cb6-18"></a><span class="pp">#endif </span><span class="co">/* __TFE_ALERT_H__ */</span></span></code></pre></div>
-<p>There are three public functions. The functions
-<code>tfe_alert_set_message</code> and
-<code>tfe_alert_set_button_label</code> sets the label and button name
-of the alert dialog. For example, if you want to show an alert that the
-user tries to close without saving the content, set them like:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tfe_alert_set_message <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">);</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>tfe_alert_set_button_label <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span></code></pre></div>
-<p>The function <code>tfe_alert_new</code> creates a TfeAlert
-dialog.</p>
+<p>Change the mode to advanced and quit.</p>
 <figure>
-<img src="image/alert_dialog.png" alt="Alert dialog" />
-<figcaption aria-hidden="true">Alert dialog</figcaption>
+<img src="image/gnome_calculator_advanced.png"
+alt="gnome-calculator advanced mode" />
+<figcaption aria-hidden="true">gnome-calculator advanced
+mode</figcaption>
 </figure>
-<p>The C source file is:</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">struct</span> _TfeAlert</span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="op">{</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>  GtkDialog parent<span class="op">;</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  GtkLabel <span class="op">*</span>lb_alert<span class="op">;</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a>  GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="op">};</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a></span>
-<span id="cb8-11"><a href="#cb8-11"></a>G_DEFINE_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> GTK_TYPE_DIALOG<span class="op">);</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="dt">void</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a>tfe_alert_set_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a>  gtk_label_set_text <span class="op">(</span>alert<span class="op">-&gt;</span>lb_alert<span class="op">,</span> message<span class="op">);</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a><span class="op">}</span></span>
-<span id="cb8-17"><a href="#cb8-17"></a></span>
-<span id="cb8-18"><a href="#cb8-18"></a><span class="dt">void</span></span>
-<span id="cb8-19"><a href="#cb8-19"></a>tfe_alert_set_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>label<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-20"><a href="#cb8-20"></a>  gtk_button_set_label <span class="op">(</span>alert<span class="op">-&gt;</span>btn_accept<span class="op">,</span> label<span class="op">);</span></span>
-<span id="cb8-21"><a href="#cb8-21"></a><span class="op">}</span></span>
-<span id="cb8-22"><a href="#cb8-22"></a></span>
-<span id="cb8-23"><a href="#cb8-23"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb8-24"><a href="#cb8-24"></a>tfe_alert_init <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-25"><a href="#cb8-25"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb8-26"><a href="#cb8-26"></a><span class="op">}</span></span>
-<span id="cb8-27"><a href="#cb8-27"></a></span>
-<span id="cb8-28"><a href="#cb8-28"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb8-29"><a href="#cb8-29"></a>tfe_alert_class_init <span class="op">(</span>TfeAlertClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-30"><a href="#cb8-30"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span><span class="op">);</span></span>
-<span id="cb8-31"><a href="#cb8-31"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_alert<span class="op">);</span></span>
-<span id="cb8-32"><a href="#cb8-32"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_accept<span class="op">);</span></span>
-<span id="cb8-33"><a href="#cb8-33"></a><span class="op">}</span></span>
-<span id="cb8-34"><a href="#cb8-34"></a></span>
-<span id="cb8-35"><a href="#cb8-35"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb8-36"><a href="#cb8-36"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-37"><a href="#cb8-37"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb8-38"><a href="#cb8-38"></a><span class="op">}</span></span></code></pre></div>
-<p>The program is almost same as <code>tfepref.c</code>.</p>
-<p>The Usage of the alert object is as follows.</p>
-<ol type="1">
-<li>Write the “response” signal handler.</li>
-<li>Create a TfeAlert object.</li>
-<li>Connect “response” signal to a handler</li>
-<li>Show the dialog</li>
-<li>In the signal handler, do something with regard to the response-id
-and destroy the dialog.</li>
-</ol>
-<h2 id="top-level-window">Top-level window</h2>
-<p><code>TfeWindow</code> is a child class of GtkApplicationWindow.</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb9-3"><a href="#cb9-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeWindow&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkApplicationWindow&quot;</span>&gt;</span>
-<span id="cb9-4"><a href="#cb9-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;file editor&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-5"><a href="#cb9-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-6"><a href="#cb9-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-7"><a href="#cb9-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-8"><a href="#cb9-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxv&quot;</span>&gt;</span>
-<span id="cb9-9"><a href="#cb9-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-10"><a href="#cb9-10"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-11"><a href="#cb9-11"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxh&quot;</span>&gt;</span>
-<span id="cb9-12"><a href="#cb9-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-13"><a href="#cb9-13"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-14"><a href="#cb9-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy1&quot;</span>&gt;</span>
-<span id="cb9-15"><a href="#cb9-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-16"><a href="#cb9-16"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-17"><a href="#cb9-17"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-18"><a href="#cb9-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-19"><a href="#cb9-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btno&quot;</span>&gt;</span>
-<span id="cb9-20"><a href="#cb9-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-21"><a href="#cb9-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.open&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-22"><a href="#cb9-22"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-23"><a href="#cb9-23"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-24"><a href="#cb9-24"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-25"><a href="#cb9-25"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btns&quot;</span>&gt;</span>
-<span id="cb9-26"><a href="#cb9-26"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-27"><a href="#cb9-27"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.save&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-28"><a href="#cb9-28"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-29"><a href="#cb9-29"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-30"><a href="#cb9-30"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-31"><a href="#cb9-31"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy2&quot;</span>&gt;</span>
-<span id="cb9-32"><a href="#cb9-32"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-33"><a href="#cb9-33"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-34"><a href="#cb9-34"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-35"><a href="#cb9-35"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-36"><a href="#cb9-36"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnc&quot;</span>&gt;</span>
-<span id="cb9-37"><a href="#cb9-37"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-38"><a href="#cb9-38"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.close&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-39"><a href="#cb9-39"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-40"><a href="#cb9-40"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-41"><a href="#cb9-41"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-42"><a href="#cb9-42"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
-<span id="cb9-43"><a href="#cb9-43"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;down&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-44"><a href="#cb9-44"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;halign&quot;</span>&gt;start&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-45"><a href="#cb9-45"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;open-menu-symbolic&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-46"><a href="#cb9-46"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-47"><a href="#cb9-47"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-48"><a href="#cb9-48"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-49"><a href="#cb9-49"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy3&quot;</span>&gt;</span>
-<span id="cb9-50"><a href="#cb9-50"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-51"><a href="#cb9-51"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-52"><a href="#cb9-52"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-53"><a href="#cb9-53"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-54"><a href="#cb9-54"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-55"><a href="#cb9-55"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb9-56"><a href="#cb9-56"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNotebook&quot;</span><span class="ot"> id=</span><span class="st">&quot;nb&quot;</span>&gt;</span>
-<span id="cb9-57"><a href="#cb9-57"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;scrollable&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-58"><a href="#cb9-58"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-59"><a href="#cb9-59"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-60"><a href="#cb9-60"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-61"><a href="#cb9-61"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-62"><a href="#cb9-62"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb9-63"><a href="#cb9-63"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb9-64"><a href="#cb9-64"></a>  &lt;/<span class="kw">template</span>&gt;</span>
-<span id="cb9-65"><a href="#cb9-65"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>This XML file is almost same as before except template tag and
-“action-name” property in buttons.</p>
-<p>GtkButton implements GtkActionable interface, which has “action-name”
-property. If this property is set, GtkButton activates the action when
-it is clicked. For example, if an open button is clicked, “win.open”
-action will be activated and <code>open_activated</code> handler will be
-invoked.</p>
-<p>This action is also used by “&lt;Control&gt;o” accelerator (See
-<code>tfeapplication.c</code>). If you used “clicked” signal for the
-button, you would need its signal handler. Then, there would be two
-handlers:</p>
-<ul>
-<li>a handler for the “clicked” signal on the button</li>
-<li>a handler for the “activate” signal on the “win.open” action, to
-which “&lt;Control&gt;o” accelerator is connected</li>
-</ul>
-<p>These two handlers are almost same. It is inefficient. Connecting
-buttons to actions is a good way to reduce unnecessary codes.</p>
+<p>Run gsettings and check the value of <code>button-mode</code>.</p>
+<pre><code>$ gsettings list-recursively org.gnome.calculator
+
+... ...
+
+org.gnome.calculator button-mode &#39;advanced&#39;
+
+... ...
+</code></pre>
+<p>Now we know that GNOME Calculator used gsettings and it has set
+<code>button-mode</code> key to “advanced”. The value remains even the
+calculator quits. So when the calculator runs again, it will appear as
+an advanced mode.</p>
+<h3 id="glib-compile-schemas-utility">Glib-compile-schemas utility</h3>
+<p>GSettings schemas are specified with an XML format. The XML schema
+files must have the filename extension <code>.gschema.xml</code>. The
+following is the XML schema file for the application
+<code>tfe</code>.</p>
 <div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#ifndef __TFE_WINDOW_H__</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="pp">#define __TFE_WINDOW_H__</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="pp">#define TFE_TYPE_WINDOW tfe_window_get_type ()</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> TFE<span class="op">,</span> WINDOW<span class="op">,</span> GtkApplicationWindow<span class="op">)</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="dt">void</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">);</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a></span>
-<span id="cb10-12"><a href="#cb10-12"></a><span class="dt">void</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">);</span></span>
-<span id="cb10-14"><a href="#cb10-14"></a></span>
-<span id="cb10-15"><a href="#cb10-15"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb10-16"><a href="#cb10-16"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">);</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a></span>
-<span id="cb10-18"><a href="#cb10-18"></a><span class="pp">#endif </span><span class="co">/* __TFE_WINDOW_H__ */</span></span></code></pre></div>
-<p>There are three public functions. The function
-<code>tfe_window_notebook_page_new</code> creates a new notebook page.
-This is a wrapper function for <code>notebook_page_new</code>. It is
-called by TfeApplication object. The function
-<code>tfe_window_notebook_page_new_with_files</code> creates notebook
-pages with a contents read from the given files. The function
-<code>tfe_window_new</code> creates a TfeWindow instance.</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="pp">#include </span><span class="im">&quot;tfenotebook.h&quot;</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a></span>
-<span id="cb11-7"><a href="#cb11-7"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
-<span id="cb11-8"><a href="#cb11-8"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
-<span id="cb11-9"><a href="#cb11-9"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span></span>
-<span id="cb11-10"><a href="#cb11-10"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span></span>
-<span id="cb11-11"><a href="#cb11-11"></a>  gboolean is_quit<span class="op">;</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a><span class="op">};</span></span>
-<span id="cb11-13"><a href="#cb11-13"></a></span>
-<span id="cb11-14"><a href="#cb11-14"></a>G_DEFINE_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> GTK_TYPE_APPLICATION_WINDOW<span class="op">);</span></span>
-<span id="cb11-15"><a href="#cb11-15"></a></span>
-<span id="cb11-16"><a href="#cb11-16"></a><span class="co">/* alert response signal handler */</span></span>
-<span id="cb11-17"><a href="#cb11-17"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-18"><a href="#cb11-18"></a>alert_response_cb <span class="op">(</span>GtkDialog <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response_id<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-19"><a href="#cb11-19"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-20"><a href="#cb11-20"></a></span>
-<span id="cb11-21"><a href="#cb11-21"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb11-22"><a href="#cb11-22"></a>  <span class="cf">if</span> <span class="op">(</span>response_id <span class="op">==</span> GTK_RESPONSE_ACCEPT<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-23"><a href="#cb11-23"></a>    <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>is_quit<span class="op">)</span></span>
-<span id="cb11-24"><a href="#cb11-24"></a>      gtk_window_destroy<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb11-25"><a href="#cb11-25"></a>    <span class="cf">else</span></span>
-<span id="cb11-26"><a href="#cb11-26"></a>      notebook_page_close <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
-<span id="cb11-27"><a href="#cb11-27"></a>  <span class="op">}</span></span>
-<span id="cb11-28"><a href="#cb11-28"></a><span class="op">}</span></span>
-<span id="cb11-29"><a href="#cb11-29"></a></span>
-<span id="cb11-30"><a href="#cb11-30"></a><span class="dt">static</span> gboolean</span>
-<span id="cb11-31"><a href="#cb11-31"></a>close_request_cb <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-32"><a href="#cb11-32"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
-<span id="cb11-33"><a href="#cb11-33"></a></span>
-<span id="cb11-34"><a href="#cb11-34"></a>  <span class="cf">if</span> <span class="op">(</span>has_saved_all <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)))</span></span>
-<span id="cb11-35"><a href="#cb11-35"></a>    <span class="cf">return</span> false<span class="op">;</span></span>
-<span id="cb11-36"><a href="#cb11-36"></a>  <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb11-37"><a href="#cb11-37"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> true<span class="op">;</span></span>
-<span id="cb11-38"><a href="#cb11-38"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new <span class="op">());</span></span>
-<span id="cb11-39"><a href="#cb11-39"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb11-40"><a href="#cb11-40"></a>    tfe_alert_set_message <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span><span class="op">);</span></span>
-<span id="cb11-41"><a href="#cb11-41"></a>    tfe_alert_set_button_label <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Quit&quot;</span><span class="op">);</span></span>
-<span id="cb11-42"><a href="#cb11-42"></a>    g_signal_connect <span class="op">(</span>GTK_DIALOG <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb11-43"><a href="#cb11-43"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb11-44"><a href="#cb11-44"></a>    <span class="cf">return</span> true<span class="op">;</span></span>
-<span id="cb11-45"><a href="#cb11-45"></a>  <span class="op">}</span></span>
-<span id="cb11-46"><a href="#cb11-46"></a><span class="op">}</span></span>
-<span id="cb11-47"><a href="#cb11-47"></a></span>
-<span id="cb11-48"><a href="#cb11-48"></a><span class="co">/* ----- action activated handlers ----- */</span></span>
-<span id="cb11-49"><a href="#cb11-49"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-50"><a href="#cb11-50"></a>open_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-51"><a href="#cb11-51"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-52"><a href="#cb11-52"></a></span>
-<span id="cb11-53"><a href="#cb11-53"></a>  notebook_page_open <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
-<span id="cb11-54"><a href="#cb11-54"></a><span class="op">}</span></span>
-<span id="cb11-55"><a href="#cb11-55"></a></span>
-<span id="cb11-56"><a href="#cb11-56"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-57"><a href="#cb11-57"></a>save_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-58"><a href="#cb11-58"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-59"><a href="#cb11-59"></a></span>
-<span id="cb11-60"><a href="#cb11-60"></a>  notebook_page_save <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
-<span id="cb11-61"><a href="#cb11-61"></a><span class="op">}</span></span>
-<span id="cb11-62"><a href="#cb11-62"></a></span>
-<span id="cb11-63"><a href="#cb11-63"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-64"><a href="#cb11-64"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-65"><a href="#cb11-65"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-66"><a href="#cb11-66"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
-<span id="cb11-67"><a href="#cb11-67"></a></span>
-<span id="cb11-68"><a href="#cb11-68"></a>  <span class="cf">if</span> <span class="op">(</span>has_saved <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">))</span></span>
-<span id="cb11-69"><a href="#cb11-69"></a>    notebook_page_close <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
-<span id="cb11-70"><a href="#cb11-70"></a>  <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb11-71"><a href="#cb11-71"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> false<span class="op">;</span></span>
-<span id="cb11-72"><a href="#cb11-72"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new <span class="op">());</span></span>
-<span id="cb11-73"><a href="#cb11-73"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb11-74"><a href="#cb11-74"></a>    tfe_alert_set_message <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">);</span></span>
-<span id="cb11-75"><a href="#cb11-75"></a>    tfe_alert_set_button_label <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span>
-<span id="cb11-76"><a href="#cb11-76"></a>    g_signal_connect <span class="op">(</span>GTK_DIALOG <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb11-77"><a href="#cb11-77"></a>    gtk_widget_show <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb11-78"><a href="#cb11-78"></a>  <span class="op">}</span></span>
-<span id="cb11-79"><a href="#cb11-79"></a><span class="op">}</span></span>
-<span id="cb11-80"><a href="#cb11-80"></a></span>
-<span id="cb11-81"><a href="#cb11-81"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-82"><a href="#cb11-82"></a>new_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-83"><a href="#cb11-83"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-84"><a href="#cb11-84"></a></span>
-<span id="cb11-85"><a href="#cb11-85"></a>  notebook_page_new <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
-<span id="cb11-86"><a href="#cb11-86"></a><span class="op">}</span></span>
-<span id="cb11-87"><a href="#cb11-87"></a></span>
-<span id="cb11-88"><a href="#cb11-88"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-89"><a href="#cb11-89"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-90"><a href="#cb11-90"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-91"><a href="#cb11-91"></a></span>
-<span id="cb11-92"><a href="#cb11-92"></a>  notebook_page_saveas <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
-<span id="cb11-93"><a href="#cb11-93"></a><span class="op">}</span></span>
-<span id="cb11-94"><a href="#cb11-94"></a></span>
-<span id="cb11-95"><a href="#cb11-95"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-96"><a href="#cb11-96"></a>pref_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-97"><a href="#cb11-97"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-98"><a href="#cb11-98"></a>  GtkWidget <span class="op">*</span>pref<span class="op">;</span></span>
-<span id="cb11-99"><a href="#cb11-99"></a></span>
-<span id="cb11-100"><a href="#cb11-100"></a>  pref <span class="op">=</span> tfe_pref_new <span class="op">();</span></span>
-<span id="cb11-101"><a href="#cb11-101"></a>  gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb11-102"><a href="#cb11-102"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">));</span></span>
-<span id="cb11-103"><a href="#cb11-103"></a><span class="op">}</span></span>
-<span id="cb11-104"><a href="#cb11-104"></a></span>
-<span id="cb11-105"><a href="#cb11-105"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-106"><a href="#cb11-106"></a>close_all_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-107"><a href="#cb11-107"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-108"><a href="#cb11-108"></a></span>
-<span id="cb11-109"><a href="#cb11-109"></a>  <span class="cf">if</span> <span class="op">(</span>close_request_cb <span class="op">(</span>win<span class="op">)</span> <span class="op">==</span> false<span class="op">)</span></span>
-<span id="cb11-110"><a href="#cb11-110"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb11-111"><a href="#cb11-111"></a><span class="op">}</span></span>
-<span id="cb11-112"><a href="#cb11-112"></a></span>
-<span id="cb11-113"><a href="#cb11-113"></a><span class="co">/* --- public functions --- */</span></span>
-<span id="cb11-114"><a href="#cb11-114"></a></span>
-<span id="cb11-115"><a href="#cb11-115"></a><span class="dt">void</span></span>
-<span id="cb11-116"><a href="#cb11-116"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-117"><a href="#cb11-117"></a>  notebook_page_new <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
-<span id="cb11-118"><a href="#cb11-118"></a><span class="op">}</span></span>
-<span id="cb11-119"><a href="#cb11-119"></a></span>
-<span id="cb11-120"><a href="#cb11-120"></a><span class="dt">void</span></span>
-<span id="cb11-121"><a href="#cb11-121"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-122"><a href="#cb11-122"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
-<span id="cb11-123"><a href="#cb11-123"></a></span>
-<span id="cb11-124"><a href="#cb11-124"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span></span>
-<span id="cb11-125"><a href="#cb11-125"></a>    notebook_page_new_with_file <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> files<span class="op">[</span>i<span class="op">]);</span></span>
-<span id="cb11-126"><a href="#cb11-126"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb11-127"><a href="#cb11-127"></a>    notebook_page_new <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
-<span id="cb11-128"><a href="#cb11-128"></a><span class="op">}</span></span>
-<span id="cb11-129"><a href="#cb11-129"></a></span>
-<span id="cb11-130"><a href="#cb11-130"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-131"><a href="#cb11-131"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-132"><a href="#cb11-132"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb11-133"><a href="#cb11-133"></a>  GMenuModel <span class="op">*</span>menu<span class="op">;</span></span>
-<span id="cb11-134"><a href="#cb11-134"></a></span>
-<span id="cb11-135"><a href="#cb11-135"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb11-136"><a href="#cb11-136"></a></span>
-<span id="cb11-137"><a href="#cb11-137"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/menu.ui&quot;</span><span class="op">);</span></span>
-<span id="cb11-138"><a href="#cb11-138"></a>  menu <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;menu&quot;</span><span class="op">));</span></span>
-<span id="cb11-139"><a href="#cb11-139"></a>  gtk_menu_button_set_menu_model <span class="op">(</span>win<span class="op">-&gt;</span>btnm<span class="op">,</span> menu<span class="op">);</span></span>
-<span id="cb11-140"><a href="#cb11-140"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb11-141"><a href="#cb11-141"></a></span>
-<span id="cb11-142"><a href="#cb11-142"></a><span class="co">/* ----- action ----- */</span></span>
-<span id="cb11-143"><a href="#cb11-143"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb11-144"><a href="#cb11-144"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-145"><a href="#cb11-145"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-146"><a href="#cb11-146"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-147"><a href="#cb11-147"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-148"><a href="#cb11-148"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-149"><a href="#cb11-149"></a>    <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-150"><a href="#cb11-150"></a>    <span class="op">{</span> <span class="st">&quot;close-all&quot;</span><span class="op">,</span> close_all_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
-<span id="cb11-151"><a href="#cb11-151"></a>  <span class="op">};</span></span>
-<span id="cb11-152"><a href="#cb11-152"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb11-153"><a href="#cb11-153"></a></span>
-<span id="cb11-154"><a href="#cb11-154"></a>  g_signal_connect <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_request_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb11-155"><a href="#cb11-155"></a><span class="op">}</span></span>
-<span id="cb11-156"><a href="#cb11-156"></a></span>
-<span id="cb11-157"><a href="#cb11-157"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-158"><a href="#cb11-158"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-159"><a href="#cb11-159"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfewindow.ui&quot;</span><span class="op">);</span></span>
-<span id="cb11-160"><a href="#cb11-160"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span></span>
-<span id="cb11-161"><a href="#cb11-161"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span></span>
-<span id="cb11-162"><a href="#cb11-162"></a><span class="op">}</span></span>
-<span id="cb11-163"><a href="#cb11-163"></a></span>
-<span id="cb11-164"><a href="#cb11-164"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb11-165"><a href="#cb11-165"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-166"><a href="#cb11-166"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb11-167"><a href="#cb11-167"></a><span class="op">}</span></span></code></pre></div>
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font-desc&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
+<span id="cb10-5"><a href="#cb10-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Monospace 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
+<span id="cb10-6"><a href="#cb10-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
+<span id="cb10-7"><a href="#cb10-7"></a>      &lt;<span class="kw">description</span>&gt;A font to be used for textview.&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb10-8"><a href="#cb10-8"></a>    &lt;/<span class="kw">key</span>&gt;</span>
+<span id="cb10-9"><a href="#cb10-9"></a>  &lt;/<span class="kw">schema</span>&gt;</span>
+<span id="cb10-10"><a href="#cb10-10"></a>&lt;/<span class="kw">schemalist</span>&gt;</span></code></pre></div>
+<p>The filename is “com.github.ToshioCP.tfe.gschema.xml”. Schema XML
+filenames are usually the schema id followed by “.gschema.xml” suffix.
+You can use different name from schema id, but it is not
+recommended.</p>
 <ul>
-<li>7-12: <code>_TfeWindow</code> structure. A TfeWindow instance points
-the structure.</li>
-<li>14: <code>G_DEFINE_TYPE</code> macro.</li>
-<li>17-28: <code>alert_response_cb</code> is a call back function for
-the “response” signal of TfeAlert dialog.</li>
-<li>21: Destroys the alert dialog.</li>
-<li>22-27: If the user has clicked on the accept button, it destroys the
-main window or closes the current notebook page.</li>
-<li>30-46: A “close-request” signal handler on the TfeWindow. When a
-user clicked on the close button (top right x-shaped button), the
-handler is called before the window closes. If the handler returns true,
-the default handler isn’t called and the window doesn’t close. If the
-handler returns false, the default handler is called and the window
-closes.</li>
-<li>34: If <code>has_saved_all</code> returns true, the handler returns
-false and the window will close. Otherwise, it shows an alert
-dialog.</li>
-<li>48-111: Handlers of action activated signal. The
-<code>user_data</code> is a pointer to the TfeWindow instance.</li>
-<li>115-128: Public functions.</li>
-<li>130-155: Instance initialization function.</li>
-<li>135: The function <code>gtk_widget_init_template</code> creates a
-child widgets and initializes them.</li>
-<li>137-140: Builds and inserts <code>menu</code>. It is inserted to the
-menu button.</li>
-<li>143-152: Creates actions and inserts them to the window. The scope
-of the actions is “win”.</li>
-<li>154: Connects the “close-request” signal and a handler.</li>
-<li>157-162: Class initialization function.</li>
-<li>159: Sets the composite widget template</li>
-<li>160-161: Binds private variables with child class templates.</li>
-<li>164-167: <code>tfe_window_new</code>. This function creates
-TfeWindow instance.</li>
+<li>2: The top level element is <code>&lt;schemalist&gt;</code>.</li>
+<li>3: schema tag has <code>path</code> and <code>id</code> attributes.
+A path determines where the settings are stored in the conceptual global
+tree of settings. An id identifies the schema.</li>
+<li>4: Key tag has two attributes. Name is the name of the key. Type is
+the type of the value of the key and it is a GVariant Format
+String.</li>
+<li>5: default value of the key <code>font-desc</code> is
+<code>Monospace 12</code>.</li>
+<li>6: Summery and description elements describes the key. They are
+optional, but it is recommended to add them in the XML file.</li>
 </ul>
-<h2 id="tfeapplication">TfeApplication</h2>
-<p>The file <code>tfeaplication.h</code> and
-<code>tfeapplication.c</code> are now very simple. The following is the
-header file.</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#pragma once</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="pp">#define TFE_TYPE_APPLICATION tfe_application_get_type ()</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> TFE<span class="op">,</span> APPLICATION<span class="op">,</span> GtkApplication<span class="op">)</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a></span>
-<span id="cb12-8"><a href="#cb12-8"></a>TfeApplication <span class="op">*</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> application_id<span class="op">,</span> GApplicationFlags flags<span class="op">);</span></span></code></pre></div>
+<p>The XML file is compiled by glib-compile-schemas. When compiling,
+<code>glib-compile-schemas</code> compiles all the XML files which have
+“.gschema.xml” file extension in the directory given as an argument. It
+converts the XML file into a binary file <code>gschemas.compiled</code>.
+Suppose the XML file above is under <code>tfe6</code> directory.</p>
+<pre><code>$ glib-compile-schemas tfe6</code></pre>
+<p>Then, <code>gschemas.compiled</code> is generated under
+<code>tfe6</code>. When you test your application, set
+<code>GSETTINGS_SCHEMA_DIR</code> environment variable so that GSettings
+objet can find <code>gschemas.compiled</code>.</p>
+<pre><code>$ GSETTINGS_SCHEMA_DIR=(the directory gschemas.compiled is located):$GSETTINGS_SCHEMA_DIR (your application name)</code></pre>
+<p>GSettings object looks for this file by the following process.</p>
 <ul>
-<li>1: <code>#pragma once</code> isn’t an official pre-processor
-command, but widely used. It makes the header file be read only
-once.</li>
-<li>5-6: <code>TFE_TYPE_APPLICATION</code> is defined as the type of
-TfeApplication. <code>G_DECLARE_FINAL_TYPE</code> is a macro used in the
-header file to define a new object.</li>
-<li>8-9: The function <code>tfe_application_new</code> creates a new
-TfeApplication instance.</li>
+<li>It searches <code>glib-2.0/schemas</code> subdirectories of all the
+directories specified in the environment variable
+<code>XDG_DATA_DIRS</code>. Common directores are
+<code>/usr/share/glib-2.0/schemas</code> and
+<code>/usr/local/share/glib-2.0/schemas</code>.</li>
+<li>If <code>$HOME/.local/share/glib-2.0/schemas</code> exists, it is
+also searched.</li>
+<li>If <code>GSETTINGS_SCHEMA_DIR</code> environment variable is
+defined, it searches all the directories specified in the variable.
+<code>GSETTINGS_SCHEMA_DIR</code> can specify multiple directories
+delimited by colon (:).</li>
 </ul>
-<p>The following is <code>tfeapplication.c</code>. It defines the
-application and supports:</p>
+<p>The directories above includes more than one
+<code>.gschema.xml</code> file. Therefore, when you install your
+application, follow the instruction below to install your schemas.</p>
+<ol type="1">
+<li>Make <code>.gschema.xml</code> file.</li>
+<li>Copy it to one of the directories above. For example,
+<code>$HOME/.local/share/glib-2.0/schemas</code>.</li>
+<li>Run <code>glib-compile-schemas</code> on the directory. It compiles
+all the schema files in the directory and creates or updates the
+database file <code>gschemas.compiled</code>.</li>
+</ol>
+<h3 id="gsettings-object-and-binding">GSettings object and binding</h3>
+<p>Now, we go on to the next topic, how to program GSettings.</p>
+<p>You need to compile your schema file in advance.</p>
+<p>Suppose id, key, class name and a property name are:</p>
 <ul>
-<li>GSettings</li>
-<li>CSS</li>
+<li>GSettings id: com.github.ToshioCP.sample</li>
+<li>GSettings key: sample_key</li>
+<li>The class name: Sample</li>
+<li>The property to bind: sample_property</li>
 </ul>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="pp">#include </span><span class="im">&quot;pfd2css.h&quot;</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">struct</span> _TfeApplication <span class="op">{</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a>  GtkApplication parent<span class="op">;</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a>  TfeWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a>  GtkCssProvider <span class="op">*</span>provider<span class="op">;</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="op">};</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a></span>
-<span id="cb13-13"><a href="#cb13-13"></a>G_DEFINE_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> GTK_TYPE_APPLICATION<span class="op">)</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="co">/* gsettings changed::font signal handler */</span></span>
-<span id="cb13-16"><a href="#cb13-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-17"><a href="#cb13-17"></a>changed_font_cb <span class="op">(</span>GSettings <span class="op">*</span>settings<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>key<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-18"><a href="#cb13-18"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb13-19"><a href="#cb13-19"></a>  <span class="dt">char</span> <span class="op">*</span>font<span class="op">,</span> <span class="op">*</span>s<span class="op">,</span> <span class="op">*</span>css<span class="op">;</span></span>
-<span id="cb13-20"><a href="#cb13-20"></a>  PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">;</span></span>
-<span id="cb13-21"><a href="#cb13-21"></a></span>
-<span id="cb13-22"><a href="#cb13-22"></a>  font <span class="op">=</span> g_settings_get_string <span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">);</span></span>
-<span id="cb13-23"><a href="#cb13-23"></a>  pango_font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>font<span class="op">);</span></span>
-<span id="cb13-24"><a href="#cb13-24"></a>  g_free <span class="op">(</span>font<span class="op">);</span></span>
-<span id="cb13-25"><a href="#cb13-25"></a>  s <span class="op">=</span> pfd2css <span class="op">(</span>pango_font_desc<span class="op">);</span> <span class="co">// converts Pango Font Description into CSS style string</span></span>
-<span id="cb13-26"><a href="#cb13-26"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {%s}&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
-<span id="cb13-27"><a href="#cb13-27"></a>  gtk_css_provider_load_from_data <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">,</span> css<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb13-28"><a href="#cb13-28"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
-<span id="cb13-29"><a href="#cb13-29"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
-<span id="cb13-30"><a href="#cb13-30"></a><span class="op">}</span></span>
-<span id="cb13-31"><a href="#cb13-31"></a></span>
-<span id="cb13-32"><a href="#cb13-32"></a><span class="co">/* ----- activate, open, startup handlers ----- */</span></span>
-<span id="cb13-33"><a href="#cb13-33"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-34"><a href="#cb13-34"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-35"><a href="#cb13-35"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb13-36"><a href="#cb13-36"></a></span>
-<span id="cb13-37"><a href="#cb13-37"></a>  tfe_window_notebook_page_new <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">);</span></span>
-<span id="cb13-38"><a href="#cb13-38"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">));</span></span>
-<span id="cb13-39"><a href="#cb13-39"></a><span class="op">}</span></span>
-<span id="cb13-40"><a href="#cb13-40"></a></span>
-<span id="cb13-41"><a href="#cb13-41"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-42"><a href="#cb13-42"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">,</span> GFile <span class="op">**</span> files<span class="op">,</span> gint n_files<span class="op">,</span> <span class="dt">const</span> gchar <span class="op">*</span>hint<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-43"><a href="#cb13-43"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb13-44"><a href="#cb13-44"></a></span>
-<span id="cb13-45"><a href="#cb13-45"></a>  tfe_window_notebook_page_new_with_files <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">,</span> files<span class="op">,</span> n_files<span class="op">);</span></span>
-<span id="cb13-46"><a href="#cb13-46"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">));</span></span>
-<span id="cb13-47"><a href="#cb13-47"></a><span class="op">}</span></span>
-<span id="cb13-48"><a href="#cb13-48"></a></span>
-<span id="cb13-49"><a href="#cb13-49"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-50"><a href="#cb13-50"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-51"><a href="#cb13-51"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb13-52"><a href="#cb13-52"></a>  GtkCssProvider <span class="op">*</span>provider0<span class="op">;</span></span>
-<span id="cb13-53"><a href="#cb13-53"></a>  GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
-<span id="cb13-54"><a href="#cb13-54"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
-<span id="cb13-55"><a href="#cb13-55"></a></span>
-<span id="cb13-56"><a href="#cb13-56"></a>  app<span class="op">-&gt;</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>tfe_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">)));</span></span>
-<span id="cb13-57"><a href="#cb13-57"></a>  provider0 <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb13-58"><a href="#cb13-58"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider0<span class="op">,</span> <span class="st">&quot;textview {padding: 10px;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb13-59"><a href="#cb13-59"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
-<span id="cb13-60"><a href="#cb13-60"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider0<span class="op">),</span></span>
-<span id="cb13-61"><a href="#cb13-61"></a>                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
-<span id="cb13-62"><a href="#cb13-62"></a>  g_object_unref <span class="op">(</span>provider0<span class="op">);</span></span>
-<span id="cb13-63"><a href="#cb13-63"></a>  app<span class="op">-&gt;</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb13-64"><a href="#cb13-64"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">),</span></span>
-<span id="cb13-65"><a href="#cb13-65"></a>                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
-<span id="cb13-66"><a href="#cb13-66"></a>  app<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
-<span id="cb13-67"><a href="#cb13-67"></a>  g_signal_connect <span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;changed::font&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>changed_font_cb<span class="op">),</span> app<span class="op">);</span></span>
-<span id="cb13-68"><a href="#cb13-68"></a>  changed_font_cb<span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font&quot;</span><span class="op">,</span> app<span class="op">);</span></span>
-<span id="cb13-69"><a href="#cb13-69"></a></span>
-<span id="cb13-70"><a href="#cb13-70"></a><span class="co">/* ----- accelerator ----- */</span> </span>
-<span id="cb13-71"><a href="#cb13-71"></a>  <span class="kw">struct</span> <span class="op">{</span></span>
-<span id="cb13-72"><a href="#cb13-72"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>action<span class="op">;</span></span>
-<span id="cb13-73"><a href="#cb13-73"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>accels<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
-<span id="cb13-74"><a href="#cb13-74"></a>  <span class="op">}</span> action_accels<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb13-75"><a href="#cb13-75"></a>    <span class="op">{</span> <span class="st">&quot;win.open&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;o&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
-<span id="cb13-76"><a href="#cb13-76"></a>    <span class="op">{</span> <span class="st">&quot;win.save&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
-<span id="cb13-77"><a href="#cb13-77"></a>    <span class="op">{</span> <span class="st">&quot;win.close&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;w&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
-<span id="cb13-78"><a href="#cb13-78"></a>    <span class="op">{</span> <span class="st">&quot;win.new&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;n&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
-<span id="cb13-79"><a href="#cb13-79"></a>    <span class="op">{</span> <span class="st">&quot;win.saveas&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Shift&gt;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
-<span id="cb13-80"><a href="#cb13-80"></a>    <span class="op">{</span> <span class="st">&quot;win.close-all&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;q&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
-<span id="cb13-81"><a href="#cb13-81"></a>  <span class="op">};</span></span>
-<span id="cb13-82"><a href="#cb13-82"></a></span>
-<span id="cb13-83"><a href="#cb13-83"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> G_N_ELEMENTS<span class="op">(</span>action_accels<span class="op">);</span> i<span class="op">++)</span></span>
-<span id="cb13-84"><a href="#cb13-84"></a>    gtk_application_set_accels_for_action<span class="op">(</span>GTK_APPLICATION<span class="op">(</span>app<span class="op">),</span> action_accels<span class="op">[</span>i<span class="op">].</span>action<span class="op">,</span> action_accels<span class="op">[</span>i<span class="op">].</span>accels<span class="op">);</span></span>
-<span id="cb13-85"><a href="#cb13-85"></a><span class="op">}</span></span>
-<span id="cb13-86"><a href="#cb13-86"></a></span>
-<span id="cb13-87"><a href="#cb13-87"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-88"><a href="#cb13-88"></a>tfe_application_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-89"><a href="#cb13-89"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb13-90"><a href="#cb13-90"></a></span>
-<span id="cb13-91"><a href="#cb13-91"></a>  g_clear_object <span class="op">(&amp;</span>app<span class="op">-&gt;</span>settings<span class="op">);</span></span>
-<span id="cb13-92"><a href="#cb13-92"></a>  g_clear_object <span class="op">(&amp;</span>app<span class="op">-&gt;</span>provider<span class="op">);</span></span>
-<span id="cb13-93"><a href="#cb13-93"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb13-94"><a href="#cb13-94"></a><span class="op">}</span></span>
-<span id="cb13-95"><a href="#cb13-95"></a></span>
-<span id="cb13-96"><a href="#cb13-96"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-97"><a href="#cb13-97"></a>tfe_application_init <span class="op">(</span>TfeApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-98"><a href="#cb13-98"></a>  g_signal_connect <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb13-99"><a href="#cb13-99"></a>  g_signal_connect <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb13-100"><a href="#cb13-100"></a>  g_signal_connect <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb13-101"><a href="#cb13-101"></a><span class="op">}</span></span>
-<span id="cb13-102"><a href="#cb13-102"></a></span>
-<span id="cb13-103"><a href="#cb13-103"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb13-104"><a href="#cb13-104"></a>tfe_application_class_init <span class="op">(</span>TfeApplicationClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-105"><a href="#cb13-105"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
-<span id="cb13-106"><a href="#cb13-106"></a></span>
-<span id="cb13-107"><a href="#cb13-107"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_application_dispose<span class="op">;</span></span>
-<span id="cb13-108"><a href="#cb13-108"></a><span class="op">}</span></span>
-<span id="cb13-109"><a href="#cb13-109"></a></span>
-<span id="cb13-110"><a href="#cb13-110"></a>TfeApplication <span class="op">*</span></span>
-<span id="cb13-111"><a href="#cb13-111"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> application_id<span class="op">,</span> GApplicationFlags flags<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-112"><a href="#cb13-112"></a>  <span class="cf">return</span> TFE_APPLICATION <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_APPLICATION<span class="op">,</span> <span class="st">&quot;application-id&quot;</span><span class="op">,</span> application_id<span class="op">,</span> <span class="st">&quot;flags&quot;</span><span class="op">,</span> flags<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb13-113"><a href="#cb13-113"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>6-11: Defines <code>_TfeApplication</code> structure. The members
-are:
-<ul>
-<li>win: main window instance</li>
-<li>settings: GSettings instance.it is bound to “font” item in the
-GSettings</li>
-<li>provider: a provider for the font of the textview.</li>
-</ul></li>
-<li><code>G_DEFINE_TYPE</code> macro.</li>
-<li>16-30: <code>changed_font_cb</code> is a handler for “changed::font”
-signal on the GSettings instance. The signal name is “changed” and
-“font” is a key name. When the valeu of “font” key is changed, the
-signal is emitted. So, this handler doesn’t directly relate to the font
-button, but through the GSettings database. A user changes the font in
-the font button =&gt; GSettings font key data is changed =&gt; the
-handler is called.</li>
-<li>22-24: Retrieves a string from the GSetting database and converts it
-into a pango font description.</li>
-<li>25-29: Sets the css provider with the font data. The provider has
-been inserted to the current display in advance.</li>
-<li>33-39: Activate signal handler. It uses
-<code>tfe_window_notebook_page_new</code> instead of
-<code>notebook_page_new</code>.</li>
-<li>41-47: Open signal handler. It just calls
-<code>tfe_window_notebook_page_new_with_files</code> and shows the main
-window. Be careful that the activate and open handlers don’t create a
-new window. They just create a new notebook page. Therefore, even if the
-second application runs, no new window appears. Just a new notebook page
-is inserted to the same main window.</li>
-<li>49-85: Startup signal handler.</li>
-<li>56: Creates a new window (main window) and assigns it to
-<code>app-&gt;win</code>.</li>
-<li>57-61: Creates a css provider (<code>provider0</code>). It includes
-only the padding data for the textview. The provider is inserted to the
-default display.</li>
-<li>63-65: Another css provider is created
-(<code>app-&gt;provider</code>) and inserted to the default display. It
-will include the font data for the textview.</li>
-<li>66-68: Creates a new GSettings instance. If the GSettings data is
-changed, the “changed” signal is emitted. The signal can have a key name
-like “changed::font”. This style (“changed::font”) is called detailed
-signal. The detailed signal is emitted only if the font data is changed.
-The handler <code>changed_font_cb</code> is called to set the CSS with
-the font data. The handler gets the font data from the GSettings data
-which is the last font in the previous run of the application.</li>
-<li>71-84: Defines accelerators.</li>
-<li>87-94: A dispose handler. It releases references to the instances of
-GSettings and GtkCssProvider.</li>
-<li>96-101: An initialization for the instance. It connects three
-signals (activate, open and startup) and their handlers.</li>
-<li>183-188: An initialization for the class. It overrides the dispose
-class method.</li>
-<li>110-113: <code>tfe_application_new</code> creates a new
-TfeApplication instance. The parameters are an application-id and
-flags.</li>
-</ul>
-<h2 id="other-files">Other files</h2>
-<p>main.c</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a></span>
-<span id="cb14-4"><a href="#cb14-4"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="dt">int</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a>  TfeApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb14-10"><a href="#cb14-10"></a></span>
-<span id="cb14-11"><a href="#cb14-11"></a>  app <span class="op">=</span> tfe_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
-<span id="cb14-12"><a href="#cb14-12"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb14-13"><a href="#cb14-13"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb14-14"><a href="#cb14-14"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb14-15"><a href="#cb14-15"></a><span class="op">}</span></span></code></pre></div>
-<p>CSS related files <code>pfd2css.h</code> and <code>pfd2css.c</code>
-are the same as the previous section.</p>
-<p>Resource XML file.</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb15-3"><a href="#cb15-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe&quot;</span>&gt;</span>
-<span id="cb15-4"><a href="#cb15-4"></a>    &lt;<span class="kw">file</span>&gt;tfewindow.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb15-5"><a href="#cb15-5"></a>    &lt;<span class="kw">file</span>&gt;tfepref.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb15-6"><a href="#cb15-6"></a>    &lt;<span class="kw">file</span>&gt;tfealert.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb15-7"><a href="#cb15-7"></a>    &lt;<span class="kw">file</span>&gt;menu.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb15-8"><a href="#cb15-8"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
-<span id="cb15-9"><a href="#cb15-9"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-<p>GSchema XML file</p>
+<p>The example below uses <code>g_settings_bind</code>. If you use it,
+GSettings key and instance property must have the same the type. In the
+example, it is assumed that the type of “sample_key” and
+“sample_property” are the same.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>Sample <span class="op">*</span>sample_object<span class="op">;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.sample&quot;</span><span class="op">);</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>sample_object <span class="op">=</span> sample_new <span class="op">();</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>g_settings_bind <span class="op">(</span>settings<span class="op">,</span> <span class="st">&quot;sample_key&quot;</span><span class="op">,</span> sample_object<span class="op">,</span> <span class="st">&quot;sample_property&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">);</span></span></code></pre></div>
+<p>The function <code>g_settings_bind</code> binds the GSettings value
+and the property of the instance. If the property value is changed, the
+GSettings value is also changed, and vice versa. The two values are
+always the same.</p>
+<p>The function <code>g_settings_bind</code> is simple and easy but it
+isn’t always possible. The type of GSettings are restricted to the type
+GVariant has. Some property types are out of GVariant. For example,
+GtkFontDialogButton has “font-desc” property and its type is
+PangoFontDescription. PangoFontDescription is a C structure and it is
+wrapped in a boxed type GValue to store in the property. GVariant
+doesn’t support boxed type.</p>
+<p>In that case, another function
+<code>g_settings_bind_with_mapping</code> is used. It binds GSettings
+GVariant value and object property via GValue with mapping
+functions.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>g_settings_bind_with_mapping <span class="op">(</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  GSettings<span class="op">*</span> settings<span class="op">,</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> gchar<span class="op">*</span> key<span class="op">,</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> object<span class="op">,</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> gchar<span class="op">*</span> property<span class="op">,</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  GSettingsBindFlags flags<span class="op">,</span> <span class="co">// G_SETTINGS_BIND_DEFAULT is commonly used</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  GSettingsBindGetMapping get_mapping<span class="op">,</span> <span class="co">// GSettings =&gt; property, See the example below</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  GSettingsBindSetMapping set_mapping<span class="op">,</span> <span class="co">// property =&gt; GSettings, See the example below</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  gpointer user_data<span class="op">,</span> <span class="co">// NULL if unnecessary</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  GDestroyNotify destroy <span class="co">//NULL if unnecessary</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<p>The mapping functions are defined like these:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gboolean</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="op">(*</span> GSettingsBindGetMapping<span class="op">)</span> <span class="op">(</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  GValue<span class="op">*</span> value<span class="op">,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  GVariant<span class="op">*</span> variant<span class="op">,</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>GVariant<span class="op">*</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="op">(*</span> GSettingsBindSetMapping<span class="op">)</span> <span class="op">(</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+<p>The following codes are extracted from <code>tfepref.c</code>.</p>
 <div class="sourceCode" id="cb16"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
-<span id="cb16-3"><a href="#cb16-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
-<span id="cb16-4"><a href="#cb16-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
-<span id="cb16-5"><a href="#cb16-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Monospace 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
-<span id="cb16-6"><a href="#cb16-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
-<span id="cb16-7"><a href="#cb16-7"></a>      &lt;<span class="kw">description</span>&gt;A font to be used for textview.&lt;/<span class="kw">description</span>&gt;</span>
-<span id="cb16-8"><a href="#cb16-8"></a>    &lt;/<span class="kw">key</span>&gt;</span>
-<span id="cb16-9"><a href="#cb16-9"></a>  &lt;/<span class="kw">schema</span>&gt;</span>
-<span id="cb16-10"><a href="#cb16-10"></a>&lt;/<span class="kw">schemalist</span>&gt;</span></code></pre></div>
-<p>Meson.build</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb17-1"><a href="#cb17-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
-<span id="cb17-2"><a href="#cb17-2"></a></span>
-<span id="cb17-3"><a href="#cb17-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
-<span id="cb17-4"><a href="#cb17-4"></a></span>
-<span id="cb17-5"><a href="#cb17-5"></a>gnome=import(&#39;gnome&#39;)</span>
-<span id="cb17-6"><a href="#cb17-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;tfe.gresource.xml&#39;)</span>
-<span id="cb17-7"><a href="#cb17-7"></a>gnome.compile_schemas(build_by_default: true, depend_files: &#39;com.github.ToshioCP.tfe.gschema.xml&#39;)</span>
-<span id="cb17-8"><a href="#cb17-8"></a></span>
-<span id="cb17-9"><a href="#cb17-9"></a>sourcefiles=files(&#39;main.c&#39;, &#39;tfeapplication.c&#39;, &#39;tfewindow.c&#39;, &#39;tfenotebook.c&#39;, &#39;tfepref.c&#39;, &#39;tfealert.c&#39;, &#39;pfd2css.c&#39;, &#39;../tfetextview/tfetextview.c&#39;)</span>
-<span id="cb17-10"><a href="#cb17-10"></a></span>
-<span id="cb17-11"><a href="#cb17-11"></a>executable(&#39;tfe&#39;, sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)</span>
-<span id="cb17-12"><a href="#cb17-12"></a></span>
-<span id="cb17-13"><a href="#cb17-13"></a>schema_dir = get_option(&#39;prefix&#39;) / get_option(&#39;datadir&#39;) / &#39;glib-2.0/schemas/&#39;</span>
-<span id="cb17-14"><a href="#cb17-14"></a>install_data(&#39;com.github.ToshioCP.tfe.gschema.xml&#39;, install_dir: schema_dir)</span>
-<span id="cb17-15"><a href="#cb17-15"></a>gnome.post_install (glib_compile_schemas: true)</span></code></pre></div>
-<h2 id="compilation-and-installation.">Compilation and
-installation.</h2>
-<p>If you want to install it to your local area, use
-<code>--prefix=$HOME/.local</code> or <code>--prefix=$HOME</code>
-option. If you want to install it to the system area, no option is
-needed. It will be installed under <code>/user/local</code>
-directory.</p>
-<pre><code>$ meson --prefix=$HOME/.local _build
-$ ninja -C _build
-$ ninja -C _build install</code></pre>
-<p>You need root privilege to install it to the system area..</p>
-<pre><code>$ meson _build
-$ ninja -C _build
-$ sudo ninja -C _build install</code></pre>
-<p>Source files are in src/tfe7 directory.</p>
-<p>Composite widgets give us two advantages.</p>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">static</span> gboolean <span class="co">// GSettings =&gt; property</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>get_mapping <span class="op">(</span>GValue<span class="op">*</span> value<span class="op">,</span> GVariant<span class="op">*</span> variant<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s <span class="op">=</span> g_variant_get_string <span class="op">(</span>variant<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>  PangoFontDescription <span class="op">*</span>font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>  g_value_take_boxed <span class="op">(</span>value<span class="op">,</span> font_desc<span class="op">);</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="op">}</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="dt">static</span> GVariant<span class="op">*</span> <span class="co">// Property =&gt; GSettings</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>set_mapping <span class="op">(</span><span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span> <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a>  <span class="dt">char</span><span class="op">*</span>font_desc_string <span class="op">=</span> pango_font_description_to_string <span class="op">(</span>g_value_get_boxed <span class="op">(</span>value<span class="op">));</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a>  <span class="cf">return</span> g_variant_new_take_string <span class="op">(</span>font_desc_string<span class="op">);</span></span>
+<span id="cb16-13"><a href="#cb16-13"></a><span class="op">}</span></span>
+<span id="cb16-14"><a href="#cb16-14"></a></span>
+<span id="cb16-15"><a href="#cb16-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb16-16"><a href="#cb16-16"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb16-18"><a href="#cb16-18"></a>  pref<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
+<span id="cb16-19"><a href="#cb16-19"></a>  g_settings_bind_with_mapping <span class="op">(</span>pref<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">,</span> pref<span class="op">-&gt;</span>font_dialog_btn<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">,</span></span>
+<span id="cb16-20"><a href="#cb16-20"></a>      get_mapping<span class="op">,</span> set_mapping<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb16-21"><a href="#cb16-21"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>A set of widgets is better than individual widgets because of the
-simple coding.</li>
-<li>They hold instance variables (members of the object structure) so
-static variables are no longer necessary. It makes the program
-simpler.</li>
+<li>15-21: This function <code>tfe_pref_init</code> initializes the new
+TfePref instance.</li>
+<li>18: Creates a new GSettings instance. The id is
+“com.github.ToshioCP.tfe”.</li>
+<li>19-20: Binds the GSettings “font-desc” and the GtkFontDialogButton
+property “font-desc”. The mapping functions are <code>get_mapping</code>
+and <code>set_mapping</code>.</li>
+<li>1-7: The mapping function from GSettings to the property. The first
+argument <code>value</code> is a GValue to be stored in the property.
+The second argument <code>variant</code> is a GVarinat structure that
+comes from the GSettings value.</li>
+<li>3: Retrieves a string from the GVariant structure.</li>
+<li>4: Build a PangoFontDescription structure from the string and
+assigns its address to <code>font_desc</code>.</li>
+<li>5: Puts <code>font_desc</code> into the GValue <code>value</code>.
+The ownership of <code>font_desc</code> moves to
+<code>value</code>.</li>
+<li>6: Returns TRUE that means the mapping succeeds.</li>
+<li>9-13: The mapping function from the property to GSettings. The first
+argument <code>value</code> holds the property data. The second argument
+<code>expected_type</code> is the type of GVariant that the GSettings
+value has. It isn’t used in this function.</li>
+<li>11: Gets the PangoFontDescription structure from <code>value</code>
+and converts it to string.</li>
+<li>12: The string is inserted to a GVariant structure. The ownership of
+the string <code>font_desc_string</code> moves to the returned
+value.</li>
 </ul>
-<p>We made a very small text editor. You can add features to this
-editor. When you add a new feature, be careful about the structure of
-the program. Maybe you need to divide a file into several files like
-this section. It isn’t good to put many things into one file. And it is
-important to think about the relationship between source files and
-widget structures.</p>
+<h2 id="c-file">C file</h2>
+<p>The following is the full codes of <code>tfepref.c</code></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="kw">struct</span> _TfePref</span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="op">{</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>  GtkWindow parent<span class="op">;</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a>  GtkFontDialogButton <span class="op">*</span>font_dialog_btn<span class="op">;</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="op">};</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a></span>
+<span id="cb17-11"><a href="#cb17-11"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a></span>
+<span id="cb17-13"><a href="#cb17-13"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb17-16"><a href="#cb17-16"></a></span>
+<span id="cb17-17"><a href="#cb17-17"></a>  <span class="co">/* GSetting bindings are automatically removed when the object is finalized, so it isn&#39;t necessary to unbind them explicitly.*/</span></span>
+<span id="cb17-18"><a href="#cb17-18"></a>  g_clear_object <span class="op">(&amp;</span>pref<span class="op">-&gt;</span>settings<span class="op">);</span></span>
+<span id="cb17-19"><a href="#cb17-19"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">),</span> TFE_TYPE_PREF<span class="op">);</span></span>
+<span id="cb17-20"><a href="#cb17-20"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb17-21"><a href="#cb17-21"></a><span class="op">}</span></span>
+<span id="cb17-22"><a href="#cb17-22"></a></span>
+<span id="cb17-23"><a href="#cb17-23"></a><span class="co">/* ---------- get_mapping/set_mapping ---------- */</span></span>
+<span id="cb17-24"><a href="#cb17-24"></a><span class="dt">static</span> gboolean <span class="co">// GSettings =&gt; property</span></span>
+<span id="cb17-25"><a href="#cb17-25"></a>get_mapping <span class="op">(</span>GValue<span class="op">*</span> value<span class="op">,</span> GVariant<span class="op">*</span> variant<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-26"><a href="#cb17-26"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s <span class="op">=</span> g_variant_get_string <span class="op">(</span>variant<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb17-27"><a href="#cb17-27"></a>  PangoFontDescription <span class="op">*</span>font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb17-28"><a href="#cb17-28"></a>  g_value_take_boxed <span class="op">(</span>value<span class="op">,</span> font_desc<span class="op">);</span></span>
+<span id="cb17-29"><a href="#cb17-29"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb17-30"><a href="#cb17-30"></a><span class="op">}</span></span>
+<span id="cb17-31"><a href="#cb17-31"></a></span>
+<span id="cb17-32"><a href="#cb17-32"></a><span class="dt">static</span> GVariant<span class="op">*</span> <span class="co">// Property =&gt; GSettings</span></span>
+<span id="cb17-33"><a href="#cb17-33"></a>set_mapping <span class="op">(</span><span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span> <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-34"><a href="#cb17-34"></a>  <span class="dt">char</span><span class="op">*</span>font_desc_string <span class="op">=</span> pango_font_description_to_string <span class="op">(</span>g_value_get_boxed <span class="op">(</span>value<span class="op">));</span></span>
+<span id="cb17-35"><a href="#cb17-35"></a>  <span class="cf">return</span> g_variant_new_take_string <span class="op">(</span>font_desc_string<span class="op">);</span></span>
+<span id="cb17-36"><a href="#cb17-36"></a><span class="op">}</span></span>
+<span id="cb17-37"><a href="#cb17-37"></a></span>
+<span id="cb17-38"><a href="#cb17-38"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-39"><a href="#cb17-39"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-40"><a href="#cb17-40"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb17-41"><a href="#cb17-41"></a>  pref<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
+<span id="cb17-42"><a href="#cb17-42"></a>  g_settings_bind_with_mapping <span class="op">(</span>pref<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">,</span> pref<span class="op">-&gt;</span>font_dialog_btn<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">,</span></span>
+<span id="cb17-43"><a href="#cb17-43"></a>      get_mapping<span class="op">,</span> set_mapping<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb17-44"><a href="#cb17-44"></a><span class="op">}</span></span>
+<span id="cb17-45"><a href="#cb17-45"></a></span>
+<span id="cb17-46"><a href="#cb17-46"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-47"><a href="#cb17-47"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-48"><a href="#cb17-48"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
+<span id="cb17-49"><a href="#cb17-49"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span><span class="op">);</span></span>
+<span id="cb17-50"><a href="#cb17-50"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> font_dialog_btn<span class="op">);</span></span>
+<span id="cb17-51"><a href="#cb17-51"></a><span class="op">}</span></span>
+<span id="cb17-52"><a href="#cb17-52"></a></span>
+<span id="cb17-53"><a href="#cb17-53"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb17-54"><a href="#cb17-54"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-55"><a href="#cb17-55"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb17-56"><a href="#cb17-56"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="test-program">Test program</h2>
+<p>There’s a test program located at <code>src/tfe6/test</code>
+directory.</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="pp">#include </span><span class="im">&quot;../tfepref.h&quot;</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a></span>
+<span id="cb18-4"><a href="#cb18-4"></a>GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">// &quot;changed::font-desc&quot; signal handler</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>changed_font_desc_cb <span class="op">(</span>GSettings <span class="op">*</span>settings<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>key<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>  s <span class="op">=</span> g_settings_get_string <span class="op">(</span>settings<span class="op">,</span> key<span class="op">);</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a>  g_print <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="op">}</span></span>
+<span id="cb18-14"><a href="#cb18-14"></a></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb18-16"><a href="#cb18-16"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a>  g_object_unref <span class="op">(</span>settings<span class="op">);</span></span>
+<span id="cb18-18"><a href="#cb18-18"></a><span class="op">}</span></span>
+<span id="cb18-19"><a href="#cb18-19"></a></span>
+<span id="cb18-20"><a href="#cb18-20"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb18-21"><a href="#cb18-21"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-22"><a href="#cb18-22"></a>  GtkWidget <span class="op">*</span>pref <span class="op">=</span> tfe_pref_new <span class="op">();</span></span>
+<span id="cb18-23"><a href="#cb18-23"></a></span>
+<span id="cb18-24"><a href="#cb18-24"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">));</span></span>
+<span id="cb18-25"><a href="#cb18-25"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb18-26"><a href="#cb18-26"></a><span class="op">}</span></span>
+<span id="cb18-27"><a href="#cb18-27"></a></span>
+<span id="cb18-28"><a href="#cb18-28"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb18-29"><a href="#cb18-29"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-30"><a href="#cb18-30"></a>  settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
+<span id="cb18-31"><a href="#cb18-31"></a>  g_signal_connect <span class="op">(</span>settings<span class="op">,</span> <span class="st">&quot;changed::font-desc&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>changed_font_desc_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb18-32"><a href="#cb18-32"></a>  g_print <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="st">&quot;Change the font with the font button. Then the new font will be printed out.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb18-33"><a href="#cb18-33"></a><span class="op">}</span></span>
+<span id="cb18-34"><a href="#cb18-34"></a></span>
+<span id="cb18-35"><a href="#cb18-35"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.test_tfe_pref&quot;</span></span>
+<span id="cb18-36"><a href="#cb18-36"></a></span>
+<span id="cb18-37"><a href="#cb18-37"></a><span class="dt">int</span></span>
+<span id="cb18-38"><a href="#cb18-38"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-39"><a href="#cb18-39"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb18-40"><a href="#cb18-40"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb18-41"><a href="#cb18-41"></a></span>
+<span id="cb18-42"><a href="#cb18-42"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb18-43"><a href="#cb18-43"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb18-44"><a href="#cb18-44"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb18-45"><a href="#cb18-45"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb18-46"><a href="#cb18-46"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb18-47"><a href="#cb18-47"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb18-48"><a href="#cb18-48"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb18-49"><a href="#cb18-49"></a><span class="op">}</span></span></code></pre></div>
+<p>This program sets its active window to TfePref instance, which is a
+child object of GtkWindow.</p>
+<p>It sets the “changed::font-desc” signal handler in the startup
+function. The process from the user’s font selection to the handler
+is:</p>
+<ul>
+<li>The user clicked on the GtkFontDialogButton and GtkFontDialog
+appears.</li>
+<li>He/she selects a new font.</li>
+<li>The “font-desc” property of the GtkFontDialogButton instance is
+changed.</li>
+<li>The value of “font-desc” key on the GSettings database is changed
+since it is bound to the property.</li>
+<li>The “changed::font-desc” signal on the GSettings instance is
+emitted.</li>
+<li>The handler is called.</li>
+</ul>
+<p>The program building is divided into four steps.</p>
+<ul>
+<li>Compile the schema file</li>
+<li>Compile the XML file to a resource (C source file)</li>
+<li>Compile the C files</li>
+<li>Run the executable file</li>
+</ul>
+<p>Commands are shown in the next four sub-subsections. You don’t need
+to try them. The final sub-subsection shows the meson-ninja way, which
+is the easiest.</p>
+<h3 id="compile-the-schema-file">Compile the schema file</h3>
+<pre><code>$ cd src/tef6/test
+$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
+$ glib-compile-schemas .</code></pre>
+<p>Be careful. The commands <code>glib-compile-schemas</code> has an
+argument “.”, which means the current directory. This results in
+creating <code>gschemas.compiled</code> file.</p>
+<h3 id="compile-the-xml-file">Compile the XML file</h3>
+<pre><code>$ glib-compile-resources --sourcedir=.. --generate-source --target=resource.c ../tfe.gresource.xml</code></pre>
+<h3 id="compile-the-c-file">Compile the C file</h3>
+<pre><code>$ gcc `pkg-config --cflags gtk4` test_pref.c ../tfepref.c resource.c `pkg-config --libs gtk4`</code></pre>
+<h3 id="run-the-executable-file">Run the executable file</h3>
+<pre><code>$ GSETTINGS_SCHEMA_DIR=. ./a.out
+
+Jamrul Italic Semi-Expanded 12 # &lt;= select Jamrul Italic 12
+Monospace 12 #&lt;= select Monospace Regular 12</code></pre>
+<h3 id="meson-ninja-way">Meson-ninja way</h3>
+<p>Meson wraps up the commands above. Create the following text and save
+it to <code>meson.build</code>.</p>
+<p>Note: Gtk4-tutorial repository has meson.build file that defines
+several tests. So you can try it instead of the following text.</p>
+<pre><code>project(&#39;tfe_pref_test&#39;, &#39;c&#39;)
+
+gtkdep = dependency(&#39;gtk4&#39;)
+
+gnome=import(&#39;gnome&#39;)
+resources = gnome.compile_resources(&#39;resources&#39;,&#39;../tfe.gresource.xml&#39;, source_dir: &#39;..&#39;)
+gnome.compile_schemas(build_by_default: true, depend_files: &#39;com.github.ToshioCP.tfe.gschema.xml&#39;)
+
+executable(&#39;test_pref&#39;, [&#39;test_pref.c&#39;, &#39;../tfepref.c&#39;], resources, dependencies: gtkdep, export_dynamic: true, install: false)</code></pre>
+<ul>
+<li>Project name is ‘tfe_pref_test’ and it is written in C
+language.</li>
+<li>It depends on GTK4 library.</li>
+<li>It uses GNOME module. Modules are prepared by Meson.</li>
+<li>GNOME module has <code>compile_resources</code> method. When you
+call this method, you need the prefix “gnome.”.
+<ul>
+<li>The target filename is resources.</li>
+<li>The definition XML file is ‘../tfe.gresource.xml’.</li>
+<li>The source dir is ‘..’. All the ui files are located there.</li>
+</ul></li>
+<li>GNOME module has <code>compile_schemas</code> method. It compiles
+the schema file ‘com.github.ToshioCP.tfe.gschema.xml’. You need to copy
+‘../com.github.ToshioCP.tfe.gschema.xml’ to the current directory in
+advance.</li>
+<li>It creates an executable file ‘test_pref’. The source files are
+‘test_pref.c’, ‘../tfepref.c’ and <code>resources</code>, which is made
+by <code>gnome.compile_resources</code>. It depends on
+<code>gtkdep</code>, which is GTK4 library. The symbols are exported and
+no installation support.</li>
+</ul>
+<p>Type like this to build and test the program.</p>
+<pre><code>$ cd src/tef6/test
+$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
+$ meson setup _build
+$ ninja -C _build
+$ GSETTINGS_SCHEMA_DIR=_build _build/test_pref</code></pre>
+<p>A window appears and you can choose a font via GtkFontDialog. If you
+select a new font, the font string is output through the standard
+output.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

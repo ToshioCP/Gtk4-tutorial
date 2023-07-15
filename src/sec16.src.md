@@ -10,7 +10,7 @@ The following is the instruction of compilation and execution.
 - You need meson and ninja.
 - If you have installed gtk4 from the source, you need to set environment variables to suit your installation.
 - Change your current directory to `src/tfe5` directory.
-- Type `meson _build` for configuration.
+- Type `meson setup _build` for configuration.
 - Type `ninja -C _build` for compilation.
 Then the application `tfe` is built under the `_build` directory.
 - Type `_build/tfe` to execute it.
@@ -18,7 +18,7 @@ Then the application `tfe` is built under the `_build` directory.
 Then the window appears.
 There are four buttons, `New`, `Open`, `Save` and `Close`.
 
-- Click on `Open` button, then a FileChooserDialog appears.
+- Click on `Open` button, then a file chooser dialog appears.
 Choose a file in the list and click on `Open` button.
 Then the file is read and a new Notebook Page appears.
 - Edit the file and click on `Save` button, then the text is saved to the original file.
@@ -33,4 +33,3 @@ It is a good practice for you to add more features.
 @@@shell
 LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
 @@@
-

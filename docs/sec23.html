@@ -111,392 +111,537 @@
         </div>
       </div>
     </nav>
-<h1 id="periodic-events">Periodic Events</h1>
-<p>This chapter was written by Paul Schulz <a
-href="mailto:paul@mawsonlakes.org"
-class="email">paul@mawsonlakes.org</a>.</p>
-<h2 id="how-do-we-create-an-animation">How do we create an
-animation?</h2>
-<p>In this section we will continue to build on our previous work. We
-will create an analog clock application. By adding a function which
-periodically redraws GtkDrawingArea, the clock will be able to
-continuously display the time.</p>
-<p>The application uses a compiled in ‘resource’ file, so if the GTK4
-libraries and their dependencies are installed and available, the
-application will run from anywhere.</p>
-<p>The program also makes use of some standard mathematical and time
-handling functions.</p>
-<p>The clocks mechanics were taken from a Cairo drawing example, using
-gtkmm4, which can be found <a
-href="https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en">here</a>.</p>
-<p>The complete code is at the end.</p>
-<h2 id="drawing-the-clock-face-hour-minute-and-second-hands">Drawing the
-clock face, hour, minute and second hands</h2>
-<p>The <code>draw_clock()</code> function does all the work. See the
-in-file comments for an explanation of how the Cairo drawing works.</p>
-<p>For a detailed reference of what each of the Cairo functions does see
-the <a
-href="https://www.cairographics.org/manual/cairo-cairo-t.html">cairo_t
-reference</a>.</p>
+<h1 id="pango-css-and-application">Pango, CSS and Application</h1>
+<h2 id="pangofontdescription">PangoFontDescription</h2>
+<p>PangoFontDescription is a C structure for a font. You can get font
+family, style, weight and size. You can also get a string that includes
+font attributes. For example, suppose that the PangoFontDescription has
+a font of “Noto Sans Mono”, “Bold”, “Italic” and 12 points of size. Then
+the string converted from the PangoFontDescription is “Noto Sans Mono
+Bold Italic 12”.</p>
+<ul>
+<li>Font family is “Noto Sans Mono”.</li>
+<li>Font style is “Italic”.</li>
+<li>Font weight is “Bold”, or 700.</li>
+<li>Font size is 12 pt.</li>
+</ul>
+<p>The font in CSS is different from the string from
+PangoFontDescription.</p>
+<ul>
+<li><code>font: bold italic 12pt "Noto Sans Mono"</code></li>
+<li><code>Noto Sans Mono Bold Italic 12</code></li>
+</ul>
+<p>So, it may be easier to use each property, i.e. font-family,
+font-style, font-weight and font-size, to convert a PangoFontDescription
+data to CSS.</p>
+<p>Refer to <a href="https://docs.gtk.org/Pango/index.html">Pango
+document</a> and <a href="https://www.w3.org/TR/css-fonts-3/">W3C CSS
+Fonts Module Level 3</a> for further information.</p>
+<h2 id="converter-from-pangofontdescription-to-css">Converter from
+PangoFontDescription to CSS</h2>
+<p>Two files <code>pfd2css.h</code> and <code>pfd2css.c</code> include
+the converter from PangoFontDescription to CSS.</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>draw_clock <span class="op">(</span>GtkDrawingArea <span class="op">*</span>area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a>    <span class="co">// Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>    <span class="co">// the center of the window</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>    cairo_scale<span class="op">(</span>cr<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    cairo_translate<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.5</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a>    <span class="co">// Set the line width and save the cairo drawing state.</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width<span class="op">);</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#pragma once</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#include </span><span class="im">&lt;pango/pango.h&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co">// Pango font description to CSS style string</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="co">// Returned string is owned by the caller. The caller should free it when it becomes useless.</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="dt">char</span><span class="op">*</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>pfd2css <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co">// Each element (family, style, weight and size)</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a></span>
-<span id="cb1-13"><a href="#cb1-13"></a>    <span class="co">// Set the background to a slightly transparent green.</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>    cairo_paint<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a></span>
-<span id="cb1-17"><a href="#cb1-17"></a>    <span class="co">// Resore back to precious drawing state and draw the circular path</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a>    <span class="co">// representing the clockface. Save this state (including the path) so we</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>    <span class="co">// can reuse it.</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_radius<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a></span>
-<span id="cb1-24"><a href="#cb1-24"></a>    <span class="co">// Fill the clockface with white</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span></span>
-<span id="cb1-26"><a href="#cb1-26"></a>    cairo_fill_preserve<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>    <span class="co">// Restore the path, paint the outside of the clock face.</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-29"><a href="#cb1-29"></a>    cairo_stroke_preserve<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-30"><a href="#cb1-30"></a>    <span class="co">// Set the &#39;clip region&#39; to the inside of the path (fill region).</span></span>
-<span id="cb1-31"><a href="#cb1-31"></a>    cairo_clip<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-32"><a href="#cb1-32"></a></span>
-<span id="cb1-33"><a href="#cb1-33"></a>    <span class="co">// Clock ticks</span></span>
-<span id="cb1-34"><a href="#cb1-34"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">12</span><span class="op">;</span> i<span class="op">++)</span></span>
-<span id="cb1-35"><a href="#cb1-35"></a>    <span class="op">{</span></span>
-<span id="cb1-36"><a href="#cb1-36"></a>        <span class="co">// Major tick size</span></span>
-<span id="cb1-37"><a href="#cb1-37"></a>        <span class="dt">double</span> inset <span class="op">=</span> <span class="fl">0.05</span><span class="op">;</span></span>
-<span id="cb1-38"><a href="#cb1-38"></a></span>
-<span id="cb1-39"><a href="#cb1-39"></a>        <span class="co">// Save the graphics state, restore after drawing tick to maintain pen</span></span>
-<span id="cb1-40"><a href="#cb1-40"></a>        <span class="co">// size</span></span>
-<span id="cb1-41"><a href="#cb1-41"></a>        cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-42"><a href="#cb1-42"></a>        cairo_set_line_cap<span class="op">(</span>cr<span class="op">,</span> CAIRO_LINE_CAP_ROUND<span class="op">);</span></span>
-<span id="cb1-43"><a href="#cb1-43"></a></span>
-<span id="cb1-44"><a href="#cb1-44"></a>        <span class="co">// Minor ticks are shorter, and narrower.</span></span>
-<span id="cb1-45"><a href="#cb1-45"></a>        <span class="cf">if</span><span class="op">(</span>i <span class="op">%</span> <span class="dv">3</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb1-46"><a href="#cb1-46"></a>        <span class="op">{</span></span>
-<span id="cb1-47"><a href="#cb1-47"></a>            inset <span class="op">*=</span> <span class="fl">0.8</span><span class="op">;</span></span>
-<span id="cb1-48"><a href="#cb1-48"></a>            cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.03</span><span class="op">);</span></span>
-<span id="cb1-49"><a href="#cb1-49"></a>        <span class="op">}</span></span>
-<span id="cb1-50"><a href="#cb1-50"></a></span>
-<span id="cb1-51"><a href="#cb1-51"></a>        <span class="co">// Draw tick mark</span></span>
-<span id="cb1-52"><a href="#cb1-52"></a>        cairo_move_to<span class="op">(</span></span>
-<span id="cb1-53"><a href="#cb1-53"></a>            cr<span class="op">,</span></span>
-<span id="cb1-54"><a href="#cb1-54"></a>            <span class="op">(</span>m_radius <span class="op">-</span> inset<span class="op">)</span> <span class="op">*</span> cos <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">),</span></span>
-<span id="cb1-55"><a href="#cb1-55"></a>            <span class="op">(</span>m_radius <span class="op">-</span> inset<span class="op">)</span> <span class="op">*</span> sin <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">));</span></span>
-<span id="cb1-56"><a href="#cb1-56"></a>        cairo_line_to<span class="op">(</span></span>
-<span id="cb1-57"><a href="#cb1-57"></a>            cr<span class="op">,</span></span>
-<span id="cb1-58"><a href="#cb1-58"></a>            m_radius <span class="op">*</span> cos <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">),</span></span>
-<span id="cb1-59"><a href="#cb1-59"></a>            m_radius <span class="op">*</span> sin <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">));</span></span>
-<span id="cb1-60"><a href="#cb1-60"></a>        cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-61"><a href="#cb1-61"></a>        cairo_restore<span class="op">(</span>cr<span class="op">);</span> <span class="co">/* stack-pen-size */</span></span>
-<span id="cb1-62"><a href="#cb1-62"></a>    <span class="op">}</span></span>
-<span id="cb1-63"><a href="#cb1-63"></a></span>
-<span id="cb1-64"><a href="#cb1-64"></a>    <span class="co">// Draw the analog hands</span></span>
-<span id="cb1-65"><a href="#cb1-65"></a></span>
-<span id="cb1-66"><a href="#cb1-66"></a>    <span class="co">// Get the current Unix time, convert to the local time and break into time</span></span>
-<span id="cb1-67"><a href="#cb1-67"></a>    <span class="co">// structure to read various time parts.</span></span>
-<span id="cb1-68"><a href="#cb1-68"></a>    <span class="dt">time_t</span> rawtime<span class="op">;</span></span>
-<span id="cb1-69"><a href="#cb1-69"></a>    time<span class="op">(&amp;</span>rawtime<span class="op">);</span></span>
-<span id="cb1-70"><a href="#cb1-70"></a>    <span class="kw">struct</span> tm <span class="op">*</span> timeinfo <span class="op">=</span> localtime <span class="op">(&amp;</span>rawtime<span class="op">);</span></span>
-<span id="cb1-71"><a href="#cb1-71"></a></span>
-<span id="cb1-72"><a href="#cb1-72"></a>    <span class="co">// Calculate the angles of the hands of our clock</span></span>
-<span id="cb1-73"><a href="#cb1-73"></a>    <span class="dt">double</span> hours   <span class="op">=</span> timeinfo<span class="op">-&gt;</span>tm_hour <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">;</span></span>
-<span id="cb1-74"><a href="#cb1-74"></a>    <span class="dt">double</span> minutes <span class="op">=</span> timeinfo<span class="op">-&gt;</span>tm_min <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">30.0</span><span class="op">;</span></span>
-<span id="cb1-75"><a href="#cb1-75"></a>    <span class="dt">double</span> seconds <span class="op">=</span> timeinfo<span class="op">-&gt;</span>tm_sec <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">30.0</span><span class="op">;</span></span>
-<span id="cb1-76"><a href="#cb1-76"></a></span>
-<span id="cb1-77"><a href="#cb1-77"></a>    <span class="co">// Save the graphics state</span></span>
-<span id="cb1-78"><a href="#cb1-78"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-79"><a href="#cb1-79"></a>    cairo_set_line_cap<span class="op">(</span>cr<span class="op">,</span> CAIRO_LINE_CAP_ROUND<span class="op">);</span></span>
-<span id="cb1-80"><a href="#cb1-80"></a></span>
-<span id="cb1-81"><a href="#cb1-81"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-82"><a href="#cb1-82"></a></span>
-<span id="cb1-83"><a href="#cb1-83"></a>    <span class="co">// Draw the seconds hand</span></span>
-<span id="cb1-84"><a href="#cb1-84"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">);</span></span>
-<span id="cb1-85"><a href="#cb1-85"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span>   <span class="co">// gray</span></span>
-<span id="cb1-86"><a href="#cb1-86"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb1-87"><a href="#cb1-87"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-88"><a href="#cb1-88"></a>                  sin<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">),</span></span>
-<span id="cb1-89"><a href="#cb1-89"></a>                  <span class="op">-</span>cos<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">));</span></span>
-<span id="cb1-90"><a href="#cb1-90"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-91"><a href="#cb1-91"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-92"><a href="#cb1-92"></a></span>
-<span id="cb1-93"><a href="#cb1-93"></a>    <span class="co">// Draw the minutes hand</span></span>
-<span id="cb1-94"><a href="#cb1-94"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// blue</span></span>
-<span id="cb1-95"><a href="#cb1-95"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb1-96"><a href="#cb1-96"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-97"><a href="#cb1-97"></a>                  sin<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">),</span></span>
-<span id="cb1-98"><a href="#cb1-98"></a>                  <span class="op">-</span>cos<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">));</span></span>
-<span id="cb1-99"><a href="#cb1-99"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-100"><a href="#cb1-100"></a></span>
-<span id="cb1-101"><a href="#cb1-101"></a>    <span class="co">// draw the hours hand</span></span>
-<span id="cb1-102"><a href="#cb1-102"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
-<span id="cb1-103"><a href="#cb1-103"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb1-104"><a href="#cb1-104"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-105"><a href="#cb1-105"></a>                  sin<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">),</span></span>
-<span id="cb1-106"><a href="#cb1-106"></a>                  <span class="op">-</span>cos<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">));</span></span>
-<span id="cb1-107"><a href="#cb1-107"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-108"><a href="#cb1-108"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-109"><a href="#cb1-109"></a></span>
-<span id="cb1-110"><a href="#cb1-110"></a>    <span class="co">// Draw a little dot in the middle</span></span>
-<span id="cb1-111"><a href="#cb1-111"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
-<span id="cb1-112"><a href="#cb1-112"></a>    cairo_fill<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-113"><a href="#cb1-113"></a><span class="op">}</span></span></code></pre></div>
-<p>In order for the clock to be drawn, the drawing function
-<code>draw_clock()</code> needs to be registered with GTK4. This is done
-in the <code>app_activate()</code> function (on line 24).</p>
-<p>Whenever the application needs to redraw the GtkDrawingArea, it will
-now call <code>draw_clock()</code>.</p>
-<p>There is still a problem though. In order to animate the clock we
-need to also tell the application that the clock needs to be redrawn
-every second. This process starts by registering (on the next line, line
-15) a timeout function with <code>g_timeout_add()</code> that will
-wakeup and run another function <code>time_handler</code>, every second
-(or 1000ms).</p>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>pfd2css_family <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>pfd2css_style <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a></span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="dt">int</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>pfd2css_weight <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="co">// Returned string is owned by the caller. The caller should free it when it becomes useless.</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>pfd2css_size <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">);</span></span></code></pre></div>
+<p>The five functions are public. The first function is a convenient
+function to set other four CSS at once.</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>    GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>    GtkWidget <span class="op">*</span>clock<span class="op">;</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>    GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#include </span><span class="im">&lt;pango/pango.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="pp">#include </span><span class="im">&quot;pfd2css.h&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">// Pango font description to CSS style string</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="co">// Returned string is owned by caller. The caller should free it when it is useless.</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a>    build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfc/tfc.ui&quot;</span><span class="op">);</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>    win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>    gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>pfd2css <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="dt">char</span> <span class="op">*</span>fontsize<span class="op">;</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a></span>
-<span id="cb2-11"><a href="#cb2-11"></a>    clock <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;clock&quot;</span><span class="op">));</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>    g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a></span>
-<span id="cb2-14"><a href="#cb2-14"></a>    gtk_drawing_area_set_draw_func<span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>clock<span class="op">),</span> draw_clock<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a>    g_timeout_add<span class="op">(</span><span class="dv">1000</span><span class="op">,</span> <span class="op">(</span>GSourceFunc<span class="op">)</span> time_handler<span class="op">,</span> <span class="op">(</span>gpointer<span class="op">)</span> clock<span class="op">);</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>    gtk_widget_show<span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>  fontsize <span class="op">=</span> pfd2css_size <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;font-family: </span><span class="sc">\&quot;</span><span class="st">%s</span><span class="sc">\&quot;</span><span class="st">; font-style: %s; font-weight: %d; font-size: %s;&quot;</span><span class="op">,</span></span>
+<span id="cb2-13"><a href="#cb2-13"></a>              pfd2css_family <span class="op">(</span>pango_font_desc<span class="op">),</span> pfd2css_style <span class="op">(</span>pango_font_desc<span class="op">),</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a>              pfd2css_weight <span class="op">(</span>pango_font_desc<span class="op">),</span> fontsize<span class="op">);</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>  g_free <span class="op">(</span>fontsize<span class="op">);</span> </span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="op">}</span></span>
 <span id="cb2-17"><a href="#cb2-17"></a></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="op">}</span></span></code></pre></div>
-<p>Our <code>time_handler()</code> function is very simple, as it just
-calls <code>gtk_widget_queue_draw()</code> which schedules a redraw of
-the widget.</p>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="co">// Each element (family, style, weight and size)</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>pfd2css_family <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  <span class="cf">return</span> pango_font_description_get_family <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="op">}</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a></span>
+<span id="cb2-25"><a href="#cb2-25"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a>pfd2css_style <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>  PangoStyle pango_style <span class="op">=</span> pango_font_description_get_style <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a>  <span class="cf">switch</span> <span class="op">(</span>pango_style<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a>  <span class="cf">case</span> PANGO_STYLE_NORMAL<span class="op">:</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a>    <span class="cf">return</span> <span class="st">&quot;normal&quot;</span><span class="op">;</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a>  <span class="cf">case</span> PANGO_STYLE_ITALIC<span class="op">:</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a>    <span class="cf">return</span> <span class="st">&quot;italic&quot;</span><span class="op">;</span></span>
+<span id="cb2-33"><a href="#cb2-33"></a>  <span class="cf">case</span> PANGO_STYLE_OBLIQUE<span class="op">:</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a>    <span class="cf">return</span> <span class="st">&quot;oblique&quot;</span><span class="op">;</span></span>
+<span id="cb2-35"><a href="#cb2-35"></a>  <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb2-36"><a href="#cb2-36"></a>    <span class="cf">return</span> <span class="st">&quot;normal&quot;</span><span class="op">;</span></span>
+<span id="cb2-37"><a href="#cb2-37"></a>  <span class="op">}</span></span>
+<span id="cb2-38"><a href="#cb2-38"></a><span class="op">}</span></span>
+<span id="cb2-39"><a href="#cb2-39"></a></span>
+<span id="cb2-40"><a href="#cb2-40"></a><span class="dt">int</span></span>
+<span id="cb2-41"><a href="#cb2-41"></a>pfd2css_weight <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-42"><a href="#cb2-42"></a>  PangoWeight pango_weight <span class="op">=</span> pango_font_description_get_weight <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb2-43"><a href="#cb2-43"></a>  <span class="cf">switch</span> <span class="op">(</span>pango_weight<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-44"><a href="#cb2-44"></a>  <span class="cf">case</span> PANGO_WEIGHT_THIN<span class="op">:</span></span>
+<span id="cb2-45"><a href="#cb2-45"></a>    <span class="cf">return</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb2-46"><a href="#cb2-46"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRALIGHT<span class="op">:</span></span>
+<span id="cb2-47"><a href="#cb2-47"></a>    <span class="cf">return</span> <span class="dv">200</span><span class="op">;</span></span>
+<span id="cb2-48"><a href="#cb2-48"></a>  <span class="cf">case</span> PANGO_WEIGHT_LIGHT<span class="op">:</span></span>
+<span id="cb2-49"><a href="#cb2-49"></a>    <span class="cf">return</span> <span class="dv">300</span><span class="op">;</span></span>
+<span id="cb2-50"><a href="#cb2-50"></a>  <span class="cf">case</span> PANGO_WEIGHT_SEMILIGHT<span class="op">:</span></span>
+<span id="cb2-51"><a href="#cb2-51"></a>    <span class="cf">return</span> <span class="dv">350</span><span class="op">;</span></span>
+<span id="cb2-52"><a href="#cb2-52"></a>  <span class="cf">case</span> PANGO_WEIGHT_BOOK<span class="op">:</span></span>
+<span id="cb2-53"><a href="#cb2-53"></a>    <span class="cf">return</span> <span class="dv">380</span><span class="op">;</span></span>
+<span id="cb2-54"><a href="#cb2-54"></a>  <span class="cf">case</span> PANGO_WEIGHT_NORMAL<span class="op">:</span></span>
+<span id="cb2-55"><a href="#cb2-55"></a>    <span class="cf">return</span> <span class="dv">400</span><span class="op">;</span> <span class="co">/* or &quot;normal&quot; */</span></span>
+<span id="cb2-56"><a href="#cb2-56"></a>  <span class="cf">case</span> PANGO_WEIGHT_MEDIUM<span class="op">:</span></span>
+<span id="cb2-57"><a href="#cb2-57"></a>    <span class="cf">return</span> <span class="dv">500</span><span class="op">;</span></span>
+<span id="cb2-58"><a href="#cb2-58"></a>  <span class="cf">case</span> PANGO_WEIGHT_SEMIBOLD<span class="op">:</span></span>
+<span id="cb2-59"><a href="#cb2-59"></a>    <span class="cf">return</span> <span class="dv">600</span><span class="op">;</span></span>
+<span id="cb2-60"><a href="#cb2-60"></a>  <span class="cf">case</span> PANGO_WEIGHT_BOLD<span class="op">:</span></span>
+<span id="cb2-61"><a href="#cb2-61"></a>    <span class="cf">return</span> <span class="dv">700</span><span class="op">;</span> <span class="co">/* or &quot;bold&quot; */</span></span>
+<span id="cb2-62"><a href="#cb2-62"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRABOLD<span class="op">:</span></span>
+<span id="cb2-63"><a href="#cb2-63"></a>    <span class="cf">return</span> <span class="dv">800</span><span class="op">;</span></span>
+<span id="cb2-64"><a href="#cb2-64"></a>  <span class="cf">case</span> PANGO_WEIGHT_HEAVY<span class="op">:</span></span>
+<span id="cb2-65"><a href="#cb2-65"></a>    <span class="cf">return</span> <span class="dv">900</span><span class="op">;</span></span>
+<span id="cb2-66"><a href="#cb2-66"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRAHEAVY<span class="op">:</span></span>
+<span id="cb2-67"><a href="#cb2-67"></a>    <span class="cf">return</span> <span class="dv">900</span><span class="op">;</span> <span class="co">/* 1000 is available since CSS Fonts level 4 but GTK currently supports level 3. */</span></span>
+<span id="cb2-68"><a href="#cb2-68"></a>  <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb2-69"><a href="#cb2-69"></a>    <span class="cf">return</span> <span class="dv">400</span><span class="op">;</span> <span class="co">/* &quot;normal&quot; */</span></span>
+<span id="cb2-70"><a href="#cb2-70"></a>  <span class="op">}</span></span>
+<span id="cb2-71"><a href="#cb2-71"></a><span class="op">}</span></span>
+<span id="cb2-72"><a href="#cb2-72"></a></span>
+<span id="cb2-73"><a href="#cb2-73"></a><span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb2-74"><a href="#cb2-74"></a>pfd2css_size <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-75"><a href="#cb2-75"></a>  <span class="cf">if</span> <span class="op">(</span>pango_font_description_get_size_is_absolute <span class="op">(</span>pango_font_desc<span class="op">))</span></span>
+<span id="cb2-76"><a href="#cb2-76"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%dpx&quot;</span><span class="op">,</span> pango_font_description_get_size <span class="op">(</span>pango_font_desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">);</span></span>
+<span id="cb2-77"><a href="#cb2-77"></a>  <span class="cf">else</span></span>
+<span id="cb2-78"><a href="#cb2-78"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%dpt&quot;</span><span class="op">,</span> pango_font_description_get_size <span class="op">(</span>pango_font_desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">);</span></span>
+<span id="cb2-79"><a href="#cb2-79"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li>The function <code>pfd2css_family</code> returns font family.</li>
+<li>The function <code>pfd2css_style</code> returns font style which is
+one of “normal”, “italic” or “oblique”.</li>
+<li>The function <code>pfd2css_weight</code> returns font weight in
+integer. See the list below.</li>
+<li>The function <code>pfd2css_size</code> returns font size.
+<ul>
+<li>If the font description size is absolute, it returns the size of
+device unit, which is pixel. Otherwise the unit is point.</li>
+<li>The function <code>pango_font_description_get_size</code> returns
+the integer of the size but it is multiplied by
+<code>PANGO_SCALE</code>. So, you need to divide it by
+<code>PANGO_SCALE</code>. The <code>PANGO_SCALE</code> is currently
+1024, but this might be changed in the future. If the font size is 12pt,
+the size in pango is <code>12*PANGO_SCALE=12*1024=12288</code>.</li>
+</ul></li>
+<li>The function <code>pfd2css</code> returns a string of the font. For
+example, if a font “Noto Sans Mono Bold Italic 12” is given, it returns
+“font-family: Noto Sans Mono; font-style: italic; font-weight: 700;
+font-size: 12pt;”.</li>
+</ul>
+<p>The font weight number is one of:</p>
+<ul>
+<li>100 - Thin</li>
+<li>200 - Extra Light (Ultra Light)</li>
+<li>300 - Light</li>
+<li>400 - Normal</li>
+<li>500 - Medium</li>
+<li>600 - Semi Bold (Demi Bold)</li>
+<li>700 - Bold</li>
+<li>800 - Extra Bold (Ultra Bold)</li>
+<li>900 - Black (Heavy)</li>
+</ul>
+<h2 id="application-object">Application object</h2>
+<h3 id="tfeapplication-class">TfeApplication class</h3>
+<p>TfeApplication class is a child of GtkApplication. It has some
+instance variables. The header file defines the type macro and a public
+function.</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a>gboolean</span>
-<span id="cb3-2"><a href="#cb3-2"></a>time_handler<span class="op">(</span>GtkWidget<span class="op">*</span> widget<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>    gtk_widget_queue_draw<span class="op">(</span>widget<span class="op">);</span></span>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="op">}</span></span></code></pre></div>
-<p>.. and that is all there is to it. If you compile and run the example
-you will get a ticking analog clock.</p>
-<p>If you get this working, you can try modifying some of the code in
-<code>draw_clock()</code> to tweak the application (such as change the
-color or size and length of the hands) or even add text, or create a
-digital clock.</p>
-<h2 id="the-complete-code">The Complete code</h2>
-<p>You can find the source files in the <code>tfc</code> directory. it
-can be compiled with <code>./comp tfc</code>.</p>
-<p><code>tfc.c</code></p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#include </span><span class="im">&lt;math.h&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="pp">#include </span><span class="im">&lt;time.h&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="dt">float</span> m_radius     <span class="op">=</span> <span class="fl">0.42</span><span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">float</span> m_line_width <span class="op">=</span> <span class="fl">0.05</span><span class="op">;</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>draw_clock <span class="op">(</span>GtkDrawingArea <span class="op">*</span>area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-11"><a href="#cb4-11"></a>    <span class="co">// Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>    <span class="co">// the center of the window</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a>    cairo_scale<span class="op">(</span>cr<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>    cairo_translate<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.5</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a></span>
-<span id="cb4-16"><a href="#cb4-16"></a>    <span class="co">// Set the line width and save the cairo drawing state.</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width<span class="op">);</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a></span>
-<span id="cb4-20"><a href="#cb4-20"></a>    <span class="co">// Set the background to a slightly transparent green.</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a>    cairo_paint<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a></span>
-<span id="cb4-24"><a href="#cb4-24"></a>    <span class="co">// Resore back to precious drawing state and draw the circular path</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a>    <span class="co">// representing the clockface. Save this state (including the path) so we</span></span>
-<span id="cb4-26"><a href="#cb4-26"></a>    <span class="co">// can reuse it.</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_radius<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a></span>
-<span id="cb4-31"><a href="#cb4-31"></a>    <span class="co">// Fill the clockface with white</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a>    cairo_fill_preserve<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>    <span class="co">// Restore the path, paint the outside of the clock face.</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a>    cairo_stroke_preserve<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-37"><a href="#cb4-37"></a>    <span class="co">// Set the &#39;clip region&#39; to the inside of the path (fill region).</span></span>
-<span id="cb4-38"><a href="#cb4-38"></a>    cairo_clip<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-39"><a href="#cb4-39"></a></span>
-<span id="cb4-40"><a href="#cb4-40"></a>    <span class="co">// Clock ticks</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">12</span><span class="op">;</span> i<span class="op">++)</span></span>
-<span id="cb4-42"><a href="#cb4-42"></a>    <span class="op">{</span></span>
-<span id="cb4-43"><a href="#cb4-43"></a>        <span class="co">// Major tick size</span></span>
-<span id="cb4-44"><a href="#cb4-44"></a>        <span class="dt">double</span> inset <span class="op">=</span> <span class="fl">0.05</span><span class="op">;</span></span>
-<span id="cb4-45"><a href="#cb4-45"></a></span>
-<span id="cb4-46"><a href="#cb4-46"></a>        <span class="co">// Save the graphics state, restore after drawing tick to maintain pen</span></span>
-<span id="cb4-47"><a href="#cb4-47"></a>        <span class="co">// size</span></span>
-<span id="cb4-48"><a href="#cb4-48"></a>        cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-49"><a href="#cb4-49"></a>        cairo_set_line_cap<span class="op">(</span>cr<span class="op">,</span> CAIRO_LINE_CAP_ROUND<span class="op">);</span></span>
-<span id="cb4-50"><a href="#cb4-50"></a></span>
-<span id="cb4-51"><a href="#cb4-51"></a>        <span class="co">// Minor ticks are shorter, and narrower.</span></span>
-<span id="cb4-52"><a href="#cb4-52"></a>        <span class="cf">if</span><span class="op">(</span>i <span class="op">%</span> <span class="dv">3</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb4-53"><a href="#cb4-53"></a>        <span class="op">{</span></span>
-<span id="cb4-54"><a href="#cb4-54"></a>            inset <span class="op">*=</span> <span class="fl">0.8</span><span class="op">;</span></span>
-<span id="cb4-55"><a href="#cb4-55"></a>            cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.03</span><span class="op">);</span></span>
-<span id="cb4-56"><a href="#cb4-56"></a>        <span class="op">}</span></span>
-<span id="cb4-57"><a href="#cb4-57"></a></span>
-<span id="cb4-58"><a href="#cb4-58"></a>        <span class="co">// Draw tick mark</span></span>
-<span id="cb4-59"><a href="#cb4-59"></a>        cairo_move_to<span class="op">(</span></span>
-<span id="cb4-60"><a href="#cb4-60"></a>            cr<span class="op">,</span></span>
-<span id="cb4-61"><a href="#cb4-61"></a>            <span class="op">(</span>m_radius <span class="op">-</span> inset<span class="op">)</span> <span class="op">*</span> cos <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">),</span></span>
-<span id="cb4-62"><a href="#cb4-62"></a>            <span class="op">(</span>m_radius <span class="op">-</span> inset<span class="op">)</span> <span class="op">*</span> sin <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">));</span></span>
-<span id="cb4-63"><a href="#cb4-63"></a>        cairo_line_to<span class="op">(</span></span>
-<span id="cb4-64"><a href="#cb4-64"></a>            cr<span class="op">,</span></span>
-<span id="cb4-65"><a href="#cb4-65"></a>            m_radius <span class="op">*</span> cos <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">),</span></span>
-<span id="cb4-66"><a href="#cb4-66"></a>            m_radius <span class="op">*</span> sin <span class="op">(</span>i <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">));</span></span>
-<span id="cb4-67"><a href="#cb4-67"></a>        cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-68"><a href="#cb4-68"></a>        cairo_restore<span class="op">(</span>cr<span class="op">);</span> <span class="co">/* stack-pen-size */</span></span>
-<span id="cb4-69"><a href="#cb4-69"></a>    <span class="op">}</span></span>
-<span id="cb4-70"><a href="#cb4-70"></a></span>
-<span id="cb4-71"><a href="#cb4-71"></a>    <span class="co">// Draw the analog hands</span></span>
-<span id="cb4-72"><a href="#cb4-72"></a></span>
-<span id="cb4-73"><a href="#cb4-73"></a>    <span class="co">// Get the current Unix time, convert to the local time and break into time</span></span>
-<span id="cb4-74"><a href="#cb4-74"></a>    <span class="co">// structure to read various time parts.</span></span>
-<span id="cb4-75"><a href="#cb4-75"></a>    <span class="dt">time_t</span> rawtime<span class="op">;</span></span>
-<span id="cb4-76"><a href="#cb4-76"></a>    time<span class="op">(&amp;</span>rawtime<span class="op">);</span></span>
-<span id="cb4-77"><a href="#cb4-77"></a>    <span class="kw">struct</span> tm <span class="op">*</span> timeinfo <span class="op">=</span> localtime <span class="op">(&amp;</span>rawtime<span class="op">);</span></span>
-<span id="cb4-78"><a href="#cb4-78"></a></span>
-<span id="cb4-79"><a href="#cb4-79"></a>    <span class="co">// Calculate the angles of the hands of our clock</span></span>
-<span id="cb4-80"><a href="#cb4-80"></a>    <span class="dt">double</span> hours   <span class="op">=</span> timeinfo<span class="op">-&gt;</span>tm_hour <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">6.0</span><span class="op">;</span></span>
-<span id="cb4-81"><a href="#cb4-81"></a>    <span class="dt">double</span> minutes <span class="op">=</span> timeinfo<span class="op">-&gt;</span>tm_min <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">30.0</span><span class="op">;</span></span>
-<span id="cb4-82"><a href="#cb4-82"></a>    <span class="dt">double</span> seconds <span class="op">=</span> timeinfo<span class="op">-&gt;</span>tm_sec <span class="op">*</span> M_PI <span class="op">/</span> <span class="fl">30.0</span><span class="op">;</span></span>
-<span id="cb4-83"><a href="#cb4-83"></a></span>
-<span id="cb4-84"><a href="#cb4-84"></a>    <span class="co">// Save the graphics state</span></span>
-<span id="cb4-85"><a href="#cb4-85"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-86"><a href="#cb4-86"></a>    cairo_set_line_cap<span class="op">(</span>cr<span class="op">,</span> CAIRO_LINE_CAP_ROUND<span class="op">);</span></span>
-<span id="cb4-87"><a href="#cb4-87"></a></span>
-<span id="cb4-88"><a href="#cb4-88"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-89"><a href="#cb4-89"></a></span>
-<span id="cb4-90"><a href="#cb4-90"></a>    <span class="co">// Draw the seconds hand</span></span>
-<span id="cb4-91"><a href="#cb4-91"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">);</span></span>
-<span id="cb4-92"><a href="#cb4-92"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span>   <span class="co">// gray</span></span>
-<span id="cb4-93"><a href="#cb4-93"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb4-94"><a href="#cb4-94"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb4-95"><a href="#cb4-95"></a>                  sin<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">),</span></span>
-<span id="cb4-96"><a href="#cb4-96"></a>                  <span class="op">-</span>cos<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">));</span></span>
-<span id="cb4-97"><a href="#cb4-97"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-98"><a href="#cb4-98"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-99"><a href="#cb4-99"></a></span>
-<span id="cb4-100"><a href="#cb4-100"></a>    <span class="co">// Draw the minutes hand</span></span>
-<span id="cb4-101"><a href="#cb4-101"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// blue</span></span>
-<span id="cb4-102"><a href="#cb4-102"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb4-103"><a href="#cb4-103"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb4-104"><a href="#cb4-104"></a>                  sin<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">),</span></span>
-<span id="cb4-105"><a href="#cb4-105"></a>                  <span class="op">-</span>cos<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">));</span></span>
-<span id="cb4-106"><a href="#cb4-106"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-107"><a href="#cb4-107"></a></span>
-<span id="cb4-108"><a href="#cb4-108"></a>    <span class="co">// draw the hours hand</span></span>
-<span id="cb4-109"><a href="#cb4-109"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
-<span id="cb4-110"><a href="#cb4-110"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb4-111"><a href="#cb4-111"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb4-112"><a href="#cb4-112"></a>                  sin<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">),</span></span>
-<span id="cb4-113"><a href="#cb4-113"></a>                  <span class="op">-</span>cos<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">));</span></span>
-<span id="cb4-114"><a href="#cb4-114"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-115"><a href="#cb4-115"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-116"><a href="#cb4-116"></a></span>
-<span id="cb4-117"><a href="#cb4-117"></a>    <span class="co">// Draw a little dot in the middle</span></span>
-<span id="cb4-118"><a href="#cb4-118"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
-<span id="cb4-119"><a href="#cb4-119"></a>    cairo_fill<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-120"><a href="#cb4-120"></a><span class="op">}</span></span>
-<span id="cb4-121"><a href="#cb4-121"></a></span>
-<span id="cb4-122"><a href="#cb4-122"></a></span>
-<span id="cb4-123"><a href="#cb4-123"></a>gboolean</span>
-<span id="cb4-124"><a href="#cb4-124"></a>time_handler<span class="op">(</span>GtkWidget<span class="op">*</span> widget<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-125"><a href="#cb4-125"></a>    gtk_widget_queue_draw<span class="op">(</span>widget<span class="op">);</span></span>
-<span id="cb4-126"><a href="#cb4-126"></a></span>
-<span id="cb4-127"><a href="#cb4-127"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
-<span id="cb4-128"><a href="#cb4-128"></a><span class="op">}</span></span>
-<span id="cb4-129"><a href="#cb4-129"></a></span>
-<span id="cb4-130"><a href="#cb4-130"></a></span>
-<span id="cb4-131"><a href="#cb4-131"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-132"><a href="#cb4-132"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-133"><a href="#cb4-133"></a>    GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb4-134"><a href="#cb4-134"></a>    GtkWidget <span class="op">*</span>clock<span class="op">;</span></span>
-<span id="cb4-135"><a href="#cb4-135"></a>    GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb4-136"><a href="#cb4-136"></a></span>
-<span id="cb4-137"><a href="#cb4-137"></a>    build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfc/tfc.ui&quot;</span><span class="op">);</span></span>
-<span id="cb4-138"><a href="#cb4-138"></a>    win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb4-139"><a href="#cb4-139"></a>    gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb4-140"><a href="#cb4-140"></a></span>
-<span id="cb4-141"><a href="#cb4-141"></a>    clock <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;clock&quot;</span><span class="op">));</span></span>
-<span id="cb4-142"><a href="#cb4-142"></a>    g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb4-143"><a href="#cb4-143"></a></span>
-<span id="cb4-144"><a href="#cb4-144"></a>    gtk_drawing_area_set_draw_func<span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>clock<span class="op">),</span> draw_clock<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb4-145"><a href="#cb4-145"></a>    g_timeout_add<span class="op">(</span><span class="dv">1000</span><span class="op">,</span> <span class="op">(</span>GSourceFunc<span class="op">)</span> time_handler<span class="op">,</span> <span class="op">(</span>gpointer<span class="op">)</span> clock<span class="op">);</span></span>
-<span id="cb4-146"><a href="#cb4-146"></a>    gtk_widget_show<span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb4-147"><a href="#cb4-147"></a></span>
-<span id="cb4-148"><a href="#cb4-148"></a><span class="op">}</span></span>
-<span id="cb4-149"><a href="#cb4-149"></a></span>
-<span id="cb4-150"><a href="#cb4-150"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-151"><a href="#cb4-151"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> gint n_files<span class="op">,</span> gchar <span class="op">*</span>hint<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-152"><a href="#cb4-152"></a>    app_activate<span class="op">(</span>app<span class="op">,</span>user_data<span class="op">);</span></span>
-<span id="cb4-153"><a href="#cb4-153"></a><span class="op">}</span></span>
-<span id="cb4-154"><a href="#cb4-154"></a></span>
-<span id="cb4-155"><a href="#cb4-155"></a><span class="dt">int</span></span>
-<span id="cb4-156"><a href="#cb4-156"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-157"><a href="#cb4-157"></a>    GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb4-158"><a href="#cb4-158"></a>    <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb4-159"><a href="#cb4-159"></a></span>
-<span id="cb4-160"><a href="#cb4-160"></a>    app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfc&quot;</span><span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
-<span id="cb4-161"><a href="#cb4-161"></a>    g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-162"><a href="#cb4-162"></a>    g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-163"><a href="#cb4-163"></a>    stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb4-164"><a href="#cb4-164"></a>    g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb4-165"><a href="#cb4-165"></a>    <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb4-166"><a href="#cb4-166"></a><span class="op">}</span></span></code></pre></div>
-<p><code>tfc.ui</code></p>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_APPLICATION tfe_application_get_type ()</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> TFE<span class="op">,</span> APPLICATION<span class="op">,</span> GtkApplication<span class="op">)</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>TfeApplication <span class="op">*</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> application_id<span class="op">,</span> GApplicationFlags flag<span class="op">);</span></span></code></pre></div>
+<p>The following code is extracted from <code>tfeapplication.c</code>.
+It builds TfeApplication class and instance.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeApplication <span class="op">{</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  GtkApplication parent<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  TfeWindow <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  GtkCssProvider <span class="op">*</span>provider<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> GTK_TYPE_APPLICATION<span class="op">)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>tfe_application_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  g_clear_object <span class="op">(&amp;</span>app<span class="op">-&gt;</span>settings<span class="op">);</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  g_clear_object <span class="op">(&amp;</span>app<span class="op">-&gt;</span>provider<span class="op">);</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>tfe_application_init <span class="op">(</span>TfeApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  app<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  g_signal_connect <span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;changed::font-desc&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>changed_font_cb<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  app<span class="op">-&gt;</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>tfe_application_class_init <span class="op">(</span>TfeApplicationClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_application_dispose<span class="op">;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>startup <span class="op">=</span> app_startup<span class="op">;</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>activate <span class="op">=</span> app_activate<span class="op">;</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>open <span class="op">=</span> app_open<span class="op">;</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>TfeApplication <span class="op">*</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> application_id<span class="op">,</span> GApplicationFlags flag<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TFE_APPLICATION <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_APPLICATION<span class="op">,</span> <span class="st">&quot;application-id&quot;</span><span class="op">,</span> application_id<span class="op">,</span> <span class="st">&quot;flags&quot;</span><span class="op">,</span> flag<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li>The structure <code>_TfeApplication</code> is defined. It has four
+members. One is its parents and the others are kinds of instance
+variables. The members are usually initialized in the instance
+initialization function. And they are released in the disposal function
+or freed in the finalization function. The members are:
+<ul>
+<li>win: main window instance</li>
+<li>settings: GSettings instance.it is bound to “font-desc” item in the
+GSettings</li>
+<li>provider: a provider for the font of the textview.</li>
+</ul></li>
+<li>The macro <code>G_DEFINE_FINAL_TYPE</code> defines
+<code>tfe_application_get_type</code> function and some other useful
+things.</li>
+<li>The function <code>tfe_application_class_init</code> initializes the
+TfeApplication class. It overrides four class methods. Three class
+methods <code>startup</code>, <code>activate</code> and
+<code>open</code> points the default signal handlers. The overriding
+changes the default handlers. You can connect the handlers with
+<code>g_signal_connect</code> macro but the result is different. The
+macro connects a user handler to the signal. The default handler still
+exists and no change is made to them.</li>
+<li>The function <code>tfe_application_init</code> initializes an
+instance.
+<ul>
+<li>Creates a new GSettings instance and make
+<code>app-&gt;settings</code> point it. Then connects the handler
+<code>changed_font_cb</code> to the “changed::font-desc” signal.</li>
+<li>Creates a new GtkCssProvider instance and make
+<code>app-&gt;provider</code> point it.</li>
+</ul></li>
+<li>The function <code>tfe_application_dispose</code> releases the
+GSettings and GtkCssProvider instances. Then, call the parent’s dispose
+handler. It is called “chaining up”. See <a
+href="https://docs.gtk.org/gobject/tutorial.html#chaining-up">GObject
+document</a>.</li>
+</ul>
+<h3 id="startup-signal-handlers">Startup signal handlers</h3>
 <div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Clock&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;200&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-6"><a href="#cb5-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;200&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDrawingArea&quot;</span><span class="ot"> id=</span><span class="st">&quot;clock&quot;</span>&gt;</span>
-<span id="cb5-9"><a href="#cb5-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-10"><a href="#cb5-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-11"><a href="#cb5-11"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-12"><a href="#cb5-12"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-13"><a href="#cb5-13"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-14"><a href="#cb5-14"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p><code>tfc.gresource.xml</code></p>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>  GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a>  G_APPLICATION_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>startup <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a>  app<span class="op">-&gt;</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>tfe_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">)));</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>  g_object_unref <span class="op">(</span>provider<span class="op">);</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">),</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a></span>
+<span id="cb5-20"><a href="#cb5-20"></a>  changed_font_cb <span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">,</span> app<span class="op">);</span> <span class="co">// Sets the text view font to the font from the gsettings data base.</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a></span>
+<span id="cb5-22"><a href="#cb5-22"></a><span class="co">/* ----- accelerator ----- */</span> </span>
+<span id="cb5-23"><a href="#cb5-23"></a>  <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb5-24"><a href="#cb5-24"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>action<span class="op">;</span></span>
+<span id="cb5-25"><a href="#cb5-25"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>accels<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb5-26"><a href="#cb5-26"></a>  <span class="op">}</span> action_accels<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-27"><a href="#cb5-27"></a>    <span class="op">{</span> <span class="st">&quot;win.open&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;o&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb5-28"><a href="#cb5-28"></a>    <span class="op">{</span> <span class="st">&quot;win.save&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb5-29"><a href="#cb5-29"></a>    <span class="op">{</span> <span class="st">&quot;win.close&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;w&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb5-30"><a href="#cb5-30"></a>    <span class="op">{</span> <span class="st">&quot;win.new&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;n&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb5-31"><a href="#cb5-31"></a>    <span class="op">{</span> <span class="st">&quot;win.saveas&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Shift&gt;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb5-32"><a href="#cb5-32"></a>    <span class="op">{</span> <span class="st">&quot;win.close-all&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;q&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb5-33"><a href="#cb5-33"></a>  <span class="op">};</span></span>
+<span id="cb5-34"><a href="#cb5-34"></a></span>
+<span id="cb5-35"><a href="#cb5-35"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> G_N_ELEMENTS<span class="op">(</span>action_accels<span class="op">);</span> i<span class="op">++)</span></span>
+<span id="cb5-36"><a href="#cb5-36"></a>    gtk_application_set_accels_for_action<span class="op">(</span>GTK_APPLICATION<span class="op">(</span>app<span class="op">),</span> action_accels<span class="op">[</span>i<span class="op">].</span>action<span class="op">,</span> action_accels<span class="op">[</span>i<span class="op">].</span>accels<span class="op">);</span></span>
+<span id="cb5-37"><a href="#cb5-37"></a><span class="op">}</span></span></code></pre></div>
+<p>The function <code>app_startup</code> replace the default signal
+handlers. It does five things.</p>
+<ul>
+<li>Calls the parent’s startup handler. It is called “chaining up”. The
+“startup” default handler runs before user handlers. So the call for the
+parent’s handler must be done at the beginning.</li>
+<li>Creates the main window. This application has only one top level
+window. In that case, it is a good way to create the window in the
+startup handler, which is called only once. Activate or open handlers
+can be called twice or more. Therefore, if you create a window in the
+activate or open handler, two or more windows can be created.</li>
+<li>Sets the default display CSS to “textview {padding: 10px;}”. It sets
+the GtkTextView, or TfeTextView, padding to 10px and makes the text
+easier to read. This CSS is fixed and never changed through the
+application life.</li>
+<li>Adds another CSS provider, which is pointed by
+<code>app-&gt;provider</code>, to the default display. This CSS depends
+on the GSettings “font-desc” value and it can be changed during the
+application life time. And calls <code>changed_font_cb</code> to update
+the font CSS setting.</li>
+<li>Sets application accelerator with the function
+<code>gtk_application_set_accels_for_action</code>. Accelerators are
+kinds of short cut key functions. For example, <code>Ctrl+O</code> is an
+accelerator to activate “open” action. Accelerators are written in the
+array <code>action-accels[]</code>. Its element is a structure
+<code>struct {const char *action; const char *accels[2];}</code>. The
+member <code>action</code> is an action name. The member
+<code>accels</code> is an array of two pointers. For example,
+<code>{"win.open", { "&lt;Control&gt;o", NULL }}</code> tells that the
+accelerator <code>Ctrl+O</code> is connected to the “win.open” action.
+The second element of <code>accels</code> is NULL which is the end mark.
+You can define more than one accelerator keys and the list must ends
+with NULL (zero). If you want to do so, the array length needs to be
+three or more. For example,
+<code>{"win.open", { "&lt;Control&gt;o", "&lt;Alt&gt;o", NULL }}</code>
+means two accelerators <code>Ctrl+O</code> and <code>Alt+O</code> is
+connected to the “win.open” action. The parser recognizes
+“&lt;control&gt;o”, “&lt;Shift&gt;&lt;Alt&gt;F2”, “&lt;Ctrl&gt;minus”
+and so on. If you want to use symbol key like “&lt;Ctrl&gt;-”, use
+“&lt;Ctrl&gt;minus” instead. Such relation between lower case and symbol
+(character code) is specified in <a
+href="https://gitlab.gnome.org/GNOME/gtk/-/blob/master/gdk/gdkkeysyms.h"><code>gdkkeysyms.h</code></a>
+in the GTK 4 source code.</li>
+</ul>
+<h3 id="activate-and-open-signal-handlers">Activate and open signal
+handlers</h3>
+<p>Two functions <code>app_activate</code> and <code>app_open</code>
+replace the default signal handlers.</p>
 <div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfc&quot;</span>&gt;</span>
-<span id="cb6-4"><a href="#cb6-4"></a>    &lt;<span class="kw">file</span>&gt;tfc.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb6-5"><a href="#cb6-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
-<span id="cb6-6"><a href="#cb6-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-<p><code>comp</code></p>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  tfe_window_notebook_page_new <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">));</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="op">}</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">,</span> GFile <span class="op">**</span> files<span class="op">,</span> gint n_files<span class="op">,</span> <span class="dt">const</span> gchar <span class="op">*</span>hint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a></span>
+<span id="cb6-13"><a href="#cb6-13"></a>  tfe_window_notebook_page_new_with_files <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">,</span> files<span class="op">,</span> n_files<span class="op">);</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>app<span class="op">-&gt;</span>win<span class="op">));</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="op">}</span></span></code></pre></div>
+<p>The original default handlers don’t do useful works and you don’t
+need to chain up to the parent’s default handlers. They just create
+notebook pages and show the top level window.</p>
+<h3 id="css-font-setting">CSS font setting</h3>
 <div class="sourceCode" id="cb7"><pre
-class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb7-1"><a href="#cb7-1"></a>glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source</span>
-<span id="cb7-2"><a href="#cb7-2"></a>gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm</span></code></pre></div>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>changed_font_cb <span class="op">(</span>GSettings <span class="op">*</span>settings<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>key<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>  <span class="dt">char</span> <span class="op">*</span>font<span class="op">,</span> <span class="op">*</span>s<span class="op">,</span> <span class="op">*</span>css<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a></span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="cf">if</span> <span class="op">(</span>g_strcmp0<span class="op">(</span>key<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">)</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>  font <span class="op">=</span> g_settings_get_string <span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;font-desc&quot;</span><span class="op">);</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>  pango_font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>font<span class="op">);</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>  g_free <span class="op">(</span>font<span class="op">);</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  s <span class="op">=</span> pfd2css <span class="op">(</span>pango_font_desc<span class="op">);</span> <span class="co">// converts Pango Font Description into CSS style string</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  pango_font_description_free <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {%s}&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>  gtk_css_provider_load_from_data <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">,</span> css<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="op">}</span></span></code></pre></div>
+<p>The function <code>changed_font_cb</code> is a handler for
+“changed::font-desc” signal on the GSettings instance. The signal name
+is “changed” and “font-desc” is a key name. This signal is emitted when
+the value of the “font-desc” key is changed. The value is bound to the
+“font-desc” property of the GtkFontDialogButton instance. Therefore, the
+handler <code>changed_font_cb</code> is called when the user selects and
+updates a font through the font dialog.</p>
+<p>A string is retrieved from the GSetting database and converts it into
+a pango font description. And a CSS string is made by the function
+<code>pfd2css</code> and <code>g_strdup_printf</code>. Then the css
+provider is set to the string. The provider has been inserted to the
+current display in advance. So, the font is applied to the display.</p>
+<h2 id="other-files">Other files</h2>
+<p>main.c</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="dt">int</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  TfeApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a>  app <span class="op">=</span> tfe_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="op">}</span></span></code></pre></div>
+<p>Resource XML file.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
+<span id="cb9-3"><a href="#cb9-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe&quot;</span>&gt;</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    &lt;<span class="kw">file</span>&gt;tfewindow.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb9-5"><a href="#cb9-5"></a>    &lt;<span class="kw">file</span>&gt;tfepref.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb9-6"><a href="#cb9-6"></a>    &lt;<span class="kw">file</span>&gt;tfealert.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb9-7"><a href="#cb9-7"></a>    &lt;<span class="kw">file</span>&gt;menu.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb9-8"><a href="#cb9-8"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
+<span id="cb9-9"><a href="#cb9-9"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
+<p>GSchema XML file</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font-desc&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
+<span id="cb10-5"><a href="#cb10-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Monospace 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
+<span id="cb10-6"><a href="#cb10-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
+<span id="cb10-7"><a href="#cb10-7"></a>      &lt;<span class="kw">description</span>&gt;A font to be used for textview.&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb10-8"><a href="#cb10-8"></a>    &lt;/<span class="kw">key</span>&gt;</span>
+<span id="cb10-9"><a href="#cb10-9"></a>  &lt;/<span class="kw">schema</span>&gt;</span>
+<span id="cb10-10"><a href="#cb10-10"></a>&lt;/<span class="kw">schemalist</span>&gt;</span></code></pre></div>
+<p>Meson.build</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb11-1"><a href="#cb11-1"></a>project(&#39;tfe&#39;, &#39;c&#39;, license : &#39;GPL-3.0-or-later&#39;, meson_version:&#39; &gt;=1.0.1&#39;, version: &#39;0.5&#39;)</span>
+<span id="cb11-2"><a href="#cb11-2"></a></span>
+<span id="cb11-3"><a href="#cb11-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
+<span id="cb11-4"><a href="#cb11-4"></a></span>
+<span id="cb11-5"><a href="#cb11-5"></a>gnome = import(&#39;gnome&#39;)</span>
+<span id="cb11-6"><a href="#cb11-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;tfe.gresource.xml&#39;)</span>
+<span id="cb11-7"><a href="#cb11-7"></a>gnome.compile_schemas(depend_files: &#39;com.github.ToshioCP.tfe.gschema.xml&#39;)</span>
+<span id="cb11-8"><a href="#cb11-8"></a></span>
+<span id="cb11-9"><a href="#cb11-9"></a>sourcefiles = files(&#39;main.c&#39;, &#39;tfeapplication.c&#39;, &#39;tfewindow.c&#39;, &#39;tfepref.c&#39;, &#39;tfealert.c&#39;, &#39;pfd2css.c&#39;, &#39;../tfetextview/tfetextview.c&#39;)</span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a>executable(meson.project_name(), sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)</span>
+<span id="cb11-12"><a href="#cb11-12"></a></span>
+<span id="cb11-13"><a href="#cb11-13"></a>schema_dir = get_option(&#39;prefix&#39;) / get_option(&#39;datadir&#39;) / &#39;glib-2.0/schemas/&#39;</span>
+<span id="cb11-14"><a href="#cb11-14"></a>install_data(&#39;com.github.ToshioCP.tfe.gschema.xml&#39;, install_dir: schema_dir)</span>
+<span id="cb11-15"><a href="#cb11-15"></a>gnome.post_install (glib_compile_schemas: true)</span></code></pre></div>
+<ul>
+<li>The function <code>project</code> defines project and initialize
+meson. The first argument is the project name and the second is the
+language name. The other arguments are keyword arguments.</li>
+<li>The function <code>dependency</code> defines the denpendent library.
+Tfe depends GTK4. This is used to create <code>pkg-config</code> option
+in the command line of C compiler to include header files and link
+libraries. The returned object <code>gtkdep</code> is used as an
+argument to the <code>executable</code> function later.</li>
+<li>The function <code>import</code> imports an extension module. The
+GNOME module has some convenient methods like
+<code>gnome.compile_resources</code> and
+<code>gnome.compile_schemas</code>.</li>
+<li>The method <code>gnome.compile_resources</code> compiles and creates
+resource files. The first argument is the resource name without
+extension and the second is the name of XML file. The returned value is
+an array <code>['resources,c', 'resources.h']</code>.</li>
+<li>The function <code>gnome.compile_schemas</code> compiles the schema
+files in the current directory. This just creates
+<code>gschemas.compiled</code> in the build directory. It is used to
+test the executable binary in the build directory. The function doesn’t
+install the schema file.</li>
+<li>The function <code>files</code> creates a File Object.</li>
+<li>The function <code>executable</code> defines the compilation
+elements such as target name, source files, dependencies and
+installation. The target name is “tfe”. The source files are elements of
+‘sourcefiles’ and `resources’. It uses GTK4 libraries. It can be
+installed.</li>
+<li>The last three lines are post install work. The variable
+<code>schema_dir</code> is the directory stored the schema file. If
+meson runs with <code>--prefix=$HOME/.local</code> argument, it is
+<code>$HOME/.local/share/glib-2.9/schemas</code>. The function
+<code>install_data</code> copies the first argument file into the second
+argument directory. The method <code>gnome.post_install</code> runs
+<code>glib-compile-schemas</code> and updates
+<code>gschemas_compiled</code> file.</li>
+</ul>
+<h2 id="compilation-and-installation.">Compilation and
+installation.</h2>
+<p>If you want to install it to your local area, use
+<code>--prefix=$HOME/.local</code> or <code>--prefix=$HOME</code>
+option. If you want to install it to the system area, no option is
+needed. It will be installed under <code>/user/local</code>
+directory.</p>
+<pre><code>$ meson setup --prefix=$HOME/.local _build
+$ ninja -C _build
+$ ninja -C _build install</code></pre>
+<p>You need root privilege to install it to the system area..</p>
+<pre><code>$ meson setup _build
+$ ninja -C _build
+$ sudo ninja -C _build install</code></pre>
+<p>Source files are in src/tfe6 directory.</p>
+<p>We made a very small text editor. You can add features to this
+editor. When you add a new feature, be careful about the structure of
+the program. Maybe you need to divide a file into several files. It
+isn’t good to put many things into one file. And it is important to
+think about the relationship between source files and widget
+structures.</p>
+<p>The source files are in the <a
+href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial GitHub
+repository</a>. Download it and see <code>src/tfe6</code> directory.</p>
+<p>Note: When the menu button is clicked, error messages are
+printed.</p>
+<pre><code>(tfe:31153): Gtk-CRITICAL **: 13:05:40.746: _gtk_css_corner_value_get_x: assertion &#39;corner-&gt;class == &amp;GTK_CSS_VALUE_CORNER&#39; failed</code></pre>
+<p>I found a <a
+href="https://discourse.gnome.org/t/menu-button-gives-error-messages-with-latest-gtk4/15689">message</a>
+in the GNOME Discourse. The comment says that GTK 4.10 has a bug and it
+is fixed in the version 4.10.5. I haven’t check 4.10.5 yet, where the
+UBUNTU GTK4 is still 4.10.4.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

@@ -1,368 +1,658 @@
-# Template XML and composite widget
+# GtkFontDialogButton and Gsettings
 
-The tfe program in the previous section is not so good because many things are crammed into `tfepplication.c`.
-And many static variables in `tfepplication.c`.
-The file `tfeapplication.c` should be divided into several files.
+## The preference dialog
 
-- `tfeapplication.c` only has codes related to the application.
-- A file for the main window
-- A file for a preference dialog
-- A file for an alert dialog
-
-The preference dialog is defined by a ui file.
-And it has GtkBox, GtkLabel and GtkFontButton in it.
-Such widget can be defined as a composite widget.
-Composite widget is:
-
-- a child object (not child widget) of a widget.
-For example, the preference composite widget is a child object of GtkDialog.
-- Composite widget can be built from template XML.
-The widget is defined with template tag, not object tag.
-
-Next subsection shows how to build a preference dialog.
-
-## Preference dialog
-
-First, write a template XML file.
-
-@@@include
-tfe7/tfepref.ui
-@@@
-
-Template tag specifies a composite widget.
-The value of a class attribute is the object name.
-It is "TfePref".
-A parent attribute specifies the direct parent class of the composite widget.
-Therefore. `TfePref` is a child class of `GtkDialog`.
-A parent attribute is optional.
-But it is recommended to specify it.
-Other lines are the same as before.
-
-The class `TfePref` is defined like TfeTextView.
-There are two files `tfepref.h` and `tfepref.c`.
-
-The file `tfepref.h` defines types and declares public functions.
-The definitions are public and open to any C files.
-
-@@@include
-tfe7/tfepref.h
-@@@
-
-- 6: Defines a type `TFE_TYPE_PREF`, which is a macro replaced by `tfe_pref_get_type ()`.
-- 7: The macro `G_DECLAER_FINAL_TYPE` expands to:
-  - The function `tfe_pref_get_type ()` is declared.
-  - TfePrep type is defined as a typedef of `struct _TfePrep`.
-  - TfePrepClass type is defined as a typedef of `struct {GtkDialogClass *parent;}`.
-  - Two functions `TFE_PREF ()` and `TFE_IS_PREF ()` is defined.
-- 9-10: `tfe_pref_new` creates a new TfePref object.
-
-The file `tfepref.c` includes:
-
-- `struct _TfePrep` structure
-- `G_DEFINE_TYPE` macro
-- Initialize and dispose functions
-- public functions
-
-@@@include
-tfe7/tfepref.c
-@@@
-
-- 4-9: The structure `struct _TfePref` is defined.
-Every TfePref instance has its own data of the structure.
-The structure has references to:
-  - a GSettings instance
-  - a FontButton instance
-- 11: `G_DEFINE_TYPE` macro.
-The macro expands to:
-  - the declaration of the class initialization function `tfe_pref_class_init`
-  - the declaration of the instance initialization function `tfe_pref_init`
-  - a static variable `tfe_pref_parent_class` that points the parent class (GtkDialogClass) structure.
-  - a definition of `tfe_pref_get_type ()` function
-- 13-19: `tfe_pref_dispose` function.
-It is called in the destruction process and releases all the reference to other objects.
-For further information about destruction process, refer to [Section 11](sec11.src.md).
-- 17: g\_clear\_object is often used in dispose handlers. `g_clear_object (&pref->gsettings)` does:
-  - `g_object_unref (pref->gsettings)`
-  - `pref->settings =  NULL`
-- 21-26: Instance initialization function.
-The argument `pref` points a newly created TfePref instance.
-- 23: The function `gtk_widget_init_template` creates and initializes the child widgets.
-The widgets are created based on the template which is created in the `gtk_widget_class_set_template_from_resource` function.
-- 24: Creates GSettings instance and assigns the pointer to it into `pref->settings`.
-The instance refers to a GSetting id `com.github.ToshioCP.tfe`.
-- 25: Binds the GSettings data `font` and the `font` property of `pref->fontbtn` (GtkFontButton).
-The element `pref->fontbtn` points the GtkFontButton, which is the instance of `fontbtn` in the ui file.
-The relation was made by the `gtk_widget_class_bind_template_child` function.
-- 28-35: Class initialization function.
-- 32: Sets the dispose handler.
-- 33: `gtk_widget_class_set_template_from_resource` function associates the description in the XML file (`tfepref.ui`) with the widget.
-At this moment no instance is created.
-It just makes the class recognize the structure of the object.
-That's why the top level tag is not `<object>` but `<template>` in the XML file.
-The instance will be created in the `gtk_widget_init_template` function later.
-- 34: `gtk_widget_class_bind_template_child` macro binds the structure member (`fontbtn` in `struct _TfePref`) and the id `fontbtn` in the XML file.
-The two names must be the same.
-This binding is between the member and the template (not an instance).
-- 37-40: The function `tfe_pref_new` creates a TfePref instance.
-
-Now, It is very simple to use this dialog.
-A caller just creates this object and shows it.
-
-~~~C
-TfePref *pref;
-pref = tfe_pref_new ();
-gtk_window_set_transient_for (GTK_WINDOW (pref), win); /* win is the main window */
-gtk_window_present (GTK_WINDOW (pref));
-~~~
-
-This instance is automatically destroyed when a user clicks on the close button.
-That's all.
-If you want to show the dialog again, just create and show it.
+If the user clicks on the preference menu, a preference dialog appears.
 
 ![Preference dialog](../image/pref_dialog.png){width=4cm height=1.6cm}
 
-## Alert dialog
+It has only one button, which is a GtkFontDialogButton widget.
+You can add more widgets on the dialog but this simple dialog isn't so bad for the first example program.
 
-It is almost same as preference dialog.
+If the button is clicked, a FontDialog appears like this.
 
-Its ui file is:
+![Font dialog](../image/fontdialog.png){width=6.27cm height=7.38cm}
+
+If the user chooses a font and clicks on the select button, the font is changed.
+
+GtkFontDialogButton and GtkFontDialog are available since GTK version 4.10.
+They replace GtkFontButton and GtkFontChooserDialog, which are deprecated since 4.10.
+
+## A composite widget
+
+The preference dialog has GtkBox, GtkLabel and GtkFontButton in it and is defined as a composite widget.
+The following is the template ui file for TfePref.
 
 @@@include
-tfe7/tfealert.ui
+tfe6/tfepref.ui
 @@@
 
-The header file is:
+- Template tag specifies a composite widget.
+The class attribute specifies the class name, which is "TfePref".
+The parent attribute is `GtkWindow`.
+Therefore. `TfePref` is a child class of `GtkWindow`.
+A parent attribute is optional but it is recommended to write it explicitly.
+You can make TfePref as a child of `GtkDialog`, but `GtkDialog` is deprecated since version 4.10.
+- There are three properties, title, resizable and modal.
+- TfePref has a child widget GtkBox which is horizontal.
+The box has two children GtkLabel and GtkFontDialogButton.
+
+## The header file
+
+The file `tfepref.h` defines types and declares a public function.
 
 @@@include
-tfe7/tfealert.h
+tfe6/tfepref.h
 @@@
 
-There are three public functions.
-The functions `tfe_alert_set_message` and `tfe_alert_set_button_label` sets the label and button name of the alert dialog.
-For example, if you want to show an alert that the user tries to close without saving the content, set them like:
+- 5: Defines the type `TFE_TYPE_PREF`, which is a macro replaced by `tfe_pref_get_type ()`.
+- 6: The macro `G_DECLAER_FINAL_TYPE` expands to:
+  - The function `tfe_pref_get_type ()` is declared.
+  - TfePrep type is defined as a typedef of `struct _TfePrep`.
+  - TfePrepClass type is defined as a typedef of `struct {GtkWindowClass *parent;}`.
+  - Two functions `TFE_PREF ()` and `TFE_IS_PREF ()` is defined.
+- 8-9:The function `tfe_pref_new` is declared. It creates a new TfePref instance.
 
-~~~C
-tfe_alert_set_message (alert, "Contents aren't saved yet.\nAre you sure to close?");
-tfe_alert_set_button_label (alert, "Close");
+## The C file for composite widget
+
+The following codes are extracted from the file `tfepref.c`.
+
+@@@if gfm
+```C
+#include <gtk/gtk.h>
+#include "tfepref.h"
+
+struct _TfePref
+{
+  GtkWindow parent;
+  GtkFontDialogButton *font_dialog_btn;
+};
+
+G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
+
+static void
+tfe_pref_dispose (GObject *gobject) {
+  TfePref *pref = TFE_PREF (gobject);
+  gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
+  G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_pref_init (TfePref *pref) {
+  gtk_widget_init_template (GTK_WIDGET (pref));
+}
+
+static void
+tfe_pref_class_init (TfePrefClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfepref.ui");
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
+}
+
+GtkWidget *
+tfe_pref_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
+}
+```
+@@@else
+```{.C}
+#include <gtk/gtk.h>
+#include "tfepref.h"
+
+struct _TfePref
+{
+  GtkWindow parent;
+  GtkFontDialogButton *font_dialog_btn;
+};
+
+G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
+
+static void
+tfe_pref_dispose (GObject *gobject) {
+  TfePref *pref = TFE_PREF (gobject);
+  gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
+  G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_pref_init (TfePref *pref) {
+  gtk_widget_init_template (GTK_WIDGET (pref));
+}
+
+static void
+tfe_pref_class_init (TfePrefClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfepref.ui");
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
+}
+
+GtkWidget *
+tfe_pref_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
+}
+```
+@@@end
+
+- The structure `_TfePref` has `font_dialog_btn` member.
+It points the GtkFontDialogButton object specified in the XML file "tfepref.ui".
+The member name `font_dialog_btn` must be the same as the GtkFontDialogButton id attribute in the XML file.
+- `G_DEFINE_FINAL_TYPE` macro expands to:
+  - The declaration of the functions `tfe_pref_init` and `tfe_pref_class_init`.
+They are defined in the following part of the program.
+  - The definition of the variable `tfe_pref_parent_class`.
+  - The definition of the function `tfe_pref_get_type`.
+- The function `tfe_pref_class_init` initializes the TfePref class.
+The function `gtk_widget_class_set_template_from_resource` initializes the composite widget template from the XML resource.
+The function `gtk_widget_class_bind_template_child` connects the TfePref structure member `font_dialog_btn` and the GtkFontDialogButton in the XML.
+The member name and the id attribute value must be the same.
+- The function `tfe_pref_init` initializes a newly created instance. The function `gtk_widget_init_template` creates and initializes child widgets.
+- The function `tfe_pref_dispose` releases objects. The function `gtk_widget_dispose_template` releases child widgets.
+
+## GtkFontDialogButton and Pango
+
+If the GtkFontDialogButton button is clicked, the GtkFontDialog dialog appears.
+A user can choose a font on the dialog.
+If the user clicks on the "select" button, the dialog disappears.
+And the font information is given to the GtkFontDialogButton instance.
+The font data is taken with the method `gtk_font_dialog_button_get_font_desc`.
+It returns a pointer to the PangoFontDescription structure.
+
+Pango is a text layout engine.
+The [documentation](https://docs.gtk.org/Pango/index.html) is on the internet.
+
+PangoFontDescription is a C structure and it isn't allowed to access directly.
+The document is [here](https://docs.gtk.org/Pango/struct.FontDescription.html).
+If you want to retrieve the font information, there are several functions.
+
+- `pango_font_description_to_string` returns a string like "Jamrul Bold Italic Semi-Expanded 12".
+- `pango_font_description_get_family` returns a font family like "Jamrul".
+- `pango_font_description_get_weight` returns a PangoWeight constant like `PANGO_WEIGHT_BOLD`.
+- `pango_font_description_get_style` returns a PangoStyle constant like `PANGO_STYLE_ITALIC`.
+- `pango_font_description_get_stretch` returns a PangoStretch constant like `PANGO_STRETCH_SEMI_EXPANDED`.
+- `pango_font_description_get_size` returns an integer like `12`.
+Its unit is point or pixel (device unit).
+The function `pango_font_description_get_size_is_absolute` returns TRUE if the unit is absolute that means device unit.
+Otherwise the unit is point.
+
+## GSettings
+
+We want to maintain the font data after the application quits.
+There are some ways to implement it.
+
+- Make a configuration file.
+For example, a text file "~/.config/tfe/font_desc.cfg" keeps font information.
+- Use GSettings object.
+The basic idea of GSettings are similar to configuration file.
+Configuration information data is put into a database file.
+
+GSettings is simple and easy to use but a bit hard to understand the concept.
+This subsection describes the concept first and then how to program it.
+
+### GSettings schema
+
+GSettings schema describes a set of keys, value types and some other information.
+GSettings object uses this schema and it writes/reads the value of a key to/from the right place in the database.
+
+- A schema has an id.
+The id must be unique.
+We often use the same string as application id, but schema id and application id are different.
+You can use different name from application id.
+Schema id is a string delimited by periods.
+For example, "com.github.ToshioCP.tfe" is a correct schema id.
+- A schema usually has a path.
+The path is a location in the database.
+Each key is stored under the path.
+For example, if a key `font-desc` is defined with a path `/com/github/ToshioCP/tfe/`,
+the key's location in the database is `/com/github/ToshioCP/tfe/font-desc`.
+Path is a string begins with and ends with a slash (`/`).
+And it is delimited by slashes.
+- GSettings save information as key-value style.
+Key is a string begins with a lower case character followed by lower case, digit or dash (`-`) and ends with lower case or digit.
+No consecutive dashes are allowed.
+Values can be any type.
+GSettings stores values as GVariant type, which can be, for example, integer, double, boolean, string or complex types like an array.
+The type of values needs to be defined in the schema.
+- A default value needs to be set for each key.
+- A summery and description can be set for each key optionally.
+
+Schemas are described in an XML format.
+For example,
+
+@@@include
+tfe6/com.github.ToshioCP.tfe.gschema.xml
+@@@
+
+- 4: The type attribute is "s".
+It is GVariant type string.
+For GVariant type string, see [GLib API Reference -- GVariant Type Strings](https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings).
+Other common types are:
+  - "b": gboolean
+  - "i": gint32.
+  - "d": double.
+
+Further information is in:
+
+- [GLib API Reference -- GVariant Format Strings](https://docs.gtk.org/glib/gvariant-format-strings.html)
+- [GLib API Reference -- GVariant Text Format](https://docs.gtk.org/glib/gvariant-text.html)
+- [GLib API Reference -- GVariant](https://docs.gtk.org/glib/struct.Variant.html)
+- [GLib API Reference -- VariantType](https://docs.gtk.org/glib/struct.VariantType.html)
+
+### Gsettings command
+
+First, let's try `gsettings` application.
+It is a configuration tool for GSettings.
+
+~~~
+$ gsettings help
+Usage:
+  gsettings --version
+  gsettings [--schemadir SCHEMADIR] COMMAND [ARGS?]
+
+Commands:
+  help                      Show this information
+  list-schemas              List installed schemas
+  list-relocatable-schemas  List relocatable schemas
+  list-keys                 List keys in a schema
+  list-children             List children of a schema
+  list-recursively          List keys and values, recursively
+  range                     Queries the range of a key
+  describe                  Queries the description of a key
+  get                       Get the value of a key
+  set                       Set the value of a key
+  reset                     Reset the value of a key
+  reset-recursively         Reset all values in a given schema
+  writable                  Check if a key is writable
+  monitor                   Watch for changes
+
+Use "gsettings help COMMAND" to get detailed help.
 ~~~
 
-The function `tfe_alert_new` creates a TfeAlert dialog.
-
-![Alert dialog](../image/alert_dialog.png){width=4cm height=2.14cm}
-
-The C source file is:
-
-@@@include
-tfe7/tfealert.c
-@@@
-
-The program is almost same as `tfepref.c`.
-
-The Usage of the alert object is as follows.
-
-1. Write the "response" signal handler.
-2. Create a TfeAlert object.
-3. Connect "response" signal to a handler
-4. Show the dialog
-5. In the signal handler, do something with regard to the response-id and destroy the dialog.
-
-## Top-level window
-
-`TfeWindow` is a child class of GtkApplicationWindow.
-
-@@@include
-tfe7/tfewindow.ui
-@@@
-
-This XML file is almost same as before except template tag and "action-name" property in buttons.
-
-GtkButton implements GtkActionable interface, which has "action-name" property.
-If this property is set, GtkButton activates the action when it is clicked.
-For example, if an open button is clicked, "win.open" action will be activated and `open_activated` handler will be invoked.
-
-This action is also used by "\<Control\>o" accelerator (See `tfeapplication.c`).
-If you used "clicked" signal for the button, you would need its signal handler.
-Then, there would be two handlers:
-
-- a handler for the "clicked" signal on the button
-- a handler for the "activate" signal on the "win.open" action, to which "\<Control\>o" accelerator is connected
-
-These two handlers are almost same.
-It is inefficient.
-Connecting buttons to actions is a good way to reduce unnecessary codes.
-
-
-@@@include
-tfe7/tfewindow.h
-@@@
-
-There are three public functions.
-The function `tfe_window_notebook_page_new` creates a new notebook page.
-This is a wrapper function for `notebook_page_new`.
-It is called by TfeApplication object.
-The function `tfe_window_notebook_page_new_with_files` creates notebook pages with a contents read from the given files.
-The function `tfe_window_new` creates a TfeWindow instance.
-
-@@@include
-tfe7/tfewindow.c
-@@@
-
-- 7-12: `_TfeWindow` structure.
-A TfeWindow instance points the structure.
-- 14: `G_DEFINE_TYPE` macro.
-- 17-28: `alert_response_cb` is a call back function for the "response" signal of TfeAlert dialog.
-- 21: Destroys the alert dialog.
-- 22-27: If the user has clicked on the accept button, it destroys the main window or closes the current notebook page.
-- 30-46: A "close-request" signal handler on the TfeWindow.
-When a user clicked on the close button (top right x-shaped button), the handler is called before the window closes.
-If the handler returns true, the default handler isn't called and the window doesn't close.
-If the handler returns false, the default handler is called and the window closes.
-- 34: If `has_saved_all` returns true, the handler returns false and the window will close.
-Otherwise, it shows an alert dialog.
-- 48-111: Handlers of action activated signal.
-The `user_data` is a pointer to the TfeWindow instance.
-- 115-128: Public functions.
-- 130-155: Instance initialization function.
-- 135: The function `gtk_widget_init_template` creates a child widgets and initializes them.
-- 137-140: Builds and inserts `menu`. It is inserted to the menu button.
-- 143-152: Creates actions and inserts them to the window.
-The scope of the actions is "win".
-- 154: Connects the "close-request" signal and a handler.
-- 157-162: Class initialization function.
-- 159: Sets the composite widget template
-- 160-161: Binds private variables with child class templates.
-- 164-167: `tfe_window_new`.
-This function creates TfeWindow instance.
-
-## TfeApplication
-
-The file `tfeaplication.h` and `tfeapplication.c` are now very simple.
-The following is the header file.
-
-@@@include
-tfe7/tfeapplication.h
-@@@
-
-- 1: `#pragma once` isn't an official pre-processor command, but widely used.
-It makes the header file be read only once.
-- 5-6: `TFE_TYPE_APPLICATION` is defined as the type of TfeApplication.
-`G_DECLARE_FINAL_TYPE` is a macro used in the header file to define a new object.
-- 8-9: The function `tfe_application_new` creates a new TfeApplication instance.
-
-The following is `tfeapplication.c`.
-It defines the application and supports:
-
-- GSettings
-- CSS
-
-@@@include
-tfe7/tfeapplication.c
-@@@
-
-- 6-11: Defines `_TfeApplication` structure.
-The members are:
-  - win: main window instance
-  - settings: GSettings instance.it is bound to "font" item in the GSettings
-  - provider: a provider for the font of the textview.
-- `G_DEFINE_TYPE` macro.
-- 16-30: `changed_font_cb` is a handler for "changed::font" signal on the GSettings instance.
-The signal name is "changed" and "font" is a key name.
-When the valeu of "font" key is changed, the signal is emitted.
-So, this handler doesn't directly relate to the font button, but through the GSettings database.
-A user changes the font in the font button => GSettings font key data is changed => the handler is called.
-- 22-24: Retrieves a string from the GSetting database and converts it into a pango font description.
-- 25-29: Sets the css provider with the font data.
-The provider has been inserted to the current display in advance.
-- 33-39: Activate signal handler.
-It uses `tfe_window_notebook_page_new` instead of `notebook_page_new`.
-- 41-47: Open signal handler.
-It just calls `tfe_window_notebook_page_new_with_files` and shows the main window.
-Be careful that the activate and open handlers don't create a new window.
-They just create a new notebook page.
-Therefore, even if the second application runs, no new window appears.
-Just a new notebook page is inserted to the same main window.
-- 49-85: Startup signal handler.
-- 56: Creates a new window (main window) and assigns it to `app->win`.
-- 57-61: Creates a css provider (`provider0`).
-It includes only the padding data for the textview.
-The provider is inserted to the default display.
-- 63-65: Another css provider is created (`app->provider`) and inserted to the default display.
-It will include the font data for the textview.
-- 66-68: Creates a new GSettings instance.
-If the GSettings data is changed, the "changed" signal is emitted.
-The signal can have a key name like "changed::font".
-This style ("changed::font") is called detailed signal.
-The detailed signal is emitted only if the font data is changed.
-The handler `changed_font_cb` is called to set the CSS with the font data.
-The handler gets the font data from the GSettings data which is the last font in the previous run of the application.
-- 71-84: Defines accelerators.
-- 87-94: A dispose handler. It releases references to the instances of GSettings and GtkCssProvider.
-- 96-101: An initialization for the instance.
-It connects three signals (activate, open and startup) and their handlers.
-- 183-188: An initialization for the class.
-It overrides the dispose class method.
-- 110-113: `tfe_application_new` creates a new TfeApplication instance.
-The parameters are an application-id and flags. 
-
-## Other files
-
-main.c
-
-@@@include
-tfe7/main.c
-@@@
-
-CSS related files `pfd2css.h` and `pfd2css.c` are the same as the previous section.
-
-Resource XML file.
-
-@@@include
-tfe7/tfe.gresource.xml
-@@@
-
-GSchema XML file
-
-@@@include
-tfe7/com.github.ToshioCP.tfe.gschema.xml
-@@@
-
-Meson.build
-
-@@@include
-tfe7/meson.build
-@@@
-
-## Compilation and installation.
-
-If you want to install it to your local area, use `--prefix=$HOME/.local` or `--prefix=$HOME` option.
-If you want to install it to the system area, no option is needed.
-It will be installed under `/user/local` directory.
+List schemas.
 
 ~~~
-$ meson --prefix=$HOME/.local _build
+$ gsettings list-schemas
+org.gnome.rhythmbox.podcast
+ca.desrt.dconf-editor.Demo.Empty
+org.gnome.gedit.preferences.ui
+org.gnome.evolution-data-server.calendar
+org.gnome.rhythmbox.plugins.generic-player
+
+... ...
+
+~~~
+
+Each line is an id of a schema.
+Each schema has a key-value configuration data.
+You can see them with list-recursively command.
+Let's look at the keys and values of `org.gnome.calculator` schema.
+
+~~~
+$ gsettings list-recursively org.gnome.calculator
+org.gnome.calculator accuracy 9
+org.gnome.calculator angle-units 'degrees'
+org.gnome.calculator base 10
+org.gnome.calculator button-mode 'basic'
+org.gnome.calculator number-format 'automatic'
+org.gnome.calculator precision 2000
+org.gnome.calculator refresh-interval 604800
+org.gnome.calculator show-thousands false
+org.gnome.calculator show-zeroes false
+org.gnome.calculator source-currency ''
+org.gnome.calculator source-units 'degree'
+org.gnome.calculator target-currency ''
+org.gnome.calculator target-units 'radian'
+org.gnome.calculator window-position (-1, -1)
+org.gnome.calculator word-size 64
+~~~
+
+This schema is used by GNOME Calculator.
+Run the calculator and change the mode, then check the schema again.
+
+~~~
+$ gnome-calculator
+~~~
+
+![gnome-calculator basic mode](../image/gnome_calculator_basic.png){width=5.34cm height=5.97cm}
+
+
+Change the mode to advanced and quit.
+
+![gnome-calculator advanced mode](../image/gnome_calculator_advanced.png){width=10.74cm height=7.14cm}
+
+Run gsettings and check the value of `button-mode`.
+
+~~~
+$ gsettings list-recursively org.gnome.calculator
+
+... ...
+
+org.gnome.calculator button-mode 'advanced'
+
+... ...
+
+~~~
+
+Now we know that GNOME Calculator used gsettings and it has set `button-mode` key to "advanced".
+The value remains even the calculator quits.
+So when the calculator runs again, it will appear as an advanced mode.
+
+### Glib-compile-schemas utility
+
+GSettings schemas are specified with an XML format.
+The XML schema files must have the filename extension `.gschema.xml`.
+The following is the XML schema file for the application `tfe`.
+
+@@@include
+tfe6/com.github.ToshioCP.tfe.gschema.xml
+@@@
+
+The filename is "com.github.ToshioCP.tfe.gschema.xml".
+Schema XML filenames are usually the schema id followed by ".gschema.xml" suffix.
+You can use different name from schema id, but it is not recommended.
+
+- 2: The top level element is `<schemalist>`.
+- 3: schema tag has `path` and `id` attributes.
+A path determines where the settings are stored in the conceptual global tree of settings.
+An id identifies the schema.
+- 4: Key tag has two attributes.
+Name is the name of the key.
+Type is the type of the value of the key and it is a GVariant Format String.
+- 5: default value of the key `font-desc` is `Monospace 12`.
+- 6: Summery and description elements describes the key.
+They are optional, but it is recommended to add them in the XML file.
+
+The XML file is compiled by glib-compile-schemas.
+When compiling, `glib-compile-schemas` compiles all the XML files which have ".gschema.xml" file extension in the directory given as an argument.
+It converts the XML file into a binary file `gschemas.compiled`.
+Suppose the XML file above is under `tfe6` directory.
+
+~~~
+$ glib-compile-schemas tfe6
+~~~
+
+Then, `gschemas.compiled` is generated under `tfe6`.
+When you test your application, set `GSETTINGS_SCHEMA_DIR` environment variable so that GSettings objet can find `gschemas.compiled`.
+
+~~~
+$ GSETTINGS_SCHEMA_DIR=(the directory gschemas.compiled is located):$GSETTINGS_SCHEMA_DIR (your application name)
+~~~
+
+GSettings object looks for this file by the following process.
+
+- It searches `glib-2.0/schemas` subdirectories of all the directories specified in the environment variable `XDG_DATA_DIRS`.
+Common directores are `/usr/share/glib-2.0/schemas` and `/usr/local/share/glib-2.0/schemas`.
+- If `$HOME/.local/share/glib-2.0/schemas` exists, it is also searched.
+- If `GSETTINGS_SCHEMA_DIR` environment variable is defined, it searches all the directories specified in the variable.
+`GSETTINGS_SCHEMA_DIR` can specify multiple directories delimited by colon (:).
+
+The directories above includes more than one `.gschema.xml` file.
+Therefore, when you install your application, follow the instruction below to install your schemas.
+
+1. Make `.gschema.xml` file.
+2. Copy it to one of the directories above. For example, `$HOME/.local/share/glib-2.0/schemas`.
+3. Run `glib-compile-schemas` on the directory.
+It compiles all the schema files in the directory and creates or updates the database file `gschemas.compiled`.
+
+### GSettings object and binding
+
+Now, we go on to the next topic, how to program GSettings.
+
+You need to compile your schema file in advance.
+
+Suppose id, key, class name and a property name are:
+
+- GSettings id: com.github.ToshioCP.sample
+- GSettings key: sample_key
+- The class name: Sample
+- The property to bind: sample_property
+
+The example below uses `g_settings_bind`.
+If you use it, GSettings key and instance property must have the same the type.
+In the example, it is assumed that the type of "sample_key" and "sample_property" are the same.
+
+@@@if gfm
+```C
+GSettings *settings;
+Sample *sample_object;
+
+settings = g_settings_new ("com.github.ToshioCP.sample");
+sample_object = sample_new ();
+g_settings_bind (settings, "sample_key", sample_object, "sample_property", G_SETTINGS_BIND_DEFAULT);
+```
+@@@else
+```{.C}
+GSettings *settings;
+Sample *sample_object;
+
+settings = g_settings_new ("com.github.ToshioCP.sample");
+sample_object = sample_new ();
+g_settings_bind (settings, "sample_key", sample_object, "sample_property", G_SETTINGS_BIND_DEFAULT);
+```
+@@@end
+
+The function `g_settings_bind` binds the GSettings value and the property of the instance.
+If the property value is changed, the GSettings value is also changed, and vice versa.
+The two values are always the same.
+
+The function `g_settings_bind` is simple and easy but it isn't always possible.
+The type of GSettings are restricted to the type GVariant has.
+Some property types are out of GVariant.
+For example, GtkFontDialogButton has "font-desc" property and its type is PangoFontDescription.
+PangoFontDescription is a C structure and it is wrapped in a boxed type GValue to store in the property.
+GVariant doesn't support boxed type.
+
+In that case, another function `g_settings_bind_with_mapping` is used.
+It binds GSettings GVariant value and object property via GValue with mapping functions.
+
+@@@if gfm
+```C
+void
+g_settings_bind_with_mapping (
+  GSettings* settings,
+  const gchar* key,
+  GObject* object,
+  const gchar* property,
+  GSettingsBindFlags flags, // G_SETTINGS_BIND_DEFAULT is commonly used
+  GSettingsBindGetMapping get_mapping, // GSettings => property, See the example below
+  GSettingsBindSetMapping set_mapping, // property => GSettings, See the example below
+  gpointer user_data, // NULL if unnecessary
+  GDestroyNotify destroy //NULL if unnecessary
+)
+```
+@@@else
+```{.C}
+void
+g_settings_bind_with_mapping (
+  GSettings* settings,
+  const gchar* key,
+  GObject* object,
+  const gchar* property,
+  GSettingsBindFlags flags, // G_SETTINGS_BIND_DEFAULT is commonly used
+  GSettingsBindGetMapping get_mapping, // GSettings => property, See the example below
+  GSettingsBindSetMapping set_mapping, // property => GSettings, See the example below
+  gpointer user_data, // NULL if unnecessary
+  GDestroyNotify destroy //NULL if unnecessary
+)
+```
+@@@end
+
+The mapping functions are defined like these:
+
+@@@if gfm
+```C
+gboolean
+(* GSettingsBindGetMapping) (
+  GValue* value,
+  GVariant* variant,
+  gpointer user_data
+)
+
+GVariant*
+(* GSettingsBindSetMapping) (
+  const GValue* value,
+  const GVariantType* expected_type,
+  gpointer user_data
+)
+```
+@@@else
+```{.C}
+gboolean
+(* GSettingsBindGetMapping) (
+  GValue* value,
+  GVariant* variant,
+  gpointer user_data
+)
+
+GVariant*
+(* GSettingsBindSetMapping) (
+  const GValue* value,
+  const GVariantType* expected_type,
+  gpointer user_data
+)
+```
+@@@end
+
+The following codes are extracted from `tfepref.c`.
+
+@@@include
+tfe6/tfepref.c get_mapping set_mapping tfe_pref_init
+@@@
+
+- 15-21: This function `tfe_pref_init` initializes the new TfePref instance.
+- 18: Creates a new GSettings instance. The id is "com.github.ToshioCP.tfe".
+- 19-20: Binds the GSettings "font-desc" and the GtkFontDialogButton property "font-desc". The mapping functions are `get_mapping` and `set_mapping`.
+- 1-7: The mapping function from GSettings to the property.
+The first argument `value` is a GValue to be stored in the property.
+The second argument `variant` is a GVarinat structure that comes from the GSettings value.
+- 3: Retrieves a string from the GVariant structure.
+- 4: Build a PangoFontDescription structure from the string and assigns its address to `font_desc`.
+- 5: Puts `font_desc` into the GValue `value`.
+The ownership of `font_desc` moves to `value`.
+- 6: Returns TRUE that means the mapping succeeds.
+- 9-13: The mapping function from the property to GSettings.
+The first argument `value` holds the property data.
+The second argument `expected_type` is the type of GVariant that the GSettings value has.
+It isn't used in this function.
+- 11: Gets the PangoFontDescription structure from `value` and converts it to string.
+- 12: The string is inserted to a GVariant structure.
+The ownership of the string `font_desc_string` moves to the returned value.
+
+## C file
+
+The following is the full codes of `tfepref.c`
+
+@@@include
+tfe6/tfepref.c
+@@@
+
+## Test program
+
+There's a test program located at `src/tfe6/test` directory.
+
+@@@include
+tfe6/test/test_pref.c
+@@@
+
+This program sets its active window to TfePref instance, which is a child object of GtkWindow.
+
+It sets the "changed::font-desc" signal handler in the startup function.
+The process from the user's font selection to the handler is:
+
+- The user clicked on the GtkFontDialogButton and GtkFontDialog appears.
+- He/she selects a new font.
+- The "font-desc" property of the GtkFontDialogButton instance is changed.
+- The value of "font-desc" key on the GSettings database is changed since it is bound to the property.
+- The "changed::font-desc" signal on the GSettings instance is emitted.
+- The handler is called.
+
+The program building is divided into four steps.
+
+- Compile the schema file
+- Compile the XML file to a resource (C source file)
+- Compile the C files
+- Run the executable file
+
+Commands are shown in the next four sub-subsections.
+You don't need to try them.
+The final sub-subsection shows the meson-ninja way, which is the easiest.
+
+### Compile the schema file
+
+```
+$ cd src/tef6/test
+$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
+$ glib-compile-schemas .
+```
+
+Be careful. The commands `glib-compile-schemas` has an argument ".", which means the current directory.
+This results in creating `gschemas.compiled` file.
+
+### Compile the XML file
+
+```
+$ glib-compile-resources --sourcedir=.. --generate-source --target=resource.c ../tfe.gresource.xml
+```
+
+### Compile the C file
+
+```
+$ gcc `pkg-config --cflags gtk4` test_pref.c ../tfepref.c resource.c `pkg-config --libs gtk4`
+```
+
+### Run the executable file
+
+```
+$ GSETTINGS_SCHEMA_DIR=. ./a.out
+
+Jamrul Italic Semi-Expanded 12 # <= select Jamrul Italic 12
+Monospace 12 #<= select Monospace Regular 12
+```
+
+### Meson-ninja way
+
+Meson wraps up the commands above.
+Create the following text and save it to `meson.build`.
+
+Note: Gtk4-tutorial repository has meson.build file that defines several tests.
+So you can try it instead of the following text.
+
+```
+project('tfe_pref_test', 'c')
+
+gtkdep = dependency('gtk4')
+
+gnome=import('gnome')
+resources = gnome.compile_resources('resources','../tfe.gresource.xml', source_dir: '..')
+gnome.compile_schemas(build_by_default: true, depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
+
+executable('test_pref', ['test_pref.c', '../tfepref.c'], resources, dependencies: gtkdep, export_dynamic: true, install: false)
+```
+
+- Project name is 'tfe\_pref\_test' and it is written in C language.
+- It depends on GTK4 library.
+- It uses GNOME module. Modules are prepared by Meson.
+- GNOME module has `compile_resources` method.
+When you call this method, you need the prefix "gnome.".
+  - The target filename is resources.
+  - The definition XML file is '../tfe.gresource.xml'.
+  - The source dir is '..'. All the ui files are located there.
+- GNOME module has `compile_schemas` method.
+It compiles the schema file 'com.github.ToshioCP.tfe.gschema.xml'.
+You need to copy '../com.github.ToshioCP.tfe.gschema.xml' to the current directory in advance.
+- It creates an executable file 'test_pref'.
+The source files are 'test_pref.c', '../tfepref.c' and `resources`, which is made by `gnome.compile_resources`.
+It depends on `gtkdep`, which is GTK4 library.
+The symbols are exported and no installation support.
+
+Type like this to build and test the program.
+
+```
+$ cd src/tef6/test
+$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
+$ meson setup _build
 $ ninja -C _build
-$ ninja -C _build install
-~~~
+$ GSETTINGS_SCHEMA_DIR=_build _build/test_pref
+```
 
-You need root privilege to install it to the system area..
-
-~~~
-$ meson _build
-$ ninja -C _build
-$ sudo ninja -C _build install
-~~~
-
-Source files are in [src/tfe7](tfe7) directory.
-
-Composite widgets give us two advantages.
-
-- A set of widgets is better than individual widgets because of the simple coding.
-- They hold instance variables (members of the object structure) so static variables are no longer necessary.
-It makes the program simpler.
-
-We made a very small text editor.
-You can add features to this editor.
-When you add a new feature, be careful about the structure of the program.
-Maybe you need to divide a file into several files like this section.
-It isn't good to put many things into one file.
-And it is important to think about the relationship between source files and widget structures.
+A window appears and you can choose a font via GtkFontDialog.
+If you select a new font, the font string is output through the standard output.

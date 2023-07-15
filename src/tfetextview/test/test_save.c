@@ -2,9 +2,9 @@
 #include <gtk/gtk.h>
 #include "../tfetextview.h"
 
-#define APPLICATION_ID "com.github.ToshioCP.testtfetextview"
+#define APPLICATION_ID "com.github.ToshioCP.testtfetextviewsave"
 
-// NOTICE!! -- Don't choose any existing file to save in FileChooserDialog (except 'yesy.txt')
+// NOTICE!! -- Don't choose any existing file to save in the file chooser dialog (except 'test.txt')
 // senario:
 // setup: create test.txt
 // create tv (TfeTextView) with test.txt => gtk_text_view_get_text => is the file correct?
@@ -85,7 +85,7 @@ app_activate (GApplication *application) {
 
   // tfe_text_view_saveas
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
   tfe_text_view_saveas (TFE_TEXT_VIEW (tv));
 }
 
@@ -101,6 +101,11 @@ main (int argc, char **argv) {
 
   stat =g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
+
+  // remove "test.txt" and "test.txt~"
+  remove ("test.txt");
+  remove ("test.txt~");
+
   return stat;
 }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
-    <key name="font" type="s">
+    <key name="font-desc" type="s">
       <default>'Monospace 12'</default>
       <summary>Font</summary>
       <description>A font to be used for textview.</description>

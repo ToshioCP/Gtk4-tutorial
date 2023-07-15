@@ -7,27 +7,34 @@ And it is not recommended to use global variables because they are prone to make
 So, we need something to communicate between objects.
 There are two ways to do so.
 
-- Functions.
-For example, `tb = gtk_text_view_get_buffer (tv)`.
+- Instance methods:
+Instance methods are functions on instances.
+For example, `tb = gtk_text_view_get_buffer (tv)` is an instance method on the instance `tv`.
 The caller requests `tv` to give `tb`, which is a GtkTextBuffer instance connected to `tv`.
-- Signals.
+- Signals:
 For example, `activate` signal on GApplication object.
 When the application is activated, the signal is emitted.
 Then the handler, which has been connected to the signal, is invoked.
 
-The caller of the function or the handler connected to the signal is usually out of the object.
+The caller of methods or signals are usually out of the object.
 One of the difference between these two is that the object is active or passive.
-In functions the object passively responds to the caller.
-In signals the object actively sends a signal to the handler.
+In methods, objects passively respond to the caller.
+In signals, objects actively send signals to handlers.
 
 GObject signals are registered, connected and emitted.
 
-1. Signals are registered with the object type on which they are emitted.
-The registration is done usually when the object class is initialized.
-2. Signals are connected to handlers by `g_connect_signal` or its family functions.
+1. Signals are registered in the class.
+The registration is done usually when the class is initialized.
+Signals can have a default handler, which is sometimes called "object method handler".
+It is not a user handler connected by `g_signal_connect` family functions.
+A default handler is always called on any instance of the class.
+1. Signals are connected to handlers by the macro `g_signal_connect` or its family functions.
 The connection is usually done out of the object.
-3. When Signals are emitted, the connected handlers are invoked.
-Signals are emitted on the instance of the object.
+One important thing is that signals are connected on a certain instance.
+Suppose there exist two GtkButton instances A, B and a function C.
+Even if you connected the "clicked" signal on A to C, B and C are *not* connected.
+1. When Signals are emitted, the connected handlers are invoked.
+Signals are emitted on the instance of the class.
 
 ## Signal registration
 
@@ -36,7 +43,8 @@ In TfeTextView, two signals are registered.
 - "change-file" signal.
 This signal is emitted when `tv->file` is changed.
 - "open-response" signal.
-`tfe_text_view_open` function is not able to return the status because it uses GtkFileChooserDialog.
+The function `tfe_text_view_open` doesn't return the status because it can't get the status from the file chooser dialog.
+(Instead, the call back function gets the status.)
 This signal is emitted instead of the return value of the function.
 
 A static variable or array is used to store signal ID.
@@ -89,23 +97,23 @@ user_function (TfeTextView *tv,
                gpointer user_data)
 ~~~
 
-- Because "change-file" signal doesn't have parameter, the handler's parameters are a TfeTextView instance and user data.
-- Because "open-response" signal has one parameter, the handler's parameters are a TfeTextView instance, the signal's parameter and user data.
-- `tv` is the object instance on which the signal is emitted.
-- `user_data` comes from the fourth argument of `g_signal_connect`.
-- `parameter` comes from the fourth argument of `g_signal_emit`.
+- The signal "change-file" doesn't have parameter, so the handler's arguments are a TfeTextView instance and a user data.
+- The signal "open-response" signal has one parameter and its arguments are a TfeTextView instance, the signal's parameter and user data.
+- The variable `tv` points the instance on which the signal is emitted.
+- The last argument `user_data` comes from the fourth argument of `g_signal_connect`.
+- The `parameter` (`response-id`) comes from the fourth argument of `g_signal_emit`.
 
-The values of the parameter is defined in `tfetextview.h` because they are public.
+The values of the type `TfeTextViewOpenResponseType` are defined in `tfetextview.h`.
 
-~~~C
+```C
 /* "open-response" signal response */
-enum
+enum TfeTextViewOpenResponseType
 {
   TFE_OPEN_RESPONSE_SUCCESS,
   TFE_OPEN_RESPONSE_CANCEL,
   TFE_OPEN_RESPONSE_ERROR
 };
-~~~
+```
 
 - The parameter is set to `TFE_OPEN_RESPONSE_SUCCESS` when `tfe_text_view_open` has successfully opened a file and read it.
 - The parameter is set to `TFE_OPEN_RESPONSE_CANCEL` when the user has canceled.
@@ -113,31 +121,26 @@ enum
  
 ## Signal connection
 
-A signal and a handler are connected by the function `g_signal_connect`.
-There are some similar functions like `g_signal_connect_after`, `g_signal_connect_swapped` and so on.
-However, `g_signal_connect` is the most common.
-The signals "change-file" is connected to a callback function out of the TfeTextView object.
-In the same way, the signals "open-response" is connected to a callback function out of the TfeTextView object.
+A signal and a handler are connected by the function macro `g_signal_connect`.
+There are some similar function macros like `g_signal_connect_after`, `g_signal_connect_swapped` and so on.
+However, `g_signal_connect` is used most often.
+The signals "change-file" and "open-response" are connected to their callback functions out of the TfeTextView object.
 Those callback functions are defined by users.
 
-In the program `tfe`, callback functions are defined in `tfenotebook.c`.
-And their names are `file_changed` and `open_response`.
+For example, callback functions are defined in `src/tfe6/tfewindow.c` and their names are `file_changed_cb` and `open_response_cb`.
 They will be explained later.
 
 ~~~C
-g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed), nb);
+g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
 
-g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
+g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), nb);
 ~~~
 
 ## Signal emission
 
-Signals are emitted on an instance.
-The type of the instance is the second argument of `g_signal_new`.
-The relationship between the signal and object type is determined when the signal is registered.
-
+A signal is emitted on the instance.
 A function `g_signal_emit` is used to emit the signal.
-The following lines are extracted from `tfetextview.c`.
+The following lines are extracted from `src/tfetextview/tfetextview.c`.
 Each line comes from a different line.
 
 ~~~C
@@ -150,8 +153,7 @@ g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ER
 - The first argument is the instance on which the signal is emitted.
 - The second argument is the signal id.
 - The third argument is the detail of the signal.
-"change-file" signal and "open-response" signal doesn't have details and the argument is zero when no details.
-- "change-file" signal doesn't have parameter, so there's no fourth parameter.
-- "open-response" signal has one parameter.
-The fourth parameter is the parameter.
-
+The signals "change-file" and "open-response" don't have details and the arguments are zero.
+- The signal "change-file" doesn't have parameters, so there's no fourth argument.
+- The signal "open-response" has one parameter.
+The fourth argument is the parameter.

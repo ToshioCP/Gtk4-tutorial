@@ -259,7 +259,13 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>builder<span class="op">);</span></span></code></pre></div>
 <p>The builder instance is freed after the GMenuModel
 <code>menubar</code> is inserted to the application. If you do it before
-the insertion, bad thing will happen – your computer might freeze.</p>
+the insertion, bad thing will happen – your computer might freeze. It is
+because you don’t own the <code>menubar</code> instance. The function
+<code>gtk_builder_get_object</code> just returns the pointer to
+<code>menubar</code> and doesn’t increase the reference count of
+<code>menubar</code>. So, if you released <code>bulder</code> before
+<code>gtk_application_set_menubar</code>, <code>builder</code> would be
+destroyed and <code>menubar</code> as well.</p>
 <h2 id="action-entry">Action entry</h2>
 <p>The coding for building actions and signal handlers is bothersome
 work as well. Therefore, it should be automated. You can implement them
@@ -306,12 +312,12 @@ defines that strings are surrounded by single or double quotes. So, the
 string red is ‘red’ or “red”. The fourth element is
 <code>"'red'"</code>, which is a C string format and the string is
 ‘red’. You can write <code>"\"red\""</code> instead. The second element
-color_activated is the activate handler. The action doesn’t have
-change-state handler, so the fifth element is NULL.</li>
+<code>color_activated</code> is the activate handler. The action doesn’t
+have change-state handler, so the fifth element is NULL.</li>
 <li>Quit action is non-stateful and has no parameter. So, the third and
-fourth elements are NULL. The second element quit_activated is the
-activate handler. The action doesn’t have change-state handler, so the
-fifth element is NULL.</li>
+fourth elements are NULL. The second element <code>quit_activated</code>
+is the activate handler. The action doesn’t have change-state handler,
+so the fifth element is NULL.</li>
 </ul>
 <p>The function <code>g_action_map_add_action_entries</code> does
 everything to create GSimpleAction instances and add them to a
@@ -326,7 +332,7 @@ GActionMap (an application or window).</p>
 <ul>
 <li>Builds the “color” and “quit” actions</li>
 <li>Connects the action and the “activate” signal handlers
-(color_activated and quit_activated).</li>
+(<code>color_activated</code> and <code>quit_activated</code>).</li>
 <li>Adds the actions to the action map <code>app</code>.</li>
 </ul>
 <p>The same goes for the other action.</p>
@@ -402,67 +408,66 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-51"><a href="#cb11-51"></a><span class="op">}</span></span>
 <span id="cb11-52"><a href="#cb11-52"></a></span>
 <span id="cb11-53"><a href="#cb11-53"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-54"><a href="#cb11-54"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span></span>
-<span id="cb11-55"><a href="#cb11-55"></a><span class="op">{</span></span>
-<span id="cb11-56"><a href="#cb11-56"></a>  GApplication <span class="op">*</span>app <span class="op">=</span> G_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb11-57"><a href="#cb11-57"></a></span>
-<span id="cb11-58"><a href="#cb11-58"></a>  g_application_quit <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb11-59"><a href="#cb11-59"></a><span class="op">}</span></span>
-<span id="cb11-60"><a href="#cb11-60"></a></span>
-<span id="cb11-61"><a href="#cb11-61"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-62"><a href="#cb11-62"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-63"><a href="#cb11-63"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb11-64"><a href="#cb11-64"></a></span>
-<span id="cb11-65"><a href="#cb11-65"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb11-66"><a href="#cb11-66"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-67"><a href="#cb11-67"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-68"><a href="#cb11-68"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-69"><a href="#cb11-69"></a>    <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
-<span id="cb11-70"><a href="#cb11-70"></a>  <span class="op">};</span></span>
-<span id="cb11-71"><a href="#cb11-71"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb11-72"><a href="#cb11-72"></a></span>
-<span id="cb11-73"><a href="#cb11-73"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
-<span id="cb11-74"><a href="#cb11-74"></a></span>
-<span id="cb11-75"><a href="#cb11-75"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;menu3&quot;</span><span class="op">);</span></span>
-<span id="cb11-76"><a href="#cb11-76"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb11-77"><a href="#cb11-77"></a>  gtk_widget_show <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb11-78"><a href="#cb11-78"></a><span class="op">}</span></span>
-<span id="cb11-79"><a href="#cb11-79"></a></span>
-<span id="cb11-80"><a href="#cb11-80"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-81"><a href="#cb11-81"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-82"><a href="#cb11-82"></a>  GtkBuilder <span class="op">*</span>builder <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/menu3/menu3.ui&quot;</span><span class="op">);</span></span>
-<span id="cb11-83"><a href="#cb11-83"></a>  GMenuModel <span class="op">*</span>menubar <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>builder<span class="op">,</span> <span class="st">&quot;menubar&quot;</span><span class="op">));</span></span>
-<span id="cb11-84"><a href="#cb11-84"></a></span>
-<span id="cb11-85"><a href="#cb11-85"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> menubar<span class="op">);</span></span>
-<span id="cb11-86"><a href="#cb11-86"></a>  g_object_unref <span class="op">(</span>builder<span class="op">);</span></span>
-<span id="cb11-87"><a href="#cb11-87"></a></span>
-<span id="cb11-88"><a href="#cb11-88"></a>  <span class="dt">const</span> GActionEntry app_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb11-89"><a href="#cb11-89"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-90"><a href="#cb11-90"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-91"><a href="#cb11-91"></a>    <span class="op">{</span> <span class="st">&quot;cut&quot;</span><span class="op">,</span> cut_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-92"><a href="#cb11-92"></a>    <span class="op">{</span> <span class="st">&quot;copy&quot;</span><span class="op">,</span> copy_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-93"><a href="#cb11-93"></a>    <span class="op">{</span> <span class="st">&quot;paste&quot;</span><span class="op">,</span> paste_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-94"><a href="#cb11-94"></a>    <span class="op">{</span> <span class="st">&quot;selectall&quot;</span><span class="op">,</span> selectall_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-95"><a href="#cb11-95"></a>    <span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
-<span id="cb11-96"><a href="#cb11-96"></a>  <span class="op">};</span></span>
-<span id="cb11-97"><a href="#cb11-97"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> app_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span>
-<span id="cb11-98"><a href="#cb11-98"></a><span class="op">}</span></span>
-<span id="cb11-99"><a href="#cb11-99"></a></span>
-<span id="cb11-100"><a href="#cb11-100"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu3&quot;</span></span>
-<span id="cb11-101"><a href="#cb11-101"></a></span>
-<span id="cb11-102"><a href="#cb11-102"></a><span class="dt">int</span></span>
-<span id="cb11-103"><a href="#cb11-103"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-104"><a href="#cb11-104"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb11-105"><a href="#cb11-105"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb11-106"><a href="#cb11-106"></a></span>
-<span id="cb11-107"><a href="#cb11-107"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb11-108"><a href="#cb11-108"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb11-109"><a href="#cb11-109"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb11-110"><a href="#cb11-110"></a></span>
-<span id="cb11-111"><a href="#cb11-111"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb11-112"><a href="#cb11-112"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb11-113"><a href="#cb11-113"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb11-114"><a href="#cb11-114"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb11-54"><a href="#cb11-54"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-55"><a href="#cb11-55"></a>  GApplication <span class="op">*</span>app <span class="op">=</span> G_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb11-56"><a href="#cb11-56"></a></span>
+<span id="cb11-57"><a href="#cb11-57"></a>  g_application_quit <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb11-58"><a href="#cb11-58"></a><span class="op">}</span></span>
+<span id="cb11-59"><a href="#cb11-59"></a></span>
+<span id="cb11-60"><a href="#cb11-60"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-61"><a href="#cb11-61"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-62"><a href="#cb11-62"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb11-63"><a href="#cb11-63"></a></span>
+<span id="cb11-64"><a href="#cb11-64"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb11-65"><a href="#cb11-65"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-66"><a href="#cb11-66"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-67"><a href="#cb11-67"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-68"><a href="#cb11-68"></a>    <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+<span id="cb11-69"><a href="#cb11-69"></a>  <span class="op">};</span></span>
+<span id="cb11-70"><a href="#cb11-70"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb11-71"><a href="#cb11-71"></a></span>
+<span id="cb11-72"><a href="#cb11-72"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
+<span id="cb11-73"><a href="#cb11-73"></a></span>
+<span id="cb11-74"><a href="#cb11-74"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;menu3&quot;</span><span class="op">);</span></span>
+<span id="cb11-75"><a href="#cb11-75"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
+<span id="cb11-76"><a href="#cb11-76"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb11-77"><a href="#cb11-77"></a><span class="op">}</span></span>
+<span id="cb11-78"><a href="#cb11-78"></a></span>
+<span id="cb11-79"><a href="#cb11-79"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-80"><a href="#cb11-80"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-81"><a href="#cb11-81"></a>  GtkBuilder <span class="op">*</span>builder <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/menu3/menu3.ui&quot;</span><span class="op">);</span></span>
+<span id="cb11-82"><a href="#cb11-82"></a>  GMenuModel <span class="op">*</span>menubar <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>builder<span class="op">,</span> <span class="st">&quot;menubar&quot;</span><span class="op">));</span></span>
+<span id="cb11-83"><a href="#cb11-83"></a></span>
+<span id="cb11-84"><a href="#cb11-84"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> menubar<span class="op">);</span></span>
+<span id="cb11-85"><a href="#cb11-85"></a>  g_object_unref <span class="op">(</span>builder<span class="op">);</span></span>
+<span id="cb11-86"><a href="#cb11-86"></a></span>
+<span id="cb11-87"><a href="#cb11-87"></a>  <span class="dt">const</span> GActionEntry app_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb11-88"><a href="#cb11-88"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-89"><a href="#cb11-89"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-90"><a href="#cb11-90"></a>    <span class="op">{</span> <span class="st">&quot;cut&quot;</span><span class="op">,</span> cut_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-91"><a href="#cb11-91"></a>    <span class="op">{</span> <span class="st">&quot;copy&quot;</span><span class="op">,</span> copy_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-92"><a href="#cb11-92"></a>    <span class="op">{</span> <span class="st">&quot;paste&quot;</span><span class="op">,</span> paste_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-93"><a href="#cb11-93"></a>    <span class="op">{</span> <span class="st">&quot;selectall&quot;</span><span class="op">,</span> selectall_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-94"><a href="#cb11-94"></a>    <span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb11-95"><a href="#cb11-95"></a>  <span class="op">};</span></span>
+<span id="cb11-96"><a href="#cb11-96"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> app_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb11-97"><a href="#cb11-97"></a><span class="op">}</span></span>
+<span id="cb11-98"><a href="#cb11-98"></a></span>
+<span id="cb11-99"><a href="#cb11-99"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu3&quot;</span></span>
+<span id="cb11-100"><a href="#cb11-100"></a></span>
+<span id="cb11-101"><a href="#cb11-101"></a><span class="dt">int</span></span>
+<span id="cb11-102"><a href="#cb11-102"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-103"><a href="#cb11-103"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb11-104"><a href="#cb11-104"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb11-105"><a href="#cb11-105"></a></span>
+<span id="cb11-106"><a href="#cb11-106"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb11-107"><a href="#cb11-107"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb11-108"><a href="#cb11-108"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb11-109"><a href="#cb11-109"></a></span>
+<span id="cb11-110"><a href="#cb11-110"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb11-111"><a href="#cb11-111"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb11-112"><a href="#cb11-112"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb11-113"><a href="#cb11-113"></a><span class="op">}</span></span></code></pre></div>
 <p>meson.build</p>
 <div class="sourceCode" id="cb12"><pre
 class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb12-1"><a href="#cb12-1"></a>project(&#39;menu3&#39;, &#39;c&#39;)</span>

@@ -115,10 +115,9 @@
 <h2 id="gtklabel-gtkbutton-and-gtkbox">GtkLabel, GtkButton and
 GtkBox</h2>
 <h3 id="gtklabel">GtkLabel</h3>
-<p>In the previous section we made a window and displayed it on the
-screen. Now we go on to the next topic, where we add widgets to this
-window. The simplest widget is GtkLabel. It is a widget with text in
-it.</p>
+<p>We made a window and showed it on the screen in the previous section.
+Now we go on to the next topic: widgets. The simplest widget is
+GtkLabel. It is a widget with text in it.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -148,8 +147,9 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-26"><a href="#cb1-26"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb1-27"><a href="#cb1-27"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb1-28"><a href="#cb1-28"></a><span class="op">}</span></span></code></pre></div>
-<p>Save this program to a file <code>lb1.c</code>. Then compile and run
-it.</p>
+<p>Save this program to a file <code>lb1.c</code>. (You can use
+<code>src/misc/lb1.c</code> if you’ve downloaded this repository.) Then
+compile and run it.</p>
 <pre><code>$ comp lb1
 $ ./a.out</code></pre>
 <p>A window with a message “Hello.” appears.</p>
@@ -157,9 +157,9 @@ $ ./a.out</code></pre>
 <img src="image/screenshot_lb1.png" alt="Screenshot of the label" />
 <figcaption aria-hidden="true">Screenshot of the label</figcaption>
 </figure>
-<p>There’s only a little change between <code>pr4.c</code> and
-<code>lb1.c</code>. A program <code>diff</code> is good to know the
-difference between two files.</p>
+<p>There are only a few changes between <code>pr4.c</code> and
+<code>lb1.c</code>. A program <code>diff</code> is useful to know the
+difference.</p>
 <pre><code>$ cd misc; diff pr4.c lb1.c
 4c4
 &lt; app_activate (GApplication *app, gpointer user_data) {
@@ -202,7 +202,7 @@ their parent widget on the screen. See how the window has appeared on
 the screen. The application window includes the label.</p>
 <p>The window <code>win</code> doesn’t have any parents. We call such a
 window top-level window. An application can have more than one top-level
-window.</p>
+windows.</p>
 <h3 id="gtkbutton">GtkButton</h3>
 <p>The next widget is GtkButton. It displays a button on the screen with
 a label or icon on it. In this subsection, we will make a button with a
@@ -245,8 +245,8 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-34"><a href="#cb4-34"></a><span class="op">}</span></span></code></pre></div>
 <p>Look at the line 17 to 19. First, it creates a GtkButton instance
 <code>btn</code> with a label “Click me”. Then, adds the button to the
-window <code>win</code> as a child. Finally, connects a “clicked” signal
-of the button to the handler <code>click_cb</code>. So, if
+window <code>win</code> as a child. Finally, connects the “clicked”
+signal of the button to the handler <code>click_cb</code>. So, if
 <code>btn</code> is clicked, the function <code>click_cb</code> is
 invoked. The suffix “cb” means “call back”.</p>
 <p>Name the program <code>lb2.c</code> and save it. Now compile and run
@@ -259,10 +259,10 @@ it.</p>
 button, you can click everywhere in the window), then a string
 “Clicked.” appears on the terminal. It shows the handler was invoked by
 clicking the button.</p>
-<p>It’s good that we make sure that the clicked signal was caught and
+<p>It’s good that we’ve made sure that the clicked signal was caught and
 the handler was invoked by using <code>g_print</code>. However, using
 <code>g_print</code> is out of harmony with GTK, which is a GUI library.
-So, we will change the handler. The following code is
+So, we will change the handler. The following code is extracted from
 <code>lb3.c</code>.</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -318,7 +318,7 @@ is as follows.</p>
 and two lines are inserted.
 <ul>
 <li><code>click_cb</code> has the second parameter, which comes from the
-fourth argument of the <code>g_signal_connect</code> at the line 19. One
+fourth argument of the <code>g_signal_connect</code> at line 17. One
 thing to be careful is the types are different between the second
 parameter of <code>click_cb</code> and the fourth argument of
 <code>g_signal_connect</code>. The former is <code>GtkWindow *</code>
@@ -327,7 +327,7 @@ complain because <code>g_signal_connect</code> uses gpointer (general
 type of pointer). In this program the instance pointed by
 <code>win</code> is a GtkApplicationWindow object. It is a descendant of
 GtkWindow and GtkWidget class, so both <code>GtkWindow *</code> and
-<code>GtkWidget *</code> are correct types for the instance.</li>
+<code>GtkWidget *</code> are correct types of the instance.</li>
 <li><code>gtk_destroy (win)</code> destroys the top-level window. Then
 the application quits.</li>
 </ul></li>
@@ -338,7 +338,7 @@ the application quits.</li>
 </ul>
 <p>The most important change is the fourth argument of the
 <code>g_signal_connect</code>. This argument is described as “data to
-pass to handler” in the definition of <a
+pass to the handler” in the definition of <a
 href="https://docs.gtk.org/gobject/func.signal_connect.html"><code>g_signal_connect</code></a>.</p>
 <h3 id="gtkbox">GtkBox</h3>
 <p>GtkWindow and GtkApplicationWindow can have only one child. If you
@@ -429,8 +429,8 @@ vertically</li>
 <li>GTK_ORIENTATION_HORIZONTAL: the children widgets are arranged
 horizontally</li>
 </ul>
-<p>The second argument is the size between the children. The unit of the
-length is pixel.</p>
+<p>The second argument is the size of the space between the children.
+The unit of the length is pixel.</p>
 <p>The next function fills the box with the children, giving them the
 same space.</p>
 <p>After that, two buttons <code>btn1</code> and <code>btn2</code> are

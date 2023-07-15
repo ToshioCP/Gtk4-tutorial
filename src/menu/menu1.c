@@ -8,7 +8,7 @@ quit_activated(GSimpleAction *action, GVariant *parameter, GApplication *applica
 static void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
-  GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+  GtkWidget *win = gtk_application_window_new (app);
   gtk_window_set_title (GTK_WINDOW (win), "menu1");
   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
 
@@ -31,6 +31,7 @@ app_startup (GApplication *application) {
   g_menu_append_item (menu, menu_item_quit);
   g_object_unref (menu_item_quit);
   g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));
+  g_object_unref (menu);
   g_menu_append_item (menubar, menu_item_menu);
   g_object_unref (menu_item_menu);
 

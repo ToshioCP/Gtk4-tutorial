@@ -126,7 +126,7 @@ href="sec15.html">previous section</a>.</p>
 environment variables to suit your installation.</li>
 <li>Change your current directory to <code>src/tfe5</code>
 directory.</li>
-<li>Type <code>meson _build</code> for configuration.</li>
+<li>Type <code>meson setup _build</code> for configuration.</li>
 <li>Type <code>ninja -C _build</code> for compilation. Then the
 application <code>tfe</code> is built under the <code>_build</code>
 directory.</li>
@@ -135,9 +135,9 @@ directory.</li>
 <p>Then the window appears. There are four buttons, <code>New</code>,
 <code>Open</code>, <code>Save</code> and <code>Close</code>.</p>
 <ul>
-<li>Click on <code>Open</code> button, then a FileChooserDialog appears.
-Choose a file in the list and click on <code>Open</code> button. Then
-the file is read and a new Notebook Page appears.</li>
+<li>Click on <code>Open</code> button, then a file chooser dialog
+appears. Choose a file in the list and click on <code>Open</code>
+button. Then the file is read and a new Notebook Page appears.</li>
 <li>Edit the file and click on <code>Save</code> button, then the text
 is saved to the original file.</li>
 <li>Click <code>Close</code>, then the Notebook Page disappears.</li>
@@ -151,14 +151,14 @@ more features.</p>
 lines, words and characters</h2>
 <pre><code>$ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
-  110   336  3631 tfe5/tfeapplication.c
+  110   334  3601 tfe5/tfeapplication.c
     6     9   153 tfe5/tfe.gresource.xml
-  145   387  3667 tfe5/tfenotebook.c
+  144   390  3668 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
-  239   863  9264 tfetextview/tfetextview.c
-   35    60   701 tfetextview/tfetextview.h
+  235   821  8473 tfetextview/tfetextview.c
+   32    54   624 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  621  1793 20024 total</code></pre>
+  613  1746 19127 total</code></pre>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

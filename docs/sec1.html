@@ -111,18 +111,20 @@
 <h1 id="prerequisite-and-license">Prerequisite and License</h1>
 <h2 id="prerequisite">Prerequisite</h2>
 <h3 id="gtk-4-on-a-linux-os">GTK 4 on a Linux OS</h3>
-<p>This tutorial is about GTK 4 libraries. It is originally used on
+<p>This tutorial describes GTK 4 libraries. It is originally used on
 Linux with C compiler, but now it is used more widely, on Windows and
-MacOS, with Vala, Python and so on. However, this tutorial describes
-only <em>C programs on Linux</em>.</p>
+MacOS, with Vala, Python, Ruby and so on. However, this tutorial
+describes only <em>C programs on Linux</em>.</p>
 <p>If you want to try the examples in the tutorial, you need:</p>
 <ul>
 <li>PC with Linux distribution like Ubuntu or Debian.</li>
 <li>GCC.</li>
-<li>GTK 4. The stable version of GTK is 4.8.2 at present (13/Dec/2022),
-but older version (4.0 or higher) may work. See <a
-href="sec2.html">Section 2</a> for the installation for GTK 4.</li>
+<li>GTK 4 (version 4.10.1 or later).</li>
 </ul>
+<p>The stable version of GTK is 4.10.1 at present (24/April/2023). The
+version 4.10 adds some new classes and functions and makes some classes
+and functions deprecated. Some example programs in this tutorial don’t
+work on the older version.</p>
 <h3 id="ruby-and-rake-for-making-the-document">Ruby and rake for making
 the document</h3>
 <p>This repository includes Ruby programs. They are used to make GFM
@@ -135,11 +137,10 @@ file.</p>
 installing the distribution’s package. The other is using rbenv and
 ruby-build. If you want to use the latest version of ruby, use
 rbenv.</li>
-<li>Rake. You don’t need to install it separately because it is a
-standard library of Ruby.</li>
+<li>Rake.</li>
 </ul>
 <h2 id="license">License</h2>
-<p>Copyright (C) 2020-2020,2023 ToshioCP (Toshio Sekiya)</p>
+<p>Copyright (C) 2020,2023 ToshioCP (Toshio Sekiya)</p>
 <p>GTK4-tutorial repository contains tutorial documents and programs
 such as converters, generators and controllers. All of them make up the
 ‘GTK4-tutorial’ package. This package is simply called ‘GTK4-tutorial’

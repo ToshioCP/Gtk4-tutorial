@@ -132,7 +132,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-10"><a href="#cb1-10"></a>  text <span class="op">=</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a>      <span class="st">&quot;Once upon a time, there was an old man who was called Taketori-no-Okina. &quot;</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>      <span class="st">&quot;It is a japanese word that means a man whose work is making bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>      <span class="st">&quot;One day, he went into a mountain and found a shining bamboo. &quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>      <span class="st">&quot;One day, he went into a hill and found a shining bamboo. &quot;</span></span>
 <span id="cb1-14"><a href="#cb1-14"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">What a mysterious bamboo it is!,</span><span class="sc">\&quot;</span><span class="st"> he said. &quot;</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a>      <span class="st">&quot;He cut it, then there was a small cute baby girl in it. &quot;</span></span>
 <span id="cb1-16"><a href="#cb1-16"></a>      <span class="st">&quot;The girl was shining faintly. &quot;</span></span>
@@ -182,7 +182,8 @@ href="https://docs.gtk.org/gtk4/enum.WrapMode.html">Gtk_WrapMode</a> in
 the GTK 4 API document.</p>
 <p>In line 30, <code>tv</code> is added to <code>win</code> as a
 child.</p>
-<p>Now compile and run it.</p>
+<p>Now compile and run it. If you’ve downloaded this repository, its
+pathname is <code>src/tfv/tfv1.c</code>.</p>
 <pre><code>$ cd src/tfv
 $ comp tfv1
 $ ./a.out</code></pre>
@@ -194,9 +195,9 @@ $ ./a.out</code></pre>
 characters on the GtkTextView, and your changes are kept in the
 GtkTextBuffer. If you add more characters beyond the limit of the
 window, the height increases and the window extends. If the height gets
-bigger than the height of the display screen, you won’t be able to
-control the size of the window or change it back to the original size.
-This is a problem, that is to say a bug. This can be solved by adding a
+bigger than the height of the screen, you won’t be able to control the
+size of the window or change it back to the original size. This is a
+problem, that is to say a bug. This can be solved by adding a
 GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.</p>
 <h3 id="gtkscrolledwindow">GtkScrolledWindow</h3>
 <p>What we need to do is:</p>
@@ -238,7 +239,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-11"><a href="#cb4-11"></a>  text <span class="op">=</span></span>
 <span id="cb4-12"><a href="#cb4-12"></a>      <span class="st">&quot;Once upon a time, there was an old man who was called Taketori-no-Okina. &quot;</span></span>
 <span id="cb4-13"><a href="#cb4-13"></a>      <span class="st">&quot;It is a japanese word that means a man whose work is making bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>      <span class="st">&quot;One day, he went into a mountain and found a shining bamboo. &quot;</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>      <span class="st">&quot;One day, he went into a hill and found a shining bamboo. &quot;</span></span>
 <span id="cb4-15"><a href="#cb4-15"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">What a mysterious bamboo it is!,</span><span class="sc">\&quot;</span><span class="st"> he said. &quot;</span></span>
 <span id="cb4-16"><a href="#cb4-16"></a>      <span class="st">&quot;He cut it, then there was a small cute baby girl in it. &quot;</span></span>
 <span id="cb4-17"><a href="#cb4-17"></a>      <span class="st">&quot;The girl was shining faintly. &quot;</span></span>

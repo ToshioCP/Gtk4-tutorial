@@ -7,4 +7,4 @@ resources = gnome.compile_resources('resources','tfe.gresource.xml')
 
 sourcefiles=files('tfe.c', 'tfetextview.c')
 
-executable('tfe', sourcefiles, resources, dependencies: gtkdep)
+executable('tfe', sourcefiles, resources, dependencies: gtkdep, install: false)

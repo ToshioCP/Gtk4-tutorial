@@ -69,7 +69,7 @@ struct _TfeTextView
   GFile *file;
 };
 
-G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+G_DEFINE_FINAL_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
@@ -99,45 +99,46 @@ tfe_text_view_new (void) {
 Tfe and TextView.
 Tfe is called prefix or namespace.
 TextView is called object.
-- There are three differnet identifier patterns.
+- There are three different identifier patterns.
 TfeTextView (camel case), tfe\_text\_view (this is used for functions) and TFE\_TEXT\_VIEW (This is used to cast a object to TfeTextView).
-- First, define TFE\_TYPE\_TEXT\_VIEW macro as tfe\_text\_view\_get\_type ().
+- First, define `TFE_TYPE_TEXT_VIEW` macro as `tfe_text_view_get_type ()`.
 The name is always (prefix)\_TYPE\_(object) and the letters are upper case.
 And the replacement text is always (prefix)\_(object)\_get\_type () and the letters are lower case.
-This definition is put before G\_DECLARE\_FINAL\_TYPE macro.
-- The arguments of G\_DECLARE\_FINAL\_TYPE macro are the child class name in camel case, lower case with underscore, prefix (upper case), object (upper case with underscore) and parent class name (camel case).
-The following two C structure is declared in the expansion of the macro.
+This definition is put before `G_DECLARE_FINAL_TYPE` macro.
+- The arguments of `G_DECLARE_FINAL_TYPE` macro are the child class name in camel case, lower case with underscore, prefix (upper case),
+object (upper case with underscore) and parent class name (camel case).
+The following two C structures are declared in the expansion of the macro.
   - `typedef struct _TfeTextView TfeTextView`
   - `typedef struct {GtkTextViewClass parent_class; } TfeTextViewClass;`
 - These declaration tells us that TfeTextView and TfeTextViewClass are C structures.
 "TfeTextView" has two meanings, class name and C structure name.
 The C structure TfeTextView is called object.
 Similarly, TfeTextViewClass is called class.
-- Declare the structure \_TfeTextView.
+- Declare the structure `_TfeTextView`.
 The underscore is necessary.
 The first member is the parent object (C structure).
 Notice this is not a pointer but the object itself.
 The second member and after are members of the child object.
 TfeTextView structure has a pointer to a GFile instance as a member.
-- G\_DEFINE\_TYPE macro.
+- `G_DEFINE_FINEL_TYPE` macro.
 The arguments are the child object name in camel case, lower case with underscore and parent object type (prefix)\_TYPE\_(module).
 This macro is mainly used to register the new class to the type system.
 Type system is a base system of GObject.
 Every class has its own type.
-The types of GObject, GtkWidget and TfeTextView are G\_TYPE\_OBJECT, GTK\_TYPE\_WIDGET and TFE\_TYPE\_TEXT\_VIEW respectively.
-Such type (for example, TFE\_TYPE\_TEXT\_VIEW) is a macro and it is expanded to a function (tfe\_text\_view\_get\_type()).
+The types of GObject, GtkWidget and TfeTextView are `G_TYPE_OBJECT`, `GTK_TYPE_WIDGET` and `TFE_TYPE_TEXT_VIEW` respectively.
+For example, `TFE_TYPE_TEXT_VIEW` is a macro and it is expanded to a function `tfe_text_view_get_type()`.
 It returns a integer which is unique among all GObject system classes.
-- Instance init function (tfe\_text\_view\_init) is called when the instance is created.
+- The instance init function `tfe_text_view_init` is called when the instance is created.
 It is the same as a constructor in other object oriented languages.
-- Class init function (tfe\_text\_view\_class\_init) is called when the class is created.
-- Two functions tfe\_text\_view\_set\_file and tfe\_text\_view\_get\_file are public functions.
+- The class init function `tfe_text_view_class_init` is called when the class is created.
+- Two functions `tfe_text_view_set_file` and `tfe_text_view_get_file` are public functions.
 Public functions are open and you can call them anywhere.
 They are the same as public method in other object oriented languages.
 `tv` is a pointer to the TfeTextView object (C structure).
 It has a member `file` and it is pointed by `tv->file`.
 - TfeTextView instance creation function is `tfe_text_view_new`.
 Its name is (prefix)\_(object)\_new.
-It uses g\_object\_new function to create the instance.
+It uses `g_object_new` function to create the instance.
 The arguments are (prefix)\_TYPE\_(object), a list to initialize properties and NULL.
 NULL is the end mark of the property list.
 No property is initialized here.
@@ -152,10 +153,10 @@ First, you run the editor with arguments.
 The arguments are filenames.
 The editor reads the files and shows the window with the text of files in it.
 Then you edit the text.
-After you finish editing, you exit the editor.
+After you finish editing, you click on the close button of the window and quit the editor.
 The editor updates files just before the window closes.
 
-GtkWindow emits the "close-request" signal before it closes.
+GtkWindow emits the "close-request" signal when the close button is clicked.
 We will connect the signal and the handler `before_close`.
 (A handler is a C function which is connected to a signal.)
 The function `before_close` is called when the signal "close-request" is emitted.
@@ -165,30 +166,31 @@ g_signal_connect (win, "close-request", G_CALLBACK (before_close), NULL);
 ~~~
 
 The argument `win` is a GtkApplicationWindow, in which the signal "close-request" is defined, and `before_close` is the handler.
-`G_CALLBACK` cast is necessary for the handler.
+The `G_CALLBACK` cast is necessary for the handler.
 The program of `before_close` is as follows.
 
 @@@include
 tfe/tfe1.c before_close
 @@@
 
-The numbers on the left of items are line numbers in the source code.
+The numbers on the left are line numbers.
 
-- 14: The number of pages of `nb` is assigned to `n`.
-- 15-31: For loop with regard to the index to each pages.
-- 16-18: `scr`, `tv` and `file` is assigned pointers to the GtkScrolledWindow, TfeTextView and GFile.
+- 15: The number of note book pages is assigned to `n`.
+- 16-29: For loop with regard to the index to each page.
+- 17-19: `scr`, `tv` and `file` is assigned pointers to the GtkScrolledWindow, TfeTextView and GFile.
 The GFile of TfeTextView was stored when `app_open` handler was called. It will be shown later.
-- 19-21: `tb` is assigned the GtkTextBuffer of the TfeTextView.
-The buffer is accessed with iterators.
+- 20-22: `tb` is assigned the GtkTextBuffer of the TfeTextView.
+The contents of the buffer are accessed with iterators.
 Iterators points somewhere in the buffer.
 The function `gtk_text_buffer_get_bounds` assigns the start and end of the buffer to `start_iter` and `end_iter` respectively.
 Then the function `gtk_text_buffer_get_text` returns the text between `start_iter` and `end_iter`, which is the whole text in the buffer.
-- 22-28: The text is saved to the file.
+- 23-26: The text is saved to the file.
 If it fails, error messages are displayed.
-- 29: `contents` are freed.
-- 30: GFile is useless. `g_object_unref` decreases the reference count of the GFile.
+The GError instance must be freed and the pointer `err` needs to be NULL for the next run in the loop.
+- 27: `contents` are freed.
+- 28: GFile is useless. `g_object_unref` decreases the reference count of the GFile.
 Reference count will be explained in the later section.
-The reference count will be zero in this program and the GFile instance will destroy itself.
+The reference count will be zero and the GFile instance will destroy itself.
 
 ## Source code of tfe1.c
 
@@ -198,11 +200,12 @@ The following is the whole source code of `tfe1.c`.
 tfe/tfe1.c
 @@@
 
-- 110: The GFile pointer of the TfeTextView is set with `files[i]`, which is a GFile created with the command line argument.
-But the GFile will be destroyed by the system later.
+- 109: The GFile pointer of the TfeTextView is set to the copy of `files[i]`, which is a GFile created with the command line argument.
+The GFile will be destroyed by the system later.
 So it needs to be copied before the assignment.
 `g_file_dup` duplicates the GFile.
-- 126: The "close-request" signal is connected to `before_close` handler.
+Note: GFile is *not* thread safe. Duplicating GFile avoids a trouble comes from the different thread.
+- 124: The "close-request" signal is connected to `before_close` handler.
 The fourth argument is called "user data" and it will be the second argument of the signal handler.
 So, `nb` is given to `before_close` as the second argument.
 

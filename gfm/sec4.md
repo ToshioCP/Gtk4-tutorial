@@ -6,8 +6,8 @@ Up: [README.md](../README.md),  Prev: [Section 3](sec3.md), Next: [Section 5](se
 
 ### GtkLabel
 
-In the previous section we made a window and displayed it on the screen.
-Now we go on to the next topic, where we add widgets to this window.
+We made a window and showed it on the screen in the previous section.
+Now we go on to the next topic: widgets.
 The simplest widget is GtkLabel.
 It is a widget with text in it.
 
@@ -44,6 +44,7 @@ It is a widget with text in it.
 ~~~
 
 Save this program to a file `lb1.c`.
+(You can use `src/misc/lb1.c` if you've downloaded this repository.)
 Then compile and run it.
 
     $ comp lb1
@@ -53,8 +54,8 @@ A window with a message "Hello." appears.
 
 ![Screenshot of the label](../image/screenshot_lb1.png)
 
-There's only a little change between `pr4.c` and `lb1.c`.
-A program `diff` is good to know the difference between two files.
+There are only a few changes between `pr4.c` and `lb1.c`.
+A program `diff` is useful to know the difference.
 
 ~~~
 $ cd misc; diff pr4.c lb1.c
@@ -100,7 +101,7 @@ The application window includes the label.
 
 The window `win` doesn't have any parents.
 We call such a window top-level window.
-An application can have more than one top-level window.
+An application can have more than one top-level windows.
 
 ### GtkButton
 
@@ -151,7 +152,7 @@ The following program shows how to catch the signal and do something.
 Look at the line 17 to 19.
 First, it creates a GtkButton instance `btn` with a label "Click me".
 Then, adds the button to the window `win` as a child.
-Finally, connects a "clicked" signal of the button to the handler `click_cb`.
+Finally, connects the "clicked" signal of the button to the handler `click_cb`.
 So, if `btn` is clicked, the function `click_cb` is invoked.
 The suffix "cb" means "call back".
 
@@ -164,10 +165,10 @@ A window with the button appears.
 Click the button (it is a large button, you can click everywhere in the window), then a string "Clicked." appears on the terminal.
 It shows the handler was invoked by clicking the button.
 
-It's good that we make sure that the clicked signal was caught and the handler was invoked by using `g_print`.
+It's good that we've made sure that the clicked signal was caught and the handler was invoked by using `g_print`.
 However, using `g_print` is out of harmony with GTK, which is a GUI library.
 So, we will change the handler.
-The following code is `lb3.c`.
+The following code is extracted from `lb3.c`.
 
 ~~~C
  1 static void
@@ -225,18 +226,18 @@ $ cd misc; diff lb2.c lb3.c
 The changes are:
 
 - The function `g_print` in `lb2.c` was deleted and two lines are inserted.
-  - `click_cb` has the second parameter, which comes from the fourth argument of the `g_signal_connect` at the line 19.
+  - `click_cb` has the second parameter, which comes from the fourth argument of the `g_signal_connect` at line 17.
 One thing to be careful is the types are different between the second parameter of `click_cb` and the fourth argument of `g_signal_connect`.
 The former is `GtkWindow *` and the latter is `GtkWidget *`.
 The compiler doesn't complain because `g_signal_connect` uses gpointer (general type of pointer).
 In this program the instance pointed by `win` is a GtkApplicationWindow object.
-It is a descendant of GtkWindow and GtkWidget class, so both `GtkWindow *` and `GtkWidget *` are correct types for the instance.
+It is a descendant of GtkWindow and GtkWidget class, so both `GtkWindow *` and `GtkWidget *` are correct types of the instance.
   - `gtk_destroy (win)` destroys the top-level window. Then the application quits.
 - The label of `btn` is changed from "Click me" to "Close".
 - The fourth argument of `g_signal_connect` is changed from `NULL` to `win`.
 
 The most important change is the fourth argument of the `g_signal_connect`.
-This argument is described as "data to pass to handler" in the definition of [`g_signal_connect`](https://docs.gtk.org/gobject/func.signal_connect.html).
+This argument is described as "data to pass to the handler" in the definition of [`g_signal_connect`](https://docs.gtk.org/gobject/func.signal_connect.html).
 
 ### GtkBox
 
@@ -331,7 +332,7 @@ The orientation constants are defined like this:
 - GTK\_ORIENTATION\_VERTICAL: the children widgets are arranged vertically
 - GTK\_ORIENTATION\_HORIZONTAL: the children widgets are arranged horizontally
 
-The second argument is the size between the children.
+The second argument is the size of the space between the children.
 The unit of the length is pixel.
 
 The next function fills the box with the children, giving them the same space.

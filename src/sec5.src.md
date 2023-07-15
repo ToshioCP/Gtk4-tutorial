@@ -29,6 +29,7 @@ Wrap mode is written in [Gtk\_WrapMode](https://docs.gtk.org/gtk4/enum.WrapMode.
 In line 30, `tv` is added to `win` as a child.
 
 Now compile and run it.
+If you've downloaded this repository, its pathname is `src/tfv/tfv1.c`.
 
 ```
 $ cd src/tfv
@@ -39,11 +40,10 @@ $ ./a.out
 ![GtkTextView](../image/screenshot_tfv1.png){width=6.3cm height=5.325cm}
 
 There's an I-beam pointer in the window.
-You can add or delete any characters on the GtkTextView,
-and your changes are kept in the GtkTextBuffer.
+You can add or delete any characters on the GtkTextView, and your changes are kept in the GtkTextBuffer.
 If you add more characters beyond the limit of the window, the height increases and the window extends.
-If the height gets bigger than the height of the display screen, you won't be
-able to control the size of the window or change it back to the original size.
+If the height gets bigger than the height of the screen,
+you won't be able to control the size of the window or change it back to the original size.
 This is a problem, that is to say a bug.
 This can be solved by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
 

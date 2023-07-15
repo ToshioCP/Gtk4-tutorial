@@ -10,7 +10,7 @@ app_activate (GApplication *app) {
   text =
       "Once upon a time, there was an old man who was called Taketori-no-Okina. "
       "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-      "One day, he went into a mountain and found a shining bamboo. "
+      "One day, he went into a hill and found a shining bamboo. "
       "\"What a mysterious bamboo it is!,\" he said. "
       "He cut it, then there was a small cute baby girl in it. "
       "The girl was shining faintly. "

@@ -12,7 +12,7 @@ The following is the instruction of compilation and execution.
 - You need meson and ninja.
 - If you have installed gtk4 from the source, you need to set environment variables to suit your installation.
 - Change your current directory to `src/tfe5` directory.
-- Type `meson _build` for configuration.
+- Type `meson setup _build` for configuration.
 - Type `ninja -C _build` for compilation.
 Then the application `tfe` is built under the `_build` directory.
 - Type `_build/tfe` to execute it.
@@ -20,7 +20,7 @@ Then the application `tfe` is built under the `_build` directory.
 Then the window appears.
 There are four buttons, `New`, `Open`, `Save` and `Close`.
 
-- Click on `Open` button, then a FileChooserDialog appears.
+- Click on `Open` button, then a file chooser dialog appears.
 Choose a file in the list and click on `Open` button.
 Then the file is read and a new Notebook Page appears.
 - Edit the file and click on `Save` button, then the text is saved to the original file.
@@ -35,15 +35,14 @@ It is a good practice for you to add more features.
 ~~~
 $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
-  110   336  3631 tfe5/tfeapplication.c
+  110   334  3601 tfe5/tfeapplication.c
     6     9   153 tfe5/tfe.gresource.xml
-  145   387  3667 tfe5/tfenotebook.c
+  144   390  3668 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
-  239   863  9264 tfetextview/tfetextview.c
-   35    60   701 tfetextview/tfetextview.h
+  235   821  8473 tfetextview/tfetextview.c
+   32    54   624 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  621  1793 20024 total
+  613  1746 19127 total
 ~~~
-
 
 Up: [README.md](../README.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)

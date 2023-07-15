@@ -23,7 +23,7 @@ See the sample program `tfv1.c` below.
 10   text =
 11       "Once upon a time, there was an old man who was called Taketori-no-Okina. "
 12       "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-13       "One day, he went into a mountain and found a shining bamboo. "
+13       "One day, he went into a hill and found a shining bamboo. "
 14       "\"What a mysterious bamboo it is!,\" he said. "
 15       "He cut it, then there was a small cute baby girl in it. "
 16       "The girl was shining faintly. "
@@ -75,6 +75,7 @@ Wrap mode is written in [Gtk\_WrapMode](https://docs.gtk.org/gtk4/enum.WrapMode.
 In line 30, `tv` is added to `win` as a child.
 
 Now compile and run it.
+If you've downloaded this repository, its pathname is `src/tfv/tfv1.c`.
 
 ```
 $ cd src/tfv
@@ -85,11 +86,10 @@ $ ./a.out
 ![GtkTextView](../image/screenshot_tfv1.png)
 
 There's an I-beam pointer in the window.
-You can add or delete any characters on the GtkTextView,
-and your changes are kept in the GtkTextBuffer.
+You can add or delete any characters on the GtkTextView, and your changes are kept in the GtkTextBuffer.
 If you add more characters beyond the limit of the window, the height increases and the window extends.
-If the height gets bigger than the height of the display screen, you won't be
-able to control the size of the window or change it back to the original size.
+If the height gets bigger than the height of the screen,
+you won't be able to control the size of the window or change it back to the original size.
 This is a problem, that is to say a bug.
 This can be solved by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
 
@@ -137,7 +137,7 @@ The whole code of `tfv2.c` is as follows.
 11   text =
 12       "Once upon a time, there was an old man who was called Taketori-no-Okina. "
 13       "It is a japanese word that means a man whose work is making bamboo baskets.\n"
-14       "One day, he went into a mountain and found a shining bamboo. "
+14       "One day, he went into a hill and found a shining bamboo. "
 15       "\"What a mysterious bamboo it is!,\" he said. "
 16       "He cut it, then there was a small cute baby girl in it. "
 17       "The girl was shining faintly. "

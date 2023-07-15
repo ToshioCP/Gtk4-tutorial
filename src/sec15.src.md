@@ -1,6 +1,7 @@
-# tfeapplication.c
+# Tfe main program
 
-`tfeapplication.c` includes all the code other than `tfetxtview.c` and `tfenotebook.c`.
+The file `tfeapplication.c` is a main program of Tfe.
+It includes all the code other than `tfetextview.c` and `tfenotebook.c`.
 It does:
 
 - Application support, mainly handling command line arguments.
@@ -8,7 +9,7 @@ It does:
 - Connects button signals and their handlers.
 - Manages CSS.
 
-## main
+## The function main
 
 The function `main` is the first invoked function in C language.
 It connects the command line given by the user and Gtk application.
@@ -56,16 +57,16 @@ main (int argc, char **argv) {
 @@@end
 
 - 1: Defines the application id.
-It is easy to find the application id, and better than the id is embedded in `gtk_application_new`.
+Thanks to the `#define` directive, it is easy to find the application id.
 - 8: Creates GtkApplication object.
 - 10-12: Connects "startup", "activate" and "open" signals to their handlers.
 - 14: Runs the application.
-- 15-16: releases the reference to the application and returns the status.
+- 15-16: Releases the reference to the application and returns the status.
 
-## startup signal handler
+## Startup signal handler
 
 Startup signal is emitted just after the GtkApplication instance is initialized.
-What the signal handler needs to do is the initialization of the application.
+The handler initializes the whole application which includes not only GtkApplication instance but also widgets and some other objects.
 
 - Builds the widgets using ui file.
 - Connects button signals and their handlers.
@@ -77,20 +78,26 @@ The handler is as follows.
 tfe5/tfeapplication.c app_startup
 @@@
 
-- 12-15: Builds widgets using ui file (resource).
+- 12-15: Builds widgets using ui resource.
 Connects the top-level window and the application with `gtk_window_set_application`.
 - 16-23: Gets buttons and connects their signals and handlers.
+The macro `g_signal_connect_swapped` connects a signal and handler like `g_signal_connect`.
+The difference is that `g_signal_connect_swapped` swaps the user data for the object.
+For example, the macro on line 20 swaps `nb` for `btno`.
+So, the handler expects that the first argument is `nb` instead of `btno`.
 - 24: Releases the reference to GtkBuilder.
 - 26-31: Sets CSS.
 CSS in Gtk is similar to CSS in HTML.
 You can set margin, border, padding, color, font and so on with CSS.
-In this program CSS is in line 30.
+In this program, CSS is on line 30.
 It sets padding, font-family and font size of GtkTextView.
-- 26-28: GdkDisplay is used to set CSS.
 CSS will be explained in the next subsection.
+- 26-28: GdkDisplay is used to set CSS.
+The default GdkDisplay object can be obtain with the function `gfk_display_get_default`.
+This function needs to be called after the window creation.
 - 33: Connects "destroy" signal on the main window and before\_destroy handler.
 This handler is explained in the next subsection.
-- 34: The provider is useless for the startup handler, so g\_object\_unref(provider) is called.
+- 34: The provider is useless for the startup handler, so it is released.
 Note: It doesn't mean the destruction of the provider.
 It is referred by the display so the reference count is not zero.
 
@@ -98,8 +105,8 @@ It is referred by the display so the reference count is not zero.
 
 CSS is an abbreviation of Cascading Style Sheet.
 It is originally used with HTML to describe the presentation semantics of a document.
-You might have found that the widgets in Gtk is similar to a window in a browser.
-It implies that CSS can also be applied to Gtk windowing system.
+You might have found that widgets in Gtk is similar to elements in HTML.
+It tells that CSS can be applied to Gtk windowing system, too.
 
 ### CSS nodes, selectors
 
@@ -114,8 +121,8 @@ selector { color: yellow; padding-top: 10px; ...}
 ~~~
 
 Every widget has CSS node.
-For example GtkTextView has `textview` node.
-If you want to set style to GtkTextView, substitute "textview" for the selector.
+For example, GtkTextView has `textview` node.
+If you want to set style to GtkTextView, substitute "textview" for `selector` above.
 
 @@@if gfm
 ~~~css
@@ -128,7 +135,7 @@ textview {color: yellow; ...}
 Class, ID and some other things can be applied to the selector like Web CSS.
 Refer to [GTK 4 API Reference -- CSS in Gtk](https://docs.gtk.org/gtk4/css-overview.html) for further information.
 
-In line 30, the CSS is a string.
+The codes of the startup handler has a CSS string on line 30.
 
 @@@if gfm
 ~~~css
@@ -138,73 +145,55 @@ In line 30, the CSS is a string.
 textview {padding: 10px; font-family: monospace; font-size: 12pt;}
 ~~~
 
-- padding is a space between the border and contents.
+- Padding is a space between the border and contents.
 This space makes the textview easier to read.
 - font-family is a name of font.
-"monospace" is one of the generic family font keywords.
-- font-size is set to 12pt.
+The font name "monospace" is one of the generic family font keywords.
+- Font-size is set to 12pt.
 
-### GtkStyleContext, GtkCSSProvider and GdkDisplay
+### GtkStyleContext, GtkCssProvider and GdkDisplay
 
-GtkStyleContext is an object that stores styling information affecting a widget.
-Each widget is connected to the corresponding GtkStyleContext.
-You can get the context by `gtk_widget_get_style_context`.
+GtkStyleContext is deprecated since version 4.10.
+But two functions `gtk_style_context_add_provider_for_display` and `gtk_style_context_remove_provider_for_display` are not deprecated.
+They add or remove a css provider object to the GdkDisplay object.
 
-GtkCssProvider is an object which parses CSS in order to style widgets.
+GtkCssProvider is an object which parses CSS for style widgets.
 
-To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCSSProvider) to GtkStyleContext.
-However, instead, you can add it to GdkDisplay of the window (usually top-level window).
+To apply your CSS to widgets, you need to add GtkStyleProvider (the interface of GtkCssProvider) to the GdkDisplay object.
+You can get the default display object with the function `gdk_display_get_default`.
+The returned object is owned by the function and you don't have its ownership.
+So, you don't need to care about releasing it.
 
 Look at the source file of `startup` handler again.
 
-- 28: The display is obtained by `gtk_widget_get_display`.
+- 28: The display is obtained by `gdk_display_get_default`.
 - 29: Creates a GtkCssProvider instance.
 - 30: Puts the CSS into the provider.
+The function `gtk_css_provider_load_from_data` will be deprecated since 4.12 (Not 4.10).
+The new function `gtk_css_provider_load_from_string` will be used in the future version of Tfe.
 - 31: Adds the provider to the display.
 The last argument of `gtk_style_context_add_provider_for_display` is the priority of the style provider.
 `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` is a priority for application-specific style information.
-`GTK_STYLE_PROVIDER_PRIORITY_USER` is also often used and it is the highest priority.
-So, `GTK_STYLE_PROVIDER_PRIORITY_USER` is often used to a specific widget.
-
-It is possible to add the provider to the context of GtkTextView instead of GdkDiplay.
-To do so, rewrite `tfe_text_view_new`.
-First, get the GtkStyleContext object of a TfeTextView object.
-Then adds the CSS provider to the context.
-
-~~~C
-GtkWidget *
-tfe_text_view_new (void) {
-  GtkWidget *tv;
-
-  tv = gtk_widget_new (TFE_TYPE_TEXT_VIEW, NULL);
-
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (GTK_WIDGET (tv));
-  GtkCssProvider *provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
-  gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-
-  return tv;
-}
-~~~
-
-CSS in the context takes precedence over CSS in the display.
+Refer to [GTK 4 Reference --- Constants](https://docs.gtk.org/gtk4/index.html#constants) for more information.
+You can find other constants, which have "STYLE\_PROVIDER\_PRIORITY\_XXXX" pattern names.
 
 @@@include
 tfe5/tfeapplication.c before_destroy
 @@@
 
-When a widget is destroyed, or more precisely during its dispose process, a "destroy" signal is emitted.
+When a widget is destroyed, or more precisely during its disposing process, a "destroy" signal is emitted.
 The "before\_destroy" handler connects to the signal on the main window.
 (See the program list of app\_startup.)
 So, it is called when the window is destroyed.
 
 The handler removes the CSS provider from the GdkDisplay.
 
-## activate and open handler
+Note: CSS providers are removed automatically when the application quits.
+So, even if the handler `before_destroy` is removed, the application works.
 
-The handler of "activate" and "open" signal are `app_activate` and `app_open` respectively.
+## Activate and open signal handler
+
+The handlers of "activate" and "open" signals are `app_activate` and `app_open` respectively.
 They just create a new GtkNotebookPage.
 
 @@@include
@@ -220,9 +209,9 @@ tfe5/tfeapplication.c app_activate app_open
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
 
-## Primary instance
+## A primary instance
 
-Only one GApplication instance can be run at a time per session.
+Only one GApplication instance can be run at a time in a session.
 The session is a bit difficult concept and also platform-dependent, but roughly speaking, it corresponds to a graphical desktop login.
 When you use your PC, you probably login first, then your desktop appears until you log off.
 This is the session.
@@ -233,16 +222,16 @@ Isn't it a contradiction?
 When first instance is launched, then it registers itself with its application ID (for example, `com.github.ToshioCP.tfe`).
 Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
 I wrote "startup signal is emitted just after the application instance is initialized" in the prior subsection.
-More precisely, it is emitted just after the registration.
+More precisely, it is emitted after the registration.
 
-If another instance which has the same application ID is invoked, it also tries to register itself.
+If another instance which has the same application ID is launched, it also tries to register itself.
 Because this is the second instance, the registration of the ID has already done, so it fails.
 Because of the failure startup signal isn't emitted.
-After that, activate or open signal is emitted in the primary instance, not the second instance.
+After that, activate or open signal is emitted in the primary instance, not on the second instance.
 The primary instance receives the signal and its handler is invoked.
 On the other hand, the second instance doesn't receive the signal and it immediately quits.
 
-Try to run two instances in a row.
+Try running two instances in a row.
 
     $ ./_build/tfe &
     [1] 84453
@@ -254,7 +243,7 @@ Then, after the second instance is run, a new notebook page with the contents of
 This is because the open signal is emitted in the primary instance.
 The second instance immediately quits so shell prompt soon appears.
 
-## a series of handlers correspond to the button signals
+## A series of handlers correspond to the button signals
 
 @@@include
 tfe5/tfeapplication.c open_cb new_cb save_cb close_cb

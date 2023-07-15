@@ -116,9 +116,9 @@ GtkApplicationWindow</h1>
 <h2 id="gtkapplication">GtkApplication</h2>
 <h3 id="gtkapplication-and-g_application_run">GtkApplication and
 g_application_run</h3>
-<p>People write programming code to make an application. What are
+<p>People write programming codes to make an application. What are
 applications? Applications are software that runs using libraries, which
-includes the OS, frameworks and so on. In GTK 4 programming, the
+are the OS, frameworks and so on. In GTK 4 programming, the
 GtkApplication is a program (or executable) that runs using Gtk
 libraries.</p>
 <p>The basic way to write a GtkApplication is as follows.</p>
@@ -147,21 +147,20 @@ in C language. The variable <code>app</code> is defined as a pointer to
 a GtkApplication instance. The function <code>gtk_application_new</code>
 creates a GtkApplication instance and returns a pointer to the instance.
 The GtkApplication instance is a C structure data in which the
-information about the application is stored. The meaning of the
-arguments will be explained later. The function
-<code>g_application_run</code> runs an application that the instance
-defined. (We often say that the function runs <code>app</code>.
-Actually, <code>app</code> is not an application but a pointer to the
-instance of the application. However, it is simple and short, and
-probably no confusion occurs.)</p>
+information of the application is stored. The arguments will be
+explained later. The function <code>g_application_run</code> runs an
+application that the instance defined. (We often say that the function
+runs <code>app</code>. Actually, <code>app</code> is not an application
+but a pointer to the instance of the application. However, it is simple
+and short, and probably no confusion occurs.)</p>
 <p>Here I used the word <code>instance</code>. Instance, class and
 object are terminologies in Object Oriented Programming. I use these
 words in the same way. But, I will often use “object” instead of
 “instance” in this tutorial. That means “object” and “instance” is the
 same. Object is a bit ambiguous word. In a broad sense, object has wider
 meaning than instance. So, readers should be careful of the contexts to
-find the meaning of “object”. In many cases, object and instance are the
-same.</p>
+find the meaning of “object”. In many cases, object and instance are
+interchangeable.</p>
 <p>The function <code>gtk_application_new</code> has two parameters.</p>
 <ul>
 <li><p>Application ID (com.github.ToshioCP.pr1). It is used to
@@ -176,43 +175,46 @@ G_APPLICATION_DEFAULT_FLAGS. Otherwise, you need other flags. See <a
 href="https://docs.gtk.org/gio/flags.ApplicationFlags.html">GIO API
 reference</a> for further information.</p></li>
 </ul>
-<p>To compile this, the following command needs to be run. The string
-<code>pr1.c</code> is the filename of the C source code above.</p>
 <p>Notice: If your GLib-2.0 version is older than 2.74, use
 <code>G_APPLICATION_FLAGS_NONE</code> instead of
 <code>G_APPLICATION_DEFAULT_FLAGS</code>. It is an old flag replaced by
 <code>G_APPLICATION_DEFAULT_FLAGS</code> and deprecated since version
-2.74. However, many distributions use GLib-2.0 version 2.72 or older,
-for example, Ubuntu 22.04 LTS.</p>
+2.74.</p>
+<p>To compile this, run the following command. The string
+<code>pr1.c</code> is the filename of the C source code above.</p>
+<p>If you’ve downloaded this repository, you don’t need to create the
+file. There’s the same file at <code>src/misc/pr1.c</code> in your local
+repository. All the example codes are under the <code>src</code>
+directory as well.</p>
 <pre><code>$ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`</code></pre>
 <p>The C compiler gcc generates an executable file, <code>a.out</code>.
 Let’s run it.</p>
 <pre><code>$ ./a.out
 
-(a.out:13533): GLib-GIO-WARNING **: 15:30:17.449: Your application does not implement
-g_application_activate() and has no handlers connected to the &quot;activate&quot; signal.
+(a.out:5084): GLib-GIO-WARNING **: 09:52:04.236: Your application does not implement
+g_application_activate() and has no handlers connected to the &#39;activate&#39; signal.
 It should do one of these.
 $</code></pre>
-<p>Oh, it just produces an error message. This error message means that
+<p>Oh, it just produces an error message. This error message shows that
 the GtkApplication object ran, without a doubt. Now, let’s think about
 what this message means.</p>
-<h3 id="signal">signal</h3>
+<h3 id="signals">Signals</h3>
 <p>The message tells us that:</p>
 <ol type="1">
-<li>The application GtkApplication doesn’t implement
+<li>The application doesn’t implement
 <code>g_application_activate()</code>,</li>
 <li>It has no handlers connected to the “activate” signal, and</li>
 <li>You will need to solve at least one of these.</li>
 </ol>
-<p>These two causes of the error are related to signals. So, I will
-explain that to you first.</p>
+<p>These two problems are related to signals. So, I will explain that
+first.</p>
 <p>A signal is emitted when something happens. For example, a window is
 created, a window is destroyed and so on. The signal “activate” is
 emitted when the application is activated. (Activated is a bit different
 from started, but you can think of them both as almost the same so far.)
 If the signal is connected to a function, which is called a signal
 handler or simply handler, then the function is invoked when the signal
-emits.</p>
+is emitted.</p>
 <p>The flow is like this:</p>
 <ol type="1">
 <li>Something happens.</li>
@@ -264,7 +266,7 @@ and it’s like a printf in the C standard library. In the function
 <li>The name of the signal.</li>
 <li>A handler function (also called callback), which needs to be casted
 by <code>G_CALLBACK</code>.</li>
-<li>Data to pass to the handler. If no data is necessary, NULL should be
+<li>Data to pass to the handler. If no data is necessary, NULL is
 given.</li>
 </ol>
 <p>It is described in the <a
@@ -278,7 +280,7 @@ a C function).</p>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  data</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
 <p>You can find the description of each signal in the API reference
-manual. For example, “activate” signal is in <a
+manual. For example, “activate” signal is in the <a
 href="https://docs.gtk.org/gio/signal.Application.activate.html">GApplication
 section</a> in the GIO API Reference.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
@@ -333,7 +335,7 @@ user interface (GUI). Now we go ahead with adding a window into this
 program. What we need to do is:</p>
 <ol type="1">
 <li>Create a GtkWindow.</li>
-<li>Connect it to GtkApplication.</li>
+<li>Connect it to the GtkApplication.</li>
 <li>Show the window.</li>
 </ol>
 <p>Now rewrite the function <code>app_activate</code>.</p>
@@ -348,9 +350,8 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-7"><a href="#cb12-7"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb12-8"><a href="#cb12-8"></a><span class="op">}</span></span></code></pre></div>
 <p>Widget is an abstract concept that includes all the GUI interfaces
-such as windows, dialogs, buttons, multi-line text, containers and so
-on. And GtkWidget is a base object from which all the GUI objects
-derive.</p>
+such as windows, labels, buttons, multi-line text, boxes and so on. And
+GtkWidget is a base object from which all the GUI objects derive.</p>
 <pre><code>parent &lt;-----&gt; child
 GtkWidget -- GtkWindow</code></pre>
 <p>GtkWindow includes GtkWidget at the top of its object.</p>
@@ -374,7 +375,7 @@ macro is used.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>GTK_WINDOW <span class="op">(</span>win<span class="op">)</span></span></code></pre></div>
 <p>The macro is recommended because it does not only cast the pointer
 but it also checks the type.</p>
-<h4 id="connect-it-to-gtkapplication.">Connect it to
+<h4 id="connect-it-to-the-gtkapplication.">Connect it to the
 GtkApplication.</h4>
 <p>The function <code>gtk_window_set_application</code> is used to
 connect GtkWindow to GtkApplication.</p>
@@ -438,7 +439,7 @@ instances. So you don’t need to call
 <code>gtk_window_set_application</code> any more.</p>
 <p>The program sets the title and the default size of the window.
 Compile it and run <code>a.out</code>, then you will see a bigger window
-with its title “pr4”.</p>
+with the title “pr4”.</p>
 <figure>
 <img src="image/screenshot_pr4.png" alt="Screenshot of the window" />
 <figcaption aria-hidden="true">Screenshot of the window</figcaption>

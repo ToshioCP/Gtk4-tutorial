@@ -11,7 +11,7 @@ struct _TfeTextView
   GFile *file;
 };
 
-G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+G_DEFINE_FINAL_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
@@ -51,6 +51,7 @@ before_close (GtkWindow *win, GtkWidget *nb) {
   char *contents;
   unsigned int n;
   unsigned int i;
+  GError *err = NULL;
 
   n = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
   for (i = 0; i < n; ++i) {
@@ -60,12 +61,9 @@ before_close (GtkWindow *win, GtkWidget *nb) {
     tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
     gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
     contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-    if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, NULL)) {
-      if ((pathname = g_file_get_path (file)) != NULL) {
-        g_printerr ("Can't save %s.", pathname);
-        g_free (pathname);
-      } else
-        g_printerr ("Pathname not exist.\n");
+    if (! g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err)) {
+      g_printerr ("%s.\n", err->message);
+      g_clear_error (&err);
     }
     g_free (contents);
     g_object_unref (file);
@@ -91,6 +89,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   gsize length;
   char *filename;
   int i;
+  GError *err = NULL;
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file editor");
@@ -100,7 +99,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   gtk_window_set_child (GTK_WINDOW (win), nb);
 
   for (i = 0; i < n_files; i++) {
-    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, NULL)) {
+    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
       scr = gtk_scrolled_window_new ();
       tv = tfe_text_view_new ();
       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
@@ -116,11 +115,10 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);
       g_free (filename);
-    } else if ((filename = g_file_get_path (files[i])) != NULL) {
-        g_print ("No such file: %s.\n", filename);
-        g_free (filename);
-    } else
-        g_print ("No valid file is given\n");
+    } else {
+      g_printerr ("%s.\n", err->message);
+      g_clear_error (&err);
+    }
   }
   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
     g_signal_connect (win, "close-request", G_CALLBACK (before_close), nb);

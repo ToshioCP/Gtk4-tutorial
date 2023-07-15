@@ -169,6 +169,9 @@ g_object_unref (builder);
 
 The builder instance is freed after the GMenuModel `menubar` is inserted to the application.
 If you do it before the insertion, bad thing will happen -- your computer might freeze.
+It is because you don't own the `menubar` instance.
+The function `gtk_builder_get_object` just returns the pointer to `menubar` and doesn't increase the reference count of `menubar`.
+So, if you released `bulder` before `gtk_application_set_menubar`, `builder` would be destroyed and `menubar` as well.
 
 ## Action entry
 
@@ -220,11 +223,11 @@ GVariant text format defines that strings are surrounded by single or double quo
 So, the string red is 'red' or "red".
 The fourth element is `"'red'"`, which is a C string format and the string is 'red'.
 You can write `"\"red\""` instead.
-The second element color\_activated is the activate handler.
+The second element `color_activated` is the activate handler.
 The action doesn't have change-state handler, so the fifth element is NULL.
 - Quit action is non-stateful and has no parameter.
 So, the third and fourth elements are NULL.
-The second element quit\_activated is the activate handler.
+The second element `quit_activated` is the activate handler.
 The action doesn't have change-state handler, so the fifth element is NULL.
 
 The function `g_action_map_add_action_entries` does everything
@@ -242,7 +245,7 @@ g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
 The code above does:
 
 - Builds the "color" and "quit" actions
-- Connects the action and the "activate" signal handlers (color\_activated and quit\_activated).
+- Connects the action and the "activate" signal handlers (`color_activated` and `quit_activated`).
 - Adds the actions to the action map `app`.
 
 The same goes for the other action.
@@ -321,68 +324,67 @@ The following are `menu3.c` and `meson.build`.
  51 }
  52 
  53 static void
- 54 quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
- 55 {
- 56   GApplication *app = G_APPLICATION (user_data);
- 57 
- 58   g_application_quit (app);
- 59 }
- 60 
- 61 static void
- 62 app_activate (GApplication *app) {
- 63   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
- 64 
- 65   const GActionEntry win_entries[] = {
- 66     { "save", save_activated, NULL, NULL, NULL },
- 67     { "saveas", saveas_activated, NULL, NULL, NULL },
- 68     { "close", close_activated, NULL, NULL, NULL },
- 69     { "fullscreen", NULL, NULL, "false", fullscreen_changed }
- 70   };
- 71   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
- 72 
- 73   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
- 74 
- 75   gtk_window_set_title (GTK_WINDOW (win), "menu3");
- 76   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
- 77   gtk_widget_show (win);
- 78 }
- 79 
- 80 static void
- 81 app_startup (GApplication *app) {
- 82   GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
- 83   GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
- 84 
- 85   gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
- 86   g_object_unref (builder);
- 87 
- 88   const GActionEntry app_entries[] = {
- 89     { "new", new_activated, NULL, NULL, NULL },
- 90     { "open", open_activated, NULL, NULL, NULL },
- 91     { "cut", cut_activated, NULL, NULL, NULL },
- 92     { "copy", copy_activated, NULL, NULL, NULL },
- 93     { "paste", paste_activated, NULL, NULL, NULL },
- 94     { "selectall", selectall_activated, NULL, NULL, NULL },
- 95     { "quit", quit_activated, NULL, NULL, NULL }
- 96   };
- 97   g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
- 98 }
- 99 
-100 #define APPLICATION_ID "com.github.ToshioCP.menu3"
-101 
-102 int
-103 main (int argc, char **argv) {
-104   GtkApplication *app;
-105   int stat;
-106 
-107   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-108   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-109   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-110 
-111   stat =g_application_run (G_APPLICATION (app), argc, argv);
-112   g_object_unref (app);
-113   return stat;
-114 }
-115 
+ 54 quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+ 55   GApplication *app = G_APPLICATION (user_data);
+ 56 
+ 57   g_application_quit (app);
+ 58 }
+ 59 
+ 60 static void
+ 61 app_activate (GApplication *app) {
+ 62   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+ 63 
+ 64   const GActionEntry win_entries[] = {
+ 65     { "save", save_activated, NULL, NULL, NULL },
+ 66     { "saveas", saveas_activated, NULL, NULL, NULL },
+ 67     { "close", close_activated, NULL, NULL, NULL },
+ 68     { "fullscreen", NULL, NULL, "false", fullscreen_changed }
+ 69   };
+ 70   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
+ 71 
+ 72   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
+ 73 
+ 74   gtk_window_set_title (GTK_WINDOW (win), "menu3");
+ 75   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+ 76   gtk_window_present (GTK_WINDOW (win));
+ 77 }
+ 78 
+ 79 static void
+ 80 app_startup (GApplication *app) {
+ 81   GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
+ 82   GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
+ 83 
+ 84   gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
+ 85   g_object_unref (builder);
+ 86 
+ 87   const GActionEntry app_entries[] = {
+ 88     { "new", new_activated, NULL, NULL, NULL },
+ 89     { "open", open_activated, NULL, NULL, NULL },
+ 90     { "cut", cut_activated, NULL, NULL, NULL },
+ 91     { "copy", copy_activated, NULL, NULL, NULL },
+ 92     { "paste", paste_activated, NULL, NULL, NULL },
+ 93     { "selectall", selectall_activated, NULL, NULL, NULL },
+ 94     { "quit", quit_activated, NULL, NULL, NULL }
+ 95   };
+ 96   g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
+ 97 }
+ 98 
+ 99 #define APPLICATION_ID "com.github.ToshioCP.menu3"
+100 
+101 int
+102 main (int argc, char **argv) {
+103   GtkApplication *app;
+104   int stat;
+105 
+106   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+107   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+108   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+109 
+110   stat =g_application_run (G_APPLICATION (app), argc, argv);
+111   g_object_unref (app);
+112   return stat;
+113 }
+114 
 ~~~
 
 meson.build

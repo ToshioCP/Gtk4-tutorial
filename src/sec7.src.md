@@ -5,11 +5,13 @@
 ### G\_APPLICATION\_HANDLES\_OPEN flag
 
 We made a very simple editor in the previous section with GtkTextView, GtkTextBuffer and GtkScrolledWindow.
-We will add file-reading ability to the program and improve it to a file viewer.
+We will add file-read ability to the program and improve it to a file viewer.
 
 The easiest way to give a filename is to use a command line argument.
 
-    $ ./a.out filename
+~~~
+$ ./a.out filename
+~~~
 
 The program will open the file and insert its contents into the GtkTextBuffer.
 
@@ -24,10 +26,9 @@ gtk_application_new (const gchar *application_id, GApplicationFlags flags);
 ~~~
 
 This tutorial explains only two flags, `G_APPLICATION_DEFAULT_FLAGS` and `G_APPLICATION_HANDLES_OPEN`.
-(`G_APPLICATION_FLAGS_NONE` was used instead of `G_APPLICATION_DEFAULT_FLAGS` before GIO version2.73.3 (GLib 2.73.3 5/Aug/2022).
-Some GTK 4 applications still use `G_APPLICATION_FLAGS_NONE`.
-But now it is deprecated and `G_APPLICATION_DEFAULT_FLAGS` is recommended.)
-If you want to handle command line arguments, the `G_APPLICATION_HANDLES_COMMAND_LINE` flag is what you need.
+
+`G_APPLICATION_FLAGS_NONE` was used instead of `G_APPLICATION_DEFAULT_FLAGS` before GIO version2.73.3 (GLib 2.73.3 5/Aug/2022).
+Now it is deprecated and `G_APPLICATION_DEFAULT_FLAGS` is recommended.
 
 For further information, see [GIO API Reference -- ApplicationFlags](https://docs.gtk.org/gio/flags.ApplicationFlags.html) and
 [GIO API Reference -- g\_application\_run](https://docs.gtk.org/gio/method.Application.run.html).
@@ -36,8 +37,7 @@ We've already used `G_APPLICATION_DEFAULT_FLAGS`, as it is the simplest option, 
 If you give arguments, an error will occur.
 
 The flag `G_APPLICATION_HANDLES_OPEN` is the second simplest option.
-It allows arguments but only files.
-The application assumes all the arguments are filenames.
+It allows arguments but only filenames.
 
 ~~~C
 app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
@@ -47,8 +47,8 @@ app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPE
 
 When `G_APPLICATION_HANDLES_OPEN` flag is given to the application, two signals are available.
 
-- activate signal --- This signal is emitted when there's no argument.
-- open signal --- This signal is emitted when there is at least one argument.
+- activate signal: This signal is emitted when there's no argument.
+- open signal: This signal is emitted when there is at least one argument.
 
 The handler of the "open" signal is defined as follows.
 
@@ -65,18 +65,18 @@ open (
 
 The parameters are:
 
-- `self` --- the application instance (usually GtkApplication)
-- `files` --- an array of GFiles. [array length=n\_files] [element-type GFile]
-- `n_files` --- the number of the elements of `files`
-- `hint` --- a hint provided by the calling instance (usually it can be ignored)
-- `user_data` --- user data set when the signal handler was connected.
+- self: the application instance (usually GtkApplication)
+- files: an array of GFiles. [array length=n\_files] [element-type GFile]
+- n_files: the number of the elements of `files`
+- hint: a hint provided by the calling instance (usually it can be ignored)
+- user_data: user data that is set when the signal handler was connected.
 
-## Making a file viewer
+## File viewer
 
 ### What is a file viewer?
 
 A file viewer is a program that displays text files.
-Our file viewer will work as follows.
+Our file viewer is as follows.
 
 - When arguments are given, it recognizes the first argument as a filename and opens it.
 - The second argument and after are ignored.
@@ -91,10 +91,13 @@ tfv/tfv3.c
 @@@
 
 Save it as `tfv3.c`.
-Then compile and run it.
+If you've downloaded this repository, the file is `src/tfv/tfv3.c`.
+Compile and run it.
 
-    $ comp tfv3
-    $ ./a.out tfv3.c
+~~~
+$ comp tfv3
+$ ./a.out tfv3.c
+~~~
 
 ![File viewer](../image/screenshot_tfv3.png){width=6.3cm height=5.325cm}
 
@@ -109,7 +112,7 @@ When the flag `G_APPLICATION_HANDLES_OPEN` is given to `gtk_application_new` fun
 - If the application is run with command line arguments, it emits "open" signal when it is activated.
 
 The handler `app_activate` becomes very simple.
-It just outputs the error message and return to the caller.
+It just outputs an error message and returns to the caller.
 Then the application quits immediately because no window is created.
 
 The main work is done in the handler `app_open`.
@@ -120,23 +123,20 @@ The main work is done in the handler `app_open`.
 - Reads the file and inserts the text into GtkTextBuffer (this will be explained later)
 - If the file is not opened, outputs an error message and destroys the window. This makes the application quit.
 
-The following is the file reading part of the program again.
+The following is the file reading part of the program.
 
 ~~~C
-if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, NULL)) {
+if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
   gtk_text_buffer_set_text (tb, contents, length);
   g_free (contents);
   if ((filename = g_file_get_basename (files[0])) != NULL) {
     gtk_window_set_title (GTK_WINDOW (win), filename);
     g_free (filename);
   }
-  gtk_widget_show (win);
+  gtk_window_present (GTK_WINDOW (win));
 } else {
-  if ((filename = g_file_get_path (files[0])) != NULL) {
-    g_printerr ("No such file: %s.\n", filename);
-    g_free (filename);
-  } else
-    g_printerr ("File can't be opened.\n");
+  g_printerr ("%s.\n", err->message);
+  g_error_free (err);
   gtk_window_destroy (GTK_WINDOW (win));
 }
 ~~~
@@ -144,13 +144,32 @@ if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, NULL)) {
 The function `g_file_load_contents` loads the file contents into a temporary buffer,
 which is automatically allocated and sets `contents` to point the buffer.
 The length of the buffer is assigned to `length`.
-It returns `TRUE` if the file's contents are successfully loaded or `FALSE` if an error occurs.
+It returns `TRUE` if the file's contents are successfully loaded.
+If an error occurs, it returns `FALSE` and sets the variable `err` to point a newly created GError structure.
+The caller takes ownership of the GError structure and is responsible for freeing it.
 If you want to know the details about g\_file\_load\_contents, see [g file load contents](https://docs.gtk.org/gio/method.File.load_contents.html).
 
 If it has successfully read the file, it inserts the contents into GtkTextBuffer,
 frees the temporary buffer pointed by `contents`, sets the title of the window,
 frees the memories pointed by `filename` and then shows the window.
-If it fails, it outputs an error message and destroys the window and finally make the program quit.
+
+If it fails, `g_file_load_contents` sets `err` to point a newly created GError structure.
+The structure is:
+
+~~~C
+struct GError {
+  GQuark domain;
+  int code;
+  char* message;
+}
+~~~
+
+The `message` member is used most often.
+It points an error message.
+A function `g_error_free` is used to free the memory of the structure.
+See [GError](https://docs.gtk.org/glib/struct.Error.html).
+
+The program above outputs an error message, frees `err` and destroys the window and finally make the program quit.
 
 ## GtkNotebook
 
@@ -162,8 +181,7 @@ Another child will be shown when its tab is clicked.
 
 The left image is the window at the startup.
 The file `pr1.c` is shown and its filename is in the left tab.
-After clicking on the right tab, the contents of the file `tfv1.c` is shown.
-The right image is the screenshot.
+After clicking on the right tab, the contents of the file `tfv1.c` is shown (the right image).
 
 The following is `tfv4.c`.
 It has GtkNoteBook widget.
@@ -177,13 +195,13 @@ Most of the changes are in the function `app_open`.
 The numbers at the left of the following items are line numbers in the source code.
 
 - 11-13: Variables `nb`, `lab` and `nbp` are defined. They point GtkNotebook, GtkLabel and GtkNotebookPage respectively.
-- 23: The window's title is set to "file viewer".
-- 24: The default size of the window is 600x400.
-- 26-27 GtkNotebook is created and inserted to the GtkApplicationWindow as a child.
-- 29-58 For-loop. The variable `files[i]` points i-th GFile, which is created by the GtkApplication from the i-th command line argument.
-- 31-36 GtkScrollledWindow, GtkTextView are created. GtkTextBuffer is got from the GtkTextView.
+- 24: The window's title is set to "file viewer".
+- 25: The default size of the window is 600x400.
+- 26-27: GtkNotebook is created and inserted to the GtkApplicationWindow as a child.
+- 29-57: For-loop. The variable `files[i]` points i-th GFile, which is created by the GtkApplication from the i-th command line argument.
+- 31-36: GtkScrollledWindow, GtkTextView are created. GtkTextBuffer is got from the GtkTextView.
 The GtkTextView is connected to the GtkScrolledWindow as a child.
-- 38-39 inserts the contents of the file into GtkTextBuffer and frees the memory pointed by `contents`.
+- 38-39: inserts the contents of the file into GtkTextBuffer and frees the memory pointed by `contents`.
 - 40-42: If the filename is taken from the GFile, GtkLabel is created with the filename. The string `filename` is freed..
 - 43-44: If it fails to take the filename, empty string GtkLabel is created.
 - 45-46: Appends a GtkScrolledWindow to the GtkNotebook as a child.
@@ -195,7 +213,7 @@ If it is set to TRUE then the tab expands horizontally as long as possible.
 If it is FALSE, then the width of the tab is determined by the size of the label.
 `g_object_set` is a general function to set properties of objects.
 See [GObject API Reference -- g\_object\_set](https://docs.gtk.org/gobject/method.Object.set.html).
-- 48-50: If it fails to read the file and a filename is taken from the GFile, "No such file" message is displayed. The `filename` is freed.
-- 51-52: If `filename` is NULL, the "No valid file is given" message is displayed.
-- 54-57: If at least one page exists, the window is shown.
+- 48-50: If it fails to read the file, the error message is shown.
+The function `g_clear_error (&err)` works like `g_error_free (err); err = NULL`.
+- 53-56: If at least one page exists, the window is shown.
 Otherwise, the window is destroyed and the application quits.

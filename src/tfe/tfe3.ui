@@ -5,43 +5,43 @@
     <property name="default-width">600</property>
     <property name="default-height">400</property>
     <child>
-      <object class="GtkBox" id="boxv">
+      <object class="GtkBox">
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <child>
-          <object class="GtkBox" id="boxh">
+          <object class="GtkBox">
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
-              <object class="GtkLabel" id="dmy1">
+              <object class="GtkLabel">
                 <property name="width-chars">10</property>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="btnn">
+              <object class="GtkButton">
                 <property name="label">New</property>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="btno">
+              <object class="GtkButton">
                 <property name="label">Open</property>
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="dmy2">
+              <object class="GtkLabel">
                 <property name="hexpand">TRUE</property>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="btns">
+              <object class="GtkButton">
                 <property name="label">Save</property>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="btnc">
+              <object class="GtkButton">
                 <property name="label">Close</property>
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="dmy3">
+              <object class="GtkLabel">
                 <property name="width-chars">10</property>
               </object>
             </child>

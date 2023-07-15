@@ -113,16 +113,16 @@
     </nav>
 <h1 id="build-system">Build system</h1>
 <h2 id="managing-big-source-files">Managing big source files</h2>
-<p>We’ve compiled a small editor so far. But Some bad signs are
-beginning to appear.</p>
+<p>We’ve compiled a small editor so far. The program is also small and
+not complicated yet. But if it grows bigger, it will be difficult to
+maintain. So, we should do the followings now.</p>
 <ul>
 <li>We’ve had only one C source file and put everything in it. We need
-to sort it out.</li>
+to divide it and sort them out.</li>
 <li>There are two compilers, <code>gcc</code> and
 <code>glib-compile-resources</code>. We should control them by one
 building tool.</li>
 </ul>
-<p>These ideas are useful to manage big source files.</p>
 <h2 id="divide-a-c-source-file-into-two-parts.">Divide a C source file
 into two parts.</h2>
 <p>When you divide C source file into several parts, each file should
@@ -140,10 +140,10 @@ to GtkApplication and GtkApplicationWindow</li>
 <p>Now we have three source files, <code>tfetextview.c</code>,
 <code>tfe.c</code> and <code>tfe3.ui</code>. The <code>3</code> of
 <code>tfe3.ui</code> is like a version number. Managing version with
-filenames is one possible idea but it may make bothersome problem. You
-need to rewrite filename in each version and it affects to contents of
-source files that refer to filenames. So, we should take <code>3</code>
-away from the filename.</p>
+filenames is one possible idea but it also has a problem. You need to
+rewrite filename in each version and it affects to contents of source
+files that refer to filenames. So, we should take <code>3</code> away
+from the filename.</p>
 <p>In <code>tfe.c</code> the function <code>tfe_text_view_new</code> is
 invoked to create a TfeTextView instance. But it is defined in
 <code>tfetextview.c</code>, not <code>tfe.c</code>. The lack of the
@@ -151,10 +151,10 @@ declaration (not definition) of <code>tfe_text_view_new</code> makes
 error when <code>tfe.c</code> is compiled. The declaration is necessary
 in <code>tfe.c</code>. Those public information is usually written in
 header files. It has <code>.h</code> suffix like
-<code>tfetextview.h</code> And header files are included by C source
+<code>tfetextview.h</code>. And header files are included by C source
 files. For example, <code>tfetextview.h</code> is included by
 <code>tfe.c</code>.</p>
-<p>All the source files are listed below.</p>
+<p>The source files are shown below.</p>
 <p><code>tfetextview.h</code></p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
@@ -193,12 +193,12 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-19"><a href="#cb2-19"></a></span>
 <span id="cb2-20"><a href="#cb2-20"></a><span class="dt">void</span></span>
 <span id="cb2-21"><a href="#cb2-21"></a>tfe_text_view_set_file <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> GFile <span class="op">*</span>f<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a>  tv <span class="op">-&gt;</span> file <span class="op">=</span> f<span class="op">;</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  tv<span class="op">-&gt;</span>file <span class="op">=</span> f<span class="op">;</span></span>
 <span id="cb2-23"><a href="#cb2-23"></a><span class="op">}</span></span>
 <span id="cb2-24"><a href="#cb2-24"></a></span>
 <span id="cb2-25"><a href="#cb2-25"></a>GFile <span class="op">*</span></span>
 <span id="cb2-26"><a href="#cb2-26"></a>tfe_text_view_get_file <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-27"><a href="#cb2-27"></a>  <span class="cf">return</span> tv <span class="op">-&gt;</span> file<span class="op">;</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a>  <span class="cf">return</span> tv<span class="op">-&gt;</span>file<span class="op">;</span></span>
 <span id="cb2-28"><a href="#cb2-28"></a><span class="op">}</span></span>
 <span id="cb2-29"><a href="#cb2-29"></a></span>
 <span id="cb2-30"><a href="#cb2-30"></a>GtkWidget <span class="op">*</span></span>
@@ -228,35 +228,35 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-19"><a href="#cb3-19"></a>  gsize length<span class="op">;</span></span>
 <span id="cb3-20"><a href="#cb3-20"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
 <span id="cb3-21"><a href="#cb3-21"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe3/tfe.ui&quot;</span><span class="op">);</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>  nb <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;nb&quot;</span><span class="op">));</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb3-30"><a href="#cb3-30"></a>    <span class="cf">if</span> <span class="op">(</span>g_file_load_contents <span class="op">(</span>files<span class="op">[</span>i<span class="op">],</span> NULL<span class="op">,</span> <span class="op">&amp;</span>contents<span class="op">,</span> <span class="op">&amp;</span>length<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a>      scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
-<span id="cb3-32"><a href="#cb3-32"></a>      tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
-<span id="cb3-33"><a href="#cb3-33"></a>      tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>      gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a>      gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
-<span id="cb3-36"><a href="#cb3-36"></a></span>
-<span id="cb3-37"><a href="#cb3-37"></a>      tfe_text_view_set_file <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span>  g_file_dup <span class="op">(</span>files<span class="op">[</span>i<span class="op">]));</span></span>
-<span id="cb3-38"><a href="#cb3-38"></a>      gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
-<span id="cb3-39"><a href="#cb3-39"></a>      g_free <span class="op">(</span>contents<span class="op">);</span></span>
-<span id="cb3-40"><a href="#cb3-40"></a>      filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span>i<span class="op">]);</span></span>
-<span id="cb3-41"><a href="#cb3-41"></a>      lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb3-42"><a href="#cb3-42"></a>      gtk_notebook_append_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
-<span id="cb3-43"><a href="#cb3-43"></a>      nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">);</span></span>
-<span id="cb3-44"><a href="#cb3-44"></a>      g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb3-45"><a href="#cb3-45"></a>      g_free <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb3-46"><a href="#cb3-46"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">((</span>filename <span class="op">=</span> g_file_get_path <span class="op">(</span>files<span class="op">[</span>i<span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-47"><a href="#cb3-47"></a>        g_print <span class="op">(</span><span class="st">&quot;No such file: %s.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
-<span id="cb3-48"><a href="#cb3-48"></a>        g_free <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb3-49"><a href="#cb3-49"></a>    <span class="op">}</span> <span class="cf">else</span></span>
-<span id="cb3-50"><a href="#cb3-50"></a>        g_print <span class="op">(</span><span class="st">&quot;No valid file is given</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  GError <span class="op">*</span>err <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a></span>
+<span id="cb3-25"><a href="#cb3-25"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/tfe.ui&quot;</span><span class="op">);</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb3-28"><a href="#cb3-28"></a>  nb <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;nb&quot;</span><span class="op">));</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a>    <span class="cf">if</span> <span class="op">(</span>g_file_load_contents <span class="op">(</span>files<span class="op">[</span>i<span class="op">],</span> NULL<span class="op">,</span> <span class="op">&amp;</span>contents<span class="op">,</span> <span class="op">&amp;</span>length<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a>      scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a>      tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a>      tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>      gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a>      gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a></span>
+<span id="cb3-38"><a href="#cb3-38"></a>      tfe_text_view_set_file <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span>  g_file_dup <span class="op">(</span>files<span class="op">[</span>i<span class="op">]));</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a>      gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a>      g_free <span class="op">(</span>contents<span class="op">);</span></span>
+<span id="cb3-41"><a href="#cb3-41"></a>      filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb3-42"><a href="#cb3-42"></a>      lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb3-43"><a href="#cb3-43"></a>      gtk_notebook_append_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
+<span id="cb3-44"><a href="#cb3-44"></a>      nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">);</span></span>
+<span id="cb3-45"><a href="#cb3-45"></a>      g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb3-46"><a href="#cb3-46"></a>      g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb3-47"><a href="#cb3-47"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb3-48"><a href="#cb3-48"></a>      g_printerr <span class="op">(</span><span class="st">&quot;%s.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb3-49"><a href="#cb3-49"></a>      g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
+<span id="cb3-50"><a href="#cb3-50"></a>    <span class="op">}</span></span>
 <span id="cb3-51"><a href="#cb3-51"></a>  <span class="op">}</span></span>
 <span id="cb3-52"><a href="#cb3-52"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-53"><a href="#cb3-53"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
@@ -282,12 +282,12 @@ in the previous section.</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb4-3"><a href="#cb4-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe3&quot;</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe&quot;</span>&gt;</span>
 <span id="cb4-4"><a href="#cb4-4"></a>    &lt;<span class="kw">file</span>&gt;tfe.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb4-5"><a href="#cb4-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb4-6"><a href="#cb4-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-<p>Dividing a file makes it easy to maintain source files. But now we
-face a new problem. The building step increases.</p>
+<p>Dividing a file makes it easy to maintain. But now we face a new
+problem. The building step increases.</p>
 <ul>
 <li>Compiling the ui file <code>tfe.ui</code> into
 <code>resources.c</code>.</li>
@@ -299,14 +299,13 @@ file).</li>
 <code>resources.o</code>.</li>
 <li>Linking all the object files into application <code>tfe</code>.</li>
 </ul>
-<p>Build tools manage the steps. I’ll show you three build tools, Meson
-and Ninja, Make and Rake. Meson and Ninja is recommended as a C build
-tool, but others are also fine. It’s your choice.</p>
+<p>Build tools manage the steps.</p>
 <h2 id="meson-and-ninja">Meson and Ninja</h2>
-<p>Meson and Ninja is one of the most popular building tool to build C
-language program. Many developers use Meson and Ninja lately. For
-example, GTK 4 uses them.</p>
-<p>You need to make <code>meson.build</code> file first.</p>
+<p>I’ll explain Meson and Ninja build tools.</p>
+<p>Other possible tools are Make and Autotools. They are traditional
+tools but slower than Ninja. So, many developers use Meson and Ninja
+lately. For example, GTK 4 uses them.</p>
+<p>You need to create <code>meson.build</code> file first.</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
@@ -317,19 +316,19 @@ class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="c
 <span id="cb5-7"><a href="#cb5-7"></a></span>
 <span id="cb5-8"><a href="#cb5-8"></a>sourcefiles=files(&#39;tfe.c&#39;, &#39;tfetextview.c&#39;)</span>
 <span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>executable(&#39;tfe&#39;, sourcefiles, resources, dependencies: gtkdep)</span></code></pre></div>
+<span id="cb5-10"><a href="#cb5-10"></a>executable(&#39;tfe&#39;, sourcefiles, resources, dependencies: gtkdep, install: false)</span></code></pre></div>
 <ul>
 <li>1: The function <code>project</code> defines things about the
-project. The first parameter is the name of the project and the second
-is the programming language.</li>
-<li>2: <code>dependency</code> function defines a dependency that is
+project. The first argument is the name of the project and the second is
+the programming language.</li>
+<li>3: The function <code>dependency</code> defines a dependency that is
 taken by <code>pkg-config</code>. We put <code>gtk4</code> as an
 argument.</li>
-<li>5: <code>import</code> function imports a module. In line 5, the
+<li>5: The function <code>import</code> imports a module. In line 5, the
 gnome module is imported and assigned to the variable
 <code>gnome</code>. The gnome module provides helper tools to build GTK
 programs.</li>
-<li>6: <code>.compile_resources</code> is a method of the gnome module
+<li>6: The method <code>.compile_resources</code> is of the gnome module
 and compiles files to resources under the instruction of xml file. In
 line 6, the resource filename is <code>resources</code>, which means
 <code>resources.c</code> and <code>resources.h</code>, and xml file is
@@ -337,14 +336,25 @@ line 6, the resource filename is <code>resources</code>, which means
 default.</li>
 <li>8: Defines source files.</li>
 <li>10: Executable function generates a target file by compiling source
-files. The first parameter is the filename of the target. The following
-parameters are source files. The last parameter is an option
-<code>dependencies</code>. <code>gtkdep</code> is used in the
-compilation.</li>
+files. The first argument is the filename of the target. The following
+arguments are source files. The last two arguments have keys and values.
+For example, the fourth argument has a key <code>dependencies</code> , a
+delimiter (<code>:</code>) and a value <code>gtkdep</code>. This type of
+parameter is called <em>keyword parameter</em> or <em>kwargs</em>. The
+value <code>gtkdep</code> is defined in line 3. The last argument tells
+that this project doesn’t install the executable file. So it is just
+compiled in the build directory.</li>
 </ul>
 <p>Now run meson and ninja.</p>
-<pre><code>$ meson _build
+<pre><code>$ meson setup _build
 $ ninja -C _build</code></pre>
+<p>meson has two arguments.</p>
+<ul>
+<li>setup: The first argument is a command of meson. Setup is the
+default, so you can leave it out. But it is recommended to write it
+explicitly since version 0.64.0.</li>
+<li>The second argument is the name of the build directory.</li>
+</ul>
 <p>Then, the executable file <code>tfe</code> is generated under the
 directory <code>_build</code>.</p>
 <pre><code>$ _build/tfe tfe.c tfetextview.c</code></pre>
@@ -352,133 +362,6 @@ directory <code>_build</code>.</p>
 <code>tfe.c</code> and the other is <code>tfetextview.c</code>.</p>
 <p>For further information, see <a href="https://mesonbuild.com/">The
 Meson Build system</a>.</p>
-<h2 id="make">Make</h2>
-<p>Make is a build tool created in 1976. It was a standard build tool
-for C compiling, but lately it is replaced by Meson and Ninja.</p>
-<p>Make analyzes Makefile and executes compilers. All instructions are
-written in Makefile.</p>
-<p>For example,</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode makefile"><code class="sourceCode makefile"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dv">sample.o:</span><span class="dt"> sample.c</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    gcc -o sample.o sample.c</span></code></pre></div>
-<p>Malefile above consists of three elements, <code>sample.o</code>,
-<code>sample.c</code> and <code>gcc -o sample.o sample.c</code>.</p>
-<ul>
-<li><code>sample.o</code> is a target.</li>
-<li><code>sample.c</code> is a prerequisite.</li>
-<li><code>gcc -o sample.o sample.c</code> is a recipe. Recipes follow
-tab characters, not spaces. (It is very important. Use tab, or make
-won’t work as you expected).</li>
-</ul>
-<p>The rule is:</p>
-<p>If a prerequisite modified later than a target, then make executes
-the recipe.</p>
-<p>In the example above, if <code>sample.c</code> is modified after the
-generation of <code>sample.o</code>, then make executes gcc and compile
-<code>sample.c</code> into <code>sample.o</code>. If the modification
-time of <code>sample.c</code> is older then the generation of
-<code>sample.o</code>, then no compiling is necessary, so make does
-nothing.</p>
-<p>The Makefile for <code>tfe</code> is as follows.</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode numberSource makefile numberLines"><code class="sourceCode makefile"><span id="cb9-1"><a href="#cb9-1"></a><span class="dv">all:</span><span class="dt"> tfe</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="dv">tfe:</span><span class="dt"> tfe.o tfetextview.o resources.o</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>    gcc -o tfe tfe.o tfetextview.o resources.o `pkg-config --libs gtk4`</span>
-<span id="cb9-5"><a href="#cb9-5"></a></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="dv">tfe.o:</span><span class="dt"> tfe.c tfetextview.h</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a>    gcc -c -o tfe.o `pkg-config --cflags gtk4` tfe.c</span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="dv">tfetextview.o:</span><span class="dt"> tfetextview.c tfetextview.h</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a>    gcc -c -o tfetextview.o `pkg-config --cflags gtk4` tfetextview.c</span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="dv">resources.o:</span><span class="dt"> resources.c</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a>    gcc -c -o resources.o `pkg-config --cflags gtk4` resources.c</span>
-<span id="cb9-12"><a href="#cb9-12"></a></span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="dv">resources.c:</span><span class="dt"> tfe.gresource.xml tfe.ui</span></span>
-<span id="cb9-14"><a href="#cb9-14"></a>    glib-compile-resources tfe.gresource.xml --target=resources.c --generate-source</span>
-<span id="cb9-15"><a href="#cb9-15"></a></span>
-<span id="cb9-16"><a href="#cb9-16"></a><span class="ot">.Phony:</span><span class="dt"> clean</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a></span>
-<span id="cb9-18"><a href="#cb9-18"></a><span class="dv">clean:</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a>    rm -f tfe tfe.o tfetextview.o resources.o resources.c</span></code></pre></div>
-<p>You just type <code>make</code> and everything will be done.</p>
-<pre><code>$ make
-gcc -c -o tfe.o `pkg-config --cflags gtk4` tfe.c
-gcc -c -o tfetextview.o `pkg-config --cflags gtk4` tfetextview.c
-glib-compile-resources tfe.gresource.xml --target=resources.c --generate-source
-gcc -c -o resources.o `pkg-config --cflags gtk4` resources.c
-gcc -o tfe tfe.o tfetextview.o resources.o `pkg-config --libs gtk4`</code></pre>
-<p>I used only very basic rules to write this Makefile. There are many
-more convenient methods to make it more compact. But it will be long to
-explain it. So I want to finish with make and move on to the next
-topic.</p>
-<p>You can download “Gnu Make Manual” from <a
-href="https://www.gnu.org/software/make/manual/">GNU website</a>.</p>
-<h2 id="rake">Rake</h2>
-<p>Rake is a similar program to make. It is written in Ruby language. If
-you don’t use Ruby, you don’t need to read this subsection. However,
-Ruby is really sophisticated and recommendable script language.</p>
-<ul>
-<li>Rakefile controls the behavior of <code>rake</code>.</li>
-<li>You can write any Ruby code in Rakefile.</li>
-</ul>
-<p>Rake has task and file task, which is similar to target, prerequisite
-and recipe in make.</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode numberSource ruby numberLines"><code class="sourceCode ruby"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">require</span> <span class="vs">&#39;rake/clean&#39;</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a></span>
-<span id="cb11-3"><a href="#cb11-3"></a>targetfile <span class="kw">=</span> <span class="st">&quot;tfe&quot;</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>srcfiles <span class="kw">=</span> <span class="dt">FileList</span><span class="kw">[</span><span class="st">&quot;tfe.c&quot;</span>, <span class="st">&quot;tfetextview.c&quot;</span>, <span class="st">&quot;resources.c&quot;</span><span class="kw">]</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a>uifile <span class="kw">=</span> <span class="st">&quot;tfe.ui&quot;</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>rscfile <span class="kw">=</span> srcfiles<span class="kw">[</span><span class="dv">2</span><span class="kw">]</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>objfiles <span class="kw">=</span> srcfiles<span class="at">.ext</span>(<span class="st">&quot;.o&quot;</span>)</span>
-<span id="cb11-8"><a href="#cb11-8"></a>gresource_xml <span class="kw">=</span> <span class="st">&quot;tfe.gresource.xml&quot;</span></span>
-<span id="cb11-9"><a href="#cb11-9"></a></span>
-<span id="cb11-10"><a href="#cb11-10"></a><span class="cn">CLEAN</span><span class="at">.include</span>(targetfile, objfiles, rscfile)</span>
-<span id="cb11-11"><a href="#cb11-11"></a></span>
-<span id="cb11-12"><a href="#cb11-12"></a>task <span class="wa">default: </span>targetfile</span>
-<span id="cb11-13"><a href="#cb11-13"></a></span>
-<span id="cb11-14"><a href="#cb11-14"></a>file targetfile <span class="kw">=&gt;</span> objfiles <span class="cf">do</span> <span class="kw">|</span>t<span class="kw">|</span></span>
-<span id="cb11-15"><a href="#cb11-15"></a>  sh <span class="st">&quot;gcc -o </span><span class="sc">#{</span>t<span class="at">.name</span><span class="sc">}</span><span class="st"> </span><span class="sc">#{</span>t<span class="at">.prerequisites.join</span>(<span class="ch">&#39; &#39;</span>)<span class="sc">}</span><span class="st"> `pkg-config --libs gtk4`&quot;</span></span>
-<span id="cb11-16"><a href="#cb11-16"></a><span class="cf">end</span></span>
-<span id="cb11-17"><a href="#cb11-17"></a></span>
-<span id="cb11-18"><a href="#cb11-18"></a>objfiles<span class="at">.each</span> <span class="cf">do</span> <span class="kw">|</span>obj<span class="kw">|</span></span>
-<span id="cb11-19"><a href="#cb11-19"></a>  src <span class="kw">=</span> obj<span class="at">.ext</span>(<span class="st">&quot;.c&quot;</span>)</span>
-<span id="cb11-20"><a href="#cb11-20"></a>  file obj <span class="kw">=&gt;</span> src <span class="cf">do</span> <span class="kw">|</span>t<span class="kw">|</span></span>
-<span id="cb11-21"><a href="#cb11-21"></a>    sh <span class="st">&quot;gcc -c -o </span><span class="sc">#{</span>t<span class="at">.name</span><span class="sc">}</span><span class="st"> `pkg-config --cflags gtk4` </span><span class="sc">#{</span>t<span class="at">.source</span><span class="sc">}</span><span class="st">&quot;</span></span>
-<span id="cb11-22"><a href="#cb11-22"></a>  <span class="cf">end</span></span>
-<span id="cb11-23"><a href="#cb11-23"></a><span class="cf">end</span></span>
-<span id="cb11-24"><a href="#cb11-24"></a></span>
-<span id="cb11-25"><a href="#cb11-25"></a>file rscfile <span class="kw">=&gt;</span> uifile <span class="cf">do</span> <span class="kw">|</span>t<span class="kw">|</span></span>
-<span id="cb11-26"><a href="#cb11-26"></a>  sh <span class="st">&quot;glib-compile-resources </span><span class="sc">#{</span>gresource_xml<span class="sc">}</span><span class="st"> --target=</span><span class="sc">#{</span>t<span class="at">.name</span><span class="sc">}</span><span class="st"> --generate-source&quot;</span></span>
-<span id="cb11-27"><a href="#cb11-27"></a><span class="cf">end</span></span></code></pre></div>
-<p>The contents of the <code>Rakefile</code> is almost same as the
-<code>Makefile</code> in the previous subsection.</p>
-<ul>
-<li>3-8: Defines target file, source files and so on.</li>
-<li>1, 10 Requires rake/clean library. And clean files are added to
-CLEAN. The files included by CLEAN will be removed when
-<code>rake clean</code> is typed on the command line.</li>
-<li>12: The default target depends on <code>targetfile</code>. The task
-<code>default</code> is the final goal of tasks.</li>
-<li>14-16: <code>targetfile</code> depends on <code>objfiles</code>. The
-variable <code>t</code> is a task object.
-<ul>
-<li><code>t.name</code> is a target name</li>
-<li><code>t.prerequisites</code> is an array of prerequisites.</li>
-<li><code>t.source</code> is the first element of prerequisites.</li>
-</ul></li>
-<li><code>sh</code> is a method to give the following string to shell as
-an argument and executes the shell.</li>
-<li>18-23: An each iterator of the array <code>objfiles</code>. Each
-object depends on corresponding source file.</li>
-<li>25-27: Resource file depends on ui file.</li>
-</ul>
-<p>Rakefile might seem to be difficult for beginners. But, you can use
-any Ruby syntax in the Rakefile, so it is really flexible. If you
-practice Ruby and Rakefile, it will be highly productive tools.</p>
-<p>For further information, see <a
-href="https://toshiocp.github.io/Rake-tutorial-for-beginners-en/LearningRake.html">Rake
-tutorial for beginners</a>.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>

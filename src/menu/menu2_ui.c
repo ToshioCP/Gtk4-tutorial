@@ -25,18 +25,16 @@ color_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) 
 }
 
 static void
-remove_provider (GApplication *app, GtkCssProvider *provider) {
-  GdkDisplay *display = gdk_display_get_default();
-
-  gtk_style_context_remove_provider_for_display (display, GTK_STYLE_PROVIDER (provider));
-  g_object_unref (provider);
-}
-
-static void
-quit_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
   GApplication *app = G_APPLICATION (user_data);
 
   g_application_quit (app);
+}
+
+static void
+app_shutdown (GApplication *app, GtkCssProvider *provider) {
+  gtk_style_context_remove_provider_for_display (gdk_display_get_default(), GTK_STYLE_PROVIDER (provider));
 }
 
 static void
@@ -79,10 +77,10 @@ app_startup (GApplication *app) {
   /* Initialize the css data */
   gtk_css_provider_load_from_data (provider, "label.lb {background-color: red;}", -1);
   /* Add CSS to the default GdkDisplay. */
-  GdkDisplay *display = gdk_display_get_default ();
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  g_signal_connect (app, "shutdown", G_CALLBACK (remove_provider), provider);
+  gtk_style_context_add_provider_for_display (gdk_display_get_default (),
+        GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), provider);
+  g_object_unref (provider); /* release provider, but it's still alive because the display owns it */
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.menu2_ui"

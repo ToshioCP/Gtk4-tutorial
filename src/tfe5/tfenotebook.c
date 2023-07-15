@@ -2,7 +2,7 @@
 
 #include "../tfetextview/tfetextview.h"
 
-/* The returned string should be freed with g_free() when no longer needed. */
+/* The caller should free the returned string when it is no longer needed. */
 static char*
 get_untitled () {
   static int c = -1;
@@ -12,6 +12,7 @@ get_untitled () {
     return g_strdup_printf ("Untitled%u", c);
 }
 
+/* Returned (TfeTextView) object is NOT owned by the caller. */
 static TfeTextView *
 get_current_textview (GtkNotebook *nb) {
   int i;
@@ -50,7 +51,7 @@ notebook_page_save (GtkNotebook *nb) {
   TfeTextView *tv;
 
   tv = get_current_textview (nb);
-  tfe_text_view_save (TFE_TEXT_VIEW (tv));
+  tfe_text_view_save (tv);
 }
 
 void
@@ -87,7 +88,7 @@ notebook_page_build (GtkNotebook *nb, GtkWidget *tv, const char *filename) {
 }
 
 static void
-open_response (TfeTextView *tv, int response, GtkNotebook *nb) {
+open_response_cb (TfeTextView *tv, int response, GtkNotebook *nb) {
   GFile *file;
   char *filename;
 
@@ -109,9 +110,8 @@ notebook_page_open (GtkNotebook *nb) {
 
   GtkWidget *tv;
 
-  if ((tv = tfe_text_view_new ()) == NULL)
-    return;
-  g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
+  tv = tfe_text_view_new ();
+  g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), nb);
   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
 }
 
@@ -137,8 +137,7 @@ notebook_page_new (GtkNotebook *nb) {
   GtkWidget *tv;
   char *filename;
 
-  if ((tv = tfe_text_view_new ()) == NULL)
-    return;
+  tv = tfe_text_view_new ();
   filename = get_untitled ();
   notebook_page_build (nb, tv, filename);
   g_free (filename);

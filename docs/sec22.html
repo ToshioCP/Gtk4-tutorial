@@ -111,236 +111,969 @@
         </div>
       </div>
     </nav>
-<h1 id="gtkdrawingarea-and-cairo">GtkDrawingArea and Cairo</h1>
-<p>If you want to draw dynamically on the screen, like an image window
-of gimp graphics editor, the GtkDrawingArea widget is the most suitable
-widget. You can freely draw or redraw an image in this widget. This is
-called custom drawing.</p>
-<p>GtkDrawingArea provides a cairo drawing context so users can draw
-images by using cairo functions. In this section, I will explain:</p>
-<ol type="1">
-<li>Cairo, but only briefly</li>
-<li>GtkDrawingArea, with a very simple example.</li>
-</ol>
-<h2 id="cairo">Cairo</h2>
-<p>Cairo is a set of two dimensional graphical drawing functions (or
-graphics library). There are a lot of documents on <a
-href="https://www.cairographics.org/">Cairo’s website</a>. If you aren’t
-familiar with Cairo, it is worth reading the <a
-href="https://www.cairographics.org/tutorial/">tutorial</a>.</p>
-<p>The following is an introduction to the Cairo library and how to use
-it. First, you need to know about surfaces, sources, masks,
-destinations, cairo context and transformations.</p>
-<ul>
-<li>A surface represents an image. It is like a canvas. We can draw
-shapes and images with different colors on surfaces.</li>
-<li>The source pattern, or simply source, is like paint, which will be
-transferred to destination surface by cairo functions.</li>
-<li>The mask describes the area to be used in the copy;</li>
-<li>The destination is a target surface;</li>
-<li>The cairo context manages the transfer from source to destination,
-through mask with its functions; For example, <code>cairo_stroke</code>
-is a function to draw a path to the destination by the transfer.</li>
-<li>A transformation can be applied before the transfer completes. The
-transformation which is applied is called affine, which is a
-mathematical term meaning transofrmations that preserve straight lines.
-Scaling, rotating, reflecting, shearing and translating are all examples
-of affine transformations. They are mathematically represented by matrix
-multiplication and vector addition. In this section we don’t use it,
-instead we will only use the identity transformation. This means that
-the coordinates in the source and mask are the same as the coordinates
-in destination.</li>
-</ul>
+<h1 id="tfewindow">TfeWindow</h1>
+<h2 id="the-tfe-window-and-xml-files">The Tfe window and XML files</h2>
+<p>The following is the window of Tfe.</p>
 <figure>
-<img src="image/cairo.png" alt="Stroke a rectangle" />
-<figcaption aria-hidden="true">Stroke a rectangle</figcaption>
+<img src="image/tfe6.png" alt="tfe6" />
+<figcaption aria-hidden="true">tfe6</figcaption>
 </figure>
-<p>The instruction is as follows:</p>
-<ol type="1">
-<li>Create a surface. This will be the destination.</li>
-<li>Create a cairo context with the surface, the surface will be the
-destination of the context.</li>
-<li>Create a source pattern within the context.</li>
-<li>Create paths, which are lines, rectangles, arcs, texts or more
-complicated shapes in the mask.</li>
-<li>Use a drawing operator such as <code>cairo_stroke</code> to transfer
-the paint in the source to the destination.</li>
-<li>Save the destination surface to a file if necessary.</li>
-</ol>
-<p>Here’s a simple example program that draws a small square and saves
-it as a png file. The path of the file is
-<code>src/misc/cairo.c</code>.</p>
+<ul>
+<li>Open, save and close buttons are placed on the toolbar. In addition,
+GtkMenuButton is added to the toolbar. This button shows a popup menu
+when clicked on. Here, popup means widely, including pull-down
+menu.</li>
+<li>New, save-as, preference and quit items are put into the menu.</li>
+</ul>
+<p>This makes the most frequently used operation bound to the tool bar
+buttons. And the others are stored in behind the menus. So, it is more
+practical.</p>
+<p>The window is a composite widget. The definition is described in the
+XML file <code>tfewindow.ui</code>.</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;cairo.h&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="op">{</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>  cairo_surface_t <span class="op">*</span>surface<span class="op">;</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>  <span class="dt">int</span> width <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>  <span class="dt">int</span> height <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>  <span class="dt">int</span> square_size <span class="op">=</span> <span class="fl">40.0</span><span class="op">;</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a>  <span class="co">/* Create surface and cairo */</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a></span>
-<span id="cb1-16"><a href="#cb1-16"></a>  <span class="co">/* Drawing starts here. */</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>  <span class="co">/* Paint the background white */</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a>  <span class="co">/* Draw a black rectangle */</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">2.0</span><span class="op">);</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-24"><a href="#cb1-24"></a>                   width<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>                   height<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
-<span id="cb1-26"><a href="#cb1-26"></a>                   square_size<span class="op">,</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>                   square_size<span class="op">);</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-29"><a href="#cb1-29"></a></span>
-<span id="cb1-30"><a href="#cb1-30"></a>  <span class="co">/* Write the surface to a png file and clean up cairo and surface. */</span></span>
-<span id="cb1-31"><a href="#cb1-31"></a>  cairo_surface_write_to_png <span class="op">(</span>surface<span class="op">,</span> <span class="st">&quot;rectangle.png&quot;</span><span class="op">);</span></span>
-<span id="cb1-32"><a href="#cb1-32"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-33"><a href="#cb1-33"></a>  cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb1-34"><a href="#cb1-34"></a></span>
-<span id="cb1-35"><a href="#cb1-35"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-36"><a href="#cb1-36"></a><span class="op">}</span></span></code></pre></div>
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeWindow&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkApplicationWindow&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Text File Editor&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxv&quot;</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxh&quot;</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb1-20"><a href="#cb1-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-22"><a href="#cb1-22"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-23"><a href="#cb1-23"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-24"><a href="#cb1-24"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.save&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-28"><a href="#cb1-28"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-29"><a href="#cb1-29"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-30"><a href="#cb1-30"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-31"><a href="#cb1-31"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb1-32"><a href="#cb1-32"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-33"><a href="#cb1-33"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-34"><a href="#cb1-34"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-35"><a href="#cb1-35"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-36"><a href="#cb1-36"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb1-37"><a href="#cb1-37"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-38"><a href="#cb1-38"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.close&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-39"><a href="#cb1-39"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-40"><a href="#cb1-40"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-41"><a href="#cb1-41"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-42"><a href="#cb1-42"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
+<span id="cb1-43"><a href="#cb1-43"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;down&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-44"><a href="#cb1-44"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;open-menu-symbolic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-45"><a href="#cb1-45"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-46"><a href="#cb1-46"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-47"><a href="#cb1-47"></a>            &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-48"><a href="#cb1-48"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb1-49"><a href="#cb1-49"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-50"><a href="#cb1-50"></a>              &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-51"><a href="#cb1-51"></a>            &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-52"><a href="#cb1-52"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-53"><a href="#cb1-53"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-54"><a href="#cb1-54"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-55"><a href="#cb1-55"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNotebook&quot;</span><span class="ot"> id=</span><span class="st">&quot;nb&quot;</span>&gt;</span>
+<span id="cb1-56"><a href="#cb1-56"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;scrollable&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-57"><a href="#cb1-57"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-58"><a href="#cb1-58"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-59"><a href="#cb1-59"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-60"><a href="#cb1-60"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-61"><a href="#cb1-61"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-62"><a href="#cb1-62"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-63"><a href="#cb1-63"></a>  &lt;/<span class="kw">template</span>&gt;</span>
+<span id="cb1-64"><a href="#cb1-64"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
 <ul>
-<li>1: Includes the header file of Cairo.</li>
-<li>6: <code>cairo_surface_t</code> is the type of a surface.</li>
-<li>7: <code>cairo_t</code> is the type of a cairo context.</li>
-<li>8-10: <code>width</code> and <code>height</code> are the size of
-<code>surface</code>. <code>square_size</code> is the size of a square
-to be drawn on the surface.</li>
-<li>13: <code>cairo_image_surface_create</code> creates an image
-surface. <code>CAIRO_FORMAT_RGB24</code> is a constant which means that
-each pixel has red, green and blue data, and each data point is an 8
-bits number (for 24 bits in total). Modern displays have this type of
-color depth. Width and height are in pixels and given as integers.</li>
-<li>14: Creates cairo context. The surface given as an argument will be
-the destination of the context.</li>
-<li>18: <code>cairo_set_source_rgb</code> creates a source pattern,
-which in this case is a solid white paint. The second to fourth
-arguments are red, green and blue color values respectively, and they
-are of type float. The values are between zero (0.0) and one (1.0), with
-black being given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).</li>
-<li>19: <code>cairo_paint</code> copies everywhere in the source to
-destination. The destination is filled with white pixels with this
-command.</li>
-<li>21: Sets the source color to black.</li>
-<li>22: <code>cairo_set_line_width</code> set the width of lines. In
-this case, the line width is set to be two pixels and will end up that
-same size. (It is because the transformation is identity. If the
-transformation isn’t identity, for example scaling with the factor
-three, the actual width in destination will be six (2x3=6) pixels.)</li>
-<li>23: Draws a rectangle (square) on the mask. The square is located at
-the center.</li>
-<li>24: <code>cairo_stroke</code> transfer the source to destination
-through the rectangle in the mask.</li>
-<li>27: Outputs the image to a png file <code>rectangle.png</code>.</li>
-<li>28: Destroys the context. At the same time the source is
-destroyed.</li>
-<li>29: Destroys the surface.</li>
+<li>Three buttons “Open”, “Save” and “Close” are defined. You can use
+two ways to catch the button click event. The one is “clicked” signal
+and the other is to register an action to the button. The first way is
+simple. You can connects the signal and your handler directly. The
+second way is like menu items. When the button is clicked, the
+corresponding action is activated. It is a bit complicated because you
+need to create an action and its “activate” handler in advance. But one
+advantage is you can connect two or more things to the action. For
+example, an accelerator can be connected to the action. Accelerators are
+keys that connects to actions. For example, Ctrl+O is often connected to
+a file open action. So, both open button and Ctrl+O activates an open
+action. The latter way is used in the XML file above.</li>
+<li>You can specify a theme icon to GtkMenuButton with “icon-name”
+poperty. The “open-menu-symbolic” is an image that is called hamburger
+menu.</li>
 </ul>
-<p>To compile this, change your current directory to
-<code>src/misc</code> and type the following.</p>
-<pre><code>$ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`</code></pre>
-<figure>
-<img src="image/rectangle.png" alt="rectangle.png" />
-<figcaption aria-hidden="true">rectangle.png</figcaption>
-</figure>
-<p>See the <a href="https://www.cairographics.org/">Cairo’s website</a>
-for further information.</p>
-<h2 id="gtkdrawingarea">GtkDrawingArea</h2>
-<p>The following is a very simple example.</p>
+<p>The <code>menu.ui</code> XML file defines the menu for
+GtkMenuButton.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menu&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5"></a>      &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-7"><a href="#cb2-7"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.new&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9"></a>      &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb2-10"><a href="#cb2-10"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save As…&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.saveas&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-12"><a href="#cb2-12"></a>      &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb2-14"><a href="#cb2-14"></a>    &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb2-15"><a href="#cb2-15"></a>      &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb2-16"><a href="#cb2-16"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Preference&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-17"><a href="#cb2-17"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.pref&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-18"><a href="#cb2-18"></a>      &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb2-19"><a href="#cb2-19"></a>    &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb2-20"><a href="#cb2-20"></a>    &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb2-21"><a href="#cb2-21"></a>      &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb2-22"><a href="#cb2-22"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-23"><a href="#cb2-23"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.close-all&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb2-24"><a href="#cb2-24"></a>      &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb2-25"><a href="#cb2-25"></a>    &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb2-26"><a href="#cb2-26"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
+<span id="cb2-27"><a href="#cb2-27"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+<p>There are four menu items and they are connected to actions.</p>
+<h2 id="the-header-file">The header file</h2>
+<p>The following is the codes of <code>tfewindow.h</code>.</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>draw_function <span class="op">(</span>GtkDrawingArea <span class="op">*</span>area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>  <span class="dt">int</span> square_size <span class="op">=</span> <span class="fl">40.0</span><span class="op">;</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span> <span class="co">/* white */</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">2.0</span><span class="op">);</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span> <span class="co">/* black */</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>                   width<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a>                   height<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a>                   square_size<span class="op">,</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>                   square_size<span class="op">);</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="op">}</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a></span>
-<span id="cb3-19"><a href="#cb3-19"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-21"><a href="#cb3-21"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>  GtkWidget <span class="op">*</span>area <span class="op">=</span> gtk_drawing_area_new <span class="op">();</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;da1&quot;</span><span class="op">);</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>area<span class="op">),</span> draw_function<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> area<span class="op">);</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a></span>
-<span id="cb3-28"><a href="#cb3-28"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a><span class="op">}</span></span>
-<span id="cb3-30"><a href="#cb3-30"></a></span>
-<span id="cb3-31"><a href="#cb3-31"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.da1&quot;</span></span>
-<span id="cb3-32"><a href="#cb3-32"></a></span>
-<span id="cb3-33"><a href="#cb3-33"></a><span class="dt">int</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb3-36"><a href="#cb3-36"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a></span>
-<span id="cb3-38"><a href="#cb3-38"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb3-39"><a href="#cb3-39"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb3-40"><a href="#cb3-40"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb3-41"><a href="#cb3-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb3-42"><a href="#cb3-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb3-43"><a href="#cb3-43"></a><span class="op">}</span></span></code></pre></div>
-<p>The function <code>main</code> is almost same as before. The two
-functions <code>app_activate</code> and <code>draw_function</code> are
-important in this example.</p>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_WINDOW tfe_window_get_type ()</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> TFE<span class="op">,</span> WINDOW<span class="op">,</span> GtkApplicationWindow<span class="op">)</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="dt">void</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="dt">void</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a></span>
+<span id="cb3-14"><a href="#cb3-14"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">);</span></span></code></pre></div>
 <ul>
-<li>22: Creates a GtkDrawingArea instance.</li>
-<li>25: Sets a drawing function of the widget. GtkDrawingArea widget
-uses the function to draw the contents of itself whenever its necessary.
-For example, when a user drag a mouse pointer and resize a top-level
-window, GtkDrawingArea also changes the size. Then, the whole window
-needs to be redrawn. For the information of
-<code>gtk_drawing_area_set_draw_func</code>, see <a
-href="https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html">Gtk
-API Reference – gtk_drawing_area_set_draw_func</a>.</li>
+<li>5-6: <code>TFE_TYPE_WINDOW</code> definition and the
+<code>G_DECLARE_FINAL_TYPE</code> macro.</li>
+<li>8-15: Public functions. The first two functions creates a notebook
+page and the last function creates a window.</li>
 </ul>
-<p>The drawing function has five parameters.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> drawing_function <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                       gpointer user_data<span class="op">);</span></span></code></pre></div>
-<p>The first parameter is the GtkDrawingArea widget. You can’t change
-any properties, for example <code>content-width</code> or
-<code>content-height</code>, in this function. The second parameter is a
-cairo context given by the widget. The destination surface of the
-context is connected to the contents of the widget. What you draw to
-this surface will appear in the widget on the screen. The third and
-fourth parameters are the size of the destination surface. Now, look at
-the program again.</p>
+<h2 id="c-file">C file</h2>
+<h3 id="a-composite-widget">A composite widget</h3>
+<p>The following codes are extracted from <code>tfewindow.c</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  gboolean is_quit<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> GTK_TYPE_APPLICATION_WINDOW<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>tfe_window_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_window_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  GMenuModel <span class="op">*</span>menu<span class="op">;</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/menu.ui&quot;</span><span class="op">);</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  menu <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;menu&quot;</span><span class="op">));</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  gtk_menu_button_set_menu_model <span class="op">(</span>win<span class="op">-&gt;</span>btnm<span class="op">,</span> menu<span class="op">);</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_window_dispose<span class="op">;</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfewindow.ui&quot;</span><span class="op">);</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The program above is similar to <code>tfealert.c</code> and
+<code>tfepref.c</code>. It uses the same way to build a composite
+widget. But there’s one thing new. It is menu. The menu is built from
+the XML resource <code>menu.ui</code> and inserted into the menu button.
+It is done in the instance initialization function
+<code>tfe_window_init</code>.</p>
+<h3 id="actions">Actions</h3>
+<p>Actions can belong to an application or window. Tfe only has one top
+window and all the actions are registered in the window. For example,
+“close-all” action destroys the top level window and that brings the
+application to quit. You can make “app.quit” action instead of
+“win.close-all”. It’s your choice. If your application has two or more
+windows, both “app.quit” and “win:close-all”, which closes all the
+notebook pages on the window, may be necessary. Anyway, you need to
+consider that each action should belong to the application or a
+window.</p>
+<p>Actions are defined in the instance initialization function.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">/* ----- action ----- */</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;close-all&quot;</span><span class="op">,</span> close_all_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Two things are necessary, an array and the
+<code>g_action_map_add_action_entries</code> function.</p>
 <ul>
-<li>3-17: The drawing function.</li>
-<li>7-8: Sets the source to be white and paint the destination
-white.</li>
-<li>9: Sets the line width to be 2.</li>
-<li>10: Sets the source to be black.</li>
-<li>11-15: Adds a rectangle to the mask.</li>
-<li>16: Draws the rectangle with black color to the destination.</li>
+<li>The element of the array is the GActionEntry structure. The
+structure has the following members:
+<ul>
+<li>an action name</li>
+<li>a handler for the activate signal</li>
+<li>the type of the parameter or NULL for no parameter</li>
+<li>the initial state for the action</li>
+<li>a handler for the change-state signal</li>
+</ul></li>
+<li>The actions above are stateless and have no parameters. So, the
+third parameter and after are all NULL.</li>
+<li>The function <code>g_action_map_add_action_entries</code> adds the
+actions in the <code>win_entries</code> array to the action map
+<code>win</code>. The last argument <code>win</code> is the user_data,
+which is the last argument of handlers.</li>
+<li>All the handlers are in <code>tfewindow.c</code> program and shown
+in the following subsections.</li>
 </ul>
-<p>The program is src/misc/da1.c. Compile and run it, then a window with
-a black rectangle (square) appears. Try resizing the window. The square
-always appears at the center of the window because the drawing function
-is invoked each time the window is resized.</p>
-<figure>
-<img src="image/da1.png" alt="Square in the window" />
-<figcaption aria-hidden="true">Square in the window</figcaption>
-</figure>
+<h3 id="the-handlers-of-the-actions">The handlers of the actions</h3>
+<h4 id="open_activated">open_activated</h4>
+<p>The callback function <code>open_activated</code> is an activate
+signal handler on “open” action.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>open_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
+<p>It connects the “open-response” signal on the newly created
+TfeTextView instance and just calls <code>tfe_text_view_open</code>. It
+leaves the rest of the task to the signal handler
+<code>open_response_cb</code>.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>open_response_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a></span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">!=</span> TFE_OPEN_RESPONSE_SUCCESS<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>    g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>  <span class="op">}</span><span class="cf">else</span> <span class="cf">if</span> <span class="op">(!</span> G_IS_FILE <span class="op">(</span>file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">)))</span> <span class="op">{</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a>    g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>    g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="op">}</span><span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>    filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>    g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>    notebook_page_build <span class="op">(</span>win<span class="op">,</span> GTK_WIDGET <span class="op">(</span>tv<span class="op">),</span> filename<span class="op">);</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a>    g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a>  <span class="op">}</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a><span class="op">}</span></span></code></pre></div>
+<p>If the TfeTextView instance failed to read a file, it destroys the
+instance with <code>g_object_ref_sink</code> and
+<code>g_object_unref</code>. Since newly created widgets are floating,
+you need to convert the floating reference to the normal reference
+before you release it. The conversion is done with
+<code>g_object_ref_sink</code>.</p>
+<p>If the instance successfully read the file, it calls
+<code>notebook_page_build</code> to build a notebook page and add it to
+the GtkNotebook object.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>notebook_page_build <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GtkWidget <span class="op">*</span>tv<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="co">// The arguments win, tb and filename are owned by the caller.</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>  <span class="co">// If tv has a floating reference, it is consumed by the function.</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>  GtkNotebookPage <span class="op">*</span>nbp<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  GtkWidget <span class="op">*</span>lab<span class="op">;</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a>  gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  i <span class="op">=</span> gtk_notebook_append_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>  nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">);</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>  g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a>  gtk_notebook_set_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>  g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  g_signal_connect <span class="op">(</span>tb<span class="op">,</span> <span class="st">&quot;modified-changed&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>modified_changed_cb<span class="op">),</span> tv<span class="op">);</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="op">}</span></span></code></pre></div>
+<p>This function is a kind of library function and it is called from the
+different three places.</p>
+<p>This function creates a new GtkScrolledWindow instance and sets its
+child to <code>tv</code>. Then it appends it to the GtkNotebook instance
+<code>win-&gt;nb</code>. And it sets the tab label to the filename.</p>
+<p>After the building, it connects two signals and handlers.</p>
+<ul>
+<li>“change-file” signal and <code>file_changed_cb</code> handler. If
+the TfeTextView instance changes the file, the handler is called and the
+notebook page tab is updated.</li>
+<li>“modified-changed” signal and <code>modified_changed_cb</code>
+handler. If the text in the buffer of TfeTextView instance is modified,
+an asterisk is added at the beginning of the filename of the notebook
+page tab. If the text is saved to the file, the asterisk is removed. The
+asterisk tells the user that the text has been modified or not.</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>file_changed_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  GtkNotebook <span class="op">*</span>nb <span class="op">=</span>  GTK_NOTEBOOK <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  scr <span class="op">=</span> gtk_widget_get_parent <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a>  <span class="cf">if</span> <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a>    filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a>    g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a>  <span class="op">}</span> <span class="cf">else</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>    filename <span class="op">=</span> get_untitled <span class="op">();</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a>  label <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a>  gtk_notebook_set_tab_label <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="op">}</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>modified_changed_cb <span class="op">(</span>GtkTextBuffer <span class="op">*</span>tb<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-23"><a href="#cb9-23"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> TFE_TEXT_VIEW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb9-24"><a href="#cb9-24"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_widget_get_parent <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb9-25"><a href="#cb9-25"></a>  GtkWidget <span class="op">*</span>nb <span class="op">=</span>  gtk_widget_get_ancestor <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">),</span> GTK_TYPE_NOTEBOOK<span class="op">);</span></span>
+<span id="cb9-26"><a href="#cb9-26"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb9-27"><a href="#cb9-27"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb9-28"><a href="#cb9-28"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb9-29"><a href="#cb9-29"></a>  <span class="dt">char</span> <span class="op">*</span>text<span class="op">;</span></span>
+<span id="cb9-30"><a href="#cb9-30"></a></span>
+<span id="cb9-31"><a href="#cb9-31"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb9-32"><a href="#cb9-32"></a>  filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb9-33"><a href="#cb9-33"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span></span>
+<span id="cb9-34"><a href="#cb9-34"></a>    text <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;*%s&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb9-35"><a href="#cb9-35"></a>  <span class="cf">else</span></span>
+<span id="cb9-36"><a href="#cb9-36"></a>    text <span class="op">=</span> g_strdup <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb9-37"><a href="#cb9-37"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb9-38"><a href="#cb9-38"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb9-39"><a href="#cb9-39"></a>  label <span class="op">=</span> gtk_label_new <span class="op">(</span>text<span class="op">);</span></span>
+<span id="cb9-40"><a href="#cb9-40"></a>  g_free <span class="op">(</span>text<span class="op">);</span></span>
+<span id="cb9-41"><a href="#cb9-41"></a>  gtk_notebook_set_tab_label <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb9-42"><a href="#cb9-42"></a><span class="op">}</span></span></code></pre></div>
+<h4 id="save_activated">save_activated</h4>
+<p>The callback function <code>save_activated</code> is an activate
+signal handler on “save” action.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>save_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  tfe_text_view_save <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="op">}</span></span></code></pre></div>
+<p>This function gets the current TfeTextView instance with the function
+<code>get_current_textview</code>. And it just calls
+<code>tfe_text_view_save</code>.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>get_current_textview <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a></span>
+<span id="cb11-7"><a href="#cb11-7"></a>  i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>  tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>  <span class="cf">return</span> TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="op">}</span></span></code></pre></div>
+<h4 id="close_activated">close_activated</h4>
+<p>The callback function <code>close_activated</code> is an activate
+signal handler on “close” action. It closes the current notebook
+page.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>  TfeTextView <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>  GtkTextBuffer <span class="op">*</span>tb<span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  GtkWidget <span class="op">*</span>alert<span class="op">;</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a></span>
+<span id="cb12-8"><a href="#cb12-8"></a>  tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  <span class="cf">if</span> <span class="op">(!</span> gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span> <span class="co">/* is saved? */</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>    notebook_page_close <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> FALSE<span class="op">;</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a>    alert <span class="op">=</span> tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a>  <span class="op">}</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="op">}</span></span></code></pre></div>
+<p>If the text in the current page has been saved, it calls
+<code>notebook_page_close</code> to close the page. Otherwise, it sets
+<code>win-&gt;is_quit</code> to FALSE and show the alert dialog. The
+“response” signal on the dialog is connected to the handler
+<code>alert_response_cb</code>.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>notebook_page_close <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">){</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a></span>
+<span id="cb13-5"><a href="#cb13-5"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a>    i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a>    gtk_notebook_remove_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a>  <span class="op">}</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="op">}</span></span></code></pre></div>
+<p>If the notebook has only one page, it destroys the window and the
+application quits. Otherwise, it removes the current page.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>alert_response_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response_id<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a></span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="cf">if</span> <span class="op">(</span>response_id <span class="op">==</span> TFE_ALERT_RESPONSE_ACCEPT<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>    <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>is_quit<span class="op">)</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>      gtk_window_destroy<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a>    <span class="cf">else</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a>      notebook_page_close <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a>  <span class="op">}</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="op">}</span></span></code></pre></div>
+<p>If the user clicked on the cacel button, it does nothing. If the user
+clicked on the accept button, which is the same as close button, it
+calls <code>notebook_page_close</code>. Note that
+<code>win-&gt;is_quit</code> has been set to FALSE in the
+<code>close_activated</code> function.</p>
+<h4 id="new_activated">new_activated</h4>
+<p>The callback function <code>new_activated</code> is an activate
+signal handler on “new” action.</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>new_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a></span>
+<span id="cb15-5"><a href="#cb15-5"></a>  tfe_window_notebook_page_new <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="op">}</span></span></code></pre></div>
+<p>It just calls <code>tfe_window_notebook_page_new</code>, which is a
+public method of TfeWindow.</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">void</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a>  tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>  filename <span class="op">=</span> get_untitled <span class="op">();</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>  notebook_page_build <span class="op">(</span>win<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a><span class="op">}</span></span></code></pre></div>
+<p>This function creates a new TfeTextView instance, “Untitled” family
+string and calls <code>notebook_page_build</code>.</p>
+<h4 id="saveas_activated">saveas_activated</h4>
+<p>The callback function <code>saveas_activated</code> is an activate
+signal handler on “saveas” action.</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a>  tfe_text_view_saveas <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="op">}</span></span></code></pre></div>
+<p>This function gets the current page TfeTextView instance and calls
+<code>tfe_text_view_saveas</code>.</p>
+<h4 id="pref_activated">pref_activated</h4>
+<p>The callback function <code>pref_activated</code> is an activate
+signal handler on “pref” action.</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>pref_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a>  GtkWidget <span class="op">*</span>pref<span class="op">;</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a></span>
+<span id="cb18-6"><a href="#cb18-6"></a>  pref <span class="op">=</span> tfe_pref_new <span class="op">();</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a>  gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="op">}</span></span></code></pre></div>
+<p>This function creates a TfePref instance, which is a dialog, and sets
+the transient parent window to <code>win</code>. And it shows the
+dialog.</p>
+<h4 id="close_all_activated">close_all_activated</h4>
+<p>The callback function <code>close_all_activated</code> is an activate
+signal handler on “close_all” action.</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a>close_all_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a></span>
+<span id="cb19-5"><a href="#cb19-5"></a>  <span class="cf">if</span> <span class="op">(</span>close_request_cb <span class="op">(</span>win<span class="op">)</span> <span class="op">==</span> FALSE<span class="op">)</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="op">}</span></span></code></pre></div>
+<p>It first calls the function <code>close_request_cb</code>. It is a
+callback function for the “close-request” signal on the top window. It
+returns FALSE if all the texts have been saved. Otherwise it returns
+TRUE.</p>
+<p>Therefore, function <code>close_all_activated</code> destroys the top
+window if all the texts have been saved. Otherwise it does nothing. But,
+the function <code>close_request_cb</code> shows an alert dialog and if
+the user clicks on the accept button, the window will be destroyed.</p>
+<h3 id="window-close-request-signal">Window “close-request” signal</h3>
+<p>GtkWindow has a “close-request” signal and it is emitted when the
+close button, which is x-shaped button at the top right corner, is
+clicked on. And the user handler is called before the default handler.
+If the user handler returns TRUE, the rest of the close process is
+skipped. If it returns FALSE, the rest will go on and the window will be
+destroyed.</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1"></a><span class="dt">static</span> gboolean</span>
+<span id="cb20-2"><a href="#cb20-2"></a>close_request_cb <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a></span>
+<span id="cb20-5"><a href="#cb20-5"></a>  <span class="cf">if</span> <span class="op">(</span>is_saved_all <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">))</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a>    <span class="cf">return</span> FALSE<span class="op">;</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> TRUE<span class="op">;</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span><span class="op">,</span> <span class="st">&quot;Quit&quot;</span><span class="op">));</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb20-12"><a href="#cb20-12"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb20-13"><a href="#cb20-13"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb20-14"><a href="#cb20-14"></a>  <span class="op">}</span></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="op">}</span></span></code></pre></div>
+<p>First, it calls <code>is_saved_all</code> and checks if the texts
+have been saved. If so, it returns FALSE and the close process
+continues. Otherwise, it sets <code>win-&gt;is_quit</code> to TRUE and
+shows an alert dialog. When the user clicks on the accept or cancel
+button, the dialog disappears and “response” signal is emitted. Then,
+the handler <code>alert_response_cb</code> is called. It destroys the
+top window if the user clicked on the accept button since
+<code>win-&gt;is_quit</code> is TRUE. Otherwise it does nothing.</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1"></a><span class="dt">static</span> gboolean</span>
+<span id="cb21-2"><a href="#cb21-2"></a>is_saved_all <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>  <span class="dt">int</span> i<span class="op">,</span> n<span class="op">;</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a>  GtkTextBuffer <span class="op">*</span>tb<span class="op">;</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a></span>
+<span id="cb21-8"><a href="#cb21-8"></a>  n <span class="op">=</span> gtk_notebook_get_n_pages <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>    scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a>    tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a>    tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a>    <span class="cf">if</span> <span class="op">(</span>gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span></span>
+<span id="cb21-14"><a href="#cb21-14"></a>      <span class="cf">return</span> FALSE<span class="op">;</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>  <span class="op">}</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="public-functions">Public functions</h3>
+<p>There are three public functions.</p>
+<ul>
+<li><code>void tfe_window_notebook_page_new (TfeWindow *win)</code></li>
+<li><code>void tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files)</code></li>
+<li><code>GtkWidget *tfe_window_new (GtkApplication *app)</code></li>
+</ul>
+<p>The first function is called when the application emits the
+“activate” signal. The second is for “open” signal. It is given three
+arguments and they are owned by the caller.</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1"></a><span class="dt">void</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a></span>
+<span id="cb22-7"><a href="#cb22-7"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a>    <span class="cf">if</span> <span class="op">((</span>tv <span class="op">=</span> tfe_text_view_new_with_file <span class="op">(*(</span>files<span class="op">+</span>i<span class="op">)))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a>      filename <span class="op">=</span> g_file_get_basename <span class="op">(*(</span>files<span class="op">+</span>i<span class="op">));</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a>      notebook_page_build <span class="op">(</span>win<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a>      g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a>    <span class="op">}</span></span>
+<span id="cb22-13"><a href="#cb22-13"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb22-14"><a href="#cb22-14"></a>    tfe_window_notebook_page_new <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="op">}</span></span></code></pre></div>
+<p>This function has a loop for the array <code>files</code>. It creates
+TfeTextView instance with the text from each file. And build a page with
+it.</p>
+<p>If an error happens and no page is created, it creates a new empty
+page.</p>
+<h3 id="full-codes-of-tfewindow.c">Full codes of tfewindow.c</h3>
+<p>The following is the full source codes of
+<code>tfewindow.c</code>.</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="pp">#include </span><span class="im">&quot;../tfetextview/tfetextview.h&quot;</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a>  gboolean is_quit<span class="op">;</span></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="op">};</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a></span>
+<span id="cb23-14"><a href="#cb23-14"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> GTK_TYPE_APPLICATION_WINDOW<span class="op">);</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a></span>
+<span id="cb23-16"><a href="#cb23-16"></a><span class="co">/* Low level functions */</span></span>
+<span id="cb23-17"><a href="#cb23-17"></a></span>
+<span id="cb23-18"><a href="#cb23-18"></a><span class="co">/* Create a new untitled string */</span></span>
+<span id="cb23-19"><a href="#cb23-19"></a><span class="co">/* The returned string should be freed with g_free() when no longer needed. */</span></span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="dt">static</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a>get_untitled <span class="op">()</span> <span class="op">{</span></span>
+<span id="cb23-22"><a href="#cb23-22"></a>  <span class="dt">static</span> <span class="dt">int</span> c <span class="op">=</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a>  <span class="cf">if</span> <span class="op">(++</span>c <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> </span>
+<span id="cb23-24"><a href="#cb23-24"></a>    <span class="cf">return</span> g_strdup_printf<span class="op">(</span><span class="st">&quot;Untitled&quot;</span><span class="op">);</span></span>
+<span id="cb23-25"><a href="#cb23-25"></a>  <span class="cf">else</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;Untitled%u&quot;</span><span class="op">,</span> c<span class="op">);</span></span>
+<span id="cb23-27"><a href="#cb23-27"></a><span class="op">}</span></span>
+<span id="cb23-28"><a href="#cb23-28"></a></span>
+<span id="cb23-29"><a href="#cb23-29"></a><span class="co">/* The returned object is owned by the scrolled window. */</span></span>
+<span id="cb23-30"><a href="#cb23-30"></a><span class="co">/* The caller won&#39;t get the ownership and mustn&#39;t release it. */</span></span>
+<span id="cb23-31"><a href="#cb23-31"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
+<span id="cb23-32"><a href="#cb23-32"></a>get_current_textview <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-33"><a href="#cb23-33"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb23-34"><a href="#cb23-34"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb23-35"><a href="#cb23-35"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb23-36"><a href="#cb23-36"></a></span>
+<span id="cb23-37"><a href="#cb23-37"></a>  i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb23-38"><a href="#cb23-38"></a>  scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb23-39"><a href="#cb23-39"></a>  tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb23-40"><a href="#cb23-40"></a>  <span class="cf">return</span> TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-41"><a href="#cb23-41"></a><span class="op">}</span></span>
+<span id="cb23-42"><a href="#cb23-42"></a></span>
+<span id="cb23-43"><a href="#cb23-43"></a><span class="co">/* This call back is called when a TfeTextView instance emits a &quot;change-file&quot; signal. */</span></span>
+<span id="cb23-44"><a href="#cb23-44"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-45"><a href="#cb23-45"></a>file_changed_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-46"><a href="#cb23-46"></a>  GtkNotebook <span class="op">*</span>nb <span class="op">=</span>  GTK_NOTEBOOK <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-47"><a href="#cb23-47"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb23-48"><a href="#cb23-48"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb23-49"><a href="#cb23-49"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb23-50"><a href="#cb23-50"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb23-51"><a href="#cb23-51"></a></span>
+<span id="cb23-52"><a href="#cb23-52"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-53"><a href="#cb23-53"></a>  scr <span class="op">=</span> gtk_widget_get_parent <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-54"><a href="#cb23-54"></a>  <span class="cf">if</span> <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb23-55"><a href="#cb23-55"></a>    filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb23-56"><a href="#cb23-56"></a>    g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb23-57"><a href="#cb23-57"></a>  <span class="op">}</span> <span class="cf">else</span></span>
+<span id="cb23-58"><a href="#cb23-58"></a>    filename <span class="op">=</span> get_untitled <span class="op">();</span></span>
+<span id="cb23-59"><a href="#cb23-59"></a>  label <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-60"><a href="#cb23-60"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-61"><a href="#cb23-61"></a>  gtk_notebook_set_tab_label <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb23-62"><a href="#cb23-62"></a><span class="op">}</span></span>
+<span id="cb23-63"><a href="#cb23-63"></a></span>
+<span id="cb23-64"><a href="#cb23-64"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-65"><a href="#cb23-65"></a>modified_changed_cb <span class="op">(</span>GtkTextBuffer <span class="op">*</span>tb<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-66"><a href="#cb23-66"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> TFE_TEXT_VIEW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-67"><a href="#cb23-67"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_widget_get_parent <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-68"><a href="#cb23-68"></a>  GtkWidget <span class="op">*</span>nb <span class="op">=</span>  gtk_widget_get_ancestor <span class="op">(</span>GTK_WIDGET <span class="op">(</span>tv<span class="op">),</span> GTK_TYPE_NOTEBOOK<span class="op">);</span></span>
+<span id="cb23-69"><a href="#cb23-69"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
+<span id="cb23-70"><a href="#cb23-70"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb23-71"><a href="#cb23-71"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb23-72"><a href="#cb23-72"></a>  <span class="dt">char</span> <span class="op">*</span>text<span class="op">;</span></span>
+<span id="cb23-73"><a href="#cb23-73"></a></span>
+<span id="cb23-74"><a href="#cb23-74"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-75"><a href="#cb23-75"></a>  filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb23-76"><a href="#cb23-76"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span></span>
+<span id="cb23-77"><a href="#cb23-77"></a>    text <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;*%s&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb23-78"><a href="#cb23-78"></a>  <span class="cf">else</span></span>
+<span id="cb23-79"><a href="#cb23-79"></a>    text <span class="op">=</span> g_strdup <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-80"><a href="#cb23-80"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb23-81"><a href="#cb23-81"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-82"><a href="#cb23-82"></a>  label <span class="op">=</span> gtk_label_new <span class="op">(</span>text<span class="op">);</span></span>
+<span id="cb23-83"><a href="#cb23-83"></a>  g_free <span class="op">(</span>text<span class="op">);</span></span>
+<span id="cb23-84"><a href="#cb23-84"></a>  gtk_notebook_set_tab_label <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> label<span class="op">);</span></span>
+<span id="cb23-85"><a href="#cb23-85"></a><span class="op">}</span></span>
+<span id="cb23-86"><a href="#cb23-86"></a></span>
+<span id="cb23-87"><a href="#cb23-87"></a><span class="dt">static</span> gboolean</span>
+<span id="cb23-88"><a href="#cb23-88"></a>is_saved_all <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-89"><a href="#cb23-89"></a>  <span class="dt">int</span> i<span class="op">,</span> n<span class="op">;</span></span>
+<span id="cb23-90"><a href="#cb23-90"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb23-91"><a href="#cb23-91"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb23-92"><a href="#cb23-92"></a>  GtkTextBuffer <span class="op">*</span>tb<span class="op">;</span></span>
+<span id="cb23-93"><a href="#cb23-93"></a></span>
+<span id="cb23-94"><a href="#cb23-94"></a>  n <span class="op">=</span> gtk_notebook_get_n_pages <span class="op">(</span>nb<span class="op">);</span></span>
+<span id="cb23-95"><a href="#cb23-95"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-96"><a href="#cb23-96"></a>    scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb23-97"><a href="#cb23-97"></a>    tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb23-98"><a href="#cb23-98"></a>    tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-99"><a href="#cb23-99"></a>    <span class="cf">if</span> <span class="op">(</span>gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span></span>
+<span id="cb23-100"><a href="#cb23-100"></a>      <span class="cf">return</span> FALSE<span class="op">;</span></span>
+<span id="cb23-101"><a href="#cb23-101"></a>  <span class="op">}</span></span>
+<span id="cb23-102"><a href="#cb23-102"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb23-103"><a href="#cb23-103"></a><span class="op">}</span></span>
+<span id="cb23-104"><a href="#cb23-104"></a></span>
+<span id="cb23-105"><a href="#cb23-105"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-106"><a href="#cb23-106"></a>notebook_page_close <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">){</span></span>
+<span id="cb23-107"><a href="#cb23-107"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb23-108"><a href="#cb23-108"></a></span>
+<span id="cb23-109"><a href="#cb23-109"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb23-110"><a href="#cb23-110"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-111"><a href="#cb23-111"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb23-112"><a href="#cb23-112"></a>    i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb23-113"><a href="#cb23-113"></a>    gtk_notebook_remove_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb23-114"><a href="#cb23-114"></a>  <span class="op">}</span></span>
+<span id="cb23-115"><a href="#cb23-115"></a><span class="op">}</span></span>
+<span id="cb23-116"><a href="#cb23-116"></a></span>
+<span id="cb23-117"><a href="#cb23-117"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-118"><a href="#cb23-118"></a>notebook_page_build <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GtkWidget <span class="op">*</span>tv<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-119"><a href="#cb23-119"></a>  <span class="co">// The arguments win, tb and filename are owned by the caller.</span></span>
+<span id="cb23-120"><a href="#cb23-120"></a>  <span class="co">// If tv has a floating reference, it is consumed by the function.</span></span>
+<span id="cb23-121"><a href="#cb23-121"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
+<span id="cb23-122"><a href="#cb23-122"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-123"><a href="#cb23-123"></a>  GtkNotebookPage <span class="op">*</span>nbp<span class="op">;</span></span>
+<span id="cb23-124"><a href="#cb23-124"></a>  GtkWidget <span class="op">*</span>lab<span class="op">;</span></span>
+<span id="cb23-125"><a href="#cb23-125"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb23-126"><a href="#cb23-126"></a></span>
+<span id="cb23-127"><a href="#cb23-127"></a>  gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb23-128"><a href="#cb23-128"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
+<span id="cb23-129"><a href="#cb23-129"></a>  lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-130"><a href="#cb23-130"></a>  i <span class="op">=</span> gtk_notebook_append_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
+<span id="cb23-131"><a href="#cb23-131"></a>  nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">);</span></span>
+<span id="cb23-132"><a href="#cb23-132"></a>  g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb23-133"><a href="#cb23-133"></a>  gtk_notebook_set_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb23-134"><a href="#cb23-134"></a>  g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb23-135"><a href="#cb23-135"></a>  g_signal_connect <span class="op">(</span>tb<span class="op">,</span> <span class="st">&quot;modified-changed&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>modified_changed_cb<span class="op">),</span> tv<span class="op">);</span></span>
+<span id="cb23-136"><a href="#cb23-136"></a><span class="op">}</span></span>
+<span id="cb23-137"><a href="#cb23-137"></a></span>
+<span id="cb23-138"><a href="#cb23-138"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-139"><a href="#cb23-139"></a>open_response_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-140"><a href="#cb23-140"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-141"><a href="#cb23-141"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
+<span id="cb23-142"><a href="#cb23-142"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb23-143"><a href="#cb23-143"></a></span>
+<span id="cb23-144"><a href="#cb23-144"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">!=</span> TFE_OPEN_RESPONSE_SUCCESS<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-145"><a href="#cb23-145"></a>    g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-146"><a href="#cb23-146"></a>    g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-147"><a href="#cb23-147"></a>  <span class="op">}</span><span class="cf">else</span> <span class="cf">if</span> <span class="op">(!</span> G_IS_FILE <span class="op">(</span>file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">)))</span> <span class="op">{</span></span>
+<span id="cb23-148"><a href="#cb23-148"></a>    g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-149"><a href="#cb23-149"></a>    g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb23-150"><a href="#cb23-150"></a>  <span class="op">}</span><span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb23-151"><a href="#cb23-151"></a>    filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb23-152"><a href="#cb23-152"></a>    g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb23-153"><a href="#cb23-153"></a>    notebook_page_build <span class="op">(</span>win<span class="op">,</span> GTK_WIDGET <span class="op">(</span>tv<span class="op">),</span> filename<span class="op">);</span></span>
+<span id="cb23-154"><a href="#cb23-154"></a>    g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-155"><a href="#cb23-155"></a>  <span class="op">}</span></span>
+<span id="cb23-156"><a href="#cb23-156"></a><span class="op">}</span></span>
+<span id="cb23-157"><a href="#cb23-157"></a></span>
+<span id="cb23-158"><a href="#cb23-158"></a><span class="co">/* alert response signal handler */</span></span>
+<span id="cb23-159"><a href="#cb23-159"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-160"><a href="#cb23-160"></a>alert_response_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response_id<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-161"><a href="#cb23-161"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-162"><a href="#cb23-162"></a></span>
+<span id="cb23-163"><a href="#cb23-163"></a>  <span class="cf">if</span> <span class="op">(</span>response_id <span class="op">==</span> TFE_ALERT_RESPONSE_ACCEPT<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-164"><a href="#cb23-164"></a>    <span class="cf">if</span> <span class="op">(</span>win<span class="op">-&gt;</span>is_quit<span class="op">)</span></span>
+<span id="cb23-165"><a href="#cb23-165"></a>      gtk_window_destroy<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-166"><a href="#cb23-166"></a>    <span class="cf">else</span></span>
+<span id="cb23-167"><a href="#cb23-167"></a>      notebook_page_close <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb23-168"><a href="#cb23-168"></a>  <span class="op">}</span></span>
+<span id="cb23-169"><a href="#cb23-169"></a><span class="op">}</span></span>
+<span id="cb23-170"><a href="#cb23-170"></a></span>
+<span id="cb23-171"><a href="#cb23-171"></a><span class="co">/* ----- Close request on the top window ----- */</span></span>
+<span id="cb23-172"><a href="#cb23-172"></a><span class="co">/* ----- The signal is emitted when the close button is clicked. ----- */</span></span>
+<span id="cb23-173"><a href="#cb23-173"></a><span class="dt">static</span> gboolean</span>
+<span id="cb23-174"><a href="#cb23-174"></a>close_request_cb <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-175"><a href="#cb23-175"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
+<span id="cb23-176"><a href="#cb23-176"></a></span>
+<span id="cb23-177"><a href="#cb23-177"></a>  <span class="cf">if</span> <span class="op">(</span>is_saved_all <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">))</span></span>
+<span id="cb23-178"><a href="#cb23-178"></a>    <span class="cf">return</span> FALSE<span class="op">;</span></span>
+<span id="cb23-179"><a href="#cb23-179"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb23-180"><a href="#cb23-180"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> TRUE<span class="op">;</span></span>
+<span id="cb23-181"><a href="#cb23-181"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span><span class="op">,</span> <span class="st">&quot;Quit&quot;</span><span class="op">));</span></span>
+<span id="cb23-182"><a href="#cb23-182"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-183"><a href="#cb23-183"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-184"><a href="#cb23-184"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb23-185"><a href="#cb23-185"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb23-186"><a href="#cb23-186"></a>  <span class="op">}</span></span>
+<span id="cb23-187"><a href="#cb23-187"></a><span class="op">}</span></span>
+<span id="cb23-188"><a href="#cb23-188"></a></span>
+<span id="cb23-189"><a href="#cb23-189"></a><span class="co">/* ----- action activated handlers ----- */</span></span>
+<span id="cb23-190"><a href="#cb23-190"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-191"><a href="#cb23-191"></a>open_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-192"><a href="#cb23-192"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-193"><a href="#cb23-193"></a>  GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
+<span id="cb23-194"><a href="#cb23-194"></a></span>
+<span id="cb23-195"><a href="#cb23-195"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-196"><a href="#cb23-196"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-197"><a href="#cb23-197"></a><span class="op">}</span></span>
+<span id="cb23-198"><a href="#cb23-198"></a></span>
+<span id="cb23-199"><a href="#cb23-199"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-200"><a href="#cb23-200"></a>save_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-201"><a href="#cb23-201"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-202"><a href="#cb23-202"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb23-203"><a href="#cb23-203"></a></span>
+<span id="cb23-204"><a href="#cb23-204"></a>  tfe_text_view_save <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-205"><a href="#cb23-205"></a><span class="op">}</span></span>
+<span id="cb23-206"><a href="#cb23-206"></a></span>
+<span id="cb23-207"><a href="#cb23-207"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-208"><a href="#cb23-208"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-209"><a href="#cb23-209"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-210"><a href="#cb23-210"></a>  TfeTextView <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb23-211"><a href="#cb23-211"></a>  GtkTextBuffer <span class="op">*</span>tb<span class="op">;</span></span>
+<span id="cb23-212"><a href="#cb23-212"></a>  GtkWidget <span class="op">*</span>alert<span class="op">;</span></span>
+<span id="cb23-213"><a href="#cb23-213"></a></span>
+<span id="cb23-214"><a href="#cb23-214"></a>  tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb23-215"><a href="#cb23-215"></a>  tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-216"><a href="#cb23-216"></a>  <span class="cf">if</span> <span class="op">(!</span> gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span> <span class="co">/* is saved? */</span></span>
+<span id="cb23-217"><a href="#cb23-217"></a>    notebook_page_close <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb23-218"><a href="#cb23-218"></a>  <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb23-219"><a href="#cb23-219"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> FALSE<span class="op">;</span></span>
+<span id="cb23-220"><a href="#cb23-220"></a>    alert <span class="op">=</span> tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span>
+<span id="cb23-221"><a href="#cb23-221"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-222"><a href="#cb23-222"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-223"><a href="#cb23-223"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb23-224"><a href="#cb23-224"></a>  <span class="op">}</span></span>
+<span id="cb23-225"><a href="#cb23-225"></a><span class="op">}</span></span>
+<span id="cb23-226"><a href="#cb23-226"></a></span>
+<span id="cb23-227"><a href="#cb23-227"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-228"><a href="#cb23-228"></a>new_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-229"><a href="#cb23-229"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-230"><a href="#cb23-230"></a></span>
+<span id="cb23-231"><a href="#cb23-231"></a>  tfe_window_notebook_page_new <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb23-232"><a href="#cb23-232"></a><span class="op">}</span></span>
+<span id="cb23-233"><a href="#cb23-233"></a></span>
+<span id="cb23-234"><a href="#cb23-234"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-235"><a href="#cb23-235"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-236"><a href="#cb23-236"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-237"><a href="#cb23-237"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb23-238"><a href="#cb23-238"></a></span>
+<span id="cb23-239"><a href="#cb23-239"></a>  tfe_text_view_saveas <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb23-240"><a href="#cb23-240"></a><span class="op">}</span></span>
+<span id="cb23-241"><a href="#cb23-241"></a></span>
+<span id="cb23-242"><a href="#cb23-242"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-243"><a href="#cb23-243"></a>pref_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-244"><a href="#cb23-244"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-245"><a href="#cb23-245"></a>  GtkWidget <span class="op">*</span>pref<span class="op">;</span></span>
+<span id="cb23-246"><a href="#cb23-246"></a></span>
+<span id="cb23-247"><a href="#cb23-247"></a>  pref <span class="op">=</span> tfe_pref_new <span class="op">();</span></span>
+<span id="cb23-248"><a href="#cb23-248"></a>  gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-249"><a href="#cb23-249"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb23-250"><a href="#cb23-250"></a><span class="op">}</span></span>
+<span id="cb23-251"><a href="#cb23-251"></a></span>
+<span id="cb23-252"><a href="#cb23-252"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-253"><a href="#cb23-253"></a>close_all_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-254"><a href="#cb23-254"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb23-255"><a href="#cb23-255"></a></span>
+<span id="cb23-256"><a href="#cb23-256"></a>  <span class="cf">if</span> <span class="op">(</span>close_request_cb <span class="op">(</span>win<span class="op">)</span> <span class="op">==</span> FALSE<span class="op">)</span></span>
+<span id="cb23-257"><a href="#cb23-257"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-258"><a href="#cb23-258"></a><span class="op">}</span></span>
+<span id="cb23-259"><a href="#cb23-259"></a></span>
+<span id="cb23-260"><a href="#cb23-260"></a><span class="co">/* --- public functions --- */</span></span>
+<span id="cb23-261"><a href="#cb23-261"></a></span>
+<span id="cb23-262"><a href="#cb23-262"></a><span class="dt">void</span></span>
+<span id="cb23-263"><a href="#cb23-263"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-264"><a href="#cb23-264"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb23-265"><a href="#cb23-265"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb23-266"><a href="#cb23-266"></a></span>
+<span id="cb23-267"><a href="#cb23-267"></a>  tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
+<span id="cb23-268"><a href="#cb23-268"></a>  filename <span class="op">=</span> get_untitled <span class="op">();</span></span>
+<span id="cb23-269"><a href="#cb23-269"></a>  notebook_page_build <span class="op">(</span>win<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb23-270"><a href="#cb23-270"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-271"><a href="#cb23-271"></a><span class="op">}</span></span>
+<span id="cb23-272"><a href="#cb23-272"></a></span>
+<span id="cb23-273"><a href="#cb23-273"></a><span class="dt">void</span></span>
+<span id="cb23-274"><a href="#cb23-274"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-275"><a href="#cb23-275"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb23-276"><a href="#cb23-276"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb23-277"><a href="#cb23-277"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb23-278"><a href="#cb23-278"></a></span>
+<span id="cb23-279"><a href="#cb23-279"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb23-280"><a href="#cb23-280"></a>    <span class="cf">if</span> <span class="op">((</span>tv <span class="op">=</span> tfe_text_view_new_with_file <span class="op">(*(</span>files<span class="op">+</span>i<span class="op">)))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-281"><a href="#cb23-281"></a>      filename <span class="op">=</span> g_file_get_basename <span class="op">(*(</span>files<span class="op">+</span>i<span class="op">));</span></span>
+<span id="cb23-282"><a href="#cb23-282"></a>      notebook_page_build <span class="op">(</span>win<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb23-283"><a href="#cb23-283"></a>      g_free <span class="op">(</span>filename<span class="op">);</span></span>
+<span id="cb23-284"><a href="#cb23-284"></a>    <span class="op">}</span></span>
+<span id="cb23-285"><a href="#cb23-285"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb23-286"><a href="#cb23-286"></a>    tfe_window_notebook_page_new <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb23-287"><a href="#cb23-287"></a><span class="op">}</span></span>
+<span id="cb23-288"><a href="#cb23-288"></a></span>
+<span id="cb23-289"><a href="#cb23-289"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-290"><a href="#cb23-290"></a>tfe_window_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-291"><a href="#cb23-291"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb23-292"><a href="#cb23-292"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_window_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb23-293"><a href="#cb23-293"></a><span class="op">}</span></span>
+<span id="cb23-294"><a href="#cb23-294"></a></span>
+<span id="cb23-295"><a href="#cb23-295"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-296"><a href="#cb23-296"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-297"><a href="#cb23-297"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb23-298"><a href="#cb23-298"></a>  GMenuModel <span class="op">*</span>menu<span class="op">;</span></span>
+<span id="cb23-299"><a href="#cb23-299"></a></span>
+<span id="cb23-300"><a href="#cb23-300"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb23-301"><a href="#cb23-301"></a></span>
+<span id="cb23-302"><a href="#cb23-302"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/menu.ui&quot;</span><span class="op">);</span></span>
+<span id="cb23-303"><a href="#cb23-303"></a>  menu <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;menu&quot;</span><span class="op">));</span></span>
+<span id="cb23-304"><a href="#cb23-304"></a>  gtk_menu_button_set_menu_model <span class="op">(</span>win<span class="op">-&gt;</span>btnm<span class="op">,</span> menu<span class="op">);</span></span>
+<span id="cb23-305"><a href="#cb23-305"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb23-306"><a href="#cb23-306"></a></span>
+<span id="cb23-307"><a href="#cb23-307"></a><span class="co">/* ----- action ----- */</span></span>
+<span id="cb23-308"><a href="#cb23-308"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb23-309"><a href="#cb23-309"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb23-310"><a href="#cb23-310"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb23-311"><a href="#cb23-311"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb23-312"><a href="#cb23-312"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb23-313"><a href="#cb23-313"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb23-314"><a href="#cb23-314"></a>    <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb23-315"><a href="#cb23-315"></a>    <span class="op">{</span> <span class="st">&quot;close-all&quot;</span><span class="op">,</span> close_all_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb23-316"><a href="#cb23-316"></a>  <span class="op">};</span></span>
+<span id="cb23-317"><a href="#cb23-317"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-318"><a href="#cb23-318"></a></span>
+<span id="cb23-319"><a href="#cb23-319"></a>  g_signal_connect <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_request_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb23-320"><a href="#cb23-320"></a><span class="op">}</span></span>
+<span id="cb23-321"><a href="#cb23-321"></a></span>
+<span id="cb23-322"><a href="#cb23-322"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb23-323"><a href="#cb23-323"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-324"><a href="#cb23-324"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
+<span id="cb23-325"><a href="#cb23-325"></a></span>
+<span id="cb23-326"><a href="#cb23-326"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_window_dispose<span class="op">;</span></span>
+<span id="cb23-327"><a href="#cb23-327"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfewindow.ui&quot;</span><span class="op">);</span></span>
+<span id="cb23-328"><a href="#cb23-328"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span></span>
+<span id="cb23-329"><a href="#cb23-329"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span></span>
+<span id="cb23-330"><a href="#cb23-330"></a><span class="op">}</span></span>
+<span id="cb23-331"><a href="#cb23-331"></a></span>
+<span id="cb23-332"><a href="#cb23-332"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb23-333"><a href="#cb23-333"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-334"><a href="#cb23-334"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb23-335"><a href="#cb23-335"></a><span class="op">}</span></span></code></pre></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>
