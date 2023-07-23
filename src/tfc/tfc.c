@@ -143,7 +143,7 @@ app_activate (GApplication *app, gpointer user_data) {
 
     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-    gtk_widget_show(win);
+    gtk_window_present(GTK_WINDOW (win));
 
 }
 

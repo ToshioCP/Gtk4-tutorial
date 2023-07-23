@@ -279,7 +279,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-13"><a href="#cb2-13"></a></span>
 <span id="cb2-14"><a href="#cb2-14"></a>    gtk_drawing_area_set_draw_func<span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>clock<span class="op">),</span> draw_clock<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb2-15"><a href="#cb2-15"></a>    g_timeout_add<span class="op">(</span><span class="dv">1000</span><span class="op">,</span> <span class="op">(</span>GSourceFunc<span class="op">)</span> time_handler<span class="op">,</span> <span class="op">(</span>gpointer<span class="op">)</span> clock<span class="op">);</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>    gtk_widget_show<span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>    gtk_window_present<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb2-17"><a href="#cb2-17"></a></span>
 <span id="cb2-18"><a href="#cb2-18"></a><span class="op">}</span></span></code></pre></div>
 <p>Our <code>time_handler()</code> function is very simple, as it just
@@ -448,7 +448,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-143"><a href="#cb4-143"></a></span>
 <span id="cb4-144"><a href="#cb4-144"></a>    gtk_drawing_area_set_draw_func<span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>clock<span class="op">),</span> draw_clock<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb4-145"><a href="#cb4-145"></a>    g_timeout_add<span class="op">(</span><span class="dv">1000</span><span class="op">,</span> <span class="op">(</span>GSourceFunc<span class="op">)</span> time_handler<span class="op">,</span> <span class="op">(</span>gpointer<span class="op">)</span> clock<span class="op">);</span></span>
-<span id="cb4-146"><a href="#cb4-146"></a>    gtk_widget_show<span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb4-146"><a href="#cb4-146"></a>    gtk_window_present<span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb4-147"><a href="#cb4-147"></a></span>
 <span id="cb4-148"><a href="#cb4-148"></a><span class="op">}</span></span>
 <span id="cb4-149"><a href="#cb4-149"></a></span>

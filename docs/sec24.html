@@ -112,28 +112,22 @@
       </div>
     </nav>
 <h1 id="gtkdrawingarea-and-cairo">GtkDrawingArea and Cairo</h1>
-<p>This section and following sections are <em>not</em> updated yet and
-the programs were checked on the older GTK version than 4.10. They will
-be updated in the near future.</p>
-<p>If you want to draw dynamically on the screen, like an image window
-of gimp graphics editor, the GtkDrawingArea widget is the most suitable
-widget. You can freely draw or redraw an image in this widget. This is
-called custom drawing.</p>
-<p>GtkDrawingArea provides a cairo drawing context so users can draw
-images by using cairo functions. In this section, I will explain:</p>
+<p>If you want to draw shapes or paint images dynamically on the screen,
+use the GtkDrawingArea widget.</p>
+<p>GtkDrawingArea provides a cairo drawing context. You can draw images
+with cairo library functions. This section describes:</p>
 <ol type="1">
-<li>Cairo, but only briefly</li>
+<li>Cairo, but briefly</li>
 <li>GtkDrawingArea, with a very simple example.</li>
 </ol>
 <h2 id="cairo">Cairo</h2>
-<p>Cairo is a set of two dimensional graphical drawing functions (or
-graphics library). There are a lot of documents on <a
-href="https://www.cairographics.org/">Cairo’s website</a>. If you aren’t
-familiar with Cairo, it is worth reading the <a
-href="https://www.cairographics.org/tutorial/">tutorial</a>.</p>
-<p>The following is an introduction to the Cairo library and how to use
-it. First, you need to know about surfaces, sources, masks,
-destinations, cairo context and transformations.</p>
+<p>Cairo is a drawing library for two dimensional graphics. There are a
+lot of documents on <a href="https://www.cairographics.org/">Cairo’s
+website</a>. If you aren’t familiar with Cairo, it is worth reading the
+<a href="https://www.cairographics.org/tutorial/">tutorial</a>.</p>
+<p>The following is an introduction to the Cairo library. First, you
+need to know surfaces, sources, masks, destinations, cairo context and
+transformations.</p>
 <ul>
 <li>A surface represents an image. It is like a canvas. We can draw
 shapes and images with different colors on surfaces.</li>
@@ -147,8 +141,8 @@ is a function to draw a path to the destination by the transfer.</li>
 <li>A transformation can be applied before the transfer completes. The
 transformation which is applied is called affine, which is a
 mathematical term meaning transofrmations that preserve straight lines.
-Scaling, rotating, reflecting, shearing and translating are all examples
-of affine transformations. They are mathematically represented by matrix
+Scaling, rotating, reflecting, shearing and translating are examples of
+affine transformations. They are mathematically represented by matrix
 multiplication and vector addition. In this section we don’t use it,
 instead we will only use the identity transformation. This means that
 the coordinates in the source and mask are the same as the coordinates
@@ -225,35 +219,32 @@ color depth. Width and height are in pixels and given as integers.</li>
 <li>14: Creates cairo context. The surface given as an argument will be
 the destination of the context.</li>
 <li>18: <code>cairo_set_source_rgb</code> creates a source pattern,
-which in this case is a solid white paint. The second to fourth
-arguments are red, green and blue color values respectively, and they
-are of type float. The values are between zero (0.0) and one (1.0), with
-black being given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).</li>
+which is a solid white paint. The second to fourth arguments are red,
+green and blue color values respectively, and they are of type float.
+The values are between zero (0.0) and one (1.0). Black is (0.0,0.0,0.0)
+and white is (1.0,1.0,1.0).</li>
 <li>19: <code>cairo_paint</code> copies everywhere in the source to
 destination. The destination is filled with white pixels with this
 command.</li>
 <li>21: Sets the source color to black.</li>
-<li>22: <code>cairo_set_line_width</code> set the width of lines. In
+<li>22: <code>cairo_set_line_width</code> sets the width of lines. In
 this case, the line width is set to be two pixels and will end up that
 same size. (It is because the transformation is identity. If the
 transformation isn’t identity, for example scaling with the factor
 three, the actual width in destination will be six (2x3=6) pixels.)</li>
 <li>23: Draws a rectangle (square) on the mask. The square is located at
 the center.</li>
-<li>24: <code>cairo_stroke</code> transfer the source to destination
+<li>24: <code>cairo_stroke</code> transfers the source to destination
 through the rectangle in the mask.</li>
-<li>27: Outputs the image to a png file <code>rectangle.png</code>.</li>
-<li>28: Destroys the context. At the same time the source is
+<li>31: Outputs the image to a png file <code>rectangle.png</code>.</li>
+<li>32: Destroys the context. At the same time the source is
 destroyed.</li>
-<li>29: Destroys the surface.</li>
+<li>33: Destroys the surface.</li>
 </ul>
 <p>To compile this, change your current directory to
 <code>src/misc</code> and type the following.</p>
 <pre><code>$ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`</code></pre>
-<figure>
-<img src="image/rectangle.png" alt="rectangle.png" />
-<figcaption aria-hidden="true">rectangle.png</figcaption>
-</figure>
+<p>s <img src="image/rectangle.png" alt="rectangle.png" /></p>
 <p>See the <a href="https://www.cairographics.org/">Cairo’s website</a>
 for further information.</p>
 <h2 id="gtkdrawingarea">GtkDrawingArea</h2>
@@ -308,10 +299,10 @@ important in this example.</p>
 <ul>
 <li>22: Creates a GtkDrawingArea instance.</li>
 <li>25: Sets a drawing function of the widget. GtkDrawingArea widget
-uses the function to draw the contents of itself whenever its necessary.
-For example, when a user drag a mouse pointer and resize a top-level
-window, GtkDrawingArea also changes the size. Then, the whole window
-needs to be redrawn. For the information of
+uses the function <code>draw_function</code> to draw the contents of
+itself whenever its necessary. For example, when a user drag a mouse
+pointer and resize a top-level window, GtkDrawingArea also changes the
+size. Then, the whole window needs to be redrawn. For the information of
 <code>gtk_drawing_area_set_draw_func</code>, see <a
 href="https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html">Gtk
 API Reference – gtk_drawing_area_set_draw_func</a>.</li>

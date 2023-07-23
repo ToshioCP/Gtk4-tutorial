@@ -173,7 +173,7 @@ every second (or 1000ms).
 13 
 14     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
 15     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-16     gtk_widget_show(win);
+16     gtk_window_present(GTK_WINDOW (win));
 17 
 18 }
 ~~~
@@ -349,7 +349,7 @@ You can find the source files in the `tfc` directory. it can be compiled with `.
 143 
 144     gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
 145     g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-146     gtk_widget_show(win);
+146     gtk_window_present(GTK_WINDOW (win));
 147 
 148 }
 149 

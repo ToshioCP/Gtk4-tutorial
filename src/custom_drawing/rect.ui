@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkApplicationWindow" id="win">
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="resizable">FALSE</property>
+    <property name="title">Custom drawing</property>
+    <child>
+      <object class="GtkDrawingArea" id="da">
+        <property name="hexpand">TRUE</property>
+        <property name="vexpand">TRUE</property>
+      </object>
+    </child>
+  </object>
+</interface>
+

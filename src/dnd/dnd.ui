@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkApplicationWindow" id="win">
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="resizable">FALSE</property>
+    <property name="title">Drag and Drop</property>
+    <child>
+      <object class="GtkBox">
+        <property name="hexpand">TRUE</property>
+        <property name="vexpand">TRUE</property>
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="homogeneous">TRUE</property>
+            <child>
+              <object class="GtkLabel" id="red">
+                <property name="label">RED</property>
+                <property name="justify">GTK_JUSTIFY_CENTER</property>
+                <property name="name">red</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="green">
+                <property name="label">GREEN</property>
+                <property name="justify">GTK_JUSTIFY_CENTER</property>
+                <property name="name">green</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="blue">
+                <property name="label">BLUE</property>
+                <property name="justify">GTK_JUSTIFY_CENTER</property>
+                <property name="name">blue</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="canvas">
+            <property name="label">CANVAS</property>
+            <property name="justify">GTK_JUSTIFY_CENTER</property>
+            <property name="name">canvas</property>
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
+

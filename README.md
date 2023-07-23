@@ -85,7 +85,7 @@ In short,
 1. [Pango, CSS and Application](gfm/sec23.md)
 1. [GtkDrawingArea and Cairo](gfm/sec24.md)
 1. [Periodic Events](gfm/sec25.md)
-1. [Combine GtkDrawingArea and TfeTextView](gfm/sec26.md)
+1. [Custom drawing](gfm/sec26.md)
 1. [Tiny turtle graphics interpreter](gfm/sec27.md)
 1. [GtkListView](gfm/sec28.md)
 1. [GtkGridView and activate signal](gfm/sec29.md)

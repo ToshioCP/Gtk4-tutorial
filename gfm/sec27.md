@@ -4,7 +4,7 @@ Up: [README.md](../README.md),  Prev: [Section 26](sec26.md), Next: [Section 28]
 
 A program `turtle` is an example with the combination of TfeTextView and GtkDrawingArea objects.
 It is a very small interpreter but you can draw fractal curves with it.
-The following diagram is a Koch curve, which is one of famous fractal curves.
+The following diagram is a Koch curve, which is one of the famous fractal curves.
 
 ![Koch curve](../src/turtle/image/turtle_koch.png)
 

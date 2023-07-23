@@ -1,182 +1,240 @@
-# Combine GtkDrawingArea and TfeTextView
+# Custom drawing
 
-Now, we will make a new application which has GtkDrawingArea and TfeTextView in it.
-Its name is "color".
-If you write a name of a color in TfeTextView and click on the `run` button, then the color of GtkDrawingArea changes to the color given by you.
+Custom drawing is to draw shapes dynamically.
+This section shows an example of custom drawing.
+You can draw rectangles by dragging the mouse.
 
-![color](../image/color.png){width=7.0cm height=5.13cm}
+Down the button.
 
-The following colors are available.
-(without new line charactor)
+![down the button](../image/cd0.png){width=6cm height=4.83cm}
 
-- white
-- black
-- red
-- green
-- blue
+Move the mouse
 
-In addition the following two options are also available.
+![Move the mouse](../image/cd1.png){width=6cm height=4.83cm}
 
-- light: Make the color of the drawing area lighter.
-- dark: Make the color of the drawing area darker.
+Up the button.
 
-This application can only do very simple things.
-However, it tells us that if we add powerful parser to it, we will be able to make it more efficient.
-I want to show it to you in the later section by making a turtle graphics language like Logo program language.
+![Up the button](../image/cd2.png){width=6cm height=4.83cm}
 
-In this section, we focus on how to bind the two objects.
+The programs are at `src/custom_drawing` directory.
+Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial) and see the directory.
+There are four files.
 
-## Color.ui and color.gresource.xml
+- meson.build
+- rect.c
+- rect.gresource.xml
+- rect.ui
 
-First, We need to make the ui file of the widgets.
-Title bar, four buttons in the tool bar, textview and drawing area.
-The ui file is as follows.
+## rect.gresource.xml
+
+This file describes a ui file to compile.
+The compiler glib-compile-resources uses it.
 
 @@@include
-color/color.ui
+custom_drawing/rect.gresource.xml
 @@@
 
-- 10-53: The horizontal box `boxh1` makes a tool bar which has four buttons, `Run`, `Open`, `Save` and `Close`.
-This is similar to the `tfe` text editor in [Section 9](sec9.src.md).
-There are two differences.
-`Run` button replaces `New` button.
-A signal element is added to each button object.
-It has "name" attribute which is a signal name and "handler" attribute which is the name of its signal handler.
-Options "-WI, --export-dynamic" CFLAG is necessary when you compile the application.
-You can achieve this by adding "export_dynamic: true" argument to the executable function in `meson.build`.
-And be careful that the handler must be defined without 'static' class.
-- 54-76: The horizontal box `boxh2` includes GtkScrolledWindow and GtkDrawingArea.
-GtkBox has "homogeneous property" with TRUE value, so the two children have the same width in the box.
-TfeTextView is a child of GtkScrolledWindow.
+The prefix is `/com/github/ToshioCP/rect` and the file is `rect.ui`.
+Therefore, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui`.
 
-The xml file for the resource compiler is almost same as before.
-Just substitute "color" for "tfe".
+## rect.ui
+
+The following is the ui file that defines the widgets.
+There are two widgets which are GtkApplicationWindow and GtkDrawingArea.
+The ids are `win` and `da` respectively.
 
 @@@include
-color/color.gresource.xml
+custom_drawing/rect.ui
 @@@
 
-## Drawing function and surface
+## rect.c
 
-The main point of this program is a drawing function.
+### GtkApplication
+
+This program uses GtkApplication.
+The application ID is `com.github.ToshioCP.rect`.
+
+```c
+#define APPLICATION_ID "com.github.ToshioCP.rect"
+```
+
+See [GNOME Developer Documentation](https://developer.gnome.org/documentation/tutorials/application-id.html) for further information.
+
+The function `main` is called at the beginning of the application.
 
 @@@include
-color/colorapplication.c draw_func
+custom_drawing/rect.c main
 @@@
 
-The `surface` variable in line 3 is a static variable.
+It connects three signals and handlers.
 
-~~~C
+- startup: It is emitted after the application is registered to the system. 
+- activate: It is emitted when the application is activated.
+- shutdown: It is emitted just before the application quits.
+
+@@@include
+custom_drawing/rect.c app_startup
+@@@
+
+The startup handler does three things.
+
+- Builds the widgets.
+- Initializes the GtkDrawingArea instance.
+  - Sets the drawing function
+  - Connects the "resize" signal and the handler.
+- Creates the GtkGestureDrag instance and initializes it.
+Gesture will be explained in this section later.
+
+@@@include
+custom_drawing/rect.c app_activate
+@@@
+
+The activate handler just shows the window.
+
+### GtkDrawingArea
+
+The program has two cairo surfaces and they are pointed by the global variables.
+
+@@@if gfm
+```C
 static cairo_surface_t *surface = NULL;
-~~~
+static cairo_surface_t *surface_save = NULL;
+```
+@@@else
+```{.C}
+static cairo_surface_t *surface = NULL;
+static cairo_surface_t *surface_save = NULL;
+```
+@@@end
 
-The drawing function just copies the `surface` to its own surface with the `cairo_paint` function.
-The surface (pointed by the static variable `surface`) is built by the `run` function.
+The drawing process is as follows.
 
-@@@include
-color/colorapplication.c run
-@@@
+- Creates an image on `surface`.
+- Copies `surface` to the cairo surface of the GtkDrawingArea.
+- Calls ` gtk_widget_queue_draw (da)` to draw it if necessary.
 
-- 9-10: Gets the string in the GtkTextBuffer and inserts it to `contents`.
-- 11: If the variable `surface` points a surface instance, it is painted as follows.
-- 12- 30: The source is set based on the string `contents` and copied to the surface with `cairo_paint`.
-- 24,26: Alpha channel is used in "light" and "dark" procedure.
-
-The drawing area just reflects the `surface`.
-But one problem is resizing.
-If a user resizes the main window, the drawing area is also resized.
-It makes size difference between the surface and the drawing area.
-So, the surface needs to be resized to fit the drawing area.
-
-It is accomplished by connecting the "resize" signal on the drawing area to a handler.
-
-~~~C
-g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
-~~~
-
-The handler is as follows.
+They are created in the "resize" signal handler.
 
 @@@include
-color/colorapplication.c resize_cb
+custom_drawing/rect.c resize_cb
 @@@
 
-If the variable `surface` sets a surface instance, it is destroyed.
-A new surface is created and its size fits the drawing area.
-The surface is assigned to the variable `surface`.
-The function `run` is called and the surface is colored.
+This callback is called when the GtkDrawingArea is shown.
+It is the only call because the window is not resizable.
 
-The signal is emitted when:
+It creates image surfaces for `surface` and `surface_save`.
+The `surface` surface is painted white, which is the background color.
 
-- The drawing area is realized (it appears on the display).
-- It is changed (resized) while realized
-
-So, the first surface is created when it is realized.
-
-## Colorapplication.c
-
-This is the main file.
-
-- Builds widgets by GtkBuilder.
-- Sets a drawing function for GtkDrawingArea.
-And connects a handler to the "resize" signal on the GtkDrawingArea instance.
-- Implements each call back function.
-Particularly, `Run` signal handler is the point in this program.
-
-The following is `colorapplication.c`.
+The drawing function copies `surface` to the GtkDrawingArea surface.
 
 @@@include
-color/colorapplication.c
+custom_drawing/rect.c draw_cb
 @@@
 
-- 4-8: Win, tv, da and surface are defined as static variables.
-- 10-42: Run function.
-- 44-63: Handlers for button signals.
-- 65-71: Resize handler.
-- 73-79: Drawing function.
-- 81-84: Application activate handler.
-It just shows the main window.
-- 86-105: Application startup handler.
-- 92- 97: It builds widgets according to the ui resource.
-The static variables win, tv and da are assigned instances.
-- 98: Connects "resize" signal and a handler.
-- 99: Drawing function is set.
-- 101-104: CSS for textview padding is set.
-- 107-111: Application shutdown handler.
-If there exists a surface instance, it will be destroyed.
-- 116-129: A function `main`.
-It creates a new application instance.
-And connects three signals startup, shutdown and activate to their handlers.
-It runs the application.
-It releases the reference to the application and returns with `stat` value.
+This function is called by the system when it needs to redraw the drawing area.
 
-## Meson.build
-
-This file is almost same as before.
-An argument "export_dynamic: true" is added to executable function.
+Two surfaces `surface` and `surface_save` are destroyed before the application quits.
 
 @@@include
-color/meson.build
+custom_drawing/rect.c app_shutdown
 @@@
 
-## Build and try
+### GtkGestureDrag
 
-Type the following to compile the program.
+Gesture class is used to recognize human gestures such as click, drag, pan, swipe and so on.
+It is a subclass of GtkEventController.
+GtkGesture class is abstract and there are several implementations.
 
-    $ meson _build
-    $ ninja -C _build
+- GtkGestureClick
+- GtkGestureDrag
+- GtkGesturePan
+- GtkGestureSwipe
+- other implementations
 
-The application is made in `_build` directory.
-Type the following to execute it.
+The program `rect.c` uses GtkGestureDrag.
+It is the implementation for drags.
+The parent-child relationship is as follows.
 
-    $ _build/color
+```
+GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag
+```
 
-Type "red", "green", "blue", "white", black", "light" or "dark" in the TfeTextView.
-No new line charactor is needed.
-Then, click on the `Run` button.
-Make sure the color of GtkDrawingArea changes.
+GtkGestureSingle is a subclass of GtkGesture and optimized for singe-touch and mouse gestures.
 
-In this program TfeTextView is used to change the color.
-You can use buttons or menus instead of textview.
-Probably it is more appropriate.
-Using textview is unnatural.
-It is a good practice to make such application by yourself.
+A GtkGestureDrag instance is created and initialized in the startup signal handler in `rect.c`.
+See line 18 to 23 in the following.
+
+@@@include
+custom_drawing/rect.c app_startup
+@@@
+
+- The function `gtk_gesture_drag_new` creates a new GtkGestureDrag instance.
+- The function `gtk_gesture_single_set_button` sets the button number to listen to.
+The constant `GDK_BUTTON_PRIMARY` is the left button of a mouse.
+- The function `gtk_widget_add_controller` adds an event controller, gestures are descendants of the event controller, to a widget.
+- Three signals and handlers are connected.
+  - drag-begin: Emitted when dragging starts.
+  - drag-update: Emitted when the dragging point moves.
+  - drag-end: Emitted when the dragging ends.
+
+The process during the drag is as follows.
+
+- start: save the surface and start points
+- update: restore the surface and draw a thin rectangle between the start point and the current point of the mouse
+- end: restore the surface and draw a thick rectangle between the start and end points.
+
+We need two global variables for the start point.
+
+@@@if gfm
+```C
+static double start_x;
+static double start_y;
+```
+@@@else
+```{.C}
+static double start_x;
+static double start_y;
+```
+@@@end
+
+The following is the handler for the "drag-begin" signal.
+
+@@@include
+custom_drawing/rect.c copy_surface drag_begin
+@@@
+
+- Copies `surface` to `surface_save`, which is an image just before the dragging.
+- Stores the points to `start_x` and `start_y`.
+
+@@@include
+custom_drawing/rect.c drag_update
+@@@
+
+- Restores `surface` from `surface_save`.
+- Draws a rectangle with thin lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+@@@include
+custom_drawing/rect.c drag_end
+@@@
+
+- Restores `surface` from `surface_save`.
+- Draws a rectangle with thick lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+## Build and run
+
+Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+Change your current directory to `src/custom_drawing`.
+Run meson and ninja to build the program.
+Type `_build/rect` to run the program.
+Try to draw rectangles.
+
+```
+$ cd src/custom_drawing
+$ meson setup _build
+$ ninja -C _build
+$ _build/rect
+```
+
+![The screen of rect program](../image/rect.png){width=12.4cm height=10cm}

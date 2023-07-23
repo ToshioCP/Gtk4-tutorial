@@ -2,27 +2,23 @@ Up: [README.md](../README.md),  Prev: [Section 23](sec23.md), Next: [Section 25]
 
 # GtkDrawingArea and Cairo
 
-This section and following sections are *not* updated yet and the programs were checked on the older GTK version than 4.10.
-They will be updated in the near future.
+If you want to draw shapes or paint images dynamically on the screen, use the GtkDrawingArea widget.
 
-If you want to draw dynamically on the screen, like an image window of gimp graphics editor, the GtkDrawingArea widget is the most suitable widget.
-You can freely draw or redraw an image in this widget.
-This is called custom drawing.
+GtkDrawingArea provides a cairo drawing context.
+You can draw images with cairo library functions.
+This section describes:
 
-GtkDrawingArea provides a cairo drawing context so users can draw images by using cairo functions.
-In this section, I will explain:
-
-1. Cairo, but only briefly
+1. Cairo, but briefly
 2. GtkDrawingArea, with a very simple example.
 
 ## Cairo
 
-Cairo is a set of two dimensional graphical drawing functions (or graphics library).
+Cairo is a drawing library for two dimensional graphics.
 There are a lot of documents on [Cairo's website](https://www.cairographics.org/).
 If you aren't familiar with Cairo, it is worth reading the [tutorial](https://www.cairographics.org/tutorial/).
 
-The following is an introduction to the Cairo library and how to use it.
-First, you need to know about surfaces, sources, masks, destinations, cairo context and transformations.
+The following is an introduction to the Cairo library.
+First, you need to know surfaces, sources, masks, destinations, cairo context and transformations.
 
 - A surface represents an image.
 It is like a canvas.
@@ -35,7 +31,7 @@ For example, `cairo_stroke` is a function to draw a path to the destination by t
 - A transformation can be applied before the transfer completes.
 The transformation which is applied is called affine, which is a mathematical term meaning transofrmations
 that preserve straight lines.
-Scaling, rotating, reflecting, shearing and translating are all examples of affine transformations.
+Scaling, rotating, reflecting, shearing and translating are examples of affine transformations.
 They are mathematically represented by matrix multiplication and vector addition.
 In this section we don't use it, instead we will only use the identity transformation.
 This means that the coordinates in the source and mask are the same as the coordinates in destination.
@@ -106,28 +102,30 @@ Modern displays have this type of color depth.
 Width and height are in pixels and given as integers.
 - 14: Creates cairo context.
 The surface given as an argument will be the destination of the context.
-- 18: `cairo_set_source_rgb` creates a source pattern, which in this case is a solid white paint.
-The second to fourth arguments are red, green and blue color values respectively, and they are
-of type float. The values are between zero (0.0) and one (1.0), with
-black being given by (0.0,0.0,0.0) and white by (1.0,1.0,1.0).
+- 18: `cairo_set_source_rgb` creates a source pattern, which is a solid white paint.
+The second to fourth arguments are red, green and blue color values respectively, and they are of type float.
+The values are between zero (0.0) and one (1.0).
+Black is (0.0,0.0,0.0) and white is (1.0,1.0,1.0).
 - 19: `cairo_paint` copies everywhere in the source to destination.
 The destination is filled with white pixels with this command.
 - 21: Sets the source color to black.
-- 22: `cairo_set_line_width` set the width of lines.
+- 22: `cairo_set_line_width` sets the width of lines.
 In this case, the line width is set to be two pixels and will end up that same size.
 (It is because the transformation is identity.
 If the transformation isn't identity, for example scaling with the factor three, the actual width in destination will be six (2x3=6) pixels.)
 - 23: Draws a rectangle (square) on the mask.
 The square is located at the center.
-- 24: `cairo_stroke` transfer the source to destination through the rectangle in the mask.
-- 27: Outputs the image to a png file `rectangle.png`.
-- 28: Destroys the context. At the same time the source is destroyed.
-- 29: Destroys the surface.
+- 24: `cairo_stroke` transfers the source to destination through the rectangle in the mask.
+- 31: Outputs the image to a png file `rectangle.png`.
+- 32: Destroys the context. At the same time the source is destroyed.
+- 33: Destroys the surface.
 
 To compile this, change your current directory to `src/misc` and type the following.
 
-    $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
-
+```
+$ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
+```
+s
 ![rectangle.png](../image/rectangle.png)
 
 See the [Cairo's website](https://www.cairographics.org/) for further information.
@@ -187,7 +185,7 @@ The two functions `app_activate` and `draw_function` are important in this examp
 
 - 22: Creates a GtkDrawingArea instance.
 - 25: Sets a drawing function of the widget.
-GtkDrawingArea widget uses the function to draw the contents of itself whenever its necessary.
+GtkDrawingArea widget uses the function `draw_function` to draw the contents of itself whenever its necessary.
 For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
 Then, the whole window needs to be redrawn.
 For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference -- gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
