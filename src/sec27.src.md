@@ -16,7 +16,7 @@ Flex is a lexical analyzer.
 Bison is a parser generator.
 These two programs are similar to lex and yacc which are proprietary software developed in Bell Laboratory.
 However, flex and bison are open source software.
-I will write about how to use those software, but they are not topics about GTK 4.
+This section describes them and they are not the topics about GTK 4.
 So, readers can skip this section.
 
 ## How to use turtle
@@ -53,7 +53,6 @@ You can read these files into `turtle` editor by clicking on the `Open` button.
 ## Combination of TfeTextView and GtkDrawingArea objects
 
 Turtle uses TfeTextView and GtkDrawingArea.
-It is similar to `color` program in the previous section.
 
 1. A user inputs/reads a turtle program into the buffer in the TfeTextView instance.
 2. The user clicks on the "Run" button.
@@ -68,55 +67,67 @@ It will be redrawn with the drawing function, which just copies the surface into
 
 The body of the interpreter is written with flex and bison.
 The codes are not thread safe.
-So the handler of "clicked" signal of the `Run` button prevents from reentering.
+So the callback function `run_cb`, which is the handler of "clicked" signal on the `Run` button, prevents reentering.
 
 @@@include
 turtle/turtleapplication.c run_cb resize_cb
 @@@
 
-- 8-13: The static value `busy` holds a status of the interpreter.
-If it is `TRUE`, the interpreter is running and it is not possible to call the interpreter again because it's not a re-entrant program.
-If it is `FALSE`, it is safe to call the interpreter.
-- 14: Changes `busy` to TRUE to avoid reentrance.
-- 15-16: Gets the contents of `tb`.
-- 17: The variable `surface` is a static variable.
+- 8, 13-15: The static value `busy` holds a status of the interpreter.
+If it is `TRUE`, the interpreter is running and it is not possible to call the interpreter because it's not a re-entrant program.
+If it is `FALSE`, it is safe to call the interpreter and set the variable `busy` to TRUE.
+- 16-17: Gets the contents of `tb`.
+- 18-30: The variable `surface` is a static variable.
 It points to a `cairo_surface_t` instance.
 It is created when the GtkDrawingArea instance is realized and whenever it is resized.
 Therefore, `surface` isn't NULL usually.
 But if it is NULL, the interpreter won't be called.
-- 18: Initializes lexical analyzer.
-- 19: Calls parser.
-Parser analyzes the program codes syntactically and generates a tree structured data.
-- 20-22: If the parser successfully parsed, it calls `run` (runtime routine).
-- 23: finalizes the lexical analyzer.
-- 25: frees `contents`.
-- 26: Adds the drawing area widget to the queue to draw.
-- 27: The interpreter program has finished so `busy` is now changed to FALSE.
-- 30-37: A "resized" signal handler.
+- 18-24: If `surface` points a surface instance and the string `contents` isn't empty, it calls the interpreter.
+  - Initializes the lexical analyzer.
+  - Calls the parser. The parser analyzes the program codes syntactically and generates a tree structured data.
+  - If the parser successfully parsed, it calls the runtime routine 'run'.
+  - Finalizes the lexical analyzer.
+- 25-29: If `surface` points a surface instance and the string `contents` is empty, it clears the surface `surface`.
+- 31: Frees `contents`.
+- 32: Adds the drawing area widget to the queue to draw.
+- 33: Sets the variable `busy` to FALSE.
+- 36-43: The "resized" signal handler.
 If the `surface` isn't NULL, it is destroyed.
 A new surface is created.
 Its size is the same as the surface of the GtkDrawingArea instance.
-Run\_cb is called to redraw the shape on the drawing area.
+It calls the callback function `run_cb` to redraw the shape on the drawing area.
 
-Other part of `turtleapplication.c` is almost same as the codes of `colorapplication.c` in the previous section.
+If the open button is clicked and a file is read, the filename will be shown on the header bar.
+
+@@@include
+turtle/turtleapplication.c show_filename
+@@@
+
+This function is the callback function of the "change-file" signal on the TfeTextView instance.
+It calls `tfe_text_view_get_file`.
+
+- If the return value is a GFile instance, the title will be "Turtle (the filename)".
+- Otherwise, the title will be "Turtle".
+
+Other part of `turtleapplication.c` is very simple and similar to the codes in the former applications.
 The codes of `turtleapplication.c` is in the [turtle directory](turtle).
 
 ## What does the interpreter do?
 
-Suppose that the turtle runs with the following program.
+Suppose that the turtle application runs with the following program.
 
 ~~~
 distance = 100
 fd distance*2
 ~~~
 
-The turtle recognizes the program above and works as follows.
+The application recognizes the program and works as follows.
 
 - Generally, a program consists of tokens.
 Tokens are "distance", "=", "100", "fd", "*" and "2" in the above example..
 - The parser calls a function `yylex` to read a token in the source file.
-`yylex` returns a code which is called "token kind" and sets a global variable `yylval` with a value, which is called a semantic value.
-The type of `yylval` is union and `yylval.ID` is string and `yylval.NUM` is double.
+`yylex` returns a code which is called "token kind" and sets a global variable `yylval` to a value, which is called a semantic value.
+The type of `yylval` is union. The type of `yylval.ID` and `yylval.NUM` are string and double respectively.
 There are seven tokens in the program so `yylex` is called seven times.
 
 |   |token kind|yylval.ID|yylval.NUM|
@@ -129,15 +140,15 @@ There are seven tokens in the program so `yylex` is called seven times.
 | 6 |    *     |         |          |
 | 7 |   NUM    |         |    2     |
 
-- `yylex` returns a token kind every time, but it doesn't set `yylval.ID` or `yylval.NUM` every time.
+- The function `yylex` returns a token kind every time, but it doesn't set `yylval.ID` or `yylval.NUM` every time.
 It is because keywords (`FD`) and symbols (`=` and `*`) don't have any semantic values.
 The function `yylex` is called lexical analyzer or scanner.
-- `turtle` makes a tree structured data.
+- The application `turtle` makes a tree structured data.
 This part of `turtle` is called parser.
 
 ![turtle parser tree](../image/turtle_parser_tree.png){width=12cm height=5.34cm}
 
-- `turtle` analyzes the tree and executes it.
+- `Turtle` analyzes the tree and executes it.
 This part of `turtle` is called runtime routine or interpreter.
 The tree consists of rectangles and line segments between the rectangles.
 The rectangles are called nodes.
@@ -149,10 +160,10 @@ First, `turtle` checks if the first child is ID.
 If it's ID, then `turtle` looks for the variable in the variable table.
 If it doesn't exist, it registers the ID (`distance`) to the table.
 Then go back to the N\_ASSIGN node.
-  3. `turtle` calculates the second child.
+  3. `Turtle` calculates the second child.
 In this case its a number 100.
 Saves 100 to the variable table at the `distance` record.
-  4. `turtle` goes back to N\_PROGRAM then go to the next node N\_FD.
+  4. `Turtle` goes back to N\_PROGRAM then go to the next node N\_FD.
 It has only one child.
 Goes down to the child N\_MUL.
   5. The first child is ID (distance).
@@ -162,14 +173,14 @@ Multiplies 100 by 2 and gets 200.
 Then `turtle` goes back to N_FD.
   6. Now `turtle` knows the distance is 200.
 It moves the cursor forward by 200 pixels.
-The segment is drawn on the surface (`surface`).
+The segment is drawn on the `surface`.
   8. There are no node follows.
 Runtime routine returns to the function `run_cb`.
 
-- `run_cb` calls `gtk_widget_queue_draw` and put the GtkDrawingArea widget to the queue.
+- The function `run_cb` calls `gtk_widget_queue_draw` and put the GtkDrawingArea widget to the queue.
 - The system redraws the widget.
 At that time drawing function `draw_func` is called.
-The function copies the surface (`surface`) to the surface in the GtkDrawingArea.
+The function copies the `surface` to the surface in the GtkDrawingArea.
 
 Actual turtle program is more complicated than the example above.
 However, what turtle does is basically the same.
@@ -207,6 +218,7 @@ The instruction is described in `meson.build`.
 turtle/meson.build
 @@@
 
+- 1: The project name is "turtle" and the program language is C.
 - 3: Gets C compiler.
 It is usually `gcc` in linux.
 - 4: Gets math library.
@@ -214,15 +226,15 @@ This program uses trigonometric functions.
 They are defined in the math library, but the library is optional.
 So, it is necessary to include it by `#include <math.h>` and also link the library with the linker.
 - 6: Gets gtk4 library.
-- 8: Gets gnome module.See [Meson build system website -- GNUME module](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
+- 8: Gets gnome module.See [Meson build system website -- GNOME module](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
 - 9: Compiles ui file to C source file according to the XML file `turtle.gresource.xml`.
 - 11: Gets flex.
 - 12: Gets bison.
 - 13: Compiles `turtle.y` to `turtle_parser.c` and `turtle_parser.h` by bison.
 The function `custom_target` creates a custom top level target.
-See [Meson build system website -- custom target](https://mesonbuild.com/Reference-manual.html#custom_target) for further information.
+See [Meson build system website -- custom target](https://mesonbuild.com/Reference-manual_functions.html#custom_target) for further information.
 - 14: Compiles `turtle.lex` to `turtle_lex.c` by flex.
-- 16: Specifies C source files.
+- 16: The variable `sourcefiles` is a file object created with the C source files.
 - 18: Compiles C source files including generated files by glib-compile-resources, bison and flex.
 The argument `turtleparser[1]` refers to `tirtle_parser.h` which is the second output in the line 13.
 
@@ -260,26 +272,33 @@ Turtle.lex isn't a big program.
 turtle/turtle.lex
 @@@
 
-The file consists of three sections which are separated by "%%" (line 18 and 56).
+The file consists of three sections which are separated by "%%" (line 19 and 59).
 They are definitions, rules and user code sections.
 
 ### Definitions section
 
 - 1-12: Lines between "%top{" and "}" are C source codes.
 They will be copied to the top of the generated C source file.
-- 2-3: The function `strlen`, in line 65, is defined in `string.h`
-The function `atof`, in line 40, is defined in `stdlib.h`.
+- 2-3: This program uses two functions `strlen` (l.65) and `atof` (l.40).
+They are defined in `string.h` and `stdlib.h` respectively.
+These two header files are included here.
+- 4: This program uses some GLib functions and structures like `g_strdup` and `GSList`.
+GLib header file is `glib.h` and it is included here.
+- 5: The header file "turtle_parser.h" is generated from "turtle.y" by bison.
+It defines some constants and functions like `PU` and `yylloc`.
+The header file is included here.
 - 7-9: The current input position is pointed by `nline` and `ncolumn`.
-The function `get_location` (line 61-66) sets `yylloc`to point the start and end point of `yytext` in the buffer.
-This function is declared here so that it can be called before the function is defined.
-- 12: GSlist is used to keep allocated memories.
-- 15: This option (`%option noyywrap`) must be specified when you have only single source file to the scanner. Refer to "9 The Generated Scanner" in the flex documentation in your distribution for further information.
+The function `get_location` is declared here so that it can be called before the function is defined (l.61-65).
+- 12: GSlist is a structure for a singly-linked list.
+The variable `list` is defined in `turtle.y` so its class is `extern`.
+It is the start point of the list.
+The list is used to keep allocated memories.
+- 15: This option `%option noyywrap` must be specified when you have only single source file to the scanner. Refer to "9 The Generated Scanner" in the flex documentation in your distribution.
 (The documentation is not on the internet.)
 - 17-18: `REAL_NUMBER` and `IDENTIFIER` are names.
 A name begins with a letter or an underscore followed by zero or more letters, digits, underscores (`_`) or dashes (`-`).
 They are followed by regular expressions which are their definitions.
 They will be used in rules section and will expand to the definition.
-You can leave out such definitions here and use regular expressions in rules section directly.
 
 ### Rules section
 
@@ -300,14 +319,14 @@ If an input is a number, it matches the pattern in line 40.
 Then the matched text is assigned to `yytext` and corresponding action is executed.
 A function `get_location` changes the location variables to the position at the text.
 It assigns `atof (yytext)`, which is double sized number converted from `yytext`, to `yylval.NUM` and return `NUM`.
-`NUM` is a token kind and it represents integer.
+`NUM` is a token kind and it represents (double type) numbers.
  It is defined in `turtle.y`.
 
 The scanner generated by flex has `yylex` function.
 If `yylex` is called and the input is "123.4", then it works as follows.
 
 1. A string "123.4" matches `{REAL_NUMBER}`.
-2. Update the location variable `ncolumn` and `yylloc`with `get_location`.
+2. Updates the location variable `ncolumn`. The structure `yylloc` is set by `get_location`.
 3. The function `atof` converts the string "123.4" to double type number 123.4.
 4. It is assigned to `yylval.NUM`.
 5. `yylex` returns `NUM` to the caller.
@@ -318,18 +337,22 @@ Then the caller knows the input is a number (`NUM`), and its value is 123.4.
 - 21: The symbol `.` (dot) matches any character except newline.
 Therefore, a comment begins `#` followed by any characters except newline.
 No action happens.
+That means that comments are ignored.
 - 22: White space just increases the variable `ncolumn` by one.
 - 23: Tab is assumed to be equal to eight spaces.
 - 24: New line increases a variable `nline` by one and resets `ncolumn`.
-- 26-38: Keywords just updates the location variables `ncolumn` and `yylloc`, and return the token kinds of the keywords.
+- 26-38: Keywords updates the location variables `ncolumn` and `yylloc`, and returns the token kinds of the keywords.
 - 40: Real number constant.
+The action converts the text`yytext` to a double type number, puts it into `yylval.NUM` and returns `NUM`.
 - 42: `IDENTIFIER` is defined in line 18.
+The identifier is a name of variable or procedure.
+It begins with a letter and followed by letters or digits.
 The location variables are updated and the name of the identifier is assigned to `yylval.ID`.
 The memory of the name is allocated by the function `g_strdup`.
 The memory is registered to the list (GSlist type list).
 The memory will be freed after the runtime routine finishes.
 A token kind `ID` is returned.
-- 46-56: Symbols just update the location variable and return the token kinds.
+- 46-57: Symbols update the location variable and return the token kinds.
 The token kind is the same as the symbol itself.
 - 58: If the input doesn't match the patterns, then it is an error.
 A special token kind `YYUNDEF` is returned.
@@ -344,6 +367,8 @@ A variable `yylloc` is referred by the parser.
 It is a C structure and has four members, `first_line`, `first_column`, `last_line` and `last_column`.
 They point the start and end of the current input text.
 - 68: `YY_BUFFER_STATE` is a pointer points the input buffer.
+Flex makes the definition of `YY_BUFFER_STATE` in the C file (scanner source file `turtle_lex.c`).
+See your flex document, section 11 Multiple Input Buffers, for further information.
 - 70-73: A function `init_flex` is called by `run_cb` which is a "clicked" signal handler on the `Run` button.
 It has one string type parameter.
 The caller assigns it with the content of the GtkTextBuffer instance.
@@ -505,12 +530,12 @@ The definition is recursive.
 - `statement` is program.
 - `statement statement` is `program statement`.
 Therefore, it is program.
-- `statement statement statement` is `program statement`.
+- `statement statement statement` is `program statement` because the first two statements are `program`.
 Therefore, it is program.
 
-You can find that a sequence of statements is program like this.
+You can find that a sequence of statements is program as well.
 
-`program` and `statement` aren't tokens.
+The symbols `program` and `statement` aren't tokens.
 They don't appear in the input.
 They are called non terminal symbols.
 On the other hand, tokens are called terminal symbols.
@@ -624,7 +649,7 @@ The following is an extract from `turtle.y`.
 
   /* error reporting */
   static void yyerror (char const *s) { /* for syntax error */
-    g_print ("%s from line %d, column %d to line %d, column %d\n",s, yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column);
+    g_printerr ("%s from line %d, column %d to line %d, column %d\n",s, yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column);
   }
   /* Node type */
   enum {
@@ -645,12 +670,7 @@ Another directive `%code requires` copies its contents to both the parser implem
 The header file is read by the scanner C source file and other files.
 
 @@@if gfm
-~~~bison
-@@@elif html
-~~~{.bison}
-@@@else
-~~~
-@@@end
+```bison
 %code requires {
   int yylex (void);
   int yyparse (void);
@@ -669,7 +689,50 @@ The header file is read by the scanner C source file and other files.
     } content;
   };
 }
-~~~
+```
+@@@elif html
+```{.bison}
+%code requires {
+  int yylex (void);
+  int yyparse (void);
+  void run (void);
+
+  /* semantic value type */
+  typedef struct _node_t node_t;
+  struct _node_t {
+    int type;
+    union {
+      struct {
+        node_t *child1, *child2, *child3;
+      } child;
+      char *name;
+      double value;
+    } content;
+  };
+}
+```
+@@@else
+```
+%code requires {
+  int yylex (void);
+  int yyparse (void);
+  void run (void);
+
+  /* semantic value type */
+  typedef struct _node_t node_t;
+  struct _node_t {
+    int type;
+    union {
+      struct {
+        node_t *child1, *child2, *child3;
+      } child;
+      char *name;
+      double value;
+    } content;
+  };
+}
+```
+@@@end
 
 - `yylex` is shared by the parser implementation file and scanner file.
 - `yyparse` and `run` is called by `run_cb` in `turtleapplication.c`.
@@ -677,7 +740,8 @@ The header file is read by the scanner C source file and other files.
 The header file defines `YYSTYPE`, which is the semantic value type, with all the token and nterm value types.
 The following is extracted from the header file.
 
-~~~
+@@@if gfm
+```C
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
@@ -693,11 +757,30 @@ union YYSTYPE
   node_t * argument_list;                  /* argument_list  */
   node_t * expression;                     /* expression  */
 };
-~~~
+```
+@@@else
+```{.C}
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+union YYSTYPE
+{
+  char * ID;                               /* ID  */
+  double NUM;                              /* NUM  */
+  node_t * program;                        /* program  */
+  node_t * statement;                      /* statement  */
+  node_t * primary_procedure;              /* primary_procedure  */
+  node_t * primary_procedure_list;         /* primary_procedure_list  */
+  node_t * procedure_definition;           /* procedure_definition  */
+  node_t * parameter_list;                 /* parameter_list  */
+  node_t * argument_list;                  /* argument_list  */
+  node_t * expression;                     /* expression  */
+};
+```
+@@@end
 
 Other useful macros and declarations are put into the `%code` directive.
 
-~~~
+```
 %code {
 /* The following macro is convenient to get the member of the node. */
   #define child1(n) (n)->content.child.child1
@@ -713,14 +796,14 @@ Other useful macros and declarations are put into the `%code` directive.
   static node_t *tree2 (int type, double value);
   static node_t *tree3 (int type, char *name);
 }
-~~~
+```
 
 ### Bison declarations
 
 Bison declarations defines terminal and non-terminal symbols.
 It also specifies some directives.
 
-~~~
+```
 %locations
 %define api.value.type union /* YYSTYPE, the type of semantic values, is union of following types */
  /* key words */
@@ -729,17 +812,17 @@ It also specifies some directives.
 %token PW
 %token FD
 %token TR
-%token TL
+%token TL /* ver 0.5 */
 %token BC
 %token FC
 %token DP
 %token IF
 %token RT
 %token RS
-%token RP
+%token RP /* ver 0.5 */
  /* constant */
 %token <double> NUM
- /* identirier */
+ /* identifier */
 %token <char *> ID
  /* non terminal symbol */
 %nterm <node_t *> program
@@ -756,12 +839,13 @@ It also specifies some directives.
 %left '+' '-'
 %left '*' '/'
 %precedence UMINUS /* unary minus */
-~~~
+```
 
 `%locations` directive inserts the location structure into the header file.
 It is like this.
 
-~~~
+@@@if gfm
+```C
 typedef struct YYLTYPE YYLTYPE;
 struct YYLTYPE
 {
@@ -770,7 +854,19 @@ struct YYLTYPE
   int last_line;
   int last_column;
 };
-~~~
+```
+@@@else
+```{.C}
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+```
+@@@end
 
 This type is shared by the scanner file and the parser implementation file.
 The error report function `yyerror` uses it so that it can inform the location that error occurs.
@@ -780,16 +876,16 @@ The inserted part is shown in the previous subsection as the extracts that shows
 
 `%token` and `%nterm` directives define tokens and non terminal symbols respectively.
 
-~~~
+```
 %token PU
 ... ...
 %token <double> NUM
-~~~
+```
 
 These directives define a token `PU` and `NUM`.
 The values of token kinds `PU` and `NUM` are defined as an enumeration constant in the header file.
 
-~~~
+```
   enum yytokentype
   {
   ... ... ...
@@ -799,45 +895,45 @@ The values of token kinds `PU` and `NUM` are defined as an enumeration constant 
   ... ... ...
   };
   typedef enum yytokentype yytoken_kind_t;
-~~~
+```
 
 In addition, the type of the semantic value of `NUM` is defined as double in the header file because of `<double>` tag.
 
-~~~
+```
 union YYSTYPE
 {
   char * ID;                               /* ID  */
   double NUM;                              /* NUM  */
   ... ...
 }
-~~~
+```
 
-All the nterm symbols have the same type `* node_t` of the semantic value.
+All the nterm symbols have the same type `*node_t` of the semantic value.
 
 `%left` and `%precedence` directives define the precedence of operation symbols.
 
-~~~
+```
  /* logical relation symbol */
 %left '=' '<' '>'
  /* arithmetic symbol */
 %left '+' '-'
 %left '*' '/'
 %precedence UMINUS /* unary minus */
-~~~
+```
 
 `%left` directive defines the following symbols as left-associated operators.
 If an operator `+` is left-associated, then
 
-~~~
+```
 A + B + C = (A + B) + C
-~~~
+```
 
 That is, the calculation is carried out the left operator first, then the right operator.
 If an operator `*` is right-associated, then:
 
-~~~
+```
 A * B * C = A * (B * C)
-~~~
+```
 
 The definition above decides the behavior of the parser.
 Addition and multiplication hold associative law so the result of `(A+B)+C` and `A+(B+C)` are equal in terms of mathematics.
@@ -847,9 +943,9 @@ However, the parser will be confused if left (or right) associativity is not spe
 Later declared operators have higher precedence than former declared ones.
 The declaration above says, for example,
 
-~~~
+```
 v=w+z*5+7 is the same as v=((w+(z*5))+7)
-~~~
+```
 
 Be careful.
 The operator `=` above is an assignment.
@@ -874,6 +970,7 @@ result: components { action };
 Action can be left out.
 
 The following is a part of the grammar rule in `turtle.y`.
+But it is not exactly the same.
 
 ~~~
 program:
@@ -894,10 +991,10 @@ expression:
 - Whenever `statement` is reduced to `program`, an action `node_top=$$=$1;` is executed.
 - `node_top` is a static variable.
 It points the top node of the tree.
-- A symbol `$$` is a semantic value of the result.
+- The symbol `$$` is a semantic value of the result.
 For example, `$$` in line 2 is the semantic value of `program`.
 It is a pointer to a `node_t` type structure.
-- `$1` is a semantic value of the first component.
+- The symbol `$1` is a semantic value of the first component.
 For example, `$1` in line 2 is the semantic value of `statement`.
 It is also a pointer to `node_t`.
 - The next rule is that `statement` is `primary_procedure`.
@@ -930,11 +1027,11 @@ What does the parser do?
 Maybe it is the start of `primary_procedure`, but parser needs to read the next token.
 2. `yylex` returns the token kind `NUM` and sets `yylval.NUM` to 100.0 (the type is double). The parser reduces `NUM` to `expression`.
 At the same time, it sets the semantic value of the `expression` to point a new node.
-The node has an type `N_NUM` and a semantic value 100.0.
+The node has the type `N_NUM` and a semantic value 100.0.
 3. After the reduction, the buffer has `FD` and `expression`.
 The parser reduces it to `primary_procedure`.
 And it sets the semantic value of the `primary_procedure` to point a new node.
-The node has an type `N_FD` and its member child1 points the node of `expression`, whose type is `N_NUM`.
+The node has the type `N_FD` and its member child1 points the node of `expression`, whose type is `N_NUM`.
 4. The parser reduces `primary_procedure` to `statement`.
 The semantic value of `statement` is the same as the one of `primary_procedure`,
 which points to the node `N_FD`.
@@ -950,16 +1047,14 @@ I don't want to explain the whole rules below.
 Please look into each line carefully so that you will understand all the rules and actions.
 
 @@@if gfm
-~~~bison
-@@@elif html
-~~~{.bison}
-@@@else
-~~~
-@@@end
+```bison
 program:
   statement { node_top = $$ = $1; }
 | program statement {
         node_top = $$ = tree1 (N_program, $1, $2, NULL);
+#ifdef debug
+if (node_top == NULL) g_printerr ("program: node_top is NULL.\n"); else g_printerr ("program: node_top is NOT NULL.\n");
+#endif
         }
 ;
 
@@ -1028,7 +1123,86 @@ expression:
 | ID    { $$ = tree3 (N_ID, $1); }
 | NUM   { $$ = tree2 (N_NUM, $1); }
 ;
-~~~
+```
+@@@else
+```{.yacc}
+program:
+  statement { node_top = $$ = $1; }
+| program statement {
+        node_top = $$ = tree1 (N_program, $1, $2, NULL);
+#ifdef debug
+if (node_top == NULL) g_printerr ("program: node_top is NULL.\n"); else g_printerr ("program: node_top is NOT NULL.\n");
+#endif
+        }
+;
+
+statement:
+  primary_procedure
+| procedure_definition
+;
+
+primary_procedure:
+  PU    { $$ = tree1 (N_PU, NULL, NULL, NULL); }
+| PD    { $$ = tree1 (N_PD, NULL, NULL, NULL); }
+| PW expression    { $$ = tree1 (N_PW, $2, NULL, NULL); }
+| FD expression    { $$ = tree1 (N_FD, $2, NULL, NULL); }
+| TR expression    { $$ = tree1 (N_TR, $2, NULL, NULL); }
+| TL expression    { $$ = tree1 (N_TL, $2, NULL, NULL); } /* ver 0.5 */
+| BC '(' expression ',' expression ',' expression ')' { $$ = tree1 (N_BC, $3, $5, $7); }
+| FC '(' expression ',' expression ',' expression ')' { $$ = tree1 (N_FC, $3, $5, $7); }
+ /* assignment */
+| ID '=' expression   { $$ = tree1 (N_ASSIGN, tree3 (N_ID, $1), $3, NULL); }
+ /* control flow */
+| IF '(' expression ')' '{' primary_procedure_list '}' { $$ = tree1 (N_IF, $3, $6, NULL); }
+| RT    { $$ = tree1 (N_RT, NULL, NULL, NULL); }
+| RS    { $$ = tree1 (N_RS, NULL, NULL, NULL); }
+| RP '(' expression ')' '{' primary_procedure_list '}'    { $$ = tree1 (N_RP, $3, $6, NULL); }
+ /* user defined procedure call */
+| ID '(' ')'  { $$ = tree1 (N_procedure_call, tree3 (N_ID, $1), NULL, NULL); }
+| ID '(' argument_list ')'  { $$ = tree1 (N_procedure_call, tree3 (N_ID, $1), $3, NULL); }
+;
+
+procedure_definition:
+  DP ID '('  ')' '{' primary_procedure_list '}'  {
+         $$ = tree1 (N_procedure_definition, tree3 (N_ID, $2), NULL, $6);
+        }
+| DP ID '(' parameter_list ')' '{' primary_procedure_list '}'  {
+         $$ = tree1 (N_procedure_definition, tree3 (N_ID, $2), $4, $7);
+        }
+;
+
+parameter_list:
+  ID { $$ = tree3 (N_ID, $1); }
+| parameter_list ',' ID  { $$ = tree1 (N_parameter_list, $1, tree3 (N_ID, $3), NULL); }
+;
+
+argument_list:
+  expression
+| argument_list ',' expression { $$ = tree1 (N_argument_list, $1, $3, NULL); }
+;
+
+primary_procedure_list:
+  primary_procedure
+| primary_procedure_list primary_procedure {
+         $$ = tree1 (N_primary_procedure_list, $1, $2, NULL);
+        }
+;
+
+expression:
+  expression '=' expression { $$ = tree1 (N_EQ, $1, $3, NULL); }
+| expression '>' expression { $$ = tree1 (N_GT, $1, $3, NULL); }
+| expression '<' expression { $$ = tree1 (N_LT, $1, $3, NULL); }
+| expression '+' expression { $$ = tree1 (N_ADD, $1, $3, NULL); }
+| expression '-' expression { $$ = tree1 (N_SUB, $1, $3, NULL); }
+| expression '*' expression { $$ = tree1 (N_MUL, $1, $3, NULL); }
+| expression '/' expression { $$ = tree1 (N_DIV, $1, $3, NULL); }
+| '-' expression %prec UMINUS { $$ = tree1 (N_UMINUS, $2, NULL, NULL); }
+| '(' expression ')' { $$ = $2; }
+| ID    { $$ = tree3 (N_ID, $1); }
+| NUM   { $$ = tree2 (N_NUM, $1); }
+;
+```
+@@@end
 
 ### Epilogue
 
@@ -1050,7 +1224,8 @@ They will be freed when runtime routine finishes.
 
 The three functions are called in the actions in the rules section.
 
-~~~C
+@@@if gfm
+```C
 /* Dynamically allocated memories are added to the single list. They will be freed in the finalize function. */
 GSList *list = NULL;
 
@@ -1088,13 +1263,54 @@ tree3 (int type, char *name) {
   name(new_node) = name;
   return new_node;
 }
-~~~
+```
+@@@else
+```{.C}
+/* Dynamically allocated memories are added to the single list. They will be freed in the finalize function. */
+GSList *list = NULL;
+
+node_t *
+tree1 (int type, node_t *child1, node_t *child2, node_t *child3) {
+  node_t *new_node;
+
+  list = g_slist_prepend (list, g_malloc (sizeof (node_t)));
+  new_node = (node_t *) list->data;
+  new_node->type = type;
+  child1(new_node) = child1;
+  child2(new_node) = child2;
+  child3(new_node) = child3;
+  return new_node;
+}
+
+node_t *
+tree2 (int type, double value) {
+  node_t *new_node;
+
+  list = g_slist_prepend (list, g_malloc (sizeof (node_t)));
+  new_node = (node_t *) list->data;
+  new_node->type = type;
+  value(new_node) = value;
+  return new_node;
+}
+
+node_t *
+tree3 (int type, char *name) {
+  node_t *new_node;
+
+  list = g_slist_prepend (list, g_malloc (sizeof (node_t)));
+  new_node = (node_t *) list->data;
+  new_node->type = type;
+  name(new_node) = name;
+  return new_node;
+}
+```
+@@@end
 
 #### Symbol table
 
-Variables and user defined procedures are registered in a symbol table.
+Variables and user defined procedures are registered in the symbol table.
 This table is a C array.
-It should be replaced by more appropriate data structure with memory allocation in the future version
+It should be replaced by better algorithm and data structure, for example hash, in the future version
 
 - Variables are registered with its name and value.
 - Procedures are registered with its name and a pointer to the node of the procedure.
@@ -1105,23 +1321,21 @@ Therefore the table has the following fields.
 - name
 - value or pointer to a node
 
-~~~C
+@@@if gfm
+```C
 #define MAX_TABLE_SIZE 100
 enum {
   PROC,
   VAR
 };
 
-typedef union _object_t object_t;
-union _object_t {
-  node_t *node;
-  double value;
-};
-
 struct {
   int type;
   char *name;
-  object_t object;
+  union {
+    node_t *node;
+    double value;
+  } object;
 } table[MAX_TABLE_SIZE];
 int tp;
 
@@ -1129,10 +1343,33 @@ void
 init_table (void) {
   tp = 0;
 }
+```
+@@@else
+```{.C}
+#define MAX_TABLE_SIZE 100
+enum {
+  PROC,
+  VAR
+};
 
-~~~
+struct {
+  int type;
+  char *name;
+  union {
+    node_t *node;
+    double value;
+  } object;
+} table[MAX_TABLE_SIZE];
+int tp;
 
-`init_table` initializes the table.
+void
+init_table (void) {
+  tp = 0;
+}
+```
+@@@end
+
+The function `init_table` initializes the table.
 This must be called before registrations.
 
 There are five functions to access the table,
@@ -1143,7 +1380,8 @@ There are five functions to access the table,
 - `var_lookup` looks up a variable. If the variable is found, it returns TRUE and sets the pointer (argument) to point the value. Otherwise it returns FALSE.
 - `var_replace` replaces the value of a variable. If the variable hasn't registered yet, it installs the variable.
 
-~~~C
+@@@if gfm
+```C
 int
 tbl_lookup (int type, char *name) {
   int i;
@@ -1157,7 +1395,7 @@ tbl_lookup (int type, char *name) {
 }
 
 void
-tbl_install (int type, char *name, object_t object) {
+tbl_install (int type, char *name, node_t *node, double value) {
   if (tp >= MAX_TABLE_SIZE)
     runtime_error ("Symbol table overflow.\n");
   else if (tbl_lookup (type, name) >= 0)
@@ -1166,24 +1404,20 @@ tbl_install (int type, char *name, object_t object) {
     table[tp].type = type;
     table[tp].name = name;
     if (type == PROC)
-      table[tp++].object.node = object.node;
+      table[tp++].object.node = node;
     else
-      table[tp++].object.value = object.value;
+      table[tp++].object.value = value;
   }
 }
 
 void
 proc_install (char *name, node_t *node) {
-  object_t object;
-  object.node = node;
-  tbl_install (PROC, name, object);
+  tbl_install (PROC, name, node, 0.0);
 }
 
 void
 var_install (char *name, double value) {
-  object_t object;
-  object.value = value;
-  tbl_install (VAR, name, object);
+  tbl_install (VAR, name, NULL, value);
 }
 
 void
@@ -1214,7 +1448,77 @@ var_lookup (char *name, double *value) {
     return TRUE;
   }
 }
-~~~
+```
+@@@else
+```{.C}
+int
+tbl_lookup (int type, char *name) {
+  int i;
+
+  if (tp == 0)
+    return -1;
+  for (i=0; i<tp; ++i)
+    if (type == table[i].type && strcmp(name, table[i].name) == 0)
+      return i;
+  return -1;
+}
+
+void
+tbl_install (int type, char *name, node_t *node, double value) {
+  if (tp >= MAX_TABLE_SIZE)
+    runtime_error ("Symbol table overflow.\n");
+  else if (tbl_lookup (type, name) >= 0)
+    runtime_error ("Name %s is already registered.\n", name);
+  else {
+    table[tp].type = type;
+    table[tp].name = name;
+    if (type == PROC)
+      table[tp++].object.node = node;
+    else
+      table[tp++].object.value = value;
+  }
+}
+
+void
+proc_install (char *name, node_t *node) {
+  tbl_install (PROC, name, node, 0.0);
+}
+
+void
+var_install (char *name, double value) {
+  tbl_install (VAR, name, NULL, value);
+}
+
+void
+var_replace (char *name, double value) {
+  int i;
+  if ((i = tbl_lookup (VAR, name)) >= 0)
+    table[i].object.value = value;
+  else
+    var_install (name, value);
+}
+
+node_t *
+proc_lookup (char *name) {
+  int i;
+  if ((i = tbl_lookup (PROC, name)) < 0)
+    return NULL;
+  else
+    return table[i].object.node;
+}
+
+gboolean
+var_lookup (char *name, double *value) {
+  int i;
+  if ((i = tbl_lookup (VAR, name)) < 0)
+    return FALSE;
+  else {
+    *value = table[i].object.value;
+    return TRUE;
+  }
+}
+```
+@@@end
 
 #### Stack for parameters and arguments
 
@@ -1296,7 +1600,8 @@ If it succeeds, it returns TRUE. Otherwise returns FALSE.
 - `stack_return` throws away the latest parameters.
 The stack pointer goes back to the point before the latest procedure call so that it points to parameters of the previous called procedure.
 
-~~~C
+@@@if gfm
+```C
 void
 stack_push (char *name, double value) {
   if (sp >= MAX_STACK_SIZE)
@@ -1359,7 +1664,73 @@ stack_return(void) {
     runtime_error ("Stack error.\n");
   sp -= depth + 1;
 }
-~~~
+```
+@@@else
+```C
+void
+stack_push (char *name, double value) {
+  if (sp >= MAX_STACK_SIZE)
+    runtime_error ("Stack overflow.\n");
+  else {
+    stack[sp].name = name;
+    stack[sp++].value = value;
+    sp_biggest = sp > sp_biggest ? sp : sp_biggest;
+  }
+}
+
+int
+stack_search (char *name) {
+  int depth, i;
+
+  if (sp == 0)
+    return -1;
+  depth = (int) stack[sp-1].value;
+  if (depth + 1 > sp) /* something strange */
+    runtime_error ("Stack error.\n");
+  for (i=0; i<depth; ++i)
+    if (strcmp(name, stack[sp-(i+2)].name) == 0) {
+      return sp-(i+2);
+    }
+  return -1;
+}
+
+gboolean
+stack_lookup (char *name, double *value) {
+  int i;
+
+  if ((i = stack_search (name)) < 0)
+    return FALSE;
+  else {
+    *value = stack[i].value;
+    return TRUE;
+  }
+}
+
+gboolean
+stack_replace (char *name, double value) {
+  int i;
+
+  if ((i = stack_search (name)) < 0)
+    return FALSE;
+  else {
+    stack[i].value = value;
+    return TRUE;
+  }
+}
+
+void
+stack_return(void) {
+  int depth;
+
+  if (sp <= 0)
+    return;
+  depth = (int) stack[sp-1].value;
+  if (depth + 1 > sp) /* something strange */
+    runtime_error ("Stack error.\n");
+  sp -= depth + 1;
+}
+```
+@@@end
 
 #### Surface and cairo
 
@@ -1367,8 +1738,8 @@ A global variable `surface` is shared by `turtleapplication.c` and `turtle.y`.
 It is initialized in `turtleapplication.c`.
 
 The runtime routine has its own cairo context.
-This is different from the cairo of GtkDrawingArea.
-Runtime routine draws a shape on the `surface` with the cairo context.
+This is different from the cairo in the GtkDrawingArea instance.
+The runtime routine draws a shape on the `surface` with the cairo context.
 After runtime routine returns to `run_cb`, `run_cb` adds the GtkDrawingArea widget to the queue to redraw.
 When the widget is redraw,the drawing function `draw_func` is called.
 It copies the `surface` to the surface in the GtkDrawingArea object.
@@ -1394,7 +1765,7 @@ It transforms a user-space coordinate (x, y) into a device-space coordinate (z, 
 
 ![transformation](../image/transformation.png){width=6.3cm height=2.04cm}
 
-`init_cairo` gets the width and height of the `surface` (See the program below).
+The function `init_cairo` gets the width and height of the `surface` (See the program below).
 
 - The center of the surface is (0,0) with regard to the user-space coordinate and (width/2, height/2) with regard to the device-space coordinate.
 - The positive direction of x axis in the two spaces are the same. So, (1,0) is transformed into (1+width/2,height/2).
@@ -1408,10 +1779,11 @@ a = 1, b = 0, c = 0, d = -1, p = width/2, q = height/2
 ~~~
 
 Cairo provides a structure `cairo_matrix_t`.
-`init_cairo` uses it and sets the cairo transformation (See the program below).
+The function `init_cairo` uses it and sets the cairo transformation (See the program below).
 Once the matrix is set, the transformation always performs whenever `cairo_stroke` function is invoked.
 
-~~~C
+@@@if gfm
+```C
 /* status of the surface */
 static gboolean pen = TRUE;
 static double angle = 90.0; /* angle starts from x axis and measured counterclockwise */
@@ -1464,7 +1836,63 @@ void
 destroy_cairo () {
   cairo_destroy (cr);
 }
-~~~
+```
+@@@else
+```{.C}
+/* status of the surface */
+static gboolean pen = TRUE;
+static double angle = 90.0; /* angle starts from x axis and measured counterclockwise */
+                   /* Initially facing to the north */
+static double cur_x = 0.0;
+static double cur_y = 0.0;
+static double line_width = 2.0;
+
+struct color {
+  double red;
+  double green;
+  double blue;
+};
+static struct color bc = {0.95, 0.95, 0.95}; /* white */
+static struct color fc = {0.0, 0.0, 0.0}; /* black */
+
+/* cairo */
+static cairo_t *cr;
+gboolean
+init_cairo (void) {
+  int width, height;
+  cairo_matrix_t matrix;
+
+  pen = TRUE;
+  angle = 90.0;
+  cur_x = 0.0;
+  cur_y = 0.0;
+  line_width = 2.0;
+  bc.red = 0.95; bc.green = 0.95; bc.blue = 0.95;
+  fc.red = 0.0; fc.green = 0.0; fc.blue = 0.0;
+
+  if (surface) {
+    width = cairo_image_surface_get_width (surface);
+    height = cairo_image_surface_get_height (surface);
+    matrix.xx = 1.0; matrix.xy = 0.0; matrix.x0 = (double) width / 2.0;
+    matrix.yx = 0.0; matrix.yy = -1.0; matrix.y0 = (double) height / 2.0;
+
+    cr = cairo_create (surface);
+    cairo_transform (cr, &matrix);
+    cairo_set_source_rgb (cr, bc.red, bc.green, bc.blue);
+    cairo_paint (cr);
+    cairo_set_source_rgb (cr, fc.red, fc.green, fc.blue);
+    cairo_move_to (cr, cur_x, cur_y);
+    return TRUE;
+  } else
+    return FALSE;
+}
+
+void
+destroy_cairo () {
+  cairo_destroy (cr);
+}
+```
+@@@end
 
 #### Eval function
 
@@ -1478,7 +1906,8 @@ For example, if the node is `N_ADD`, then:
 
 This is performed by a macro `calc` defined in the sixth line in the following program.
 
-~~~C
+@@@if gfm
+```C
 double
 eval (node_t *node) {
 double value = 0.0;
@@ -1525,7 +1954,57 @@ double value = 0.0;
   }
   return value;
 }
-~~~
+```
+@@@else
+```{.C}
+double
+eval (node_t *node) {
+double value = 0.0;
+  if (node == NULL)
+    runtime_error ("No expression to evaluate.\n");
+#define calc(op) eval (child1(node)) op eval (child2(node))
+  switch (node->type) {
+    case N_EQ:
+      value = (double) calc(==);
+      break;
+    case N_GT:
+      value = (double) calc(>);
+      break;
+    case N_LT:
+      value = (double) calc(<);
+      break;
+    case N_ADD:
+      value = calc(+);
+      break;
+    case N_SUB:
+      value = calc(-);
+      break;
+    case N_MUL:
+      value = calc(*);
+      break;
+    case N_DIV:
+      if (eval (child2(node)) == 0.0)
+        runtime_error ("Division by zerp.\n");
+      else
+        value = calc(/);
+      break;
+    case N_UMINUS:
+      value = -(eval (child1(node)));
+      break;
+    case N_ID:
+      if (! (stack_lookup (name(node), &value)) && ! var_lookup (name(node), &value) )
+        runtime_error ("Variable %s not defined.\n", name(node));
+      break;
+    case N_NUM:
+      value = value(node);
+      break;
+    default:
+      runtime_error ("Illegal expression.\n");
+  }
+  return value;
+}
+```
+@@@end
 
 #### Execute function
 
@@ -1537,7 +2016,8 @@ It will explained after the following program.
 Other parts are not so difficult.
 Read the program below carefully so that you will understand the process.
 
-~~~C
+@@@if gfm
+```C
 /* procedure - return status */
 static int proc_level = 0;
 static int ret_level = 0;
@@ -1692,13 +2172,171 @@ node_t *arg_list;
       runtime_error ("Unknown statement.\n");
   }
 }
-~~~
+```
+@@@else
+```{.C}
+/* procedure - return status */
+static int proc_level = 0;
+static int ret_level = 0;
+
+void
+execute (node_t *node) {
+  double d, x, y;
+  char *name;
+  int n, i;
+
+  if (node == NULL)
+    runtime_error ("Node is NULL.\n");
+  if (proc_level > ret_level)
+    return;
+  switch (node->type) {
+    case N_program:
+      execute (child1(node));
+      execute (child2(node));
+      break;
+    case N_PU:
+      pen = FALSE;
+      break;
+    case N_PD:
+      pen = TRUE;
+      break;
+    case N_PW:
+      line_width = eval (child1(node)); /* line width */
+      break;
+    case N_FD:
+      d = eval (child1(node)); /* distance */
+      x = d * cos (angle*M_PI/180);
+      y = d * sin (angle*M_PI/180);
+      /* initialize the current point = start point of the line */
+      cairo_move_to (cr, cur_x, cur_y);
+      cur_x += x;
+      cur_y += y;
+      cairo_set_line_width (cr, line_width);
+      cairo_set_source_rgb (cr, fc.red, fc.green, fc.blue);
+      if (pen)
+        cairo_line_to (cr, cur_x, cur_y);
+      else
+        cairo_move_to (cr, cur_x, cur_y);
+      cairo_stroke (cr);
+      break;
+    case N_TR:
+      angle -= eval (child1(node));
+      for (; angle < 0; angle += 360.0);
+      for (; angle>360; angle -= 360.0);
+      break;
+    case N_BC:
+      bc.red = eval (child1(node));
+      bc.green = eval (child2(node));
+      bc.blue = eval (child3(node));
+#define fixcolor(c)  c = c < 0 ? 0 : (c > 1 ? 1 : c)
+      fixcolor (bc.red);
+      fixcolor (bc.green);
+      fixcolor (bc.blue);
+      /* clear the shapes and set the background color */
+      cairo_set_source_rgb (cr, bc.red, bc.green, bc.blue);
+      cairo_paint (cr);
+      break;
+    case N_FC:
+      fc.red = eval (child1(node));
+      fc.green = eval (child2(node));
+      fc.blue = eval (child3(node));
+      fixcolor (fc.red);
+      fixcolor (fc.green);
+      fixcolor (fc.blue);
+      break;
+    case N_ASSIGN:
+      name = name(child1(node));
+      d = eval (child2(node));
+      if (! stack_replace (name, d)) /* First, tries to replace the value in the stack (parameter).*/
+        var_replace (name, d); /* If the above fails, tries to replace the value in the table. If the variable isn't in the table, installs it, */
+      break;
+    case N_IF:
+      if (eval (child1(node)))
+        execute (child2(node));
+      break;
+    case N_RT:
+      ret_level--;
+      break;
+    case N_RS:
+      pen = TRUE;
+      angle = 90.0;
+      cur_x = 0.0;
+      cur_y = 0.0;
+      line_width = 2.0;
+      fc.red = 0.0; fc.green = 0.0; fc.blue = 0.0;
+      /* To change background color, use bc. */
+      break;
+    case N_procedure_call:
+      name = name(child1(node));
+node_t *proc = proc_lookup (name);
+      if (! proc)
+        runtime_error ("Procedure %s not defined.\n", name);
+      if (strcmp (name, name(child1(proc))) != 0)
+        runtime_error ("Unexpected error. Procedure %s is called, but invoked procedure is %s.\n", name, name(child1(proc)));
+/* make tuples (parameter (name), argument (value)) and push them to the stack */
+node_t *param_list;
+node_t *arg_list;
+      param_list = child2(proc);
+      arg_list = child2(node);
+      if (param_list == NULL) {
+        if (arg_list == NULL) {
+          stack_push (NULL, 0.0); /* number of argument == 0 */
+        } else
+          runtime_error ("Procedure %s has different number of argument and parameter.\n", name);
+      }else {
+/* Don't change the stack until finish evaluating the arguments. */
+#define TEMP_STACK_SIZE 20
+        char *temp_param[TEMP_STACK_SIZE];
+        double temp_arg[TEMP_STACK_SIZE];
+        n = 0;
+        for (; param_list->type == N_parameter_list; param_list = child1(param_list)) {
+          if (arg_list->type != N_argument_list)
+            runtime_error ("Procedure %s has different number of argument and parameter.\n", name);
+          if (n >= TEMP_STACK_SIZE)
+            runtime_error ("Too many parameters. the number must be %d or less.\n", TEMP_STACK_SIZE);
+          temp_param[n] = name(child2(param_list));
+          temp_arg[n] = eval (child2(arg_list));
+          arg_list = child1(arg_list);
+          ++n;
+        }
+        if (param_list->type == N_ID && arg_list -> type != N_argument_list) {
+          temp_param[n] = name(param_list);
+          temp_arg[n] = eval (arg_list);
+          if (++n >= TEMP_STACK_SIZE)
+            runtime_error ("Too many parameters. the number must be %d or less.\n", TEMP_STACK_SIZE);
+          temp_param[n] = NULL;
+          temp_arg[n] = (double) n;
+          ++n;
+        } else
+          runtime_error ("Unexpected error.\n");
+        for (i = 0; i < n; ++i)
+          stack_push (temp_param[i], temp_arg[i]);
+      }
+      ret_level = ++proc_level;
+      execute (child3(proc));
+      ret_level = --proc_level;
+      stack_return ();
+      break;
+    case N_procedure_definition:
+      name = name(child1(node));
+      proc_install (name, node);
+      break;
+    case N_primary_procedure_list:
+      execute (child1(node));
+      execute (child2(node));
+      break;
+    default:
+      runtime_error ("Unknown statement.\n");
+  }
+}
+```
+@@@end
 
 A node `N_procedure_call` is created by the parser when it has found a user defined procedure call.
 The procedure has been defined in the prior statement.
 Suppose the parser reads the following example code.
 
-~~~
+```
 dp drawline (angle, distance) {
   tr angle
   fd distance
@@ -1707,7 +2345,7 @@ drawline (90, 100)
 drawline (90, 100)
 drawline (90, 100)
 drawline (90, 100)
-~~~
+```
 
 This example draws a square.
 
@@ -1765,7 +2403,8 @@ On the other hand, when longjmp is called, 1 is assigned to `i` and `execute(nod
 
 `g_slist_free_full` frees all the allocated memories.
 
-~~~C
+@@@if gfm
+```C
 static jmp_buf buf;
 
 void
@@ -1830,14 +2469,87 @@ runtime_error (char *format, ...) {
 
   longjmp (buf, 1);
 }
+```
+@@@else
+```{.C}
+static jmp_buf buf;
 
-~~~
+void
+run (void) {
+  int i;
+
+  if (! init_cairo()) {
+    g_print ("Cairo not initialized.\n");
+    return;
+  }
+  init_table();
+  init_stack();
+  ret_level = proc_level = 1;
+  i = setjmp (buf);
+  if (i == 0)
+    execute(node_top);
+  /* else ... get here by calling longjmp */
+  destroy_cairo ();
+  g_slist_free_full (g_steal_pointer (&list), g_free);
+}
+
+/* format supports only %s, %f and %d */
+static void
+runtime_error (char *format, ...) {
+  va_list args;
+  char *f;
+  char b[3];
+  char *s;
+  double v;
+  int i;
+
+  va_start (args, format);
+  for (f = format; *f; f++) {
+    if (*f != '%') {
+      b[0] = *f;
+      b[1] = '\0';
+      g_print ("%s", b);
+      continue;
+    }
+    switch (*++f) {
+      case 's':
+        s = va_arg(args, char *);
+        g_print ("%s", s);
+        break;
+      case 'f':
+        v = va_arg(args, double);
+        g_print("%f", v);
+        break;
+      case 'd':
+        i = va_arg(args, int);
+        g_print("%d", i);
+        break;
+      default:
+        b[0] = '%';
+        b[1] = *f;
+        b[2] = '\0';
+        g_print ("%s", b);
+        break;
+    }
+  }
+  va_end (args);
+
+  longjmp (buf, 1);
+}
+```
+@@@end
 
 A function `runtime_error` has a variable-length argument list.
 
-~~~C
+@@@if gfm
+```C
 void runtime_error (char *format, ...)
-~~~
+```
+@@@else
+```{.C}
+void runtime_error (char *format, ...)
+```
+@@@end
 
 This is implemented with `<stdarg.h>` header file.
 The `va_list` type variable `args` will refer to each argument in turn.

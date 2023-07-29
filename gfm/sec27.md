@@ -18,7 +18,7 @@ Flex is a lexical analyzer.
 Bison is a parser generator.
 These two programs are similar to lex and yacc which are proprietary software developed in Bell Laboratory.
 However, flex and bison are open source software.
-I will write about how to use those software, but they are not topics about GTK 4.
+This section describes them and they are not the topics about GTK 4.
 So, readers can skip this section.
 
 ## How to use turtle
@@ -49,7 +49,6 @@ You can read these files into `turtle` editor by clicking on the `Open` button.
 ## Combination of TfeTextView and GtkDrawingArea objects
 
 Turtle uses TfeTextView and GtkDrawingArea.
-It is similar to `color` program in the previous section.
 
 1. A user inputs/reads a turtle program into the buffer in the TfeTextView instance.
 2. The user clicks on the "Run" button.
@@ -64,7 +63,7 @@ It will be redrawn with the drawing function, which just copies the surface into
 
 The body of the interpreter is written with flex and bison.
 The codes are not thread safe.
-So the handler of "clicked" signal of the `Run` button prevents from reentering.
+So the callback function `run_cb`, which is the handler of "clicked" signal on the `Run` button, prevents reentering.
 
 ~~~C
  1 void
@@ -75,80 +74,114 @@ So the handler of "clicked" signal of the `Run` button prevents from reentering.
  6   char *contents;
  7   int stat;
  8   static gboolean busy = FALSE; /* initialized only once */
- 9 
-10   /* yyparse() and run() are NOT thread safe. */
-11   /* The variable busy avoids reentrance. */
-12   if (busy)
-13     return;
-14   busy = TRUE;
-15   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
-16   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-17   if (surface) {
-18     init_flex (contents);
-19     stat = yyparse ();
-20     if (stat == 0) /* No error */ {
-21       run ();
-22     }
-23     finalize_flex ();
-24   }
-25   g_free (contents);
-26   gtk_widget_queue_draw (GTK_WIDGET (da));
-27   busy = FALSE;
-28 }
-29 
-30 static void
-31 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
-32 
-33   if (surface)
-34     cairo_surface_destroy (surface);
-35   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-36   run_cb (NULL); // NULL is a fake (run button).
-37 }
+ 9   cairo_t *cr;
+10 
+11   /* yyparse() and run() are NOT thread safe. */
+12   /* The variable busy avoids reentrance. */
+13   if (busy)
+14     return;
+15   busy = TRUE;
+16   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+17   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+18   if (surface && contents[0] != '\0') {
+19     init_flex (contents);
+20     stat = yyparse ();
+21     if (stat == 0) { /* No error */
+22       run ();
+23     }
+24     finalize_flex ();
+25   } else if (surface) {
+26     cr = cairo_create (surface);
+27     cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+28     cairo_paint (cr);
+29     cairo_destroy (cr);
+30   }
+31   g_free (contents);
+32   gtk_widget_queue_draw (GTK_WIDGET (da));
+33   busy = FALSE;
+34 }
+35 
+36 static void
+37 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
+38 
+39   if (surface)
+40     cairo_surface_destroy (surface);
+41   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+42   run_cb (NULL); // NULL is a fake (run button).
+43 }
 ~~~
 
-- 8-13: The static value `busy` holds a status of the interpreter.
-If it is `TRUE`, the interpreter is running and it is not possible to call the interpreter again because it's not a re-entrant program.
-If it is `FALSE`, it is safe to call the interpreter.
-- 14: Changes `busy` to TRUE to avoid reentrance.
-- 15-16: Gets the contents of `tb`.
-- 17: The variable `surface` is a static variable.
+- 8, 13-15: The static value `busy` holds a status of the interpreter.
+If it is `TRUE`, the interpreter is running and it is not possible to call the interpreter because it's not a re-entrant program.
+If it is `FALSE`, it is safe to call the interpreter and set the variable `busy` to TRUE.
+- 16-17: Gets the contents of `tb`.
+- 18-30: The variable `surface` is a static variable.
 It points to a `cairo_surface_t` instance.
 It is created when the GtkDrawingArea instance is realized and whenever it is resized.
 Therefore, `surface` isn't NULL usually.
 But if it is NULL, the interpreter won't be called.
-- 18: Initializes lexical analyzer.
-- 19: Calls parser.
-Parser analyzes the program codes syntactically and generates a tree structured data.
-- 20-22: If the parser successfully parsed, it calls `run` (runtime routine).
-- 23: finalizes the lexical analyzer.
-- 25: frees `contents`.
-- 26: Adds the drawing area widget to the queue to draw.
-- 27: The interpreter program has finished so `busy` is now changed to FALSE.
-- 30-37: A "resized" signal handler.
+- 18-24: If `surface` points a surface instance and the string `contents` isn't empty, it calls the interpreter.
+  - Initializes the lexical analyzer.
+  - Calls the parser. The parser analyzes the program codes syntactically and generates a tree structured data.
+  - If the parser successfully parsed, it calls the runtime routine 'run'.
+  - Finalizes the lexical analyzer.
+- 25-29: If `surface` points a surface instance and the string `contents` is empty, it clears the surface `surface`.
+- 31: Frees `contents`.
+- 32: Adds the drawing area widget to the queue to draw.
+- 33: Sets the variable `busy` to FALSE.
+- 36-43: The "resized" signal handler.
 If the `surface` isn't NULL, it is destroyed.
 A new surface is created.
 Its size is the same as the surface of the GtkDrawingArea instance.
-Run\_cb is called to redraw the shape on the drawing area.
+It calls the callback function `run_cb` to redraw the shape on the drawing area.
 
-Other part of `turtleapplication.c` is almost same as the codes of `colorapplication.c` in the previous section.
+If the open button is clicked and a file is read, the filename will be shown on the header bar.
+
+~~~C
+ 1 static void
+ 2 show_filename (TfeTextView *tv) {
+ 3   GFile *file;
+ 4   char *filename;
+ 5   char *title;
+ 6 
+ 7   file = tfe_text_view_get_file (tv);
+ 8   if (G_IS_FILE (file)) {
+ 9     filename = g_file_get_basename (file);
+10     title = g_strdup_printf ("Turtle (%s)", filename);
+11     g_free (filename);
+12     g_object_unref (file);
+13   } else
+14     title = g_strdup ("Turtle");
+15   gtk_window_set_title (GTK_WINDOW (win), title);
+16   g_free (title);
+17 }
+~~~
+
+This function is the callback function of the "change-file" signal on the TfeTextView instance.
+It calls `tfe_text_view_get_file`.
+
+- If the return value is a GFile instance, the title will be "Turtle (the filename)".
+- Otherwise, the title will be "Turtle".
+
+Other part of `turtleapplication.c` is very simple and similar to the codes in the former applications.
 The codes of `turtleapplication.c` is in the [turtle directory](../src/turtle).
 
 ## What does the interpreter do?
 
-Suppose that the turtle runs with the following program.
+Suppose that the turtle application runs with the following program.
 
 ~~~
 distance = 100
 fd distance*2
 ~~~
 
-The turtle recognizes the program above and works as follows.
+The application recognizes the program and works as follows.
 
 - Generally, a program consists of tokens.
 Tokens are "distance", "=", "100", "fd", "*" and "2" in the above example..
 - The parser calls a function `yylex` to read a token in the source file.
-`yylex` returns a code which is called "token kind" and sets a global variable `yylval` with a value, which is called a semantic value.
-The type of `yylval` is union and `yylval.ID` is string and `yylval.NUM` is double.
+`yylex` returns a code which is called "token kind" and sets a global variable `yylval` to a value, which is called a semantic value.
+The type of `yylval` is union. The type of `yylval.ID` and `yylval.NUM` are string and double respectively.
 There are seven tokens in the program so `yylex` is called seven times.
 
 |   |token kind|yylval.ID|yylval.NUM|
@@ -161,15 +194,15 @@ There are seven tokens in the program so `yylex` is called seven times.
 | 6 |    *     |         |          |
 | 7 |   NUM    |         |    2     |
 
-- `yylex` returns a token kind every time, but it doesn't set `yylval.ID` or `yylval.NUM` every time.
+- The function `yylex` returns a token kind every time, but it doesn't set `yylval.ID` or `yylval.NUM` every time.
 It is because keywords (`FD`) and symbols (`=` and `*`) don't have any semantic values.
 The function `yylex` is called lexical analyzer or scanner.
-- `turtle` makes a tree structured data.
+- The application `turtle` makes a tree structured data.
 This part of `turtle` is called parser.
 
 ![turtle parser tree](../image/turtle_parser_tree.png)
 
-- `turtle` analyzes the tree and executes it.
+- `Turtle` analyzes the tree and executes it.
 This part of `turtle` is called runtime routine or interpreter.
 The tree consists of rectangles and line segments between the rectangles.
 The rectangles are called nodes.
@@ -181,10 +214,10 @@ First, `turtle` checks if the first child is ID.
 If it's ID, then `turtle` looks for the variable in the variable table.
 If it doesn't exist, it registers the ID (`distance`) to the table.
 Then go back to the N\_ASSIGN node.
-  3. `turtle` calculates the second child.
+  3. `Turtle` calculates the second child.
 In this case its a number 100.
 Saves 100 to the variable table at the `distance` record.
-  4. `turtle` goes back to N\_PROGRAM then go to the next node N\_FD.
+  4. `Turtle` goes back to N\_PROGRAM then go to the next node N\_FD.
 It has only one child.
 Goes down to the child N\_MUL.
   5. The first child is ID (distance).
@@ -194,14 +227,14 @@ Multiplies 100 by 2 and gets 200.
 Then `turtle` goes back to N_FD.
   6. Now `turtle` knows the distance is 200.
 It moves the cursor forward by 200 pixels.
-The segment is drawn on the surface (`surface`).
+The segment is drawn on the `surface`.
   8. There are no node follows.
 Runtime routine returns to the function `run_cb`.
 
-- `run_cb` calls `gtk_widget_queue_draw` and put the GtkDrawingArea widget to the queue.
+- The function `run_cb` calls `gtk_widget_queue_draw` and put the GtkDrawingArea widget to the queue.
 - The system redraws the widget.
 At that time drawing function `draw_func` is called.
-The function copies the surface (`surface`) to the surface in the GtkDrawingArea.
+The function copies the `surface` to the surface in the GtkDrawingArea.
 
 Actual turtle program is more complicated than the example above.
 However, what turtle does is basically the same.
@@ -257,6 +290,7 @@ The instruction is described in `meson.build`.
 19 
 ~~~
 
+- 1: The project name is "turtle" and the program language is C.
 - 3: Gets C compiler.
 It is usually `gcc` in linux.
 - 4: Gets math library.
@@ -264,15 +298,15 @@ This program uses trigonometric functions.
 They are defined in the math library, but the library is optional.
 So, it is necessary to include it by `#include <math.h>` and also link the library with the linker.
 - 6: Gets gtk4 library.
-- 8: Gets gnome module.See [Meson build system website -- GNUME module](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
+- 8: Gets gnome module.See [Meson build system website -- GNOME module](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
 - 9: Compiles ui file to C source file according to the XML file `turtle.gresource.xml`.
 - 11: Gets flex.
 - 12: Gets bison.
 - 13: Compiles `turtle.y` to `turtle_parser.c` and `turtle_parser.h` by bison.
 The function `custom_target` creates a custom top level target.
-See [Meson build system website -- custom target](https://mesonbuild.com/Reference-manual.html#custom_target) for further information.
+See [Meson build system website -- custom target](https://mesonbuild.com/Reference-manual_functions.html#custom_target) for further information.
 - 14: Compiles `turtle.lex` to `turtle_lex.c` by flex.
-- 16: Specifies C source files.
+- 16: The variable `sourcefiles` is a file object created with the C source files.
 - 18: Compiles C source files including generated files by glib-compile-resources, bison and flex.
 The argument `turtleparser[1]` refers to `tirtle_parser.h` which is the second output in the line 13.
 
@@ -328,7 +362,7 @@ Turtle.lex isn't a big program.
 19 %%
 20   /* rules */
 21 #.*               ; /* comment. Be careful. Dot symbol (.) matches any character but new line. */
-22 [ ]               ncolumn++;
+22 [ ]               ncolumn++; /* white space. [ and ] is a "character class". */
 23 \t                ncolumn += 8; /* assume that tab is 8 spaces. */
 24 \n                nline++; ncolumn = 1;
 25   /* reserved keywords */
@@ -337,14 +371,14 @@ Turtle.lex isn't a big program.
 28 pw                get_location (yytext); return PW; /* pen width = line width */
 29 fd                get_location (yytext); return FD; /* forward */
 30 tr                get_location (yytext); return TR; /* turn right */
-31 tl                get_location (yytext); return TL; /* turn left ver 0.5 */
+31 tl                get_location (yytext); return TL; /* turn left, since ver 0.5 */
 32 bc                get_location (yytext); return BC; /* background color */
 33 fc                get_location (yytext); return FC; /* foreground color */
 34 dp                get_location (yytext); return DP; /* define procedure */
 35 if                get_location (yytext); return IF; /* if statement */
 36 rt                get_location (yytext); return RT; /* return statement */
 37 rs                get_location (yytext); return RS; /* reset the status */
-38 rp                get_location (yytext); return RP; /* repeat ver 0.5 */
+38 rp                get_location (yytext); return RP; /* repeat, since ver 0.5 */
 39   /* constant */
 40 {REAL_NUMBER}     get_location (yytext); yylval.NUM = atof (yytext); return NUM;
 41   /* identifier */
@@ -387,26 +421,33 @@ Turtle.lex isn't a big program.
 78 }
 ~~~
 
-The file consists of three sections which are separated by "%%" (line 18 and 56).
+The file consists of three sections which are separated by "%%" (line 19 and 59).
 They are definitions, rules and user code sections.
 
 ### Definitions section
 
 - 1-12: Lines between "%top{" and "}" are C source codes.
 They will be copied to the top of the generated C source file.
-- 2-3: The function `strlen`, in line 65, is defined in `string.h`
-The function `atof`, in line 40, is defined in `stdlib.h`.
+- 2-3: This program uses two functions `strlen` (l.65) and `atof` (l.40).
+They are defined in `string.h` and `stdlib.h` respectively.
+These two header files are included here.
+- 4: This program uses some GLib functions and structures like `g_strdup` and `GSList`.
+GLib header file is `glib.h` and it is included here.
+- 5: The header file "turtle_parser.h" is generated from "turtle.y" by bison.
+It defines some constants and functions like `PU` and `yylloc`.
+The header file is included here.
 - 7-9: The current input position is pointed by `nline` and `ncolumn`.
-The function `get_location` (line 61-66) sets `yylloc`to point the start and end point of `yytext` in the buffer.
-This function is declared here so that it can be called before the function is defined.
-- 12: GSlist is used to keep allocated memories.
-- 15: This option (`%option noyywrap`) must be specified when you have only single source file to the scanner. Refer to "9 The Generated Scanner" in the flex documentation in your distribution for further information.
+The function `get_location` is declared here so that it can be called before the function is defined (l.61-65).
+- 12: GSlist is a structure for a singly-linked list.
+The variable `list` is defined in `turtle.y` so its class is `extern`.
+It is the start point of the list.
+The list is used to keep allocated memories.
+- 15: This option `%option noyywrap` must be specified when you have only single source file to the scanner. Refer to "9 The Generated Scanner" in the flex documentation in your distribution.
 (The documentation is not on the internet.)
 - 17-18: `REAL_NUMBER` and `IDENTIFIER` are names.
 A name begins with a letter or an underscore followed by zero or more letters, digits, underscores (`_`) or dashes (`-`).
 They are followed by regular expressions which are their definitions.
 They will be used in rules section and will expand to the definition.
-You can leave out such definitions here and use regular expressions in rules section directly.
 
 ### Rules section
 
@@ -427,14 +468,14 @@ If an input is a number, it matches the pattern in line 40.
 Then the matched text is assigned to `yytext` and corresponding action is executed.
 A function `get_location` changes the location variables to the position at the text.
 It assigns `atof (yytext)`, which is double sized number converted from `yytext`, to `yylval.NUM` and return `NUM`.
-`NUM` is a token kind and it represents integer.
+`NUM` is a token kind and it represents (double type) numbers.
  It is defined in `turtle.y`.
 
 The scanner generated by flex has `yylex` function.
 If `yylex` is called and the input is "123.4", then it works as follows.
 
 1. A string "123.4" matches `{REAL_NUMBER}`.
-2. Update the location variable `ncolumn` and `yylloc`with `get_location`.
+2. Updates the location variable `ncolumn`. The structure `yylloc` is set by `get_location`.
 3. The function `atof` converts the string "123.4" to double type number 123.4.
 4. It is assigned to `yylval.NUM`.
 5. `yylex` returns `NUM` to the caller.
@@ -445,18 +486,22 @@ Then the caller knows the input is a number (`NUM`), and its value is 123.4.
 - 21: The symbol `.` (dot) matches any character except newline.
 Therefore, a comment begins `#` followed by any characters except newline.
 No action happens.
+That means that comments are ignored.
 - 22: White space just increases the variable `ncolumn` by one.
 - 23: Tab is assumed to be equal to eight spaces.
 - 24: New line increases a variable `nline` by one and resets `ncolumn`.
-- 26-38: Keywords just updates the location variables `ncolumn` and `yylloc`, and return the token kinds of the keywords.
+- 26-38: Keywords updates the location variables `ncolumn` and `yylloc`, and returns the token kinds of the keywords.
 - 40: Real number constant.
+The action converts the text`yytext` to a double type number, puts it into `yylval.NUM` and returns `NUM`.
 - 42: `IDENTIFIER` is defined in line 18.
+The identifier is a name of variable or procedure.
+It begins with a letter and followed by letters or digits.
 The location variables are updated and the name of the identifier is assigned to `yylval.ID`.
 The memory of the name is allocated by the function `g_strdup`.
 The memory is registered to the list (GSlist type list).
 The memory will be freed after the runtime routine finishes.
 A token kind `ID` is returned.
-- 46-56: Symbols just update the location variable and return the token kinds.
+- 46-57: Symbols update the location variable and return the token kinds.
 The token kind is the same as the symbol itself.
 - 58: If the input doesn't match the patterns, then it is an error.
 A special token kind `YYUNDEF` is returned.
@@ -471,6 +516,8 @@ A variable `yylloc` is referred by the parser.
 It is a C structure and has four members, `first_line`, `first_column`, `last_line` and `last_column`.
 They point the start and end of the current input text.
 - 68: `YY_BUFFER_STATE` is a pointer points the input buffer.
+Flex makes the definition of `YY_BUFFER_STATE` in the C file (scanner source file `turtle_lex.c`).
+See your flex document, section 11 Multiple Input Buffers, for further information.
 - 70-73: A function `init_flex` is called by `run_cb` which is a "clicked" signal handler on the `Run` button.
 It has one string type parameter.
 The caller assigns it with the content of the GtkTextBuffer instance.
@@ -632,12 +679,12 @@ The definition is recursive.
 - `statement` is program.
 - `statement statement` is `program statement`.
 Therefore, it is program.
-- `statement statement statement` is `program statement`.
+- `statement statement statement` is `program statement` because the first two statements are `program`.
 Therefore, it is program.
 
-You can find that a sequence of statements is program like this.
+You can find that a sequence of statements is program as well.
 
-`program` and `statement` aren't tokens.
+The symbols `program` and `statement` aren't tokens.
 They don't appear in the input.
 They are called non terminal symbols.
 On the other hand, tokens are called terminal symbols.
@@ -745,7 +792,7 @@ The following is an extract from `turtle.y`.
 
   /* error reporting */
   static void yyerror (char const *s) { /* for syntax error */
-    g_print ("%s from line %d, column %d to line %d, column %d\n",s, yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column);
+    g_printerr ("%s from line %d, column %d to line %d, column %d\n",s, yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column);
   }
   /* Node type */
   enum {
@@ -765,7 +812,7 @@ Node type identifies a node in the tree.
 Another directive `%code requires` copies its contents to both the parser implementation file and header file.
 The header file is read by the scanner C source file and other files.
 
-~~~bison
+```bison
 %code requires {
   int yylex (void);
   int yyparse (void);
@@ -784,7 +831,7 @@ The header file is read by the scanner C source file and other files.
     } content;
   };
 }
-~~~
+```
 
 - `yylex` is shared by the parser implementation file and scanner file.
 - `yyparse` and `run` is called by `run_cb` in `turtleapplication.c`.
@@ -792,7 +839,7 @@ The header file is read by the scanner C source file and other files.
 The header file defines `YYSTYPE`, which is the semantic value type, with all the token and nterm value types.
 The following is extracted from the header file.
 
-~~~
+```C
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
@@ -808,11 +855,11 @@ union YYSTYPE
   node_t * argument_list;                  /* argument_list  */
   node_t * expression;                     /* expression  */
 };
-~~~
+```
 
 Other useful macros and declarations are put into the `%code` directive.
 
-~~~
+```
 %code {
 /* The following macro is convenient to get the member of the node. */
   #define child1(n) (n)->content.child.child1
@@ -828,14 +875,14 @@ Other useful macros and declarations are put into the `%code` directive.
   static node_t *tree2 (int type, double value);
   static node_t *tree3 (int type, char *name);
 }
-~~~
+```
 
 ### Bison declarations
 
 Bison declarations defines terminal and non-terminal symbols.
 It also specifies some directives.
 
-~~~
+```
 %locations
 %define api.value.type union /* YYSTYPE, the type of semantic values, is union of following types */
  /* key words */
@@ -844,17 +891,17 @@ It also specifies some directives.
 %token PW
 %token FD
 %token TR
-%token TL
+%token TL /* ver 0.5 */
 %token BC
 %token FC
 %token DP
 %token IF
 %token RT
 %token RS
-%token RP
+%token RP /* ver 0.5 */
  /* constant */
 %token <double> NUM
- /* identirier */
+ /* identifier */
 %token <char *> ID
  /* non terminal symbol */
 %nterm <node_t *> program
@@ -871,12 +918,12 @@ It also specifies some directives.
 %left '+' '-'
 %left '*' '/'
 %precedence UMINUS /* unary minus */
-~~~
+```
 
 `%locations` directive inserts the location structure into the header file.
 It is like this.
 
-~~~
+```C
 typedef struct YYLTYPE YYLTYPE;
 struct YYLTYPE
 {
@@ -885,7 +932,7 @@ struct YYLTYPE
   int last_line;
   int last_column;
 };
-~~~
+```
 
 This type is shared by the scanner file and the parser implementation file.
 The error report function `yyerror` uses it so that it can inform the location that error occurs.
@@ -895,16 +942,16 @@ The inserted part is shown in the previous subsection as the extracts that shows
 
 `%token` and `%nterm` directives define tokens and non terminal symbols respectively.
 
-~~~
+```
 %token PU
 ... ...
 %token <double> NUM
-~~~
+```
 
 These directives define a token `PU` and `NUM`.
 The values of token kinds `PU` and `NUM` are defined as an enumeration constant in the header file.
 
-~~~
+```
   enum yytokentype
   {
   ... ... ...
@@ -914,45 +961,45 @@ The values of token kinds `PU` and `NUM` are defined as an enumeration constant 
   ... ... ...
   };
   typedef enum yytokentype yytoken_kind_t;
-~~~
+```
 
 In addition, the type of the semantic value of `NUM` is defined as double in the header file because of `<double>` tag.
 
-~~~
+```
 union YYSTYPE
 {
   char * ID;                               /* ID  */
   double NUM;                              /* NUM  */
   ... ...
 }
-~~~
+```
 
-All the nterm symbols have the same type `* node_t` of the semantic value.
+All the nterm symbols have the same type `*node_t` of the semantic value.
 
 `%left` and `%precedence` directives define the precedence of operation symbols.
 
-~~~
+```
  /* logical relation symbol */
 %left '=' '<' '>'
  /* arithmetic symbol */
 %left '+' '-'
 %left '*' '/'
 %precedence UMINUS /* unary minus */
-~~~
+```
 
 `%left` directive defines the following symbols as left-associated operators.
 If an operator `+` is left-associated, then
 
-~~~
+```
 A + B + C = (A + B) + C
-~~~
+```
 
 That is, the calculation is carried out the left operator first, then the right operator.
 If an operator `*` is right-associated, then:
 
-~~~
+```
 A * B * C = A * (B * C)
-~~~
+```
 
 The definition above decides the behavior of the parser.
 Addition and multiplication hold associative law so the result of `(A+B)+C` and `A+(B+C)` are equal in terms of mathematics.
@@ -962,9 +1009,9 @@ However, the parser will be confused if left (or right) associativity is not spe
 Later declared operators have higher precedence than former declared ones.
 The declaration above says, for example,
 
-~~~
+```
 v=w+z*5+7 is the same as v=((w+(z*5))+7)
-~~~
+```
 
 Be careful.
 The operator `=` above is an assignment.
@@ -989,6 +1036,7 @@ result: components { action };
 Action can be left out.
 
 The following is a part of the grammar rule in `turtle.y`.
+But it is not exactly the same.
 
 ~~~
 program:
@@ -1009,10 +1057,10 @@ expression:
 - Whenever `statement` is reduced to `program`, an action `node_top=$$=$1;` is executed.
 - `node_top` is a static variable.
 It points the top node of the tree.
-- A symbol `$$` is a semantic value of the result.
+- The symbol `$$` is a semantic value of the result.
 For example, `$$` in line 2 is the semantic value of `program`.
 It is a pointer to a `node_t` type structure.
-- `$1` is a semantic value of the first component.
+- The symbol `$1` is a semantic value of the first component.
 For example, `$1` in line 2 is the semantic value of `statement`.
 It is also a pointer to `node_t`.
 - The next rule is that `statement` is `primary_procedure`.
@@ -1045,11 +1093,11 @@ What does the parser do?
 Maybe it is the start of `primary_procedure`, but parser needs to read the next token.
 2. `yylex` returns the token kind `NUM` and sets `yylval.NUM` to 100.0 (the type is double). The parser reduces `NUM` to `expression`.
 At the same time, it sets the semantic value of the `expression` to point a new node.
-The node has an type `N_NUM` and a semantic value 100.0.
+The node has the type `N_NUM` and a semantic value 100.0.
 3. After the reduction, the buffer has `FD` and `expression`.
 The parser reduces it to `primary_procedure`.
 And it sets the semantic value of the `primary_procedure` to point a new node.
-The node has an type `N_FD` and its member child1 points the node of `expression`, whose type is `N_NUM`.
+The node has the type `N_FD` and its member child1 points the node of `expression`, whose type is `N_NUM`.
 4. The parser reduces `primary_procedure` to `statement`.
 The semantic value of `statement` is the same as the one of `primary_procedure`,
 which points to the node `N_FD`.
@@ -1064,11 +1112,14 @@ The rules there are based on the same idea above.
 I don't want to explain the whole rules below.
 Please look into each line carefully so that you will understand all the rules and actions.
 
-~~~bison
+```bison
 program:
   statement { node_top = $$ = $1; }
 | program statement {
         node_top = $$ = tree1 (N_program, $1, $2, NULL);
+#ifdef debug
+if (node_top == NULL) g_printerr ("program: node_top is NULL.\n"); else g_printerr ("program: node_top is NOT NULL.\n");
+#endif
         }
 ;
 
@@ -1137,7 +1188,7 @@ expression:
 | ID    { $$ = tree3 (N_ID, $1); }
 | NUM   { $$ = tree2 (N_NUM, $1); }
 ;
-~~~
+```
 
 ### Epilogue
 
@@ -1159,7 +1210,7 @@ They will be freed when runtime routine finishes.
 
 The three functions are called in the actions in the rules section.
 
-~~~C
+```C
 /* Dynamically allocated memories are added to the single list. They will be freed in the finalize function. */
 GSList *list = NULL;
 
@@ -1197,13 +1248,13 @@ tree3 (int type, char *name) {
   name(new_node) = name;
   return new_node;
 }
-~~~
+```
 
 #### Symbol table
 
-Variables and user defined procedures are registered in a symbol table.
+Variables and user defined procedures are registered in the symbol table.
 This table is a C array.
-It should be replaced by more appropriate data structure with memory allocation in the future version
+It should be replaced by better algorithm and data structure, for example hash, in the future version
 
 - Variables are registered with its name and value.
 - Procedures are registered with its name and a pointer to the node of the procedure.
@@ -1214,23 +1265,20 @@ Therefore the table has the following fields.
 - name
 - value or pointer to a node
 
-~~~C
+```C
 #define MAX_TABLE_SIZE 100
 enum {
   PROC,
   VAR
 };
 
-typedef union _object_t object_t;
-union _object_t {
-  node_t *node;
-  double value;
-};
-
 struct {
   int type;
   char *name;
-  object_t object;
+  union {
+    node_t *node;
+    double value;
+  } object;
 } table[MAX_TABLE_SIZE];
 int tp;
 
@@ -1238,10 +1286,9 @@ void
 init_table (void) {
   tp = 0;
 }
+```
 
-~~~
-
-`init_table` initializes the table.
+The function `init_table` initializes the table.
 This must be called before registrations.
 
 There are five functions to access the table,
@@ -1252,7 +1299,7 @@ There are five functions to access the table,
 - `var_lookup` looks up a variable. If the variable is found, it returns TRUE and sets the pointer (argument) to point the value. Otherwise it returns FALSE.
 - `var_replace` replaces the value of a variable. If the variable hasn't registered yet, it installs the variable.
 
-~~~C
+```C
 int
 tbl_lookup (int type, char *name) {
   int i;
@@ -1266,7 +1313,7 @@ tbl_lookup (int type, char *name) {
 }
 
 void
-tbl_install (int type, char *name, object_t object) {
+tbl_install (int type, char *name, node_t *node, double value) {
   if (tp >= MAX_TABLE_SIZE)
     runtime_error ("Symbol table overflow.\n");
   else if (tbl_lookup (type, name) >= 0)
@@ -1275,24 +1322,20 @@ tbl_install (int type, char *name, object_t object) {
     table[tp].type = type;
     table[tp].name = name;
     if (type == PROC)
-      table[tp++].object.node = object.node;
+      table[tp++].object.node = node;
     else
-      table[tp++].object.value = object.value;
+      table[tp++].object.value = value;
   }
 }
 
 void
 proc_install (char *name, node_t *node) {
-  object_t object;
-  object.node = node;
-  tbl_install (PROC, name, object);
+  tbl_install (PROC, name, node, 0.0);
 }
 
 void
 var_install (char *name, double value) {
-  object_t object;
-  object.value = value;
-  tbl_install (VAR, name, object);
+  tbl_install (VAR, name, NULL, value);
 }
 
 void
@@ -1323,7 +1366,7 @@ var_lookup (char *name, double *value) {
     return TRUE;
   }
 }
-~~~
+```
 
 #### Stack for parameters and arguments
 
@@ -1405,7 +1448,7 @@ If it succeeds, it returns TRUE. Otherwise returns FALSE.
 - `stack_return` throws away the latest parameters.
 The stack pointer goes back to the point before the latest procedure call so that it points to parameters of the previous called procedure.
 
-~~~C
+```C
 void
 stack_push (char *name, double value) {
   if (sp >= MAX_STACK_SIZE)
@@ -1468,7 +1511,7 @@ stack_return(void) {
     runtime_error ("Stack error.\n");
   sp -= depth + 1;
 }
-~~~
+```
 
 #### Surface and cairo
 
@@ -1476,8 +1519,8 @@ A global variable `surface` is shared by `turtleapplication.c` and `turtle.y`.
 It is initialized in `turtleapplication.c`.
 
 The runtime routine has its own cairo context.
-This is different from the cairo of GtkDrawingArea.
-Runtime routine draws a shape on the `surface` with the cairo context.
+This is different from the cairo in the GtkDrawingArea instance.
+The runtime routine draws a shape on the `surface` with the cairo context.
 After runtime routine returns to `run_cb`, `run_cb` adds the GtkDrawingArea widget to the queue to redraw.
 When the widget is redraw,the drawing function `draw_func` is called.
 It copies the `surface` to the surface in the GtkDrawingArea object.
@@ -1503,7 +1546,7 @@ It transforms a user-space coordinate (x, y) into a device-space coordinate (z, 
 
 ![transformation](../image/transformation.png)
 
-`init_cairo` gets the width and height of the `surface` (See the program below).
+The function `init_cairo` gets the width and height of the `surface` (See the program below).
 
 - The center of the surface is (0,0) with regard to the user-space coordinate and (width/2, height/2) with regard to the device-space coordinate.
 - The positive direction of x axis in the two spaces are the same. So, (1,0) is transformed into (1+width/2,height/2).
@@ -1517,10 +1560,10 @@ a = 1, b = 0, c = 0, d = -1, p = width/2, q = height/2
 ~~~
 
 Cairo provides a structure `cairo_matrix_t`.
-`init_cairo` uses it and sets the cairo transformation (See the program below).
+The function `init_cairo` uses it and sets the cairo transformation (See the program below).
 Once the matrix is set, the transformation always performs whenever `cairo_stroke` function is invoked.
 
-~~~C
+```C
 /* status of the surface */
 static gboolean pen = TRUE;
 static double angle = 90.0; /* angle starts from x axis and measured counterclockwise */
@@ -1573,7 +1616,7 @@ void
 destroy_cairo () {
   cairo_destroy (cr);
 }
-~~~
+```
 
 #### Eval function
 
@@ -1587,7 +1630,7 @@ For example, if the node is `N_ADD`, then:
 
 This is performed by a macro `calc` defined in the sixth line in the following program.
 
-~~~C
+```C
 double
 eval (node_t *node) {
 double value = 0.0;
@@ -1634,7 +1677,7 @@ double value = 0.0;
   }
   return value;
 }
-~~~
+```
 
 #### Execute function
 
@@ -1646,7 +1689,7 @@ It will explained after the following program.
 Other parts are not so difficult.
 Read the program below carefully so that you will understand the process.
 
-~~~C
+```C
 /* procedure - return status */
 static int proc_level = 0;
 static int ret_level = 0;
@@ -1801,13 +1844,13 @@ node_t *arg_list;
       runtime_error ("Unknown statement.\n");
   }
 }
-~~~
+```
 
 A node `N_procedure_call` is created by the parser when it has found a user defined procedure call.
 The procedure has been defined in the prior statement.
 Suppose the parser reads the following example code.
 
-~~~
+```
 dp drawline (angle, distance) {
   tr angle
   fd distance
@@ -1816,7 +1859,7 @@ drawline (90, 100)
 drawline (90, 100)
 drawline (90, 100)
 drawline (90, 100)
-~~~
+```
 
 This example draws a square.
 
@@ -1874,7 +1917,7 @@ On the other hand, when longjmp is called, 1 is assigned to `i` and `execute(nod
 
 `g_slist_free_full` frees all the allocated memories.
 
-~~~C
+```C
 static jmp_buf buf;
 
 void
@@ -1939,14 +1982,13 @@ runtime_error (char *format, ...) {
 
   longjmp (buf, 1);
 }
-
-~~~
+```
 
 A function `runtime_error` has a variable-length argument list.
 
-~~~C
+```C
 void runtime_error (char *format, ...)
-~~~
+```
 
 This is implemented with `<stdarg.h>` header file.
 The `va_list` type variable `args` will refer to each argument in turn.

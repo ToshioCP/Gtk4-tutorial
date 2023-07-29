@@ -1,366 +1,474 @@
-Up: [README.md](../README.md),  Prev: [Section 31](sec31.md)
+Up: [README.md](../README.md),  Prev: [Section 31](sec31.md), Next: [Section 33](sec33.md)
 
-# GtkSignalListItemFactory
+# GtkColumnView
 
-## GtkSignalListItemFactory and GtkBulderListItemFactory
+## GtkColumnView
 
-GtkBuilderlistItemFactory is convenient when GtkListView just shows the contents of a list.
-Its binding direction is always from an item of a list to a child of GtkListItem.
+GtkColumnView is like GtkListView, but it has multiple columns.
+Each column is GtkColumnViewColumn.
 
-When it comes to dynamic connection, it's not enough.
-For example, you want to edit the contents of a list.
-You set a child of GtkListItem to a GtkText instance so a user can edit a text with it.
-You need to bind an item in the list with the buffer of the GtkText.
-The direction is opposite from the one with GtkBuilderListItemFactory.
-It is from the GtkText instance to the item in the list.
-You can implement this with GtkSignalListItemFactory, which is more flexible than GtkBuilderListItemFactory.
+![Column View](../image/column_view.png)
 
-Two things are shown in this section.
+- GtkColumnView has "model" property.
+The property points a GtkSelectionModel object.
+- Each GtkColumnViewColumn has "factory" property.
+The property points a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).
+- The factory connects GtkListItem and items of GtkSelectionModel.
+And the factory builds the descendant widgets of GtkColumnView to display the item on the display.
+This process is the same as the one in GtkListView.
 
-- Binding from a child of a GtkListItem instance to an item of a list.
-- Access a child of GtkListItem dynamically.
-This direction is the same as the one with GtkBulderListItemFactory.
-But GtkBulderListItemFactory uses GtkExpression from the item property of the GtkListItem.
-So, it updates its child widget only when the item property changes.
-In this example the child reflects the change in the same item in the list dynamically.
+The following diagram shows how it works.
 
-This section shows just a part of the source file `listeditor.c`.
-If you want to see the whole codes, see `src/listeditor` directory of the [Gtk4 tutorial repository](https://github.com/ToshioCP/Gtk4-tutorial).
+![ColumnView](../image/column.png)
 
-## A list editor
+The example in this section is a window that displays information of files in a current directory.
+The information is the name, size and last modified datetime of files.
+So, there are three columns.
 
-The sample program is a list editor and data of the list are strings.
-It's the same as a line editor.
-It reads a text file line by line.
-Each line is an item of the list.
-The list is displayed with GtkColumnView.
-There are two columns.
-The one is a button, which makes the line be a current line.
-If the line is the current line, the button is colored with red.
-The other is a string which is the contents of the corresponding item of the list.
+In addition, the example uses GtkSortListModel and GtkSorter to sort the information.
 
-![List editor](../image/listeditor.png)
+## column.ui
 
-The source files are located at `src/listeditor` directory.
-You can compile end execute it as follows.
+Ui file specifies widgets and list item templates.
 
-- Download the program from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-- Change your current directory to `src/listeditor`.
-- Type the following on your commandline.
+~~~xml
+  1 <?xml version="1.0" encoding="UTF-8"?>
+  2 <interface>
+  3   <object class="GtkApplicationWindow" id="win">
+  4     <property name="title">file list</property>
+  5     <property name="default-width">800</property>
+  6     <property name="default-height">600</property>
+  7     <child>
+  8       <object class="GtkScrolledWindow">
+  9         <property name="hexpand">TRUE</property>
+ 10         <property name="vexpand">TRUE</property>
+ 11         <child>
+ 12           <object class="GtkColumnView" id="columnview">
+ 13             <property name="model">
+ 14               <object class="GtkNoSelection">
+ 15                 <property name="model">
+ 16                   <object class="GtkSortListModel">
+ 17                     <property name="model">
+ 18                       <object class="GtkDirectoryList" id="directorylist">
+ 19                         <property name="attributes">standard::name,standard::icon,standard::size,time::modified</property>
+ 20                       </object>
+ 21                     </property>
+ 22                     <binding name="sorter">
+ 23                       <lookup name="sorter">columnview</lookup>
+ 24                     </binding>
+ 25                   </object>
+ 26                 </property>
+ 27               </object>
+ 28             </property>
+ 29             <child>
+ 30               <object class="GtkColumnViewColumn">
+ 31                 <property name="title">Name</property>
+ 32                 <property name="expand">TRUE</property>
+ 33                 <property name="factory">
+ 34                   <object class="GtkBuilderListItemFactory">
+ 35                     <property name="bytes"><![CDATA[
+ 36 <?xml version="1.0" encoding="UTF-8"?>
+ 37 <interface>
+ 38   <template class="GtkListItem">
+ 39     <property name="child">
+ 40       <object class="GtkBox">
+ 41         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+ 42         <property name="spacing">20</property>
+ 43         <child>
+ 44           <object class="GtkImage">
+ 45             <binding name="gicon">
+ 46               <closure type="GIcon" function="get_icon_factory">
+ 47                 <lookup name="item">GtkListItem</lookup>
+ 48               </closure>
+ 49             </binding>
+ 50           </object>
+ 51         </child>
+ 52         <child>
+ 53           <object class="GtkLabel">
+ 54             <property name="hexpand">TRUE</property>
+ 55             <property name="xalign">0</property>
+ 56             <binding name="label">
+ 57               <closure type="gchararray" function="get_file_name_factory">
+ 58                 <lookup name="item">GtkListItem</lookup>
+ 59               </closure>
+ 60             </binding>
+ 61           </object>
+ 62         </child>
+ 63       </object>
+ 64     </property>
+ 65   </template>
+ 66 </interface>
+ 67                     ]]></property>
+ 68                   </object>
+ 69                 </property>
+ 70                 <property name="sorter">
+ 71                   <object class="GtkStringSorter">
+ 72                     <property name="expression">
+ 73                       <closure type="gchararray" function="get_file_name">
+ 74                       </closure>
+ 75                     </property>
+ 76                   </object>
+ 77                 </property>
+ 78               </object>
+ 79             </child>
+ 80             <child>
+ 81               <object class="GtkColumnViewColumn">
+ 82                 <property name="title">Size</property>
+ 83                 <property name="factory">
+ 84                   <object class="GtkBuilderListItemFactory">
+ 85                     <property name="bytes"><![CDATA[
+ 86 <?xml version="1.0" encoding="UTF-8"?>
+ 87 <interface>
+ 88   <template class="GtkListItem">
+ 89     <property name="child">
+ 90       <object class="GtkLabel">
+ 91         <property name="hexpand">TRUE</property>
+ 92         <property name="xalign">0</property>
+ 93         <binding name="label">
+ 94           <closure type="gint64" function="get_file_size_factory">
+ 95             <lookup name="item">GtkListItem</lookup>
+ 96           </closure>
+ 97         </binding>
+ 98       </object>
+ 99     </property>
+100   </template>
+101 </interface>
+102                     ]]></property>
+103                   </object>
+104                 </property>
+105                 <property name="sorter">
+106                   <object class="GtkNumericSorter">
+107                     <property name="expression">
+108                       <closure type="gint64" function="get_file_size">
+109                       </closure>
+110                     </property>
+111                     <property name="sort-order">GTK_SORT_ASCENDING</property>
+112                   </object>
+113                 </property>
+114               </object>
+115             </child>
+116             <child>
+117               <object class="GtkColumnViewColumn">
+118                 <property name="title">Date modified</property>
+119                 <property name="factory">
+120                   <object class="GtkBuilderListItemFactory">
+121                     <property name="bytes"><![CDATA[
+122 <?xml version="1.0" encoding="UTF-8"?>
+123 <interface>
+124   <template class="GtkListItem">
+125     <property name="child">
+126       <object class="GtkLabel">
+127         <property name="hexpand">TRUE</property>
+128         <property name="xalign">0</property>
+129         <binding name="label">
+130           <closure type="gchararray" function="get_file_time_modified_factory">
+131             <lookup name="item">GtkListItem</lookup>
+132           </closure>
+133         </binding>
+134       </object>
+135     </property>
+136   </template>
+137 </interface>
+138                     ]]></property>
+139                   </object>
+140                 </property>
+141                 <property name="sorter">
+142                   <object class="GtkNumericSorter">
+143                     <property name="expression">
+144                       <closure type="gint64" function="get_file_unixtime_modified">
+145                       </closure>
+146                     </property>
+147                     <property name="sort-order">GTK_SORT_ASCENDING</property>
+148                   </object>
+149                 </property>
+150               </object>
+151             </child>
+152           </object>
+153         </child>
+154       </object>
+155     </child>
+156   </object>
+157 </interface>
+~~~
+
+- 3-12: GtkApplicationWindow has a child widget GtkScrolledWindow.
+GtkScrolledWindoww has a child widget GtkColumnView.
+- 12-18: GtkColumnView has "model" property.
+It points GtkSelectionModel interface.
+GtkNoSelection class is used as GtkSelectionModel.
+And again, it has "model" property.
+It points GtkSortListModel.
+This list model supports sorting the list.
+It will be explained in the later subsection.
+And it also has "model" property.
+It points GtkDirectoryList.
+Therefore, the chain is: GtkColumnView => GtkNoSelection => GtkSortListModel => GtkDirectoryList.
+- 18-20: GtkDirectoryList.
+It is a list of GFileInfo, which holds information of files under a directory.
+It has "attributes" property.
+It specifies what attributes is kept in each GFileInfo.
+  - "standard::name" is a name of the file.
+  - "standard::icon" is a GIcon object of the file
+  - "standard::size" is the file size.
+  - "time::modified" is the date and time the file was last modified.
+- 29-79: The first GtkColumnViewColumn object.
+There are four properties, "title", "expand", factory" and "sorter".
+- 31: Sets the "title" property to "Name".
+This is the title on the header of the column.
+- 32: Sets the "expand" property to TRUE to allow the column to expand as much as possible.
+(See the image above).
+- 33- 69: Sets the "factory" property to GtkBuilderListItemFactory.
+The factory has "bytes" property which holds a ui string to define a template to build GtkListItem composite widget.
+The CDATA section (line 36-66) is the ui string to put into the "bytes" property.
+The contents are the same as the ui file `factory_list.ui` in the section 27.
+- 70-77: Sets the "sorter" property to GtkStringSorter object.
+This object provides a sorter that compares strings.
+It has "expression" property.
+A closure tag with a string type function `get_file_name` is used here.
+The function will be explained later.
+- 80-115: The second GtkColumnViewColumn object.
+Its sorter property is set to GtkNumericSorter.
+- 116-151: The third GtkColumnViewColumn object.
+Its sorter property is set to GtkNumericSorter.
+
+## GtkSortListModel and GtkSorter
+
+GtkSortListModel is a list model that sorts its elements according to a GtkSorter instance assigned to the "sorter" property.
+The property is bound to "sorter" property of GtkColumnView in line 22 to 24.
+
+~~~xml
+<object class="GtkSortListModel" id="sortlist">
+... ... ...
+  <binding name="sorter">
+    <lookup name="sorter">columnview</lookup>
+  </binding>
+~~~
+
+Therefore, `columnview` determines the way how to sort the list model.
+The "sorter" property of GtkColumnView is read-only property and it is a special sorter.
+It reflects the user's sorting choice.
+If a user clicks the header of a column, then the sorter ("sorter" property) of the column is referenced by "sorter" property of the GtkColumnView.
+If the user clicks the header of another column, then the "sorter" property of the GtkColumnView refers to the newly clicked column's "sorter" property.
+
+The binding above makes a indirect connection between the "sorter" property of GtkSortListModel and the "sorter" property of each column.
+
+GtkSorter compares two items (GObject or its descendant).
+GtkSorter has several child objects.
+
+- GtkStringSorter compares strings taken from the items.
+- GtkNumericSorter compares numbers taken from the items.
+- GtkCustomSorter uses a callback to compare.
+- GtkMultiSorter combines multiple sorters.
+
+The example uses GtkStringSorter and GtkNumericSorter.
+
+GtkStringSorter uses GtkExpression to get the strings from the items (objects).
+The GtkExpression is stored in the "expression" property of the GtkStringSorter.
+When GtkStringSorter compares two items, it evaluates the expression by calling `gtk_expression_evaluate` function.
+It assigns each item to the second argument ('this' object) of the function.
+
+In the ui file above, the GtkExpression is in the line 71 to 76.
+
+~~~xml
+<object class="GtkStringSorter">
+  <property name="expression">
+    <closure type="gchararray" function="get_file_name">
+    </closure>
+  </property>
+</object>
+~~~
+
+The GtkExpression calls `get_file_name` function when it is evaluated.
+
+~~~C
+1 char *
+2 get_file_name (GFileInfo *info) {
+3   return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+4 }
+~~~
+
+The function is given the item (GFileInfo) of the GtkSortListModel as an argument (`this` object).
+But you need to be careful that it can be NULL while the list item is being recycled.
+So, `G_IS_FILE_INFO (info)` is always necessary in callback functions.
+The function retrieves a filename from `info`.
+The string is owned by `info` so it is necessary to duplicate it.
+And it returns the copied string.
+
+GtkNumericSorter compares numbers.
+It is used in the line 106 to 112 and line 142 to 148.
+The lines from 106 to 112 is:
+
+~~~xml
+<object class="GtkNumericSorter">
+  <property name="expression">
+    <closure type="gint64" function="get_file_size">
+    </closure>
+  </property>
+  <property name="sort-order">GTK_SORT_ASCENDING</property>
+</object>
+~~~
+
+The closure tag specifies a callback function `get_file_size`.
+
+~~~C
+1 goffset
+2 get_file_size (GFileInfo *info) {
+3   return G_IS_FILE_INFO (info) ? g_file_info_get_size (info): -1;
+4 }
+~~~
+
+It just returns the size of `info`.
+The type of the size is `goffset`.
+The type `goffset` is the same as `gint64`.
+
+The lines from 142 to 148 is:
+
+~~~xml
+<object class="GtkNumericSorter" id="sorter_datetime_modified">
+  <property name="expression">
+    <closure type="gint64" function="get_file_unixtime_modified">
+    </closure>
+  </property>
+  <property name="sort-order">GTK_SORT_ASCENDING</property>
+</object>
+~~~
+
+The closure tag specifies a callback function `get_file_unixtime_modified`.
+
+~~~C
+1 gint64
+2 get_file_unixtime_modified (GFileInfo *info) {
+3   GDateTime *dt;
+4 
+5   dt = G_IS_FILE_INFO (info) ? g_file_info_get_modification_date_time (info) : NULL;
+6   return dt ? g_date_time_to_unix (dt) : -1;
+7 }
+~~~
+
+It gets the modification date and time (GDateTime type) of `info`.
+Then it gets a unix time from `dt`.
+Unix time, sometimes called unix epoch, is the number of seconds that have elapsed since 00:00:00 UTC on 1 January 1970.
+It returns the unix time (gint64 type).
+
+## column.c
+
+`column.c` is as follows.
+It is simple and short thanks to `column.ui`.
+
+~~~C
+ 1 #include <gtk/gtk.h>
+ 2 
+ 3 /* functions (closures) for GtkBuilderListItemFactory */
+ 4 GIcon *
+ 5 get_icon_factory (GtkListItem *item, GFileInfo *info) {
+ 6   GIcon *icon;
+ 7 
+ 8    /* g_file_info_get_icon can return NULL */
+ 9   icon = G_IS_FILE_INFO (info) ? g_file_info_get_icon (info) : NULL;
+10   return icon ? g_object_ref (icon) : NULL;
+11 }
+12 
+13 char *
+14 get_file_name_factory (GtkListItem *item, GFileInfo *info) {
+15   return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+16 }
+17 
+18 /* goffset is defined as gint64 */
+19 /* It is used for file offsets. */
+20 goffset
+21 get_file_size_factory (GtkListItem *item, GFileInfo *info) {
+22   return G_IS_FILE_INFO (info) ? g_file_info_get_size (info) : -1;
+23 }
+24 
+25 char *
+26 get_file_time_modified_factory (GtkListItem *item, GFileInfo *info) {
+27   GDateTime *dt;
+28 
+29    /* g_file_info_get_modification_date_time can return NULL */
+30   dt = G_IS_FILE_INFO (info) ? g_file_info_get_modification_date_time (info) : NULL;
+31   return dt ? g_date_time_format (dt, "%F") : NULL;
+32 }
+33 
+34 /* Functions (closures) for GtkSorter */
+35 char *
+36 get_file_name (GFileInfo *info) {
+37   return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+38 }
+39 
+40 goffset
+41 get_file_size (GFileInfo *info) {
+42   return G_IS_FILE_INFO (info) ? g_file_info_get_size (info): -1;
+43 }
+44 
+45 gint64
+46 get_file_unixtime_modified (GFileInfo *info) {
+47   GDateTime *dt;
+48 
+49   dt = G_IS_FILE_INFO (info) ? g_file_info_get_modification_date_time (info) : NULL;
+50   return dt ? g_date_time_to_unix (dt) : -1;
+51 }
+52 
+53 static void
+54 app_activate (GApplication *application) {
+55   GtkApplication *app = GTK_APPLICATION (application);
+56   gtk_window_present (gtk_application_get_active_window(app));
+57 }
+58 
+59 static void
+60 app_startup (GApplication *application) {
+61   GtkApplication *app = GTK_APPLICATION (application);
+62   GFile *file;
+63   GtkBuilder *build = gtk_builder_new_from_resource ("/com/github/ToshioCP/column/column.ui");
+64   GtkWidget *win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+65   GtkDirectoryList *directorylist = GTK_DIRECTORY_LIST (gtk_builder_get_object (build, "directorylist"));
+66   g_object_unref (build);
+67 
+68   gtk_window_set_application (GTK_WINDOW (win), app);
+69 
+70   file = g_file_new_for_path (".");
+71   gtk_directory_list_set_file (directorylist, file);
+72   g_object_unref (file);
+73 }
+74 
+75 #define APPLICATION_ID "com.github.ToshioCP.columnview"
+76 
+77 int
+78 main (int argc, char **argv) {
+79   GtkApplication *app;
+80   int stat;
+81 
+82   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+83 
+84   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+85   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+86 
+87   stat =g_application_run (G_APPLICATION (app), argc, argv);
+88   g_object_unref (app);
+89   return stat;
+90 }
+91 
+~~~
+
+
+## Compilation and execution.
+
+All the source files are in [`src/column`](../src/column) directory.
+Change your current directory to the directory and type the following.
 
 ~~~
 $ meson _build
 $ ninja -C _build
-$ _build/listeditor
+$ _build/column
 ~~~
 
-- Append button: appends a line after the current line, or at the last line if no current line exists.
-- Insert button: inserts a line before the current line.
-- Remove button: removes a current line.
-- Read button: reads a file.
-- Write button: writes the contents to a file.
-- close button: close the contents.
-- quit button: quit the application.
-- Button on the select column: makes the line current.
-- String column: GtkText. You can edit a string in the field.
+Then, a window appears.
 
-The current line number (zero-based) is shown at the left of the tool bar.
-The file name is shown at the right of the write button.
+![Column View](../image/column_view.png)
 
-## Connect a GtkText instance and an item in the list
+If you click the header of a column, then the whole lists are sorted by the column.
+If you click the header of another column, then the whole lists are sorted by the newly selected column.
 
-The second column (GtkColumnViewColumn) sets its factory property to GtkSignalListItemFactory.
-It uses three signals setup, bind and unbind.
-The following is their sgnal handlers.
+GtkColumnView is very useful and it can manage very big GListModel.
+It is possible to use it for file list, application list, database frontend and so on.
 
-~~~C
- 1 static void
- 2 setup2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
- 3   GtkWidget *text = gtk_text_new ();
- 4   gtk_list_item_set_child (listitem, GTK_WIDGET (text));
- 5   gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
- 6 }
- 7 
- 8 static void
- 9 bind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-10   GtkWidget *text = gtk_list_item_get_child (listitem);
-11   GtkEntryBuffer *buffer = gtk_text_get_buffer (GTK_TEXT (text));
-12   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-13   GBinding *bind;
-14 
-15   gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
-16   gtk_editable_set_position (GTK_EDITABLE (text), 0);
-17 
-18   bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
-19   g_object_set_data (G_OBJECT (listitem), "bind", bind);
-20 }
-21 
-22 static void
-23 unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-24   GBinding *bind = G_BINDING (g_object_get_data (G_OBJECT (listitem), "bind"));
-25 
-26   g_binding_unbind(bind);
-27   g_object_set_data (G_OBJECT (listitem), "bind", NULL);
-28 }
-~~~
-
-- 1-6: `setup2_cb` is a setup signal handler on the GtkSignalListItemFactory.
-This factory is inserted to the factory property of the second GtkColumnViewColumn.
-The handler just creates a GtkText instance and sets the child of `listitem` to it.
-The instance will be destroyed automatically when the `listitem` is destroyed.
-So, teardown signal handler isn't necessary.
-- 8-20: `bind2_cb` is a bind signal handler.
-It is called when the `listitem` is bound to an item in the list.
-The list items are LeData instances.
-LeData is defined in the file `listeditor.c` (the C source file of the list editor).
-It is a child class of GObject and has two data.
-The one is `listitem` which points a first column GtkListItem instance when they are connected.
-Be careful that the GtkListItem instance is *not* the `listitem` in this handler.
-If no GtkListItem is connected, it is NULL.
-The other is `string` which is a content of the line. 
-  - 10-11: `text` is a child of the `listitem` and it is a GtkText instance.
-And `buffer` is a GtkTextBuffer instance of the `text`.
-  - 12: The LeData instance `data` is an item pointed by the `listitem`.
-  - 15-16: Sets the text of `text` to `le_data_look_string (data)`.
-le\_data\_look\_string returns the string of the `data` and the ownership of the string is still taken by the `data`.
-So, the caller don't need to free the string.
-  - 18: `g_object_bind_property` binds a property and another object property.
-This line binds the "text" property of the `buffer` (source) and the "string" property of the `data` (destination).
-It is a uni-directional binding (`G_BINDING_DEFAULT`).
-When a user changes the GtkText text, the same string is immediately put into the `data`. 
-The function returns a GBinding instance.
-This binding is different from bindings of GtkExpression.
-This binding needs the existence of the two properties.
-  - 19: GObjec has a table.
-The key is a string (or GQuark) and the value is a gpointer (pointer to any type).
-The function `g_object_set_data` sets the association from the key to the value.
-This line sets the association from "bind" to `bind` instance.
-It makes possible for the "unbind" handler to get the `bind` instance.
-- 22-28: `unbind2_cb` is a unbind signal handler.
-  - 24: Retrieves the `bind` instance from the table in the `listitem` instance.
-  - 26: Unbind the binding.
-  - 27: Removes the value corresponds to the "bind" key.
-
-This technique is not so complicated.
-You can use it when you make a cell editable application.
-
-## Change the cell of GtkColumnView dynamically
-
-Next topic is to change the GtkColumnView (or GtkListView) cells dynamically.
-The example changes the color of the buttons, which are children of GtkListItem instances, as the current line position moves.
-
-The line editor has the current position of the list.
-
-- At first, no line is current.
-- When a line is appended or inserted, the line is current.
-- When the current line is deleted, no line will be current.
-- When a button in the first column of GtkColumnView is clicked, the line will be current.
-- It is necessary to set the line status (whether current or not) when a GtkListItem is bound to an item in the list.
-It is because GtkListItem is recycled.
-A GtkListItem was possibly current line before but not current after recycled.
-The opposite can also be happen.
-
-The button of the current line is colored with red and otherwise white.
-
-The current line has no relationship to GtkSingleSelection object.
-GtkSingleSelection selects a line on the display.
-The current line doesn't need to be on the display.
-It is possible to be on the line out of the Window (GtkScrolledWindow).
-Actually, the program doesn't use GtkSingleSelection.
-
-It is necessary to know the corresponding GtkListItem instance from the item in the list.
-It is the opposite direction from `gtk_list_item_get_item` function.
-To accomplish this, we set a `listitem` element of LeData to point the corresponding GtkListItem instance.
-Therefore, items (LeData) in the list always know the GtkListItem.
-If there's no GtkListItem bound to the item, NULL is assigned.
-
-~~~C
- 1 void
- 2 select_cb (GtkButton *btn, GtkListItem *listitem) {
- 3   LeWindow *win = LE_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (btn), LE_TYPE_WINDOW));
- 4 
- 5   update_current (win, gtk_list_item_get_position (listitem));
- 6 }
- 7 
- 8 static void
- 9 setup1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-10   GtkWidget *button = gtk_button_new ();
-11   gtk_list_item_set_child (listitem, button);
-12   gtk_widget_set_focusable (GTK_WIDGET (button), FALSE);
-13   g_signal_connect (button, "clicked", G_CALLBACK (select_cb), listitem);
-14 }
-15 
-16 static void
-17 bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
-18   LeWindow *win = LE_WINDOW (user_data);
-19   GtkWidget *button = gtk_list_item_get_child (listitem);
-20   const char *non_current[1] = {NULL};
-21   const char *current[2] = {"current", NULL};
-22   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-23 
-24   if (data) {
-25     le_data_set_listitem (data, listitem);
-26     if (win->position == gtk_list_item_get_position (listitem))
-27       gtk_widget_set_css_classes (GTK_WIDGET (button), current);
-28     else
-29       gtk_widget_set_css_classes (GTK_WIDGET (button), non_current);
-30   }
-31 }
-32 
-33 static void
-34 unbind1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-35   LeData *data = LE_DATA (gtk_list_item_get_item (listitem));
-36   if (data)
-37     le_data_set_listitem (data, NULL);
-38 }
-~~~
-
-- 8-14: `setup1_cb` is a setup signal handler on the GtkSignalListItemFactory.
-This factory is inserted to the factory property of the first GtkColumnViewColumn.
-It sets the child of `listitem` to a GtkButton instance.
-The "clicked" signal on the button is connected to the handler `select_cb`.
-When the listitem is destroyed, the child (GtkButton) is also destroyed.
-At the same time, the connection of the signal and the handler is also destroyed.
-So, you don't need teardown signal handler.
-- 1-6: `select_cb` is a "clicked" signal handler.
-LeWindow is defined in `listeditor.c`.
-It's a child class of GtkApplicationWindow.
-The handler just calls the `update_current` function.
-The function will be explained later.
-- 16-31: `bind1_cb` is a bind signal handler.
-It sets the "listitem" element of the item (LeData) to point the `listitem` (GtkListItem instance).
-It makes the item possible to find the corresponding GtkListItem instance.
-If the item is the current line, the CSS class of the button includes "current" class.
-Otherwise it has no CSS class.
-This is necessary because the button may be recycled and it has had former CSS class.
-The class need to be updated.
-- 33-38: `unbind1_cb` is an unbind signal handler.
-It removes the `listitem` instance from the "listitem" element of the item.
-The element becomes NULL, which tells no GtkListItem is bound.
-When referring GtkListItem, it needs to check the "listitem" element whether it points a GtkListItem or not (NULL).
-Otherwise bad things will happen.
-
-~~~C
- 1 static void
- 2 update_current (LeWindow *win, int new) {
- 3   char *s;
- 4   LeData *data;
- 5   GtkListItem *listitem;
- 6   GtkButton *button;
- 7   const char *non_current[1] = {NULL};
- 8   const char *current[2] = {"current", NULL};
- 9 
-10   if (new >= 0)
-11     s = g_strdup_printf ("%d", new);
-12   else
-13     s = "";
-14   gtk_label_set_text (GTK_LABEL (win->position_label), s);
-15   if (*s) // s isn't an empty string
-16     g_free (s);
-17 
-18   if (win->position >=0) {
-19     data = LE_DATA (g_list_model_get_item (G_LIST_MODEL (win->liststore), win->position));
-20     if ((listitem = le_data_get_listitem (data)) != NULL) {
-21       button = GTK_BUTTON (gtk_list_item_get_child (listitem));
-22       gtk_widget_set_css_classes (GTK_WIDGET (button), non_current);
-23       g_object_unref (listitem);
-24     }
-25     g_object_unref (data);
-26   }
-27   win->position = new;
-28   if (win->position >=0) {
-29     data = LE_DATA (g_list_model_get_item (G_LIST_MODEL (win->liststore), win->position));
-30     if ((listitem = le_data_get_listitem (data)) != NULL) {
-31       button = GTK_BUTTON (gtk_list_item_get_child (listitem));
-32       gtk_widget_set_css_classes (GTK_WIDGET (button), current);
-33       g_object_unref (listitem);
-34     }
-35     g_object_unref (data);
-36   }
-37 }
-~~~
-
-The function `update_current` does several things.
-
-- It has two parameters.
-The first one is `win`, which is an instance of LeWindow class.
-It has some elements.
-  - win->position: an Integer. it is the current position. If no current line exists, it is -1.
-  - win->position_label: GtkLabel. It shows the current position.
-- The second parameter is `new`, which is the new current position.
-At the beginning of the function, win->position points the old position.
-- 10-16: Update the text of GtkLabel.
-- 18-26: If the old position (win->position) is not negative, the current line exists.
-It gets a GtkListItem instance via the item (LeData) of the list.
-And it gets the GtkButton instance which is the child of the GtkListItem.
-It clears the "css-classes" property of the button.
-- 27: Updates win->position.
-- 28-36: If the new position is not negative (It's possible to be negative when the current line has been removed), the current line exists.
-It sets the "css-classes" property of the button to `{"current", NULL}`.
-It is a NULL-terminated array of strings.
-Each string is a CSS class.
-Now the button has "current" style class.
-
-The color of buttons are determined by the "background" CSS style.
-The following CSS is applied to the default GdkDisplay in advance (in the startup handler of the application).
-
-~~~css
-columnview listview row button.current {background: red;}
-~~~
-
-The selectors "columnview listview row" is needed before "button" selector.
-Otherwise the buttons in the GtkColumnview won't be found.
-The button selector has "current" class.
-So, the only "current" class button is colored with red.
-Other buttons are not colored, which means they are white.
-
-## Gtk\_widget\_dispose\_template function
-
-The function `gtk_widget_dispose_template` clears the template children for the given widget.
-This is the opposite of `gtk_widget_init_template()`.
-It is a new function of GTK 4.8 version.
-If your GTK version is lower than 4.8, you need to modify the program.
-
-## A waring from GtkText
-
-If your program has the following two, a warning message can be issued.
-
-- The list has many items and it needs to be scrolled.
-- A GtkText instance is the focus widget.
-
-~~~
-GtkText - unexpected blinking selection. Removing
-~~~
-
-I don't have an exact idea why this happens.
-But if GtkText "focusable" property is FALSE, the warning doesn't happen.
-So it probably comes from focus and scroll.
-
-You can avoid this by unsetting any focus widget under the main window.
-When scroll begins, the "value-changed" signal on the vertical adjustment of the scrolled window is emitted.
-
-The following is extracted from the ui file and C source file.
-
-~~~xml
-... ... ...
-<object class="GtkScrolledWindow">
-  <property name="hexpand">TRUE</property>
-  <property name="vexpand">TRUE</property>
-  <property name="vadjustment">
-    <object class="GtkAdjustment">
-      <signal name="value-changed" handler="adjustment_value_changed_cb" swapped="no" object="LeWindow"/>
-    </object>
-  </property>
-... ... ...  
-~~~
-
-~~~C
-1 static void
-2 adjustment_value_changed_cb (GtkAdjustment *adjustment, gpointer user_data) {
-3   GtkWidget *win = GTK_WIDGET (user_data);
-4 
-5   gtk_window_set_focus (GTK_WINDOW (win), NULL);
-6 }
-~~~
-
-Up: [README.md](../README.md),  Prev: [Section 31](sec31.md)
+Up: [README.md](../README.md),  Prev: [Section 31](sec31.md), Next: [Section 33](sec33.md)

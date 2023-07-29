@@ -17,7 +17,7 @@ Then, it will be installed under `$HOME/.local/bin`.
 The instruction is:
 
 ~~~
-$ meson --prefix=$HOME/.local _build
+$ meson setup --prefix=$HOME/.local _build
 $ ninja -C _build
 $ ninja -C _build install
 ~~~
@@ -26,7 +26,7 @@ If you want to install it in the system area, no option is necessary.
 It will be installed under `/usr/local/bin`.
 
 ~~~
-$ meson _build
+$ meson setup _build
 $ ninja -C _build
 $ sudo ninja -C _build install
 ~~~

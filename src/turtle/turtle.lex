@@ -19,7 +19,7 @@ IDENTIFIER [a-zA-Z][a-zA-Z0-9]*
 %%
   /* rules */
 #.*               ; /* comment. Be careful. Dot symbol (.) matches any character but new line. */
-[ ]               ncolumn++;
+[ ]               ncolumn++; /* white space. [ and ] is a "character class". */
 \t                ncolumn += 8; /* assume that tab is 8 spaces. */
 \n                nline++; ncolumn = 1;
   /* reserved keywords */
@@ -28,14 +28,14 @@ pd                get_location (yytext); return PD; /* pen down */
 pw                get_location (yytext); return PW; /* pen width = line width */
 fd                get_location (yytext); return FD; /* forward */
 tr                get_location (yytext); return TR; /* turn right */
-tl                get_location (yytext); return TL; /* turn left ver 0.5 */
+tl                get_location (yytext); return TL; /* turn left, since ver 0.5 */
 bc                get_location (yytext); return BC; /* background color */
 fc                get_location (yytext); return FC; /* foreground color */
 dp                get_location (yytext); return DP; /* define procedure */
 if                get_location (yytext); return IF; /* if statement */
 rt                get_location (yytext); return RT; /* return statement */
 rs                get_location (yytext); return RS; /* reset the status */
-rp                get_location (yytext); return RP; /* repeat ver 0.5 */
+rp                get_location (yytext); return RP; /* repeat, since ver 0.5 */
   /* constant */
 {REAL_NUMBER}     get_location (yytext); yylval.NUM = atof (yytext); return NUM;
   /* identifier */

@@ -119,12 +119,12 @@ install it in your local area, put an option
 <code>--prefix=$HOME/.local</code> to your meson command line. Then, it
 will be installed under <code>$HOME/.local/bin</code>. The instruction
 is:</p>
-<pre><code>$ meson --prefix=$HOME/.local _build
+<pre><code>$ meson setup --prefix=$HOME/.local _build
 $ ninja -C _build
 $ ninja -C _build install</code></pre>
 <p>If you want to install it in the system area, no option is necessary.
 It will be installed under <code>/usr/local/bin</code>.</p>
-<pre><code>$ meson _build
+<pre><code>$ meson setup _build
 $ ninja -C _build
 $ sudo ninja -C _build install</code></pre>
 <p>Type the following command then turtle shows the following
