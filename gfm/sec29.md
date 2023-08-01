@@ -8,9 +8,10 @@ The new feature is described in [Gtk API Reference -- List Widget Overview](http
 GTK 4 has other means to implement lists.
 They are GtkListBox and GtkTreeView which are took over from GTK 3.
 There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
-He described why GtkListView are developed to replace GtkListBox and GtkTreeView.
+He described why GtkListView are developed to replace GtkTreeView.
+GtkTreeView is deprecated since version 4.10.
 
-GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 26 to 29.
+GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 29 to 33.
 
 ## Outline
 
@@ -21,7 +22,7 @@ A list is like an array, but in many cases it is implemented with pointers which
 And it has a start point.
 So, each item can be referred by the index of the item (first item, second item, ..., nth item, ...).
 There are two cases.
-One is the index starts from one (one-based) and the other is from zero (zero-based).
+The one is the index starts from one (one-based) and the other is from zero (zero-based).
 
 Gio provides GListModel interface.
 It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
@@ -29,11 +30,11 @@ An object implements GListModel is not a widget.
 So, the list is not displayed on the screen directly.
 There's another object GtkListView which is a widget to display the list.
 The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GListView.
+GtkListItemFactory instance maps items in the list to GtkListView.
 
 ![List](../image/list.png)
 
-## GListModel
+## GListModel and GtkStringList
 
 If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
 Because GListModel is a list of GObject objects and strings aren't GObject objects.
@@ -253,7 +254,7 @@ There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
 Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in [section 30](../src/sec30).
+`this` object will be explained in [section 31](../src/sec31).
 
 The C source code is as follows.
 Its name is `list2.c` and located under [src/misc](../src/misc) directory.
@@ -370,7 +371,7 @@ Instead, closure tag is appropriate in this case.
 Closure tag specifies a function and the type of the return value of the function.
 
 ~~~C
-const char *
+char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
   return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
@@ -406,7 +407,7 @@ The contents of closure tag (it is between \<closure...\> and\</closure\>) is pa
 `<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
 This will be the second argument of the function.
 The first parameter is always the GListItem instance, which is a 'this' object.
-The 'this' object is explained in section 28.
+The 'this' object is explained in section 31.
 - `gtk_file_name` function is the callback function for the closure tag.
 It first checks the `info` parameter.
 Because it can be NULL when GListItem `item` is unbounded.
@@ -530,6 +531,5 @@ $ ./a.out
 ~~~
 
 ![screenshot list3](../image/list3.png)
-
 
 Up: [README.md](../README.md),  Prev: [Section 28](sec28.md), Next: [Section 30](sec30.md)

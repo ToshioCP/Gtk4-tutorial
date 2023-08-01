@@ -2,8 +2,8 @@
 <interface>
   <template class="LeWindow" parent="GtkApplicationWindow">
     <property name="title">list editor</property>
-    <property name="default-width">600</property>
-    <property name="default-height">400</property>
+    <property name="default-width">1000</property>
+    <property name="default-height">600</property>
     <child>
       <object class="GtkBox">
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
@@ -95,7 +95,7 @@
                 <property name="vexpand">TRUE</property>
                 <property name="focusable">FALSE</property>
                 <property name="model">
-                  <object class="GtkNoSelection">
+                  <object class="GtkNoSelection" id = "noselection">
                     <property name="model">
                       <object class="GListStore" id="liststore">
                         <property name="item-type">LeData</property>
@@ -110,7 +110,6 @@
                       <object class="GtkSignalListItemFactory">
                         <signal name="setup"  handler="setup1_cb"></signal>
                         <signal name="bind"   handler="bind1_cb" swapped="no" object="LeWindow"></signal>
-                        <signal name="unbind" handler="unbind1_cb"></signal>
                       </object>
                     </property>
                   </object>
@@ -118,6 +117,7 @@
                 <child>
                   <object class="GtkColumnViewColumn">
                     <property name="title">String</property>
+                    <property name="expand">TRUE</property>
                     <property name="factory">
                       <object class="GtkSignalListItemFactory">
                         <signal name="setup"  handler="setup2_cb"></signal>

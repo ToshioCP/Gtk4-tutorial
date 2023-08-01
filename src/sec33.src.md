@@ -6,23 +6,14 @@ GtkBuilderlistItemFactory is convenient when GtkListView just shows the contents
 Its binding direction is always from an item of a list to a child of GtkListItem.
 
 When it comes to dynamic connection, it's not enough.
-For example, you want to edit the contents of a list.
+For example, suppose you want to edit the contents of a list.
 You set a child of GtkListItem to a GtkText instance so a user can edit a text with it.
 You need to bind an item in the list with the buffer of the GtkText.
 The direction is opposite from the one with GtkBuilderListItemFactory.
 It is from the GtkText instance to the item in the list.
 You can implement this with GtkSignalListItemFactory, which is more flexible than GtkBuilderListItemFactory.
 
-Two things are shown in this section.
-
-- Binding from a child of a GtkListItem instance to an item of a list.
-- Access a child of GtkListItem dynamically.
-This direction is the same as the one with GtkBulderListItemFactory.
-But GtkBulderListItemFactory uses GtkExpression from the item property of the GtkListItem.
-So, it updates its child widget only when the item property changes.
-In this example the child reflects the change in the same item in the list dynamically.
-
-This section shows just a part of the source file `listeditor.c`.
+This section shows just some parts of the source file `listeditor.c`.
 If you want to see the whole codes, see `src/listeditor` directory of the [Gtk4 tutorial repository](https://github.com/ToshioCP/Gtk4-tutorial).
 
 ## A list editor
@@ -33,7 +24,7 @@ It reads a text file line by line.
 Each line is an item of the list.
 The list is displayed with GtkColumnView.
 There are two columns.
-The one is a button, which makes the line be a current line.
+The one is a button, which shows if the line is a current line.
 If the line is the current line, the button is colored with red.
 The other is a string which is the contents of the corresponding item of the list.
 
@@ -47,18 +38,18 @@ You can compile end execute it as follows.
 - Type the following on your commandline.
 
 ~~~
-$ meson _build
+$ meson setup _build
 $ ninja -C _build
 $ _build/listeditor
 ~~~
 
 - Append button: appends a line after the current line, or at the last line if no current line exists.
-- Insert button: inserts a line before the current line.
+- Insert button: inserts a line before the current line, or at the top line if no current line exists.
 - Remove button: removes a current line.
 - Read button: reads a file.
 - Write button: writes the contents to a file.
-- close button: close the contents.
-- quit button: quit the application.
+- close button: closes the contents.
+- quit button: quits the application.
 - Button on the select column: makes the line current.
 - String column: GtkText. You can edit a string in the field.
 
@@ -69,7 +60,7 @@ The file name is shown at the right of the write button.
 
 The second column (GtkColumnViewColumn) sets its factory property to GtkSignalListItemFactory.
 It uses three signals setup, bind and unbind.
-The following is their sgnal handlers.
+The following shows the signal handlers.
 
 @@@include
 listeditor/listeditor.c setup2_cb bind2_cb unbind2_cb
@@ -84,17 +75,13 @@ So, teardown signal handler isn't necessary.
 It is called when the `listitem` is bound to an item in the list.
 The list items are LeData instances.
 LeData is defined in the file `listeditor.c` (the C source file of the list editor).
-It is a child class of GObject and has two data.
-The one is `listitem` which points a first column GtkListItem instance when they are connected.
-Be careful that the GtkListItem instance is *not* the `listitem` in this handler.
-If no GtkListItem is connected, it is NULL.
-The other is `string` which is a content of the line. 
+It is a child class of GObject and has string data which is the content of the line. 
   - 10-11: `text` is a child of the `listitem` and it is a GtkText instance.
-And `buffer` is a GtkTextBuffer instance of the `text`.
+And `buffer` is a GtkEntryBuffer instance of the `text`.
   - 12: The LeData instance `data` is an item pointed by the `listitem`.
   - 15-16: Sets the text of `text` to `le_data_look_string (data)`.
 le\_data\_look\_string returns the string of the `data` and the ownership of the string is still taken by the `data`.
-So, the caller don't need to free the string.
+So, the caller doesn't need to free the string.
   - 18: `g_object_bind_property` binds a property and another object property.
 This line binds the "text" property of the `buffer` (source) and the "string" property of the `data` (destination).
 It is a uni-directional binding (`G_BINDING_DEFAULT`).
@@ -107,13 +94,18 @@ The key is a string (or GQuark) and the value is a gpointer (pointer to any type
 The function `g_object_set_data` sets the association from the key to the value.
 This line sets the association from "bind" to `bind` instance.
 It makes possible for the "unbind" handler to get the `bind` instance.
-- 22-28: `unbind2_cb` is a unbind signal handler.
+- 22-29: `unbind2_cb` is a unbind signal handler.
   - 24: Retrieves the `bind` instance from the table in the `listitem` instance.
-  - 26: Unbind the binding.
-  - 27: Removes the value corresponds to the "bind" key.
+  - 26-27: Unbind the binding.
+  - 28: Removes the value corresponds to the "bind" key.
 
 This technique is not so complicated.
 You can use it when you make a cell editable application.
+
+If it is impossible to use `g_object_bind_property`, use a notify signal on the GtkEntryBuffer instance.
+You can use "deleted-text" and "inserted-text" signal instead.
+The handler of the signals above copies the text in the GtkEntryBuffer instance to the LeData string.
+Connect the notify signal handler in `bind2_cb` and disconnect it in `unbind2_cb`.
 
 ## Change the cell of GtkColumnView dynamically
 
@@ -139,85 +131,79 @@ The current line doesn't need to be on the display.
 It is possible to be on the line out of the Window (GtkScrolledWindow).
 Actually, the program doesn't use GtkSingleSelection.
 
-It is necessary to know the corresponding GtkListItem instance from the item in the list.
-It is the opposite direction from `gtk_list_item_get_item` function.
-To accomplish this, we set a `listitem` element of LeData to point the corresponding GtkListItem instance.
-Therefore, items (LeData) in the list always know the GtkListItem.
-If there's no GtkListItem bound to the item, NULL is assigned.
+The LeWindow instance has two instance variables for recording the current line.
+
+- `win->position`: An int type variable. It is the position of the current line. It is zero-based. If no current line exists, it is -1.
+- `win->current_button`: A variable points the button, located at the first column, on the current line. If no current line exists, it is NULL.
+
+If the current line moves, the following two functions are called.
+They updates the two varables.
 
 @@@include
-listeditor/listeditor.c select_cb setup1_cb bind1_cb unbind1_cb
+listeditor/listeditor.c update_current_position update_current_button
 @@@
 
-- 8-14: `setup1_cb` is a setup signal handler on the GtkSignalListItemFactory.
-This factory is inserted to the factory property of the first GtkColumnViewColumn.
+The varable `win->position_label` points a GtkLabel instance.
+The label shows the current line position.
+
+The current button has CSS "current" class.
+The button is colored red through the CSS "button.current {background: red;}".
+
+The order of the call for these two functions is important.
+The first function, which updates the position, is usually called first.
+After that, a new line is appended or inserted.
+Then, the second function is called.
+
+The following functions call the two functions above.
+Be careful about the order of the call.
+
+@@@include
+listeditor/listeditor.c select_cb setup1_cb bind1_cb
+@@@
+
+- 1-7: `select_cb` is a "clicked" signal handler.
+The handler just calls the two functions and update the position and button.
+- 9-15: `setup1_cb` is a setup signal handler on the GtkSignalListItemFactory.
 It sets the child of `listitem` to a GtkButton instance.
 The "clicked" signal on the button is connected to the handler `select_cb`.
 When the listitem is destroyed, the child (GtkButton) is also destroyed.
 At the same time, the connection of the signal and the handler is also destroyed.
 So, you don't need teardown signal handler.
-- 1-6: `select_cb` is a "clicked" signal handler.
-LeWindow is defined in `listeditor.c`.
-It's a child class of GtkApplicationWindow.
-The handler just calls the `update_current` function.
-The function will be explained later.
-- 16-31: `bind1_cb` is a bind signal handler.
-It sets the "listitem" element of the item (LeData) to point the `listitem` (GtkListItem instance).
-It makes the item possible to find the corresponding GtkListItem instance.
-If the item is the current line, the CSS class of the button includes "current" class.
-Otherwise it has no CSS class.
-This is necessary because the button may be recycled and it has had former CSS class.
-The class need to be updated.
-- 33-38: `unbind1_cb` is an unbind signal handler.
-It removes the `listitem` instance from the "listitem" element of the item.
-The element becomes NULL, which tells no GtkListItem is bound.
-When referring GtkListItem, it needs to check the "listitem" element whether it points a GtkListItem or not (NULL).
-Otherwise bad things will happen.
+- 17-24: `bind1_cb` is a bind signal handler.
+Usually, the position moves before this handler is called.
+If the item is on the current line, the button is updated.
+No unbind handler is necessary.
+
+When a line is added, the current position is updated in advance.
 
 @@@include
-listeditor/listeditor.c update_current
+listeditor/listeditor.c app_cb ins_cb
 @@@
 
-The function `update_current` does several things.
+When a line is removed, the current position becomes -1 and no button is current.
 
-- It has two parameters.
-The first one is `win`, which is an instance of LeWindow class.
-It has some elements.
-  - win->position: an Integer. it is the current position. If no current line exists, it is -1.
-  - win->position_label: GtkLabel. It shows the current position.
-- The second parameter is `new`, which is the new current position.
-At the beginning of the function, win->position points the old position.
-- 10-16: Update the text of GtkLabel.
-- 18-26: If the old position (win->position) is not negative, the current line exists.
-It gets a GtkListItem instance via the item (LeData) of the list.
-And it gets the GtkButton instance which is the child of the GtkListItem.
-It clears the "css-classes" property of the button.
-- 27: Updates win->position.
-- 28-36: If the new position is not negative (It's possible to be negative when the current line has been removed), the current line exists.
-It sets the "css-classes" property of the button to `{"current", NULL}`.
-It is a NULL-terminated array of strings.
-Each string is a CSS class.
-Now the button has "current" style class.
+@@@include
+listeditor/listeditor.c rm_cb
+@@@
 
 The color of buttons are determined by the "background" CSS style.
-The following CSS is applied to the default GdkDisplay in advance (in the startup handler of the application).
+The following CSS node is a bit complicated.
+CSS node `column view` has `listview` child node.
+It covers the rows in the GtkColumnView.
+The `listview` node is the same as the one for GtkListView.
+It has `row` child node, which is for each child widget.
+Therefore, the following node corresponds buttons on the GtkColumnView widget.
+In addition, it is applied to the "current" class.
 
+@@@if gfm
 ~~~css
 columnview listview row button.current {background: red;}
 ~~~
-
-The selectors "columnview listview row" is needed before "button" selector.
-Otherwise the buttons in the GtkColumnview won't be found.
-The button selector has "current" class.
-So, the only "current" class button is colored with red.
-Other buttons are not colored, which means they are white.
-
-## Gtk\_widget\_dispose\_template function
-
-The function `gtk_widget_dispose_template` clears the template children for the given widget.
-This is the opposite of `gtk_widget_init_template()`.
-It is a new function of GTK 4.8 version.
-If your GTK version is lower than 4.8, you need to modify the program.
+@@@else
+~~~{.css}
+columnview listview row button.current {background: red;}
+~~~
+@@@end
 
 ## A waring from GtkText
 

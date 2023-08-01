@@ -120,16 +120,17 @@ Reference – List Widget Overview</a>.</p>
 GtkTreeView which are took over from GTK 3. There’s an article in <a
 href="https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/">Gtk
 Development blog</a> about list widgets by Matthias Clasen. He described
-why GtkListView are developed to replace GtkListBox and GtkTreeView.</p>
+why GtkListView are developed to replace GtkTreeView. GtkTreeView is
+deprecated since version 4.10.</p>
 <p>GtkListView, GtkGridView, GtkColumnView and related objects are
-described in Section 26 to 29.</p>
+described in Section 29 to 33.</p>
 <h2 id="outline">Outline</h2>
 <p>A list is a sequential data structure. For example, an ordered string
 sequence “one”, “two”, “three”, “four” is a list. Each element is called
 item. A list is like an array, but in many cases it is implemented with
 pointers which point to the next items of the list. And it has a start
 point. So, each item can be referred by the index of the item (first
-item, second item, …, nth item, …). There are two cases. One is the
+item, second item, …, nth item, …). There are two cases. The one is the
 index starts from one (one-based) and the other is from zero
 (zero-based).</p>
 <p>Gio provides GListModel interface. It is a zero-based list and its
@@ -138,12 +139,12 @@ implement the same interface. An object implements GListModel is not a
 widget. So, the list is not displayed on the screen directly. There’s
 another object GtkListView which is a widget to display the list. The
 items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GListView.</p>
+GtkListItemFactory instance maps items in the list to GtkListView.</p>
 <figure>
 <img src="image/list.png" alt="List" />
 <figcaption aria-hidden="true">List</figcaption>
 </figure>
-<h2 id="glistmodel">GListModel</h2>
+<h2 id="glistmodel-and-gtkstringlist">GListModel and GtkStringList</h2>
 <p>If you want to make a list of strings with GListModel, for example,
 “one”, “two”, “three”, “four”, note that strings can’t be items of the
 list. Because GListModel is a list of GObject objects and strings aren’t
@@ -356,7 +357,7 @@ instantiated.</p>
 </blockquote>
 <p>Therefore, GtkListItem instance is used as the <code>this</code>
 object of the lookup tag when it is evaluated. <code>this</code> object
-will be explained in section 30.</p>
+will be explained in section 31.</p>
 <p>The C source code is as follows. Its name is <code>list2.c</code> and
 located under src/misc directory.</p>
 <div class="sourceCode" id="cb7"><pre
@@ -431,7 +432,7 @@ are information of files under a certain directory. It uses
 <code>g_file_enumerate_children_async()</code> to get the GFileInfo
 objects. The list model is created by
 <code>gtk_directory_list_new</code> function.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>gtk_directory_list_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>attributes<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">);</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>gtk_directory_list_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>attributes<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">);</span></span></code></pre></div>
 <p><code>attributes</code> is a comma separated list of file attributes.
 File attributes are key-value pairs. A key consists of a namespace and a
 name. For example, “standard::name” key is the name of a file.
@@ -477,7 +478,7 @@ seconds since the UNIX epoch</td>
 <p>The current directory is “.”. The following program makes
 GtkDirectoryList <code>dl</code> and its contents are GFileInfo objects
 under the current directory.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>dl <span class="op">=</span> gtk_directory_list_new <span class="op">(</span><span class="st">&quot;standard::name&quot;</span><span class="op">,</span> file<span class="op">);</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>file<span class="op">);</span></span></code></pre></div>
 <p>It is not so difficult to make file listing program by changing
@@ -486,7 +487,7 @@ GInfoFile doesn’t have properties. Lookup tag look for a property, so it
 is useless for looking for a filename from a GFileInfo object. Instead,
 closure tag is appropriate in this case. Closure tag specifies a
 function and the type of the return value of the function.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
+<div class="sourceCode" id="cb10"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
@@ -526,7 +527,7 @@ the function.
 the value of the item property of the GtkListItem. This will be the
 second argument of the function. The first parameter is always the
 GListItem instance, which is a ‘this’ object. The ‘this’ object is
-explained in section 28.</li>
+explained in section 31.</li>
 <li><code>gtk_file_name</code> function is the callback function for the
 closure tag. It first checks the <code>info</code> parameter. Because it
 can be NULL when GListItem <code>item</code> is unbounded. If it’s

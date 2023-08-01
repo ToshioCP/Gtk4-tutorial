@@ -218,9 +218,9 @@ This is the title on the header of the column.
 - 32: Sets the "expand" property to TRUE to allow the column to expand as much as possible.
 (See the image above).
 - 33- 69: Sets the "factory" property to GtkBuilderListItemFactory.
-The factory has "bytes" property which holds a ui string to define a template to build GtkListItem composite widget.
+The factory has "bytes" property which holds a ui string to define a template to extend GtkListItem class.
 The CDATA section (line 36-66) is the ui string to put into the "bytes" property.
-The contents are the same as the ui file `factory_list.ui` in the section 27.
+The contents are the same as the ui file `factory_list.ui` in the section 30.
 - 70-77: Sets the "sorter" property to GtkStringSorter object.
 This object provides a sorter that compares strings.
 It has "expression" property.
@@ -456,7 +456,8 @@ All the source files are in [`src/column`](../src/column) directory.
 Change your current directory to the directory and type the following.
 
 ~~~
-$ meson _build
+$ cd src/colomn
+$ meson setup _build
 $ ninja -C _build
 $ _build/column
 ~~~

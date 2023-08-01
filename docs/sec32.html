@@ -328,10 +328,9 @@ header of the column.</li>
 as much as possible. (See the image above).</li>
 <li>33- 69: Sets the “factory” property to GtkBuilderListItemFactory.
 The factory has “bytes” property which holds a ui string to define a
-template to build GtkListItem composite widget. The CDATA section (line
-36-66) is the ui string to put into the “bytes” property. The contents
-are the same as the ui file <code>factory_list.ui</code> in the section
-27.</li>
+template to extend GtkListItem class. The CDATA section (line 36-66) is
+the ui string to put into the “bytes” property. The contents are the
+same as the ui file <code>factory_list.ui</code> in the section 30.</li>
 <li>70-77: Sets the “sorter” property to GtkStringSorter object. This
 object provides a sorter that compares strings. It has “expression”
 property. A closure tag with a string type function
@@ -542,7 +541,8 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <h2 id="compilation-and-execution.">Compilation and execution.</h2>
 <p>All the source files are in <code>src/column</code> directory. Change
 your current directory to the directory and type the following.</p>
-<pre><code>$ meson _build
+<pre><code>$ cd src/colomn
+$ meson setup _build
 $ ninja -C _build
 $ _build/column</code></pre>
 <p>Then, a window appears.</p>

@@ -23,7 +23,7 @@ app_startup (GApplication *application) {
   GtkBuilder *build;
   GtkWidget *win;
 
-  build = gtk_builder_new_from_file ("exp_test.ui");
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp_test.ui");
   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   gtk_window_set_application (GTK_WINDOW (win), app);
   g_object_unref (build);

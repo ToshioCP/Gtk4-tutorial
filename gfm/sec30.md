@@ -64,7 +64,7 @@ Such "x-" subtype is not a standard mime type.)
 Content type is also used by desktop systems.
 
 GtkGridView uses the same GtkSingleSelection instance (`singleselection`).
-So, its model property is set with it.
+So, its model property is set to it.
 
 ## Ui file of the window
 
@@ -467,7 +467,7 @@ The last parameter is the pointer to the pointer to a GError.
 
 If your distribution supports GTK 4, using `g_app_info_launch_default_for_uri` is convenient.
 The function automatically determines the default application from the file and launches it.
-For example, if the file is text, then it launches gedit with the file.
+For example, if the file is text, then it launches GNOME text editor with the file.
 Such feature comes from desktop.
 
 ## Compilation and execution
@@ -477,7 +477,7 @@ To compile and execute list4, type as follows.
 
 ~~~
 $ cd list4 # or cd src/list4. It depends your current directory.
-$ meson _build
+$ meson setup _build
 $ ninja -C _build
 $ _build/list4
 ~~~

@@ -32,6 +32,7 @@ GtkGridView (model property) => GtkSingleSelection (model property) => GtkDirect
 
 The following is a part of the ui file `list4.ui`.
 
+@@@if gfm
 ~~~xml
 <object class="GtkListView" id="list">
   <property name="model">
@@ -48,6 +49,24 @@ The following is a part of the ui file `list4.ui`.
   <property name="model">singleselection</property>
 </object>
 ~~~
+@@@else
+~~~{.xml}
+<object class="GtkListView" id="list">
+  <property name="model">
+    <object class="GtkSingleSelection" id="singleselection">
+      <property name="model">
+        <object class="GtkDirectoryList" id="directorylist">
+          <property name="attributes">standard::name,standard::icon,standard::content-type</property>
+        </object>
+      </property>
+    </object>
+  </property>
+</object>
+<object class="GtkGridView" id="grid">
+  <property name="model">singleselection</property>
+</object>
+~~~
+@@@end
 
 GtkDirectoryList has an "attributes" property.
 It is attributes of GFileInfo such as "standard::name", "standard::icon" and "standard::content-type".
@@ -62,7 +81,7 @@ Such "x-" subtype is not a standard mime type.)
 Content type is also used by desktop systems.
 
 GtkGridView uses the same GtkSingleSelection instance (`singleselection`).
-So, its model property is set with it.
+So, its model property is set to it.
 
 ## Ui file of the window
 
@@ -112,11 +131,19 @@ Its child widget will be set with GtkListView or GtkGridView.
 
 The action `view` is created, connected to the "activate" signal handler and inserted to the window (action map) as follows.
 
+@@@if gfm
 ~~~C
 act_view = g_simple_action_new_stateful ("view", g_variant_type_new("s"), g_variant_new_string ("list"));
 g_signal_connect (act_view, "activate", G_CALLBACK (view_activated), NULL);
 g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_view));
 ~~~
+@@@else
+~~~{.C}
+act_view = g_simple_action_new_stateful ("view", g_variant_type_new("s"), g_variant_new_string ("list"));
+g_signal_connect (act_view, "activate", G_CALLBACK (view_activated), NULL);
+g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_view));
+~~~
+@@@end
 
 The signal handler `view_activated` will be explained later.
 
@@ -198,6 +225,7 @@ You can do anything you like by connecting the "activate" signal to the handler.
 
 The example `list4` launches `tfe` text file editor if the item of the list is a text file.
 
+@@@if gfm
 ~~~C
 static void
 list_activate (GtkListView *list, int position, gpointer user_data) {
@@ -217,6 +245,27 @@ grid_activate (GtkGridView *grid, int position, gpointer user_data) {
   g_signal_connect (GTK_LIST_VIEW (list), "activate", G_CALLBACK (list_activate), NULL);
   g_signal_connect (GTK_GRID_VIEW (grid), "activate", G_CALLBACK (grid_activate), NULL);
 ~~~
+@@@else
+~~~{.C}
+static void
+list_activate (GtkListView *list, int position, gpointer user_data) {
+  GFileInfo *info = G_FILE_INFO (g_list_model_get_item (G_LIST_MODEL (gtk_list_view_get_model (list)), position));
+  launch_tfe_with_file (info);
+}
+
+static void
+grid_activate (GtkGridView *grid, int position, gpointer user_data) {
+  GFileInfo *info = G_FILE_INFO (g_list_model_get_item (G_LIST_MODEL (gtk_grid_view_get_model (grid)), position));
+  launch_tfe_with_file (info);
+}
+
+... ...
+... ...
+
+  g_signal_connect (GTK_LIST_VIEW (list), "activate", G_CALLBACK (list_activate), NULL);
+  g_signal_connect (GTK_GRID_VIEW (grid), "activate", G_CALLBACK (grid_activate), NULL);
+~~~
+@@@end
 
 The second parameter of each handler is the position of the item (GFileInfo) of the GListModel.
 So you can get the item with `g_list_model_get_item` function.
@@ -254,7 +303,7 @@ The last parameter is the pointer to the pointer to a GError.
 
 If your distribution supports GTK 4, using `g_app_info_launch_default_for_uri` is convenient.
 The function automatically determines the default application from the file and launches it.
-For example, if the file is text, then it launches gedit with the file.
+For example, if the file is text, then it launches GNOME text editor with the file.
 Such feature comes from desktop.
 
 ## Compilation and execution
@@ -264,7 +313,7 @@ To compile and execute list4, type as follows.
 
 ~~~
 $ cd list4 # or cd src/list4. It depends your current directory.
-$ meson _build
+$ meson setup _build
 $ ninja -C _build
 $ _build/list4
 ~~~

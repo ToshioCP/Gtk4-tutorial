@@ -28,7 +28,7 @@ app_startup (GApplication *application) {
   GtkExpression *expression, *params[1];
 
   /* Builds a window with exp.ui resource */
-  build = gtk_builder_new_from_file ("exp_bind.ui");
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp_bind.ui");
   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   label = GTK_WIDGET (gtk_builder_get_object (build, "label"));
   // scale = GTK_WIDGET (gtk_builder_get_object (build, "scale"));

@@ -58,8 +58,8 @@ The type of the value is int.
 |G\_TYPE\_INT     |int   |gint      |                       |
 |G\_TYPE\_FLOAT   |float |gfloat    |                       |
 |G\_TYPE\_DOUBLE  |double|gdouble   |                       |
-|G\_TYPE\_POINTER |      |gpointer  |                       |
-|G\_TYPE\_STRING  |      |gchararray|null-terminated Cstring|
+|G\_TYPE\_POINTER |void *|gpointer  |general pointer        |
+|G\_TYPE\_STRING  |char *|gchararray|null-terminated Cstring|
 |G\_TYPE\_OBJECT  |      |GObject   |                       |
 |GTK\_TYPE\_WINDOW|      |GtkWindow |                       |
 
@@ -119,7 +119,7 @@ expression = gtk_property_expression_new (GTK_TYPE_LABEL, another_expression, "l
 
 If `expression` is evaluated, the second parameter `another_expression` is evaluated in advance.
 The value of `another_expression` is the `label` (GtkLabel instance).
-Then, `expression` looks up "label" property of the label and the evaluation results "Hello".
+Then, `expression` looks up "label" property of the label and the evaluation results in "Hello".
 
 In the example above, the second argument of `gtk_property_expression_new` is another expression.
 But the second argument can be NULL.
@@ -145,7 +145,7 @@ There's a simple program `exp_property_simple.c` in `src/expression` directory.
 14   if (gtk_expression_evaluate (expression, label, &value))
 15     g_print ("The value is %s.\n", g_value_get_string (&value));
 16   else
-17     g_print ("The constant expression wasn't evaluated correctly.\n");
+17     g_print ("The property expression wasn't evaluated correctly.\n");
 18   gtk_expression_unref (expression);
 19   g_value_unset (&value);
 20 
@@ -164,7 +164,7 @@ The expression just knows how to take the property from a future-given GtkLabel 
 The result is stored in the GValue `value`.
 The function `g_value_get_string` gets a string from the GValue.
 But the string is owned by the GValue so you must not free the string.
-- 18-19: Release the expression and unset the GValue.
+- 18-19: Releases the expression and unset the GValue.
 At the same time the string in the GValue is freed.
 
 If the second argument of `gtk_property_expression_new` isn't NULL, it is another expression.
@@ -195,6 +195,18 @@ gtk_cclosure_expression_new (GType value_type,
                              gpointer user_data,
                              GClosureNotify user_destroy);
 ~~~
+@else
+~~~{.C}
+GtkExpression *
+gtk_cclosure_expression_new (GType value_type,
+                             GClosureMarshal marshal,
+                             guint n_params,
+                             GtkExpression **params,
+                             GCallback callback_func,
+                             gpointer user_data,
+                             GClosureNotify user_destroy);
+~~~
+@end
 
 - `value_type` is the type of the value when it is evaluated.
 - `marshal` is a marshaller.
@@ -224,6 +236,7 @@ callback (this, param1, param2, ...)
 
 For example,
 
+@@@if gfm
 ~~~C
 int
 callback (GObject *object, int x, const char *s)
@@ -276,13 +289,13 @@ If you want to return error report, change the return value type to be a pointer
 One for error and the other for the sum.
 The first argument of `gtk_cclosure_expression_new` is `G_TYPE_POINTER`.
 There is a sample program `exp_closure_with_error_report` in `src/expression` directory.
-- 19: gtk\_init initializes GTK. It is necessary for GtkLabel.
+- 19: The function `gtk_init`` initializes GTK. It is necessary for GtkLabel.
 - 20: A GtkLabel instance is created with "123+456".
 - 21: The instance has floating reference. It is changed to an ordinary reference count.
-- 22-23: Create a closure expression. Its return value type is `G_TYPE_INT` and no parameters or 'this' object.
+- 22-23: Creates a closure expression. Its return value type is `G_TYPE_INT` and no parameters or 'this' object.
 - 24: Evaluates the expression with the label as a 'this' object.
-- 25: If the evaluation successes, show the sum of "123+456". It's 579.
-- 27: If it fails, show an error message.
+- 25: If the evaluation successes, the sum of "123+456", which is 579, is shown.
+- 27: If it fails, an error message appears.
 - 28-30: Releases the expression and the label. Unsets the value.
 
 Closure expression is flexible than other type of expression because you can specify your own callback function.
@@ -292,6 +305,7 @@ Closure expression is flexible than other type of expression because you can spe
 GtkExpressionWatch is a structure, not an object.
 It represents a watched GtkExpression.
 Two functions create GtkExpressionWatch structure.
+They are `gtk_expression_bind` and `gtk_expression_watch`.
 
 ### gtk\_expression\_bind function
 
@@ -411,7 +425,7 @@ For example, if it is zero, the slider moves to an integer point.
 28   GtkExpression *expression, *params[1];
 29 
 30   /* Builds a window with exp.ui resource */
-31   build = gtk_builder_new_from_file ("exp_bind.ui");
+31   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp_bind.ui");
 32   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
 33   label = GTK_WIDGET (gtk_builder_get_object (build, "label"));
 34   // scale = GTK_WIDGET (gtk_builder_get_object (build, "scale"));
@@ -448,7 +462,7 @@ The point of the program is:
 
 - 41-42: Two expressions are defined.
 One is a property expression and the other is a closure expression.
-The property expression look up the "value"property of the adjustment instance.
+The property expression looks up the "value" property of the adjustment instance.
 The closure expression just converts the double into an integer.
 - 43: `gtk_expression_bind` binds the label property of the GtkLabel instance to the integer returned by the closure expression.
 It creates a GtkExpressionWatch structure.
@@ -462,8 +476,8 @@ This signal is emitted when the close button is clicked.
 The handler is called just before the window closes.
 It is the right moment to make the GtkExpressionWatch unwatched.
 - 10-14: "close-request" signal handler.
-`gtk_expression_watch_unwatch (watch)` makes the watch stop watching the expression.
-It releases the expression and calls `gtk_expression_watch_unref (watch)` in it.
+The function `gtk_expression_watch_unwatch (watch)` makes the watch stop watching the expression.
+It also releases the expression.
 
 If you want to bind a property to an expression, `gtk_expression_bind` is the best choice.
 You can do it with `gtk_expression_watch` function, but it is less suitable.
@@ -619,7 +633,7 @@ These tags are usually used for GtkBuilderListItemFactory.
     <property name="child">
       <object class="GtkLabel">
         <binding name="label">
-          <lookup name="name" type="string">
+          <lookup name="string" type="GtkStringObject">
             <lookup name="item">GtkListItem</lookup>
           </lookup>
         </binding>
@@ -629,14 +643,13 @@ These tags are usually used for GtkBuilderListItemFactory.
 </interface>
 ~~~
 
+GtkBuilderListItemFactory uses GtkBuilder to extends the GtkListItem with the XML data.
+
 In the xml file above, "GtkListItem" is an instance of the GtkListItem template.
 It is the 'this' object given to the expressions.
 (The information is in the [GTK Development Blog](https://blog.gtk.org/2020/09/)).
 
-GtkBuilderListItemFactory uses GtkBuilder to build the XML data.
-It sets the current object of the GtkBuilder to the GtkListItem instance.
-
-GtkBuilder calls `gtk_expression_bind` function in the binding tag analysis.
+GtkBuilder calls `gtk_expression_bind` function when it finds a binding tag.
 The function sets the 'this' object like this:
 
 1. If the binding tag has object attribute, the object will be the 'this' object.
@@ -760,7 +773,7 @@ String duplication is necessary.
 
 The C source file is very simple because almost everything is done in the ui file.
 
-### Conversion between GValues
+## Conversion between GValues
 
 If you bind different type properties, type conversion is automatically done.
 Suppose a label property (string) is bound to default-width property (int).
@@ -781,5 +794,44 @@ When a GValue is copied to another GValue, the type is automatically converted i
 If the current width is 100, an int `100` is converted to a string `"100"`.
 
 If you use `g_object_get` and `g_object_set` to copy properties, the value is automatically converted. 
+
+## Meson.build
+
+The source files are in `src/expression` directory.
+You can build all the files at once.
+
+~~~
+$ cd src/expression
+$ meson setup _build
+$ ninja -C _build
+~~~
+
+For example, if you want to run "exp", which is the executable file from "exp.c", type `_build/exp`.
+You can run other programs as well.
+
+The file `meson.build` is as follows.
+
+~~~meson
+ 1 project('exp', 'c')
+ 2 
+ 3 gtkdep = dependency('gtk4')
+ 4 
+ 5 gnome=import('gnome')
+ 6 resources = gnome.compile_resources('resources','exp.gresource.xml')
+ 7 
+ 8 sourcefiles=files('exp.c')
+ 9 
+10 executable('exp', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: false)
+11 executable('exp_constant', 'exp_constant.c', dependencies: gtkdep, export_dynamic: true, install: false)
+12 executable('exp_constant_simple', 'exp_constant_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
+13 executable('exp_property_simple', 'exp_property_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
+14 executable('closure', 'closure.c', dependencies: gtkdep, export_dynamic: true, install: false)
+15 executable('closure_each', 'closure_each.c', dependencies: gtkdep, export_dynamic: true, install: false)
+16 executable('exp_closure_simple', 'exp_closure_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
+17 executable('exp_closure_with_error_report', 'exp_closure_with_error_report.c', dependencies: gtkdep, export_dynamic: true, install: false)
+18 executable('exp_bind', 'exp_bind.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)
+19 executable('exp_watch', 'exp_watch.c', dependencies: gtkdep, export_dynamic: true, install: false)
+20 executable('exp_test', 'exp_test.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)
+~~~
 
 Up: [README.md](../README.md),  Prev: [Section 30](sec30.md), Next: [Section 32](sec32.md)

@@ -6,9 +6,10 @@ The new feature is described in [Gtk API Reference -- List Widget Overview](http
 GTK 4 has other means to implement lists.
 They are GtkListBox and GtkTreeView which are took over from GTK 3.
 There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
-He described why GtkListView are developed to replace GtkListBox and GtkTreeView.
+He described why GtkListView are developed to replace GtkTreeView.
+GtkTreeView is deprecated since version 4.10.
 
-GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 26 to 29.
+GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 29 to 33.
 
 ## Outline
 
@@ -19,7 +20,7 @@ A list is like an array, but in many cases it is implemented with pointers which
 And it has a start point.
 So, each item can be referred by the index of the item (first item, second item, ..., nth item, ...).
 There are two cases.
-One is the index starts from one (one-based) and the other is from zero (zero-based).
+The one is the index starts from one (one-based) and the other is from zero (zero-based).
 
 Gio provides GListModel interface.
 It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
@@ -27,11 +28,11 @@ An object implements GListModel is not a widget.
 So, the list is not displayed on the screen directly.
 There's another object GtkListView which is a widget to display the list.
 The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GListView.
+GtkListItemFactory instance maps items in the list to GtkListView.
 
 ![List](../image/list.png){width=10cm height=7.5cm}
 
-## GListModel
+## GListModel and GtkStringList
 
 If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
 Because GListModel is a list of GObject objects and strings aren't GObject objects.
@@ -172,6 +173,7 @@ If you feel some difficulty, read this section again, especially GtkSignalListIt
 GtkBuilderListItemFactory is another GtkListItemFactory.
 Its behavior is defined with ui file.
 
+@@@if gfm
 ~~~xml
 <interface>
   <template class="GtkListItem">
@@ -187,6 +189,23 @@ Its behavior is defined with ui file.
   </template>
 </interface>
 ~~~
+@@@else
+~~~{.xml}
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkLabel">
+        <binding name="label">
+          <lookup name="string" type="GtkStringObject">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
+      </object>
+    </property>
+  </template>
+</interface>
+~~~
+@@@end
 
 Template tag is used to define GtkListItem.
 And its child property is GtkLabel object.
@@ -209,7 +228,7 @@ There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
 Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in [section 30](sec30).
+`this` object will be explained in [section 31](sec31).
 
 The C source code is as follows.
 Its name is `list2.c` and located under [src/misc](misc) directory.
@@ -229,9 +248,15 @@ GtkDirectoryList is a list model containing GFileInfo objects which are informat
 It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
 The list model is created by `gtk_directory_list_new` function.
 
+@@@if gfm
 ~~~C
 GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
 ~~~
+@@@else
+~~~{.C}
+GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
+~~~
+@@@end
 
 `attributes` is a comma separated list of file attributes.
 File attributes are key-value pairs.
@@ -252,11 +277,19 @@ The following table shows some example.
 The current directory is ".".
 The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
 
+@@@if gfm
 ~~~C
 GFile *file = g_file_new_for_path (".");
 GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
 g_object_unref (file);
 ~~~
+@@@else
+~~~{.C}
+GFile *file = g_file_new_for_path (".");
+GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
+g_object_unref (file);
+~~~
+@@@end
 
 It is not so difficult to make file listing program by changing `list2.c` in the previous subsection.
 One problem is that GInfoFile doesn't have properties.
@@ -264,8 +297,9 @@ Lookup tag look for a property, so it is useless for looking for a filename from
 Instead, closure tag is appropriate in this case.
 Closure tag specifies a function and the type of the return value of the function.
 
+@@@if gfm
 ~~~C
-const char *
+char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
   return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
@@ -286,6 +320,30 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
   "</template>"
 "</interface>"
 ~~~
+@@@else
+~~~{.C}
+char *
+get_file_name (GtkListItem *item, GFileInfo *info) {
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+}
+... ...
+... ...
+
+"<interface>"
+  "<template class=\"GtkListItem\">"
+    "<property name=\"child\">"
+      "<object class=\"GtkLabel\">"
+        "<binding name=\"label\">"
+          "<closure type=\"gchararray\" function=\"get_file_name\">"
+            "<lookup name=\"item\">GtkListItem</lookup>"
+          "</closure>"
+        "</binding>"
+      "</object>"
+    "</property>"
+  "</template>"
+"</interface>"
+~~~
+@@@end
 
 - The string "gchararray" is a type name.
 The type "gchar" is a type name and it is the same as C type "char".
@@ -301,7 +359,7 @@ The contents of closure tag (it is between \<closure...\> and\</closure\>) is pa
 `<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
 This will be the second argument of the function.
 The first parameter is always the GListItem instance, which is a 'this' object.
-The 'this' object is explained in section 28.
+The 'this' object is explained in section 31.
 - `gtk_file_name` function is the callback function for the closure tag.
 It first checks the `info` parameter.
 Because it can be NULL when GListItem `item` is unbounded.
@@ -341,9 +399,15 @@ $ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs
 
 You can also make a shell script to compile `list3.c`
 
+@@@if gfm
 ~~~bash
 gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 ~~~
+@@@else
+~~~{.bash}
+gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
+~~~
+@@@end
 
 Save this one liner to a file `comp`.
 Then, copy it to `$HOME/bin` and give it executable permission.
@@ -361,4 +425,3 @@ $ ./a.out
 ~~~
 
 ![screenshot list3](../image/list3.png){width=10cm height=7.3cm}
-

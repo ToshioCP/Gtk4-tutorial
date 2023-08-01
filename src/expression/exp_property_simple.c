@@ -14,7 +14,7 @@ main (int argc, char **argv) {
   if (gtk_expression_evaluate (expression, label, &value))
     g_print ("The value is %s.\n", g_value_get_string (&value));
   else
-    g_print ("The constant expression wasn't evaluated correctly.\n");
+    g_print ("The property expression wasn't evaluated correctly.\n");
   gtk_expression_unref (expression);
   g_value_unset (&value);
 

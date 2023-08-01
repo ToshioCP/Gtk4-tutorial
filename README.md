@@ -10,7 +10,8 @@ The table of contents is at the end of this abstract.
 
 - Section 3 to 23 describes the basics, with the example of a simple editor `tfe` (Text File Editor).
 - Section 24 to 27 describes GtkDrawingArea.
-- Section 28 to 32 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
+- Section 28 describes Drag and Drop.
+- Section 29 to 33 describes the list model and the list view (GtkListView, GtkGridView and GtkColumnView).
 It also describes GtkExpression.
 
 The latest version of the tutorial is located at [GTK4-tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).

@@ -2,5 +2,7 @@
 <gresources>
   <gresource prefix="/com/github/ToshioCP/exp">
     <file>exp.ui</file>
+    <file>exp_bind.ui</file>
+    <file>exp_test.ui</file>
   </gresource>
 </gresources>

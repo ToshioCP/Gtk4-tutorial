@@ -15,6 +15,6 @@ executable('closure', 'closure.c', dependencies: gtkdep, export_dynamic: true, i
 executable('closure_each', 'closure_each.c', dependencies: gtkdep, export_dynamic: true, install: false)
 executable('exp_closure_simple', 'exp_closure_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
 executable('exp_closure_with_error_report', 'exp_closure_with_error_report.c', dependencies: gtkdep, export_dynamic: true, install: false)
-executable('exp_bind', 'exp_bind.c', dependencies: gtkdep, export_dynamic: true, install: false)
+executable('exp_bind', 'exp_bind.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)
 executable('exp_watch', 'exp_watch.c', dependencies: gtkdep, export_dynamic: true, install: false)
-executable('exp_test', 'exp_test.c', dependencies: gtkdep, export_dynamic: true, install: false)
+executable('exp_test', 'exp_test.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)

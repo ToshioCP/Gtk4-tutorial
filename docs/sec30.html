@@ -173,8 +173,7 @@ registered to IANA media types. Such “x-” subtype is not a standard mime
 type.) Content type is also used by desktop systems.</li>
 </ul>
 <p>GtkGridView uses the same GtkSingleSelection instance
-(<code>singleselection</code>). So, its model property is set with
-it.</p>
+(<code>singleselection</code>). So, its model property is set to it.</p>
 <h2 id="ui-file-of-the-window">Ui file of the window</h2>
 <p>The window is built with the following ui file. (See the screenshot
 at the beginning of this section).</p>
@@ -291,7 +290,7 @@ GtkListView or GtkGridView.</li>
 </ul>
 <p>The action <code>view</code> is created, connected to the “activate”
 signal handler and inserted to the window (action map) as follows.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>act_view <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;view&quot;</span><span class="op">,</span> g_variant_type_new<span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">),</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;list&quot;</span><span class="op">));</span></span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>act_view <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;view&quot;</span><span class="op">,</span> g_variant_type_new<span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">),</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;list&quot;</span><span class="op">));</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_view<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>view_activated<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_view<span class="op">));</span></span></code></pre></div>
 <p>The signal handler <code>view_activated</code> will be explained
@@ -464,7 +463,7 @@ pressed. You can do anything you like by connecting the “activate”
 signal to the handler.</p>
 <p>The example <code>list4</code> launches <code>tfe</code> text file
 editor if the item of the list is a text file.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<div class="sourceCode" id="cb10"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>list_activate <span class="op">(</span>GtkListView <span class="op">*</span>list<span class="op">,</span> <span class="dt">int</span> position<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  GFileInfo <span class="op">*</span>info <span class="op">=</span> G_FILE_INFO <span class="op">(</span>g_list_model_get_item <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>gtk_list_view_get_model <span class="op">(</span>list<span class="op">)),</span> position<span class="op">));</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  launch_tfe_with_file <span class="op">(</span>info<span class="op">);</span></span>
@@ -558,12 +557,12 @@ list and items.</li>
 <code>g_app_info_launch_default_for_uri</code> is convenient. The
 function automatically determines the default application from the file
 and launches it. For example, if the file is text, then it launches
-gedit with the file. Such feature comes from desktop.</p>
+GNOME text editor with the file. Such feature comes from desktop.</p>
 <h2 id="compilation-and-execution">Compilation and execution</h2>
 <p>The source files are located in src/list4 directory. To compile and
 execute list4, type as follows.</p>
 <pre><code>$ cd list4 # or cd src/list4. It depends your current directory.
-$ meson _build
+$ meson setup _build
 $ ninja -C _build
 $ _build/list4</code></pre>
 <p>Then a file list appears as a list style. Click on a button on the
