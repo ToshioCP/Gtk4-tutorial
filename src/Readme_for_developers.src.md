@@ -444,7 +444,7 @@ The repository not only stores source files but also shows the whole tutorial.
 Src.md files can be translated to html files.
 You need pandoc to do this.
 Most linux distribution has pandoc package.
-Refer to your distribution document to install it.
+Refer to your distribution document to install.
 
 Type `rake html` to generate html files.
 

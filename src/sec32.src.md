@@ -130,7 +130,7 @@ The function is given the item (GFileInfo) of the GtkSortListModel as an argumen
 But you need to be careful that it can be NULL while the list item is being recycled.
 So, `G_IS_FILE_INFO (info)` is always necessary in callback functions.
 The function retrieves a filename from `info`.
-The string is owned by `info` so it is necessary to duplicate it.
+The string is owned by `info` so it is necessary to duplicate.
 And it returns the copied string.
 
 GtkNumericSorter compares numbers.

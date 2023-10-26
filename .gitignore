@@ -1,24 +1,13 @@
 # .gitignore
 
-src/img.rb
-src/imgsize.rb
-src/toi.rb
-src/misc/cairo2.c
-src/misc/cairo2.pdf
-src/misc/color_square.c
-src/misc/color_square.png
-src/tfe/hello.txt
-src/tfe/resources.c
-src/tfe5/hello.txt
-src/temp
-src/le
-latex/*
+# temporary directory
+src/temp/
 
 # build directory
-*_build
+_build/
 
 # a.out
-*a.out
+a.out
 
 # configuration file
 *.vscode

@@ -177,7 +177,7 @@ Otherwise the unit is point.
 ## GSettings
 
 We want to maintain the font data after the application quits.
-There are some ways to implement it.
+There are some ways to implement.
 
 - Make a configuration file.
 For example, a text file "~/.config/tfe/font_desc.cfg" keeps font information.
