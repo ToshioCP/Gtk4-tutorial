@@ -12,7 +12,7 @@ There are two ways to install GTK 4.
 ### Installation from the distribution packages
 
 The first way is the easiest way to install.
-I've installed GTK 4 packages (version 4.10.1) on Ubuntu 23.04.
+I've installed GTK 4 packages (version 4.12.2) on Ubuntu 23.10.
 
 ~~~
 $ sudo apt install libgtk-4-dev
@@ -28,12 +28,12 @@ The following table shows the distributions which support GTK 4.
 @@@table
 |Distribution|version|GTK 4|GNOME|
 |:-:|:-:|:-:|:-:|
-|Fedora|38|4.10.3-2.fc38|GNOME 44|
-|Ubuntu|23.04|4.10.1|GNOME 44|
-|Debian|bookworm(testing)|4.8.3+ds-2|GNOME 43.4-1|
-|Arch|rolling release|4.10.3-1|GNOME 43.5-1|
-|Gentoo|rolling release|4.10.3|GNOME 44.1|
-|OpenSUSE|Tumbleweed(rolling release)|4.10.3|GNOME 44.1|
+|Fedora|39|4.12.2-2.fc39|GNOME 45|
+|Ubuntu|23.10|4.12.2|GNOME 45|
+|Debian|trixie(testing)|4.12.3+ds-3|GNOME 44.5|
+|Arch|rolling release|4.12.4-1|GNOME 45.2-1|
+|Gentoo|rolling release|4.12.3|GNOME 45.1|
+|OpenSUSE|Tumbleweed(rolling release)|4.12.4|GNOME 45.2|
 @@@
 
 ### Installation from the source file

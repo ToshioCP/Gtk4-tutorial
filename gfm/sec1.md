@@ -29,7 +29,7 @@ You need:
 
 - Linux.
 - Ruby programming language.
-There are two ways to install it.
+There are two ways to install.
 One is installing the distribution's package.
 The other is using rbenv and ruby-build.
 If you want to use the latest version of ruby, use rbenv.
@@ -43,7 +43,7 @@ GTK4-tutorial repository contains tutorial documents and programs such as conver
 All of them make up the 'GTK4-tutorial' package.
 This package is simply called 'GTK4-tutorial' in the following description.
 
-GTK4-tutorial is free; you can redistribute it and/or modify it under terms of the following licenses.
+GTK4-tutorial is free; you can redistribute it and/or modify it under the terms of the following licenses.
 
 - The license of documents in GTK4-tutorial is the GNU Free Documentation License as published by the Free Software Foundation; either version 1.3 of the License or, at your opinion, any later version.
 The documents are Markdown, HTML and image files.
