@@ -1,4 +1,4 @@
-project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:' >=1.0.1', version: '0.5')
+project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:'>=1.0.1', version: '0.5')
 
 gtkdep = dependency('gtk4')
 
