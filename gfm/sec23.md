@@ -447,7 +447,7 @@ GSchema XML file
 Meson.build
 
 ~~~meson
- 1 project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:' >=1.0.1', version: '0.5')
+ 1 project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:'>=1.0.1', version: '0.5')
  2 
  3 gtkdep = dependency('gtk4')
  4 
