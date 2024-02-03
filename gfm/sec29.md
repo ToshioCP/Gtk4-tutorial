@@ -40,7 +40,7 @@ If you want to make a list of strings with GListModel, for example, "one", "two"
 Because GListModel is a list of GObject objects and strings aren't GObject objects.
 The word "GObject" here means "GObject class or its descendant class".
 So, you need a wrapper which is a GObject and contains a string.
-GtkStringObject is the wrapper object and GStringList, implements GListModel, is a list of GtkStringObject.
+GtkStringObject is the wrapper object and GtkStringList, implements GListModel, is a list of GtkStringObject.
 
 ~~~C
 char *array[] = {"one", "two", "three", "four", NULL};

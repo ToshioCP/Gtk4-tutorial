@@ -153,7 +153,7 @@ list. Because GListModel is a list of GObject objects and strings aren’t
 GObject objects. The word “GObject” here means “GObject class or its
 descendant class”. So, you need a wrapper which is a GObject and
 contains a string. GtkStringObject is the wrapper object and
-GStringList, implements GListModel, is a list of GtkStringObject.</p>
+GtkStringList, implements GListModel, is a list of GtkStringObject.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>array<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;one&quot;</span><span class="op">,</span> <span class="st">&quot;two&quot;</span><span class="op">,</span> <span class="st">&quot;three&quot;</span><span class="op">,</span> <span class="st">&quot;four&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>GtkStringList <span class="op">*</span>stringlist <span class="op">=</span> gtk_string_list_new <span class="op">((</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span> <span class="dt">const</span> <span class="op">*)</span> array<span class="op">);</span></span></code></pre></div>
 <p>The function <code>gtk_string_list_new</code> creates a GtkStringList
