@@ -62,7 +62,7 @@ In short,
 ## Table of contents
 
 1. [Prerequisite and License](gfm/sec1.md)
-1. [Preparation (GTK 4 installation and the download of this repository)](gfm/sec2.md)
+1. [Preparation](gfm/sec2.md)
 1. [GtkApplication and GtkApplicationWindow](gfm/sec3.md)
 1. [Widgets (1)](gfm/sec4.md)
 1. [Widgets (2)](gfm/sec5.md)

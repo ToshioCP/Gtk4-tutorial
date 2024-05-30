@@ -113,9 +113,7 @@
     </nav>
       <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
-<h1
-id="preparation-gtk-4-installation-and-the-download-of-this-repository">Preparation
-(GTK 4 installation and the download of this repository)</h1>
+<h1 id="preparation">Preparation</h1>
 <h2 id="installing-gtk-4-into-linux-distributions">Installing GTK 4 into
 Linux distributions</h2>
 <p>This section describes how to install GTK 4 into Linux
@@ -127,66 +125,18 @@ distributions.</p>
 </ul>
 <h3 id="installation-from-the-distribution-packages">Installation from
 the distribution packages</h3>
-<p>The first way is the easiest way to install. I’ve installed GTK 4
-packages (version 4.12.2) on Ubuntu 23.10.</p>
+<p>This is the easiest way to install. I’ve installed GTK 4 packages
+(version 4.14.2) on Ubuntu 24.04 LTS.</p>
 <pre><code>$ sudo apt install libgtk-4-dev</code></pre>
 <p>It is important to install the development files package
 (libgtk-4-dev). Otherwise, you can’t compile any GTK 4 based
 programs.</p>
 <p>Fedora, Debian, Arch, Gentoo and OpenSUSE also have GTK 4 packages.
-Package information for Arch, Debian/Ubuntu and Fedora is described in
-<a
+See the website of your distribution for further information.</p>
+<p>Package information for Arch, Debian/Ubuntu and Fedora is described
+in GTK website, <a
 href="https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages">Installing
-GTK from packages</a>. The following table shows the distributions which
-support GTK 4.</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">Distribution</th>
-<th style="text-align: center;">version</th>
-<th style="text-align: center;">GTK 4</th>
-<th style="text-align: center;">GNOME</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">Fedora</td>
-<td style="text-align: center;">39</td>
-<td style="text-align: center;">4.12.2-2.fc39</td>
-<td style="text-align: center;">GNOME 45</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">Ubuntu</td>
-<td style="text-align: center;">23.10</td>
-<td style="text-align: center;">4.12.2</td>
-<td style="text-align: center;">GNOME 45</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">Debian</td>
-<td style="text-align: center;">trixie(testing)</td>
-<td style="text-align: center;">4.12.3+ds-3</td>
-<td style="text-align: center;">GNOME 44.5</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">Arch</td>
-<td style="text-align: center;">rolling release</td>
-<td style="text-align: center;">4.12.4-1</td>
-<td style="text-align: center;">GNOME 45.2-1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">Gentoo</td>
-<td style="text-align: center;">rolling release</td>
-<td style="text-align: center;">4.12.3</td>
-<td style="text-align: center;">GNOME 45.1</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">OpenSUSE</td>
-<td style="text-align: center;">Tumbleweed(rolling release)</td>
-<td style="text-align: center;">4.12.4</td>
-<td style="text-align: center;">GNOME 45.2</td>
-</tr>
-</tbody>
-</table>
+GTK from packages</a>.</p>
 <h3 id="installation-from-the-source-file">Installation from the source
 file</h3>
 <p>If you want to install a developing version of GTK 4, you need to
@@ -196,8 +146,9 @@ Libraries</a> section in the GTK 4 API reference.</p>
 <h2 id="how-to-download-this-repository">How to download this
 repository</h2>
 <p>There are two ways: zip and git. Downloading a zip file is the
-easiest way. However, if you use git, you can easily update your local
-repository.</p>
+easiest way. However, if you use git and clone this repository, you can
+easily update your local repository by <code>git pull</code>
+command.</p>
 <h3 id="download-a-zip-file">Download a zip file</h3>
 <ul>
 <li>Run your browser and open <a
