@@ -219,19 +219,64 @@ $
 
 OK, well done.
 However, you may have noticed that it's painful to type such a long line to compile.
-It is a good idea to use shell script to solve this problem.
-Make a text file which contains the following line.
+It's a good idea to use a build system, such as Make or CMake (C++) to automate this process.
 
+I'll use Make and create a `Makefile` since this is a basic C program:
+~~~Makefile
+CC = gcc
+CFLAGS = `pkg-config --cflags gtk4`
+LDFLAGS = `pkg-config --libs gtk4`
+
+TARGET = program
+SRC = main.c
+
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
+
+clean:
+	rm -f $(TARGET)
 ~~~
+
+<details>
+  <summary>Explanation</summary>
+
+Make uses a handful of variables to automate the build process
+- `CC` = C Compiler
+- `CFLAGS` = Compilation Flags
+- `LDFLAGS` = Linker Flags
+- `TARGET` = The name of the finished Program
+- `SRC` = The source code file(s) 
+- `all: $(TARGET)` = the Build target of the default `make` command
+- `$(TARGET: $(SRC)` = The actual build function
+- `clean:` = Simple delete command
+</details>
+
+After that, you can simply run `make` to build the project and `make clean` to 'clean' the directory by deleting the complete build and object files.
+And run the program with `./program` or whatever you may have changed the name to.
+
+<details>
+  <summary>Alternative: Bash Script</summary>
+It is slightly less recommended, primarily due to the possible need to update the build script, but you can
+also create a shell script to solve this problem. You *can* get more out of this with error checking and
+custom functions, but there are a few more steps to get it working.<br>
+
+<br>First, create a new file (I'll use `comp` to keep it simple) that contains the following:
+~~~sh
+#!/bin/bash
 gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 ~~~
+The first line is a shebang! which will tell the system this is a script that uses the Bash language.
+Thanks to this we don't need to explicitly tell the system it's a `.sh` file.
 
-Then, save it under the directory $HOME/bin, which is usually /home/(username)/bin.
-(If your user name is James, then the directory is /home/james/bin).
-And turn on the execute bit of the file.
-If the filename is `comp`, do like this:
+Next, you can either move it directly to `$HOME/bin` or use a symlink to create a pointer that executes this script.
+This directory is basically a personal program folder that only that user can access and helps keep things organized.
+> If your username is `james`, then the directory is `/home/james/bin`.
+> If it doesn't exist, create the directory.
 
-~~~
+After that we'll need to make sure we can actually execute the script, if the filename is `comp`, do like this:
+~~~sh
 $ chmod 755 $HOME/bin/comp
 $ ls -log $HOME/bin
     ...  ...  ...
@@ -239,14 +284,14 @@ $ ls -log $HOME/bin
     ...  ...  ...
 ~~~
 
-If this is the first time that you make a $HOME/bin directory and save a file in it, then you need to logout and login again.
-
-~~~
+If you just created the $HOME/bin directory for the first time, then you may need to logout and login again before the program executes.
+~~~sh
 $ comp pr2
 $ ./a.out
 GtkApplication is activated.
 $
 ~~~
+</details>
 
 ## GtkWindow and GtkApplicationWindow
 
