@@ -184,7 +184,7 @@ GtkNoSelection is used, so user can't select any item.
 68 
 69   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 70 
-71   stat =g_application_run (G_APPLICATION (app), argc, argv);
+71   stat = g_application_run (G_APPLICATION (app), argc, argv);
 72   g_object_unref (app);
 73   return stat;
 74 }
@@ -317,7 +317,7 @@ Its name is `list2.c` and located under [src/misc](../src/misc) directory.
 55   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 56   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 57 
-58   stat =g_application_run (G_APPLICATION (app), argc, argv);
+58   stat = g_application_run (G_APPLICATION (app), argc, argv);
 59   g_object_unref (app);
 60   return stat;
 61 }
@@ -481,7 +481,7 @@ The program is located in [src/misc](../src/misc) directory.
 59   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 60   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 61 
-62   stat =g_application_run (G_APPLICATION (app), argc, argv);
+62   stat = g_application_run (G_APPLICATION (app), argc, argv);
 63   g_object_unref (app);
 64   return stat;
 65 }

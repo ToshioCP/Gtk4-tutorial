@@ -366,7 +366,7 @@ The following is the whole source code of `tfe1.c`.
 135   app = gtk_application_new ("com.github.ToshioCP.tfe1", G_APPLICATION_HANDLES_OPEN);
 136   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 137   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-138   stat =g_application_run (G_APPLICATION (app), argc, argv);
+138   stat = g_application_run (G_APPLICATION (app), argc, argv);
 139   g_object_unref (app);
 140   return stat;
 141 }

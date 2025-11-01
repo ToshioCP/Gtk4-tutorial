@@ -30,7 +30,7 @@ It connects the command line given by the user and Gtk application.
 11   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 12   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
 13
-14   stat =g_application_run (G_APPLICATION (app), argc, argv);
+14   stat = g_application_run (G_APPLICATION (app), argc, argv);
 15   g_object_unref (app);
 16   return stat;
 17 }

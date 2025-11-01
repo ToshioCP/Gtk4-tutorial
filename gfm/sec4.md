@@ -36,7 +36,7 @@ It is a widget with text in it.
 22 
 23   app = gtk_application_new ("com.github.ToshioCP.lb1", G_APPLICATION_DEFAULT_FLAGS);
 24   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-25   stat =g_application_run (G_APPLICATION (app), argc, argv);
+25   stat = g_application_run (G_APPLICATION (app), argc, argv);
 26   g_object_unref (app);
 27   return stat;
 28 }
@@ -142,7 +142,7 @@ The following program shows how to catch the signal and do something.
 28 
 29   app = gtk_application_new ("com.github.ToshioCP.lb2", G_APPLICATION_DEFAULT_FLAGS);
 30   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-31   stat =g_application_run (G_APPLICATION (app), argc, argv);
+31   stat = g_application_run (G_APPLICATION (app), argc, argv);
 32   g_object_unref (app);
 33   return stat;
 34 }
@@ -311,7 +311,7 @@ The program `lb4.c` is as follows.
 50 
 51   app = gtk_application_new ("com.github.ToshioCP.lb4", G_APPLICATION_DEFAULT_FLAGS);
 52   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-53   stat =g_application_run (G_APPLICATION (app), argc, argv);
+53   stat = g_application_run (G_APPLICATION (app), argc, argv);
 54   g_object_unref (app);
 55   return stat;
 56 }

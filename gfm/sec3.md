@@ -29,7 +29,7 @@ The following is the C code representing the scenario above.
  6   int stat;
  7 
  8   app = gtk_application_new ("com.github.ToshioCP.pr1", G_APPLICATION_DEFAULT_FLAGS);
- 9   stat =g_application_run (G_APPLICATION (app), argc, argv);
+ 9   stat = g_application_run (G_APPLICATION (app), argc, argv);
 10   g_object_unref (app);
 11   return stat;
 12 }
@@ -157,7 +157,7 @@ We use a function `g_signal_connect` which connects a signal to a handler.
 12 
 13   app = gtk_application_new ("com.github.ToshioCP.pr2", G_APPLICATION_DEFAULT_FLAGS);
 14   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-15   stat =g_application_run (G_APPLICATION (app), argc, argv);
+15   stat = g_application_run (G_APPLICATION (app), argc, argv);
 16   g_object_unref (app);
 17   return stat;
 18 }

@@ -214,7 +214,7 @@ The source file `menu1.c` is located at [src/menu](../src/menu) directory.
 49   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 50   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 51 
-52   stat =g_application_run (G_APPLICATION (app), argc, argv);
+52   stat = g_application_run (G_APPLICATION (app), argc, argv);
 53   g_object_unref (app);
 54   return stat;
 55 }

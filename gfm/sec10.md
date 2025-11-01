@@ -166,7 +166,7 @@ The source files are shown below.
 63   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
 64   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 65   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-66   stat =g_application_run (G_APPLICATION (app), argc, argv);
+66   stat = g_application_run (G_APPLICATION (app), argc, argv);
 67   g_object_unref (app);
 68   return stat;
 69 }

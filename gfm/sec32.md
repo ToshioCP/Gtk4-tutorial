@@ -442,7 +442,7 @@ It is simple and short thanks to `column.ui`.
 84   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 85   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 86 
-87   stat =g_application_run (G_APPLICATION (app), argc, argv);
+87   stat = g_application_run (G_APPLICATION (app), argc, argv);
 88   g_object_unref (app);
 89   return stat;
 90 }
