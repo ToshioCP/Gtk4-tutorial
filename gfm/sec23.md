@@ -408,7 +408,7 @@ main.c
  9   int stat;
 10 
 11   app = tfe_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
-12   stat =g_application_run (G_APPLICATION (app), argc, argv);
+12   stat = g_application_run (G_APPLICATION (app), argc, argv);
 13   g_object_unref (app);
 14   return stat;
 15 }

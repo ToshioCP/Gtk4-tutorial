@@ -644,7 +644,7 @@ There's a test program located at `src/tfe6/test` directory.
 43   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 44   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 45   g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), NULL);
-46   stat =g_application_run (G_APPLICATION (app), argc, argv);
+46   stat = g_application_run (G_APPLICATION (app), argc, argv);
 47   g_object_unref (app);
 48   return stat;
 49 }

@@ -374,7 +374,7 @@ The code is as follows.
 114   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 115   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 116 
-117   stat =g_application_run (G_APPLICATION (app), argc, argv);
+117   stat = g_application_run (G_APPLICATION (app), argc, argv);
 118   g_object_unref (app);
 119   return stat;
 120 }

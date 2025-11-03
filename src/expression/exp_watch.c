@@ -50,7 +50,7 @@ main (int argc, char **argv) {
   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
-  stat =g_application_run (G_APPLICATION (app), argc, argv);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
 }

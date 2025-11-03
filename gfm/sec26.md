@@ -94,7 +94,7 @@ The function `main` is called at the beginning of the application.
  7   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
  8   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
  9   g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), NULL);
-10   stat =g_application_run (G_APPLICATION (app), argc, argv);
+10   stat = g_application_run (G_APPLICATION (app), argc, argv);
 11   g_object_unref (app);
 12   return stat;
 13 }

@@ -174,7 +174,7 @@ The following is a very simple example.
 37 
 38   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 39   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-40   stat =g_application_run (G_APPLICATION (app), argc, argv);
+40   stat = g_application_run (G_APPLICATION (app), argc, argv);
 41   g_object_unref (app);
 42   return stat;
 43 }

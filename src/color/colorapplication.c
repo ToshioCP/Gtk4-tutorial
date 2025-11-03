@@ -123,7 +123,7 @@ main (int argc, char **argv) {
   g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
-  stat =g_application_run (G_APPLICATION (app), argc, argv);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
 }

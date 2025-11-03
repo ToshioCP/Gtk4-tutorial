@@ -380,7 +380,7 @@ The following are `menu3.c` and `meson.build`.
 107   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 108   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 109 
-110   stat =g_application_run (G_APPLICATION (app), argc, argv);
+110   stat = g_application_run (G_APPLICATION (app), argc, argv);
 111   g_object_unref (app);
 112   return stat;
 113 }

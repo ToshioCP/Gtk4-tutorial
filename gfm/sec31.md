@@ -452,7 +452,7 @@ For example, if it is zero, the slider moves to an integer point.
 55   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 56   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 57 
-58   stat =g_application_run (G_APPLICATION (app), argc, argv);
+58   stat = g_application_run (G_APPLICATION (app), argc, argv);
 59   g_object_unref (app);
 60   return stat;
 61 }
@@ -576,7 +576,7 @@ When you resize the window, the width is displayed in the terminal.
 50   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 51   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 52 
-53   stat =g_application_run (G_APPLICATION (app), argc, argv);
+53   stat = g_application_run (G_APPLICATION (app), argc, argv);
 54   g_object_unref (app);
 55   return stat;
 56 }
@@ -761,7 +761,7 @@ The C source file is as follows.
 35   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
 36   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 37 
-38   stat =g_application_run (G_APPLICATION (app), argc, argv);
+38   stat = g_application_run (G_APPLICATION (app), argc, argv);
 39   g_object_unref (app);
 40   return stat;
 41 }

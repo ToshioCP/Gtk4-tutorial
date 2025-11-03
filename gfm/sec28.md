@@ -114,7 +114,7 @@ A GtkApplication object is created in the function `main`.
  6   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
  7   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
  8   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
- 9   stat =g_application_run (G_APPLICATION (app), argc, argv);
+ 9   stat = g_application_run (G_APPLICATION (app), argc, argv);
 10   g_object_unref (app);
 11   return stat;
 12 }
