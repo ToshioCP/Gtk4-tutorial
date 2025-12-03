@@ -147,25 +147,25 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-4"><a href="#cb1-4"></a>    <span class="co">// Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.</span></span>
 <span id="cb1-5"><a href="#cb1-5"></a>    <span class="co">// the center of the window</span></span>
 <span id="cb1-6"><a href="#cb1-6"></a>    cairo_scale<span class="op">(</span>cr<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    cairo_translate<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.5</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>    cairo_translate<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.5</span><span class="op">,</span> <span class="dv">0</span><span class="er">.5</span><span class="op">);</span></span>
 <span id="cb1-8"><a href="#cb1-8"></a></span>
 <span id="cb1-9"><a href="#cb1-9"></a>    <span class="co">// Set the line width and save the cairo drawing state.</span></span>
 <span id="cb1-10"><a href="#cb1-10"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width<span class="op">);</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a></span>
 <span id="cb1-13"><a href="#cb1-13"></a>    <span class="co">// Set the background to a slightly transparent green.</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.337</span><span class="op">,</span> <span class="dv">0</span><span class="er">.612</span><span class="op">,</span> <span class="dv">0</span><span class="er">.117</span><span class="op">,</span> <span class="dv">0</span><span class="er">.9</span><span class="op">);</span>   <span class="co">// green</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a>    cairo_paint<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-16"><a href="#cb1-16"></a></span>
 <span id="cb1-17"><a href="#cb1-17"></a>    <span class="co">// Resore back to precious drawing state and draw the circular path</span></span>
 <span id="cb1-18"><a href="#cb1-18"></a>    <span class="co">// representing the clockface. Save this state (including the path) so we</span></span>
 <span id="cb1-19"><a href="#cb1-19"></a>    <span class="co">// can reuse it.</span></span>
 <span id="cb1-20"><a href="#cb1-20"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_radius<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> m_radius<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
 <span id="cb1-22"><a href="#cb1-22"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-23"><a href="#cb1-23"></a></span>
 <span id="cb1-24"><a href="#cb1-24"></a>    <span class="co">// Fill the clockface with white</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.8</span><span class="op">);</span></span>
 <span id="cb1-26"><a href="#cb1-26"></a>    cairo_fill_preserve<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-27"><a href="#cb1-27"></a>    <span class="co">// Restore the path, paint the outside of the clock face.</span></span>
 <span id="cb1-28"><a href="#cb1-28"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
@@ -177,7 +177,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-34"><a href="#cb1-34"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">12</span><span class="op">;</span> i<span class="op">++)</span></span>
 <span id="cb1-35"><a href="#cb1-35"></a>    <span class="op">{</span></span>
 <span id="cb1-36"><a href="#cb1-36"></a>        <span class="co">// Major tick size</span></span>
-<span id="cb1-37"><a href="#cb1-37"></a>        <span class="dt">double</span> inset <span class="op">=</span> <span class="fl">0.05</span><span class="op">;</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a>        <span class="dt">double</span> inset <span class="op">=</span> <span class="dv">0</span><span class="er">.05</span><span class="op">;</span></span>
 <span id="cb1-38"><a href="#cb1-38"></a></span>
 <span id="cb1-39"><a href="#cb1-39"></a>        <span class="co">// Save the graphics state, restore after drawing tick to maintain pen</span></span>
 <span id="cb1-40"><a href="#cb1-40"></a>        <span class="co">// size</span></span>
@@ -187,8 +187,8 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-44"><a href="#cb1-44"></a>        <span class="co">// Minor ticks are shorter, and narrower.</span></span>
 <span id="cb1-45"><a href="#cb1-45"></a>        <span class="cf">if</span><span class="op">(</span>i <span class="op">%</span> <span class="dv">3</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span></span>
 <span id="cb1-46"><a href="#cb1-46"></a>        <span class="op">{</span></span>
-<span id="cb1-47"><a href="#cb1-47"></a>            inset <span class="op">*=</span> <span class="fl">0.8</span><span class="op">;</span></span>
-<span id="cb1-48"><a href="#cb1-48"></a>            cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.03</span><span class="op">);</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a>            inset <span class="op">*=</span> <span class="dv">0</span><span class="er">.8</span><span class="op">;</span></span>
+<span id="cb1-48"><a href="#cb1-48"></a>            cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.03</span><span class="op">);</span></span>
 <span id="cb1-49"><a href="#cb1-49"></a>        <span class="op">}</span></span>
 <span id="cb1-50"><a href="#cb1-50"></a></span>
 <span id="cb1-51"><a href="#cb1-51"></a>        <span class="co">// Draw tick mark</span></span>
@@ -225,33 +225,33 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-82"><a href="#cb1-82"></a></span>
 <span id="cb1-83"><a href="#cb1-83"></a>    <span class="co">// Draw the seconds hand</span></span>
 <span id="cb1-84"><a href="#cb1-84"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">);</span></span>
-<span id="cb1-85"><a href="#cb1-85"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span>   <span class="co">// gray</span></span>
-<span id="cb1-86"><a href="#cb1-86"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb1-85"><a href="#cb1-85"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.7</span><span class="op">,</span> <span class="dv">0</span><span class="er">.7</span><span class="op">,</span> <span class="dv">0</span><span class="er">.7</span><span class="op">,</span> <span class="dv">0</span><span class="er">.8</span><span class="op">);</span>   <span class="co">// gray</span></span>
+<span id="cb1-86"><a href="#cb1-86"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb1-87"><a href="#cb1-87"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-88"><a href="#cb1-88"></a>                  sin<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">),</span></span>
-<span id="cb1-89"><a href="#cb1-89"></a>                  <span class="op">-</span>cos<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">));</span></span>
+<span id="cb1-88"><a href="#cb1-88"></a>                  sin<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.9</span><span class="op">),</span></span>
+<span id="cb1-89"><a href="#cb1-89"></a>                  <span class="op">-</span>cos<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.9</span><span class="op">));</span></span>
 <span id="cb1-90"><a href="#cb1-90"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-91"><a href="#cb1-91"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-92"><a href="#cb1-92"></a></span>
 <span id="cb1-93"><a href="#cb1-93"></a>    <span class="co">// Draw the minutes hand</span></span>
-<span id="cb1-94"><a href="#cb1-94"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// blue</span></span>
+<span id="cb1-94"><a href="#cb1-94"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.117</span><span class="op">,</span> <span class="dv">0</span><span class="er">.337</span><span class="op">,</span> <span class="dv">0</span><span class="er">.612</span><span class="op">,</span> <span class="dv">0</span><span class="er">.9</span><span class="op">);</span>   <span class="co">// blue</span></span>
 <span id="cb1-95"><a href="#cb1-95"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
 <span id="cb1-96"><a href="#cb1-96"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-97"><a href="#cb1-97"></a>                  sin<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">),</span></span>
-<span id="cb1-98"><a href="#cb1-98"></a>                  <span class="op">-</span>cos<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">));</span></span>
+<span id="cb1-97"><a href="#cb1-97"></a>                  sin<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.8</span><span class="op">),</span></span>
+<span id="cb1-98"><a href="#cb1-98"></a>                  <span class="op">-</span>cos<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.8</span><span class="op">));</span></span>
 <span id="cb1-99"><a href="#cb1-99"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-100"><a href="#cb1-100"></a></span>
 <span id="cb1-101"><a href="#cb1-101"></a>    <span class="co">// draw the hours hand</span></span>
-<span id="cb1-102"><a href="#cb1-102"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
-<span id="cb1-103"><a href="#cb1-103"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb1-102"><a href="#cb1-102"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.337</span><span class="op">,</span> <span class="dv">0</span><span class="er">.612</span><span class="op">,</span> <span class="dv">0</span><span class="er">.117</span><span class="op">,</span> <span class="dv">0</span><span class="er">.9</span><span class="op">);</span>   <span class="co">// green</span></span>
+<span id="cb1-103"><a href="#cb1-103"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb1-104"><a href="#cb1-104"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb1-105"><a href="#cb1-105"></a>                  sin<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">),</span></span>
-<span id="cb1-106"><a href="#cb1-106"></a>                  <span class="op">-</span>cos<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">));</span></span>
+<span id="cb1-105"><a href="#cb1-105"></a>                  sin<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.5</span><span class="op">),</span></span>
+<span id="cb1-106"><a href="#cb1-106"></a>                  <span class="op">-</span>cos<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.5</span><span class="op">));</span></span>
 <span id="cb1-107"><a href="#cb1-107"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-108"><a href="#cb1-108"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-109"><a href="#cb1-109"></a></span>
 <span id="cb1-110"><a href="#cb1-110"></a>    <span class="co">// Draw a little dot in the middle</span></span>
-<span id="cb1-111"><a href="#cb1-111"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
+<span id="cb1-111"><a href="#cb1-111"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
 <span id="cb1-112"><a href="#cb1-112"></a>    cairo_fill<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-113"><a href="#cb1-113"></a><span class="op">}</span></span></code></pre></div>
 <p>In order for the clock to be drawn, the drawing function
@@ -309,8 +309,8 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-2"><a href="#cb4-2"></a><span class="pp">#include </span><span class="im">&lt;math.h&gt;</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="pp">#include </span><span class="im">&lt;time.h&gt;</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="dt">float</span> m_radius     <span class="op">=</span> <span class="fl">0.42</span><span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">float</span> m_line_width <span class="op">=</span> <span class="fl">0.05</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="dt">float</span> m_radius     <span class="op">=</span> <span class="dv">0</span><span class="er">.42</span><span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="dt">float</span> m_line_width <span class="op">=</span> <span class="dv">0</span><span class="er">.05</span><span class="op">;</span></span>
 <span id="cb4-7"><a href="#cb4-7"></a></span>
 <span id="cb4-8"><a href="#cb4-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb4-9"><a href="#cb4-9"></a>draw_clock <span class="op">(</span>GtkDrawingArea <span class="op">*</span>area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
@@ -318,25 +318,25 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-11"><a href="#cb4-11"></a>    <span class="co">// Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.</span></span>
 <span id="cb4-12"><a href="#cb4-12"></a>    <span class="co">// the center of the window</span></span>
 <span id="cb4-13"><a href="#cb4-13"></a>    cairo_scale<span class="op">(</span>cr<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>    cairo_translate<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.5</span><span class="op">,</span> <span class="fl">0.5</span><span class="op">);</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>    cairo_translate<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.5</span><span class="op">,</span> <span class="dv">0</span><span class="er">.5</span><span class="op">);</span></span>
 <span id="cb4-15"><a href="#cb4-15"></a></span>
 <span id="cb4-16"><a href="#cb4-16"></a>    <span class="co">// Set the line width and save the cairo drawing state.</span></span>
 <span id="cb4-17"><a href="#cb4-17"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width<span class="op">);</span></span>
 <span id="cb4-18"><a href="#cb4-18"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-19"><a href="#cb4-19"></a></span>
 <span id="cb4-20"><a href="#cb4-20"></a>    <span class="co">// Set the background to a slightly transparent green.</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.337</span><span class="op">,</span> <span class="dv">0</span><span class="er">.612</span><span class="op">,</span> <span class="dv">0</span><span class="er">.117</span><span class="op">,</span> <span class="dv">0</span><span class="er">.9</span><span class="op">);</span>   <span class="co">// green</span></span>
 <span id="cb4-22"><a href="#cb4-22"></a>    cairo_paint<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-23"><a href="#cb4-23"></a></span>
 <span id="cb4-24"><a href="#cb4-24"></a>    <span class="co">// Resore back to precious drawing state and draw the circular path</span></span>
 <span id="cb4-25"><a href="#cb4-25"></a>    <span class="co">// representing the clockface. Save this state (including the path) so we</span></span>
 <span id="cb4-26"><a href="#cb4-26"></a>    <span class="co">// can reuse it.</span></span>
 <span id="cb4-27"><a href="#cb4-27"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_radius<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> m_radius<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
 <span id="cb4-29"><a href="#cb4-29"></a>    cairo_save<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-30"><a href="#cb4-30"></a></span>
 <span id="cb4-31"><a href="#cb4-31"></a>    <span class="co">// Fill the clockface with white</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span></span>
+<span id="cb4-32"><a href="#cb4-32"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.8</span><span class="op">);</span></span>
 <span id="cb4-33"><a href="#cb4-33"></a>    cairo_fill_preserve<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-34"><a href="#cb4-34"></a>    <span class="co">// Restore the path, paint the outside of the clock face.</span></span>
 <span id="cb4-35"><a href="#cb4-35"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
@@ -348,7 +348,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-41"><a href="#cb4-41"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">12</span><span class="op">;</span> i<span class="op">++)</span></span>
 <span id="cb4-42"><a href="#cb4-42"></a>    <span class="op">{</span></span>
 <span id="cb4-43"><a href="#cb4-43"></a>        <span class="co">// Major tick size</span></span>
-<span id="cb4-44"><a href="#cb4-44"></a>        <span class="dt">double</span> inset <span class="op">=</span> <span class="fl">0.05</span><span class="op">;</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>        <span class="dt">double</span> inset <span class="op">=</span> <span class="dv">0</span><span class="er">.05</span><span class="op">;</span></span>
 <span id="cb4-45"><a href="#cb4-45"></a></span>
 <span id="cb4-46"><a href="#cb4-46"></a>        <span class="co">// Save the graphics state, restore after drawing tick to maintain pen</span></span>
 <span id="cb4-47"><a href="#cb4-47"></a>        <span class="co">// size</span></span>
@@ -358,8 +358,8 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-51"><a href="#cb4-51"></a>        <span class="co">// Minor ticks are shorter, and narrower.</span></span>
 <span id="cb4-52"><a href="#cb4-52"></a>        <span class="cf">if</span><span class="op">(</span>i <span class="op">%</span> <span class="dv">3</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span></span>
 <span id="cb4-53"><a href="#cb4-53"></a>        <span class="op">{</span></span>
-<span id="cb4-54"><a href="#cb4-54"></a>            inset <span class="op">*=</span> <span class="fl">0.8</span><span class="op">;</span></span>
-<span id="cb4-55"><a href="#cb4-55"></a>            cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.03</span><span class="op">);</span></span>
+<span id="cb4-54"><a href="#cb4-54"></a>            inset <span class="op">*=</span> <span class="dv">0</span><span class="er">.8</span><span class="op">;</span></span>
+<span id="cb4-55"><a href="#cb4-55"></a>            cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.03</span><span class="op">);</span></span>
 <span id="cb4-56"><a href="#cb4-56"></a>        <span class="op">}</span></span>
 <span id="cb4-57"><a href="#cb4-57"></a></span>
 <span id="cb4-58"><a href="#cb4-58"></a>        <span class="co">// Draw tick mark</span></span>
@@ -396,33 +396,33 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-89"><a href="#cb4-89"></a></span>
 <span id="cb4-90"><a href="#cb4-90"></a>    <span class="co">// Draw the seconds hand</span></span>
 <span id="cb4-91"><a href="#cb4-91"></a>    cairo_set_line_width<span class="op">(</span>cr<span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">);</span></span>
-<span id="cb4-92"><a href="#cb4-92"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.7</span><span class="op">,</span> <span class="fl">0.8</span><span class="op">);</span>   <span class="co">// gray</span></span>
-<span id="cb4-93"><a href="#cb4-93"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb4-92"><a href="#cb4-92"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.7</span><span class="op">,</span> <span class="dv">0</span><span class="er">.7</span><span class="op">,</span> <span class="dv">0</span><span class="er">.7</span><span class="op">,</span> <span class="dv">0</span><span class="er">.8</span><span class="op">);</span>   <span class="co">// gray</span></span>
+<span id="cb4-93"><a href="#cb4-93"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb4-94"><a href="#cb4-94"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb4-95"><a href="#cb4-95"></a>                  sin<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">),</span></span>
-<span id="cb4-96"><a href="#cb4-96"></a>                  <span class="op">-</span>cos<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.9</span><span class="op">));</span></span>
+<span id="cb4-95"><a href="#cb4-95"></a>                  sin<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.9</span><span class="op">),</span></span>
+<span id="cb4-96"><a href="#cb4-96"></a>                  <span class="op">-</span>cos<span class="op">(</span>seconds<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.9</span><span class="op">));</span></span>
 <span id="cb4-97"><a href="#cb4-97"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-98"><a href="#cb4-98"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-99"><a href="#cb4-99"></a></span>
 <span id="cb4-100"><a href="#cb4-100"></a>    <span class="co">// Draw the minutes hand</span></span>
-<span id="cb4-101"><a href="#cb4-101"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// blue</span></span>
+<span id="cb4-101"><a href="#cb4-101"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.117</span><span class="op">,</span> <span class="dv">0</span><span class="er">.337</span><span class="op">,</span> <span class="dv">0</span><span class="er">.612</span><span class="op">,</span> <span class="dv">0</span><span class="er">.9</span><span class="op">);</span>   <span class="co">// blue</span></span>
 <span id="cb4-102"><a href="#cb4-102"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
 <span id="cb4-103"><a href="#cb4-103"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb4-104"><a href="#cb4-104"></a>                  sin<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">),</span></span>
-<span id="cb4-105"><a href="#cb4-105"></a>                  <span class="op">-</span>cos<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.8</span><span class="op">));</span></span>
+<span id="cb4-104"><a href="#cb4-104"></a>                  sin<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.8</span><span class="op">),</span></span>
+<span id="cb4-105"><a href="#cb4-105"></a>                  <span class="op">-</span>cos<span class="op">(</span>minutes <span class="op">+</span> seconds <span class="op">/</span> <span class="dv">60</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.8</span><span class="op">));</span></span>
 <span id="cb4-106"><a href="#cb4-106"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-107"><a href="#cb4-107"></a></span>
 <span id="cb4-108"><a href="#cb4-108"></a>    <span class="co">// draw the hours hand</span></span>
-<span id="cb4-109"><a href="#cb4-109"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.337</span><span class="op">,</span> <span class="fl">0.612</span><span class="op">,</span> <span class="fl">0.117</span><span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span>   <span class="co">// green</span></span>
-<span id="cb4-110"><a href="#cb4-110"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb4-109"><a href="#cb4-109"></a>    cairo_set_source_rgba<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.337</span><span class="op">,</span> <span class="dv">0</span><span class="er">.612</span><span class="op">,</span> <span class="dv">0</span><span class="er">.117</span><span class="op">,</span> <span class="dv">0</span><span class="er">.9</span><span class="op">);</span>   <span class="co">// green</span></span>
+<span id="cb4-110"><a href="#cb4-110"></a>    cairo_move_to<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb4-111"><a href="#cb4-111"></a>    cairo_line_to<span class="op">(</span>cr<span class="op">,</span></span>
-<span id="cb4-112"><a href="#cb4-112"></a>                  sin<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">),</span></span>
-<span id="cb4-113"><a href="#cb4-113"></a>                  <span class="op">-</span>cos<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="fl">0.5</span><span class="op">));</span></span>
+<span id="cb4-112"><a href="#cb4-112"></a>                  sin<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.5</span><span class="op">),</span></span>
+<span id="cb4-113"><a href="#cb4-113"></a>                  <span class="op">-</span>cos<span class="op">(</span>hours <span class="op">+</span> minutes <span class="op">/</span> <span class="fl">12.0</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span>m_radius <span class="op">*</span> <span class="dv">0</span><span class="er">.5</span><span class="op">));</span></span>
 <span id="cb4-114"><a href="#cb4-114"></a>    cairo_stroke<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-115"><a href="#cb4-115"></a>    cairo_restore<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-116"><a href="#cb4-116"></a></span>
 <span id="cb4-117"><a href="#cb4-117"></a>    <span class="co">// Draw a little dot in the middle</span></span>
-<span id="cb4-118"><a href="#cb4-118"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
+<span id="cb4-118"><a href="#cb4-118"></a>    cairo_arc<span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> m_line_width <span class="op">/</span> <span class="fl">3.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="fl">2.0</span> <span class="op">*</span> M_PI<span class="op">);</span></span>
 <span id="cb4-119"><a href="#cb4-119"></a>    cairo_fill<span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb4-120"><a href="#cb4-120"></a><span class="op">}</span></span>
 <span id="cb4-121"><a href="#cb4-121"></a></span>

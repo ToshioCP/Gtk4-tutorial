@@ -455,7 +455,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-96"><a href="#cb11-96"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> app_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span>
 <span id="cb11-97"><a href="#cb11-97"></a><span class="op">}</span></span>
 <span id="cb11-98"><a href="#cb11-98"></a></span>
-<span id="cb11-99"><a href="#cb11-99"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu3&quot;</span></span>
+<span id="cb11-99"><a href="#cb11-99"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.menu3&quot;</span></span>
 <span id="cb11-100"><a href="#cb11-100"></a></span>
 <span id="cb11-101"><a href="#cb11-101"></a><span class="dt">int</span></span>
 <span id="cb11-102"><a href="#cb11-102"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -466,7 +466,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-107"><a href="#cb11-107"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb11-108"><a href="#cb11-108"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb11-109"><a href="#cb11-109"></a></span>
-<span id="cb11-110"><a href="#cb11-110"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb11-110"><a href="#cb11-110"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb11-111"><a href="#cb11-111"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb11-112"><a href="#cb11-112"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb11-113"><a href="#cb11-113"></a><span class="op">}</span></span></code></pre></div>

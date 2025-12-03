@@ -252,7 +252,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_WINDOW tfe_window_get_type ()</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_WINDOW tfe_window_get_type </span><span class="op">()</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> TFE<span class="op">,</span> WINDOW<span class="op">,</span> GtkApplicationWindow<span class="op">)</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a></span>
 <span id="cb3-8"><a href="#cb3-8"></a><span class="dt">void</span></span>
@@ -489,7 +489,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-31"><a href="#cb9-31"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
 <span id="cb9-32"><a href="#cb9-32"></a>  filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
 <span id="cb9-33"><a href="#cb9-33"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span></span>
-<span id="cb9-34"><a href="#cb9-34"></a>    text <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;*%s&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb9-34"><a href="#cb9-34"></a>    text <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;*</span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
 <span id="cb9-35"><a href="#cb9-35"></a>  <span class="cf">else</span></span>
 <span id="cb9-36"><a href="#cb9-36"></a>    text <span class="op">=</span> g_strdup <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb9-37"><a href="#cb9-37"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
@@ -766,7 +766,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb23-23"><a href="#cb23-23"></a>  <span class="cf">if</span> <span class="op">(++</span>c <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> </span>
 <span id="cb23-24"><a href="#cb23-24"></a>    <span class="cf">return</span> g_strdup_printf<span class="op">(</span><span class="st">&quot;Untitled&quot;</span><span class="op">);</span></span>
 <span id="cb23-25"><a href="#cb23-25"></a>  <span class="cf">else</span></span>
-<span id="cb23-26"><a href="#cb23-26"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;Untitled%u&quot;</span><span class="op">,</span> c<span class="op">);</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;Untitled</span><span class="sc">%u</span><span class="st">&quot;</span><span class="op">,</span> c<span class="op">);</span></span>
 <span id="cb23-27"><a href="#cb23-27"></a><span class="op">}</span></span>
 <span id="cb23-28"><a href="#cb23-28"></a></span>
 <span id="cb23-29"><a href="#cb23-29"></a><span class="co">/* The returned object is owned by the scrolled window. */</span></span>
@@ -817,7 +817,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb23-74"><a href="#cb23-74"></a>  file <span class="op">=</span> tfe_text_view_get_file <span class="op">(</span>tv<span class="op">);</span></span>
 <span id="cb23-75"><a href="#cb23-75"></a>  filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>file<span class="op">);</span></span>
 <span id="cb23-76"><a href="#cb23-76"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">))</span></span>
-<span id="cb23-77"><a href="#cb23-77"></a>    text <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;*%s&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
+<span id="cb23-77"><a href="#cb23-77"></a>    text <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;*</span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> filename<span class="op">);</span></span>
 <span id="cb23-78"><a href="#cb23-78"></a>  <span class="cf">else</span></span>
 <span id="cb23-79"><a href="#cb23-79"></a>    text <span class="op">=</span> g_strdup <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb23-80"><a href="#cb23-80"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>

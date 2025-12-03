@@ -179,7 +179,7 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <h3 id="gtkapplication">GtkApplication</h3>
 <p>This program uses GtkApplication. The application ID is
 <code>com.github.ToshioCP.rect</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.rect&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.rect&quot;</span></span></code></pre></div>
 <p>See <a
 href="https://developer.gnome.org/documentation/tutorials/application-id.html">GNOME
 Developer Documentation</a> for further information.</p>
@@ -195,7 +195,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-7"><a href="#cb4-7"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-8"><a href="#cb4-8"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-9"><a href="#cb4-9"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb4-11"><a href="#cb4-11"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb4-12"><a href="#cb4-12"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb4-13"><a href="#cb4-13"></a><span class="op">}</span></span></code></pre></div>
@@ -294,7 +294,7 @@ GtkDrawingArea surface.</p>
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>draw_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>da<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb9-5"><a href="#cb9-5"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb9-6"><a href="#cb9-6"></a>  <span class="op">}</span></span>
 <span id="cb9-7"><a href="#cb9-7"></a><span class="op">}</span></span></code></pre></div>
@@ -389,7 +389,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb14-3"><a href="#cb14-3"></a>  <span class="cf">if</span> <span class="op">(!</span>src <span class="op">||</span> <span class="op">!</span>dst<span class="op">)</span></span>
 <span id="cb14-4"><a href="#cb14-4"></a>    <span class="cf">return</span><span class="op">;</span></span>
 <span id="cb14-5"><a href="#cb14-5"></a>  cairo_t <span class="op">*</span>cr <span class="op">=</span> cairo_create <span class="op">(</span>dst<span class="op">);</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a>  cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> src<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>  cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> src<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb14-7"><a href="#cb14-7"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb14-8"><a href="#cb14-8"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb14-9"><a href="#cb14-9"></a><span class="op">}</span></span>

@@ -138,7 +138,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type </span><span class="op">()</span></span>
 <span id="cb1-6"><a href="#cb1-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeTextView<span class="op">,</span> tfe_text_view<span class="op">,</span> TFE<span class="op">,</span> TEXT_VIEW<span class="op">,</span> GtkTextView<span class="op">)</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a></span>
 <span id="cb1-8"><a href="#cb1-8"></a><span class="co">/* &quot;open-response&quot; signal response */</span></span>
@@ -304,7 +304,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-13"><a href="#cb7-13"></a>  <span class="cf">if</span> <span class="op">(</span>stat<span class="op">)</span></span>
 <span id="cb7-14"><a href="#cb7-14"></a>    gtk_text_buffer_set_modified <span class="op">(</span>tb<span class="op">,</span> FALSE<span class="op">);</span></span>
 <span id="cb7-15"><a href="#cb7-15"></a>  <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb7-16"><a href="#cb7-16"></a>    alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;%s&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>    alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
 <span id="cb7-17"><a href="#cb7-17"></a>    gtk_alert_dialog_show <span class="op">(</span>alert_dialog<span class="op">,</span> win<span class="op">);</span></span>
 <span id="cb7-18"><a href="#cb7-18"></a>    g_object_unref <span class="op">(</span>alert_dialog<span class="op">);</span></span>
 <span id="cb7-19"><a href="#cb7-19"></a>    g_error_free <span class="op">(</span>err<span class="op">);</span></span>
@@ -387,7 +387,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-21"><a href="#cb8-21"></a>    <span class="op">}</span></span>
 <span id="cb8-22"><a href="#cb8-22"></a>  <span class="op">}</span></span>
 <span id="cb8-23"><a href="#cb8-23"></a>  <span class="cf">if</span> <span class="op">(</span>err<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-24"><a href="#cb8-24"></a>    alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;%s&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a>    alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
 <span id="cb8-25"><a href="#cb8-25"></a>    gtk_alert_dialog_show <span class="op">(</span>alert_dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb8-26"><a href="#cb8-26"></a>    g_object_unref <span class="op">(</span>alert_dialog<span class="op">);</span></span>
 <span id="cb8-27"><a href="#cb8-27"></a>    g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
@@ -585,7 +585,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-32"><a href="#cb12-32"></a>    <span class="cf">if</span> <span class="op">(</span>err<span class="op">-&gt;</span>code <span class="op">==</span> GTK_DIALOG_ERROR_DISMISSED<span class="op">)</span> <span class="co">// The user canceled the file chooser dialog</span></span>
 <span id="cb12-33"><a href="#cb12-33"></a>      g_signal_emit <span class="op">(</span>tv<span class="op">,</span> tfe_text_view_signals<span class="op">[</span>OPEN_RESPONSE<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> TFE_OPEN_RESPONSE_CANCEL<span class="op">);</span></span>
 <span id="cb12-34"><a href="#cb12-34"></a>    <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb12-35"><a href="#cb12-35"></a>      alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;%s&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb12-35"><a href="#cb12-35"></a>      alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
 <span id="cb12-36"><a href="#cb12-36"></a>      gtk_alert_dialog_show <span class="op">(</span>alert_dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb12-37"><a href="#cb12-37"></a>      g_object_unref <span class="op">(</span>alert_dialog<span class="op">);</span></span>
 <span id="cb12-38"><a href="#cb12-38"></a>      g_signal_emit <span class="op">(</span>tv<span class="op">,</span> tfe_text_view_signals<span class="op">[</span>OPEN_RESPONSE<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> TFE_OPEN_RESPONSE_ERROR<span class="op">);</span></span>

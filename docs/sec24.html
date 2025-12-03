@@ -190,7 +190,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-18"><a href="#cb1-18"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
 <span id="cb1-19"><a href="#cb1-19"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb1-20"><a href="#cb1-20"></a>  <span class="co">/* Draw a black rectangle */</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb1-22"><a href="#cb1-22"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">2.0</span><span class="op">);</span></span>
 <span id="cb1-23"><a href="#cb1-23"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span></span>
 <span id="cb1-24"><a href="#cb1-24"></a>                   width<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
@@ -261,7 +261,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-7"><a href="#cb3-7"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span> <span class="co">/* white */</span></span>
 <span id="cb3-8"><a href="#cb3-8"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb3-9"><a href="#cb3-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">2.0</span><span class="op">);</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span> <span class="co">/* black */</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span> <span class="co">/* black */</span></span>
 <span id="cb3-11"><a href="#cb3-11"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span></span>
 <span id="cb3-12"><a href="#cb3-12"></a>                   width<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
 <span id="cb3-13"><a href="#cb3-13"></a>                   height<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
@@ -282,7 +282,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-28"><a href="#cb3-28"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb3-29"><a href="#cb3-29"></a><span class="op">}</span></span>
 <span id="cb3-30"><a href="#cb3-30"></a></span>
-<span id="cb3-31"><a href="#cb3-31"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.da1&quot;</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.da1&quot;</span></span>
 <span id="cb3-32"><a href="#cb3-32"></a></span>
 <span id="cb3-33"><a href="#cb3-33"></a><span class="dt">int</span></span>
 <span id="cb3-34"><a href="#cb3-34"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -291,7 +291,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-37"><a href="#cb3-37"></a></span>
 <span id="cb3-38"><a href="#cb3-38"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb3-39"><a href="#cb3-39"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb3-40"><a href="#cb3-40"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb3-41"><a href="#cb3-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb3-42"><a href="#cb3-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb3-43"><a href="#cb3-43"></a><span class="op">}</span></span></code></pre></div>

@@ -139,7 +139,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-6"><a href="#cb1-6"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a></span>
 <span id="cb1-8"><a href="#cb1-8"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.pr1&quot;</span><span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb1-10"><a href="#cb1-10"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a><span class="op">}</span></span></code></pre></div>
@@ -253,7 +253,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-12"><a href="#cb5-12"></a></span>
 <span id="cb5-13"><a href="#cb5-13"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.pr2&quot;</span><span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb5-14"><a href="#cb5-14"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-15"><a href="#cb5-15"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb5-16"><a href="#cb5-16"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb5-17"><a href="#cb5-17"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb5-18"><a href="#cb5-18"></a><span class="op">}</span></span></code></pre></div>
@@ -275,7 +275,7 @@ given.</li>
 href="https://docs.gtk.org/gobject/func.signal_connect.html">GObject API
 Reference</a>. Correctly, <code>g_signal_connect</code> is a macro (not
 a C function).</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define g_signal_connect (</span></span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define g_signal_connect </span><span class="op">(</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  instance<span class="op">,</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  detailed_signal<span class="op">,</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  c_handler<span class="op">,</span></span>

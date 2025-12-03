@@ -231,7 +231,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-9"><a href="#cb3-9"></a>  expression <span class="op">=</span> gtk_constant_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span><span class="dv">100</span><span class="op">);</span></span>
 <span id="cb3-10"><a href="#cb3-10"></a>  <span class="co">/* Evaluate the expression */</span></span>
 <span id="cb3-11"><a href="#cb3-11"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>    g_print <span class="op">(</span><span class="st">&quot;The value is %d.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    g_print <span class="op">(</span><span class="st">&quot;The value is </span><span class="sc">%d</span><span class="st">.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
 <span id="cb3-13"><a href="#cb3-13"></a>  <span class="cf">else</span></span>
 <span id="cb3-14"><a href="#cb3-14"></a>    g_print <span class="op">(</span><span class="st">&quot;The constant expression wasn&#39;t evaluated correctly.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb3-15"><a href="#cb3-15"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
@@ -291,7 +291,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-12"><a href="#cb6-12"></a>  expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span>
 <span id="cb6-13"><a href="#cb6-13"></a>  <span class="co">/* Evaluate the expression */</span></span>
 <span id="cb6-14"><a href="#cb6-14"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> label<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a>    g_print <span class="op">(</span><span class="st">&quot;The value is %s.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_string <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>    g_print <span class="op">(</span><span class="st">&quot;The value is </span><span class="sc">%s</span><span class="st">.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_string <span class="op">(&amp;</span>value<span class="op">));</span></span>
 <span id="cb6-16"><a href="#cb6-16"></a>  <span class="cf">else</span></span>
 <span id="cb6-17"><a href="#cb6-17"></a>    g_print <span class="op">(</span><span class="st">&quot;The property expression wasn&#39;t evaluated correctly.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb6-18"><a href="#cb6-18"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
@@ -349,7 +349,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-6"><a href="#cb8-6"></a>  <span class="dt">int</span> i<span class="op">,</span> j<span class="op">;</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a></span>
 <span id="cb8-8"><a href="#cb8-8"></a>  s <span class="op">=</span> gtk_label_get_text <span class="op">(</span>label<span class="op">);</span> <span class="co">/* s is owned by the label. */</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>  sscanf <span class="op">(</span>s<span class="op">,</span> <span class="st">&quot;%d+%d&quot;</span><span class="op">,</span> <span class="op">&amp;</span>i<span class="op">,</span> <span class="op">&amp;</span>j<span class="op">);</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  sscanf <span class="op">(</span>s<span class="op">,</span> <span class="st">&quot;</span><span class="sc">%d</span><span class="st">+</span><span class="sc">%d</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">&amp;</span>i<span class="op">,</span> <span class="op">&amp;</span>j<span class="op">);</span></span>
 <span id="cb8-10"><a href="#cb8-10"></a>  <span class="cf">return</span> i<span class="op">+</span>j<span class="op">;</span></span>
 <span id="cb8-11"><a href="#cb8-11"></a><span class="op">}</span></span>
 <span id="cb8-12"><a href="#cb8-12"></a></span>
@@ -365,7 +365,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-22"><a href="#cb8-22"></a>  expression <span class="op">=</span> gtk_cclosure_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span> NULL<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> NULL<span class="op">,</span></span>
 <span id="cb8-23"><a href="#cb8-23"></a>                 G_CALLBACK <span class="op">(</span>calc<span class="op">),</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb8-24"><a href="#cb8-24"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> label<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span> <span class="co">/* &#39;this&#39; object is the label. */</span></span>
-<span id="cb8-25"><a href="#cb8-25"></a>    g_print <span class="op">(</span><span class="st">&quot;%d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>    g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%d\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
 <span id="cb8-26"><a href="#cb8-26"></a>  <span class="cf">else</span></span>
 <span id="cb8-27"><a href="#cb8-27"></a>    g_print <span class="op">(</span><span class="st">&quot;The closure expression wasn&#39;t evaluated correctly.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb8-28"><a href="#cb8-28"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
@@ -505,7 +505,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-10"><a href="#cb12-10"></a><span class="dt">static</span> <span class="dt">int</span></span>
 <span id="cb12-11"><a href="#cb12-11"></a>close_request_cb <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb12-12"><a href="#cb12-12"></a>  gtk_expression_watch_unwatch <span class="op">(</span>watch<span class="op">);</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a>  <span class="cf">return</span> false<span class="op">;</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>  <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
 <span id="cb12-14"><a href="#cb12-14"></a><span class="op">}</span></span>
 <span id="cb12-15"><a href="#cb12-15"></a></span>
 <span id="cb12-16"><a href="#cb12-16"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -538,7 +538,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-43"><a href="#cb12-43"></a>  watch <span class="op">=</span> gtk_expression_bind <span class="op">(</span>expression<span class="op">,</span> label<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">,</span> adjustment<span class="op">);</span> <span class="co">/* watch takes the ownership of the expression. */</span></span>
 <span id="cb12-44"><a href="#cb12-44"></a><span class="op">}</span></span>
 <span id="cb12-45"><a href="#cb12-45"></a></span>
-<span id="cb12-46"><a href="#cb12-46"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.exp_watch&quot;</span></span>
+<span id="cb12-46"><a href="#cb12-46"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.exp_watch&quot;</span></span>
 <span id="cb12-47"><a href="#cb12-47"></a></span>
 <span id="cb12-48"><a href="#cb12-48"></a><span class="dt">int</span></span>
 <span id="cb12-49"><a href="#cb12-49"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -550,7 +550,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-55"><a href="#cb12-55"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb12-56"><a href="#cb12-56"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb12-57"><a href="#cb12-57"></a></span>
-<span id="cb12-58"><a href="#cb12-58"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb12-58"><a href="#cb12-58"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb12-59"><a href="#cb12-59"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb12-60"><a href="#cb12-60"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb12-61"><a href="#cb12-61"></a><span class="op">}</span></span></code></pre></div>
@@ -625,7 +625,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb15-8"><a href="#cb15-8"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
 <span id="cb15-9"><a href="#cb15-9"></a></span>
 <span id="cb15-10"><a href="#cb15-10"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_expression_watch_evaluate <span class="op">(</span>watch<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">))</span></span>
-<span id="cb15-11"><a href="#cb15-11"></a>    g_print <span class="op">(</span><span class="st">&quot;width = %d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>    g_print <span class="op">(</span><span class="st">&quot;width = </span><span class="sc">%d\n</span><span class="st">&quot;</span><span class="op">,</span> g_value_get_int <span class="op">(&amp;</span>value<span class="op">));</span></span>
 <span id="cb15-12"><a href="#cb15-12"></a>  <span class="cf">else</span></span>
 <span id="cb15-13"><a href="#cb15-13"></a>    g_print <span class="op">(</span><span class="st">&quot;evaluation failed.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb15-14"><a href="#cb15-14"></a><span class="op">}</span></span>
@@ -634,7 +634,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb15-17"><a href="#cb15-17"></a>close_request_cb <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb15-18"><a href="#cb15-18"></a>  gtk_expression_watch_unwatch <span class="op">(</span>watch<span class="op">);</span></span>
 <span id="cb15-19"><a href="#cb15-19"></a>  gtk_expression_unref <span class="op">(</span>expression<span class="op">);</span></span>
-<span id="cb15-20"><a href="#cb15-20"></a>  <span class="cf">return</span> false<span class="op">;</span></span>
+<span id="cb15-20"><a href="#cb15-20"></a>  <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
 <span id="cb15-21"><a href="#cb15-21"></a><span class="op">}</span></span>
 <span id="cb15-22"><a href="#cb15-22"></a></span>
 <span id="cb15-23"><a href="#cb15-23"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -655,7 +655,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb15-38"><a href="#cb15-38"></a>  watch <span class="op">=</span> gtk_expression_watch <span class="op">(</span>expression<span class="op">,</span> win<span class="op">,</span> notify<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb15-39"><a href="#cb15-39"></a><span class="op">}</span></span>
 <span id="cb15-40"><a href="#cb15-40"></a></span>
-<span id="cb15-41"><a href="#cb15-41"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.exp_watch&quot;</span></span>
+<span id="cb15-41"><a href="#cb15-41"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.exp_watch&quot;</span></span>
 <span id="cb15-42"><a href="#cb15-42"></a></span>
 <span id="cb15-43"><a href="#cb15-43"></a><span class="dt">int</span></span>
 <span id="cb15-44"><a href="#cb15-44"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -667,7 +667,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb15-50"><a href="#cb15-50"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb15-51"><a href="#cb15-51"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb15-52"><a href="#cb15-52"></a></span>
-<span id="cb15-53"><a href="#cb15-53"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb15-53"><a href="#cb15-53"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb15-54"><a href="#cb15-54"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb15-55"><a href="#cb15-55"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb15-56"><a href="#cb15-56"></a><span class="op">}</span></span></code></pre></div>
@@ -816,7 +816,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb19-2"><a href="#cb19-2"></a></span>
 <span id="cb19-3"><a href="#cb19-3"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb19-4"><a href="#cb19-4"></a>set_title <span class="op">(</span>GtkWidget <span class="op">*</span>win<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb19-5"><a href="#cb19-5"></a>  <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%d x %d&quot;</span><span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a>  <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;</span><span class="sc">%d</span><span class="st"> x </span><span class="sc">%d</span><span class="st">&quot;</span><span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
 <span id="cb19-6"><a href="#cb19-6"></a><span class="op">}</span></span>
 <span id="cb19-7"><a href="#cb19-7"></a></span>
 <span id="cb19-8"><a href="#cb19-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -837,7 +837,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb19-23"><a href="#cb19-23"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
 <span id="cb19-24"><a href="#cb19-24"></a><span class="op">}</span></span>
 <span id="cb19-25"><a href="#cb19-25"></a></span>
-<span id="cb19-26"><a href="#cb19-26"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.exp&quot;</span></span>
+<span id="cb19-26"><a href="#cb19-26"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.exp&quot;</span></span>
 <span id="cb19-27"><a href="#cb19-27"></a></span>
 <span id="cb19-28"><a href="#cb19-28"></a><span class="dt">int</span></span>
 <span id="cb19-29"><a href="#cb19-29"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -849,7 +849,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb19-35"><a href="#cb19-35"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb19-36"><a href="#cb19-36"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb19-37"><a href="#cb19-37"></a></span>
-<span id="cb19-38"><a href="#cb19-38"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb19-38"><a href="#cb19-38"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb19-39"><a href="#cb19-39"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb19-40"><a href="#cb19-40"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb19-41"><a href="#cb19-41"></a><span class="op">}</span></span></code></pre></div>

@@ -35,14 +35,14 @@ It is a good practice for you to add more features.
 ~~~
 $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
-  110   334  3601 tfe5/tfeapplication.c
+  110   335  3602 tfe5/tfeapplication.c
     6     9   153 tfe5/tfe.gresource.xml
   144   390  3668 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
   235   821  8473 tfetextview/tfetextview.c
    32    54   624 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  613  1746 19127 total
+  613  1747 19128 total
 ~~~
 
 Up: [README.md](../README.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)

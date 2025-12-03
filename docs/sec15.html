@@ -128,7 +128,7 @@ includes all the code other than <code>tfetextview.c</code> and
 language. It connects the command line given by the user and Gtk
 application.</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
+class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -141,7 +141,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-11"><a href="#cb1-11"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb1-13"><a href="#cb1-13"></a></span>
-<span id="cb1-14"><a href="#cb1-14"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb1-16"><a href="#cb1-16"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb1-17"><a href="#cb1-17"></a><span class="op">}</span></span></code></pre></div>

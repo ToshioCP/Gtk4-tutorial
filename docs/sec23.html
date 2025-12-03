@@ -182,7 +182,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-9"><a href="#cb2-9"></a>  <span class="dt">char</span> <span class="op">*</span>fontsize<span class="op">;</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a></span>
 <span id="cb2-11"><a href="#cb2-11"></a>  fontsize <span class="op">=</span> pfd2css_size <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
-<span id="cb2-12"><a href="#cb2-12"></a>  <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;font-family: </span><span class="sc">\&quot;</span><span class="st">%s</span><span class="sc">\&quot;</span><span class="st">; font-style: %s; font-weight: %d; font-size: %s;&quot;</span><span class="op">,</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;font-family: </span><span class="sc">\&quot;%s\&quot;</span><span class="st">; font-style: </span><span class="sc">%s</span><span class="st">; font-weight: </span><span class="sc">%d</span><span class="st">; font-size: </span><span class="sc">%s</span><span class="st">;&quot;</span><span class="op">,</span></span>
 <span id="cb2-13"><a href="#cb2-13"></a>              pfd2css_family <span class="op">(</span>pango_font_desc<span class="op">),</span> pfd2css_style <span class="op">(</span>pango_font_desc<span class="op">),</span></span>
 <span id="cb2-14"><a href="#cb2-14"></a>              pfd2css_weight <span class="op">(</span>pango_font_desc<span class="op">),</span> fontsize<span class="op">);</span></span>
 <span id="cb2-15"><a href="#cb2-15"></a>  g_free <span class="op">(</span>fontsize<span class="op">);</span> </span>
@@ -246,9 +246,9 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-73"><a href="#cb2-73"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb2-74"><a href="#cb2-74"></a>pfd2css_size <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-75"><a href="#cb2-75"></a>  <span class="cf">if</span> <span class="op">(</span>pango_font_description_get_size_is_absolute <span class="op">(</span>pango_font_desc<span class="op">))</span></span>
-<span id="cb2-76"><a href="#cb2-76"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%dpx&quot;</span><span class="op">,</span> pango_font_description_get_size <span class="op">(</span>pango_font_desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">);</span></span>
+<span id="cb2-76"><a href="#cb2-76"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;</span><span class="sc">%d</span><span class="st">px&quot;</span><span class="op">,</span> pango_font_description_get_size <span class="op">(</span>pango_font_desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">);</span></span>
 <span id="cb2-77"><a href="#cb2-77"></a>  <span class="cf">else</span></span>
-<span id="cb2-78"><a href="#cb2-78"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;%dpt&quot;</span><span class="op">,</span> pango_font_description_get_size <span class="op">(</span>pango_font_desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">);</span></span>
+<span id="cb2-78"><a href="#cb2-78"></a>    <span class="cf">return</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;</span><span class="sc">%d</span><span class="st">pt&quot;</span><span class="op">,</span> pango_font_description_get_size <span class="op">(</span>pango_font_desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">);</span></span>
 <span id="cb2-79"><a href="#cb2-79"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>The function <code>pfd2css_family</code> returns font family.</li>
@@ -294,7 +294,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_APPLICATION tfe_application_get_type ()</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_APPLICATION tfe_application_get_type </span><span class="op">()</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> TFE<span class="op">,</span> APPLICATION<span class="op">,</span> GtkApplication<span class="op">)</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a></span>
 <span id="cb3-8"><a href="#cb3-8"></a>TfeApplication <span class="op">*</span></span>
@@ -500,7 +500,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-11"><a href="#cb7-11"></a>  g_free <span class="op">(</span>font<span class="op">);</span></span>
 <span id="cb7-12"><a href="#cb7-12"></a>  s <span class="op">=</span> pfd2css <span class="op">(</span>pango_font_desc<span class="op">);</span> <span class="co">// converts Pango Font Description into CSS style string</span></span>
 <span id="cb7-13"><a href="#cb7-13"></a>  pango_font_description_free <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
-<span id="cb7-14"><a href="#cb7-14"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {%s}&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {</span><span class="sc">%s</span><span class="st">}&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
 <span id="cb7-15"><a href="#cb7-15"></a>  gtk_css_provider_load_from_data <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">,</span> css<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
 <span id="cb7-16"><a href="#cb7-16"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb7-17"><a href="#cb7-17"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
@@ -523,7 +523,7 @@ current display in advance. So, the font is applied to the display.</p>
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.tfe&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span></span>
 <span id="cb8-5"><a href="#cb8-5"></a></span>
 <span id="cb8-6"><a href="#cb8-6"></a><span class="dt">int</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -531,7 +531,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-9"><a href="#cb8-9"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb8-10"><a href="#cb8-10"></a></span>
 <span id="cb8-11"><a href="#cb8-11"></a>  app <span class="op">=</span> tfe_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb8-13"><a href="#cb8-13"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb8-14"><a href="#cb8-14"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb8-15"><a href="#cb8-15"></a><span class="op">}</span></span></code></pre></div>

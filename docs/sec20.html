@@ -270,7 +270,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_ALERT tfe_alert_get_type ()</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_ALERT tfe_alert_get_type </span><span class="op">()</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> TFE<span class="op">,</span> ALERT<span class="op">,</span> GtkWindow<span class="op">)</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a></span>
 <span id="cb3-8"><a href="#cb3-8"></a><span class="co">/* &quot;response&quot; signal id */</span></span>
@@ -581,7 +581,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-4"><a href="#cb6-4"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb6-5"><a href="#cb6-5"></a>alert_response_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb6-6"><a href="#cb6-6"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">==</span> TFE_ALERT_RESPONSE_ACCEPT<span class="op">)</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>    g_print <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> tfe_alert_get_button_label <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>    g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> tfe_alert_get_button_label <span class="op">(</span>alert<span class="op">));</span></span>
 <span id="cb6-8"><a href="#cb6-8"></a>  <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>response <span class="op">==</span> TFE_ALERT_RESPONSE_CANCEL<span class="op">)</span></span>
 <span id="cb6-9"><a href="#cb6-9"></a>    g_print <span class="op">(</span><span class="st">&quot;Cancel</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb6-10"><a href="#cb6-10"></a>  <span class="cf">else</span></span>
@@ -604,7 +604,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-27"><a href="#cb6-27"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb6-28"><a href="#cb6-28"></a><span class="op">}</span></span>
 <span id="cb6-29"><a href="#cb6-29"></a></span>
-<span id="cb6-30"><a href="#cb6-30"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.example_tfe_alert&quot;</span></span>
+<span id="cb6-30"><a href="#cb6-30"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.example_tfe_alert&quot;</span></span>
 <span id="cb6-31"><a href="#cb6-31"></a></span>
 <span id="cb6-32"><a href="#cb6-32"></a><span class="dt">int</span></span>
 <span id="cb6-33"><a href="#cb6-33"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -614,7 +614,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-37"><a href="#cb6-37"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb6-38"><a href="#cb6-38"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb6-39"><a href="#cb6-39"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb6-40"><a href="#cb6-40"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb6-40"><a href="#cb6-40"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb6-41"><a href="#cb6-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb6-42"><a href="#cb6-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb6-43"><a href="#cb6-43"></a><span class="op">}</span></span></code></pre></div>

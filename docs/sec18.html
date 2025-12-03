@@ -272,7 +272,7 @@ the action <code>act_color</code> is activated with the target
 <p>The following is the “activate” signal handler.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>color_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: %s;}&quot;</span><span class="op">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">;}&quot;</span><span class="op">,</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                   g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> color<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
@@ -323,7 +323,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-4"><a href="#cb9-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-5"><a href="#cb9-5"></a>  GVariantType <span class="op">*</span>vtype <span class="op">=</span> g_variant_type_new <span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">);</span></span>
 <span id="cb9-6"><a href="#cb9-6"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>type_string <span class="op">=</span> g_variant_type_peek_string <span class="op">(</span>vtype<span class="op">);</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a>  g_print <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span>type_string<span class="op">);</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span>type_string<span class="op">);</span></span>
 <span id="cb9-8"><a href="#cb9-8"></a>  g_variant_type_free <span class="op">(</span>vtype<span class="op">);</span></span>
 <span id="cb9-9"><a href="#cb9-9"></a><span class="op">}</span></span></code></pre></div>
 <ul>
@@ -374,7 +374,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb10-14"><a href="#cb10-14"></a></span>
 <span id="cb10-15"><a href="#cb10-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb10-16"><a href="#cb10-16"></a>color_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: %s;}&quot;</span><span class="op">,</span> g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">;}&quot;</span><span class="op">,</span> g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb10-18"><a href="#cb10-18"></a>  <span class="co">/* Change the CSS data in the provider. */</span></span>
 <span id="cb10-19"><a href="#cb10-19"></a>  <span class="co">/* Previous data is thrown away. */</span></span>
 <span id="cb10-20"><a href="#cb10-20"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> color<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
@@ -463,7 +463,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb10-103"><a href="#cb10-103"></a>  g_object_unref <span class="op">(</span>provider<span class="op">);</span> <span class="co">/* release provider, but it&#39;s still alive because the display owns it */</span></span>
 <span id="cb10-104"><a href="#cb10-104"></a><span class="op">}</span></span>
 <span id="cb10-105"><a href="#cb10-105"></a></span>
-<span id="cb10-106"><a href="#cb10-106"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.menu2&quot;</span></span>
+<span id="cb10-106"><a href="#cb10-106"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.menu2&quot;</span></span>
 <span id="cb10-107"><a href="#cb10-107"></a></span>
 <span id="cb10-108"><a href="#cb10-108"></a><span class="dt">int</span></span>
 <span id="cb10-109"><a href="#cb10-109"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -474,7 +474,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb10-114"><a href="#cb10-114"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb10-115"><a href="#cb10-115"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb10-116"><a href="#cb10-116"></a></span>
-<span id="cb10-117"><a href="#cb10-117"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb10-117"><a href="#cb10-117"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb10-118"><a href="#cb10-118"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb10-119"><a href="#cb10-119"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb10-120"><a href="#cb10-120"></a><span class="op">}</span></span></code></pre></div>

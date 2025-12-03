@@ -192,7 +192,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-2"><a href="#cb2-2"></a></span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="pp">#define TFE_TYPE_PREF tfe_pref_get_type ()</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="pp">#define TFE_TYPE_PREF tfe_pref_get_type </span><span class="op">()</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> TFE<span class="op">,</span> PREF<span class="op">,</span> GtkWindow<span class="op">)</span></span>
 <span id="cb2-7"><a href="#cb2-7"></a></span>
 <span id="cb2-8"><a href="#cb2-8"></a>GtkWidget <span class="op">*</span></span>
@@ -728,7 +728,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb18-8"><a href="#cb18-8"></a>changed_font_desc_cb <span class="op">(</span>GSettings <span class="op">*</span>settings<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>key<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb18-9"><a href="#cb18-9"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
 <span id="cb18-10"><a href="#cb18-10"></a>  s <span class="op">=</span> g_settings_get_string <span class="op">(</span>settings<span class="op">,</span> key<span class="op">);</span></span>
-<span id="cb18-11"><a href="#cb18-11"></a>  g_print <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
 <span id="cb18-12"><a href="#cb18-12"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb18-13"><a href="#cb18-13"></a><span class="op">}</span></span>
 <span id="cb18-14"><a href="#cb18-14"></a></span>
@@ -749,10 +749,10 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb18-29"><a href="#cb18-29"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb18-30"><a href="#cb18-30"></a>  settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
 <span id="cb18-31"><a href="#cb18-31"></a>  g_signal_connect <span class="op">(</span>settings<span class="op">,</span> <span class="st">&quot;changed::font-desc&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>changed_font_desc_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb18-32"><a href="#cb18-32"></a>  g_print <span class="op">(</span><span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="st">&quot;Change the font with the font button. Then the new font will be printed out.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb18-32"><a href="#cb18-32"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="st">&quot;Change the font with the font button. Then the new font will be printed out.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb18-33"><a href="#cb18-33"></a><span class="op">}</span></span>
 <span id="cb18-34"><a href="#cb18-34"></a></span>
-<span id="cb18-35"><a href="#cb18-35"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.test_tfe_pref&quot;</span></span>
+<span id="cb18-35"><a href="#cb18-35"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.test_tfe_pref&quot;</span></span>
 <span id="cb18-36"><a href="#cb18-36"></a></span>
 <span id="cb18-37"><a href="#cb18-37"></a><span class="dt">int</span></span>
 <span id="cb18-38"><a href="#cb18-38"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -763,7 +763,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb18-43"><a href="#cb18-43"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb18-44"><a href="#cb18-44"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb18-45"><a href="#cb18-45"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb18-46"><a href="#cb18-46"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb18-46"><a href="#cb18-46"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb18-47"><a href="#cb18-47"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb18-48"><a href="#cb18-48"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb18-49"><a href="#cb18-49"></a><span class="op">}</span></span></code></pre></div>

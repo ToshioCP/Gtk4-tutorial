@@ -356,7 +356,7 @@ Then, these two buttons are appended to the box.
 The function `gtk_button_get_label` returns a text from the label.
 The string is owned by the button and you can't modify or free it.
 The `const` qualifier is necessary for the string `s`.
-If you change the string, your compiler will give you a waring.
+If you change the string, your compiler will give you a warning.
 
 You always need to be careful with the const qualifier when you see the GTK 4 API reference.
 

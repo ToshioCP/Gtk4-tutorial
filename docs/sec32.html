@@ -480,7 +480,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-28"><a href="#cb9-28"></a></span>
 <span id="cb9-29"><a href="#cb9-29"></a>   <span class="co">/* g_file_info_get_modification_date_time can return NULL */</span></span>
 <span id="cb9-30"><a href="#cb9-30"></a>  dt <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_modification_date_time <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
-<span id="cb9-31"><a href="#cb9-31"></a>  <span class="cf">return</span> dt <span class="op">?</span> g_date_time_format <span class="op">(</span>dt<span class="op">,</span> <span class="st">&quot;%F&quot;</span><span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-31"><a href="#cb9-31"></a>  <span class="cf">return</span> dt <span class="op">?</span> g_date_time_format <span class="op">(</span>dt<span class="op">,</span> <span class="st">&quot;</span><span class="sc">%F</span><span class="st">&quot;</span><span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
 <span id="cb9-32"><a href="#cb9-32"></a><span class="op">}</span></span>
 <span id="cb9-33"><a href="#cb9-33"></a></span>
 <span id="cb9-34"><a href="#cb9-34"></a><span class="co">/* Functions (closures) for GtkSorter */</span></span>
@@ -524,7 +524,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-72"><a href="#cb9-72"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
 <span id="cb9-73"><a href="#cb9-73"></a><span class="op">}</span></span>
 <span id="cb9-74"><a href="#cb9-74"></a></span>
-<span id="cb9-75"><a href="#cb9-75"></a><span class="pp">#define APPLICATION_ID &quot;com.github.ToshioCP.columnview&quot;</span></span>
+<span id="cb9-75"><a href="#cb9-75"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.columnview&quot;</span></span>
 <span id="cb9-76"><a href="#cb9-76"></a></span>
 <span id="cb9-77"><a href="#cb9-77"></a><span class="dt">int</span></span>
 <span id="cb9-78"><a href="#cb9-78"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -536,7 +536,7 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-84"><a href="#cb9-84"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb9-85"><a href="#cb9-85"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb9-86"><a href="#cb9-86"></a></span>
-<span id="cb9-87"><a href="#cb9-87"></a>  stat <span class="op">=</span>g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb9-87"><a href="#cb9-87"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
 <span id="cb9-88"><a href="#cb9-88"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb9-89"><a href="#cb9-89"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb9-90"><a href="#cb9-90"></a><span class="op">}</span></span></code></pre></div>
