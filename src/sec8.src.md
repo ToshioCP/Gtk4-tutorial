@@ -120,7 +120,7 @@ The first member is the parent object (C structure).
 Notice this is not a pointer but the object itself.
 The second member and after are members of the child object.
 TfeTextView structure has a pointer to a GFile instance as a member.
-- `G_DEFINE_FINEL_TYPE` macro.
+- `G_DEFINE_FINAL_TYPE` macro.
 The arguments are the child object name in camel case, lower case with underscore and parent object type (prefix)\_TYPE\_(module).
 This macro is mainly used to register the new class to the type system.
 Type system is a base system of GObject.
