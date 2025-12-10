@@ -413,6 +413,8 @@ If you want to use this method, you should write a script that transforms ui fil
 - Add a backslash before each double quote.
 - Add double quotes at the left and right of the string in each line.
 
+Or, if you have `jq` installed, you can use `jq -R < tfe3.ui` to do the quoting and escaping for you.
+
 ### Gresource
 
 A Gresource is similar to a string, except that a Gresource is compressed binary data, not text data.
