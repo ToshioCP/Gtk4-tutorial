@@ -114,12 +114,13 @@
       <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
 <h1 id="gtkbuilder-and-ui-file">GtkBuilder and UI file</h1>
-<h2 id="new-open-and-save-button">New, Open and Save button</h2>
-<p>We made very simple editor in the previous section. It reads files at
-the start and writes them out at the end of the program. It works, but
-is not so good. It would be better if we had “New”, “Open”, “Save” and
-“Close” buttons. This section describes how to put those buttons into
-the window.</p>
+<h2 id="new-open-save-and-close-buttons">New, Open, Save and Close
+buttons</h2>
+<p>We made a very simple editor in the previous section. It reads files
+at the start and writes them out at the end of the program. It works,
+but is not so good. It would be better if we had “New”, “Open”, “Save”
+and “Close” buttons. This section describes how to put those buttons
+into the window.</p>
 <figure>
 <img src="image/screenshot_tfe2.png"
 alt="Screenshot of the file editor" />
@@ -228,24 +229,24 @@ child is a horizontal box. The second child is a GtkNotebook.</li>
 <code>boxv</code> as the first child.</li>
 <li>36-41: Creates three dummy labels. The labels <code>dmy1</code> and
 <code>dmy3</code> has a character width of ten. The other label
-<code>dmy2</code> has hexpand property which is set to be TRUE. This
-makes the label expands horizontally as long as possible.</li>
+<code>dmy2</code> has the hexpand property set to TRUE. This makes the
+label expand horizontally to be as long as possible.</li>
 <li>42-45: Creates four buttons.</li>
 <li>47-53: Appends these GtkLabel and GtkButton to
 <code>boxh</code>.</li>
 <li>55-58: Creates a GtkNotebook instance and sets hexpand and vexpand
 properties to be TRUE. This makes it expand horizontally and vertically
-as big as possible. It is appended to <code>boxv</code> as the second
-child.</li>
+to be as big as possible. It is appended to <code>boxv</code> as the
+second child.</li>
 </ul>
 <p>The number of widget-build lines is 33(=58-26+1). We also needed many
-variables (<code>boxv</code>, <code>boxh</code>, <code>dmy1</code>, …)
-and most of them used only for building the widgets. Are there any good
-solution to reduce these works?</p>
+variables (<code>boxv</code>, <code>boxh</code>, <code>dmy1</code>, …),
+and most of them are used only for building the widgets. Is there any
+good solution to reduce this work?</p>
 <p>Gtk provides GtkBuilder. It reads user interface (UI) data and builds
 a window. It reduces this cumbersome work.</p>
 <h2 id="the-ui-file">The UI File</h2>
-<p>Look at the UI file <code>tfe3.ui</code> that defines widget
+<p>Look at the UI file <code>tfe3.ui</code> that defines the widget
 structure.</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
@@ -307,25 +308,25 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb2-57"><a href="#cb2-57"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-58"><a href="#cb2-58"></a>  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-59"><a href="#cb2-59"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>The is a XML file. Tags begin with <code>&lt;</code> and end with
+<p>The is an XML file. Tags begin with <code>&lt;</code> and end with
 <code>&gt;</code>. There are two types of tags, the start tag and the
 end tag. For example, <code>&lt;interface&gt;</code> is a start tag and
 <code>&lt;/interface&gt;</code> is an end tag. The UI file begins and
-ends with interface tags. Some tags, for example object tags, can have a
+ends with interface tags. Some tags, for example object tags, can have
 class and id attributes in their start tag.</p>
 <ul>
 <li>1: XML declaration. It specifies that the XML version is 1.0 and the
 encoding is UTF-8.</li>
 <li>3-6: An object tag with <code>GtkApplicationWindow</code> class and
-<code>win</code> id. This is the top level window. And the three
-properties of the window are defined. The <code>title</code> property is
-“file editor”, <code>default-width</code> property is 600 and
+<code>win</code> id. This is the top level window. It defines three
+properties: the <code>title</code> property is “file editor”, the
+<code>default-width</code> property is 600, and the
 <code>default-height</code> property is 400.</li>
 <li>7: Child tag means a child widget. For example, line 7 tells us that
 GtkBox object is a child widget of <code>win</code>.</li>
 </ul>
 <p>Compare this ui file and the lines 26-58 in the <code>app_open</code>
-function of <code>tfe2.c</code>. Both builds the same window with its
+function of <code>tfe2.c</code>. Both build the same window with its
 descendant widgets.</p>
 <p>You can check the ui file with <code>gtk4-builder-tool</code>.</p>
 <ul>
@@ -333,13 +334,14 @@ descendant widgets.</p>
 validates the ui file. If the ui file includes some syntactical error,
 <code>gtk4-builder-tool</code> prints the error.</li>
 <li><code>gtk4-builder-tool simplify &lt;ui file name&gt;</code>
-simplifies the ui file and prints the result. If <code>--replace</code>
-option is given, it replaces the ui file with the simplified one. If the
-ui file specifies a value of property but it is default, then it will be
-removed. For example, the default orientation is horizontal so the
-simplification removes line 12. And some values are simplified. For
-example, “TRUE”and “FALSE” becomes “1” and “0” respectively. However,
-“TRUE” or “FALSE” is better for maintenance.</li>
+simplifies the ui file and prints the result. If the
+<code>--replace</code> option is given, it replaces the ui file with the
+simplified one. If the ui file specifies the default value of a
+property, that property will be removed. For example, the default
+orientation is horizontal so the simplification removes line 12. Some
+values are simplified too. For example, “TRUE” and “FALSE” become “1”
+and “0”, respectively. However, “TRUE” and “FALSE” are better for
+maintenance.</li>
 </ul>
 <p>It is a good idea to check your ui file before compiling.</p>
 <h2 id="gtkbuilder">GtkBuilder</h2>
@@ -352,17 +354,18 @@ example, “TRUE”and “FALSE” becomes “1” and “0” respectively. How
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>nb <span class="op">=</span> GTK_WIDGET <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;nb&quot;</span><span class="op">));</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>g_object_unref<span class="op">(</span>build<span class="op">);</span></span></code></pre></div>
 <p>The function <code>gtk_builder_new_from_file</code> reads the file
-<code>tfe3.ui</code>. Then, it builds the widgets and creates GtkBuilder
-object. All the widgets are connected based on the parent-children
-relationship described in the ui file. We can retrieve objects from the
-builder object with <code>gtk_builder_get_object</code> function. The
-top level window, its id is “win” in the ui file, is taken and assigned
-to the variable <code>win</code>, the application property of which is
-set to <code>app</code> with the <code>gtk_window_set_application</code>
-function. GtkNotebook with the id “nb” in the ui file is also taken and
-assigned to the variable <code>nb</code>. After the window and
-application are connected, GtkBuilder instance is useless. It is
-released with <code>g_object_unref</code> function.</p>
+<code>tfe3.ui</code>. Then, it builds the widgets and creates a
+GtkBuilder object. All the widgets are connected based on the
+parent-children relationship described in the ui file. We can retrieve
+objects from the builder object with the
+<code>gtk_builder_get_object</code> function. The top level window,
+which has an id of “win” in the ui file, is taken and assigned to the
+variable <code>win</code>. The window’s application property is set to
+<code>app</code> with the <code>gtk_window_set_application</code>
+function. The GtkNotebook, which has the id “nb” in the ui file, is also
+taken and assigned to the variable <code>nb</code>. After the window and
+application are connected, we no longer need the GtkBuilder instance. It
+is released with the <code>g_object_unref</code> function.</p>
 <p>The ui file reduces lines in the C source file.</p>
 <pre><code>$ cd tfe; diff tfe2.c tfe3.c
 59a60
@@ -425,10 +428,10 @@ released with <code>g_object_unref</code> function.</p>
 144a107
 &gt; </code></pre>
 <p><code>61,104c62,66</code> means that 44 (=104-61+1) lines are changed
-to 5 (=66-62+1) lines. Therefore, 39 lines are reduced. Using ui file
-not only shortens C source files, but also makes the widgets structure
+to 5 (=66-62+1) lines. Therefore, 39 lines are reduced. Using a ui file
+not only shortens C source files, but also makes the widgets’ structure
 clear.</p>
-<p>Now I’ll show you <code>app_open</code> function in the C file
+<p>Now I’ll show you the <code>app_open</code> function in the C file
 <code>tfe3.c</code>.</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -482,40 +485,43 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <p>The whole source code of <code>tfe3.c</code> is stored in the src/tfe
 directory.</p>
 <h3 id="using-ui-string">Using ui string</h3>
-<p>GtkBuilder can build widgets with string. Use
+<p>GtkBuilder can build widgets with a string. Use
 <code>gtk_builder_new_from_string</code> instead of
 <code>gtk_builder_new_from_file</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>uistring<span class="op">;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>uistring <span class="op">=</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;interface&gt;&quot;</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;object class=&quot;</span>GtkApplicationWindow<span class="st">&quot; id=&quot;</span>win<span class="st">&quot;&gt;&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;object class=</span><span class="sc">\&quot;</span><span class="st">GtkApplicationWindow</span><span class="sc">\&quot;</span><span class="st"> id=</span><span class="sc">\&quot;</span><span class="st">win</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">title</span><span class="sc">\&quot;</span><span class="st">&gt;file editor&lt;/property&gt;&quot;</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">default-width</span><span class="sc">\&quot;</span><span class="st">&gt;600&lt;/property&gt;&quot;</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">default-height</span><span class="sc">\&quot;</span><span class="st">&gt;400&lt;/property&gt;&quot;</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;child&gt;&quot;</span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;&lt;object class=</span><span class="sc">\&quot;</span><span class="st">GtkBox</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;&lt;property name=&quot;</span>orientation<span class="st">&quot;&gt;GTK_ORIENTATION_VERTICAL&lt;/property&gt;&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">orientation</span><span class="sc">\&quot;</span><span class="st">&gt;GTK_ORIENTATION_VERTICAL&lt;/property&gt;&quot;</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;/interface&gt;&quot;</span><span class="op">;</span></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>build <span class="op">=</span> gtk_builder_new_from_string <span class="op">(</span>uistring<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span></code></pre></div>
 <p>This method has an advantage and disadvantage. The advantage is that
-the ui string is written in the source code. So, no ui file is needed on
-runtime. The disadvantage is that writing C string is a bit bothersome
-because of the double quotes. If you want to use this method, you should
-write a script that transforms ui file into C-string.</p>
+the ui string is written in the source code. So, no ui file is needed at
+runtime. The disadvantage is that writing the C string is a bit
+bothersome, as the xml needs quoting and special characters need
+escaping. If you want to use this method, you should write a script that
+transforms ui files into C-strings.</p>
 <ul>
-<li>Add backslash before each double quote.</li>
+<li>Replace backslashes with two backslashes.</li>
+<li>Add a backslash before each double quote.</li>
 <li>Add double quotes at the left and right of the string in each
 line.</li>
 </ul>
 <h3 id="gresource">Gresource</h3>
-<p>Gresource is similar to string. But Gresource is compressed binary
-data, not text data. And there’s a compiler that compiles ui file into
-Gresource. It can compile not only text files but also binary files such
-as images, sounds and so on. And after compilation, it bundles them up
+<p>A Gresource is similar to a string, except that a Gresource is
+compressed binary data, not text data. The
+<code>glib-compile-resources</code> program compiles ui files into
+Gresources. It can compile not only text files but also binary files
+such as images, sounds and so on. After compilation, it bundles them up
 into one Gresource object.</p>
 <p>An xml file is necessary for the resource compiler
 <code>glib-compile-resources</code>. It describes resource files.</p>
@@ -582,8 +588,8 @@ widgets from a resource.</p>
 $ ./a.out tfe2.c</code></pre>
 <p>A window appears and it is the same as the screenshot at the
 beginning of this page.</p>
-<p>Generally, resource is the best way for C language. If you use other
-languages like Ruby, string is better than resource.</p>
+<p>Generally, resources are best for C programs. If you use other
+languages like Ruby, strings are better than resources.</p>
         </div>
       </div>
     </div>
