@@ -1,8 +1,8 @@
 # GtkBuilder and UI file
 
-## New, Open and Save button
+## New, Open, Save and Close buttons
 
-We made very simple editor in the previous section.
+We made a very simple editor in the previous section.
 It reads files at the start and writes them out at the end of the program.
 It works, but is not so good.
 It would be better if we had "New", "Open", "Save" and "Close" buttons.
@@ -28,17 +28,17 @@ The second child is a GtkNotebook.
 - 33-34: Creates a GtkBox instance `boxh` and appends it to `boxv` as the first child.
 - 36-41: Creates three dummy labels.
 The labels `dmy1` and `dmy3` has a character width of ten.
-The other label `dmy2` has hexpand property which is set to be TRUE.
-This makes the label expands horizontally as long as possible.
+The other label `dmy2` has the hexpand property set to TRUE.
+This makes the label expand horizontally to be as long as possible.
 - 42-45: Creates four buttons.
 - 47-53: Appends these GtkLabel and GtkButton to `boxh`.
 - 55-58: Creates a GtkNotebook instance and sets hexpand and vexpand properties to be TRUE.
-This makes it expand horizontally and vertically as big as possible.
+This makes it expand horizontally and vertically to be as big as possible.
 It is appended to `boxv` as the second child.
 
 The number of widget-build lines is 33(=58-26+1).
-We also needed many variables (`boxv`, `boxh`, `dmy1`, ...) and most of them used only for building the widgets.
-Are there any good solution to reduce these works?
+We also needed many variables (`boxv`, `boxh`, `dmy1`, ...), and most of them are used only for building the widgets.
+Is there any good solution to reduce this work?
 
 Gtk provides GtkBuilder.
 It reads user interface (UI) data and builds a window.
@@ -46,42 +46,42 @@ It reduces this cumbersome work.
 
 ## The UI File
 
-Look at the UI file `tfe3.ui` that defines widget structure.
+Look at the UI file `tfe3.ui` that defines the widget structure.
 
 @@@include
 tfe/tfe3.ui
 @@@
 
-The is a XML file.
+The is an XML file.
 Tags begin with `<` and end with `>`.
 There are two types of tags, the start tag and the end tag.
 For example, `<interface>` is a start tag and `</interface>` is an end tag.
 The UI file begins and ends with interface tags.
-Some tags, for example object tags, can have a class and id attributes in their start tag.
+Some tags, for example object tags, can have class and id attributes in their start tag.
 
 - 1: XML declaration.
 It specifies that the XML version is 1.0 and the encoding is UTF-8.
 - 3-6: An object tag with `GtkApplicationWindow` class and `win` id.
 This is the top level window.
-And the three properties of the window are defined.
-The `title` property is "file editor", `default-width` property is 600 and `default-height` property is 400.
+It defines three properties:
+the `title` property is "file editor", the `default-width` property is 600, and the `default-height` property is 400.
 - 7: Child tag means a child widget.
 For example, line 7 tells us that GtkBox object is a child widget of `win`.
 
 Compare this ui file and the lines 26-58 in the `app_open` function of `tfe2.c`.
-Both builds the same window with its descendant widgets.
+Both build the same window with its descendant widgets.
 
 You can check the ui file with `gtk4-builder-tool`.
 
 - `gtk4-builder-tool validate <ui file name>` validates the ui file.
 If the ui file includes some syntactical error, `gtk4-builder-tool` prints the error.
 - `gtk4-builder-tool simplify <ui file name>` simplifies the ui file and prints the result.
-If `--replace` option is given, it replaces the ui file with the simplified one.
-If the ui file specifies a value of property but it is default, then it will be removed.
+If the `--replace` option is given, it replaces the ui file with the simplified one.
+If the ui file specifies the default value of a property, that property will be removed.
 For example, the default orientation is horizontal so the simplification removes line 12.
-And some values are simplified.
-For example, "TRUE"and "FALSE" becomes "1" and "0" respectively.
-However, "TRUE" or "FALSE" is better for maintenance.
+Some values are simplified too.
+For example, "TRUE" and "FALSE" become "1" and "0", respectively.
+However, "TRUE" and "FALSE" are better for maintenance.
 
 It is a good idea to check your ui file before compiling.
 
@@ -100,14 +100,14 @@ g_object_unref(build);
 ~~~
 
 The function `gtk_builder_new_from_file` reads the file `tfe3.ui`.
-Then, it builds the widgets and creates GtkBuilder object.
+Then, it builds the widgets and creates a GtkBuilder object.
 All the widgets are connected based on the parent-children relationship described in the ui file.
-We can retrieve objects from the builder object with `gtk_builder_get_object` function.
-The top level window, its id is "win" in the ui file, is taken and assigned to the variable `win`,
-the application property of which is set to `app` with the `gtk_window_set_application` function.
-GtkNotebook with the id "nb" in the ui file is also taken and assigned to the variable `nb`.
-After the window and application are connected, GtkBuilder instance is useless.
-It is released with `g_object_unref` function.
+We can retrieve objects from the builder object with the `gtk_builder_get_object` function.
+The top level window, which has an id of "win" in the ui file, is taken and assigned to the variable `win`.
+The window's application property is set to `app` with the `gtk_window_set_application` function.
+The GtkNotebook, which has the id "nb" in the ui file, is also taken and assigned to the variable `nb`.
+After the window and application are connected, we no longer need the GtkBuilder instance.
+It is released with the `g_object_unref` function.
 
 The ui file reduces lines in the C source file.
 
@@ -117,9 +117,9 @@ cd tfe; diff tfe2.c tfe3.c
 
 `61,104c62,66` means that 44 (=104-61+1) lines are changed to 5 (=66-62+1) lines.
 Therefore, 39 lines are reduced.
-Using ui file not only shortens C source files, but also makes the widgets structure clear.
+Using a ui file not only shortens C source files, but also makes the widgets' structure clear.
 
-Now I'll show you `app_open` function in the C file `tfe3.c`.
+Now I'll show you the `app_open` function in the C file `tfe3.c`.
 
 @@@include
 tfe/tfe3.c app_open
@@ -129,7 +129,7 @@ The whole source code of `tfe3.c` is stored in the [src/tfe](tfe) directory.
 
 ### Using ui string
 
-GtkBuilder can build widgets with string.
+GtkBuilder can build widgets with a string.
 Use `gtk_builder_new_from_string` instead of `gtk_builder_new_from_file`.
 
 ~~~C
@@ -137,13 +137,13 @@ char *uistring;
 
 uistring =
 "<interface>"
-  "<object class="GtkApplicationWindow" id="win">"
+  "<object class=\"GtkApplicationWindow\" id=\"win\">"
     "<property name=\"title\">file editor</property>"
     "<property name=\"default-width\">600</property>"
     "<property name=\"default-height\">400</property>"
     "<child>"
       "<object class=\"GtkBox\">"
-        "<property name="orientation">GTK_ORIENTATION_VERTICAL</property>"
+        "<property name=\"orientation\">GTK_ORIENTATION_VERTICAL</property>"
 ... ... ...
 ... ... ...
 "</interface>";
@@ -153,20 +153,21 @@ build = gtk_builder_new_from_string (uistring, -1);
 
 This method has an advantage and disadvantage.
 The advantage is that the ui string is written in the source code.
-So, no ui file is needed on runtime.
-The disadvantage is that writing C string is a bit bothersome because of the double quotes.
-If you want to use this method, you should write a script that transforms ui file into C-string.
+So, no ui file is needed at runtime.
+The disadvantage is that writing the C string is a bit bothersome,
+as the xml needs quoting and special characters need escaping.
+If you want to use this method, you should write a script that transforms ui files into C-strings.
 
-- Add backslash before each double quote.
+- Replace backslashes with two backslashes.
+- Add a backslash before each double quote.
 - Add double quotes at the left and right of the string in each line.
 
 ### Gresource
 
-Gresource is similar to string.
-But Gresource is compressed binary data, not text data.
-And there's a compiler that compiles ui file into Gresource.
+A Gresource is similar to a string, except that a Gresource is compressed binary data, not text data.
+The `glib-compile-resources` program compiles ui files into Gresources.
 It can compile not only text files but also binary files such as images, sounds and so on.
-And after compilation, it bundles them up into one Gresource object.
+After compilation, it bundles them up into one Gresource object.
 
 An xml file is necessary for the resource compiler `glib-compile-resources`.
 It describes resource files.
@@ -244,5 +245,5 @@ $ ./a.out tfe2.c
 
 A window appears and it is the same as the screenshot at the beginning of this page.
 
-Generally, resource is the best way for C language.
-If you use other languages like Ruby, string is better than resource.
+Generally, resources are best for C programs.
+If you use other languages like Ruby, strings are better than resources.
