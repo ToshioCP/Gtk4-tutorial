@@ -3,14 +3,13 @@
 ## Managing big source files
 
 We've compiled a small editor so far.
-The program is also small and not complicated yet.
-But if it grows bigger, it will be difficult to maintain.
-So, we should do the followings now.
+The program is not complicated yet, but if it grows bigger, it will be difficult to maintain.
+So, we should do the following now.
 
 - We've had only one C source file and put everything in it.
-We need to divide it and sort them out.
+We need to divide and organize it.
 - There are two compilers, `gcc` and `glib-compile-resources`.
-We should control them by one building tool. 
+We should control them with one build tool.
 
 ## Divide a C source file into two parts.
 
@@ -19,7 +18,7 @@ For example, our source has two things, the definition of TfeTextView and functi
 It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
 
 - `tfetextview.c` includes the definition and functions of TfeTextView.
-- `tfe.c` includes functions like `main`, `app_activate`, `app_open` and so on, which relate to GtkApplication and GtkApplicationWindow
+- `tfe.c` includes functions like `main`, `app_activate`, `app_open` and so on, which relate to GtkApplication and GtkApplicationWindow.
 
 Now we have three source files, `tfetextview.c`, `tfe.c` and `tfe3.ui`.
 The `3` of `tfe3.ui` is like a version number.
@@ -29,11 +28,11 @@ So, we should take `3` away from the filename.
 
 In `tfe.c` the function `tfe_text_view_new` is invoked to create a TfeTextView instance.
 But it is defined in `tfetextview.c`, not `tfe.c`.
-The lack of the declaration (not definition) of `tfe_text_view_new` makes error when `tfe.c` is compiled.
+The lack of the declaration (not definition) of `tfe_text_view_new` makes an error when `tfe.c` is compiled.
 The declaration is necessary in `tfe.c`.
-Those public information is usually written in header files.
-It has `.h` suffix like `tfetextview.h`.
-And header files are included by C source files.
+That public information is usually written in header files.
+These have a `.h` suffix like `tfetextview.h`.
+The header files are included by C source files.
 For example, `tfetextview.h` is included by `tfe.c`.
 
 The source files are shown below.
@@ -66,7 +65,7 @@ tfe4/tfe.gresource.xml
 
 Dividing a file makes it easy to maintain.
 But now we face a new problem.
-The building step increases.
+The number of build steps increased.
 
 - Compiling the ui file `tfe.ui` into `resources.c`.
 - Compiling `tfe.c` into `tfe.o` (object file).
@@ -78,11 +77,11 @@ Build tools manage the steps.
 
 ## Meson and Ninja
 
-I'll explain Meson and Ninja build tools.
+I'll explain the Meson and Ninja build tools.
 
 Other possible tools are Make and Autotools.
 They are traditional tools but slower than Ninja.
-So, many developers use Meson and Ninja lately.
+So, many developers have switched to Meson and Ninja lately.
 For example, GTK 4 uses them.
 
 You need to create `meson.build` file first.
@@ -98,17 +97,18 @@ We put `gtk4` as an argument.
 - 5: The function `import` imports a module.
 In line 5, the gnome module is imported and assigned to the variable `gnome`.
 The gnome module provides helper tools to build GTK programs.
-- 6: The method `.compile_resources` is of the gnome module and compiles files to resources under the instruction of xml file.
-In line 6, the resource filename is `resources`, which means `resources.c` and `resources.h`, and xml file is `tfe.gresource.xml`.
+- 6: The method `.compile_resources` is from the gnome module.
+It compiles files to resources, as instructed by the xml file.
+In line 6, the resource filename is `resources`, which means `resources.c` and `resources.h`, and the xml file is `tfe.gresource.xml`.
 This method generates C source file by default.
 - 8: Defines source files.
-- 10: Executable function generates a target file by compiling source files.
+- 10: The `executable` function generates a target file by compiling source files.
 The first argument is the filename of the target. The following arguments are source files.
 The last two arguments have keys and values.
 For example, the fourth argument has a key `dependencies` , a delimiter (`:`) and a value `gtkdep`.
 This type of parameter is called *keyword parameter* or *kwargs*.
 The value `gtkdep` is defined in line 3.
-The last argument tells that this project doesn't install the executable file.
+The last argument tells Meson and Ninja that this project shouldn't install the executable file.
 So it is just compiled in the build directory.
 
 Now run meson and ninja.
