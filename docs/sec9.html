@@ -516,6 +516,9 @@ transforms ui files into C-strings.</p>
 <li>Add double quotes at the left and right of the string in each
 line.</li>
 </ul>
+<p>Or, if you have <code>jq</code> installed, you can use
+<code>jq -R &lt; tfe3.ui</code> to do the quoting and escaping for
+you.</p>
 <h3 id="gresource">Gresource</h3>
 <p>A Gresource is similar to a string, except that a Gresource is
 compressed binary data, not text data. The
