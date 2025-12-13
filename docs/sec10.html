@@ -115,15 +115,15 @@
         <div class="col-xl-10 col-xxl-9">
 <h1 id="build-system">Build system</h1>
 <h2 id="managing-big-source-files">Managing big source files</h2>
-<p>We’ve compiled a small editor so far. The program is also small and
-not complicated yet. But if it grows bigger, it will be difficult to
-maintain. So, we should do the followings now.</p>
+<p>We’ve compiled a small editor so far. The program is not complicated
+yet, but if it grows bigger, it will be difficult to maintain. So, we
+should do the following now.</p>
 <ul>
 <li>We’ve had only one C source file and put everything in it. We need
-to divide it and sort them out.</li>
+to divide and organize it.</li>
 <li>There are two compilers, <code>gcc</code> and
-<code>glib-compile-resources</code>. We should control them by one
-building tool.</li>
+<code>glib-compile-resources</code>. We should control them with one
+build tool.</li>
 </ul>
 <h2 id="divide-a-c-source-file-into-two-parts.">Divide a C source file
 into two parts.</h2>
@@ -137,7 +137,7 @@ GtkApplicationWindow. It is a good idea to separate them into two files,
 TfeTextView.</li>
 <li><code>tfe.c</code> includes functions like <code>main</code>,
 <code>app_activate</code>, <code>app_open</code> and so on, which relate
-to GtkApplication and GtkApplicationWindow</li>
+to GtkApplication and GtkApplicationWindow.</li>
 </ul>
 <p>Now we have three source files, <code>tfetextview.c</code>,
 <code>tfe.c</code> and <code>tfe3.ui</code>. The <code>3</code> of
@@ -149,11 +149,11 @@ from the filename.</p>
 <p>In <code>tfe.c</code> the function <code>tfe_text_view_new</code> is
 invoked to create a TfeTextView instance. But it is defined in
 <code>tfetextview.c</code>, not <code>tfe.c</code>. The lack of the
-declaration (not definition) of <code>tfe_text_view_new</code> makes
+declaration (not definition) of <code>tfe_text_view_new</code> makes an
 error when <code>tfe.c</code> is compiled. The declaration is necessary
-in <code>tfe.c</code>. Those public information is usually written in
-header files. It has <code>.h</code> suffix like
-<code>tfetextview.h</code>. And header files are included by C source
+in <code>tfe.c</code>. That public information is usually written in
+header files. These have a <code>.h</code> suffix like
+<code>tfetextview.h</code>. The header files are included by C source
 files. For example, <code>tfetextview.h</code> is included by
 <code>tfe.c</code>.</p>
 <p>The source files are shown below.</p>
@@ -289,7 +289,7 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb4-5"><a href="#cb4-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb4-6"><a href="#cb4-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
 <p>Dividing a file makes it easy to maintain. But now we face a new
-problem. The building step increases.</p>
+problem. The number of build steps increased.</p>
 <ul>
 <li>Compiling the ui file <code>tfe.ui</code> into
 <code>resources.c</code>.</li>
@@ -303,10 +303,10 @@ file).</li>
 </ul>
 <p>Build tools manage the steps.</p>
 <h2 id="meson-and-ninja">Meson and Ninja</h2>
-<p>I’ll explain Meson and Ninja build tools.</p>
+<p>I’ll explain the Meson and Ninja build tools.</p>
 <p>Other possible tools are Make and Autotools. They are traditional
-tools but slower than Ninja. So, many developers use Meson and Ninja
-lately. For example, GTK 4 uses them.</p>
+tools but slower than Ninja. So, many developers have switched to Meson
+and Ninja lately. For example, GTK 4 uses them.</p>
 <p>You need to create <code>meson.build</code> file first.</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
@@ -330,22 +330,23 @@ argument.</li>
 gnome module is imported and assigned to the variable
 <code>gnome</code>. The gnome module provides helper tools to build GTK
 programs.</li>
-<li>6: The method <code>.compile_resources</code> is of the gnome module
-and compiles files to resources under the instruction of xml file. In
-line 6, the resource filename is <code>resources</code>, which means
-<code>resources.c</code> and <code>resources.h</code>, and xml file is
-<code>tfe.gresource.xml</code>. This method generates C source file by
-default.</li>
+<li>6: The method <code>.compile_resources</code> is from the gnome
+module. It compiles files to resources, as instructed by the xml file.
+In line 6, the resource filename is <code>resources</code>, which means
+<code>resources.c</code> and <code>resources.h</code>, and the xml file
+is <code>tfe.gresource.xml</code>. This method generates C source file
+by default.</li>
 <li>8: Defines source files.</li>
-<li>10: Executable function generates a target file by compiling source
-files. The first argument is the filename of the target. The following
-arguments are source files. The last two arguments have keys and values.
-For example, the fourth argument has a key <code>dependencies</code> , a
-delimiter (<code>:</code>) and a value <code>gtkdep</code>. This type of
-parameter is called <em>keyword parameter</em> or <em>kwargs</em>. The
-value <code>gtkdep</code> is defined in line 3. The last argument tells
-that this project doesn’t install the executable file. So it is just
-compiled in the build directory.</li>
+<li>10: The <code>executable</code> function generates a target file by
+compiling source files. The first argument is the filename of the
+target. The following arguments are source files. The last two arguments
+have keys and values. For example, the fourth argument has a key
+<code>dependencies</code> , a delimiter (<code>:</code>) and a value
+<code>gtkdep</code>. This type of parameter is called <em>keyword
+parameter</em> or <em>kwargs</em>. The value <code>gtkdep</code> is
+defined in line 3. The last argument tells Meson and Ninja that this
+project shouldn’t install the executable file. So it is just compiled in
+the build directory.</li>
 </ul>
 <p>Now run meson and ninja.</p>
 <pre><code>$ meson setup _build
