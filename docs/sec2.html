@@ -114,71 +114,68 @@
       <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
 <h1 id="preparation">Preparation</h1>
-<h2 id="installing-gtk-4-into-linux-distributions">Installing GTK 4 into
-Linux distributions</h2>
-<p>This section describes how to install GTK 4 into Linux
-distributions.</p>
-<p>There are two ways to install GTK 4.</p>
+<h2 id="installing-gtk-on-linux-distributions">Installing GTK on Linux
+distributions</h2>
+<p>This section describes how to install GTK on Linux distributions.</p>
+<p>There are two ways to install GTK:</p>
 <ul>
-<li>Install it from the distribution packages.</li>
-<li>Build it from the source files.</li>
+<li>Install from distribution packages.</li>
+<li>Build from source.</li>
 </ul>
-<h3 id="installation-from-the-distribution-packages">Installation from
-the distribution packages</h3>
-<p>This is the easiest way to install. I’ve installed GTK 4 packages
-(version 4.14.2) on Ubuntu 24.04 LTS.</p>
+<h3 id="installation-from-distribution-packages">Installation from
+distribution packages</h3>
+<p>This is the easiest way to install. The following command installs
+the GTK (version 4) development files on Ubuntu.</p>
 <pre><code>$ sudo apt install libgtk-4-dev</code></pre>
-<p>It is important to install the development files package
-(libgtk-4-dev). Otherwise, you can’t compile any GTK 4 based
-programs.</p>
-<p>Fedora, Debian, Arch, Gentoo and OpenSUSE also have GTK 4 packages.
+<p>It is important to install the development package (libgtk-4-dev).
+Otherwise, you will not be able to compile any GTK-based programs.</p>
+<p>Fedora, Debian, Arch, Gentoo, and OpenSUSE also have GTK packages.
 See the website of your distribution for further information.</p>
-<p>Package information for Arch, Debian/Ubuntu and Fedora is described
-in GTK website, <a
+<p>Package information for Arch, Debian/Ubuntu, and Fedora is described
+on the GTK website: <a
 href="https://www.gtk.org/docs/installations/linux#installing-gtk-from-packages">Installing
 GTK from packages</a>.</p>
-<h3 id="installation-from-the-source-file">Installation from the source
-file</h3>
-<p>If you want to install a developing version of GTK 4, you need to
-build it from the source. See <a
+<h3 id="installation-from-source">Installation from source</h3>
+<p>If you want to install the development version of GTK, you need to
+build it from source. See the <a
 href="https://docs.gtk.org/gtk4/building.html">Compiling the GTK
-Libraries</a> section in the GTK 4 API reference.</p>
+Libraries</a> section of the GTK API reference.</p>
 <h2 id="how-to-download-this-repository">How to download this
 repository</h2>
 <p>There are two ways: zip and git. Downloading a zip file is the
 easiest way. However, if you use git and clone this repository, you can
-easily update your local repository by <code>git pull</code>
+easily update your local repository with the <code>git pull</code>
 command.</p>
 <h3 id="download-a-zip-file">Download a zip file</h3>
 <ul>
-<li>Run your browser and open <a
+<li>Open your browser and navigate to <a
 href="https://github.com/ToshioCP/Gtk4-tutorial">this
 repository</a>.</li>
-<li>Click on the green button with <code>&lt;&gt; Code</code>. Then a
-popup menu appears. Click on <code>Download ZIP</code> menu.</li>
-<li>Then the repository data is downloaded as a zip file into your
-download folder.</li>
+<li>Click on the green <code>&lt;&gt; Code</code> button. A dropdown
+menu will appear; click <code>Download ZIP</code>.</li>
+<li>The repository will be downloaded as a zip file to your
+computer.</li>
 <li>Unzip the file.</li>
 </ul>
 <h3 id="clone-the-repository">Clone the repository</h3>
 <ul>
-<li>Click on the green button with the label <code>&lt;&gt; Code</code>.
-Then a popup menu appears. The first section is <code>Clone</code> with
-three tabs. Click <code>HTTPS</code> tab and click on the copy icon,
-which is on the right of
+<li>Click on the green <code>&lt;&gt; Code</code> button. A dropdown
+menu will appear. The first section is <code>Clone</code> with three
+tabs. Click the <code>HTTPS</code> tab and click the copy icon to the
+right of
 <code>https://github.com/ToshioCP/Gtk4-tutorial.git</code>.</li>
-<li>Run your terminal and type <code>git clone</code>, Ctrl+Shift+V.
-Then the line will be
+<li>Open a terminal and type <code>git clone</code>, then press
+Ctrl+Shift+V. The command line will look like
 <code>git clone https://github.com/ToshioCP/Gtk4-tutorial.git</code>.
-Press the enter key.</li>
-<li>A directory <code>Gtk4-tutorial</code> is created. It is the copy of
-this repository.</li>
+Press Enter.</li>
+<li>The directory <code>Gtk4-tutorial</code> will be created. This
+directory is a local copy of the repository.</li>
 </ul>
 <h2 id="examples-in-the-tutorial">Examples in the tutorial</h2>
 <p>Examples are under the <code>src</code> directory. For example, the
-first example of the tutorial is <code>pr1.c</code> and its pathname is
-<code>src/misc/pr1.c</code>. So you don’t need to type the example codes
-by yourself.</p>
+first example of the tutorial is <code>pr1.c</code> and its path is
+<code>src/misc/pr1.c</code>. Therefore, you do not need to type the
+examples manually.</p>
         </div>
       </div>
     </div>
