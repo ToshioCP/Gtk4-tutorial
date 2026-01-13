@@ -107,95 +107,104 @@
     </nav>
       <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
-<h1 id="how-to-build-gtk4-tutorial">How to build Gtk4-Tutorial</h1>
-<h2 id="quick-start-guide">Quick start guide</h2>
+<h1 id="how-to-build-the-gtk4-tutorial">How to Build the Gtk4
+Tutorial</h1>
+<h2 id="quick-start-guide">Quick Start Guide</h2>
 <ol type="1">
-<li>You need linux operationg system, ruby, rake, pandoc and latex
-system.</li>
-<li>download this repository and uncompress the file.</li>
-<li>change your current directory to the top directory of the source
+<li>You will need a Linux operating system, Ruby, Rake, Pandoc, and a
+LaTeX system.</li>
+<li>Download this repository and extract its contents.</li>
+<li>Change your current directory to the root directory of the source
 files.</li>
-<li>type <code>rake html</code> to create html files. The files are
-created under the <code>docs</code> directory.</li>
-<li>type <code>rake pdf</code> to create pdf a file. The file is created
-under the <code>latex</code> directory.</li>
+<li>Run <code>rake html</code> to create HTML files. These files will be
+generated in the <code>docs</code> directory.</li>
+<li>Run <code>rake pdf</code> to create a PDF file. The file is
+generated in the <code>latex</code> directory.</li>
 </ol>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li>Linux operationg system. The programs in this repository has been
+<li>Linux operating system: The programs in this repository have been
 tested on Ubuntu 21.04.</li>
-<li>Download the files in the repository. There are two ways to
-download.
+<li>Files in this repository: There are two ways to obtain the files:
 <ol type="1">
-<li>Use git. Type
-<code>git clone https://github.com/ToshioCP/Gtk4-tutorial.git</code> on
-the command-line.</li>
-<li>Download a zip file. Click on the <code>Code</code> button (green
-button) on the top page of the repository. Then, click “Download
-ZIP”.</li>
+<li>Using Git: Run
+<code>git clone https://github.com/ToshioCP/Gtk4-tutorial.git</code> in
+your terminal.</li>
+<li>Download Zip: Click the green <code>Code</code> button on the
+repository’s main page and select “Download ZIP”.</li>
 </ol></li>
-<li>Ruby and rake.</li>
-<li>Pandoc. It is used to convert markdown to html and/or latex.</li>
-<li>Latex system. Texlive2020 or later version is recommended. It is
-used to generate the pdf file.</li>
+<li>Ruby and Rake.</li>
+<li>Pandoc: Used to convert Markdown to HTML and/or LaTeX.</li>
+<li>Latex system: Tex Live 2020 or later is recommended for generating
+the PDF file.</li>
 </ul>
-<h2 id="github-flavored-markdown">GitHub Flavored Markdown</h2>
-<p>When you see <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">gtk4_tutorial GitHub
-repository</a>, you’ll find the contents of the <code>Readme.md</code>
-file. This file is written in markdown language. Markdown files have
-<code>.md</code> suffix.</p>
-<p>There are several kinds of markdown language. <code>Readme.md</code>
-uses ‘GitHub Flavored Markdown’, which is often shortened as GFM.
-Markdown files in the <code>gfm</code> directory are written in GFM. If
-you are not familiar with it, refer to the page <a
-href="https://github.github.com/gfm/">GitHub Flavor Markdown
-spec</a>.</p>
-<h2 id="pandocs-markdown">Pandoc’s markdown</h2>
-<p>This tutorial also uses another markdown – ‘pandoc’s markdown’.
-Pandoc is a converter between markdown, html, latex, word docx and so
-on. This type of markdown is used to convert markdown to html and/or
-latex.</p>
-<h2 id="src.md-file">.Src.md file</h2>
-<p>.Src.md file has “.src.md” suffix. The syntax of .src.md file is
-similar to markdown but it has a special command which isn’t included in
-markdown syntax. It is @@@ command. The command starts with a line
-begins with “@@@” and ends with a line “@@@”. For example,</p>
+<h2 id="markdown-variants-and-.src.md-files">Markdown Variants and
+.src.md Files</h2>
+<h3 id="github-flavored-markdown-gfm">GitHub Flavored Markdown
+(GFM)</h3>
+<p>When you visit the <a
+href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4_tutorial GitHub
+repository</a>, the <code>README.md</code> file is displayed on the main
+page. This file is written in Markdown, which typically uses the .md
+extension.</p>
+<p>There are several dialects of Markdown. The <code>README.md</code>
+file uses “GitHub Flavored Markdown” or simply, GFM. The files in the
+<code>gfm</code> directory are also written in GFM. For more details,
+please refer to the <a href="https://github.github.com/gfm/">GitHub
+Flavor Markdown spec</a>.</p>
+<h3 id="pandocs-markdown">Pandoc’s Markdown</h3>
+<p>This tutorial also utilizes another dialect known as “Pandoc’s
+Markdown.” Pandoc is a powerful tool for converting between formats such
+as Markdown, HTML, LaTeX, and Word (.docx). In this project, this
+specific dialect is used when converting the source files into HTML or
+LaTeX.</p>
+<h2 id="the-.src.md-file-and-commands">The .src.md File and @@@
+Commands</h2>
+<h3 id="the-.src.md-file">The .src.md File</h3>
+<p>Source files in this project use the .src.md extension. The syntax of
+a .src.md file is similar to standard Markdown, but it includes a
+special custom command: the @@@ command. Each command block starts with
+a line beginning with @@@, followed by a command name and ends with a
+line containing only <code>@@@</code>.</p>
+<p>For example,</p>
 <pre><code>@@@include
 tfeapplication.c
 @@@</code></pre>
-<p>There are four types of @@@ command.</p>
+<p>The first line is called a directive, which consists of “@@@” and
+“include” (the command name).</p>
+<p>There are four types of @@@ commands, as described below.</p>
 <h3 id="include">@@<span class="citation"
 data-cites="include">@include</span></h3>
-<p>This type of @@@ command starts with a line “@@<span class="citation"
-data-cites="include">@include</span>”.</p>
+<p>This command starts with the directive <code>@@@include</code>.</p>
 <pre><code>@@@include
 tfeapplication.c
 @@@</code></pre>
-<p>This command replaces itself with the texts read from the C source
-files surrounded by <code>@@@include</code> and <code>@@@</code>. If a
-function list follows the filename, only the functions are read.</p>
+<p>It is replaced by the content of the source file specified between
+the <code>@@@include</code> and <code>@@@</code> markers. The example
+above includes a C source file <code>tfeapplication.c</code>.</p>
+<p>If specific function names follow the filename, only those functions
+will be extracted.</p>
 <pre><code>@@@include
 tfeapplication.c main startup
 @@@</code></pre>
-<p>The command above is replaced by the contents of <code>main</code>
-and <code>startup</code> functions in the file
+<p>The above command would be replaced specifically by the
+<code>main</code> and <code>startup</code> functions found in
 <code>tfeapplication.c</code>.</p>
-<p>Other language’s source files are also possible. The following
-example shows that the ruby file ‘lib_src2md.rb’ is inserted by the
-command.</p>
+<p>You can also include source files from other languages. The following
+example shows that the ruby file <code>lib_src2md.rb</code> is inserted
+by the command.</p>
 <pre><code>@@@include
 lib_src2md.rb
 @@@</code></pre>
-<p>You can’t specify functions or methods unless the file is C
-source.</p>
-<p>The inserted text is converted to fence code block. Fence code block
-begins with <code>~~~</code> and ends with <code>~~~</code>. The
-contents are displayed verbatim. <code>~~~</code> is look like a fence
-so the block is called “fence code block”.</p>
-<p>If the target markdown is GFM, then an info string can follow the
-beginning fence. The following example shows that the @@@ command
-includes a C source file <code>sample.c</code>.</p>
+<p>Note that function-specific extraction is only supported for C source
+files.</p>
+<p>The inserted text is automatically converted into a fenced code
+block. Fenced code blocks start and end with <code>~~~</code>, and the
+contents are displayed verbatim. Three consecutive tildes are called a
+“code fence” because they look like a fence.</p>
+<p>When the target format is GFM, an “info string” (language identifier)
+is added after the opening fence. The following example shows that the
+@@@ command includes a C source file <code>sample.c</code>.</p>
 <pre><code>$ cat src/sample.c
 int
 main (int argc, char **argv) {
@@ -218,17 +227,17 @@ main (int argc, char **argv) {
 ~~~
   ... ...</code></pre>
 <p>Info strings are usually languages like C, ruby, xml and so on. This
-string is decided with the filename extension.</p>
+identifier is determined by the file extension:</p>
 <ul>
 <li><code>.c</code> =&gt; C</li>
 <li><code>.rb</code> =&gt; ruby</li>
 <li><code>.xml</code> =&gt; xml</li>
 </ul>
-<p>The supported languages are written in the <code>lang</code> method
-in <code>lib/lib_src2md.rb</code>.</p>
-<p>A line number will be inserted at the top of each line in the code
-block. If you don’t want to insert it, give “-N” option to @@<span
-class="citation" data-cites="include">@include</span> command.</p>
+<p>The list of supported languages is defined in the <code>lang</code>
+method within <code>lib/lib_src2md.rb</code>.</p>
+<p>By default, line numbers are inserted at the beginning of each line.
+To disable this, use the -N option with the <code>@@@include</code>
+command.</p>
 <p>Options:</p>
 <ul>
 <li><code>-n</code>: Inserts a line number at the top of each line
@@ -253,64 +262,58 @@ $ cat gfm/sample.md
 14 }
 ~~~
   ... ...</code></pre>
-<p>If a markdown is an intermediate file to html, another type of info
-string follows the fence. If @@<span class="citation"
-data-cites="include">@include</span> command doesn’t have -N option,
-then the generated markdown is:</p>
+<p>If the Markdown file is an intermediate step for HTML output, a
+different info string is used. If the <code>@@@include</code> command
+doesn’t have <code>-N</code> option, then the generated markdown is:</p>
 <pre><code>~~~{.C .numberLines}
 int
 main (int argc, char **argv) {
   ... ...
 }
 ~~~</code></pre>
-<p>The info string <code>.C</code> specifies C language. The info string
-<code>.numberLines</code> is a class of the pandoc markdown. If the
-class is given, pandoc generates CSS to insert line numbers to the
-source code in the html file. That’s why the fence code block in the
-markdown doesn’t have line numbers, which is different from gfm
-markdown. If <code>-N</code> option is given, then the info string is
-<code>{.C}</code> only.</p>
-<p>If a markdown is an intermediate file to latex, the same info string
-follows the beginning fence.</p>
+<p>The info string <code>.C</code> specifies C language. The
+<code>.numberLines</code> class is a feature of Pandoc’s Markdown; it
+allows Pandoc to generate CSS that inserts line numbers into the final
+HTML. As a result, the fenced code block in the Markdown source does not
+contain hard-coded line numbers, unlike GFM. If <code>-N</code> option
+is given, then the info string is <code>{.C}</code> only.</p>
+<p>If the Markdown file is an intermediate step for LaTeX file, the same
+info string follows the beginning fence.</p>
 <pre><code>~~~{.C .numberLines}
 int
 main (int argc, char **argv) {
   ... ...
 }
 ~~~</code></pre>
-<p>Rake uses pandoc with –listings option to convert the markdown to a
-latex file. The generated latex file uses ‘listings package’ to list
-source files instead of verbatim environment. The markdown above is
-converted to the following latex source file.</p>
+<p>Rake uses Pandoc with the –listings option to convert Markdown into a
+LaTeX file. The resulting LaTeX file utilizes the listings package to
+display source code rather than a simple verbatim environment. The
+Markdown file is converted to the following LaTeX source file.</p>
 <pre><code>\begin{lstlisting}[language=C, numbers=left]
 int
 main (int argc, char **argv) {
   ... ...
 }
 \end{lstlisting}</code></pre>
-<p>Listing package can color or emphasize keywords, strings, comments
-and directives. But it doesn’t really analyze the syntax of the
+<p>The listings package can color or emphasize keywords, strings,
+comments and directives. But it doesn’t really analyze the syntax of the
 language, so the emphasis tokens are limited.</p>
-<p>@@<span class="citation" data-cites="include">@include</span> command
-has two advantages.</p>
+<p>The @@<span class="citation" data-cites="include">@include</span>
+command has two advantages:</p>
 <ol type="1">
 <li>Less typing.</li>
-<li>You don’t need to modify your .src.md file, even if the C source
-file is modified.</li>
+<li>Modifying a C source file does not require manual updates to the
+.src.md file, making maintenance much easier for authors.</li>
 </ol>
 <h3 id="shell">@@<span class="citation"
 data-cites="shell">@shell</span></h3>
-<p>This type of @@@ command starts with a line begins with “@@<span
-class="citation" data-cites="shell">@shell</span>”.</p>
+<p>This command begins with the <code>@@@shell</code> directive.</p>
 <pre><code>@@@shell
 shell command
  ... ...
 @@@</code></pre>
-<p>This command replaces itself with:</p>
-<ul>
-<li>the shell command</li>
-<li>the standard output from the shell command</li>
-</ul>
+<p>It is replaced by both the executed command itself and its standard
+output.</p>
 <p>For example,</p>
 <pre><code>@@@shell
 wc Rakefile
@@ -320,15 +323,13 @@ wc Rakefile
 $ wc Rakefile
 164  475 4971 Rakefile
 ~~~</code></pre>
-<h3 id="if-series">@@<span class="citation" data-cites="if">@if</span>
-series</h3>
-<p>This type of @@@ command starts with a line begins with “@@<span
-class="citation" data-cites="if">@if</span>”, and followed by “@@<span
-class="citation" data-cites="elif">@elif</span>”, “@@<span
-class="citation" data-cites="else">@else</span>” or “@@<span
-class="citation" data-cites="end">@end</span>”. This command is similar
-to “#if”, “#elif”, #else” and “#endif” directives in the C preprocessor.
-For example,</p>
+<h3 id="if-series-conditional-branching">@@<span class="citation"
+data-cites="if">@if</span> series (Conditional Branching)</h3>
+<p>This command block starts with <code>@@@if</code> and can be followed
+by <code>@@@elif</code>, <code>@@@else</code>, or <code>@@@end</code>.
+These work similarly to the <code>#if</code>, <code>#elif</code>,
+<code>#else</code>, and <code>#endif</code> preprocessor directives in
+C. For example,</p>
 <pre><code>@@@if gfm
 Refer to  [tfetextview API reference](tfetextview_doc.md)
 @@@elif html
@@ -336,16 +337,17 @@ Refer to  [tfetextview API reference](tfetextview_doc.html)
 @@@elif latex
 Refer to tfetextview API reference in appendix.
 @@@end</code></pre>
-<p><code>@@@if</code> and <code>@@@elif</code> have conditions. They are
-<code>gfm</code>, <code>html</code> or <code>latex</code> so far.</p>
+<p>The directives <code>@@@if</code> and <code>@@@elif</code> accept
+conditions such as <code>gfm</code>, <code>html</code>, or
+<code>latex</code>.</p>
 <ul>
-<li>gfm: if the target is GFM</li>
-<li>html: if the target is html</li>
-<li>latex: if the target is pdf.</li>
+<li>gfm: If the target is GFM.</li>
+<li>html: If the target is HTML.</li>
+<li>latex: If the target is PDF.</li>
 </ul>
 <p>Other type of conditions may be available in the future version.</p>
 <p>The code analyzing @@<span class="citation"
-data-cites="if">@if</span> series command is rather complicated. It is
+data-cites="if">@if</span> series commands is rather complicated. It is
 based on the state diagram below.</p>
 <figure>
 <img src="image/state_diagram.png" alt="state diagram" />
@@ -353,11 +355,10 @@ based on the state diagram below.</p>
 </figure>
 <h3 id="table">@@<span class="citation"
 data-cites="table">@table</span></h3>
-<p>This type of @@@ command starts with a line begins with “@@<span
-class="citation" data-cites="table">@table</span>”. The contents of this
-command is a table of the GFM or pandoc’s markdown. The command makes a
-table easy to read. For example, a text file <code>sample.md</code> has
-a table like this:</p>
+<p>This type of @@@ command starts with a line that begins with
+<code>@@@table</code>. This command takes a GFM or Pandoc-style table as
+input and formats it to be more human-readable in the source file. For
+example, a text file <code>sample.md</code> has a table like this:</p>
 <pre><code>Price list
 
 @@@table
@@ -373,43 +374,39 @@ a table like this:</p>
 |:---:|:---:|
 |mouse| $10 |
 | PC  |$500 |</code></pre>
-<p>This command just changes the appearance of the table. There’s no
-influence on html/latex files that is converted from the markdown.
-Notice that the command supports only the above type of markdown table
-format.</p>
+<p>This command only affects the visual alignment of the table in
+Markdown; it does not change the final HTML or LaTeX output. Notice that
+the command supports only the above type of Markdown table format.</p>
 <p>A script <code>mktbl.rb</code> supports this command. If you run the
 script like this:</p>
 <pre><code>$ ruby mktbl.rb sample.md</code></pre>
 <p>Then, the tables in ‘sample.md’ will be arranged. The script also
 makes a backup file <code>sample.md.bak</code>.</p>
 <p>The task of the script seems easy, but the program is not so simple.
-The script <code>mktbl.rb</code> uses a library
+The script <code>mktbl.rb</code> uses the library
 <code>lib/lib_src2md.rb</code></p>
-<p>@@<span class="citation" data-cites="commands">@commands</span> are
-effective in the whole text. This means you can’t stop the @@<span
-class="citation" data-cites="commands">@commands</span>. But sometimes
-you want to show the commands literally like this document. One solution
-is to add four blanks at the top of the line. Then @@<span
-class="citation" data-cites="commands">@commands</span> are not
-effective because @@<span class="citation"
-data-cites="commands">@commands</span> must be at the top of the
-line.</p>
+<p>The @@@ commands are effective throughout the whole text. This means
+you can’t stop the @@@ commands. But sometimes you want to show the
+commands literally. One solution is to add four blanks at the top of the
+lines. Then @@@ commands are not effective because <code>@@@</code> must
+be at the top of the line.</p>
 <h2 id="conversion">Conversion</h2>
-<p>The @@@ commands are carried out by a method <code>src2md</code>,
-which is in the file <code>lib/lib_src2md.rb</code>. This method
-converts <code>.src.md</code> file into <code>.md</code> file. In
-addition, some other conversions are made by <code>src2md</code>
-method.</p>
+<p>The @@@ commands are processed by the <code>src2md</code> method in
+<code>lib/lib_src2md.rb</code>. This method converts .src.md files into
+standard Markdown files. In addition, the <code>src2md</code> method
+performs the following transformations:</p>
 <ul>
-<li>Relative links are changed according to the change of the base
-directory.</li>
-<li>Size option in an image link is removed when the destination is GFM
-or html.</li>
-<li>Relative link is removed except .src.md files when the destination
-is html.</li>
-<li>Relative link is removed when the destination is latex.</li>
+<li><strong>Relative links:</strong> These are updated to reflect the
+change in the base directory.</li>
+<li><strong>Image sizes:</strong> Image size options (e.g., {width=…})
+are removed when the target format is GFM or HTML.</li>
+<li><strong>HTML-specific links:</strong> For HTML output, all relative
+links are removed, except for those pointing to other
+<code>.src.md</code> files.</li>
+<li><strong>LaTeX-specific links:</strong> For LaTeX output, all
+relative links are removed.</li>
 </ul>
-<p>The order of the conversions are:</p>
+<p>The conversions are executed in the following order:</p>
 <ol type="1">
 <li>@@<span class="citation" data-cites="if">@if</span></li>
 <li>@@<span class="citation" data-cites="table">@table</span></li>
@@ -417,198 +414,208 @@ is html.</li>
 <li>@@<span class="citation" data-cites="shell">@shell</span></li>
 <li>others</li>
 </ol>
-<p>There is the <code>src2md.rb</code> file in the top directory of this
-repository. It just invokes the method <code>src2md</code>. In the same
-way, the method is called in the action in the
-<code>Rakefile</code>.</p>
-<h2 id="directory-structure">Directory structure</h2>
-<p>There are seven directories under <code>gtk4_tutorial</code>
-directory. They are <code>gfm</code>, <code>docs</code>,
-<code>latex</code>, <code>src</code>, <code>image</code>,
-<code>test</code> and <code>lib</code>. Three directories
-<code>gfm</code>, <code>docs</code> and <code>latex</code> are the
-destination directories for GFM, html and latex files respectively. It
-is possible that these three directories don’t exist before the
-conversion.</p>
+<p>The <code>src2md.rb</code> script in the root directory simply
+invokes the <code>src2md</code> method. Similarly, the
+<code>Rakefile</code> also calls this method as part of its tasks.</p>
+<h2 id="directory-structure">Directory Structure</h2>
+<p>The <code>Gtk4-tutorial</code> directory contains seven
+subdirectories: <code>gfm</code>, <code>docs</code>, <code>latex</code>,
+<code>src</code>, <code>image</code>, <code>test</code> and
+<code>lib</code>. The <code>gfm</code>, <code>docs</code>, and
+<code>latex</code> directories serve as the destination folders for GFM,
+HTML, and LaTeX files, respectively. Note that these three destination
+directories may not exist at the beginning of the conversion. The
+conversion program automatically makes the directories if they do not
+exist.</p>
 <ul>
-<li>src: This directory contains .src.md files and C-related source
+<li><code>src</code>: Contains the .src.md source files and C source
+code.</li>
+<li><code>image</code>: Contains image files, such as PNG or JPG.</li>
+<li><code>gfm</code>: Contains GFM files converted by Rake from the
+.src.md source files.</li>
+<li><code>docs</code>: Contains HTML files converted by Rake
+(<code>rake html</code>) from the .src.md source files.</li>
+<li><code>latex</code>: Contains a PDF file and intermediate LaTeX files
+converted by Rake (<code>rake pdf</code>) from the .src.md source
 files.</li>
-<li>image: This directory contains image files like png or jpg.</li>
-<li>gfm: <code>rake</code> converts .src.md files to GFM files and store
-them in this directory.</li>
-<li>docs: <code>rake html</code> will convert .src.md files to html
-files and store them in this directory.</li>
-<li>latex: <code>rake pdf</code> will convert .src.md files to latex
-files and store them in this directory. Finally it creates a pdf file in
-<code>latex</code> directory.</li>
-<li>lib: This directory includes ruby library files.</li>
-<li>test: This directory contains test files. The tests are carried out
-by typing <code>rake test</code> on the terminal.</li>
+<li><code>lib</code>: Contains ruby library files.</li>
+<li><code>test</code>: Contains test files, which are executed by
+running <code>rake test</code> in the terminal.</li>
 </ul>
-<h2 id="src-directory-and-the-top-directory">Src directory and the top
-directory</h2>
-<p>Src directory contains .src.md files and C-related source files. The
-top directory, which is gtk_tutorial directory, contains
-<code>Rakefile</code>, <code>src2md.rb</code> and some other files. When
-<code>Readme.md</code> is generated, it will be located at the top
-directory. <code>Readme.md</code> has title, abstract, table of contents
-with links to GFM files.</p>
-<p>Rakefile describes how to convert .src.md files into GFM, html and/or
-pdf files. Rake carries out the conversion according to the
-<code>Rakefile</code>.</p>
-<h2 id="the-name-of-files-in-src-directory">The name of files in src
-directory</h2>
-<p>Files in <code>src</code> directory are an abstract, sections of the
-document and other .src.md files. An <code>abstract.src.md</code>
-contains the abstract of this tutorial. Each section filename is “sec”,
-number of the section and “.src.md” suffix. For example, “sec1.src.md”,
-“sec5.src.md” or “sec12.src.md”. They are the files correspond to the
+<h2 id="organization-of-the-source-files">Organization of the Source
+Files</h2>
+<h3 id="the-src-and-root-directory">The <code>src</code> and Root
+Directory</h3>
+<p>The <code>src</code> directory contains .src.md files and C-related
+source files. The root directory (<code>Gtk4-tutorial</code>) contains
+the <code>Rakefile</code>, <code>src2md.rb</code>, and other essential
+files. The generated <code>README.md</code> is placed in this root
+directory. It includes the title, an overview, and a table of contents
+with links to the GFM files.</p>
+<p><code>Rakefile</code> describes how to convert .src.md files into
+GFM, HTML and/or PDF files. Rake converts the source files according to
+the <code>Rakefile</code>.</p>
+<h3 id="file-naming-in-the-src-directory">File Naming in the
+<code>src</code> Directory</h3>
+<p>The <code>src</code> directory contains <code>abstract.src.md</code>,
+individual section files, and other .src.md documents. Rake converts
+<code>abstract.src.md</code> to the overview of this tutorial such as
+<code>gfm/README.md</code>, <code>docs/index.html</code> and/or
+corresponding part of the PDF file. Section files are named using the
+prefix “sec” followed by the section number and the .src.md extension
+(e.g., <code>sec1.src.md</code>, <code>sec5.src.md</code>, or
+<code>sec12.src.md</code>). They are the files that correspond to the
 section 1, section 5 and section 12 respectively.</p>
-<h2 id="c-source-file-directory">C source file directory</h2>
-<p>Most of .src.md files have <code>@@@include</code> commands and they
-include C source files. Such C source files are located in the
-subdirectories of <code>src</code> directory.</p>
-<p>Those C files have been compiled and tested. When you compile source
+<h3 id="c-source-code-storage">C Source Code Storage</h3>
+<p>Most .src.md files use the <code>@@@include</code> command to pull in
+C source code. These C files are organized into subdirectories under the
+<code>src</code> directory.</p>
+<p>All included C files have been tested. When you compile the source
 files, some auxiliary files and a target file like <code>a.out</code>
-are created. Or <code>_build</code> directory is made when
-<code>meson</code> and <code>ninja</code> is used when compiling. Those
-files are not tracked by <code>git</code> because they are specified in
-<code>.gitignore</code>.</p>
-<p>The name of the subdirectories should be independent of section
-names. It is because of renumbering, which will be explained in the next
-subsection.</p>
+are created. When you use <code>meson</code> and <code>ninja</code> for
+compilation, they create a temporary <code>_build</code> directory.
+Those files and directories are ignored by Git as specified in the
+.gitignore file.</p>
 <h2 id="renumbering">Renumbering</h2>
-<p>Sometimes you might want to insert a new section. For example, you
-want to insert it between section 4 and section 5. You can make a
-temporary section 4.5, that is a rational number between 4 and 5.
-However, section numbers are usually integer so section 4.5 must be
-changed to section 5. And the numbers of the following sections must be
-increased by one.</p>
-<p>This renumbering is done by the <code>renumber</code> method in the
-<code>lib/lib_renumber.rb</code> file.</p>
+<p>Occasionally, you may need to insert a new section, for example,
+between Section 4 and Section 5. You can temporarily name it “Section
+4.5” to place it between the two. However, since section numbers should
+be integers, Section 4.5 must be renamed to Section 5, and all
+subsequent section numbers must be incremented by one.</p>
+<p>This renumbering process is handled automatically by the
+<code>renumber</code> method in <code>lib/lib_renumber.rb</code>. This
+method performs two main tasks:</p>
 <ul>
-<li>It changes file names.</li>
-<li>If there are references (links) to sections in .src.md files, the
-section numbers will be automatically renumbered.</li>
+<li>Renaming the physical files.</li>
+<li>Updating any internal links or references within the .src.md files
+to match the new section numbers.</li>
 </ul>
 <h2 id="rakefile">Rakefile</h2>
-<p>Rakefile is similar to Makefile but controlled by rake, which is a
-ruby script. Rakefile in this tutorial has the following tasks.</p>
+<p>The <code>Rakefile</code> is similar to a Makefile but is executed by
+Rake, a Ruby-based build tool. The <code>Rakefile</code> in this project
+defines the following tasks:</p>
 <ul>
-<li>md: generate GFM markdown files. This is the default.</li>
-<li>html: generate html files.</li>
-<li>pdf: generate latex files and a pdf file, which is compiled by
-lualatex.</li>
-<li>all: generate md, html and pdf files.</li>
-<li>clean: delete latex intermediate files.</li>
-<li>clobber: delete all the generated files.</li>
+<li><code>md</code>: Generates GFM Markdown files (default task).</li>
+<li><code>html</code>: Generates HTML files.</li>
+<li><code>pdf</code>: Generates LaTeX source files and compiles them
+into a PDF using lualatex.</li>
+<li><code>all</code>: Generates GFM, HTML and PDF files.</li>
+<li><code>clean</code>: Deletes LaTeX intermediate files.</li>
+<li><code>clobber</code>: Deletes all the generated files.</li>
 </ul>
-<p>Rake does renumbering before the tasks above.</p>
-<h2 id="generate-gfm-markdown-files">Generate GFM markdown files</h2>
-<p>Markdown files (GFM) are generated by rake.</p>
+<p>Rake automatically performs the renumbering process before executing
+any of these tasks.</p>
+<h3 id="generating-gfm-files">Generating GFM Files</h3>
+<p>You can generate GFM files by simply running Rake in your
+terminal:</p>
 <pre><code>$ rake</code></pre>
-<p>This command generates <code>Readme.md</code> with
-<code>src/abstract.src.md</code> and titles of each <code>.src.md</code>
-file. At the same time, it converts each .src.md file into a GFM file
-under the <code>gfm</code> directory. Navigation lines are added at the
-top and bottom of each markdown section file.</p>
-<p>You can describe width and height of images in .src.md files. For
-example,</p>
+<p>This command generates <code>README.md</code> from
+<code>src/abstract.src.md</code> and titles of each .src.md file. At the
+same time, it converts each .src.md file into a GFM file and store it
+under the <code>gfm</code> directory. Navigation links (e.g., “Next” and
+“Previous”) are automatically inserted to the top and bottom of each
+generated Markdown file.</p>
+<p>You can specify the width and height of images within .src.md files
+using the following syntax:</p>
 <pre><code>![sample image](../image/sample_image.png){width=10cm height=6cm}</code></pre>
-<p>The size between left brace and right brace is used in latex file and
-it is not fit to GFM syntax. So the size will be removed in the
-conversion.</p>
+<p>Since image size attributes (e.g., {width=10cm}) are specific to
+LaTeX and are not supported by GFM syntax, they are automatically
+stripped out during the conversion to GFM or HTML.</p>
 <p>If a .src.md file has relative URL links, they will be changed by
-conversion. Because .src.md files are located under the <code>src</code>
-directory and GFM files are located under the <code>gfm</code>
-directory. That means the base directory of the relative link are
-different. For example, <code>[src/sample.c](sample.c)</code> is
-translated to <code>[src/sample.c](../src/sample.c)</code>.</p>
-<p>If a link points another .src.md file, then the target filename will
-be changed to .md file. For example,
+conversion, since GFM files are located under the <code>gfm</code>
+directory while .src.md files lie in the <code>src</code> directory.
+That means the base directory of the relative links is different. For
+example, <code>[src/sample.c](sample.c)</code> is translated to
+<code>[src/sample.c](../src/sample.c)</code>.</p>
+<p>Similarly, if a link points another .src.md file, the target
+extension is automatically updated to .md. For example,
 <code>[Section 5](sec5.src.md)</code> is translated to
 <code>[Section 5](sec5.md)</code>.</p>
-<p>If you want to clean the directory, that means remove all the
-generated markdown files, type <code>rake clobber</code>.</p>
+<p>The following command cleans all the generated files.</p>
 <pre><code>$ rake clobber</code></pre>
 <p>Sometimes this is necessary before generating GFM files.</p>
 <pre><code>$ rake clobber
 $ rake</code></pre>
-<p>For example, if you append a new section and other files are still
-the same as before, <code>rake clobber</code> is necessary. Because the
-navigation of the previous section of the newly added section needs to
-be updated. If you don’t do <code>rake clobber</code>, then it won’t be
-updated because the the timestamp of .md file in gfm is newer than the
-one of .src.md file. In this case, using <code>touch</code> to the
-previous section .src.md also works to update the file.</p>
-<p>If you see the GitHub repository (ToshioCP/Gtk4-tutorial),
-<code>Readme.md</code> is shown below the code. And
-<code>Readme.md</code> includes links to each markdown files. The
-repository not only stores source files but also shows the whole
-tutorial.</p>
-<h2 id="generate-html-files">Generate html files</h2>
-<p>Src.md files can be translated to html files. You need pandoc to do
-this. Most linux distribution has pandoc package. Refer to your
-distribution document to install.</p>
-<p>Type <code>rake html</code> to generate html files.</p>
+<p>If you add a new section, running rake clobber is necessary to ensure
+that the “Next” and “Previous” navigation links are correctly updated.
+Without <code>rake clobber</code>, these links may not be updated
+because Rake’s dependency tracking will see that the existing .md files
+in the <code>gfm</code> directory are already newer than their
+corresponding .src.md sources. Alternatively, using the touch command on
+the previous section’s .src.md file will also force an update of its
+navigation links.</p>
+<p>If you view the GitHub repository (ToshioCP/Gtk4-tutorial),
+<code>README.md</code> is shown below the code. And
+<code>README.md</code> includes links to each Markdown file. This allows
+the GitHub repository to function not just as a source code host, but as
+a readable online version of the entire tutorial.</p>
+<h3 id="generating-html-files">Generating HTML Files</h3>
+<p>The .src.md files can also be converted into HTML. This process
+requires Pandoc. Most Linux distributions include a Pandoc package;
+please refer to your distribution’s documentation for installation
+instructions.</p>
+<p>Type <code>rake html</code> to generate HTML files.</p>
 <pre><code>$ rake html</code></pre>
-<p>First, it generates pandoc’s markdown files under <code>docs</code>
-directory. Then, pandoc converts them to html files. The width and
-height of image files are removed. Links to .src.md files will be
-converted like this.</p>
+<p>Rake first generates intermediate Pandoc-style Markdown files in the
+<code>docs</code> directory. Then, it executes <code>pandoc</code> to
+convert them into final HTML files. The width and height of image files
+are removed. Links to .src.md files will be converted like this.</p>
 <pre><code>[Section 5](sec5.src.md) =&gt; [Section 5](sec5.html)</code></pre>
-<p>Image files are copied to <code>docs/image</code> direcotiry and
-links to them will be converted like this:</p>
+<p>Image files are copied to the <code>docs/image</code> directory, and
+their links are updated accordingly:</p>
 <pre><code>[sample.png](../image/sample.png) =&gt; [sample.png](image/sample.png)</code></pre>
 <p>Other relative links will be removed.</p>
-<p><code>index.html</code> is the top html file. If you want to clean
-html files, type <code>rake clobber</code> or
+<p>The top HTML file <code>index.html</code> corresponds to the
+<code>README.md</code> file in the <code>gfm</code> directory. If you
+want to clean HTML files, type <code>rake clobber</code> or
 <code>cleanhtml</code>.</p>
 <pre><code>$ rake clobber</code></pre>
-<p>Every html file has a header
-(<code>&lt;head&gt; -- &lt;/head&gt;</code>). It is created by pandoc
-with ‘-s’ option. You can customize the output with your own template
-file for pandoc. Rake uses <code>lib/lib_mk_html_template.rb</code> to
-create its own template. The template inserts bootstrap CSS and
-Javascript through <code>jsDelivr</code>.</p>
+<p>Each HTML file includes a standard header
+(<code>&lt;head&gt; ... &lt;/head&gt;</code>), generated by Pandoc using
+the standalone (-s) option. You can customize the output with your own
+template file for pandoc. Rake uses
+<code>lib/lib_mk_html_template.rb</code> to create its own template.
+This template integrates Bootstrap CSS and JavaScript via the jsDelivr
+CDN.</p>
 <p>The <code>docs</code> directory contains all the necessary html
 files. They are used in the <a
 href="https://ToshioCP.github.io/Gtk4-tutorial">GitHub pages</a> of this
 repository.</p>
-<p>So if you want to publish this tutorial on your own web site, just
-upload the files in the <code>docs</code> directory to your site.</p>
-<h2 id="generate-a-pdf-file">Generate a pdf file</h2>
-<p>You need pandoc to convert markdown files into latex source
-files.</p>
-<p>Type <code>rake pdf</code> to generate latex files and finally make a
-pdf file.</p>
+<p>To publish this tutorial on your own website, simply upload the
+contents of the <code>docs</code> directory to your web server.</p>
+<h3 id="generating-a-pdf-file">Generating a PDF File</h3>
+<p>Converting Markdown files into LaTeX source files also requires
+Pandoc.</p>
+<p>Type <code>rake pdf</code> to generate laTeX files and finally create
+a PDF file.</p>
 <pre><code>$ rake pdf</code></pre>
-<p>First, it generates pandoc’s markdown files under <code>latex</code>
-directory. Then, pandoc converts them into latex files. Links to files
-or directories are removed because latex doesn’t support them. However,
-links to full URL and image files are kept. Image size is set with the
-size between the left brace and right brace.</p>
+<p>First, it generates Pandoc’s Markdown files under <code>latex</code>
+directory. Then, Pandoc converts them into LaTeX files. Links to local
+files or directories are removed during conversion because LaTeX does
+not support them in the same way. However, external URLs and image
+references are preserved. Image dimensions are determined by the values
+specified within the curly braces in the source file.</p>
 <pre><code>![sample image](../image/sample_image.png){width=10cm height=6cm}</code></pre>
-<p>You need to specify appropriate width and height. It is almost
-<code>0.015 x pixels</code> cm. For example, if the width of an image is
-400 pixels, the width in a latex file will be almost 6cm.</p>
-<p>A file <code>main.tex</code> is the root file of all the generated
-latex files. It has <code>\input</code> commands, which inserts each
-section file, between <code>\begin{document}</code> and
-<code>\end{document}</code>. It also has <code>\input</code>, which
-inserts <code>helper.tex</code>, in the preamble. Two files
-<code>main.tex</code> and <code>helper.tex</code> are created by
-<code>lib/lib_gen_main_tex.rb</code>. It has a sample markdown code and
-converts it witn <code>pandoc -s</code>. Then, it extracts the preamble
-in the generated file and puts it into <code>helper.tex</code>. You can
-customize <code>helper.tex</code> by modifying
+<p>You should specify appropriate dimensions; a good rule of thumb is
+roughly 0.015 x (width in pixels) cm. For example, if the width of an
+image is 400 pixels, the width in a LaTeX file will be almost 6cm.</p>
+<p>The file <code>main.tex</code> serves as the root LaTeX file. It
+contains <code>\input</code> commands between the
+<code>\begin{document}</code> and <code>\end{document}</code> tags to
+include each individual section. It also has <code>\input</code>, which
+inserts <code>helper.tex</code> in the preamble. Both
+<code>main.tex</code> and <code>helper.tex</code> are generated by the
+<code>lib/lib_gen_main_tex.rb</code> script. The script converts a
+sample piece of Markdown using <code>pandoc -s</code>, extracts the
+resulting LaTeX preamble, and saves it into <code>helper.tex</code>. You
+can customize <code>helper.tex</code> by modifying
 <code>lib/lib_gen_main_tex.rb</code>.</p>
-<p>Finally, lualatex compiles the <code>main.tex</code> into a pdf
+<p>Finally, LuaLaTeX compiles the <code>main.tex</code> into a PDF
 file.</p>
-<p>If you want to clean <code>latex</code> directory, type
+<p>If you want to clean the <code>latex</code> directory, type
 <code>rake clobber</code> or <code>rake cleanlatex</code></p>
 <pre><code>$ rake clobber</code></pre>
-<p>This removes all the latex source files and a pdf file.</p>
+<p>This removes all the LaTeX source files and a PDF file.</p>
         </div>
       </div>
     </div>
