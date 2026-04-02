@@ -1,139 +1,122 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec21.html">Prev: section21</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec23.html">Next: section23</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>TfeWindow</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec21.html">Prev: Section 21</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec23.html">Next: Section 23</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="tfewindow">TfeWindow</h1>
-<h2 id="the-tfe-window-and-xml-files">The Tfe window and XML files</h2>
-<p>The following is the window of Tfe.</p>
-<figure>
-<img src="image/tfe6.png" alt="tfe6" />
-<figcaption aria-hidden="true">tfe6</figcaption>
-</figure>
-<ul>
-<li>Open, save and close buttons are placed on the toolbar. In addition,
-GtkMenuButton is added to the toolbar. This button shows a popup menu
-when clicked on. Here, popup means widely, including pull-down
-menu.</li>
-<li>New, save-as, preference and quit items are put into the menu.</li>
-</ul>
-<p>This makes the most frequently used operation bound to the tool bar
-buttons. And the others are stored in behind the menus. So, it is more
-practical.</p>
-<p>The window is a composite widget. The definition is described in the
-XML file <code>tfewindow.ui</code>.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="tfewindow">TfeWindow</h1>
+        <h2 id="the-tfe-window-and-xml-files">The Tfe window and XML
+        files</h2>
+        <p>The following is the window of Tfe.</p>
+        <figure>
+        <img src="/images/tfe6.png" style="width:9.06cm;height:6.615cm"
+        alt="tfe6" />
+        <figcaption aria-hidden="true">tfe6</figcaption>
+        </figure>
+        <ul>
+        <li>Open, save and close buttons are placed on the toolbar. In
+        addition, GtkMenuButton is added to the toolbar. This button
+        shows a popup menu when clicked on. Here, popup means widely,
+        including pull-down menu.</li>
+        <li>New, save-as, preference and quit items are put into the
+        menu.</li>
+        </ul>
+        <p>This makes the most frequently used operation bound to the
+        tool bar buttons. And the others are stored in behind the menus.
+        So, it is more practical.</p>
+        <p>The window is a composite widget. The definition is described
+        in the XML file <code>tfewindow.ui</code>.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeWindow&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkApplicationWindow&quot;</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Text File Editor&lt;/<span class="kw">property</span>&gt;</span>
@@ -197,27 +180,29 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb1-62"><a href="#cb1-62"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb1-63"><a href="#cb1-63"></a>  &lt;/<span class="kw">template</span>&gt;</span>
 <span id="cb1-64"><a href="#cb1-64"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<ul>
-<li>Three buttons “Open”, “Save” and “Close” are defined. You can use
-two ways to catch the button click event. The one is “clicked” signal
-and the other is to register an action to the button. The first way is
-simple. You can connects the signal and your handler directly. The
-second way is like menu items. When the button is clicked, the
-corresponding action is activated. It is a bit complicated because you
-need to create an action and its “activate” handler in advance. But one
-advantage is you can connect two or more things to the action. For
-example, an accelerator can be connected to the action. Accelerators are
-keys that connects to actions. For example, Ctrl+O is often connected to
-a file open action. So, both open button and Ctrl+O activates an open
-action. The latter way is used in the XML file above.</li>
-<li>You can specify a theme icon to GtkMenuButton with “icon-name”
-poperty. The “open-menu-symbolic” is an image that is called hamburger
-menu.</li>
-</ul>
-<p>The <code>menu.ui</code> XML file defines the menu for
-GtkMenuButton.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        <ul>
+        <li>Three buttons “Open”, “Save” and “Close” are defined. You
+        can use two ways to catch the button click event. The one is
+        “clicked” signal and the other is to register an action to the
+        button. The first way is simple. You can connects the signal and
+        your handler directly. The second way is like menu items. When
+        the button is clicked, the corresponding action is activated. It
+        is a bit complicated because you need to create an action and
+        its “activate” handler in advance. But one advantage is you can
+        connect two or more things to the action. For example, an
+        accelerator can be connected to the action. Accelerators are
+        keys that connects to actions. For example, Ctrl+O is often
+        connected to a file open action. So, both open button and Ctrl+O
+        activates an open action. The latter way is used in the XML file
+        above.</li>
+        <li>You can specify a theme icon to GtkMenuButton with
+        “icon-name” poperty. The “open-menu-symbolic” is an image that
+        is called hamburger menu.</li>
+        </ul>
+        <p>The <code>menu.ui</code> XML file defines the menu for
+        GtkMenuButton.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menu&quot;</span>&gt;</span>
 <span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">section</span>&gt;</span>
@@ -244,11 +229,12 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb2-25"><a href="#cb2-25"></a>    &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb2-26"><a href="#cb2-26"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
 <span id="cb2-27"><a href="#cb2-27"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>There are four menu items and they are connected to actions.</p>
-<h2 id="the-header-file">The header file</h2>
-<p>The following is the codes of <code>tfewindow.h</code>.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
+        <p>There are four menu items and they are connected to
+        actions.</p>
+        <h2 id="the-header-file">The header file</h2>
+        <p>The following is the codes of <code>tfewindow.h</code>.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
@@ -263,16 +249,18 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-13"><a href="#cb3-13"></a></span>
 <span id="cb3-14"><a href="#cb3-14"></a>GtkWidget <span class="op">*</span></span>
 <span id="cb3-15"><a href="#cb3-15"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">);</span></span></code></pre></div>
-<ul>
-<li>5-6: <code>TFE_TYPE_WINDOW</code> definition and the
-<code>G_DECLARE_FINAL_TYPE</code> macro.</li>
-<li>8-15: Public functions. The first two functions creates a notebook
-page and the last function creates a window.</li>
-</ul>
-<h2 id="c-file">C file</h2>
-<h3 id="a-composite-widget">A composite widget</h3>
-<p>The following codes are extracted from <code>tfewindow.c</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <ul>
+        <li>5-6: <code>TFE_TYPE_WINDOW</code> definition and the
+        <code>G_DECLARE_FINAL_TYPE</code> macro.</li>
+        <li>8-15: Public functions. The first two functions creates a
+        notebook page and the last function creates a window.</li>
+        </ul>
+        <h2 id="c-file">C file</h2>
+        <h3 id="a-composite-widget">A composite widget</h3>
+        <p>The following codes are extracted from
+        <code>tfewindow.c</code>.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
@@ -318,24 +306,26 @@ page and the last function creates a window.</li>
 <span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>The program above is similar to <code>tfealert.c</code> and
-<code>tfepref.c</code>. It uses the same way to build a composite
-widget. But there’s one thing new. It is menu. The menu is built from
-the XML resource <code>menu.ui</code> and inserted into the menu button.
-It is done in the instance initialization function
-<code>tfe_window_init</code>.</p>
-<h3 id="actions">Actions</h3>
-<p>Actions can belong to an application or window. Tfe only has one top
-window and all the actions are registered in the window. For example,
-“close-all” action destroys the top level window and that brings the
-application to quit. You can make “app.quit” action instead of
-“win.close-all”. It’s your choice. If your application has two or more
-windows, both “app.quit” and “win:close-all”, which closes all the
-notebook pages on the window, may be necessary. Anyway, you need to
-consider that each action should belong to the application or a
-window.</p>
-<p>Actions are defined in the instance initialization function.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>The program above is similar to <code>tfealert.c</code> and
+        <code>tfepref.c</code>. It uses the same way to build a
+        composite widget. But there’s one thing new. It is menu. The
+        menu is built from the XML resource <code>menu.ui</code> and
+        inserted into the menu button. It is done in the instance
+        initialization function <code>tfe_window_init</code>.</p>
+        <h3 id="actions">Actions</h3>
+        <p>Actions can belong to an application or window. Tfe only has
+        one top window and all the actions are registered in the window.
+        For example, “close-all” action destroys the top level window
+        and that brings the application to quit. You can make “app.quit”
+        action instead of “win.close-all”. It’s your choice. If your
+        application has two or more windows, both “app.quit” and
+        “win:close-all”, which closes all the notebook pages on the
+        window, may be necessary. Anyway, you need to consider that each
+        action should belong to the application or a window.</p>
+        <p>Actions are defined in the instance initialization
+        function.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">/* ----- action ----- */</span></span>
@@ -351,33 +341,34 @@ window.</p>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>Two things are necessary, an array and the
-<code>g_action_map_add_action_entries</code> function.</p>
-<ul>
-<li>The element of the array is the GActionEntry structure. The
-structure has the following members:
-<ul>
-<li>an action name</li>
-<li>a handler for the activate signal</li>
-<li>the type of the parameter or NULL for no parameter</li>
-<li>the initial state for the action</li>
-<li>a handler for the change-state signal</li>
-</ul></li>
-<li>The actions above are stateless and have no parameters. So, the
-third parameter and after are all NULL.</li>
-<li>The function <code>g_action_map_add_action_entries</code> adds the
-actions in the <code>win_entries</code> array to the action map
-<code>win</code>. The last argument <code>win</code> is the user_data,
-which is the last argument of handlers.</li>
-<li>All the handlers are in <code>tfewindow.c</code> program and shown
-in the following subsections.</li>
-</ul>
-<h3 id="the-handlers-of-the-actions">The handlers of the actions</h3>
-<h4 id="open_activated">open_activated</h4>
-<p>The callback function <code>open_activated</code> is an activate
-signal handler on “open” action.</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>Two things are necessary, an array and the
+        <code>g_action_map_add_action_entries</code> function.</p>
+        <ul>
+        <li>The element of the array is the GActionEntry structure. The
+        structure has the following members:
+        <ul>
+        <li>an action name</li>
+        <li>a handler for the activate signal</li>
+        <li>the type of the parameter or NULL for no parameter</li>
+        <li>the initial state for the action</li>
+        <li>a handler for the change-state signal</li>
+        </ul></li>
+        <li>The actions above are stateless and have no parameters. So,
+        the third parameter and after are all NULL.</li>
+        <li>The function <code>g_action_map_add_action_entries</code>
+        adds the actions in the <code>win_entries</code> array to the
+        action map <code>win</code>. The last argument <code>win</code>
+        is the user_data, which is the last argument of handlers.</li>
+        <li>All the handlers are in <code>tfewindow.c</code> program and
+        shown in the following subsections.</li>
+        </ul>
+        <h3 id="the-handlers-of-the-actions">The handlers of the
+        actions</h3>
+        <h4 id="open_activated">open_activated</h4>
+        <p>The callback function <code>open_activated</code> is an
+        activate signal handler on “open” action.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>open_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a>  GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
@@ -385,12 +376,12 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-6"><a href="#cb6-6"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
-<p>It connects the “open-response” signal on the newly created
-TfeTextView instance and just calls <code>tfe_text_view_open</code>. It
-leaves the rest of the task to the signal handler
-<code>open_response_cb</code>.</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>It connects the “open-response” signal on the newly created
+        TfeTextView instance and just calls
+        <code>tfe_text_view_open</code>. It leaves the rest of the task
+        to the signal handler <code>open_response_cb</code>.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>open_response_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
@@ -409,17 +400,17 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-17"><a href="#cb7-17"></a>    g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb7-18"><a href="#cb7-18"></a>  <span class="op">}</span></span>
 <span id="cb7-19"><a href="#cb7-19"></a><span class="op">}</span></span></code></pre></div>
-<p>If the TfeTextView instance failed to read a file, it destroys the
-instance with <code>g_object_ref_sink</code> and
-<code>g_object_unref</code>. Since newly created widgets are floating,
-you need to convert the floating reference to the normal reference
-before you release it. The conversion is done with
-<code>g_object_ref_sink</code>.</p>
-<p>If the instance successfully read the file, it calls
-<code>notebook_page_build</code> to build a notebook page and add it to
-the GtkNotebook object.</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>If the TfeTextView instance failed to read a file, it
+        destroys the instance with <code>g_object_ref_sink</code> and
+        <code>g_object_unref</code>. Since newly created widgets are
+        floating, you need to convert the floating reference to the
+        normal reference before you release it. The conversion is done
+        with <code>g_object_ref_sink</code>.</p>
+        <p>If the instance successfully read the file, it calls
+        <code>notebook_page_build</code> to build a notebook page and
+        add it to the GtkNotebook object.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>notebook_page_build <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GtkWidget <span class="op">*</span>tv<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  <span class="co">// The arguments win, tb and filename are owned by the caller.</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a>  <span class="co">// If tv has a floating reference, it is consumed by the function.</span></span>
@@ -439,24 +430,27 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-18"><a href="#cb8-18"></a>  g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
 <span id="cb8-19"><a href="#cb8-19"></a>  g_signal_connect <span class="op">(</span>tb<span class="op">,</span> <span class="st">&quot;modified-changed&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>modified_changed_cb<span class="op">),</span> tv<span class="op">);</span></span>
 <span id="cb8-20"><a href="#cb8-20"></a><span class="op">}</span></span></code></pre></div>
-<p>This function is a kind of library function and it is called from the
-different three places.</p>
-<p>This function creates a new GtkScrolledWindow instance and sets its
-child to <code>tv</code>. Then it appends it to the GtkNotebook instance
-<code>win-&gt;nb</code>. And it sets the tab label to the filename.</p>
-<p>After the building, it connects two signals and handlers.</p>
-<ul>
-<li>“change-file” signal and <code>file_changed_cb</code> handler. If
-the TfeTextView instance changes the file, the handler is called and the
-notebook page tab is updated.</li>
-<li>“modified-changed” signal and <code>modified_changed_cb</code>
-handler. If the text in the buffer of TfeTextView instance is modified,
-an asterisk is added at the beginning of the filename of the notebook
-page tab. If the text is saved to the file, the asterisk is removed. The
-asterisk tells the user that the text has been modified or not.</li>
-</ul>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>This function is a kind of library function and it is called
+        from the different three places.</p>
+        <p>This function creates a new GtkScrolledWindow instance and
+        sets its child to <code>tv</code>. Then it appends it to the
+        GtkNotebook instance <code>win-&gt;nb</code>. And it sets the
+        tab label to the filename.</p>
+        <p>After the building, it connects two signals and handlers.</p>
+        <ul>
+        <li>“change-file” signal and <code>file_changed_cb</code>
+        handler. If the TfeTextView instance changes the file, the
+        handler is called and the notebook page tab is updated.</li>
+        <li>“modified-changed” signal and
+        <code>modified_changed_cb</code> handler. If the text in the
+        buffer of TfeTextView instance is modified, an asterisk is added
+        at the beginning of the filename of the notebook page tab. If
+        the text is saved to the file, the asterisk is removed. The
+        asterisk tells the user that the text has been modified or
+        not.</li>
+        </ul>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>file_changed_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a>  GtkNotebook <span class="op">*</span>nb <span class="op">=</span>  GTK_NOTEBOOK <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb9-4"><a href="#cb9-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
@@ -498,22 +492,22 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-40"><a href="#cb9-40"></a>  g_free <span class="op">(</span>text<span class="op">);</span></span>
 <span id="cb9-41"><a href="#cb9-41"></a>  gtk_notebook_set_tab_label <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> label<span class="op">);</span></span>
 <span id="cb9-42"><a href="#cb9-42"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="save_activated">save_activated</h4>
-<p>The callback function <code>save_activated</code> is an activate
-signal handler on “save” action.</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <h4 id="save_activated">save_activated</h4>
+        <p>The callback function <code>save_activated</code> is an
+        activate signal handler on “save” action.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>save_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a></span>
 <span id="cb10-6"><a href="#cb10-6"></a>  tfe_text_view_save <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a><span class="op">}</span></span></code></pre></div>
-<p>This function gets the current TfeTextView instance with the function
-<code>get_current_textview</code>. And it just calls
-<code>tfe_text_view_save</code>.</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
+        <p>This function gets the current TfeTextView instance with the
+        function <code>get_current_textview</code>. And it just calls
+        <code>tfe_text_view_save</code>.</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>get_current_textview <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb11-4"><a href="#cb11-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
@@ -524,12 +518,12 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-9"><a href="#cb11-9"></a>  tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
 <span id="cb11-10"><a href="#cb11-10"></a>  <span class="cf">return</span> TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">);</span></span>
 <span id="cb11-11"><a href="#cb11-11"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="close_activated">close_activated</h4>
-<p>The callback function <code>close_activated</code> is an activate
-signal handler on “close” action. It closes the current notebook
-page.</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <h4 id="close_activated">close_activated</h4>
+        <p>The callback function <code>close_activated</code> is an
+        activate signal handler on “close” action. It closes the current
+        notebook page.</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a>  TfeTextView <span class="op">*</span>tv<span class="op">;</span></span>
@@ -548,13 +542,13 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-17"><a href="#cb12-17"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
 <span id="cb12-18"><a href="#cb12-18"></a>  <span class="op">}</span></span>
 <span id="cb12-19"><a href="#cb12-19"></a><span class="op">}</span></span></code></pre></div>
-<p>If the text in the current page has been saved, it calls
-<code>notebook_page_close</code> to close the page. Otherwise, it sets
-<code>win-&gt;is_quit</code> to FALSE and show the alert dialog. The
-“response” signal on the dialog is connected to the handler
-<code>alert_response_cb</code>.</p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>If the text in the current page has been saved, it calls
+        <code>notebook_page_close</code> to close the page. Otherwise,
+        it sets <code>win-&gt;is_quit</code> to FALSE and show the alert
+        dialog. The “response” signal on the dialog is connected to the
+        handler <code>alert_response_cb</code>.</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>notebook_page_close <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">){</span></span>
 <span id="cb13-3"><a href="#cb13-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb13-4"><a href="#cb13-4"></a></span>
@@ -565,10 +559,11 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb13-9"><a href="#cb13-9"></a>    gtk_notebook_remove_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
 <span id="cb13-10"><a href="#cb13-10"></a>  <span class="op">}</span></span>
 <span id="cb13-11"><a href="#cb13-11"></a><span class="op">}</span></span></code></pre></div>
-<p>If the notebook has only one page, it destroys the window and the
-application quits. Otherwise, it removes the current page.</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>If the notebook has only one page, it destroys the window and
+        the application quits. Otherwise, it removes the current
+        page.</p>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a>alert_response_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response_id<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb14-4"><a href="#cb14-4"></a></span>
@@ -579,25 +574,25 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb14-9"><a href="#cb14-9"></a>      notebook_page_close <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb14-10"><a href="#cb14-10"></a>  <span class="op">}</span></span>
 <span id="cb14-11"><a href="#cb14-11"></a><span class="op">}</span></span></code></pre></div>
-<p>If the user clicked on the cacel button, it does nothing. If the user
-clicked on the accept button, which is the same as close button, it
-calls <code>notebook_page_close</code>. Note that
-<code>win-&gt;is_quit</code> has been set to FALSE in the
-<code>close_activated</code> function.</p>
-<h4 id="new_activated">new_activated</h4>
-<p>The callback function <code>new_activated</code> is an activate
-signal handler on “new” action.</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>If the user clicked on the cacel button, it does nothing. If
+        the user clicked on the accept button, which is the same as
+        close button, it calls <code>notebook_page_close</code>. Note
+        that <code>win-&gt;is_quit</code> has been set to FALSE in the
+        <code>close_activated</code> function.</p>
+        <h4 id="new_activated">new_activated</h4>
+        <p>The callback function <code>new_activated</code> is an
+        activate signal handler on “new” action.</p>
+        <div class="sourceCode" id="cb15"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a>new_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb15-3"><a href="#cb15-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb15-4"><a href="#cb15-4"></a></span>
 <span id="cb15-5"><a href="#cb15-5"></a>  tfe_window_notebook_page_new <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb15-6"><a href="#cb15-6"></a><span class="op">}</span></span></code></pre></div>
-<p>It just calls <code>tfe_window_notebook_page_new</code>, which is a
-public method of TfeWindow.</p>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">void</span></span>
+        <p>It just calls <code>tfe_window_notebook_page_new</code>,
+        which is a public method of TfeWindow.</p>
+        <div class="sourceCode" id="cb16"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">void</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a>tfe_window_notebook_page_new <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb16-3"><a href="#cb16-3"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
 <span id="cb16-4"><a href="#cb16-4"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
@@ -607,26 +602,26 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb16-8"><a href="#cb16-8"></a>  notebook_page_build <span class="op">(</span>win<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
 <span id="cb16-9"><a href="#cb16-9"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb16-10"><a href="#cb16-10"></a><span class="op">}</span></span></code></pre></div>
-<p>This function creates a new TfeTextView instance, “Untitled” family
-string and calls <code>notebook_page_build</code>.</p>
-<h4 id="saveas_activated">saveas_activated</h4>
-<p>The callback function <code>saveas_activated</code> is an activate
-signal handler on “saveas” action.</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>This function creates a new TfeTextView instance, “Untitled”
+        family string and calls <code>notebook_page_build</code>.</p>
+        <h4 id="saveas_activated">saveas_activated</h4>
+        <p>The callback function <code>saveas_activated</code> is an
+        activate signal handler on “saveas” action.</p>
+        <div class="sourceCode" id="cb17"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb17-3"><a href="#cb17-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb17-4"><a href="#cb17-4"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> get_current_textview <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
 <span id="cb17-5"><a href="#cb17-5"></a></span>
 <span id="cb17-6"><a href="#cb17-6"></a>  tfe_text_view_saveas <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
 <span id="cb17-7"><a href="#cb17-7"></a><span class="op">}</span></span></code></pre></div>
-<p>This function gets the current page TfeTextView instance and calls
-<code>tfe_text_view_saveas</code>.</p>
-<h4 id="pref_activated">pref_activated</h4>
-<p>The callback function <code>pref_activated</code> is an activate
-signal handler on “pref” action.</p>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>This function gets the current page TfeTextView instance and
+        calls <code>tfe_text_view_saveas</code>.</p>
+        <h4 id="pref_activated">pref_activated</h4>
+        <p>The callback function <code>pref_activated</code> is an
+        activate signal handler on “pref” action.</p>
+        <div class="sourceCode" id="cb18"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a>pref_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb18-3"><a href="#cb18-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb18-4"><a href="#cb18-4"></a>  GtkWidget <span class="op">*</span>pref<span class="op">;</span></span>
@@ -635,37 +630,39 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb18-7"><a href="#cb18-7"></a>  gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb18-8"><a href="#cb18-8"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref<span class="op">));</span></span>
 <span id="cb18-9"><a href="#cb18-9"></a><span class="op">}</span></span></code></pre></div>
-<p>This function creates a TfePref instance, which is a dialog, and sets
-the transient parent window to <code>win</code>. And it shows the
-dialog.</p>
-<h4 id="close_all_activated">close_all_activated</h4>
-<p>The callback function <code>close_all_activated</code> is an activate
-signal handler on “close_all” action.</p>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>This function creates a TfePref instance, which is a dialog,
+        and sets the transient parent window to <code>win</code>. And it
+        shows the dialog.</p>
+        <h4 id="close_all_activated">close_all_activated</h4>
+        <p>The callback function <code>close_all_activated</code> is an
+        activate signal handler on “close_all” action.</p>
+        <div class="sourceCode" id="cb19"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb19-2"><a href="#cb19-2"></a>close_all_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb19-3"><a href="#cb19-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb19-4"><a href="#cb19-4"></a></span>
 <span id="cb19-5"><a href="#cb19-5"></a>  <span class="cf">if</span> <span class="op">(</span>close_request_cb <span class="op">(</span>win<span class="op">)</span> <span class="op">==</span> FALSE<span class="op">)</span></span>
 <span id="cb19-6"><a href="#cb19-6"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb19-7"><a href="#cb19-7"></a><span class="op">}</span></span></code></pre></div>
-<p>It first calls the function <code>close_request_cb</code>. It is a
-callback function for the “close-request” signal on the top window. It
-returns FALSE if all the texts have been saved. Otherwise it returns
-TRUE.</p>
-<p>Therefore, function <code>close_all_activated</code> destroys the top
-window if all the texts have been saved. Otherwise it does nothing. But,
-the function <code>close_request_cb</code> shows an alert dialog and if
-the user clicks on the accept button, the window will be destroyed.</p>
-<h3 id="window-close-request-signal">Window “close-request” signal</h3>
-<p>GtkWindow has a “close-request” signal and it is emitted when the
-close button, which is x-shaped button at the top right corner, is
-clicked on. And the user handler is called before the default handler.
-If the user handler returns TRUE, the rest of the close process is
-skipped. If it returns FALSE, the rest will go on and the window will be
-destroyed.</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1"></a><span class="dt">static</span> gboolean</span>
+        <p>It first calls the function <code>close_request_cb</code>. It
+        is a callback function for the “close-request” signal on the top
+        window. It returns FALSE if all the texts have been saved.
+        Otherwise it returns TRUE.</p>
+        <p>Therefore, function <code>close_all_activated</code> destroys
+        the top window if all the texts have been saved. Otherwise it
+        does nothing. But, the function <code>close_request_cb</code>
+        shows an alert dialog and if the user clicks on the accept
+        button, the window will be destroyed.</p>
+        <h3 id="window-close-request-signal">Window “close-request”
+        signal</h3>
+        <p>GtkWindow has a “close-request” signal and it is emitted when
+        the close button, which is x-shaped button at the top right
+        corner, is clicked on. And the user handler is called before the
+        default handler. If the user handler returns TRUE, the rest of
+        the close process is skipped. If it returns FALSE, the rest will
+        go on and the window will be destroyed.</p>
+        <div class="sourceCode" id="cb20"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1"></a><span class="dt">static</span> gboolean</span>
 <span id="cb20-2"><a href="#cb20-2"></a>close_request_cb <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb20-3"><a href="#cb20-3"></a>  TfeAlert <span class="op">*</span>alert<span class="op">;</span></span>
 <span id="cb20-4"><a href="#cb20-4"></a></span>
@@ -680,16 +677,18 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb20-13"><a href="#cb20-13"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb20-14"><a href="#cb20-14"></a>  <span class="op">}</span></span>
 <span id="cb20-15"><a href="#cb20-15"></a><span class="op">}</span></span></code></pre></div>
-<p>First, it calls <code>is_saved_all</code> and checks if the texts
-have been saved. If so, it returns FALSE and the close process
-continues. Otherwise, it sets <code>win-&gt;is_quit</code> to TRUE and
-shows an alert dialog. When the user clicks on the accept or cancel
-button, the dialog disappears and “response” signal is emitted. Then,
-the handler <code>alert_response_cb</code> is called. It destroys the
-top window if the user clicked on the accept button since
-<code>win-&gt;is_quit</code> is TRUE. Otherwise it does nothing.</p>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1"></a><span class="dt">static</span> gboolean</span>
+        <p>First, it calls <code>is_saved_all</code> and checks if the
+        texts have been saved. If so, it returns FALSE and the close
+        process continues. Otherwise, it sets
+        <code>win-&gt;is_quit</code> to TRUE and shows an alert dialog.
+        When the user clicks on the accept or cancel button, the dialog
+        disappears and “response” signal is emitted. Then, the handler
+        <code>alert_response_cb</code> is called. It destroys the top
+        window if the user clicked on the accept button since
+        <code>win-&gt;is_quit</code> is TRUE. Otherwise it does
+        nothing.</p>
+        <div class="sourceCode" id="cb21"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1"></a><span class="dt">static</span> gboolean</span>
 <span id="cb21-2"><a href="#cb21-2"></a>is_saved_all <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb21-3"><a href="#cb21-3"></a>  <span class="dt">int</span> i<span class="op">,</span> n<span class="op">;</span></span>
 <span id="cb21-4"><a href="#cb21-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
@@ -706,18 +705,18 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb21-15"><a href="#cb21-15"></a>  <span class="op">}</span></span>
 <span id="cb21-16"><a href="#cb21-16"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb21-17"><a href="#cb21-17"></a><span class="op">}</span></span></code></pre></div>
-<h3 id="public-functions">Public functions</h3>
-<p>There are three public functions.</p>
-<ul>
-<li><code>void tfe_window_notebook_page_new (TfeWindow *win)</code></li>
-<li><code>void tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files)</code></li>
-<li><code>GtkWidget *tfe_window_new (GtkApplication *app)</code></li>
-</ul>
-<p>The first function is called when the application emits the
-“activate” signal. The second is for “open” signal. It is given three
-arguments and they are owned by the caller.</p>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1"></a><span class="dt">void</span></span>
+        <h3 id="public-functions">Public functions</h3>
+        <p>There are three public functions.</p>
+        <ul>
+        <li><code>void tfe_window_notebook_page_new (TfeWindow *win)</code></li>
+        <li><code>void tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files)</code></li>
+        <li><code>GtkWidget *tfe_window_new (GtkApplication *app)</code></li>
+        </ul>
+        <p>The first function is called when the application emits the
+        “activate” signal. The second is for “open” signal. It is given
+        three arguments and they are owned by the caller.</p>
+        <div class="sourceCode" id="cb22"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1"></a><span class="dt">void</span></span>
 <span id="cb22-2"><a href="#cb22-2"></a>tfe_window_notebook_page_new_with_files <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">**</span>files<span class="op">,</span> <span class="dt">int</span> n_files<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb22-3"><a href="#cb22-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb22-4"><a href="#cb22-4"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
@@ -732,16 +731,17 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb22-13"><a href="#cb22-13"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
 <span id="cb22-14"><a href="#cb22-14"></a>    tfe_window_notebook_page_new <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb22-15"><a href="#cb22-15"></a><span class="op">}</span></span></code></pre></div>
-<p>This function has a loop for the array <code>files</code>. It creates
-TfeTextView instance with the text from each file. And build a page with
-it.</p>
-<p>If an error happens and no page is created, it creates a new empty
-page.</p>
-<h3 id="full-codes-of-tfewindow.c">Full codes of tfewindow.c</h3>
-<p>The following is the full source codes of
-<code>tfewindow.c</code>.</p>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>This function has a loop for the array <code>files</code>. It
+        creates TfeTextView instance with the text from each file. And
+        build a page with it.</p>
+        <p>If an error happens and no page is created, it creates a new
+        empty page.</p>
+        <h3 id="full-codes-of-tfewindow.c">Full codes of
+        tfewindow.c</h3>
+        <p>The following is the full source codes of
+        <code>tfewindow.c</code>.</p>
+        <div class="sourceCode" id="cb23"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb23-2"><a href="#cb23-2"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
 <span id="cb23-3"><a href="#cb23-3"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
 <span id="cb23-4"><a href="#cb23-4"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
@@ -1076,9 +1076,10 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb23-333"><a href="#cb23-333"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb23-334"><a href="#cb23-334"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb23-335"><a href="#cb23-335"></a><span class="op">}</span></span></code></pre></div>
-        </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -99,7 +99,7 @@ $ comp tfv3
 $ ./a.out tfv3.c
 ~~~
 
-![File viewer](../image/screenshot_tfv3.png){width=6.3cm height=5.325cm}
+![File viewer](/images/screenshot_tfv3.png){width=6.3cm height=5.325cm}
 
 The function `main` has only two changes from the previous version.
 
@@ -177,7 +177,7 @@ GtkNotebook is a container widget that contains multiple widgets with tabs.
 It shows only one child at a time.
 Another child will be shown when its tab is clicked.
 
-![GtkNotebook](../image/screenshot_gtk_notebook.png){width=13.2cm height=5.325cm}
+![GtkNotebook](/images/screenshot_gtk_notebook.png){width=13.2cm height=5.325cm}
 
 The left image is the window at the startup.
 The file `pr1.c` is shown and its filename is in the left tab.

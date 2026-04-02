@@ -1,0 +1,80 @@
+/* --- Section 1: Pandoc Layout Helpers --- */
+span.smallcaps { font-variant: small-caps; }
+span.underline { text-decoration: underline; }
+div.column { display: inline-block; vertical-align: top; width: 50%; }
+div.hanging-indent { margin-left: 1.5em; text-indent: -1.5em; }
+ul.task-list { list-style: none; }
+
+/* --- Section 2: Code Blocks & Containers --- */
+div.sourceCode { margin: 1rem 0; }
+pre.sourceCode, 
+pre:not(.sourceCode) { 
+  margin: 10px; 
+  padding: 16px 10px 8px 10px; 
+  border: 2px solid silver; 
+  background-color: ghostwhite; 
+  border-radius: 0.25rem;
+  /* 横スクロールが必要な場合のための保険 */
+  overflow-x: auto; 
+}
+
+code { 
+  white-space: pre-wrap; 
+  word-wrap: break-word; 
+}
+
+pre > code.sourceCode > span { 
+  display: inline-block; 
+  line-height: 1.25; 
+}
+
+/* --- Section 3: Line Numbers (pre.numberSource) --- */
+pre.numberSource { 
+  margin-left: 3em; 
+  border-left: 1px solid #aaaaaa; 
+  padding-left: 4px; 
+}
+pre.numberSource code { counter-reset: source-line 0; }
+pre.numberSource code > span { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::after { 
+  content: counter(source-line);
+  position: relative; left: -1em; text-align: right; vertical-align: baseline;
+  border: none; display: inline-block;
+  -webkit-touch-callout: none; -webkit-user-select: none;
+  -khtml-user-select: none; -moz-user-select: none;
+  -ms-user-select: none; user-select: none;
+  padding: 0 4px; width: 4em;
+  color: #aaaaaa;
+}
+
+/* --- Section 4: Tables, Images, Figures --- */
+table { 
+  margin-left: auto; 
+  margin-right: auto; 
+  border-collapse: collapse; 
+  border: 1px solid #ccc; 
+  margin-bottom: 1rem;
+}
+th { 
+  padding: 2px 6px; 
+  border: 1px solid #ccc; 
+  background-color: ghostwhite; 
+}
+td { 
+  padding: 2px 6px; 
+  border: 1px solid #ccc; 
+}
+img { 
+  display: block; 
+  margin-left: auto; 
+  margin-right: auto; 
+  max-width: 100%; 
+  height: auto; 
+}
+figcaption { text-align: center; margin-top: 0.5rem; color: #666; }
+
+/* --- Section 5: Print Adjustments --- */
+@media print {
+  pre > code.sourceCode { white-space: pre-wrap; }
+  pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>TfeTextView API reference</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                                      </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="tfetextview-api-reference">TfeTextView API
+        reference</h1>
+        <h2 id="description">Description</h2>
+        <p>TfeTextView is a child object of GtkTextView. If its contents
+        comes from a file, it holds the pointer to the GFile. Otherwise,
+        the pointer is NULL.</p>
+        <h2 id="hierarchy">Hierarchy</h2>
+        <pre><code>GObject -- GInitiallyUnowned -- GtkWidget -- GtkTextView -- TfeTextView</code></pre>
+        <h2 id="ancestors">Ancestors</h2>
+        <ul>
+        <li>GtkTextView</li>
+        <li>GtkWidget</li>
+        <li>GInitiallyUnowned</li>
+        <li>GObject</li>
+        </ul>
+        <h2 id="constructors">Constructors</h2>
+        <ul>
+        <li><a href="#tfe_text_view_new">tfe_text_view_new ()</a></li>
+        <li><a
+        href="#tfe_text_view_new_with_file">tfe_text_view_new_with_file
+        ()</a></li>
+        </ul>
+        <h2 id="instance-methods">Instance methods</h2>
+        <ul>
+        <li><a href="#tfe_text_view_get_file">tfe_text_view_get_file
+        ()</a></li>
+        <li><a href="#tfe_text_view_open">tfe_text_view_open ()</a></li>
+        <li><a href="#tfe_text_view_save">tfe_text_view_save ()</a></li>
+        <li><a href="#tfe_text_view_saveas">tfe_text_view_saveas
+        ()</a></li>
+        </ul>
+        <h2 id="signals">Signals</h2>
+        <ul>
+        <li><a href="#change-file">Tfe.TextView::change-file</a></li>
+        <li><a
+        href="#open-response">Tfe.TextView::open-response</a></li>
+        </ul>
+        <h2 id="api-for-constructors-instance-methods-and-signals">API
+        for constructors, instance methods and signals</h2>
+        <p><strong>constructors</strong></p>
+        <h3 id="tfe_text_view_new">tfe_text_view_new()</h3>
+        <pre><code>GtkWidget *
+tfe_text_view_new (void);</code></pre>
+        <p>Creates a new TfeTextView instance and returns the pointer to
+        it as GtkWidget. If an error happens, it returns
+        <code>NULL</code>.</p>
+        <p>Return value</p>
+        <ul>
+        <li>a new TfeTextView.</li>
+        </ul>
+        <h3
+        id="tfe_text_view_new_with_file">tfe_text_view_new_with_file()</h3>
+        <pre><code>GtkWidget *
+tfe_text_view_new_with_file (GFile *file);</code></pre>
+        <p>Creates a new TfeTextView, reads the contents of the
+        <code>file</code> and set it to the GtkTextBuffer corresponds to
+        the newly created TfeTextView. Then returns the pointer to the
+        TfeTextView as GtkWidget. If an error happens, it returns
+        <code>NULL</code>.</p>
+        <p>Parameters</p>
+        <ul>
+        <li>file: a GFile</li>
+        </ul>
+        <p>Return value</p>
+        <ul>
+        <li>a new TfeTextView.</li>
+        </ul>
+        <p><strong>Instance methods</strong></p>
+        <h3 id="tfe_text_view_get_file">tfe_text_view_get_file()</h3>
+        <pre><code>GFile *
+tfe_text_view_get_file (TfeTextView *tv);</code></pre>
+        <p>Returns the copy of the GFile in the TfeTextView.</p>
+        <p>Parameters</p>
+        <ul>
+        <li>tv: a TfeTextView</li>
+        </ul>
+        <p>Return value</p>
+        <ul>
+        <li>the pointer to the GFile</li>
+        </ul>
+        <h3 id="tfe_text_view_open">tfe_text_view_open()</h3>
+        <pre><code>void
+tfe_text_view_open (TfeTextView *tv, GtkWidget *win);</code></pre>
+        <p>Shows a file chooser dialog so that a user can choose a file
+        to read. Then, read the file and set the buffer with the
+        contents. This function doesn’t return the I/O status. Instead,
+        the status is informed by <code>open-response</code> signal. The
+        caller needs to set a handler to this signal in advance.</p>
+        <p>parameters</p>
+        <ul>
+        <li>tv: a TfeTextView</li>
+        <li>win: the top level window</li>
+        </ul>
+        <h3 id="tfe_text_view_save">tfe_text_view_save()</h3>
+        <pre><code>void
+tfe_text_view_save (TfeTextView *tv);</code></pre>
+        <p>Saves the contents of the buffer to the file. If
+        <code>tv</code> holds a GFile, it is used. Otherwise, this
+        function shows a file chooser dialog so that the user can choose
+        a file to save.</p>
+        <p>Parameters</p>
+        <ul>
+        <li>tv: a TfeTextView</li>
+        </ul>
+        <h3 id="tfe_text_view_saveas">tfe_text_view_saveas()</h3>
+        <pre><code>void
+tfe_text_view_saveas (TfeTextView *tv);</code></pre>
+        <p>Saves the contents of the buffer to a file. This function
+        shows file chooser dialog so that a user can choose a file to
+        save.</p>
+        <p>Parameters</p>
+        <ul>
+        <li>tv: a TfeTextView</li>
+        </ul>
+        <p><strong>Signals</strong></p>
+        <h3 id="change-file">change-file</h3>
+        <pre><code>void
+user_function (TfeTextView *tv,
+               gpointer user_data)</code></pre>
+        <p>Emitted when the GFile in the TfeTextView object is changed.
+        The signal is emitted when:</p>
+        <ul>
+        <li>a new file is opened and read</li>
+        <li>a user chooses a file with the file chooser dialog and save
+        the contents.</li>
+        </ul>
+        <h3 id="open-response">open-response</h3>
+        <pre><code>void
+user_function (TfeTextView *tv,
+               TfeTextViewOpenResponseType response-id,
+               gpointer user_data)</code></pre>
+        <p>Emitted after the user calls <code>tfe_text_view_open</code>.
+        This signal informs the status of file I/O operation.</p>
+        <p><strong>Enumerations</strong></p>
+        <h3
+        id="tfetextviewopenresponsetype">TfeTextViewOpenResponseType</h3>
+        <p>Predefined values for the response id given by
+        <code>open-response</code> signal.</p>
+        <p>Members:</p>
+        <ul>
+        <li>TFE_OPEN_RESPONSE_SUCCESS: The file is successfully
+        opened.</li>
+        <li>TFE_OPEN_RESPONSE_CANCEL: Reading file is canceled by the
+        user.</li>
+        <li>TFE_OPEN_RESPONSE_ERROR: An error happened during the
+        opening or reading process.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

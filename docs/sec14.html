@@ -1,129 +1,109 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec13.html">Prev: section13</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec15.html">Next: section15</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Functions in GtkNotebook</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec13.html">Prev: Section 13</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec15.html">Next: Section 15</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="functions-in-gtknotebook">Functions in GtkNotebook</h1>
-<p>GtkNotebook is a very important object in the text file editor
-<code>tfe</code>. It connects the application and TfeTextView objects. A
-set of public functions are declared in <code>tfenotebook.h</code>. The
-word “tfenotebook” is used only in filenames. There’s no “TfeNotebook”
-object.</p>
-<p>The source files are in the directory <code>src/tfe5</code>. You can
-get them by downloading the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">void</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="functions-in-gtknotebook">Functions in GtkNotebook</h1>
+        <p>GtkNotebook is a very important object in the text file
+        editor <code>tfe</code>. It connects the application and
+        TfeTextView objects. A set of public functions are declared in
+        <code>tfenotebook.h</code>. The word “tfenotebook” is used only
+        in filenames. There’s no “TfeNotebook” object.</p>
+        <p>The source files are in the directory <code>src/tfe5</code>.
+        You can get them by downloading the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">void</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>notebook_page_save<span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">);</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>
 <span id="cb1-4"><a href="#cb1-4"></a><span class="dt">void</span></span>
@@ -137,38 +117,43 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-12"><a href="#cb1-12"></a></span>
 <span id="cb1-13"><a href="#cb1-13"></a><span class="dt">void</span></span>
 <span id="cb1-14"><a href="#cb1-14"></a>notebook_page_new <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">);</span></span></code></pre></div>
-<p>This header file describes the public functions in
-<code>tfenotebook.c</code>.</p>
-<ul>
-<li>1-2: <code>notebook_page_save</code> saves the current page to the
-file of which the name specified in the tab. If the name is
-<code>untitled</code> or <code>untitled</code> followed by digits, a
-file chooser dialog appears and a user can choose or specify a
-filename.</li>
-<li>4-5: <code>notebook_page_close</code> closes the current page.</li>
-<li>7-8: <code>notebook_page_open</code> shows a file chooser dialog and
-a user can choose a file. The contents of the file is inserted to a new
-page.</li>
-<li>10-11: <code>notebook_page_new_with_file</code> creates a new page
-and a file given as an argument is read and inserted into the page.</li>
-<li>13-14: <code>notebook_page_new</code> creates a new empty page.</li>
-</ul>
-<p>You probably find that the functions except
-<code>notebook_page_close</code> are higher level functions of</p>
-<ul>
-<li><code>tfe_text_view_save</code></li>
-<li><code>tef_text_view_open</code></li>
-<li><code>tfe_text_view_new_with_file</code></li>
-<li><code>tfe_text_view_new</code></li>
-</ul>
-<p>respectively.</p>
-<p>There are two layers. One of them is <code>tfe_text_view ...</code>,
-which is the lower level layer. The other is <code>notebook ...</code>,
-which is the higher level layer.</p>
-<p>Now let’s look at the program of each function.</p>
-<h2 id="notebook_page_new">notebook_page_new</h2>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">char</span><span class="op">*</span></span>
+        <p>This header file describes the public functions in
+        <code>tfenotebook.c</code>.</p>
+        <ul>
+        <li>1-2: <code>notebook_page_save</code> saves the current page
+        to the file of which the name specified in the tab. If the name
+        is <code>untitled</code> or <code>untitled</code> followed by
+        digits, a file chooser dialog appears and a user can choose or
+        specify a filename.</li>
+        <li>4-5: <code>notebook_page_close</code> closes the current
+        page.</li>
+        <li>7-8: <code>notebook_page_open</code> shows a file chooser
+        dialog and a user can choose a file. The contents of the file is
+        inserted to a new page.</li>
+        <li>10-11: <code>notebook_page_new_with_file</code> creates a
+        new page and a file given as an argument is read and inserted
+        into the page.</li>
+        <li>13-14: <code>notebook_page_new</code> creates a new empty
+        page.</li>
+        </ul>
+        <p>You probably find that the functions except
+        <code>notebook_page_close</code> are higher level functions
+        of</p>
+        <ul>
+        <li><code>tfe_text_view_save</code></li>
+        <li><code>tef_text_view_open</code></li>
+        <li><code>tfe_text_view_new_with_file</code></li>
+        <li><code>tfe_text_view_new</code></li>
+        </ul>
+        <p>respectively.</p>
+        <p>There are two layers. One of them is
+        <code>tfe_text_view ...</code>, which is the lower level layer.
+        The other is <code>notebook ...</code>, which is the higher
+        level layer.</p>
+        <p>Now let’s look at the program of each function.</p>
+        <h2 id="notebook_page_new">notebook_page_new</h2>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">char</span><span class="op">*</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>get_untitled <span class="op">()</span> <span class="op">{</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="dt">static</span> <span class="dt">int</span> c <span class="op">=</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>  <span class="cf">if</span> <span class="op">(++</span>c <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> </span>
@@ -205,44 +190,53 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-35"><a href="#cb2-35"></a>  notebook_page_build <span class="op">(</span>nb<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
 <span id="cb2-36"><a href="#cb2-36"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb2-37"><a href="#cb2-37"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>26-37: The function <code>notebook_page_new</code>.</li>
-<li>28: The function <code>g_return_if_fail</code> checks the argument.
-It’s necessary because the function is public.</li>
-<li>33: Creates TfeTextView object.</li>
-<li>34: Creates filename, which is “Untitled”, “Untitled1”, … .</li>
-<li>1-8: The function <code>get_untitled</code>.</li>
-<li>3: Static variable <code>c</code> is initialized at the first call
-of this function. After that <code>c</code> keeps its value unless it is
-changed explicitly.</li>
-<li>4-7: Increases <code>c</code> by one and if it is zero, it returns
-“Untitled”. If it is a positive integer, it returns “Untitled&lt;the
-integer&gt;”, for example, “Untitled1”, “Untitled2”, and so on. The
-function <code>g_strdup_printf</code> creates a string and it should be
-freed by <code>g_free</code> when it becomes useless. The caller of
-<code>get_untitled</code> is in charge of freeing the string.</li>
-<li>36: Calls <code>notebook_page_build</code> to build a new page.</li>
-<li>37: Frees <code>filename</code>.</li>
-<li>10- 24: The function <code>notebook_page_build</code>. A parameter
-with <code>const</code> qualifier doesn’t change in the function. It
-means that the argument <code>filename</code> is owned by the caller.
-The caller needs to free it when it becomes useless.</li>
-<li>12: Creates GtkScrolledWindow.</li>
-<li>17: Inserts <code>tv</code> to GtkScrolledWindow as a child.</li>
-<li>18-19: Creates GtkLabel, then appends <code>scr</code> and
-<code>lab</code> to the GtkNotebook instance <code>nb</code>.</li>
-<li>20-21: Sets “tab-expand” property to TRUE. The function
-<code>g_object_set</code> sets properties on an object. The object can
-be any object derived from GObject. In many cases, an object has its own
-function to set its properties, but sometimes doesn’t. In that case, use
-<code>g_object_set</code> to set the property.</li>
-<li>22: Sets the current page to the newly created page.</li>
-<li>23: Connects “change-file” signal and the handler
-<code>file_changed_cb</code>.</li>
-</ul>
-<h2 id="notebook_page_new_with_file">notebook_page_new_with_file</h2>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
+        <ul>
+        <li>26-37: The function <code>notebook_page_new</code>.</li>
+        <li>28: The function <code>g_return_if_fail</code> checks the
+        argument. It’s necessary because the function is public.</li>
+        <li>33: Creates TfeTextView object.</li>
+        <li>34: Creates filename, which is “Untitled”, “Untitled1”, …
+        .</li>
+        <li>1-8: The function <code>get_untitled</code>.</li>
+        <li>3: Static variable <code>c</code> is initialized at the
+        first call of this function. After that <code>c</code> keeps its
+        value unless it is changed explicitly.</li>
+        <li>4-7: Increases <code>c</code> by one and if it is zero, it
+        returns “Untitled”. If it is a positive integer, it returns
+        “Untitled&lt;the integer&gt;”, for example, “Untitled1”,
+        “Untitled2”, and so on. The function
+        <code>g_strdup_printf</code> creates a string and it should be
+        freed by <code>g_free</code> when it becomes useless. The caller
+        of <code>get_untitled</code> is in charge of freeing the
+        string.</li>
+        <li>36: Calls <code>notebook_page_build</code> to build a new
+        page.</li>
+        <li>37: Frees <code>filename</code>.</li>
+        <li>10- 24: The function <code>notebook_page_build</code>. A
+        parameter with <code>const</code> qualifier doesn’t change in
+        the function. It means that the argument <code>filename</code>
+        is owned by the caller. The caller needs to free it when it
+        becomes useless.</li>
+        <li>12: Creates GtkScrolledWindow.</li>
+        <li>17: Inserts <code>tv</code> to GtkScrolledWindow as a
+        child.</li>
+        <li>18-19: Creates GtkLabel, then appends <code>scr</code> and
+        <code>lab</code> to the GtkNotebook instance
+        <code>nb</code>.</li>
+        <li>20-21: Sets “tab-expand” property to TRUE. The function
+        <code>g_object_set</code> sets properties on an object. The
+        object can be any object derived from GObject. In many cases, an
+        object has its own function to set its properties, but sometimes
+        doesn’t. In that case, use <code>g_object_set</code> to set the
+        property.</li>
+        <li>22: Sets the current page to the newly created page.</li>
+        <li>23: Connects “change-file” signal and the handler
+        <code>file_changed_cb</code>.</li>
+        </ul>
+        <h2
+        id="notebook_page_new_with_file">notebook_page_new_with_file</h2>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>notebook_page_new_with_file <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>  g_return_if_fail<span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">));</span></span>
@@ -256,16 +250,16 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-12"><a href="#cb3-12"></a>  notebook_page_build <span class="op">(</span>nb<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
 <span id="cb3-13"><a href="#cb3-13"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb3-14"><a href="#cb3-14"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>9-10: Calls <code>tfe_text_view_new_with_file</code>. If the
-function returns NULL, an error has happened. Then, it does nothing and
-returns.</li>
-<li>11-13: Gets the filename, builds a new page and frees
-<code>filename</code>.</li>
-</ul>
-<h2 id="notebook_page_open">notebook_page_open</h2>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>9-10: Calls <code>tfe_text_view_new_with_file</code>. If the
+        function returns NULL, an error has happened. Then, it does
+        nothing and returns.</li>
+        <li>11-13: Gets the filename, builds a new page and frees
+        <code>filename</code>.</li>
+        </ul>
+        <h2 id="notebook_page_open">notebook_page_open</h2>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>open_response_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
@@ -292,65 +286,71 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-25"><a href="#cb4-25"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> nb<span class="op">);</span></span>
 <span id="cb4-26"><a href="#cb4-26"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>gtk_widget_get_ancestor <span class="op">(</span>GTK_WIDGET <span class="op">(</span>nb<span class="op">),</span> GTK_TYPE_WINDOW<span class="op">)));</span></span>
 <span id="cb4-27"><a href="#cb4-27"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>18-27: The function <code>notebook_page_open</code>.</li>
-<li>24: Creates TfeTextView object.</li>
-<li>25: Connects the signal “open-response” and the handler
-<code>open_response_cb</code>.</li>
-<li>26: Calls <code>tfe_text_view_open</code>. The “open-response”
-signal will be emitted later in this function to inform the result.</li>
-<li>1-16: The handler <code>open_response_cb</code>.</li>
-<li>6-8: If the response code is not
-<code>TFE_OPEN_RESPONSE_SUCCESS</code>, the instance <code>tv</code>
-will be destroyed. It has floating reference, which will be explained
-later. A floating reference needs to be converted into an ordinary
-reference before releasing it. The function
-<code>g_object_ref_sink</code> does that. After that, the function
-<code>g_object_unref</code> releases <code>tv</code> and decreases the
-reference count by one. Finally the reference count becomes zero and
-<code>tv</code> is destroyed.</li>
-<li>9-15: Otherwise, it builds a new page with <code>tv</code>.</li>
-</ul>
-<h2 id="floating-reference">Floating reference</h2>
-<p>All the widgets are derived from GInitiallyUnowned. GObject and
-GInitiallyUnowned are almost the same. The difference is like this. When
-an instance of GInitiallyUnowned is created, the instance has a
-“floating reference”. On the other hand, when an instance of GObject
-(not GInitiallyUnowned) is created, it has “normal reference”. Their
-descendants inherits them, so every widget has a floating reference just
-after the creation. Non-widget class, for example, GtkTextBuffer is a
-direct sub class of GObject and it has normal reference.</p>
-<p>The function <code>g_object_ref_sink</code> converts the floating
-reference into a normal reference. If the instance doesn’t have a
-floating reference, <code>g_object_ref_sink</code> simply increases the
-reference count by one. It is used when an widget is added to another
-widget as a child.</p>
-<pre><code>GtkTextView *tv = gtk_text_view_new (); // Floating reference
+        <ul>
+        <li>18-27: The function <code>notebook_page_open</code>.</li>
+        <li>24: Creates TfeTextView object.</li>
+        <li>25: Connects the signal “open-response” and the handler
+        <code>open_response_cb</code>.</li>
+        <li>26: Calls <code>tfe_text_view_open</code>. The
+        “open-response” signal will be emitted later in this function to
+        inform the result.</li>
+        <li>1-16: The handler <code>open_response_cb</code>.</li>
+        <li>6-8: If the response code is not
+        <code>TFE_OPEN_RESPONSE_SUCCESS</code>, the instance
+        <code>tv</code> will be destroyed. It has floating reference,
+        which will be explained later. A floating reference needs to be
+        converted into an ordinary reference before releasing it. The
+        function <code>g_object_ref_sink</code> does that. After that,
+        the function <code>g_object_unref</code> releases
+        <code>tv</code> and decreases the reference count by one.
+        Finally the reference count becomes zero and <code>tv</code> is
+        destroyed.</li>
+        <li>9-15: Otherwise, it builds a new page with
+        <code>tv</code>.</li>
+        </ul>
+        <h2 id="floating-reference">Floating reference</h2>
+        <p>All the widgets are derived from GInitiallyUnowned. GObject
+        and GInitiallyUnowned are almost the same. The difference is
+        like this. When an instance of GInitiallyUnowned is created, the
+        instance has a “floating reference”. On the other hand, when an
+        instance of GObject (not GInitiallyUnowned) is created, it has
+        “normal reference”. Their descendants inherits them, so every
+        widget has a floating reference just after the creation.
+        Non-widget class, for example, GtkTextBuffer is a direct sub
+        class of GObject and it has normal reference.</p>
+        <p>The function <code>g_object_ref_sink</code> converts the
+        floating reference into a normal reference. If the instance
+        doesn’t have a floating reference,
+        <code>g_object_ref_sink</code> simply increases the reference
+        count by one. It is used when an widget is added to another
+        widget as a child.</p>
+        <pre><code>GtkTextView *tv = gtk_text_view_new (); // Floating reference
 GtkScrolledWindow *scr = gtk_scrolled_window_new ();
 gtk_scrolled_window_set_child (scr, tv); // Scrolled window sink the tv&#39;s floating reference and tv&#39;s reference count becomes one.</code></pre>
-<p>When <code>tv</code> is added to <code>scr</code> as a child,
-<code>g_object_ref_sink</code> is used.</p>
-<pre><code>g_object_ref_sink (tv);</code></pre>
-<p>So, the floating reference is converted into an ordinary reference.
-That is to say, floating reference is removed, and the normal reference
-count is one. Thanks to this, the caller doesn’t need to decrease tv’s
-reference count. If an Object_A is not a descendant of
-GInitiallyUnowned, the program is like this:</p>
-<pre><code>Object_A *obj_a = object_a_new (); // reference count is one
+        <p>When <code>tv</code> is added to <code>scr</code> as a child,
+        <code>g_object_ref_sink</code> is used.</p>
+        <pre><code>g_object_ref_sink (tv);</code></pre>
+        <p>So, the floating reference is converted into an ordinary
+        reference. That is to say, floating reference is removed, and
+        the normal reference count is one. Thanks to this, the caller
+        doesn’t need to decrease tv’s reference count. If an Object_A is
+        not a descendant of GInitiallyUnowned, the program is like
+        this:</p>
+        <pre><code>Object_A *obj_a = object_a_new (); // reference count is one
 GtkScrolledWindow *scr = gtk_scrolled_window_new ();
 gtk_scrolled_window_set_child (scr, obj_a); // obj_a&#39;s reference count is two
 // obj_a is referred by the caller (this program) and scrolled window
 g_object_unref (obj_a); // obj_a&#39;s reference count is one because the caller no longer refers obj_a.</code></pre>
-<p>This example tells us that the caller needs to unref
-<code>obj_a</code>.</p>
-<p>If you use <code>g_object_unref</code> to an instance that has a
-floating reference, you need to convert the floating reference to a
-normal reference in advance. See <a
-href="https://docs.gtk.org/gobject/floating-refs.html">GObject API
-reference</a> for further information.</p>
-<h2 id="notebook_page_close">notebook_page_close</h2>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">void</span></span>
+        <p>This example tells us that the caller needs to unref
+        <code>obj_a</code>.</p>
+        <p>If you use <code>g_object_unref</code> to an instance that
+        has a floating reference, you need to convert the floating
+        reference to a normal reference in advance. See <a
+        href="https://docs.gtk.org/gobject/floating-refs.html">GObject
+        API reference</a> for further information.</p>
+        <h2 id="notebook_page_close">notebook_page_close</h2>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>notebook_page_close <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
@@ -365,18 +365,19 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-13"><a href="#cb8-13"></a>    gtk_notebook_remove_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> i<span class="op">);</span></span>
 <span id="cb8-14"><a href="#cb8-14"></a>  <span class="op">}</span></span>
 <span id="cb8-15"><a href="#cb8-15"></a><span class="op">}</span></span></code></pre></div>
-<p>This function closes the current page. If the page is the only page
-the notebook has, then the function destroys the top-level window and
-quits the application.</p>
-<ul>
-<li>8-10: If the page is the only page the notebook has, it calls
-<code>gtk_window_destroy</code> to destroy the top-level window.</li>
-<li>11-13: Otherwise, removes the current page. The child widget
-(TfeTextView) is also destroyed.</li>
-</ul>
-<h2 id="notebook_page_save">notebook_page_save</h2>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
+        <p>This function closes the current page. If the page is the
+        only page the notebook has, then the function destroys the
+        top-level window and quits the application.</p>
+        <ul>
+        <li>8-10: If the page is the only page the notebook has, it
+        calls <code>gtk_window_destroy</code> to destroy the top-level
+        window.</li>
+        <li>11-13: Otherwise, removes the current page. The child widget
+        (TfeTextView) is also destroyed.</li>
+        </ul>
+        <h2 id="notebook_page_save">notebook_page_save</h2>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> TfeTextView <span class="op">*</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>get_current_textview <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb9-4"><a href="#cb9-4"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
@@ -397,31 +398,32 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-19"><a href="#cb9-19"></a>  tv <span class="op">=</span> get_current_textview <span class="op">(</span>nb<span class="op">);</span></span>
 <span id="cb9-20"><a href="#cb9-20"></a>  tfe_text_view_save <span class="op">(</span>tv<span class="op">);</span></span>
 <span id="cb9-21"><a href="#cb9-21"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>13-21: <code>notebook_page_save</code>.</li>
-<li>19: Gets the TfeTextView instance belongs to the current page. The
-caller doesn’t have the ownership of <code>tv</code> so you don’t need
-to care about freeing it.</li>
-<li>20: Calls <code>tfe_text_view_save</code>.</li>
-<li>1-11: <code>get_current_textview</code>. This function gets the
-TfeTextView object belongs to the current page.</li>
-<li>7: Gets the page number of the current page.</li>
-<li>8: Gets the child widget <code>scr</code>, which is a
-GtkScrolledWindow instance, of the current page. The object
-<code>scr</code> is owned by the notebook <code>nb</code>. So, the
-caller doesn’t need to free it.</li>
-<li>9-10: Gets the child widget of <code>scr</code>, which is a
-TfeTextView instance, and returns it. The returned instance is owned by
-<code>scr</code> and the caller of <code>get_cuurent_textview</code>
-doesn’t need to care about freeing it.</li>
-</ul>
-<h2 id="file_changed_cb-handler">file_changed_cb handler</h2>
-<p>The function <code>file_changed_cb</code> is a handler connected to
-“change-file” signal. If a file in a TfeTextView instance is changed,
-the instance emits this signal. This handler changes the label of the
-GtkNotebookPage.</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>13-21: <code>notebook_page_save</code>.</li>
+        <li>19: Gets the TfeTextView instance belongs to the current
+        page. The caller doesn’t have the ownership of <code>tv</code>
+        so you don’t need to care about freeing it.</li>
+        <li>20: Calls <code>tfe_text_view_save</code>.</li>
+        <li>1-11: <code>get_current_textview</code>. This function gets
+        the TfeTextView object belongs to the current page.</li>
+        <li>7: Gets the page number of the current page.</li>
+        <li>8: Gets the child widget <code>scr</code>, which is a
+        GtkScrolledWindow instance, of the current page. The object
+        <code>scr</code> is owned by the notebook <code>nb</code>. So,
+        the caller doesn’t need to free it.</li>
+        <li>9-10: Gets the child widget of <code>scr</code>, which is a
+        TfeTextView instance, and returns it. The returned instance is
+        owned by <code>scr</code> and the caller of
+        <code>get_cuurent_textview</code> doesn’t need to care about
+        freeing it.</li>
+        </ul>
+        <h2 id="file_changed_cb-handler">file_changed_cb handler</h2>
+        <p>The function <code>file_changed_cb</code> is a handler
+        connected to “change-file” signal. If a file in a TfeTextView
+        instance is changed, the instance emits this signal. This
+        handler changes the label of the GtkNotebookPage.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>file_changed_cb <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a>  GtkWidget <span class="op">*</span>label<span class="op">;</span></span>
@@ -439,22 +441,24 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb10-16"><a href="#cb10-16"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb10-17"><a href="#cb10-17"></a>  gtk_notebook_set_tab_label <span class="op">(</span>nb<span class="op">,</span> scr<span class="op">,</span> label<span class="op">);</span></span>
 <span id="cb10-18"><a href="#cb10-18"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>8: Gets the GFile instance from <code>tv</code>.</li>
-<li>9: Gets the GkScrolledWindow instance which is the parent widget of
-<code>tv</code>.</li>
-<li>10-12: If <code>file</code> points a GFile instance, the filename of
-the GFile is assigned to <code>filename</code>. Then, unref the GFile
-object <code>file</code>.</li>
-<li>13-14: Otherwise (file is NULL), a string
-<code>Untitled(number)</code> is assigned to <code>filename</code>.</li>
-<li>15-17: Creates a GtkLabel instance <code>label</code> with the
-filename and set the label of the GtkNotebookPage with
-<code>label</code>.</li>
-</ul>
-        </div>
+        <ul>
+        <li>8: Gets the GFile instance from <code>tv</code>.</li>
+        <li>9: Gets the GkScrolledWindow instance which is the parent
+        widget of <code>tv</code>.</li>
+        <li>10-12: If <code>file</code> points a GFile instance, the
+        filename of the GFile is assigned to <code>filename</code>.
+        Then, unref the GFile object <code>file</code>.</li>
+        <li>13-14: Otherwise (file is NULL), a string
+        <code>Untitled(number)</code> is assigned to
+        <code>filename</code>.</li>
+        <li>15-17: Creates a GtkLabel instance <code>label</code> with
+        the filename and set the label of the GtkNotebookPage with
+        <code>label</code>.</li>
+        </ul>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

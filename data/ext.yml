@@ -1,0 +1,30 @@
+# Language mapping for G4T Source Include.
+# Defines the 'info string' for fenced code blocks based on file extensions or filenames.
+
+# Target: GitHub Flavored Markdown
+gfm:
+  meson.build: meson
+  .c: c
+  .h: c
+  .lex: lex
+  .md: markdown
+  .rb: ruby
+  .txt: text
+  .ui: xml
+  .xml: xml
+  .y: bison
+  comp: shell
+
+# Target: Pandoc Markdown (HTML/PDF output)
+pandoc_markdown:
+  meson.build: python   # Meson is not native to Pandoc; Python provides the best highlight.
+  .c: c
+  .h: c
+  .lex: lex
+  .md: markdown
+  .rb: ruby
+  .txt: ""       # No info string for plain text to avoid 'text' identifier error.
+  .ui: xml
+  .xml: xml
+  .y: yacc
+  comp: bash     # Corrected: 'comp' is a shell script, not yacc.

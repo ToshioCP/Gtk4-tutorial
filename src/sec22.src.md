@@ -4,7 +4,7 @@
 
 The following is the window of Tfe.
 
-![tfe6](../image/tfe6.png){width=9.06cm height=6.615cm}
+![tfe6](/images/tfe6.png){width=9.06cm height=6.615cm}
 
 - Open, save and close buttons are placed on the toolbar.
 In addition, GtkMenuButton is added to the toolbar.

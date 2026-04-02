@@ -1,0 +1,15 @@
+- header: "Introduction"
+  from: 1
+  to: 2
+- header: "GTK Basics"
+  from: 3
+  to: 23
+- header: "GtkDrawingArea"
+  from: 24
+  to: 27
+- header: "Drag and Drop"
+  from: 28
+  to: 28 
+- header: "List Widgets"
+  from: 29
+  to: 33

@@ -88,7 +88,7 @@ In each structure, its parent is declared at the top of the members.
 So, all the ancestors are included in the child object.
 The structure of `TfeTextView` is like the following diagram.
 
-![The structure of the instance TfeTextView](../image/TfeTextView.png){width=14.39cm height=2.16cm}
+![The structure of the instance TfeTextView](/images/TfeTextView.png){width=14.39cm height=2.16cm}
 
 Derivable classes (ancestor classes) have their own private data area which are not included by the structure above.
 For example, GtkWidget has GtkWidgetPrivate (C structure) for its private data.
@@ -246,7 +246,7 @@ Override is rewriting ancestors' class methods in the descendant class.)
 TfeTextViewClass includes its ancestors' class in it.
 It is illustrated in the following diagram.
 
-![The structure of TfeTextView Class](../image/TfeTextViewClass.png){width=16.02cm height=8.34cm}
+![The structure of TfeTextView Class](/images/TfeTextViewClass.png){width=16.02cm height=8.34cm}
 
 ## Destruction of TfeTextView
 
@@ -262,7 +262,7 @@ At this moment, no object refers to C and the reference count of C is zero.
 This means C is no longer useful.
 Then C destructs itself and finally the memories allocated to C is freed.
 
-![Reference count of B](../image/refcount.png){width=15.855cm height=2.475cm}
+![Reference count of B](/images/refcount.png){width=15.855cm height=2.475cm}
 
 The idea above is based on an assumption that an object referred by nothing has reference count of zero.
 When the reference count drops to zero, the object starts its destruction process.
@@ -301,7 +301,7 @@ Look at the following diagram.
 There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass.
 Each class has its own dispose handler -- `dh1`, `dh2`, `dh3` and `tfe_text_view_dispose`.
 
-![dispose handlers](../image/dispose_handler.png){width=14.925cm height=4.455cm}
+![dispose handlers](/images/dispose_handler.png){width=14.925cm height=4.455cm}
 
 Now, look at the `tfe_text_view_dispose` program above.
 It first releases the reference to GFile object pointed by `tv->file`.

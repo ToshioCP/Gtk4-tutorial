@@ -4,14 +4,14 @@
 
 If the user clicks on the preference menu, a preference dialog appears.
 
-![Preference dialog](../image/pref_dialog.png){width=4cm height=1.6cm}
+![Preference dialog](/images/pref_dialog.png){width=4cm height=1.6cm}
 
 It has only one button, which is a GtkFontDialogButton widget.
 You can add more widgets on the dialog but this simple dialog isn't so bad for the first example program.
 
 If the button is clicked, a FontDialog appears like this.
 
-![Font dialog](../image/fontdialog.png){width=6.27cm height=7.38cm}
+![Font dialog](/images/fontdialog.png){width=6.27cm height=7.38cm}
 
 If the user chooses a font and clicks on the select button, the font is changed.
 
@@ -312,12 +312,12 @@ Run the calculator and change the mode, then check the schema again.
 $ gnome-calculator
 ~~~
 
-![gnome-calculator basic mode](../image/gnome_calculator_basic.png){width=5.34cm height=5.97cm}
+![gnome-calculator basic mode](/images/gnome_calculator_basic.png){width=5.34cm height=5.97cm}
 
 
 Change the mode to advanced and quit.
 
-![gnome-calculator advanced mode](../image/gnome_calculator_advanced.png){width=10.74cm height=7.14cm}
+![gnome-calculator advanced mode](/images/gnome_calculator_advanced.png){width=10.74cm height=7.14cm}
 
 Run gsettings and check the value of `button-mode`.
 

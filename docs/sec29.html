@@ -1,236 +1,231 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec28.html">Prev: section28</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec30.html">Next: section30</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>GtkListView</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec28.html">Prev: Section 28</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec30.html">Next: Section 30</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="gtklistview">GtkListView</h1>
-<p>GTK 4 has added new list objects GtkListView, GtkGridView and
-GtkColumnView. The new feature is described in <a
-href="https://docs.gtk.org/gtk4/section-list-widget.html">Gtk API
-Reference – List Widget Overview</a>.</p>
-<p>GTK 4 has other means to implement lists. They are GtkListBox and
-GtkTreeView which are took over from GTK 3. There’s an article in <a
-href="https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/">Gtk
-Development blog</a> about list widgets by Matthias Clasen. He described
-why GtkListView are developed to replace GtkTreeView. GtkTreeView is
-deprecated since version 4.10.</p>
-<p>GtkListView, GtkGridView, GtkColumnView and related objects are
-described in Section 29 to 33.</p>
-<h2 id="outline">Outline</h2>
-<p>A list is a sequential data structure. For example, an ordered string
-sequence “one”, “two”, “three”, “four” is a list. Each element is called
-item. A list is like an array, but in many cases it is implemented with
-pointers which point to the next items of the list. And it has a start
-point. So, each item can be referred by the index of the item (first
-item, second item, …, nth item, …). There are two cases. The one is the
-index starts from one (one-based) and the other is from zero
-(zero-based).</p>
-<p>Gio provides GListModel interface. It is a zero-based list and its
-items are the same type of GObject descendants, or objects that
-implement the same interface. An object implements GListModel is not a
-widget. So, the list is not displayed on the screen directly. There’s
-another object GtkListView which is a widget to display the list. The
-items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GtkListView.</p>
-<figure>
-<img src="image/list.png" alt="List" />
-<figcaption aria-hidden="true">List</figcaption>
-</figure>
-<h2 id="glistmodel-and-gtkstringlist">GListModel and GtkStringList</h2>
-<p>If you want to make a list of strings with GListModel, for example,
-“one”, “two”, “three”, “four”, note that strings can’t be items of the
-list. Because GListModel is a list of GObject objects and strings aren’t
-GObject objects. The word “GObject” here means “GObject class or its
-descendant class”. So, you need a wrapper which is a GObject and
-contains a string. GtkStringObject is the wrapper object and
-GtkStringList, implements GListModel, is a list of GtkStringObject.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>array<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;one&quot;</span><span class="op">,</span> <span class="st">&quot;two&quot;</span><span class="op">,</span> <span class="st">&quot;three&quot;</span><span class="op">,</span> <span class="st">&quot;four&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="gtklistview">GtkListView</h1>
+        <p>GTK 4 has added new list objects GtkListView, GtkGridView and
+        GtkColumnView. The new feature is described in <a
+        href="https://docs.gtk.org/gtk4/section-list-widget.html">Gtk
+        API Reference – List Widget Overview</a>.</p>
+        <p>GTK 4 has other means to implement lists. They are GtkListBox
+        and GtkTreeView which are took over from GTK 3. There’s an
+        article in <a
+        href="https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/">Gtk
+        Development blog</a> about list widgets by Matthias Clasen. He
+        described why GtkListView are developed to replace GtkTreeView.
+        GtkTreeView is deprecated since version 4.10.</p>
+        <p>GtkListView, GtkGridView, GtkColumnView and related objects
+        are described in Section 29 to 33.</p>
+        <h2 id="outline">Outline</h2>
+        <p>A list is a sequential data structure. For example, an
+        ordered string sequence “one”, “two”, “three”, “four” is a list.
+        Each element is called item. A list is like an array, but in
+        many cases it is implemented with pointers which point to the
+        next items of the list. And it has a start point. So, each item
+        can be referred by the index of the item (first item, second
+        item, …, nth item, …). There are two cases. The one is the index
+        starts from one (one-based) and the other is from zero
+        (zero-based).</p>
+        <p>Gio provides GListModel interface. It is a zero-based list
+        and its items are the same type of GObject descendants, or
+        objects that implement the same interface. An object implements
+        GListModel is not a widget. So, the list is not displayed on the
+        screen directly. There’s another object GtkListView which is a
+        widget to display the list. The items in the list need to be
+        connected to the items in GtkListView. GtkListItemFactory
+        instance maps items in the list to GtkListView.</p>
+        <figure>
+        <img src="/images/list.png" style="width:10cm;height:7.5cm"
+        alt="List" />
+        <figcaption aria-hidden="true">List</figcaption>
+        </figure>
+        <h2 id="glistmodel-and-gtkstringlist">GListModel and
+        GtkStringList</h2>
+        <p>If you want to make a list of strings with GListModel, for
+        example, “one”, “two”, “three”, “four”, note that strings can’t
+        be items of the list. Because GListModel is a list of GObject
+        objects and strings aren’t GObject objects. The word “GObject”
+        here means “GObject class or its descendant class”. So, you need
+        a wrapper which is a GObject and contains a string.
+        GtkStringObject is the wrapper object and GtkStringList,
+        implements GListModel, is a list of GtkStringObject.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>array<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;one&quot;</span><span class="op">,</span> <span class="st">&quot;two&quot;</span><span class="op">,</span> <span class="st">&quot;three&quot;</span><span class="op">,</span> <span class="st">&quot;four&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>GtkStringList <span class="op">*</span>stringlist <span class="op">=</span> gtk_string_list_new <span class="op">((</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span> <span class="dt">const</span> <span class="op">*)</span> array<span class="op">);</span></span></code></pre></div>
-<p>The function <code>gtk_string_list_new</code> creates a GtkStringList
-object. Its items are GtkStringObject objects which contain the strings
-“one”, “two”, “three” and “four”. There are functions to add items to
-the list or remove items from the list.</p>
-<ul>
-<li><code>gtk_string_list_append</code> appends an item to the list</li>
-<li><code>gtk_string_list_remove</code> removes an item from the
-list</li>
-<li><code>gtk_string_list_get_string</code> gets a string in the
-list</li>
-</ul>
-<p>See <a href="https://docs.gtk.org/gtk4/class.StringList.html">GTK 4
-API Reference – GtkStringList</a> for further information.</p>
-<p>Other list objects will be explained later.</p>
-<h2 id="gtkselectionmodel">GtkSelectionModel</h2>
-<p>GtkSelectionModel is an interface to support for selections. Thanks
-to this model, user can select items by clicking on them. It is
-implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection
-objects. These three objects are usually enough to build an application.
-They are created with another GListModel. You can also create them alone
-and add a GListModel later.</p>
-<ul>
-<li>GtkMultiSelection supports multiple selection.</li>
-<li>GtkNoSelection supports no selection. This is a wrapper to
-GListModel when GtkSelectionModel is needed.</li>
-<li>GtkSingleSelection supports single selection.</li>
-</ul>
-<h2 id="gtklistview-1">GtkListView</h2>
-<p>GtkListView is a widget to show GListModel items. GtkListItem is used
-by GtkListView to represent items of a list model. But, GtkListItem
-itself is not a widget, so a user needs to set a widget, for example
-GtkLabel, as a child of GtkListItem to display an item of the list
-model. “item” property of GtkListItem points an object that belongs to
-the list model.</p>
-<figure>
-<img src="image/gtklistitem.png" alt="GtkListItem" />
-<figcaption aria-hidden="true">GtkListItem</figcaption>
-</figure>
-<p>In case the number of items is very big, for example more than a
-thousand, GtkListItem is recycled and connected to another item which is
-newly displayed. This recycle makes the number of GtkListItem objects
-fairly small, less than 200. This is very effective to restrain the
-growth of memory consumption so that GListModel can contain lots of
-items, for example, more than a million items.</p>
-<h2 id="gtklistitemfactory">GtkListItemFactory</h2>
-<p>GtkListItemFactory creates or recycles GtkListItem and connects it
-with an item of the list model. There are two child classes of this
-factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.</p>
-<h3 id="gtksignallistitemfactory">GtkSignalListItemFactory</h3>
-<p>GtkSignalListItemFactory provides signals for users to configure a
-GtkListItem object. There are four signals.</p>
-<ol type="1">
-<li>“setup” is emitted to set up GtkListItem object. A user sets its
-child widget in the handler. For example, creates a GtkLabel widget and
-sets the child property of the GtkListItem to it. This setting is kept
-even the GtkListItem instance is recycled (to bind to another item of
-GListModel).</li>
-<li>“bind” is emitted to bind an item in the list model to the widget.
-For example, a user gets the item from “item” property of the
-GtkListItem instance. Then gets the string of the item and sets the
-label property of the GtkLabel instance with the string. This signal is
-emitted when the GtkListItem is newly created, recycled or some changes
-has happened to the item of the list.</li>
-<li>“unbind” is emitted to unbind an item. A user undoes everything done
-in step 2 in the signal handler. If some object are created in step 2,
-they must be destroyed.</li>
-<li>“teardown” is emitted to undo everything done in step 1. So, the
-widget created in step 1 must be destroyed. After this signal, the list
-item will be destroyed.</li>
-</ol>
-<p>The following program <code>list1.c</code> shows the list of strings
-“one”, “two”, “three” and “four”. GtkNoSelection is used, so user can’t
-select any item.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>The function <code>gtk_string_list_new</code> creates a
+        GtkStringList object. Its items are GtkStringObject objects
+        which contain the strings “one”, “two”, “three” and “four”.
+        There are functions to add items to the list or remove items
+        from the list.</p>
+        <ul>
+        <li><code>gtk_string_list_append</code> appends an item to the
+        list</li>
+        <li><code>gtk_string_list_remove</code> removes an item from the
+        list</li>
+        <li><code>gtk_string_list_get_string</code> gets a string in the
+        list</li>
+        </ul>
+        <p>See <a
+        href="https://docs.gtk.org/gtk4/class.StringList.html">GTK 4 API
+        Reference – GtkStringList</a> for further information.</p>
+        <p>Other list objects will be explained later.</p>
+        <h2 id="gtkselectionmodel">GtkSelectionModel</h2>
+        <p>GtkSelectionModel is an interface to support for selections.
+        Thanks to this model, user can select items by clicking on them.
+        It is implemented by GtkMultiSelection, GtkNoSelection and
+        GtkSingleSelection objects. These three objects are usually
+        enough to build an application. They are created with another
+        GListModel. You can also create them alone and add a GListModel
+        later.</p>
+        <ul>
+        <li>GtkMultiSelection supports multiple selection.</li>
+        <li>GtkNoSelection supports no selection. This is a wrapper to
+        GListModel when GtkSelectionModel is needed.</li>
+        <li>GtkSingleSelection supports single selection.</li>
+        </ul>
+        <h2 id="gtklistview-1">GtkListView</h2>
+        <p>GtkListView is a widget to show GListModel items. GtkListItem
+        is used by GtkListView to represent items of a list model. But,
+        GtkListItem itself is not a widget, so a user needs to set a
+        widget, for example GtkLabel, as a child of GtkListItem to
+        display an item of the list model. “item” property of
+        GtkListItem points an object that belongs to the list model.</p>
+        <figure>
+        <img src="/images/gtklistitem.png"
+        style="width:10cm;height:7.5cm" alt="GtkListItem" />
+        <figcaption aria-hidden="true">GtkListItem</figcaption>
+        </figure>
+        <p>In case the number of items is very big, for example more
+        than a thousand, GtkListItem is recycled and connected to
+        another item which is newly displayed. This recycle makes the
+        number of GtkListItem objects fairly small, less than 200. This
+        is very effective to restrain the growth of memory consumption
+        so that GListModel can contain lots of items, for example, more
+        than a million items.</p>
+        <h2 id="gtklistitemfactory">GtkListItemFactory</h2>
+        <p>GtkListItemFactory creates or recycles GtkListItem and
+        connects it with an item of the list model. There are two child
+        classes of this factory, GtkSignalListItemFactory and
+        GtkBuilderListItemFactory.</p>
+        <h3 id="gtksignallistitemfactory">GtkSignalListItemFactory</h3>
+        <p>GtkSignalListItemFactory provides signals for users to
+        configure a GtkListItem object. There are four signals.</p>
+        <ol type="1">
+        <li>“setup” is emitted to set up GtkListItem object. A user sets
+        its child widget in the handler. For example, creates a GtkLabel
+        widget and sets the child property of the GtkListItem to it.
+        This setting is kept even the GtkListItem instance is recycled
+        (to bind to another item of GListModel).</li>
+        <li>“bind” is emitted to bind an item in the list model to the
+        widget. For example, a user gets the item from “item” property
+        of the GtkListItem instance. Then gets the string of the item
+        and sets the label property of the GtkLabel instance with the
+        string. This signal is emitted when the GtkListItem is newly
+        created, recycled or some changes has happened to the item of
+        the list.</li>
+        <li>“unbind” is emitted to unbind an item. A user undoes
+        everything done in step 2 in the signal handler. If some object
+        are created in step 2, they must be destroyed.</li>
+        <li>“teardown” is emitted to undo everything done in step 1. So,
+        the widget created in step 1 must be destroyed. After this
+        signal, the list item will be destroyed.</li>
+        </ol>
+        <p>The following program <code>list1.c</code> shows the list of
+        strings “one”, “two”, “three” and “four”. GtkNoSelection is
+        used, so user can’t select any item.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a></span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>setup_cb <span class="op">(</span>GtkSignalListItemFactory <span class="op">*</span>self<span class="op">,</span> GtkListItem <span class="op">*</span>listitem<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
@@ -304,29 +299,32 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-72"><a href="#cb2-72"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb2-73"><a href="#cb2-73"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb2-74"><a href="#cb2-74"></a><span class="op">}</span></span></code></pre></div>
-<p>The file <code>list1.c</code> is located under the directory
-src/misc. Make a shell script below and save it to your bin directory,
-for example <code>$HOME/bin</code>.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--cflags</span> gtk4<span class="kw">`</span> <span class="va">$1</span>.c <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--libs</span> gtk4<span class="kw">`</span></span></code></pre></div>
-<p>Change the current directory to the directory includes
-<code>list1.c</code> and type as follows.</p>
-<pre><code>$ chmod 755 $HOME/bin/comp # or chmod 755 (your bin directory)/comp
+        <p>The file <code>list1.c</code> is located under the directory
+        <a href="misc">src/misc</a>. Make a shell script below and save
+        it to your bin directory, for example
+        <code>$HOME/bin</code>.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--cflags</span> gtk4<span class="kw">`</span> <span class="va">$1</span>.c <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--libs</span> gtk4<span class="kw">`</span></span></code></pre></div>
+        <p>Change the current directory to the directory includes
+        <code>list1.c</code> and type as follows.</p>
+        <pre><code>$ chmod 755 $HOME/bin/comp # or chmod 755 (your bin directory)/comp
 $ comp list1
 $ ./a.out</code></pre>
-<p>Then, the following window appears.</p>
-<figure>
-<img src="image/list1.png" alt="list1" />
-<figcaption aria-hidden="true">list1</figcaption>
-</figure>
-<p>The program is not so difficult. If you feel some difficulty, read
-this section again, especially GtkSignalListItemFactory
-subsubsection.</p>
-<h3 id="gtkbuilderlistitemfactory">GtkBuilderListItemFactory</h3>
-<p>GtkBuilderListItemFactory is another GtkListItemFactory. Its behavior
-is defined with ui file.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
+        <p>Then, the following window appears.</p>
+        <figure>
+        <img src="/images/list1.png" style="width:6.04cm;height:4.4cm"
+        alt="list1" />
+        <figcaption aria-hidden="true">list1</figcaption>
+        </figure>
+        <p>The program is not so difficult. If you feel some difficulty,
+        read this section again, especially GtkSignalListItemFactory
+        subsubsection.</p>
+        <h3
+        id="gtkbuilderlistitemfactory">GtkBuilderListItemFactory</h3>
+        <p>GtkBuilderListItemFactory is another GtkListItemFactory. Its
+        behavior is defined with ui file.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
@@ -339,31 +337,36 @@ class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#c
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">template</span>&gt;</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>Template tag is used to define GtkListItem. And its child property is
-GtkLabel object. The factory sees this template and creates GtkLabel and
-sets the child property of GtkListItem. This is the same as what setup
-handler of GtkSignalListItemFactory did.</p>
-<p>Then, bind the label property of the GtkLabel to the string property
-of a GtkStringObject. The string object refers to the item property of
-the GtkListItem. So, the lookup tag is like this:</p>
-<pre><code>label &lt;- string &lt;- GtkStringObject &lt;- item &lt;- GtkListItem</code></pre>
-<p>The last lookup tag has a content <code>GtkListItem</code>. Usually,
-C type like <code>GtkListItem</code> doesn’t appear in the content of
-tags. This is a special case. There is an explanation in the <a
-href="https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/">GTK
-Development Blog</a> by Matthias Clasen.</p>
-<blockquote>
-<p>Remember that the classname (GtkListItem) in a ui template is used as
-the “this” pointer referring to the object that is being
-instantiated.</p>
-</blockquote>
-<p>Therefore, GtkListItem instance is used as the <code>this</code>
-object of the lookup tag when it is evaluated. <code>this</code> object
-will be explained in section 31.</p>
-<p>The C source code is as follows. Its name is <code>list2.c</code> and
-located under src/misc directory.</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>Template tag is used to define GtkListItem. And its child
+        property is GtkLabel object. The factory sees this template and
+        creates GtkLabel and sets the child property of GtkListItem.
+        This is the same as what setup handler of
+        GtkSignalListItemFactory did.</p>
+        <p>Then, bind the label property of the GtkLabel to the string
+        property of a GtkStringObject. The string object refers to the
+        item property of the GtkListItem. So, the lookup tag is like
+        this:</p>
+        <pre><code>label &lt;- string &lt;- GtkStringObject &lt;- item &lt;- GtkListItem</code></pre>
+        <p>The last lookup tag has a content <code>GtkListItem</code>.
+        Usually, C type like <code>GtkListItem</code> doesn’t appear in
+        the content of tags. This is a special case. There is an
+        explanation in the <a
+        href="https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/">GTK
+        Development Blog</a> by Matthias Clasen.</p>
+        <blockquote>
+        <p>Remember that the classname (GtkListItem) in a ui template is
+        used as the “this” pointer referring to the object that is being
+        instantiated.</p>
+        </blockquote>
+        <p>Therefore, GtkListItem instance is used as the
+        <code>this</code> object of the lookup tag when it is evaluated.
+        <code>this</code> object will be explained in <a
+        href="sec31.html">Section 31</a>.</p>
+        <p>The C source code is as follows. Its name is
+        <code>list2.c</code> and located under <a
+        href="misc">src/misc</a> directory.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
@@ -424,72 +427,78 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-59"><a href="#cb7-59"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb7-60"><a href="#cb7-60"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb7-61"><a href="#cb7-61"></a><span class="op">}</span></span></code></pre></div>
-<p>No signal handler is needed for GtkBulderListItemFactory.
-GtkSingleSelection is used, so user can select one item at a time.</p>
-<p>Because this is a small program, the ui data is given as a
-string.</p>
-<h2 id="gtkdirectorylist">GtkDirectoryList</h2>
-<p>GtkDirectoryList is a list model containing GFileInfo objects which
-are information of files under a certain directory. It uses
-<code>g_file_enumerate_children_async()</code> to get the GFileInfo
-objects. The list model is created by
-<code>gtk_directory_list_new</code> function.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>gtk_directory_list_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>attributes<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">);</span></span></code></pre></div>
-<p><code>attributes</code> is a comma separated list of file attributes.
-File attributes are key-value pairs. A key consists of a namespace and a
-name. For example, “standard::name” key is the name of a file.
-“standard” means general file information. “name” means filename. The
-following table shows some example.</p>
-<table>
-<colgroup>
-<col style="width: 19%" />
-<col style="width: 80%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">key</th>
-<th style="text-align: left;">meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">standard::type</td>
-<td style="text-align: left;">file type. for example, regular file,
-directory, symbolic link, etc.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">standard::name</td>
-<td style="text-align: left;">filename</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">standard::size</td>
-<td style="text-align: left;">file size in bytes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">access::can-read</td>
-<td style="text-align: left;">read privilege if the user is able to read
-the file</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">time::modified</td>
-<td style="text-align: left;">the time the file was last modified in
-seconds since the UNIX epoch</td>
-</tr>
-</tbody>
-</table>
-<p>The current directory is “.”. The following program makes
-GtkDirectoryList <code>dl</code> and its contents are GFileInfo objects
-under the current directory.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
+        <p>No signal handler is needed for GtkBulderListItemFactory.
+        GtkSingleSelection is used, so user can select one item at a
+        time.</p>
+        <p>Because this is a small program, the ui data is given as a
+        string.</p>
+        <h2 id="gtkdirectorylist">GtkDirectoryList</h2>
+        <p>GtkDirectoryList is a list model containing GFileInfo objects
+        which are information of files under a certain directory. It
+        uses <code>g_file_enumerate_children_async()</code> to get the
+        GFileInfo objects. The list model is created by
+        <code>gtk_directory_list_new</code> function.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>gtk_directory_list_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>attributes<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">);</span></span></code></pre></div>
+        <p><code>attributes</code> is a comma separated list of file
+        attributes. File attributes are key-value pairs. A key consists
+        of a namespace and a name. For example, “standard::name” key is
+        the name of a file. “standard” means general file information.
+        “name” means filename. The following table shows some
+        example.</p>
+        <table>
+        <colgroup>
+        <col style="width: 19%" />
+        <col style="width: 80%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th style="text-align: left;">key</th>
+        <th style="text-align: left;">meaning</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td style="text-align: left;">standard::type</td>
+        <td style="text-align: left;">file type. for example, regular
+        file, directory, symbolic link, etc.</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: left;">standard::name</td>
+        <td style="text-align: left;">filename</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: left;">standard::size</td>
+        <td style="text-align: left;">file size in bytes</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: left;">access::can-read</td>
+        <td style="text-align: left;">read privilege if the user is able
+        to read the file</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: left;">time::modified</td>
+        <td style="text-align: left;">the time the file was last
+        modified in seconds since the UNIX epoch</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>The current directory is “.”. The following program makes
+        GtkDirectoryList <code>dl</code> and its contents are GFileInfo
+        objects under the current directory.</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>dl <span class="op">=</span> gtk_directory_list_new <span class="op">(</span><span class="st">&quot;standard::name&quot;</span><span class="op">,</span> file<span class="op">);</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>file<span class="op">);</span></span></code></pre></div>
-<p>It is not so difficult to make file listing program by changing
-<code>list2.c</code> in the previous subsection. One problem is that
-GInfoFile doesn’t have properties. Lookup tag look for a property, so it
-is useless for looking for a filename from a GFileInfo object. Instead,
-closure tag is appropriate in this case. Closure tag specifies a
-function and the type of the return value of the function.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span></span>
+        <p>It is not so difficult to make file listing program by
+        changing <code>list2.c</code> in the previous subsection. One
+        problem is that GInfoFile doesn’t have properties. Lookup tag
+        look for a property, so it is useless for looking for a filename
+        from a GFileInfo object. Instead, closure tag is appropriate in
+        this case. Closure tag specifies a function and the type of the
+        return value of the function.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
@@ -509,40 +518,43 @@ function and the type of the return value of the function.</p>
 <span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;/property&gt;&quot;</span></span>
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;/template&gt;&quot;</span></span>
 <span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;/interface&gt;&quot;</span></span></code></pre></div>
-<ul>
-<li>The string “gchararray” is a type name. The type “gchar” is a type
-name and it is the same as C type “char”. Therefore, “gchararray” is “an
-array of char type”, which is the same as string type. It is used to get
-the type of GValue object. GValue is a generic value and it can contain
-various type of values. For example, the type name can be gboolean,
-gchar (char), gint (int), gfloat (float), gdouble (double), gchararray
-(char *) and so on. These type names are the names of the fundamental
-types that are registered to the type system. See <a
-href="https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue">GObject
-tutorial</a>.</li>
-<li>Closure tag has type attribute and function attribute. Function
-attribute specifies the function name and type attribute specifies the
-type of the return value of the function. The contents of closure tag
-(it is between &lt;closure…&gt; and&lt;/closure&gt;) is parameters of
-the function.
-<code>&lt;lookup name="item"&gt;GtkListItem&lt;/lookup&gt;</code> gives
-the value of the item property of the GtkListItem. This will be the
-second argument of the function. The first parameter is always the
-GListItem instance, which is a ‘this’ object. The ‘this’ object is
-explained in section 31.</li>
-<li><code>gtk_file_name</code> function is the callback function for the
-closure tag. It first checks the <code>info</code> parameter. Because it
-can be NULL when GListItem <code>item</code> is unbounded. If it’s
-GFileInfo, it returns the copied filename. Because the return value
-(filename) of <code>g_file_info_get_name</code> is owned by GFileInfo
-object. So, the the string needs to be duplicated to give the ownership
-to the caller. Binding tag binds the “label” property of the GtkLabel to
-the closure tag.</li>
-</ul>
-<p>The whole program (<code>list3.c</code>) is as follows. The program
-is located in src/misc directory.</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <ul>
+        <li>The string “gchararray” is a type name. The type “gchar” is
+        a type name and it is the same as C type “char”. Therefore,
+        “gchararray” is “an array of char type”, which is the same as
+        string type. It is used to get the type of GValue object. GValue
+        is a generic value and it can contain various type of values.
+        For example, the type name can be gboolean, gchar (char), gint
+        (int), gfloat (float), gdouble (double), gchararray (char *) and
+        so on. These type names are the names of the fundamental types
+        that are registered to the type system. See <a
+        href="https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue">GObject
+        tutorial</a>.</li>
+        <li>Closure tag has type attribute and function attribute.
+        Function attribute specifies the function name and type
+        attribute specifies the type of the return value of the
+        function. The contents of closure tag (it is between
+        &lt;closure…&gt; and&lt;/closure&gt;) is parameters of the
+        function.
+        <code>&lt;lookup name="item"&gt;GtkListItem&lt;/lookup&gt;</code>
+        gives the value of the item property of the GtkListItem. This
+        will be the second argument of the function. The first parameter
+        is always the GListItem instance, which is a ‘this’ object. The
+        ‘this’ object is explained in Section 31.</li>
+        <li><code>gtk_file_name</code> function is the callback function
+        for the closure tag. It first checks the <code>info</code>
+        parameter. Because it can be NULL when GListItem
+        <code>item</code> is unbounded. If it’s GFileInfo, it returns
+        the copied filename. Because the return value (filename) of
+        <code>g_file_info_get_name</code> is owned by GFileInfo object.
+        So, the the string needs to be duplicated to give the ownership
+        to the caller. Binding tag binds the “label” property of the
+        GtkLabel to the closure tag.</li>
+        </ul>
+        <p>The whole program (<code>list3.c</code>) is as follows. The
+        program is located in <a href="misc">src/misc</a> directory.</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb11-4"><a href="#cb11-4"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
@@ -607,44 +619,50 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-63"><a href="#cb11-63"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb11-64"><a href="#cb11-64"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb11-65"><a href="#cb11-65"></a><span class="op">}</span></span></code></pre></div>
-<p>The ui data (xml data above) is used to build the GListItem template
-at runtime. GtkBuilder refers to the symbol table to find the function
-<code>get_file_name</code>.</p>
-<p>Generally, a symbol table is used by a linker to link objects to an
-executable file. It includes function names and their location. A linker
-usually doesn’t put a symbol table into the created executable file. But
-if <code>--export-dynamic</code> option is given, the linker adds the
-symbol table to the executable file.</p>
-<p>To accomplish it, an option <code>-Wl,--export-dynamic</code> is
-given to the C compiler.</p>
-<ul>
-<li><code>-Wl</code> is a C compiler option that passes the following
-option to the linker.</li>
-<li><code>--export-dynamic</code> is a linker option. The following is
-cited from the linker document. “When creating a dynamically linked
-executable, add all symbols to the dynamic symbol table. The dynamic
-symbol table is the set of symbols which are visible from dynamic
-objects at run time.”</li>
-</ul>
-<p>Compile and execute it.</p>
-<pre><code>$ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`</code></pre>
-<p>You can also make a shell script to compile <code>list3.c</code></p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wl,--export-dynamic</span> <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--cflags</span> gtk4<span class="kw">`</span> <span class="va">$1</span>.c <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--libs</span> gtk4<span class="kw">`</span></span></code></pre></div>
-<p>Save this one liner to a file <code>comp</code>. Then, copy it to
-<code>$HOME/bin</code> and give it executable permission.</p>
-<pre><code>$ cp comp $HOME/bin/comp
+        <p>The ui data (xml data above) is used to build the GListItem
+        template at runtime. GtkBuilder refers to the symbol table to
+        find the function <code>get_file_name</code>.</p>
+        <p>Generally, a symbol table is used by a linker to link objects
+        to an executable file. It includes function names and their
+        location. A linker usually doesn’t put a symbol table into the
+        created executable file. But if <code>--export-dynamic</code>
+        option is given, the linker adds the symbol table to the
+        executable file.</p>
+        <p>To accomplish it, an option <code>-Wl,--export-dynamic</code>
+        is given to the C compiler.</p>
+        <ul>
+        <li><code>-Wl</code> is a C compiler option that passes the
+        following option to the linker.</li>
+        <li><code>--export-dynamic</code> is a linker option. The
+        following is cited from the linker document. “When creating a
+        dynamically linked executable, add all symbols to the dynamic
+        symbol table. The dynamic symbol table is the set of symbols
+        which are visible from dynamic objects at run time.”</li>
+        </ul>
+        <p>Compile and execute it.</p>
+        <pre><code>$ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`</code></pre>
+        <p>You can also make a shell script to compile
+        <code>list3.c</code></p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wl,--export-dynamic</span> <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--cflags</span> gtk4<span class="kw">`</span> <span class="va">$1</span>.c <span class="kw">`</span><span class="ex">pkg-config</span> <span class="at">--libs</span> gtk4<span class="kw">`</span></span></code></pre></div>
+        <p>Save this one liner to a file <code>comp</code>. Then, copy
+        it to <code>$HOME/bin</code> and give it executable
+        permission.</p>
+        <pre><code>$ cp comp $HOME/bin/comp
 $ chmod +x $HOME/bin/comp</code></pre>
-<p>You can compile <code>list3.c</code> and execute it, like this:</p>
-<pre><code>$ comp list3
+        <p>You can compile <code>list3.c</code> and execute it, like
+        this:</p>
+        <pre><code>$ comp list3
 $ ./a.out</code></pre>
-<figure>
-<img src="image/list3.png" alt="screenshot list3" />
-<figcaption aria-hidden="true">screenshot list3</figcaption>
-</figure>
-        </div>
+        <figure>
+        <img src="/images/list3.png" style="width:10cm;height:7.3cm"
+        alt="screenshot list3" />
+        <figcaption aria-hidden="true">screenshot list3</figcaption>
+        </figure>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

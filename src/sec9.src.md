@@ -8,7 +8,7 @@ It works, but is not so good.
 It would be better if we had "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
 
-![Screenshot of the file editor](../image/screenshot_tfe2.png){width=9.3cm height=6.825cm}
+![Screenshot of the file editor](/images/screenshot_tfe2.png){width=9.3cm height=6.825cm}
 
 The screenshot above shows the layout.
 The function `app_open` in the source code `tfe2.c` is as follows.

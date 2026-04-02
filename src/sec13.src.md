@@ -239,7 +239,7 @@ It is used in the callback function.
 This function just shows the file chooser dialog.
 The rest of the operation is done by the callback function.
 
-![Saveas process](../image/saveas.png){width=10.7cm height=5.16cm}
+![Saveas process](/images/saveas.png){width=10.7cm height=5.16cm}
 
 ## Open related functions
 
@@ -321,7 +321,7 @@ The whole process between the caller and TfeTextView is shown in the following d
 It is really complicated.
 Because `gtk_file_dialog_open` can't return the status of the operation.
 
-![Caller and TfeTextView](../image/open.png){width=12.405cm height=9.225cm}
+![Caller and TfeTextView](/images/open.png){width=12.405cm height=9.225cm}
 
 1. A caller gets a pointer `tv` to a TfeTextView instance by calling `tfe_text_view_new`.
 2. The caller connects the handler (left bottom in the diagram) and the signal "open-response".

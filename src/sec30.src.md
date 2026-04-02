@@ -3,7 +3,7 @@
 GtkGridView is similar to GtkListView.
 It displays a GListModel as a grid, which is like a square tessellation.
 
-![Grid](../image/list4.png){width=10cm height=6.6cm}
+![Grid](/images/list4.png){width=10cm height=6.6cm}
 
 This is often seen when you use a file browser like GNOME Files (Nautilus).
 
@@ -28,7 +28,7 @@ GtkListView (model property) => GtkSingleSelection (model property) => GtkDirect
 GtkGridView (model property) => GtkSingleSelection (model property) => GtkDirectoryList
 ~~~
 
-![DirectoryList](../image/directorylist.png){width=10cm height=7.5cm}
+![DirectoryList](/images/directorylist.png){width=10cm height=7.5cm}
 
 The following is a part of the ui file `list4.ui`.
 
@@ -323,7 +323,7 @@ Click on a button on the tool bar so that you can change the style to grid or ba
 Double click "list4.c" item, then `tfe` text editor runs with the argument "list4.c".
 The following is the screenshot.
 
-![Screenshot](../image/screenshot_list4.png){width=8cm height=5.62cm}
+![Screenshot](/images/screenshot_list4.png){width=8cm height=5.62cm}
 
 ## "gbytes" property of GtkBuilderListItemFactory
 

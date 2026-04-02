@@ -1,167 +1,151 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec19.html">Prev: section19</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec21.html">Next: section21</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Composite widgets and alert dialog</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec19.html">Prev: Section 19</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec21.html">Next: Section 21</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="composite-widgets-and-alert-dialog">Composite widgets and alert
-dialog</h1>
-<p>The source files are in the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial GitHub
-repository</a>. Download it and see <code>src/tfe6</code> directory.</p>
-<h2 id="an-outline-of-new-tfe-text-editor">An outline of new Tfe text
-editor</h2>
-<p>Tfe text editor will be restructured. The program is divided into six
-parts.</p>
-<ul>
-<li>Main program: the C main function.</li>
-<li>TfeApplication object: It is like GtkApplication but keeps GSettings
-and CSS Provider.</li>
-<li>TfeWindow object: It is a window with buttons and a notebook.</li>
-<li>TfePref object: A preference dialog.</li>
-<li>TfeAlert object: An alert dialog.</li>
-<li>pdf2css.h and pdf2css.c: Font and CSS utility functions.</li>
-</ul>
-<p>This section describes TfeAlert. Others will be explained in the
-following sections.</p>
-<h2 id="composite-widgets">Composite widgets</h2>
-<p>The alert dialog is like this:</p>
-<figure>
-<img src="image/alert.png" alt="Alert dialog" />
-<figcaption aria-hidden="true">Alert dialog</figcaption>
-</figure>
-<p>Tfe uses it when a user quits the application or closes a notebook
-without saving data to files.</p>
-<p>The dialog has a title, buttons, an icon and a message. Therefore, it
-consists of several widgets. Such dialog is called a composite
-widget.</p>
-<p>Composite widgets are defined with template XMLs. The class is built
-in the class initialization function and the instances are built and
-desposed by the following functions.</p>
-<ul>
-<li>gtk_widget_init_template</li>
-<li>gtk_widget_dispose_template</li>
-</ul>
-<p>TfeAlert is a good example to know composite widgets. It is defined
-with the three files.</p>
-<ul>
-<li>tfealert.ui: XML file</li>
-<li>tfealert.h: Header file</li>
-<li>tfealert.c: C program file</li>
-</ul>
-<h2 id="the-xml-file">The XML file</h2>
-<p>A template tag is used in a composite widget XML.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="composite-widgets-and-alert-dialog">Composite widgets
+        and alert dialog</h1>
+        <p>The source files are in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial
+        GitHub repository</a>. Download it and see <code>src/tfe6</code>
+        directory.</p>
+        <h2 id="an-outline-of-new-tfe-text-editor">An outline of new Tfe
+        text editor</h2>
+        <p>Tfe text editor will be restructured. The program is divided
+        into six parts.</p>
+        <ul>
+        <li>Main program: the C main function.</li>
+        <li>TfeApplication object: It is like GtkApplication but keeps
+        GSettings and CSS Provider.</li>
+        <li>TfeWindow object: It is a window with buttons and a
+        notebook.</li>
+        <li>TfePref object: A preference dialog.</li>
+        <li>TfeAlert object: An alert dialog.</li>
+        <li>pdf2css.h and pdf2css.c: Font and CSS utility
+        functions.</li>
+        </ul>
+        <p>This section describes TfeAlert. Others will be explained in
+        the following sections.</p>
+        <h2 id="composite-widgets">Composite widgets</h2>
+        <p>The alert dialog is like this:</p>
+        <figure>
+        <img src="/images/alert.png" style="width:4.2cm;height:1.7cm"
+        alt="Alert dialog" />
+        <figcaption aria-hidden="true">Alert dialog</figcaption>
+        </figure>
+        <p>Tfe uses it when a user quits the application or closes a
+        notebook without saving data to files.</p>
+        <p>The dialog has a title, buttons, an icon and a message.
+        Therefore, it consists of several widgets. Such dialog is called
+        a composite widget.</p>
+        <p>Composite widgets are defined with template XMLs. The class
+        is built in the class initialization function and the instances
+        are built and desposed by the following functions.</p>
+        <ul>
+        <li>gtk_widget_init_template</li>
+        <li>gtk_widget_dispose_template</li>
+        </ul>
+        <p>TfeAlert is a good example to know composite widgets. It is
+        defined with the three files.</p>
+        <ul>
+        <li>tfealert.ui: XML file</li>
+        <li>tfealert.h: Header file</li>
+        <li>tfealert.c: C program file</li>
+        </ul>
+        <h2 id="the-xml-file">The XML file</h2>
+        <p>A template tag is used in a composite widget XML.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeAlert&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
@@ -217,56 +201,62 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb1-54"><a href="#cb1-54"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb1-55"><a href="#cb1-55"></a>  &lt;/<span class="kw">template</span>&gt;</span>
 <span id="cb1-56"><a href="#cb1-56"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<ul>
-<li>3: A template tag defines a composite widget. The class attribute
-tells the class name of the composite widget. The parent attribute tells
-the parent class of the composite widget. So, TfeAlert is a child class
-of GtkWindow. A parent attribute is an option and you can leave it out.
-But it is recommended to write it in the template tag.</li>
-<li>4-6: Its three properties are defined. These properties are
-inherited from GtkWindow. The titlebar property has a widget for a
-custom title bar. The typical widget is GtkHeaderBar.</li>
-<li>8: If the property “show-title-buttons” is TRUE, the title buttons
-like close, minimize and maximize are shown. Otherwise it is not shown.
-The TfeAlert object is not resizable. It is closed when either of the
-two buttons, cancel or accept, is clicked. Therefore the title buttons
-are not necessary and this property is set to FALSE.</li>
-<li>9-14: The bar has a title, which is a GtkLabel widget. The default
-title is “Are you sure?” but it can be replaced by an instance
-method.</li>
-<li>15-32: The bar has two buttons, cancel and accept. The cancel button
-is on the left so the child tag has <code>type="start"</code> attribute.
-The accept button is on the right so the child tag has
-<code>type="end"</code> attribute. The dialog is shown when the user
-clicked the close button or the quit menu without saving the data.
-Therefore, it is safer for the user to click on the cancel button of the
-alert dialog. So, the cancel button has a “suggested-action” CSS class.
-Ubuntu colors the button green but the color can be blue or other
-appropriate one defined by the system. In the same way the accept button
-has a “destructive-action” CSS class and is colored red. Two buttons
-have signals which are defined by the signal tags.</li>
-<li>35-54: A horizontal box has an image icon and a label.</li>
-<li>44-47: The GtkImage widget displays an image. The “icon-name”
-property is an icon name in the icon theme. The theme depends on your
-system. You can check it with an icon browser.</li>
-</ul>
-<pre><code>$ gtk4-icon-browser</code></pre>
-<p>The “dialog-warning” icon is something like this.</p>
-<figure>
-<img src="image/dialog_warning.png"
-alt="dialog-warning icon is like …" />
-<figcaption aria-hidden="true">dialog-warning icon is like
-…</figcaption>
-</figure>
-<p>These are made by my hand. The real image on the alert dialog is
-nicer.</p>
-<p>It is possible to define the alert widget as a child of GtkDialog.
-But GtkDialog is deprecated since GTK version 4.10. And users should use
-GtkWindow instead of GtkDialog.</p>
-<h2 id="the-header-file">The header file</h2>
-<p>The header file is similar to the one of TfeTextView.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
+        <ul>
+        <li>3: A template tag defines a composite widget. The class
+        attribute tells the class name of the composite widget. The
+        parent attribute tells the parent class of the composite widget.
+        So, TfeAlert is a child class of GtkWindow. A parent attribute
+        is an option and you can leave it out. But it is recommended to
+        write it in the template tag.</li>
+        <li>4-6: Its three properties are defined. These properties are
+        inherited from GtkWindow. The titlebar property has a widget for
+        a custom title bar. The typical widget is GtkHeaderBar.</li>
+        <li>8: If the property “show-title-buttons” is TRUE, the title
+        buttons like close, minimize and maximize are shown. Otherwise
+        it is not shown. The TfeAlert object is not resizable. It is
+        closed when either of the two buttons, cancel or accept, is
+        clicked. Therefore the title buttons are not necessary and this
+        property is set to FALSE.</li>
+        <li>9-14: The bar has a title, which is a GtkLabel widget. The
+        default title is “Are you sure?” but it can be replaced by an
+        instance method.</li>
+        <li>15-32: The bar has two buttons, cancel and accept. The
+        cancel button is on the left so the child tag has
+        <code>type="start"</code> attribute. The accept button is on the
+        right so the child tag has <code>type="end"</code> attribute.
+        The dialog is shown when the user clicked the close button or
+        the quit menu without saving the data. Therefore, it is safer
+        for the user to click on the cancel button of the alert dialog.
+        So, the cancel button has a “suggested-action” CSS class. Ubuntu
+        colors the button green but the color can be blue or other
+        appropriate one defined by the system. In the same way the
+        accept button has a “destructive-action” CSS class and is
+        colored red. Two buttons have signals which are defined by the
+        signal tags.</li>
+        <li>35-54: A horizontal box has an image icon and a label.</li>
+        <li>44-47: The GtkImage widget displays an image. The
+        “icon-name” property is an icon name in the icon theme. The
+        theme depends on your system. You can check it with an icon
+        browser.</li>
+        </ul>
+        <pre><code>$ gtk4-icon-browser</code></pre>
+        <p>The “dialog-warning” icon is something like this.</p>
+        <figure>
+        <img src="/images/dialog_warning.png"
+        style="width:4.19cm;height:1.62cm"
+        alt="dialog-warning icon is like …" />
+        <figcaption aria-hidden="true">dialog-warning icon is like
+        …</figcaption>
+        </figure>
+        <p>These are made by my hand. The real image on the alert dialog
+        is nicer.</p>
+        <p>It is possible to define the alert widget as a child of
+        GtkDialog. But GtkDialog is deprecated since GTK version 4.10.
+        And users should use GtkWindow instead of GtkDialog.</p>
+        <h2 id="the-header-file">The header file</h2>
+        <p>The header file is similar to the one of TfeTextView.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a></span>
@@ -303,33 +293,38 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-35"><a href="#cb3-35"></a></span>
 <span id="cb3-36"><a href="#cb3-36"></a>GtkWidget <span class="op">*</span></span>
 <span id="cb3-37"><a href="#cb3-37"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> btn_label<span class="op">);</span></span></code></pre></div>
-<ul>
-<li>5-6: These two lines are always needed to define a new object.
-<code>TFE_TYPE_ALERT</code> is the type of TfeAlert object and it is a
-macro expanded into <code>tfe_alert_get_type ()</code>.
-G_DECLARE_FINAL_TYPE macro is expanded into:
-<ul>
-<li>The declaration of the function <code>tfe_alert_get_type</code></li>
-<li><code>TfeAlert</code> is defined as a typedef of
-<code>struct _TfeAlert</code>, which is defined in the C file.</li>
-<li><code>TFE_ALERT</code> and <code>TFE_IS_ALERT</code> macro is
-defined as a cast and type check function.</li>
-<li><code>TfeAlertClass</code> structure is defined as a final
-class.</li>
-</ul></li>
-<li>8-13: The TfeAlert class has a “response” signal. It has a parameter
-and the parameter type is defined as a <code>TfeAlertResponseType</code>
-enumerative constant.</li>
-<li>15-31: Getter and setter methods.</li>
-<li>33-37: Functions to create a instance. The function
-<code>tfe_alert_new_with_data</code> is a convenience function, which
-creates an instance and sets data at once.</li>
-</ul>
-<h2 id="the-c-file">The C file</h2>
-<h3 id="functions-for-composite-widgets">Functions for composite
-widgets</h3>
-<p>The following codes are extracted from <code>tfealert.c</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <ul>
+        <li>5-6: These two lines are always needed to define a new
+        object. <code>TFE_TYPE_ALERT</code> is the type of TfeAlert
+        object and it is a macro expanded into
+        <code>tfe_alert_get_type ()</code>. G_DECLARE_FINAL_TYPE macro
+        is expanded into:
+        <ul>
+        <li>The declaration of the function
+        <code>tfe_alert_get_type</code></li>
+        <li><code>TfeAlert</code> is defined as a typedef of
+        <code>struct _TfeAlert</code>, which is defined in the C
+        file.</li>
+        <li><code>TFE_ALERT</code> and <code>TFE_IS_ALERT</code> macro
+        is defined as a cast and type check function.</li>
+        <li><code>TfeAlertClass</code> structure is defined as a final
+        class.</li>
+        </ul></li>
+        <li>8-13: The TfeAlert class has a “response” signal. It has a
+        parameter and the parameter type is defined as a
+        <code>TfeAlertResponseType</code> enumerative constant.</li>
+        <li>15-31: Getter and setter methods.</li>
+        <li>33-37: Functions to create a instance. The function
+        <code>tfe_alert_new_with_data</code> is a convenience function,
+        which creates an instance and sets data at once.</li>
+        </ul>
+        <h2 id="the-c-file">The C file</h2>
+        <h3 id="functions-for-composite-widgets">Functions for composite
+        widgets</h3>
+        <p>The following codes are extracted from
+        <code>tfealert.c</code>.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeAlert <span class="op">{</span></span>
@@ -380,59 +375,69 @@ widgets</h3>
 <span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>The macro <code>G_DEFINE_FINAL_TYPE</code> is available since GLib
-version 2.70. It is used only for a final type class. You can use
-<code>G_DEFINE_TYPE</code> macro instead. They are expanded into:
-<ul>
-<li>The declaration of the functions <code>tfe_alert_init</code> and
-<code>tfe_alert_class_init</code>. They are defined in the following
-part of the C program.</li>
-<li>The definition of the variable
-<code>tfe_alert_parent_class</code>.</li>
-<li>The definition of the function <code>tfe_alert_get_type</code>.</li>
-</ul></li>
-<li>The names of the members of <code>_TfeAlert</code>, which are
-<code>lb_title</code>, <code>lb_message</code>, <code>btn_accept</code>
-and <code>btn_cancel</code>, must be the same as the id attribute in the
-XML file <code>tfealert.ui</code>.</li>
-<li>The function <code>tfe_alert_class_init</code> initializes the
-composite widget class.
-<ul>
-<li>The function
-<code>gtk_widget_class_set_template_from_resource</code> sets the
-template of the class. The template is built from the XML resource
-“tfealert.ui”. At this moment no instance is created. It just makes the
-class recognize the structure of the object. That’s why the top level
-tag is not object but template in the XML file.</li>
-<li>The function macro <code>gtk_widget_class_bind_template_child</code>
-connects the member of TfeAlert and the object class in the template.
-So, for example, you can access to <code>lb_title</code> GtkLabel
-instance via <code>alert-&gt;lb_title</code> where <code>alert</code> is
-an instance of TfeAlert class.</li>
-<li>The function <code>gtk_widget_class_bind_template_callback</code>
-connects the callback function and the <code>handler</code> attribute of
-the signal tag in the XML. For example, the “clicked” signal on the
-cancel button has a handler named “cancel_cb” in the signal tag. And the
-function <code>cancel_cb</code> exists in the C file above. These two
-are connected so when the signal is emitted the function
-<code>cancel_cb</code> is called. You can add <code>static</code>
-storage class to the callback function thanks to this connection.</li>
-</ul></li>
-<li>The function <code>tfe_alert_init</code> initializes the newly
-created instance. You need to call <code>gtk_widget_init_template</code>
-to create and initialize the child widgets in the template.</li>
-<li>The function <code>tfe_alert_despose</code> releases objects. The
-function <code>gtk_widget_despose_template</code> clears the template
-children.</li>
-<li>The function <code>tfe_alert_new</code> creates the composite widget
-TfeAlert instance. It creates not only TfeAlert itself but also all the
-child widgets that the composite widget has.</li>
-</ul>
-<h3 id="other-functions">Other functions</h3>
-<p>The following is the full codes of <code>tfealert.c</code>.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <ul>
+        <li>The macro <code>G_DEFINE_FINAL_TYPE</code> is available
+        since GLib version 2.70. It is used only for a final type class.
+        You can use <code>G_DEFINE_TYPE</code> macro instead. They are
+        expanded into:
+        <ul>
+        <li>The declaration of the functions <code>tfe_alert_init</code>
+        and <code>tfe_alert_class_init</code>. They are defined in the
+        following part of the C program.</li>
+        <li>The definition of the variable
+        <code>tfe_alert_parent_class</code>.</li>
+        <li>The definition of the function
+        <code>tfe_alert_get_type</code>.</li>
+        </ul></li>
+        <li>The names of the members of <code>_TfeAlert</code>, which
+        are <code>lb_title</code>, <code>lb_message</code>,
+        <code>btn_accept</code> and <code>btn_cancel</code>, must be the
+        same as the id attribute in the XML file
+        <code>tfealert.ui</code>.</li>
+        <li>The function <code>tfe_alert_class_init</code> initializes
+        the composite widget class.
+        <ul>
+        <li>The function
+        <code>gtk_widget_class_set_template_from_resource</code> sets
+        the template of the class. The template is built from the XML
+        resource “tfealert.ui”. At this moment no instance is created.
+        It just makes the class recognize the structure of the object.
+        That’s why the top level tag is not object but template in the
+        XML file.</li>
+        <li>The function macro
+        <code>gtk_widget_class_bind_template_child</code> connects the
+        member of TfeAlert and the object class in the template. So, for
+        example, you can access to <code>lb_title</code> GtkLabel
+        instance via <code>alert-&gt;lb_title</code> where
+        <code>alert</code> is an instance of TfeAlert class.</li>
+        <li>The function
+        <code>gtk_widget_class_bind_template_callback</code> connects
+        the callback function and the <code>handler</code> attribute of
+        the signal tag in the XML. For example, the “clicked” signal on
+        the cancel button has a handler named “cancel_cb” in the signal
+        tag. And the function <code>cancel_cb</code> exists in the C
+        file above. These two are connected so when the signal is
+        emitted the function <code>cancel_cb</code> is called. You can
+        add <code>static</code> storage class to the callback function
+        thanks to this connection.</li>
+        </ul></li>
+        <li>The function <code>tfe_alert_init</code> initializes the
+        newly created instance. You need to call
+        <code>gtk_widget_init_template</code> to create and initialize
+        the child widgets in the template.</li>
+        <li>The function <code>tfe_alert_despose</code> releases
+        objects. The function <code>gtk_widget_despose_template</code>
+        clears the template children.</li>
+        <li>The function <code>tfe_alert_new</code> creates the
+        composite widget TfeAlert instance. It creates not only TfeAlert
+        itself but also all the child widgets that the composite widget
+        has.</li>
+        </ul>
+        <h3 id="other-functions">Other functions</h3>
+        <p>The following is the full codes of
+        <code>tfealert.c</code>.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="kw">struct</span> _TfeAlert <span class="op">{</span></span>
@@ -542,40 +547,42 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-108"><a href="#cb5-108"></a>  tfe_alert_set_button_label <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> btn_label<span class="op">);</span></span>
 <span id="cb5-109"><a href="#cb5-109"></a>  <span class="cf">return</span> alert<span class="op">;</span></span>
 <span id="cb5-110"><a href="#cb5-110"></a><span class="op">}</span></span></code></pre></div>
-<p>The function <code>tfe_alert_new_with_data</code> is used more often
-than <code>tfe_alert_new</code> to create a new instance. It creates the
-instance and sets three data at the same time. The following is the
-common process when you use the TfeAlert class.</p>
-<ul>
-<li>Call <code>tfe_alert_new_with_data</code> and create an
-instance.</li>
-<li>Call <code>gtk_window_set_transient_for</code> to set the transient
-parent window.</li>
-<li>Call <code>gtk_window_present</code> to show the TfeAlert
-dialog.</li>
-<li>Connect “response” signal and a handler.</li>
-<li>The user clicks on the cancel or accept button. Then the dialog
-emits the “response” signal and destroy itself.</li>
-<li>The user catches the signal and do something.</li>
-</ul>
-<p>The rest of the program is:</p>
-<ul>
-<li>14-19: An array for a signal id. You can use a variable instead of
-an array because the class has only one signal. But using an array is a
-common way.</li>
-<li>21-31: Signal handlers. They emits the “response” signal and destroy
-the instance itself.</li>
-<li>33-61: Getters and setters.</li>
-<li>85-95: Creates the “response” signal.</li>
-<li>103-110: A convenience function <code>tfe_alert_new_with_data</code>
-creates an instance and sets labels.</li>
-</ul>
-<h2 id="an-example">An example</h2>
-<p>There’s an example in the <code>src/tfe6/example</code> directory. It
-shows how to use TfeAlert. The program is
-<code>src/example/ex_alert.c</code>.</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>The function <code>tfe_alert_new_with_data</code> is used
+        more often than <code>tfe_alert_new</code> to create a new
+        instance. It creates the instance and sets three data at the
+        same time. The following is the common process when you use the
+        TfeAlert class.</p>
+        <ul>
+        <li>Call <code>tfe_alert_new_with_data</code> and create an
+        instance.</li>
+        <li>Call <code>gtk_window_set_transient_for</code> to set the
+        transient parent window.</li>
+        <li>Call <code>gtk_window_present</code> to show the TfeAlert
+        dialog.</li>
+        <li>Connect “response” signal and a handler.</li>
+        <li>The user clicks on the cancel or accept button. Then the
+        dialog emits the “response” signal and destroy itself.</li>
+        <li>The user catches the signal and do something.</li>
+        </ul>
+        <p>The rest of the program is:</p>
+        <ul>
+        <li>14-19: An array for a signal id. You can use a variable
+        instead of an array because the class has only one signal. But
+        using an array is a common way.</li>
+        <li>21-31: Signal handlers. They emits the “response” signal and
+        destroy the instance itself.</li>
+        <li>33-61: Getters and setters.</li>
+        <li>85-95: Creates the “response” signal.</li>
+        <li>103-110: A convenience function
+        <code>tfe_alert_new_with_data</code> creates an instance and
+        sets labels.</li>
+        </ul>
+        <h2 id="an-example">An example</h2>
+        <p>There’s an example in the <code>src/tfe6/example</code>
+        directory. It shows how to use TfeAlert. The program is
+        <code>src/example/ex_alert.c</code>.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="pp">#include </span><span class="im">&quot;../tfealert.h&quot;</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a></span>
 <span id="cb6-4"><a href="#cb6-4"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -618,31 +625,33 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-41"><a href="#cb6-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb6-42"><a href="#cb6-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb6-43"><a href="#cb6-43"></a><span class="op">}</span></span></code></pre></div>
-<p>The “activate” signal handler <code>app_activate</code> initializes
-the alert dialog.</p>
-<ul>
-<li>A TfeAlert instance is created.</li>
-<li>Its “response” signal is connected to the handler
-<code>alert_response_cb</code>.</li>
-<li>TfeAlert class is a sub class of GtkWindow so it can be a top level
-window that is connected to an application instance. The function
-<code>gtk_window_set_application</code> does that.</li>
-<li>The dialog is shown.</li>
-</ul>
-<p>A user clicks on either the cancel button or the accept button. Then,
-the “response” signal is emitted and the dialog is destroyed. The signal
-handler <code>alert_response_cb</code> checks the response and prints
-“Accept” or “Cancel”. If an error happens, it prints “Unexpected
-error”.</p>
-<p>You can compile it with meson and ninja.</p>
-<pre><code>$ cd src/tfe6/example
+        <p>The “activate” signal handler <code>app_activate</code>
+        initializes the alert dialog.</p>
+        <ul>
+        <li>A TfeAlert instance is created.</li>
+        <li>Its “response” signal is connected to the handler
+        <code>alert_response_cb</code>.</li>
+        <li>TfeAlert class is a sub class of GtkWindow so it can be a
+        top level window that is connected to an application instance.
+        The function <code>gtk_window_set_application</code> does
+        that.</li>
+        <li>The dialog is shown.</li>
+        </ul>
+        <p>A user clicks on either the cancel button or the accept
+        button. Then, the “response” signal is emitted and the dialog is
+        destroyed. The signal handler <code>alert_response_cb</code>
+        checks the response and prints “Accept” or “Cancel”. If an error
+        happens, it prints “Unexpected error”.</p>
+        <p>You can compile it with meson and ninja.</p>
+        <pre><code>$ cd src/tfe6/example
 $ meson setup _build
 $ ninja -C _build
 $ _build/ex_alert
 Accept #&lt;= if you clicked on the accept button</code></pre>
-        </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Autor Guide</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                                      </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="autor-guide">Autor Guide</h1>
+        <h2 id="quick-start-guide">Quick Start Guide</h2>
+        <p>This section describes the steps to view the GTK 4 Tutorial
+        on your local machine.</p>
+        <ol type="1">
+        <li>You will need a Linux operating system (or a Linux
+        environment like WSL on Windows), Ruby (ver 4.0.1), Rake,
+        Pandoc, and a LaTeX system.</li>
+        <li>Download this repository and extract its contents. See the
+        next section for instructions on how to download the
+        repository.</li>
+        <li>Change your current directory to the root directory of the
+        source files.</li>
+        <li>Run <code>bundle install</code> to install the required
+        Gems. <code>bundle</code> is a command from Bundler, a Ruby
+        library management tool included with Ruby.</li>
+        <li>To view the tutorial in a web browser on your local PC:</li>
+        </ol>
+        <ul>
+        <li>Run <code>bundle exec rake html</code> to generate HTML
+        files for local use.</li>
+        <li>Run <code>bundle exec rake serve</code> and access
+        <code>http://localhost:8000</code> in your browser to view the
+        HTML files.</li>
+        </ul>
+        <ol start="6" type="1">
+        <li>To create a PDF version of the tutorial:</li>
+        </ol>
+        <ul>
+        <li>Run <code>bundle exec rake pdf</code> to generate the PDF
+        file.</li>
+        <li>The PDF file will be generated in the <code>pdf</code>
+        directory.</li>
+        </ul>
+        <h2 id="recommended-environment-and-software-setup">Recommended
+        Environment and Software Setup</h2>
+        <p>To generate the tutorial documents in your local repository,
+        the following environment and software are required. I have also
+        included the versions used in my own environment for
+        reference.</p>
+        <ul>
+        <li>Linux Operating System: The programs in this repository were
+        tested on Ubuntu 24.04.3 LTS running via WSL (Windows Subsystem
+        for Linux).</li>
+        <li>Ruby, Rake, Pandoc, and LaTeX: These are used to generate
+        the documentation.
+        <ul>
+        <li>Ruby: Version 4.0.1 is used. Ruby version 3 or later may
+        work, but you may need to modify the Gemfile, .ruby-version, or
+        mise.toml.</li>
+        <li>Pandoc: Version 3.1.3 was used, but the version provided by
+        your Linux distribution’s package manager is likely sufficient.
+        Pandoc converts Markdown (Pandoc’s Markdown) into HTML or
+        PDF.</li>
+        <li>LaTeX: When Pandoc converts Markdown to PDF, it generates
+        LaTeX as an intermediate step. A LaTeX system then converts that
+        into a PDF. For this tutorial, TeXLive 2025 with LuaLaTeX
+        (LuaHBTex 1.22.0 engine) was used.</li>
+        </ul></li>
+        </ul>
+        <p>There are two ways to download the repository to your local
+        PC: - Using Git: Run
+        <code>git clone https://github.com/ToshioCP/Gtk4-tutorial.git</code>
+        in your terminal. - Downloading as a Zip: Click the green
+        <code>Code</code> button on the repository’s main page and
+        select “Download ZIP.” Extract the ZIP file after
+        downloading.</p>
+        <h2 id="how-to-write-.src.md-files">How to Write .src.md
+        Files</h2>
+        <p>The source files for this tutorial are located in the
+        <code>src</code> directory and have the <code>.src.md</code>
+        extension. From here on, these will be referred to as “.src.md
+        files.”</p>
+        <h3 id="the-document-generation-process">The Document Generation
+        Process</h3>
+        <p>Three types of documents are generated and stored in the
+        <code>gfm</code>, <code>docs</code>, and <code>pdf</code>
+        directories, corresponding to GFM (GitHub Flavored Markdown),
+        HTML, and PDF formats.</p>
+        <p>These three output formats—<code>gfm</code>,
+        <code>html</code>, and <code>pdf</code>—are referred to as
+        targets. Note that for the <code>html</code> target, the output
+        directory is named <code>docs</code> instead of
+        <code>html</code>. This is to align with the directory name used
+        for hosting files on GitHub Pages.</p>
+        <p>Conversion to a target can happen in two ways: direct
+        generation (no intermediate steps) or indirect generation (using
+        intermediate steps).</p>
+        <p>Direct Generation</p>
+        <ul>
+        <li>gfm target: .src.md =&gt; GFM</li>
+        </ul>
+        <p>Indirect Generation</p>
+        <ul>
+        <li>html target: .src.md =&gt; Pandoc’s Markdown =&gt; HTML</li>
+        <li>pdf target: .src.md =&gt; Pandoc’s Markdown =&gt; LaTeX
+        =&gt; PDF</li>
+        </ul>
+        <p>As seen in this process, the .src.md format is converted into
+        either GFM or Pandoc’s Markdown. This conversion is handled by
+        Ruby scripts.</p>
+        <p>GFM and Pandoc’s Markdown are both extensions of the original
+        Markdown. Since Markdown has several such “dialects,” they share
+        common features but also have distinct differences. While GFM
+        and Pandoc’s Markdown are identical in their basic syntax, they
+        differ in areas such as how info strings and attributes are
+        handled in fenced code blocks.</p>
+        <h3 id="the-two-components-of-.src.md">The Two Components of
+        .src.md</h3>
+        <p>The content of a .src.md file is divided into two parts:</p>
+        <ol type="1">
+        <li>@@@ commands</li>
+        <li>Markdown: specifically, GFM or Pandoc’s Markdown</li>
+        </ol>
+        <p>Let’s look at a concrete example:</p>
+        <pre><code>This line belongs to &quot;2. Markdown.&quot;
+
+@@@shell
+echo Hello World.
+@@@
+
+This line also belongs to &quot;2. Markdown.&quot;</code></pre>
+        <p>The three lines starting from <code>@@@shell</code> to
+        <code>@@@</code> belong to “1. @@@ commands.”</p>
+        <h3 id="commands">@@@ Commands</h3>
+        <p>@@@ commands are defined as blocks with the following
+        structures:</p>
+        <ul>
+        <li>@@<span class="citation" data-cites="if">@if</span> command:
+        Start with <code>@@@if</code> and end with
+        <code>@@@end</code>.</li>
+        <li>@@<span class="citation"
+        data-cites="include">@include</span> command: Start with
+        <code>@@@include</code> and end with <code>@@@</code>.</li>
+        <li>@@<span class="citation" data-cites="shell">@shell</span>
+        command: Start with <code>@@@shell</code> and end with
+        <code>@@@</code>.</li>
+        <li>@@<span class="citation" data-cites="table">@table</span>
+        command: Start with <code>@@@table</code> and end with
+        <code>@@@</code>.</li>
+        </ul>
+        <p>@@<span class="citation" data-cites="table">@table</span>
+        command will be explained in a later section.</p>
+        <h3 id="the-if-command">The @@<span class="citation"
+        data-cites="if">@if</span> Command</h3>
+        <p>This command begins with <code>@@@if</code> , optionally
+        followed by <code>@@@elif</code> or <code>@@@else</code>, and
+        ends with <code>@@@end</code>. These wotk similarly to the C
+        preprocessor directives <code>#if</code>, <code>#elif</code>,
+        <code>#else</code>, and <code>#endif</code>.</p>
+        <p><code>@@@if</code> and <code>@@@elif</code> are followed by a
+        condition. Conditions can be:</p>
+        <ul>
+        <li>One of the generation targets: gfm, html, or pdf.</li>
+        <li>Two targets joined by the <code>|</code> (OR) operator. The
+        condition is true if the generation target matches either
+        one.</li>
+        </ul>
+        <p>Example:</p>
+        <pre><code>@@@if gfm
+```ruby
+@@@else
+```{.ruby .numberLines}
+@@@end
+def hello
+  print(&quot;Hello World.\n&quot;)
+end
+```</code></pre>
+        <p>This example resolves the difference in how fenced code
+        blocks handle metadata between GFM and Pandoc’s Markdown:</p>
+        <ul>
+        <li>In GFM, you can append an info string (usually the language
+        name) after the backticks.</li>
+        <li>In Pandoc’s Markdown, you can append attributes enclosed in
+        curly braces after the backticks. This allows for language
+        specification as well as additional features like line
+        numbering.</li>
+        </ul>
+        <h3 id="include">@@<span class="citation"
+        data-cites="include">@include</span></h3>
+        <p>The <code>@@@include</code> command imports external
+        files.</p>
+        <pre><code></code></pre>
+        <p>In this example, the C source file <code>sample.c</code>
+        specified between <code>@@@include</code> and the
+        <code>@@@</code> marker is imported. If the content of
+        <code>sample.c</code> is as shown below, the @@<span
+        class="citation" data-cites="include">@include</span> command is
+        replaced by that C code. To ensure it fits within the Markdown
+        text, it is wrapped in a fenced code block.</p>
+        <pre><code>#include &lt;stdio.h&gt;
+
+void
+hello() {
+    printf(&quot;Hello World.\n&quot;);
+}
+
+int
+main() {
+    hello();
+    return 0;
+}</code></pre>
+        <p>You can extract a specific function by adding the function
+        name after the filename.</p>
+        <pre><code></code></pre>
+        <p>This will only include the <code>hello</code> function from
+        <code>sample.c</code>. The resulting replacement will look like
+        this (wrapped in a fenced code block, which is omitted here for
+        clarity):</p>
+        <pre><code>void
+hello() {
+    printf(&quot;Hello World.\n&quot;);
+}</code></pre>
+        <p>While you can import source files from other languages,
+        function-level extraction is only supported for C source files.
+        Additionally, the C function extraction feature assumes the
+        following formatting:</p>
+        <pre><code>Return_Type
+Function_Name(Arguments) {
+  Function body
+}</code></pre>
+        <p>Specifically, the return type must be on the line immediately
+        preceding the function name, and the function must end with a
+        closing brace <code>}</code> at the beginning of a line. If
+        these conditions are not met, the function cannot be extracted
+        correctly.</p>
+        <p>Inserted text is converted into a fenced code block,
+        surrounded by lines starting with three backticks.</p>
+        <p>If the output target is <code>gfm</code>, an info string
+        (language name) is added to the starting fence. Using the
+        previous C code example:</p>
+        <pre><code></code></pre>
+        <p>Since the file extension <code>.c</code> indicates C, the
+        info string will be <code>c</code>. The resulting output
+        becomes:</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>hello<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;Hello World.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>Info strings like c, ruby, or xml are determined by the file
+        extension:</p>
+        <ul>
+        <li><code>.c</code> =&gt; c</li>
+        <li><code>.rb</code> =&gt; ruby</li>
+        <li><code>.xml</code> =&gt; xml</li>
+        </ul>
+        <p>A list of supported languages is defined in
+        <code>/data/ext.yml</code>. Note that this path starts with a
+        slash to represent the repository root, not the operating system
+        root.</p>
+        <p>If the output target is <code>html</code> or
+        <code>pdf</code>, attributes of Pandoc’s Markdown are added
+        after the starting fence.</p>
+        <pre><code></code></pre>
+        <p>This @@@ command is converted as follows:</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">void</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>hello<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>    printf<span class="op">(</span><span class="st">&quot;Hello World.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="op">}</span></span></code></pre></div>
+        <p>These Pandoc’s Markdown attributes provide both syntax
+        highlighting for the C code and line numbers. Line numbering is
+        only available for <code>html</code> and <code>pdf</code>
+        targets that use Pandoc’s Markdown. Unfortunately, GFM does not
+        have a Markdown extension for line numbers, so only the code
+        itself is output for that target.</p>
+        <p>The @@<span class="citation"
+        data-cites="include">@include</span> command must be written in
+        exactly three lines (start marker, pathname with optional
+        function names, end marker). Consequently, you cannot include
+        multiple files in a single command block.</p>
+        <h3 id="shell">@@<span class="citation"
+        data-cites="shell">@shell</span></h3>
+        <p>This command consists of the following three lines:</p>
+        <pre><code></code></pre>
+        <p>$ Shell command to execute sh: 1: Shell: not found $</p>
+        <pre><code></code></pre>
+        <p>It is replaced by the command line, its standard output, and
+        the subsequent prompt.</p>
+        <p>For example:</p>
+        <pre><code></code></pre>
+        <p>$ wc Rakefile wc: Rakefile: No such file or directory $</p>
+        <pre><code></code></pre>
+        <p>This is converted into:</p>
+        <pre><code>```
+$ wc Rakefile
+86  408 2965 Rakefile
+$
+```</code></pre>
+        <p>No info strings or attributes are added to this fenced code
+        block.</p>
+        <h3 id="how-to-write-links">How to Write Links</h3>
+        <p>Links use URLs to direct the browser to a destination. There
+        are three ways to write a URL:</p>
+        <ul>
+        <li>Absolute URL: A URL starting with http or https. (e.g.,
+        <code>https://example.com/a/b/c.html</code>)</li>
+        <li>Root-relative URL: A path starting with a slash,
+        representing the root of the site. In the example above, the
+        root-relative version would be <code>/a/b/c.html</code>.</li>
+        <li>Relative URL: A path relative to the current URL. If the
+        current page is <code>https://example.com/a/d.html</code>, the
+        relative URL to <code>https://example.com/a/b/c.html</code>
+        would be <code>b/c.html</code>. Note that relative URL doesn’t
+        start with slash.</li>
+        </ul>
+        <p>Use absolute URLs for links to external sites.</p>
+        <pre><code>The GFM documentation can be found in the [GitHub Flavored Markdown Spec](https://github.github.com/gfm/).</code></pre>
+        <p>For internal links, any of the three types can be used, but
+        root-relative or relative URLs are preferred. This ensures the
+        links remain valid even if the domain name changes.</p>
+        <p>When writing root-relative URLs in .src.md files, the
+        <code>src</code> directory should be treated as the site root.
+        The Ruby script automatically adjusts these links during the
+        transformation to the target format (GFM or HTML). When
+        converting to PDF, internal links within the repository are
+        removed, except for those automatically generated by Pandoc
+        (such as table of contents links).</p>
+        <p>The following usage of root-relative or relative URLs in
+        .src.md files is recommended:</p>
+        <ul>
+        <li>Root-relative URLs: All image files that are stored in the
+        <code>/images</code> directory (<code>/</code> is the
+        <code>src</code> directory).</li>
+        <li>Relative URLs: Links to section files or other .src.md
+        files</li>
+        </ul>
+        <p>Links to C source files can be either of root-relative or
+        ralative links.</p>
+        <ul>
+        <li>Root-relative URLs are suitable for files whose location
+        relative to the src directory is unlikely to change, such as C
+        source files in a fixed global location.</li>
+        <li>Relative URLs are more appropriate when the .src.md document
+        and its related C source files are part of a self-contained
+        project (e.g., a “turtle” graphics sample). This ensures the
+        links remain intact even if the entire project directory is
+        moved.</li>
+        </ul>
+        <p><strong>Example:</strong> if you have an image at
+        <code>/images/a.png</code> and a section file at
+        <code>/sec1.src.md</code>, and you want to link to them from
+        <code>/sec2.src.md</code>:</p>
+        <pre><code>Link to an image: ![Image a](/images/a.png)
+Link to a section: [Section 1](sec1.src.md)</code></pre>
+        <p><strong>Path Validation:</strong></p>
+        <p>Ensure that all internal links remain within the repository
+        boundaries. The Ruby script will detect and warn you if a path
+        (e.g., ../../../etc/passwd) attempts to point outside the
+        project root.</p>
+        <p>Note: This check prevents broken links and helps avoid “path
+        traversal” issues, ensuring all referenced resources are
+        correctly included in the final output.</p>
+        <p>For the pdf target, you can specify image sizes in units like
+        cm.</p>
+        <pre><code>![Image a](/images/a.png){width=6cm height=5cm}</code></pre>
+        <p>This attribute is a Pandoc’s Markdown extension and is not
+        available in GFM. Additionally, size specification in cm is
+        intended for LaTeX conversion (the intermediate step for PDF)
+        and is not for HTML. These attributes are preserved only when
+        the target is pdf; the Ruby script removes them for other
+        targets.</p>
+        <p>Because the Ruby script handles link conversion
+        automatically, there is no need to use @@<span class="citation"
+        data-cites="if">@if</span> to differentiate link formats between
+        targets.</p>
+        <h3 id="other-notes-on-writing-.src.md">Other Notes on Writing
+        .src.md</h3>
+        <p>The Ruby script assumes that the starting and ending lines of
+        a fenced code block consist of three or more identical
+        characters (backticks or tildes). If these are not written
+        correctly, the script will fail to recognize the boundaries of
+        the code.</p>
+        <p>The conversion from .src.md to GFM or Pandoc’s Markdown by
+        the Ruby script follows this order:</p>
+        <ol type="1">
+        <li>Pass 1: Replacement of @@<span class="citation"
+        data-cites="if">@if</span> commands</li>
+        <li>Pass 2: Replacement of @@<span class="citation"
+        data-cites="include">@include</span> and @@<span
+        class="citation" data-cites="shell">@shell</span> commands</li>
+        <li>Pass 3: Separation into code and non-code sections; code is
+        left as-is, while links in non-code sections are converted.</li>
+        </ol>
+        <p>Failure to account for this order can lead to unexpected
+        results.</p>
+        <pre><code>```
+@@@if gfm
+Some statement for the target gfm
+@@@elif html
+Some statement for the target html
+@@@else
+Some statement for the target pdf
+@@@end
+```</code></pre>
+        <p>Even if you intend to display the @@<span class="citation"
+        data-cites="if">@if</span> command itself, it will not be
+        preserved as-is. This is because @@<span class="citation"
+        data-cites="if">@if</span> replacement (Pass 1) occurs before
+        code block protection (Pass 3). If the target is gfm, the
+        resulting output will be:</p>
+        <pre><code>```
+Some statement for the target gfm
+```</code></pre>
+        <p>To achieve the intended output, use indented code blocks
+        instead of fenced code blocks. @@@ commands must start at the
+        beginning of a line. If they are indented, they are not
+        recognized as commands, allowing them to pass through Pass 1
+        unchanged and be treated as an (indented) code block in Pass
+        3.</p>
+        <p>As explained later, section files
+        (<code>sec&lt;num&gt;.src.md</code>) must be placed directly
+        under the source directory root. However, other .src.md files
+        can be organized in subdirectories within the source directory.
+        This directory structure is mirrored in the target directory.
+        Note that only directories containing .src.md files are copied.
+        C programs are not copied, and image files are copied to the
+        <code>docs</code> directory only when generating HTML.</p>
+        <p>Finally, since .src.md uses GFM or Pandoc’s Markdown, please
+        refer to their respective manuals for proper syntax. If the
+        dialects differ, use @@<span class="citation"
+        data-cites="if">@if</span> to write the appropriate version for
+        each. Links to the manuals are below:</p>
+        <ul>
+        <li><a href="https://github.github.com/gfm/">GitHub Flavored
+        Markdown Spec</a></li>
+        <li><a href="https://pandoc.org/MANUAL.html">Pandoc User’s
+        Guide</a></li>
+        </ul>
+        <h3 id="table-formatting">Table Formatting</h3>
+        <p>Formatting tables is not strictly required, but it can
+        improve the readability of .src.md files.</p>
+        <p>For example, suppose you have the following table in a text
+        file named <code>sample.src.md</code>:</p>
+        <pre><code>Price List
+
+@@@table
+|item|price|
+|:---:|:---:|
+|mouse|$10|
+|PC|$500|
+@@@</code></pre>
+        <p>The @@<span class="citation" data-cites="table">@table</span>
+        command formats it as follows, aligning items vertically for
+        better aesthetics:</p>
+        <pre><code>Price List
+
+|item |price|
+|:---:|:---:|
+|mouse| $10 |
+| PC  |$500 |</code></pre>
+        <p>This command only affects the visual alignment within the
+        Markdown file and does not change the final HTML or PDF output.
+        Note that this command only supports the specific table syntax
+        shown above.</p>
+        <p>The @@<span class="citation" data-cites="table">@table</span>
+        command is not supported during Rakefile-based conversion. You
+        must use the standalone script
+        <code>bin/table_formatter.rb</code>.</p>
+        <pre><code>$ bundle exec ruby bin/table_formatter.rb sample.src.md</code></pre>
+        <p>Whether to format tables is a matter of personal preference.
+        If you don’t find it necessary, you don’t need to use the
+        @@<span class="citation" data-cites="table">@table</span>
+        command.</p>
+        <h2 id="directory-structure">Directory Structure</h2>
+        <p>This section covers the primary directory structure. This
+        structure can be modified, but if you do so, you must also
+        update <code>/path_manager.rb</code>, which manages these
+        directories.</p>
+        <ul>
+        <li><code>/src</code>: Contains all source files (.src.md files,
+        C source code, etc.).</li>
+        <li><code>/src/images</code>: Contains image files like PNG and
+        JPG.</li>
+        <li><code>/gfm</code>: Contains generated GFM files.</li>
+        <li><code>/docs</code>: Contains generated HTML files and copies
+        of image files.</li>
+        <li><code>/pdf</code>: Contains generated PDF files.</li>
+        <li><code>/lib</code>: Contains Ruby library files.</li>
+        <li><code>/test</code>: Contains test files. Run all tests by
+        executing <code>bundle exec rake -f test/Rakefile</code> from
+        the terminal.</li>
+        <li><code>/data</code>: Contains <code>chapters.yml</code>
+        (defining chapters for PDF generation), other definition files,
+        and templates.</li>
+        </ul>
+        <h3 id="source-directory-structure">Source Directory
+        Structure</h3>
+        <h4 id="index.src.md">index.src.md</h4>
+        <p><code>index.src.md</code> is placed directly in the source
+        directory. In GFM generation, it is converted to
+        <code>README.md</code> at the repository root. In HTML
+        generation, it becomes <code>/docs/index.html</code>, serving as
+        the website’s homepage. In PDF generation, it forms the initial
+        introductory section.</p>
+        <h4 id="section-files">Section Files</h4>
+        <p>Section files are named with the prefix “sec” followed by the
+        section number and the <code>.src.md</code> extension (e.g.,
+        <code>sec1.src.md</code>, <code>sec5.src.md</code>,
+        <code>sec12.src.md</code>). These correspond to Section 1,
+        Section 5, and Section 12, respectively.</p>
+        <p>Section numbers must be consecutive natural numbers starting
+        from 1. However, if you want to insert a new section in the
+        middle, renaming many files manually is tedious. For example, if
+        you want to insert a new section between
+        <code>sec8.src.md</code> and <code>sec9.src.md</code>, first
+        create a temporary section using a decimal, like
+        <code>sec8.5.src.md</code>. Then, use the
+        <code>/bin/renumber.rb</code> script to automatically renumber
+        the sections:</p>
+        <ul>
+        <li><code>sec8.src.md</code> remains
+        <code>sec8.src.md</code></li>
+        <li><code>sec8.5.src.md</code> becomes
+        <code>sec9.src.md</code></li>
+        <li><code>sec9.src.md</code> becomes
+        <code>sec10.src.md</code></li>
+        </ul>
+        <p>All subsequent sections will also be renumbered
+        accordingly.</p>
+        <h2 id="rake">Rake</h2>
+        <p>This repository’s conversion system uses Rake, a Ruby build
+        tool. Execute Rake by passing a task as an argument:</p>
+        <pre><code>$ bundle exec rake &lt;task name&gt;</code></pre>
+        <p>Available tasks:</p>
+        <ul>
+        <li><code>gfm</code>: Generates GFM files. (Default task;
+        executed if the task name is omitted).</li>
+        <li><code>html</code>: Generates HTML files.</li>
+        <li><code>pdf</code>: Generates PDF files.</li>
+        <li><code>all</code>: Generates GFM, HTML, and PDF files.</li>
+        <li><code>serve</code>: Starts a local server with
+        <code>docs</code> as the site root (Port 8000).</li>
+        </ul>
+        <h3 id="modes">Modes</h3>
+        <p>The environment variable <code>G4T_ENV</code> determines the
+        mode used when generating HTML files.</p>
+        <ul>
+        <li>development: Development mode. Generates files for local
+        serving.</li>
+        <li>production: Production mode. Generates files for GitHub
+        Pages.</li>
+        </ul>
+        <p>The primary difference is the base URL, which affects
+        root-relative link URLs. GitHub Pages uses the repository name
+        as the base URL, while the local environment has no base URL.
+        The Ruby script determines the mode by reading
+        <code>G4T_ENV</code>.</p>
+        <pre><code>$ G4T_ENV=development bundle exec rake html # Development mode
+$ G4T_ENV=production bundle exec rake html # Production mode</code></pre>
+        <p>You must generate the HTML files in production mode before
+        pushing to GitHub. If the environment variable assignment is
+        omitted, the files will be generated in development mode.</p>
+      </div>
+    </div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

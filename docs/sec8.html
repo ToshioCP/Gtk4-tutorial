@@ -1,173 +1,161 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec7.html">Prev: section7</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec9.html">Next: section9</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Defining a final class</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec7.html">Prev: Section 7</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec9.html">Next: Section 9</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="defining-a-final-class">Defining a final class</h1>
-<h2 id="a-very-simple-editor">A very simple editor</h2>
-<p>We made a very simple file viewer in the previous section. Now we go
-on to rewrite it and turn it into very simple editor. Its source file is
-<code>tfe1.c</code> (text file editor 1) under <code>tfe</code>
-directory.</p>
-<p>GtkTextView is a multi-line editor. So, we don’t need to write the
-editor from scratch. We just add two things to the file viewer:</p>
-<ul>
-<li>Pointers to GFile instances.</li>
-<li>A text-save function.</li>
-</ul>
-<p>There are a couple of ways to store the pointers.</p>
-<ul>
-<li>Use global variables</li>
-<li>Make a child class of GtkTextView and its each instance holds a
-pointer to the GFile instance.</li>
-</ul>
-<p>Using global variables is easy to implement. Define a sufficient size
-pointer array to GFile. For example,</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>f<span class="op">[</span><span class="dv">20</span><span class="op">];</span></span></code></pre></div>
-<p>The variable <code>f[i]</code> corresponds to the file associated
-with the i-th GtkNotebookPage.</p>
-<p>However, There are two problems. The first is the size of the array.
-If a user gives too many arguments (more than 20 in the example above),
-it is impossible to store all the pointers to the GFile instances. The
-second is difficulty to maintain the program. We have a small program so
-far. But, the more you develop the program, the bigger its size grows.
-Generally speaking, it is very difficult to maintain global variables in
-a big program. When you check the global variable, you need to check all
-the codes that use the variable.</p>
-<p>Making a child class is a good idea in terms of maintenance. And we
-prefer it rather than a global variable.</p>
-<p>Be careful that we are thinking about “child class”, not “child
-widget”. Child class and child widget are totally different. Class is a
-term of GObject system. If you are not familiar with GObject, see:</p>
-<ul>
-<li><a href="https://docs.gtk.org/gobject/">GObject API
-reference</a></li>
-<li><a href="https://toshiocp.github.io/Gobject-tutorial/">GObject
-tutorial for beginners</a></li>
-</ul>
-<p>A child class inherits everything from the parent and, in addition,
-extends its performance. We will define TfeTextView as a child class of
-GtkTextView. It has everything that GtkTextView has and adds a pointer
-to a GFile.</p>
-<figure>
-<img src="image/child.png" alt="Child object of GtkTextView" />
-<figcaption aria-hidden="true">Child object of GtkTextView</figcaption>
-</figure>
-<h2 id="how-to-define-a-child-class-of-gtktextview">How to define a
-child class of GtkTextView</h2>
-<p>You need to know GObject system convention. First, look at the
-program below.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type </span><span class="op">()</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="defining-a-final-class">Defining a final class</h1>
+        <h2 id="a-very-simple-editor">A very simple editor</h2>
+        <p>We made a very simple file viewer in the previous section.
+        Now we go on to rewrite it and turn it into very simple editor.
+        Its source file is <code>tfe1.c</code> (text file editor 1)
+        under <code>tfe</code> directory.</p>
+        <p>GtkTextView is a multi-line editor. So, we don’t need to
+        write the editor from scratch. We just add two things to the
+        file viewer:</p>
+        <ul>
+        <li>Pointers to GFile instances.</li>
+        <li>A text-save function.</li>
+        </ul>
+        <p>There are a couple of ways to store the pointers.</p>
+        <ul>
+        <li>Use global variables</li>
+        <li>Make a child class of GtkTextView and its each instance
+        holds a pointer to the GFile instance.</li>
+        </ul>
+        <p>Using global variables is easy to implement. Define a
+        sufficient size pointer array to GFile. For example,</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>f<span class="op">[</span><span class="dv">20</span><span class="op">];</span></span></code></pre></div>
+        <p>The variable <code>f[i]</code> corresponds to the file
+        associated with the i-th GtkNotebookPage.</p>
+        <p>However, There are two problems. The first is the size of the
+        array. If a user gives too many arguments (more than 20 in the
+        example above), it is impossible to store all the pointers to
+        the GFile instances. The second is difficulty to maintain the
+        program. We have a small program so far. But, the more you
+        develop the program, the bigger its size grows. Generally
+        speaking, it is very difficult to maintain global variables in a
+        big program. When you check the global variable, you need to
+        check all the codes that use the variable.</p>
+        <p>Making a child class is a good idea in terms of maintenance.
+        And we prefer it rather than a global variable.</p>
+        <p>Be careful that we are thinking about “child class”, not
+        “child widget”. Child class and child widget are totally
+        different. Class is a term of GObject system. If you are not
+        familiar with GObject, see:</p>
+        <ul>
+        <li><a href="https://docs.gtk.org/gobject/">GObject API
+        reference</a></li>
+        <li><a
+        href="https://toshiocp.github.io/Gobject-tutorial/">GObject
+        tutorial for beginners</a></li>
+        </ul>
+        <p>A child class inherits everything from the parent and, in
+        addition, extends its performance. We will define TfeTextView as
+        a child class of GtkTextView. It has everything that GtkTextView
+        has and adds a pointer to a GFile.</p>
+        <figure>
+        <img src="/images/child.png" style="width:9.675cm;height:4.89cm"
+        alt="Child object of GtkTextView" />
+        <figcaption aria-hidden="true">Child object of
+        GtkTextView</figcaption>
+        </figure>
+        <h2 id="how-to-define-a-child-class-of-gtktextview">How to
+        define a child class of GtkTextView</h2>
+        <p>You need to know GObject system convention. First, look at
+        the program below.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type </span><span class="op">()</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeTextView<span class="op">,</span> tfe_text_view<span class="op">,</span> TFE<span class="op">,</span> TEXT_VIEW<span class="op">,</span> GtkTextView<span class="op">)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeTextView</span>
@@ -200,84 +188,95 @@ program below.</p>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_TEXT_VIEW<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>TfeTextView is divided into two parts. Tfe and TextView. Tfe is
-called prefix or namespace. TextView is called object.</li>
-<li>There are three different identifier patterns. TfeTextView (camel
-case), tfe_text_view (this is used for functions) and TFE_TEXT_VIEW
-(This is used to cast a object to TfeTextView).</li>
-<li>First, define <code>TFE_TYPE_TEXT_VIEW</code> macro as
-<code>tfe_text_view_get_type ()</code>. The name is always
-(prefix)_TYPE_(object) and the letters are upper case. And the
-replacement text is always (prefix)_(object)_get_type () and the letters
-are lower case. This definition is put before
-<code>G_DECLARE_FINAL_TYPE</code> macro.</li>
-<li>The arguments of <code>G_DECLARE_FINAL_TYPE</code> macro are the
-child class name in camel case, lower case with underscore, prefix
-(upper case), object (upper case with underscore) and parent class name
-(camel case). The following two C structures are declared in the
-expansion of the macro.
-<ul>
-<li><code>typedef struct _TfeTextView TfeTextView</code></li>
-<li><code>typedef struct {GtkTextViewClass parent_class; } TfeTextViewClass;</code></li>
-</ul></li>
-<li>These declaration tells us that TfeTextView and TfeTextViewClass are
-C structures. “TfeTextView” has two meanings, class name and C structure
-name. The C structure TfeTextView is called object. Similarly,
-TfeTextViewClass is called class.</li>
-<li>Declare the structure <code>_TfeTextView</code>. The underscore is
-necessary. The first member is the parent object (C structure). Notice
-this is not a pointer but the object itself. The second member and after
-are members of the child object. TfeTextView structure has a pointer to
-a GFile instance as a member.</li>
-<li><code>G_DEFINE_FINAL_TYPE</code> macro. The arguments are the child
-object name in camel case, lower case with underscore and parent object
-type (prefix)_TYPE_(module). This macro is mainly used to register the
-new class to the type system. Type system is a base system of GObject.
-Every class has its own type. The types of GObject, GtkWidget and
-TfeTextView are <code>G_TYPE_OBJECT</code>, <code>GTK_TYPE_WIDGET</code>
-and <code>TFE_TYPE_TEXT_VIEW</code> respectively. For example,
-<code>TFE_TYPE_TEXT_VIEW</code> is a macro and it is expanded to a
-function <code>tfe_text_view_get_type()</code>. It returns a integer
-which is unique among all GObject system classes.</li>
-<li>The instance init function <code>tfe_text_view_init</code> is called
-when the instance is created. It is the same as a constructor in other
-object oriented languages.</li>
-<li>The class init function <code>tfe_text_view_class_init</code> is
-called when the class is created.</li>
-<li>Two functions <code>tfe_text_view_set_file</code> and
-<code>tfe_text_view_get_file</code> are public functions. Public
-functions are open and you can call them anywhere. They are the same as
-public method in other object oriented languages. <code>tv</code> is a
-pointer to the TfeTextView object (C structure). It has a member
-<code>file</code> and it is pointed by <code>tv-&gt;file</code>.</li>
-<li>TfeTextView instance creation function is
-<code>tfe_text_view_new</code>. Its name is (prefix)_(object)_new. It
-uses <code>g_object_new</code> function to create the instance. The
-arguments are (prefix)_TYPE_(object), a list to initialize properties
-and NULL. NULL is the end mark of the property list. No property is
-initialized here. And the return value is casted to GtkWidget.</li>
-</ul>
-<p>This program shows the outline how to define a child class.</p>
-<h2 id="close-request-signal">Close-request signal</h2>
-<p>Imagine that you are using this editor. First, you run the editor
-with arguments. The arguments are filenames. The editor reads the files
-and shows the window with the text of files in it. Then you edit the
-text. After you finish editing, you click on the close button of the
-window and quit the editor. The editor updates files just before the
-window closes.</p>
-<p>GtkWindow emits the “close-request” signal when the close button is
-clicked. We will connect the signal and the handler
-<code>before_close</code>. (A handler is a C function which is connected
-to a signal.) The function <code>before_close</code> is called when the
-signal “close-request” is emitted.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>before_close<span class="op">),</span> NULL<span class="op">);</span></span></code></pre></div>
-<p>The argument <code>win</code> is a GtkApplicationWindow, in which the
-signal “close-request” is defined, and <code>before_close</code> is the
-handler. The <code>G_CALLBACK</code> cast is necessary for the handler.
-The program of <code>before_close</code> is as follows.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> gboolean</span>
+        <ul>
+        <li>TfeTextView is divided into two parts. Tfe and TextView. Tfe
+        is called prefix or namespace. TextView is called object.</li>
+        <li>There are three different identifier patterns. TfeTextView
+        (camel case), tfe_text_view (this is used for functions) and
+        TFE_TEXT_VIEW (This is used to cast a object to
+        TfeTextView).</li>
+        <li>First, define <code>TFE_TYPE_TEXT_VIEW</code> macro as
+        <code>tfe_text_view_get_type ()</code>. The name is always
+        (prefix)_TYPE_(object) and the letters are upper case. And the
+        replacement text is always (prefix)_(object)_get_type () and the
+        letters are lower case. This definition is put before
+        <code>G_DECLARE_FINAL_TYPE</code> macro.</li>
+        <li>The arguments of <code>G_DECLARE_FINAL_TYPE</code> macro are
+        the child class name in camel case, lower case with underscore,
+        prefix (upper case), object (upper case with underscore) and
+        parent class name (camel case). The following two C structures
+        are declared in the expansion of the macro.
+        <ul>
+        <li><code>typedef struct _TfeTextView TfeTextView</code></li>
+        <li><code>typedef struct {GtkTextViewClass parent_class; } TfeTextViewClass;</code></li>
+        </ul></li>
+        <li>These declaration tells us that TfeTextView and
+        TfeTextViewClass are C structures. “TfeTextView” has two
+        meanings, class name and C structure name. The C structure
+        TfeTextView is called object. Similarly, TfeTextViewClass is
+        called class.</li>
+        <li>Declare the structure <code>_TfeTextView</code>. The
+        underscore is necessary. The first member is the parent object
+        (C structure). Notice this is not a pointer but the object
+        itself. The second member and after are members of the child
+        object. TfeTextView structure has a pointer to a GFile instance
+        as a member.</li>
+        <li><code>G_DEFINE_FINAL_TYPE</code> macro. The arguments are
+        the child object name in camel case, lower case with underscore
+        and parent object type (prefix)_TYPE_(module). This macro is
+        mainly used to register the new class to the type system. Type
+        system is a base system of GObject. Every class has its own
+        type. The types of GObject, GtkWidget and TfeTextView are
+        <code>G_TYPE_OBJECT</code>, <code>GTK_TYPE_WIDGET</code> and
+        <code>TFE_TYPE_TEXT_VIEW</code> respectively. For example,
+        <code>TFE_TYPE_TEXT_VIEW</code> is a macro and it is expanded to
+        a function <code>tfe_text_view_get_type()</code>. It returns a
+        integer which is unique among all GObject system classes.</li>
+        <li>The instance init function <code>tfe_text_view_init</code>
+        is called when the instance is created. It is the same as a
+        constructor in other object oriented languages.</li>
+        <li>The class init function
+        <code>tfe_text_view_class_init</code> is called when the class
+        is created.</li>
+        <li>Two functions <code>tfe_text_view_set_file</code> and
+        <code>tfe_text_view_get_file</code> are public functions. Public
+        functions are open and you can call them anywhere. They are the
+        same as public method in other object oriented languages.
+        <code>tv</code> is a pointer to the TfeTextView object (C
+        structure). It has a member <code>file</code> and it is pointed
+        by <code>tv-&gt;file</code>.</li>
+        <li>TfeTextView instance creation function is
+        <code>tfe_text_view_new</code>. Its name is
+        (prefix)_(object)_new. It uses <code>g_object_new</code>
+        function to create the instance. The arguments are
+        (prefix)_TYPE_(object), a list to initialize properties and
+        NULL. NULL is the end mark of the property list. No property is
+        initialized here. And the return value is casted to
+        GtkWidget.</li>
+        </ul>
+        <p>This program shows the outline how to define a child
+        class.</p>
+        <h2 id="close-request-signal">Close-request signal</h2>
+        <p>Imagine that you are using this editor. First, you run the
+        editor with arguments. The arguments are filenames. The editor
+        reads the files and shows the window with the text of files in
+        it. Then you edit the text. After you finish editing, you click
+        on the close button of the window and quit the editor. The
+        editor updates files just before the window closes.</p>
+        <p>GtkWindow emits the “close-request” signal when the close
+        button is clicked. We will connect the signal and the handler
+        <code>before_close</code>. (A handler is a C function which is
+        connected to a signal.) The function <code>before_close</code>
+        is called when the signal “close-request” is emitted.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>before_close<span class="op">),</span> NULL<span class="op">);</span></span></code></pre></div>
+        <p>The argument <code>win</code> is a GtkApplicationWindow, in
+        which the signal “close-request” is defined, and
+        <code>before_close</code> is the handler. The
+        <code>G_CALLBACK</code> cast is necessary for the handler. The
+        program of <code>before_close</code> is as follows.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> gboolean</span>
 <span id="cb4-2"><a href="#cb4-2"></a>before_close <span class="op">(</span>GtkWindow <span class="op">*</span>win<span class="op">,</span> GtkWidget <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
@@ -308,36 +307,40 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-29"><a href="#cb4-29"></a>  <span class="op">}</span></span>
 <span id="cb4-30"><a href="#cb4-30"></a>  <span class="cf">return</span> FALSE<span class="op">;</span></span>
 <span id="cb4-31"><a href="#cb4-31"></a><span class="op">}</span></span></code></pre></div>
-<p>The numbers on the left are line numbers.</p>
-<ul>
-<li>15: The number of note book pages is assigned to
-<code>n</code>.</li>
-<li>16-29: For loop with regard to the index to each page.</li>
-<li>17-19: <code>scr</code>, <code>tv</code> and <code>file</code> is
-assigned pointers to the GtkScrolledWindow, TfeTextView and GFile. The
-GFile of TfeTextView was stored when <code>app_open</code> handler was
-called. It will be shown later.</li>
-<li>20-22: <code>tb</code> is assigned the GtkTextBuffer of the
-TfeTextView. The contents of the buffer are accessed with iterators.
-Iterators points somewhere in the buffer. The function
-<code>gtk_text_buffer_get_bounds</code> assigns the start and end of the
-buffer to <code>start_iter</code> and <code>end_iter</code>
-respectively. Then the function <code>gtk_text_buffer_get_text</code>
-returns the text between <code>start_iter</code> and
-<code>end_iter</code>, which is the whole text in the buffer.</li>
-<li>23-26: The text is saved to the file. If it fails, error messages
-are displayed. The GError instance must be freed and the pointer
-<code>err</code> needs to be NULL for the next run in the loop.</li>
-<li>27: <code>contents</code> are freed.</li>
-<li>28: GFile is useless. <code>g_object_unref</code> decreases the
-reference count of the GFile. Reference count will be explained in the
-later section. The reference count will be zero and the GFile instance
-will destroy itself.</li>
-</ul>
-<h2 id="source-code-of-tfe1.c">Source code of tfe1.c</h2>
-<p>The following is the whole source code of <code>tfe1.c</code>.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>The numbers on the left are line numbers.</p>
+        <ul>
+        <li>15: The number of note book pages is assigned to
+        <code>n</code>.</li>
+        <li>16-29: For loop with regard to the index to each page.</li>
+        <li>17-19: <code>scr</code>, <code>tv</code> and
+        <code>file</code> is assigned pointers to the GtkScrolledWindow,
+        TfeTextView and GFile. The GFile of TfeTextView was stored when
+        <code>app_open</code> handler was called. It will be shown
+        later.</li>
+        <li>20-22: <code>tb</code> is assigned the GtkTextBuffer of the
+        TfeTextView. The contents of the buffer are accessed with
+        iterators. Iterators points somewhere in the buffer. The
+        function <code>gtk_text_buffer_get_bounds</code> assigns the
+        start and end of the buffer to <code>start_iter</code> and
+        <code>end_iter</code> respectively. Then the function
+        <code>gtk_text_buffer_get_text</code> returns the text between
+        <code>start_iter</code> and <code>end_iter</code>, which is the
+        whole text in the buffer.</li>
+        <li>23-26: The text is saved to the file. If it fails, error
+        messages are displayed. The GError instance must be freed and
+        the pointer <code>err</code> needs to be NULL for the next run
+        in the loop.</li>
+        <li>27: <code>contents</code> are freed.</li>
+        <li>28: GFile is useless. <code>g_object_unref</code> decreases
+        the reference count of the GFile. Reference count will be
+        explained in the later section. The reference count will be zero
+        and the GFile instance will destroy itself.</li>
+        </ul>
+        <h2 id="source-code-of-tfe1.c">Source code of tfe1.c</h2>
+        <p>The following is the whole source code of
+        <code>tfe1.c</code>.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="co">/* Define TfeTextView Widget which is the child class of GtkTextView */</span></span>
 <span id="cb5-4"><a href="#cb5-4"></a></span>
@@ -478,31 +481,33 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-139"><a href="#cb5-139"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb5-140"><a href="#cb5-140"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb5-141"><a href="#cb5-141"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>109: The GFile pointer of the TfeTextView is set to the copy of
-<code>files[i]</code>, which is a GFile created with the command line
-argument. The GFile will be destroyed by the system later. So it needs
-to be copied before the assignment. <code>g_file_dup</code> duplicates
-the GFile. Note: GFile is <em>not</em> thread safe. Duplicating GFile
-avoids a trouble comes from the different thread.</li>
-<li>124: The “close-request” signal is connected to
-<code>before_close</code> handler. The fourth argument is called “user
-data” and it will be the second argument of the signal handler. So,
-<code>nb</code> is given to <code>before_close</code> as the second
-argument.</li>
-</ul>
-<p>Now it’s time to compile and run.</p>
-<pre><code>$ cd src/tfe
+        <ul>
+        <li>109: The GFile pointer of the TfeTextView is set to the copy
+        of <code>files[i]</code>, which is a GFile created with the
+        command line argument. The GFile will be destroyed by the system
+        later. So it needs to be copied before the assignment.
+        <code>g_file_dup</code> duplicates the GFile. Note: GFile is
+        <em>not</em> thread safe. Duplicating GFile avoids a trouble
+        comes from the different thread.</li>
+        <li>124: The “close-request” signal is connected to
+        <code>before_close</code> handler. The fourth argument is called
+        “user data” and it will be the second argument of the signal
+        handler. So, <code>nb</code> is given to
+        <code>before_close</code> as the second argument.</li>
+        </ul>
+        <p>Now it’s time to compile and run.</p>
+        <pre><code>$ cd src/tfe
 $ comp tfe1
 $ ./a.out taketori.txt`.</code></pre>
-<p>Modify the contents and close the window. Make sure that the file is
-modified.</p>
-<p>Now we got a very simple editor. It’s not smart. We need more
-features like open, save, saveas, change font and so on. We will add
-them in the next section and after.</p>
-        </div>
+        <p>Modify the contents and close the window. Make sure that the
+        file is modified.</p>
+        <p>Now we got a very simple editor. It’s not smart. We need more
+        features like open, save, saveas, change font and so on. We will
+        add them in the next section and after.</p>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -28,7 +28,7 @@ The one is a button, which shows if the line is a current line.
 If the line is the current line, the button is colored with red.
 The other is a string which is the contents of the corresponding item of the list.
 
-![List editor](../image/listeditor.png){width=12cm height=9cm}
+![List editor](/images/listeditor.png){width=12cm height=9cm}
 
 The source files are located at `src/listeditor` directory.
 You can compile end execute it as follows.

@@ -1,0 +1,33 @@
+\documentclass[$if(documentclass)$$documentclass$$else$book$endif$,$if(fontsize)$$fontsize$,$endif$]{$if(documentclass)$$documentclass$$else$book$endif$}
+
+% Essential packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+
+% Hyperref for links
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Gtk4 Tutorial},
+}
+
+\begin{document}
+
+$if(title)$
+\maketitle
+$endif$
+
+$if(toc)$
+\tableofcontents
+\newpage
+$endif$
+
+$body$
+
+\end{document}

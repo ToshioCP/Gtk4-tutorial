@@ -1,177 +1,163 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec10.html">Prev: section10</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec12.html">Next: section12</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Instance Initialization and destruction</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec10.html">Prev: Section 10</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec12.html">Next: Section 12</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="instance-initialization-and-destruction">Instance Initialization
-and destruction</h1>
-<p>A new version of the text file editor (<code>tfe</code>) will be made
-in this section and the following four sections. It is
-<code>tfe5</code>. There are many changes from the prior version. They
-are located in two directories, src/tfe5 and src/tfetextview.</p>
-<h2 id="encapsulation">Encapsulation</h2>
-<p>We’ve divided C source file into two parts. But it is not enough in
-terms of encapsulation.</p>
-<ul>
-<li><code>tfe.c</code> includes everything other than TfeTextView. It
-should be divided into at least two parts, <code>tfeapplication.c</code>
-and <code>tfenotebook.c</code>.</li>
-<li>Header files also need to be organized.</li>
-</ul>
-<p>However, first of all, I’d like to focus on the object TfeTextView.
-It is a child object of GtkTextView and has a new member
-<code>file</code> in it. The important thing is to manage the Gfile
-object pointed by <code>file</code>.</p>
-<ul>
-<li>What is necessary to GFile when creating (or initializing)
-TfeTextView?</li>
-<li>What is necessary to GFile when destructing TfeTextView?</li>
-<li>Should TfeTextView read/write a file by itself or not?</li>
-<li>How it communicates with objects outside?</li>
-</ul>
-<p>You need to know at least class, instance and signals before thinking
-about them. I will explain them in this section and the next section.
-After that I will explain:</p>
-<ul>
-<li>Organizing functions.</li>
-<li>How to use GtkFileDialog. It is a new class made in the version 4.10
-and replaces GtkFileChooserDialog.</li>
-</ul>
-<h2 id="gobject-and-its-children">GObject and its children</h2>
-<p>GObject and its children are objects, which have both class and
-object C structures. First, think about instances. An instance is
-memories which has the object structure. The following is the structure
-of TfeTextView.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* This typedef statement is automatically generated by the macro G_DECLARE_FINAL_TYPE */</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="instance-initialization-and-destruction">Instance
+        Initialization and destruction</h1>
+        <p>A new version of the text file editor (<code>tfe</code>) will
+        be made in this section and the following four sections. It is
+        <code>tfe5</code>. There are many changes from the prior
+        version. They are located in two directories, <a
+        href="tfe5">src/tfe5</a> and <a
+        href="tfetextview">src/tfetextview</a>.</p>
+        <h2 id="encapsulation">Encapsulation</h2>
+        <p>We’ve divided C source file into two parts. But it is not
+        enough in terms of encapsulation.</p>
+        <ul>
+        <li><code>tfe.c</code> includes everything other than
+        TfeTextView. It should be divided into at least two parts,
+        <code>tfeapplication.c</code> and
+        <code>tfenotebook.c</code>.</li>
+        <li>Header files also need to be organized.</li>
+        </ul>
+        <p>However, first of all, I’d like to focus on the object
+        TfeTextView. It is a child object of GtkTextView and has a new
+        member <code>file</code> in it. The important thing is to manage
+        the Gfile object pointed by <code>file</code>.</p>
+        <ul>
+        <li>What is necessary to GFile when creating (or initializing)
+        TfeTextView?</li>
+        <li>What is necessary to GFile when destructing
+        TfeTextView?</li>
+        <li>Should TfeTextView read/write a file by itself or not?</li>
+        <li>How it communicates with objects outside?</li>
+        </ul>
+        <p>You need to know at least class, instance and signals before
+        thinking about them. I will explain them in this section and the
+        next section. After that I will explain:</p>
+        <ul>
+        <li>Organizing functions.</li>
+        <li>How to use GtkFileDialog. It is a new class made in the
+        version 4.10 and replaces GtkFileChooserDialog.</li>
+        </ul>
+        <h2 id="gobject-and-its-children">GObject and its children</h2>
+        <p>GObject and its children are objects, which have both class
+        and object C structures. First, think about instances. An
+        instance is memories which has the object structure. The
+        following is the structure of TfeTextView.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* This typedef statement is automatically generated by the macro G_DECLARE_FINAL_TYPE */</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _TfeTextView TfeTextView<span class="op">;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeTextView <span class="op">{</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  GtkTextView parent<span class="op">;</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
-<p>The members of the structure are:</p>
-<ul>
-<li>The member <code>parent</code> is a GtkTextView C structure. It is
-declared in <code>gtktextview.h</code>. GtkTextView is the parent of
-TfeTextView.</li>
-<li>The member <code>file</code> is a pointer to a GFile. It can be NULL
-if the TfeTextView instance has no file. The most common case is that
-the instance is newly created.</li>
-</ul>
-<p>You can find the declaration of the structures of the ancestors in
-the source files in GTK or GLib. The following is extracted from the
-source files (not exactly the same).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GObject GObject<span class="op">;</span></span>
+        <p>The members of the structure are:</p>
+        <ul>
+        <li>The member <code>parent</code> is a GtkTextView C structure.
+        It is declared in <code>gtktextview.h</code>. GtkTextView is the
+        parent of TfeTextView.</li>
+        <li>The member <code>file</code> is a pointer to a GFile. It can
+        be NULL if the TfeTextView instance has no file. The most common
+        case is that the instance is newly created.</li>
+        </ul>
+        <p>You can find the declaration of the structures of the
+        ancestors in the source files in GTK or GLib. The following is
+        extracted from the source files (not exactly the same).</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GObject GObject<span class="op">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GObject GInitiallyUnowned<span class="op">;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span>  _GObject</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
@@ -193,116 +179,129 @@ source files (not exactly the same).</p>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  GtkWidget parent_instance<span class="op">;</span></span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  GtkTextViewPrivate <span class="op">*</span>priv<span class="op">;</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
-<p>In each structure, its parent is declared at the top of the members.
-So, all the ancestors are included in the child object. The structure of
-<code>TfeTextView</code> is like the following diagram.</p>
-<figure>
-<img src="image/TfeTextView.png"
-alt="The structure of the instance TfeTextView" />
-<figcaption aria-hidden="true">The structure of the instance
-TfeTextView</figcaption>
-</figure>
-<p>Derivable classes (ancestor classes) have their own private data area
-which are not included by the structure above. For example, GtkWidget
-has GtkWidgetPrivate (C structure) for its private data.</p>
-<p>Notice declarations are not definitions. So, no memories are
-allocated when C structures are declared. Memories are allocated to them
-from the heap area when the <code>tfe_text_view_new</code> function is
-called. At the same time, the ancestors’ private area allocated for the
-TfeTetView. They are hidden from TfeTextView and it can’t access to them
-directly. The created memory is called instance. When a TfeTextView
-instance is created, it is given three data area.</p>
-<ul>
-<li>The instance (C structure).</li>
-<li>GtkWidgetPrivate structure.</li>
-<li>GtkTextViewPrivate structure.</li>
-</ul>
-<p>TfeTextView functions can access to its instance only. The
-GtkWidgetPrivate and GtkTextViewPrivate are used by the ancestors’
-functions. See the following example.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
+        <p>In each structure, its parent is declared at the top of the
+        members. So, all the ancestors are included in the child object.
+        The structure of <code>TfeTextView</code> is like the following
+        diagram.</p>
+        <figure>
+        <img src="/images/TfeTextView.png"
+        style="width:14.39cm;height:2.16cm"
+        alt="The structure of the instance TfeTextView" />
+        <figcaption aria-hidden="true">The structure of the instance
+        TfeTextView</figcaption>
+        </figure>
+        <p>Derivable classes (ancestor classes) have their own private
+        data area which are not included by the structure above. For
+        example, GtkWidget has GtkWidgetPrivate (C structure) for its
+        private data.</p>
+        <p>Notice declarations are not definitions. So, no memories are
+        allocated when C structures are declared. Memories are allocated
+        to them from the heap area when the
+        <code>tfe_text_view_new</code> function is called. At the same
+        time, the ancestors’ private area allocated for the TfeTetView.
+        They are hidden from TfeTextView and it can’t access to them
+        directly. The created memory is called instance. When a
+        TfeTextView instance is created, it is given three data
+        area.</p>
+        <ul>
+        <li>The instance (C structure).</li>
+        <li>GtkWidgetPrivate structure.</li>
+        <li>GtkTextViewPrivate structure.</li>
+        </ul>
+        <p>TfeTextView functions can access to its instance only. The
+        GtkWidgetPrivate and GtkTextViewPrivate are used by the
+        ancestors’ functions. See the following example.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>GtkTextBuffer <span class="op">*</span>buffer <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span></code></pre></div>
-<p>The parent’s function <code>gtk_text_view_get_buffer</code> accesses
-the GtkTextViewPrivate data (owned by <code>tv</code>). There is a
-pointer, which points the GtkBuffer, in the private area and the
-function returns the pointer. (Actual behavior is a bit more
-complicated.)</p>
-<p>TfeTextView instances inherit the ancestors functions like this.</p>
-<p>A TfeTextView instance is created every time the
-<code>tfe_text_view_new</code> function is called. Therefore, multiple
-TfeTextView instances can exist.</p>
-<h2 id="initialization-of-tfetextview-instances">Initialization of
-TfeTextView instances</h2>
-<p>The function <code>tfe_text_view_new</code> creates a new TfeTextView
-instance.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>GtkWidget <span class="op">*</span></span>
+        <p>The parent’s function <code>gtk_text_view_get_buffer</code>
+        accesses the GtkTextViewPrivate data (owned by <code>tv</code>).
+        There is a pointer, which points the GtkBuffer, in the private
+        area and the function returns the pointer. (Actual behavior is a
+        bit more complicated.)</p>
+        <p>TfeTextView instances inherit the ancestors functions like
+        this.</p>
+        <p>A TfeTextView instance is created every time the
+        <code>tfe_text_view_new</code> function is called. Therefore,
+        multiple TfeTextView instances can exist.</p>
+        <h2 id="initialization-of-tfetextview-instances">Initialization
+        of TfeTextView instances</h2>
+        <p>The function <code>tfe_text_view_new</code> creates a new
+        TfeTextView instance.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>GtkWidget <span class="op">*</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_TEXT_VIEW<span class="op">,</span> <span class="st">&quot;wrap-mode&quot;</span><span class="op">,</span> GTK_WRAP_WORD_CHAR<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a><span class="op">}</span></span></code></pre></div>
-<p>When this function is invoked, a TfeTextView instance is created and
-initialized. The initialization process is as follows.</p>
-<ol type="1">
-<li>When the instance is created, GtkWidgetPrivate and
-GtkTextViewPrivate structures are also created</li>
-<li>Initializes GObject (GInitiallyUnowned) part in the TfeTextView
-instance.</li>
-<li>Initializes GtkWidget part (the first <code>priv</code>) in the
-TfeTextView instance and GtkWidgetPrivate structure.</li>
-<li>Initializes GtkTextView part (the second <code>priv</code>) in the
-TfeTextView instance and GtkTextViewPrivate structure.</li>
-<li>Initializes TfeTextView part (<code>file</code>) in the TfeTextView
-instance.</li>
-</ol>
-<p>The step two through four is done by <code>g_object_init</code>,
-<code>gtk_widget_init</code> and <code>gtk_text_view_init</code>. They
-are called by the system automatically and you don’t need to care about
-them. Step five is done by the function <code>tfe_text_view_init</code>
-in <code>tfetextview.c</code>.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>When this function is invoked, a TfeTextView instance is
+        created and initialized. The initialization process is as
+        follows.</p>
+        <ol type="1">
+        <li>When the instance is created, GtkWidgetPrivate and
+        GtkTextViewPrivate structures are also created</li>
+        <li>Initializes GObject (GInitiallyUnowned) part in the
+        TfeTextView instance.</li>
+        <li>Initializes GtkWidget part (the first <code>priv</code>) in
+        the TfeTextView instance and GtkWidgetPrivate structure.</li>
+        <li>Initializes GtkTextView part (the second <code>priv</code>)
+        in the TfeTextView instance and GtkTextViewPrivate
+        structure.</li>
+        <li>Initializes TfeTextView part (<code>file</code>) in the
+        TfeTextView instance.</li>
+        </ol>
+        <p>The step two through four is done by
+        <code>g_object_init</code>, <code>gtk_widget_init</code> and
+        <code>gtk_text_view_init</code>. They are called by the system
+        automatically and you don’t need to care about them. Step five
+        is done by the function <code>tfe_text_view_init</code> in
+        <code>tfetextview.c</code>.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>tfe_text_view_init <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a>  tv<span class="op">-&gt;</span>file <span class="op">=</span> NULL<span class="op">;</span></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="op">}</span></span></code></pre></div>
-<p>This function just initializes <code>tv-&gt;file</code> to be
-<code>NULL</code>.</p>
-<h2 id="functions-and-classes">Functions and Classes</h2>
-<p>In Gtk, all objects derived from GObject have classes and instances
-(but abstract objects have only classes). Instances are memory of C
-structure, which are described in the previous two subsections. Each
-object can have more than one instance. Those instances have the same
-structure. Instances just have data. Therefore, it doesn’t define
-object’s behavior. We need at least two things. One is functions and the
-other is class methods.</p>
-<p>The latest GTK 4 document classifies functions into a constructor,
-functions and instance methods.</p>
-<ul>
-<li>constructors: Their name are always
-<code>gtk_(objectname)_new</code>. They create the objects.</li>
-<li>functions: Their first parameter (argument) is <em>NOT</em> the
-instance. Usually functions are utility functions for the class.</li>
-<li>instance methods: Their first parameter (argument) is the instance.
-They do some task for the specific instance.</li>
-</ul>
-<p>This tutorial uses <code>functions</code> in two ways, broad or
-narrow sense.</p>
-<p>You’ve already seen many functions. For example,</p>
-<ul>
-<li><code>TfeTextView *tfe_text_view_new (void);</code> is a function
-(constructor) to create a TfeTextView instance.</li>
-<li><code>GtkTextBuffer *gtk_text_view_get_buffer (GtkTextView *textview)</code>
-is a function (instance method) to get a GtkTextBuffer from
-GtkTextView.</li>
-</ul>
-<p>Functions are public, which means that they are expected to be used
-by other objects. They are similar to public methods in object oriented
-languages.</p>
-<p>Class (C structure) mainly consists of pointers to C functions. They
-are called <em>class methods</em> and used by the object itself or its
-descendant objects. For example, GObject class is declared in
-<code>gobject.h</code> in GLib source files.</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GObjectClass             GObjectClass<span class="op">;</span></span>
+        <p>This function just initializes <code>tv-&gt;file</code> to be
+        <code>NULL</code>.</p>
+        <h2 id="functions-and-classes">Functions and Classes</h2>
+        <p>In Gtk, all objects derived from GObject have classes and
+        instances (but abstract objects have only classes). Instances
+        are memory of C structure, which are described in the previous
+        two subsections. Each object can have more than one instance.
+        Those instances have the same structure. Instances just have
+        data. Therefore, it doesn’t define object’s behavior. We need at
+        least two things. One is functions and the other is class
+        methods.</p>
+        <p>The latest GTK 4 document classifies functions into a
+        constructor, functions and instance methods.</p>
+        <ul>
+        <li>constructors: Their name are always
+        <code>gtk_(objectname)_new</code>. They create the objects.</li>
+        <li>functions: Their first parameter (argument) is <em>NOT</em>
+        the instance. Usually functions are utility functions for the
+        class.</li>
+        <li>instance methods: Their first parameter (argument) is the
+        instance. They do some task for the specific instance.</li>
+        </ul>
+        <p>This tutorial uses <code>functions</code> in two ways, broad
+        or narrow sense.</p>
+        <p>You’ve already seen many functions. For example,</p>
+        <ul>
+        <li><code>TfeTextView *tfe_text_view_new (void);</code> is a
+        function (constructor) to create a TfeTextView instance.</li>
+        <li><code>GtkTextBuffer *gtk_text_view_get_buffer (GtkTextView *textview)</code>
+        is a function (instance method) to get a GtkTextBuffer from
+        GtkTextView.</li>
+        </ul>
+        <p>Functions are public, which means that they are expected to
+        be used by other objects. They are similar to public methods in
+        object oriented languages.</p>
+        <p>Class (C structure) mainly consists of pointers to C
+        functions. They are called <em>class methods</em> and used by
+        the object itself or its descendant objects. For example,
+        GObject class is declared in <code>gobject.h</code> in GLib
+        source files.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GObjectClass             GObjectClass<span class="op">;</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GObjectClass             GInitiallyUnownedClass<span class="op">;</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a></span>
 <span id="cb6-4"><a href="#cb6-4"></a><span class="kw">struct</span>  _GObjectClass</span>
@@ -350,44 +349,48 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-46"><a href="#cb6-46"></a>  <span class="co">/* padding */</span></span>
 <span id="cb6-47"><a href="#cb6-47"></a>  gpointer  pdummy<span class="op">[</span><span class="dv">3</span><span class="op">];</span></span>
 <span id="cb6-48"><a href="#cb6-48"></a><span class="op">};</span></span></code></pre></div>
-<p>There’s a pointer to the function <code>dispose</code> in line
-25.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">(*</span>dispose<span class="op">)</span> <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">);</span></span></code></pre></div>
-<p>The declaration is a bit complicated. The asterisk before the
-identifier <code>dispose</code> means pointer. So, the pointer
-<code>dispose</code> points to a function which has one parameter, which
-points a GObject structure, and returns no value. In the same way, line
-26 says <code>finalize</code> is a pointer to the function which has one
-parameter, which points a GObject structure, and returns no value.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">(*</span>finalize<span class="op">)</span> <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">);</span></span></code></pre></div>
-<p>Look at the declaration of <code>_GObjectClass</code> so that you
-would find that most of the members are pointers to functions.</p>
-<ul>
-<li>13: A function pointed by <code>constructor</code> is called when
-the instance is created. It completes the initialization of the
-instance.</li>
-<li>25: A function pointed by <code>dispose</code> is called when the
-instance destructs itself. Destruction process is divided into two
-phases. The first one is called disposing. In this phase, the instance
-releases all the references to other instances. The second phase is
-finalizing.</li>
-<li>26: A function pointed by <code>finalize</code> finishes the
-destruction process.</li>
-<li>The other pointers point to functions which are called while the
-instance lives.</li>
-</ul>
-<p>These functions are called class methods. The methods are open to its
-descendants. But not open to the objects which are not the
-descendants.</p>
-<h2 id="tfetextview-class">TfeTextView class</h2>
-<p>TfeTextView class is a structure and it includes all its ancestors’
-classes in it. Therefore, classes have similar hierarchy to
-instances.</p>
-<pre><code>GObjectClass (GInitiallyUnownedClass) -- GtkWidgetClass -- GtkTextViewClass -- TfeTextViewClass</code></pre>
-<p>The following is extracted from the source codes (not exactly the
-same).</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">struct</span> _GtkWidgetClass</span>
+        <p>There’s a pointer to the function <code>dispose</code> in
+        line 25.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">(*</span>dispose<span class="op">)</span> <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">);</span></span></code></pre></div>
+        <p>The declaration is a bit complicated. The asterisk before the
+        identifier <code>dispose</code> means pointer. So, the pointer
+        <code>dispose</code> points to a function which has one
+        parameter, which points a GObject structure, and returns no
+        value. In the same way, line 26 says <code>finalize</code> is a
+        pointer to the function which has one parameter, which points a
+        GObject structure, and returns no value.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">(*</span>finalize<span class="op">)</span> <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">);</span></span></code></pre></div>
+        <p>Look at the declaration of <code>_GObjectClass</code> so that
+        you would find that most of the members are pointers to
+        functions.</p>
+        <ul>
+        <li>13: A function pointed by <code>constructor</code> is called
+        when the instance is created. It completes the initialization of
+        the instance.</li>
+        <li>25: A function pointed by <code>dispose</code> is called
+        when the instance destructs itself. Destruction process is
+        divided into two phases. The first one is called disposing. In
+        this phase, the instance releases all the references to other
+        instances. The second phase is finalizing.</li>
+        <li>26: A function pointed by <code>finalize</code> finishes the
+        destruction process.</li>
+        <li>The other pointers point to functions which are called while
+        the instance lives.</li>
+        </ul>
+        <p>These functions are called class methods. The methods are
+        open to its descendants. But not open to the objects which are
+        not the descendants.</p>
+        <h2 id="tfetextview-class">TfeTextView class</h2>
+        <p>TfeTextView class is a structure and it includes all its
+        ancestors’ classes in it. Therefore, classes have similar
+        hierarchy to instances.</p>
+        <pre><code>GObjectClass (GInitiallyUnownedClass) -- GtkWidgetClass -- GtkTextViewClass -- TfeTextViewClass</code></pre>
+        <p>The following is extracted from the source codes (not exactly
+        the same).</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">struct</span> _GtkWidgetClass</span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  GInitiallyUnownedClass parent_class<span class="op">;</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a></span>
@@ -509,63 +512,74 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb10-120"><a href="#cb10-120"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb10-121"><a href="#cb10-121"></a>  GtkTextView parent_class<span class="op">;</span></span>
 <span id="cb10-122"><a href="#cb10-122"></a><span class="op">}</span> TfeTextViewClass<span class="op">;</span></span></code></pre></div>
-<ul>
-<li>120-122: This three lines are generated by the macro
-<code>G_DECLARE_FINAL_TYPE</code>. So, they are not written in either
-<code>tfe_text_view.h</code> or <code>tfe_text_view.c</code>.</li>
-<li>3, 84, 121: Each class has its parent class at the first member of
-its structure. It is the same as instance structures.</li>
-<li>Class members in ancestors are open to the descendant class. So,
-they can be changed in <code>tfe_text_view_class_init</code> function.
-For example, the <code>dispose</code> pointer in GObjectClass will be
-overridden later in <code>tfe_text_view_class_init</code>. (Override is
-an object oriented programming terminology. Override is rewriting
-ancestors’ class methods in the descendant class.)</li>
-<li>Some class methods are often overridden. <code>set_property</code>,
-<code>get_property</code>, <code>dispose</code>, <code>finalize</code>
-and <code>constructed</code> are such methods.</li>
-</ul>
-<p>TfeTextViewClass includes its ancestors’ class in it. It is
-illustrated in the following diagram.</p>
-<figure>
-<img src="image/TfeTextViewClass.png"
-alt="The structure of TfeTextView Class" />
-<figcaption aria-hidden="true">The structure of TfeTextView
-Class</figcaption>
-</figure>
-<h2 id="destruction-of-tfetextview">Destruction of TfeTextView</h2>
-<p>Every Object derived from GObject has a reference count. If an object
-A refers to an object B, then A keeps a pointer to B in A and at the
-same time increases the reference count of B by one with the function
-<code>g_object_ref (B)</code>. If A doesn’t need B any longer, A
-discards the pointer to B (usually it is done by assigning NULL to the
-pointer) and decreases the reference count of B by one with the function
-<code>g_object_unref (B)</code>.</p>
-<p>If two objects A and B refer to C, then the reference count of C is
-two. If A no longer needs C, A discards the pointer to C and decreases
-the reference count in C by one. Now the reference count of C is one. In
-the same way, if B no longer needs C, B discards the pointer to C and
-decreases the reference count in C by one. At this moment, no object
-refers to C and the reference count of C is zero. This means C is no
-longer useful. Then C destructs itself and finally the memories
-allocated to C is freed.</p>
-<figure>
-<img src="image/refcount.png" alt="Reference count of B" />
-<figcaption aria-hidden="true">Reference count of B</figcaption>
-</figure>
-<p>The idea above is based on an assumption that an object referred by
-nothing has reference count of zero. When the reference count drops to
-zero, the object starts its destruction process. The destruction process
-is split into two phases: disposing and finalizing. In the disposing
-process, the object invokes the function pointed by <code>dispose</code>
-in its class to release all references to other instances. After that,
-it invokes the function pointed by <code>finalize</code> in its class to
-complete the destruction process.</p>
-<p>In the destruction process, TfeTextView needs to unref the GFile
-pointed by <code>tv-&gt;file</code>. You must write the dispose handler
-<code>tfe_text_view_dispose</code>.</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>120-122: This three lines are generated by the macro
+        <code>G_DECLARE_FINAL_TYPE</code>. So, they are not written in
+        either <code>tfe_text_view.h</code> or
+        <code>tfe_text_view.c</code>.</li>
+        <li>3, 84, 121: Each class has its parent class at the first
+        member of its structure. It is the same as instance
+        structures.</li>
+        <li>Class members in ancestors are open to the descendant class.
+        So, they can be changed in <code>tfe_text_view_class_init</code>
+        function. For example, the <code>dispose</code> pointer in
+        GObjectClass will be overridden later in
+        <code>tfe_text_view_class_init</code>. (Override is an object
+        oriented programming terminology. Override is rewriting
+        ancestors’ class methods in the descendant class.)</li>
+        <li>Some class methods are often overridden.
+        <code>set_property</code>, <code>get_property</code>,
+        <code>dispose</code>, <code>finalize</code> and
+        <code>constructed</code> are such methods.</li>
+        </ul>
+        <p>TfeTextViewClass includes its ancestors’ class in it. It is
+        illustrated in the following diagram.</p>
+        <figure>
+        <img src="/images/TfeTextViewClass.png"
+        style="width:16.02cm;height:8.34cm"
+        alt="The structure of TfeTextView Class" />
+        <figcaption aria-hidden="true">The structure of TfeTextView
+        Class</figcaption>
+        </figure>
+        <h2 id="destruction-of-tfetextview">Destruction of
+        TfeTextView</h2>
+        <p>Every Object derived from GObject has a reference count. If
+        an object A refers to an object B, then A keeps a pointer to B
+        in A and at the same time increases the reference count of B by
+        one with the function <code>g_object_ref (B)</code>. If A
+        doesn’t need B any longer, A discards the pointer to B (usually
+        it is done by assigning NULL to the pointer) and decreases the
+        reference count of B by one with the function
+        <code>g_object_unref (B)</code>.</p>
+        <p>If two objects A and B refer to C, then the reference count
+        of C is two. If A no longer needs C, A discards the pointer to C
+        and decreases the reference count in C by one. Now the reference
+        count of C is one. In the same way, if B no longer needs C, B
+        discards the pointer to C and decreases the reference count in C
+        by one. At this moment, no object refers to C and the reference
+        count of C is zero. This means C is no longer useful. Then C
+        destructs itself and finally the memories allocated to C is
+        freed.</p>
+        <figure>
+        <img src="/images/refcount.png"
+        style="width:15.855cm;height:2.475cm"
+        alt="Reference count of B" />
+        <figcaption aria-hidden="true">Reference count of B</figcaption>
+        </figure>
+        <p>The idea above is based on an assumption that an object
+        referred by nothing has reference count of zero. When the
+        reference count drops to zero, the object starts its destruction
+        process. The destruction process is split into two phases:
+        disposing and finalizing. In the disposing process, the object
+        invokes the function pointed by <code>dispose</code> in its
+        class to release all references to other instances. After that,
+        it invokes the function pointed by <code>finalize</code> in its
+        class to complete the destruction process.</p>
+        <p>In the destruction process, TfeTextView needs to unref the
+        GFile pointed by <code>tv-&gt;file</code>. You must write the
+        dispose handler <code>tfe_text_view_dispose</code>.</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>tfe_text_view_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> TFE_TEXT_VIEW <span class="op">(</span>gobject<span class="op">);</span></span>
 <span id="cb11-4"><a href="#cb11-4"></a></span>
@@ -574,59 +588,68 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb11-7"><a href="#cb11-7"></a></span>
 <span id="cb11-8"><a href="#cb11-8"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_text_view_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
 <span id="cb11-9"><a href="#cb11-9"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>5,6: If <code>tv-&gt;file</code> points a GFile, it decreases the
-reference count of the GFile instance. The function
-<code>g_clear_object</code> decreases the reference count and assigns
-NULL to <code>tv-&gt;file</code>. In dispose handlers, we usually use
-<code>g_clear_object</code> rather than
-<code>g_object_unref</code>.</li>
-<li>8: invokes parent’s dispose handler. (This will be explained
-later.)</li>
-</ul>
-<p>In the disposing process, the object uses the pointer in its class to
-call the handler. Therefore, <code>tfe_text_view_dispose</code> needs to
-be registered in the class when the TfeTextView class is initialized.
-The function <code>tfe_text_view_class_init</code> is the class
-initialization function and it is declared in the
-<code>G_DEFINE_TYPE</code> macro expansion.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>5,6: If <code>tv-&gt;file</code> points a GFile, it
+        decreases the reference count of the GFile instance. The
+        function <code>g_clear_object</code> decreases the reference
+        count and assigns NULL to <code>tv-&gt;file</code>. In dispose
+        handlers, we usually use <code>g_clear_object</code> rather than
+        <code>g_object_unref</code>.</li>
+        <li>8: invokes parent’s dispose handler. (This will be explained
+        later.)</li>
+        </ul>
+        <p>In the disposing process, the object uses the pointer in its
+        class to call the handler. Therefore,
+        <code>tfe_text_view_dispose</code> needs to be registered in the
+        class when the TfeTextView class is initialized. The function
+        <code>tfe_text_view_class_init</code> is the class
+        initialization function and it is declared in the
+        <code>G_DEFINE_TYPE</code> macro expansion.</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>tfe_text_view_class_init <span class="op">(</span>TfeTextViewClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_text_view_dispose<span class="op">;</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>Each ancestors’ class has been created before TfeTextViewClass is
-created. Therefore, there are four classes and each class has a pointer
-to each dispose handler. Look at the following diagram. There are four
-classes – GObjectClass (GInitiallyUnownedClass), GtkWidgetClass,
-GtkTextViewClass and TfeTextViewClass. Each class has its own dispose
-handler – <code>dh1</code>, <code>dh2</code>, <code>dh3</code> and
-<code>tfe_text_view_dispose</code>.</p>
-<figure>
-<img src="image/dispose_handler.png" alt="dispose handlers" />
-<figcaption aria-hidden="true">dispose handlers</figcaption>
-</figure>
-<p>Now, look at the <code>tfe_text_view_dispose</code> program above. It
-first releases the reference to GFile object pointed by
-<code>tv-&gt;file</code>. Then it invokes its parent’s dispose handler
-in line 8.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>G_OBJECT_CLASS <span class="op">(</span>tfe_text_view_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span></code></pre></div>
-<p>A variable <code>tfe_text_view_parent_class</code>, which is made by
-<code>G_DEFINE_FINAL_TYPE</code> macro, is a pointer that points the
-parent object class. The variable <code>gobject</code> is a pointer to
-TfeTextView instance which is casted as a GObject instance. Therefore,
-<code>G_OBJECT_CLASS (tfe_text_view_parent_class)-&gt;dispose</code>
-points the handler <code>dh3</code> in the diagram above. The statement
-<code>G_OBJECT_CLASS (tfe_text_view_parent_class)-&gt;dispose (gobject)</code>
-is the same as <code>dh3 (gobject)</code>, which means it releases all
-the reference to the other instances in the GtkTextViewPrivate in the
-TfeTextView instance. After that, <code>dh3</code> calls
-<code>dh2</code>, and <code>dh2</code> calls <code>dh1</code>. Finally
-all the references are released.</p>
-        </div>
+        <p>Each ancestors’ class has been created before
+        TfeTextViewClass is created. Therefore, there are four classes
+        and each class has a pointer to each dispose handler. Look at
+        the following diagram. There are four classes – GObjectClass
+        (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and
+        TfeTextViewClass. Each class has its own dispose handler –
+        <code>dh1</code>, <code>dh2</code>, <code>dh3</code> and
+        <code>tfe_text_view_dispose</code>.</p>
+        <figure>
+        <img src="/images/dispose_handler.png"
+        style="width:14.925cm;height:4.455cm" alt="dispose handlers" />
+        <figcaption aria-hidden="true">dispose handlers</figcaption>
+        </figure>
+        <p>Now, look at the <code>tfe_text_view_dispose</code> program
+        above. It first releases the reference to GFile object pointed
+        by <code>tv-&gt;file</code>. Then it invokes its parent’s
+        dispose handler in line 8.</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>G_OBJECT_CLASS <span class="op">(</span>tfe_text_view_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span></code></pre></div>
+        <p>A variable <code>tfe_text_view_parent_class</code>, which is
+        made by <code>G_DEFINE_FINAL_TYPE</code> macro, is a pointer
+        that points the parent object class. The variable
+        <code>gobject</code> is a pointer to TfeTextView instance which
+        is casted as a GObject instance. Therefore,
+        <code>G_OBJECT_CLASS (tfe_text_view_parent_class)-&gt;dispose</code>
+        points the handler <code>dh3</code> in the diagram above. The
+        statement
+        <code>G_OBJECT_CLASS (tfe_text_view_parent_class)-&gt;dispose (gobject)</code>
+        is the same as <code>dh3 (gobject)</code>, which means it
+        releases all the reference to the other instances in the
+        GtkTextViewPrivate in the TfeTextView instance. After that,
+        <code>dh3</code> calls <code>dh2</code>, and <code>dh2</code>
+        calls <code>dh1</code>. Finally all the references are
+        released.</p>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

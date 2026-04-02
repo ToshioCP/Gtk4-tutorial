@@ -1,128 +1,110 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec4.html">Prev: section4</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec6.html">Next: section6</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Widgets (2)</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec4.html">Prev: Section 4</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec6.html">Next: Section 6</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="widgets-2">Widgets (2)</h1>
-<h2 id="gtktextview-gtktextbuffer-and-gtkscrolledwindow">GtkTextView,
-GtkTextBuffer and GtkScrolledWindow</h2>
-<h3 id="gtktextview-and-gtktextbuffer">GtkTextView and
-GtkTextBuffer</h3>
-<p>GtkTextView is a widget for multi-line text editing. GtkTextBuffer is
-a text buffer which is connected to GtkTextView. See the sample program
-<code>tfv1.c</code> below.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="widgets-2">Widgets (2)</h1>
+        <h2
+        id="gtktextview-gtktextbuffer-and-gtkscrolledwindow">GtkTextView,
+        GtkTextBuffer and GtkScrolledWindow</h2>
+        <h3 id="gtktextview-and-gtktextbuffer">GtkTextView and
+        GtkTextBuffer</h3>
+        <p>GtkTextView is a widget for multi-line text editing.
+        GtkTextBuffer is a text buffer which is connected to
+        GtkTextView. See the sample program <code>tfv1.c</code>
+        below.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
@@ -167,51 +149,56 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-43"><a href="#cb1-43"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb1-44"><a href="#cb1-44"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb1-45"><a href="#cb1-45"></a><span class="op">}</span></span></code></pre></div>
-<p>Look at line 25. A GtkTextView instance is created and its pointer is
-assigned to <code>tv</code>. When the GtkTextView instance is created, a
-GtkTextBuffer instance is also created and connected to the GtkTextView
-automatically. “GtkTextBuffer instance” will be referred to simply as
-“GtkTextBuffer” or “buffer”. In the next line, the pointer to the buffer
-is assigned to <code>tb</code>. Then, the text from line 10 to 20 is
-assigned to the buffer. If the third argument of
-<code>gtk_text_buffer_set_text</code> is a positive integer, it is the
-length of the text. It it is -1, the string terminates with NULL.</p>
-<p>GtkTextView has a wrap mode. When it is set to
-<code>GTK_WRAP_WORD_CHAR</code>, text wraps in between words, or if that
-is not enough, also between graphemes.</p>
-<p>Wrap mode is written in <a
-href="https://docs.gtk.org/gtk4/enum.WrapMode.html">Gtk_WrapMode</a> in
-the GTK 4 API document.</p>
-<p>In line 30, <code>tv</code> is added to <code>win</code> as a
-child.</p>
-<p>Now compile and run it. If you’ve downloaded this repository, its
-pathname is <code>src/tfv/tfv1.c</code>.</p>
-<pre><code>$ cd src/tfv
+        <p>Look at line 25. A GtkTextView instance is created and its
+        pointer is assigned to <code>tv</code>. When the GtkTextView
+        instance is created, a GtkTextBuffer instance is also created
+        and connected to the GtkTextView automatically. “GtkTextBuffer
+        instance” will be referred to simply as “GtkTextBuffer” or
+        “buffer”. In the next line, the pointer to the buffer is
+        assigned to <code>tb</code>. Then, the text from line 10 to 20
+        is assigned to the buffer. If the third argument of
+        <code>gtk_text_buffer_set_text</code> is a positive integer, it
+        is the length of the text. It it is -1, the string terminates
+        with NULL.</p>
+        <p>GtkTextView has a wrap mode. When it is set to
+        <code>GTK_WRAP_WORD_CHAR</code>, text wraps in between words, or
+        if that is not enough, also between graphemes.</p>
+        <p>Wrap mode is written in <a
+        href="https://docs.gtk.org/gtk4/enum.WrapMode.html">Gtk_WrapMode</a>
+        in the GTK 4 API document.</p>
+        <p>In line 30, <code>tv</code> is added to <code>win</code> as a
+        child.</p>
+        <p>Now compile and run it. If you’ve downloaded this repository,
+        its pathname is <code>src/tfv/tfv1.c</code>.</p>
+        <pre><code>$ cd src/tfv
 $ comp tfv1
 $ ./a.out</code></pre>
-<figure>
-<img src="image/screenshot_tfv1.png" alt="GtkTextView" />
-<figcaption aria-hidden="true">GtkTextView</figcaption>
-</figure>
-<p>There’s an I-beam pointer in the window. You can add or delete any
-characters on the GtkTextView, and your changes are kept in the
-GtkTextBuffer. If you add more characters beyond the limit of the
-window, the height increases and the window extends. If the height gets
-bigger than the height of the screen, you won’t be able to control the
-size of the window or change it back to the original size. This is a
-problem, that is to say a bug. This can be solved by adding a
-GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.</p>
-<h3 id="gtkscrolledwindow">GtkScrolledWindow</h3>
-<p>What we need to do is:</p>
-<ul>
-<li>Create a GtkScrolledWindow and insert it as a child of the
-GtkApplicationWindow</li>
-<li>Insert the GtkTextView widget to the GtkScrolledWindow as a
-child.</li>
-</ul>
-<p>Modify <code>tfv1.c</code> and save it as <code>tfv2.c</code>. There
-is only a few difference between these two files.</p>
-<pre><code>$ cd tfv; diff tfv1.c tfv2.c
+        <figure>
+        <img src="/images/screenshot_tfv1.png"
+        style="width:6.3cm;height:5.325cm" alt="GtkTextView" />
+        <figcaption aria-hidden="true">GtkTextView</figcaption>
+        </figure>
+        <p>There’s an I-beam pointer in the window. You can add or
+        delete any characters on the GtkTextView, and your changes are
+        kept in the GtkTextBuffer. If you add more characters beyond the
+        limit of the window, the height increases and the window
+        extends. If the height gets bigger than the height of the
+        screen, you won’t be able to control the size of the window or
+        change it back to the original size. This is a problem, that is
+        to say a bug. This can be solved by adding a GtkScrolledWindow
+        between the GtkApplicationWindow and GtkTextView.</p>
+        <h3 id="gtkscrolledwindow">GtkScrolledWindow</h3>
+        <p>What we need to do is:</p>
+        <ul>
+        <li>Create a GtkScrolledWindow and insert it as a child of the
+        GtkApplicationWindow</li>
+        <li>Insert the GtkTextView widget to the GtkScrolledWindow as a
+        child.</li>
+        </ul>
+        <p>Modify <code>tfv1.c</code> and save it as
+        <code>tfv2.c</code>. There is only a few difference between
+        these two files.</p>
+        <pre><code>$ cd tfv; diff tfv1.c tfv2.c
 5a6
 &gt;   GtkWidget *scr;
 24a26,28
@@ -225,10 +212,11 @@ is only a few difference between these two files.</p>
 40c44
 &lt;   app = gtk_application_new (&quot;com.github.ToshioCP.tfv1&quot;, G_APPLICATION_DEFAULT_FLAGS);
 ---
-&gt;   app = gtk_application_new (&quot;com.github.ToshioCP.tfv2&quot;, G_APPLICATION_DEFAULT_FLAGS);</code></pre>
-<p>The whole code of <code>tfv2.c</code> is as follows.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+&gt;   app = gtk_application_new (&quot;com.github.ToshioCP.tfv2&quot;, G_APPLICATION_DEFAULT_FLAGS);
+$</code></pre>
+        <p>The whole code of <code>tfv2.c</code> is as follows.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
@@ -277,12 +265,13 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-47"><a href="#cb4-47"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb4-48"><a href="#cb4-48"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb4-49"><a href="#cb4-49"></a><span class="op">}</span></span></code></pre></div>
-<p>Compile and run it.</p>
-<p>Now, the window doesn’t extend even if you type a lot of characters,
-it just scrolls.</p>
-        </div>
+        <p>Compile and run it.</p>
+        <p>Now, the window doesn’t extend even if you type a lot of
+        characters, it just scrolls.</p>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

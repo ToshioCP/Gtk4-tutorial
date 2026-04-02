@@ -289,7 +289,7 @@ If you don't own the expression, you don't care about releasing the expression.
 
 An example `exp_bind.c` and `exp_bind.ui` is in [`src/expression`](expression) directory.
 
-![exp\_bind](../image/exp_bind.png){width=9.2cm height=1.9cm}
+![exp\_bind](/images/exp_bind.png){width=9.2cm height=1.9cm}
 
 It includes a label and a scale.
 If you move the slider to the right, the scale value increases and the number on the label also increases.
@@ -408,7 +408,7 @@ But if you want to bind a property to the value, use `gtk_expression_bind` inste
 There's a sample program `exp_watch.c` in [`src/expression`](expression) directory.
 It outputs the width of the window to the standard output.
 
-![exp\_watch](../image/exp_watch.png){width=9.6cm height=6.9cm}
+![exp\_watch](/images/exp_watch.png){width=9.6cm height=6.9cm}
 
 When you resize the window, the width is displayed in the terminal.
 
@@ -529,7 +529,7 @@ The ui file includes lookup, closure and bind tags.
 No constant tag is included.
 However, constant tags are not used so often.
 
-![exp.c](../image/exp.png){width=10.3cm height=7.6cm}
+![exp.c](/images/exp.png){width=10.3cm height=7.6cm}
 
 If you resize the window, the size is shown at the title of the window.
 If you type characters in the entry, the same characters appear on the label.

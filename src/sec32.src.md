@@ -5,7 +5,7 @@
 GtkColumnView is like GtkListView, but it has multiple columns.
 Each column is GtkColumnViewColumn.
 
-![Column View](../image/column_view.png){width=11.3cm height=9cm}
+![Column View](/images/column_view.png){width=11.3cm height=9cm}
 
 - GtkColumnView has "model" property.
 The property points a GtkSelectionModel object.
@@ -17,7 +17,7 @@ This process is the same as the one in GtkListView.
 
 The following diagram shows how it works.
 
-![ColumnView](../image/column.png){width=12cm height=9cm}
+![ColumnView](/images/column.png){width=12cm height=9cm}
 
 The example in this section is a window that displays information of files in a current directory.
 The information is the name, size and last modified datetime of files.
@@ -62,7 +62,7 @@ This is the title on the header of the column.
 - 33- 69: Sets the "factory" property to GtkBuilderListItemFactory.
 The factory has "bytes" property which holds a ui string to define a template to extend GtkListItem class.
 The CDATA section (line 36-66) is the ui string to put into the "bytes" property.
-The contents are the same as the ui file `factory_list.ui` in the section 30.
+The contents are the same as the ui file `factory_list.ui` in Section 30.
 - 70-77: Sets the "sorter" property to GtkStringSorter object.
 This object provides a sorter that compares strings.
 It has "expression" property.
@@ -204,7 +204,7 @@ $ _build/column
 
 Then, a window appears.
 
-![Column View](../image/column_view.png){width=11.3cm height=9cm}
+![Column View](/images/column_view.png){width=11.3cm height=9cm}
 
 If you click the header of a column, then the whole lists are sorted by the column.
 If you click the header of another column, then the whole lists are sorted by the newly selected column.

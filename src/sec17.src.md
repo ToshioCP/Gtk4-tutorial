@@ -5,7 +5,7 @@
 Users often use menus to tell a command to the application.
 It is like this:
 
-![Menu](../image/menu.png){width=5.985cm height=5.055cm}
+![Menu](/images/menu.png){width=5.985cm height=5.055cm}
 
 There are two types of objects.
 
@@ -17,7 +17,7 @@ They are called "menu".
 Menu is an ordered list of items.
 They are similar to arrays.
 
-![Menu structure](../image/menu_structure.png){width=10.23cm height=3.57cm}
+![Menu structure](/images/menu_structure.png){width=10.23cm height=3.57cm}
 
 - Menubar is a menu which has three items, which are "File", "Edit" and "View".
 - The menu item labeled "Edit" has a link to the submenu which has two items.
@@ -206,7 +206,7 @@ GMenu and GMenuItem are built and finally connected to the variable `menubar`.
 The structure of the menu is shown in the diagram below.
 - 38: The menubar is inserted to the application.
 
-![menu and action](../image/menu1.png){width=12.555cm height=3.285cm}
+![menu and action](/images/menu1.png){width=12.555cm height=3.285cm}
 
 ## Compiling
 
@@ -222,7 +222,7 @@ Then, a window appears.
 Click on "Menu" on the menubar, then a menu appears.
 Click on "Quit" menu, then the application quits.
 
-![Screenshot of menu1](../image/menu1_screenshot.png){width=6.0cm height=5.115cm}
+![Screenshot of menu1](/images/menu1_screenshot.png){width=6.0cm height=5.115cm}
 
 ## Primary and remote application instances
 
@@ -254,7 +254,7 @@ The two windows belong to the primary instance.
 
 If you click on the "Quit" menu, the application (the primary instance) quits.
 
-![menu1 -- two windows](../image/menu1_two_windows.png){width=12cm height=7cm}
+![menu1 -- two windows](/images/menu1_two_windows.png){width=12cm height=7cm}
 
 The second execution makes a new window.
 However, it depends on the "activate" handler.

@@ -6,15 +6,15 @@ You can draw rectangles by dragging the mouse.
 
 Down the button.
 
-![down the button](../image/cd0.png){width=6cm height=4.83cm}
+![down the button](/images/cd0.png){width=6cm height=4.83cm}
 
 Move the mouse
 
-![Move the mouse](../image/cd1.png){width=6cm height=4.83cm}
+![Move the mouse](/images/cd1.png){width=6cm height=4.83cm}
 
 Up the button.
 
-![Up the button](../image/cd2.png){width=6cm height=4.83cm}
+![Up the button](/images/cd2.png){width=6cm height=4.83cm}
 
 The programs are at `src/custom_drawing` directory.
 Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial) and see the directory.
@@ -237,4 +237,4 @@ $ ninja -C _build
 $ _build/rect
 ```
 
-![The screen of rect program](../image/rect.png){width=12.4cm height=10cm}
+![The screen of rect program](/images/rect.png){width=12.4cm height=10cm}

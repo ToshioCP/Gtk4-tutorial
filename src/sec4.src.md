@@ -22,7 +22,7 @@ Then compile and run it.
 
 A window with a message "Hello." appears.
 
-![Screenshot of the label](../image/screenshot_lb1.png){width=6.3cm height=5.325cm}
+![Screenshot of the label](/images/screenshot_lb1.png){width=6.3cm height=5.325cm}
 
 There are only a few changes between `pr4.c` and `lb1.c`.
 A program `diff` is useful to know the difference.
@@ -76,7 +76,7 @@ The suffix "cb" means "call back".
 Name the program `lb2.c` and save it.
 Now compile and run it.
 
-![Screenshot of the label](../image/screenshot_lb2.png){width=11.205cm height=6.945cm}
+![Screenshot of the label](/images/screenshot_lb2.png){width=11.205cm height=6.945cm}
 
 A window with the button appears.
 Click the button (it is a large button, you can click everywhere in the window), then a string "Clicked." appears on the terminal.
@@ -128,7 +128,7 @@ The following procedure shows the way to add two buttons in a window.
 
 After this, the Widgets are connected as the following diagram.
 
-![Parent-child relationship](../image/box.png){width=7.725cm height=2.055cm}
+![Parent-child relationship](/images/box.png){width=7.725cm height=2.055cm}
 
 The program `lb4.c` is as follows.
 
@@ -170,7 +170,7 @@ If you change the string, your compiler will give you a warning.
 
 You always need to be careful with the const qualifier when you see the GTK 4 API reference.
 
-![Screenshot of the box](../image/screenshot_lb4.png){width=6.3cm height=5.325cm}
+![Screenshot of the box](/images/screenshot_lb4.png){width=6.3cm height=5.325cm}
 
 The handler corresponding to `btn1` toggles its label.
 The handler corresponding to `btn2` destroys the top-level window and the application quits.

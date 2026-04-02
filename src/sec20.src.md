@@ -22,7 +22,7 @@ Others will be explained in the following sections.
 
 The alert dialog is like this:
 
-![Alert dialog](../image/alert.png){width=4.2cm height=1.7cm}
+![Alert dialog](/images/alert.png){width=4.2cm height=1.7cm}
 
 Tfe uses it when a user quits the application or closes a notebook without saving data to files.
 
@@ -89,7 +89,7 @@ $ gtk4-icon-browser
 
 The "dialog-warning" icon is something like this.
 
-![dialog-warning icon is like ...](../image/dialog_warning.png){width=4.19cm height=1.62cm}
+![dialog-warning icon is like ...](/images/dialog_warning.png){width=4.19cm height=1.62cm}
 
 These are made by my hand.
 The real image on the alert dialog is nicer.

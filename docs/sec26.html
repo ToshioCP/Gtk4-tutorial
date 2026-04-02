@@ -1,166 +1,151 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec25.html">Prev: section25</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec27.html">Next: section27</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Custom drawing</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec25.html">Prev: Section 25</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec27.html">Next: Section 27</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="custom-drawing">Custom drawing</h1>
-<p>Custom drawing is to draw shapes dynamically. This section shows an
-example of custom drawing. You can draw rectangles by dragging the
-mouse.</p>
-<p>Down the button.</p>
-<figure>
-<img src="image/cd0.png" alt="down the button" />
-<figcaption aria-hidden="true">down the button</figcaption>
-</figure>
-<p>Move the mouse</p>
-<figure>
-<img src="image/cd1.png" alt="Move the mouse" />
-<figcaption aria-hidden="true">Move the mouse</figcaption>
-</figure>
-<p>Up the button.</p>
-<figure>
-<img src="image/cd2.png" alt="Up the button" />
-<figcaption aria-hidden="true">Up the button</figcaption>
-</figure>
-<p>The programs are at <code>src/custom_drawing</code> directory.
-Download the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a> and see
-the directory. There are four files.</p>
-<ul>
-<li>meson.build</li>
-<li>rect.c</li>
-<li>rect.gresource.xml</li>
-<li>rect.ui</li>
-</ul>
-<h2 id="rect.gresource.xml">rect.gresource.xml</h2>
-<p>This file describes a ui file to compile. The compiler
-glib-compile-resources uses it.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="custom-drawing">Custom drawing</h1>
+        <p>Custom drawing is to draw shapes dynamically. This section
+        shows an example of custom drawing. You can draw rectangles by
+        dragging the mouse.</p>
+        <p>Down the button.</p>
+        <figure>
+        <img src="/images/cd0.png" style="width:6cm;height:4.83cm"
+        alt="down the button" />
+        <figcaption aria-hidden="true">down the button</figcaption>
+        </figure>
+        <p>Move the mouse</p>
+        <figure>
+        <img src="/images/cd1.png" style="width:6cm;height:4.83cm"
+        alt="Move the mouse" />
+        <figcaption aria-hidden="true">Move the mouse</figcaption>
+        </figure>
+        <p>Up the button.</p>
+        <figure>
+        <img src="/images/cd2.png" style="width:6cm;height:4.83cm"
+        alt="Up the button" />
+        <figcaption aria-hidden="true">Up the button</figcaption>
+        </figure>
+        <p>The programs are at <code>src/custom_drawing</code>
+        directory. Download the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>
+        and see the directory. There are four files.</p>
+        <ul>
+        <li>meson.build</li>
+        <li>rect.c</li>
+        <li>rect.gresource.xml</li>
+        <li>rect.ui</li>
+        </ul>
+        <h2 id="rect.gresource.xml">rect.gresource.xml</h2>
+        <p>This file describes a ui file to compile. The compiler
+        glib-compile-resources uses it.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
 <span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/rect&quot;</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">file</span>&gt;rect.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb1-5"><a href="#cb1-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb1-6"><a href="#cb1-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-<p>The prefix is <code>/com/github/ToshioCP/rect</code> and the file is
-<code>rect.ui</code>. Therefore, GtkBuilder reads the resource from
-<code>/com/github/ToshioCP/rect/rect.ui</code>.</p>
-<h2 id="rect.ui">rect.ui</h2>
-<p>The following is the ui file that defines the widgets. There are two
-widgets which are GtkApplicationWindow and GtkDrawingArea. The ids are
-<code>win</code> and <code>da</code> respectively.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        <p>The prefix is <code>/com/github/ToshioCP/rect</code> and the
+        file is <code>rect.ui</code>. Therefore, GtkBuilder reads the
+        resource from
+        <code>/com/github/ToshioCP/rect/rect.ui</code>.</p>
+        <h2 id="rect.ui">rect.ui</h2>
+        <p>The following is the ui file that defines the widgets. There
+        are two widgets which are GtkApplicationWindow and
+        GtkDrawingArea. The ids are <code>win</code> and <code>da</code>
+        respectively.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
 <span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;800&lt;/<span class="kw">property</span>&gt;</span>
@@ -175,18 +160,19 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb2-13"><a href="#cb2-13"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-14"><a href="#cb2-14"></a>  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-15"><a href="#cb2-15"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<h2 id="rect.c">rect.c</h2>
-<h3 id="gtkapplication">GtkApplication</h3>
-<p>This program uses GtkApplication. The application ID is
-<code>com.github.ToshioCP.rect</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.rect&quot;</span></span></code></pre></div>
-<p>See <a
-href="https://developer.gnome.org/documentation/tutorials/application-id.html">GNOME
-Developer Documentation</a> for further information.</p>
-<p>The function <code>main</code> is called at the beginning of the
-application.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">int</span></span>
+        <h2 id="rect.c">rect.c</h2>
+        <h3 id="gtkapplication">GtkApplication</h3>
+        <p>This program uses GtkApplication. The application ID is
+        <code>com.github.ToshioCP.rect</code>.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.rect&quot;</span></span></code></pre></div>
+        <p>See <a
+        href="https://developer.gnome.org/documentation/tutorials/application-id.html">GNOME
+        Developer Documentation</a> for further information.</p>
+        <p>The function <code>main</code> is called at the beginning of
+        the application.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">int</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
@@ -199,15 +185,17 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-11"><a href="#cb4-11"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb4-12"><a href="#cb4-12"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb4-13"><a href="#cb4-13"></a><span class="op">}</span></span></code></pre></div>
-<p>It connects three signals and handlers.</p>
-<ul>
-<li>startup: It is emitted after the application is registered to the
-system.</li>
-<li>activate: It is emitted when the application is activated.</li>
-<li>shutdown: It is emitted just before the application quits.</li>
-</ul>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>It connects three signals and handlers.</p>
+        <ul>
+        <li>startup: It is emitted after the application is registered
+        to the system.</li>
+        <li>activate: It is emitted when the application is
+        activated.</li>
+        <li>shutdown: It is emitted just before the application
+        quits.</li>
+        </ul>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
 <span id="cb5-4"><a href="#cb5-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
@@ -231,19 +219,19 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb5-22"><a href="#cb5-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
 <span id="cb5-23"><a href="#cb5-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
 <span id="cb5-24"><a href="#cb5-24"></a><span class="op">}</span></span></code></pre></div>
-<p>The startup handler does three things.</p>
-<ul>
-<li>Builds the widgets.</li>
-<li>Initializes the GtkDrawingArea instance.
-<ul>
-<li>Sets the drawing function</li>
-<li>Connects the “resize” signal and the handler.</li>
-</ul></li>
-<li>Creates the GtkGestureDrag instance and initializes it. Gesture will
-be explained in this section later.</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>The startup handler does three things.</p>
+        <ul>
+        <li>Builds the widgets.</li>
+        <li>Initializes the GtkDrawingArea instance.
+        <ul>
+        <li>Sets the drawing function</li>
+        <li>Connects the “resize” signal and the handler.</li>
+        </ul></li>
+        <li>Creates the GtkGestureDrag instance and initializes it.
+        Gesture will be explained in this section later.</li>
+        </ul>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
@@ -251,23 +239,24 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-6"><a href="#cb6-6"></a>  win <span class="op">=</span> gtk_application_get_active_window <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>  gtk_window_present <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
-<p>The activate handler just shows the window.</p>
-<h3 id="gtkdrawingarea">GtkDrawingArea</h3>
-<p>The program has two cairo surfaces and they are pointed by the global
-variables.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
+        <p>The activate handler just shows the window.</p>
+        <h3 id="gtkdrawingarea">GtkDrawingArea</h3>
+        <p>The program has two cairo surfaces and they are pointed by
+        the global variables.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface_save <span class="op">=</span> NULL<span class="op">;</span></span></code></pre></div>
-<p>The drawing process is as follows.</p>
-<ul>
-<li>Creates an image on <code>surface</code>.</li>
-<li>Copies <code>surface</code> to the cairo surface of the
-GtkDrawingArea.</li>
-<li>Calls <code>gtk_widget_queue_draw (da)</code> to draw it if
-necessary.</li>
-</ul>
-<p>They are created in the “resize” signal handler.</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>The drawing process is as follows.</p>
+        <ul>
+        <li>Creates an image on <code>surface</code>.</li>
+        <li>Copies <code>surface</code> to the cairo surface of the
+        GtkDrawingArea.</li>
+        <li>Calls <code>gtk_widget_queue_draw (da)</code> to draw it if
+        necessary.</li>
+        </ul>
+        <p>They are created in the “resize” signal handler.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>resize_cb <span class="op">(</span>GtkWidget <span class="op">*</span>widget<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
@@ -283,55 +272,57 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-14"><a href="#cb8-14"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb8-15"><a href="#cb8-15"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb8-16"><a href="#cb8-16"></a><span class="op">}</span></span></code></pre></div>
-<p>This callback is called when the GtkDrawingArea is shown. It is the
-only call because the window is not resizable.</p>
-<p>It creates image surfaces for <code>surface</code> and
-<code>surface_save</code>. The <code>surface</code> surface is painted
-white, which is the background color.</p>
-<p>The drawing function copies <code>surface</code> to the
-GtkDrawingArea surface.</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>This callback is called when the GtkDrawingArea is shown. It
+        is the only call because the window is not resizable.</p>
+        <p>It creates image surfaces for <code>surface</code> and
+        <code>surface_save</code>. The <code>surface</code> surface is
+        painted white, which is the background color.</p>
+        <p>The drawing function copies <code>surface</code> to the
+        GtkDrawingArea surface.</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>draw_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>da<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-4"><a href="#cb9-4"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
 <span id="cb9-5"><a href="#cb9-5"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb9-6"><a href="#cb9-6"></a>  <span class="op">}</span></span>
 <span id="cb9-7"><a href="#cb9-7"></a><span class="op">}</span></span></code></pre></div>
-<p>This function is called by the system when it needs to redraw the
-drawing area.</p>
-<p>Two surfaces <code>surface</code> and <code>surface_save</code> are
-destroyed before the application quits.</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>This function is called by the system when it needs to redraw
+        the drawing area.</p>
+        <p>Two surfaces <code>surface</code> and
+        <code>surface_save</code> are destroyed before the application
+        quits.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
 <span id="cb10-6"><a href="#cb10-6"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a><span class="op">}</span></span></code></pre></div>
-<h3 id="gtkgesturedrag">GtkGestureDrag</h3>
-<p>Gesture class is used to recognize human gestures such as click,
-drag, pan, swipe and so on. It is a subclass of GtkEventController.
-GtkGesture class is abstract and there are several implementations.</p>
-<ul>
-<li>GtkGestureClick</li>
-<li>GtkGestureDrag</li>
-<li>GtkGesturePan</li>
-<li>GtkGestureSwipe</li>
-<li>other implementations</li>
-</ul>
-<p>The program <code>rect.c</code> uses GtkGestureDrag. It is the
-implementation for drags. The parent-child relationship is as
-follows.</p>
-<pre><code>GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag</code></pre>
-<p>GtkGestureSingle is a subclass of GtkGesture and optimized for
-singe-touch and mouse gestures.</p>
-<p>A GtkGestureDrag instance is created and initialized in the startup
-signal handler in <code>rect.c</code>. See line 18 to 23 in the
-following.</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <h3 id="gtkgesturedrag">GtkGestureDrag</h3>
+        <p>Gesture class is used to recognize human gestures such as
+        click, drag, pan, swipe and so on. It is a subclass of
+        GtkEventController. GtkGesture class is abstract and there are
+        several implementations.</p>
+        <ul>
+        <li>GtkGestureClick</li>
+        <li>GtkGestureDrag</li>
+        <li>GtkGesturePan</li>
+        <li>GtkGestureSwipe</li>
+        <li>other implementations</li>
+        </ul>
+        <p>The program <code>rect.c</code> uses GtkGestureDrag. It is
+        the implementation for drags. The parent-child relationship is
+        as follows.</p>
+        <pre><code>GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag</code></pre>
+        <p>GtkGestureSingle is a subclass of GtkGesture and optimized
+        for singe-touch and mouse gestures.</p>
+        <p>A GtkGestureDrag instance is created and initialized in the
+        startup signal handler in <code>rect.c</code>. See line 18 to 23
+        in the following.</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
@@ -355,36 +346,38 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-22"><a href="#cb12-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
 <span id="cb12-23"><a href="#cb12-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
 <span id="cb12-24"><a href="#cb12-24"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>The function <code>gtk_gesture_drag_new</code> creates a new
-GtkGestureDrag instance.</li>
-<li>The function <code>gtk_gesture_single_set_button</code> sets the
-button number to listen to. The constant <code>GDK_BUTTON_PRIMARY</code>
-is the left button of a mouse.</li>
-<li>The function <code>gtk_widget_add_controller</code> adds an event
-controller, gestures are descendants of the event controller, to a
-widget.</li>
-<li>Three signals and handlers are connected.
-<ul>
-<li>drag-begin: Emitted when dragging starts.</li>
-<li>drag-update: Emitted when the dragging point moves.</li>
-<li>drag-end: Emitted when the dragging ends.</li>
-</ul></li>
-</ul>
-<p>The process during the drag is as follows.</p>
-<ul>
-<li>start: save the surface and start points</li>
-<li>update: restore the surface and draw a thin rectangle between the
-start point and the current point of the mouse</li>
-<li>end: restore the surface and draw a thick rectangle between the
-start and end points.</li>
-</ul>
-<p>We need two global variables for the start point.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_x<span class="op">;</span></span>
+        <ul>
+        <li>The function <code>gtk_gesture_drag_new</code> creates a new
+        GtkGestureDrag instance.</li>
+        <li>The function <code>gtk_gesture_single_set_button</code> sets
+        the button number to listen to. The constant
+        <code>GDK_BUTTON_PRIMARY</code> is the left button of a
+        mouse.</li>
+        <li>The function <code>gtk_widget_add_controller</code> adds an
+        event controller, gestures are descendants of the event
+        controller, to a widget.</li>
+        <li>Three signals and handlers are connected.
+        <ul>
+        <li>drag-begin: Emitted when dragging starts.</li>
+        <li>drag-update: Emitted when the dragging point moves.</li>
+        <li>drag-end: Emitted when the dragging ends.</li>
+        </ul></li>
+        </ul>
+        <p>The process during the drag is as follows.</p>
+        <ul>
+        <li>start: save the surface and start points</li>
+        <li>update: restore the surface and draw a thin rectangle
+        between the start point and the current point of the mouse</li>
+        <li>end: restore the surface and draw a thick rectangle between
+        the start and end points.</li>
+        </ul>
+        <p>We need two global variables for the start point.</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_x<span class="op">;</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_y<span class="op">;</span></span></code></pre></div>
-<p>The following is the handler for the “drag-begin” signal.</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>The following is the handler for the “drag-begin” signal.</p>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a>copy_surface <span class="op">(</span>cairo_surface_t <span class="op">*</span>src<span class="op">,</span> cairo_surface_t <span class="op">*</span>dst<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a>  <span class="cf">if</span> <span class="op">(!</span>src <span class="op">||</span> <span class="op">!</span>dst<span class="op">)</span></span>
 <span id="cb14-4"><a href="#cb14-4"></a>    <span class="cf">return</span><span class="op">;</span></span>
@@ -401,14 +394,14 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb14-15"><a href="#cb14-15"></a>  start_x <span class="op">=</span> x<span class="op">;</span></span>
 <span id="cb14-16"><a href="#cb14-16"></a>  start_y <span class="op">=</span> y<span class="op">;</span></span>
 <span id="cb14-17"><a href="#cb14-17"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>Copies <code>surface</code> to <code>surface_save</code>, which is
-an image just before the dragging.</li>
-<li>Stores the points to <code>start_x</code> and
-<code>start_y</code>.</li>
-</ul>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>Copies <code>surface</code> to <code>surface_save</code>,
+        which is an image just before the dragging.</li>
+        <li>Stores the points to <code>start_x</code> and
+        <code>start_y</code>.</li>
+        </ul>
+        <div class="sourceCode" id="cb15"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a>drag_update  <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> offset_x<span class="op">,</span> <span class="dt">double</span> offset_y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb15-3"><a href="#cb15-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb15-4"><a href="#cb15-4"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
@@ -421,14 +414,15 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb15-11"><a href="#cb15-11"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb15-12"><a href="#cb15-12"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
 <span id="cb15-13"><a href="#cb15-13"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>Restores <code>surface</code> from <code>surface_save</code>.</li>
-<li>Draws a rectangle with thin lines.</li>
-<li>Calls <code>gtk_widget_queue_draw</code> to add the GtkDrawingArea
-to the queue to redraw.</li>
-</ul>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>Restores <code>surface</code> from
+        <code>surface_save</code>.</li>
+        <li>Draws a rectangle with thin lines.</li>
+        <li>Calls <code>gtk_widget_queue_draw</code> to add the
+        GtkDrawingArea to the queue to redraw.</li>
+        </ul>
+        <div class="sourceCode" id="cb16"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a>drag_end  <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> offset_x<span class="op">,</span> <span class="dt">double</span> offset_y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb16-3"><a href="#cb16-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb16-4"><a href="#cb16-4"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
@@ -441,29 +435,34 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb16-11"><a href="#cb16-11"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb16-12"><a href="#cb16-12"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
 <span id="cb16-13"><a href="#cb16-13"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>Restores <code>surface</code> from <code>surface_save</code>.</li>
-<li>Draws a rectangle with thick lines.</li>
-<li>Calls <code>gtk_widget_queue_draw</code> to add the GtkDrawingArea
-to the queue to redraw.</li>
-</ul>
-<h2 id="build-and-run">Build and run</h2>
-<p>Download the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>. Change
-your current directory to <code>src/custom_drawing</code>. Run meson and
-ninja to build the program. Type <code>_build/rect</code> to run the
-program. Try to draw rectangles.</p>
-<pre><code>$ cd src/custom_drawing
+        <ul>
+        <li>Restores <code>surface</code> from
+        <code>surface_save</code>.</li>
+        <li>Draws a rectangle with thick lines.</li>
+        <li>Calls <code>gtk_widget_queue_draw</code> to add the
+        GtkDrawingArea to the queue to redraw.</li>
+        </ul>
+        <h2 id="build-and-run">Build and run</h2>
+        <p>Download the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.
+        Change your current directory to
+        <code>src/custom_drawing</code>. Run meson and ninja to build
+        the program. Type <code>_build/rect</code> to run the program.
+        Try to draw rectangles.</p>
+        <pre><code>$ cd src/custom_drawing
 $ meson setup _build
 $ ninja -C _build
 $ _build/rect</code></pre>
-<figure>
-<img src="image/rect.png" alt="The screen of rect program" />
-<figcaption aria-hidden="true">The screen of rect program</figcaption>
-</figure>
-        </div>
+        <figure>
+        <img src="/images/rect.png" style="width:12.4cm;height:10cm"
+        alt="The screen of rect program" />
+        <figcaption aria-hidden="true">The screen of rect
+        program</figcaption>
+        </figure>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

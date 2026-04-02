@@ -8,7 +8,7 @@ If a user drags a UI element, which is a widget, selected part or something, dat
 
 You probably have experience that you moved a file with DND.
 
-![DND on the GUI file manager](../image/dnd.png){width=4.6cm height=3cm}
+![DND on the GUI file manager](/images/dnd.png){width=4.6cm height=3cm}
 
 When the DND starts, the file `sample_file.txt` is given to the system.
 When the DND ends,  the system gives `sample_file.txt` to the directory `sample_folder` in the file manager.
@@ -22,7 +22,7 @@ It has three labels for the source and one label for the destination.
 The source labels have "red", "green" or "blue" labels.
 If a user drags the label to the destination label, the font color will be changed.
 
-![DND example](../image/dnd_canvas.png){width=13.5cm height=5.2cm}
+![DND example](/images/dnd_canvas.png){width=13.5cm height=5.2cm}
 
 ## UI file
 

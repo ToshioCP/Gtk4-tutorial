@@ -1,212 +1,153 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            
-            
-            
-          </ul>
-        </div>
-      </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="gtk-4-tutorial-for-beginners">GTK 4 Tutorial for beginners</h1>
-<h4 id="contents-of-this-repository">Contents of this Repository</h4>
-<p>Now that GTK 4 is widely used, “GTK” usually means GTK 4. Therefore,
-this tutorial simply says “GTK” except where the version needs to be
-explicitly mentioned.</p>
-<p>This tutorial illustrates how to write C programs with the GTK
-library. It focuses on beginners, so the contents are limited to the
-basics. The table of contents is at the end of this README.md.</p>
-<ul>
-<li>Section 3 to 23 describe the basics, with the example of a simple
-editor <code>tfe</code> (Text File Editor).</li>
-<li>Section 24 to 27 describe GtkDrawingArea.</li>
-<li>Section 28 describes Drag and Drop.</li>
-<li>Section 29 to 33 describe the list model and the list view
-(GtkListView, GtkGridView, and GtkColumnView). It also describes
-GtkExpression.</li>
-</ul>
-<p>The latest version of the tutorial is located at the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">GTK4-tutorial GitHub
-repository</a>. You can read it directly without downloading.</p>
-<p>There’s a <a href="https://toshiocp.github.io/Gtk4-tutorial/">GitHub
-Page</a> which is the HTML version of the tutorial.</p>
-<h4 id="gtk-documentation">GTK Documentation</h4>
-<p>Please refer to the <a
-href="https://docs.gtk.org/gtk4/index.html">GTK API Reference</a> and
-the <a href="https://developer.gnome.org/">GNOME Developer Documentation
-Website</a> for further information. These websites were opened in
-August 2021.</p>
-<p>If you want to know about GObject and the type system, please refer
-to the <a href="https://github.com/ToshioCP/Gobject-tutorial">GObject
-tutorial</a>. GObject is the base of GTK, so it is important for
-developers to understand it as well as GTK.</p>
-<h4 id="contribution">Contribution</h4>
-<p>This tutorial is still under development and unstable. Even though
-the example codes have been tested on GTK (version 4.10.1), bugs may
-still exist. If you find any bugs, errors, or mistakes in the tutorial
-and C examples, please let me know. You can post them to <a
-href="https://github.com/ToshioCP/Gtk4-tutorial/issues">GitHub
-issues</a>. You can also post updated files to <a
-href="https://github.com/ToshioCP/Gtk4-tutorial/pulls">pull request</a>.
-One thing you need to be careful about is to correct the source files,
-which are under the ‘src’ directory. Don’t modify the files under
-<code>gfm</code> or <code>html</code> directories. After modifying some
-source files, run <code>rake</code> to create GFM (GitHub Flavoured
-Markdown) files and run <code>rake html</code> to create HTML files.</p>
-<p>If you have a question, feel free to post it to <code>issue</code>.
-All questions are helpful and will make this tutorial better.</p>
-<h4 id="how-to-get-gtk-4-tutorial-in-html-or-pdf-format">How to get Gtk
-4 tutorial in HTML or PDF format</h4>
-<p>If you want to get the tutorial in HTML or PDF format, build them
-with <code>rake</code> command, which is a ruby version of make. Type
-<code>rake html</code> for HTML. Type <code>rake pdf</code> for PDF.
-There is a document (“<a href="Readme_for_developers.html">How to build
-GTK 4 Tutorial</a>”) for further information.</p>
-<h4 id="license">License</h4>
-<p>The license of this repository is written in <a
-href="sec1.html">Section1</a>. In short:</p>
-<ul>
-<li>GFDL1.3 for documents</li>
-<li>GPL3 for programs</li>
-</ul>
-<h2 id="table-of-contents">Table of contents</h2>
-<ol type="1">
-<li><a href="sec1.html">Prerequisite and License</a></li>
-<li><a href="sec2.html">Preparation</a></li>
-<li><a href="sec3.html">GtkApplication and GtkApplicationWindow</a></li>
-<li><a href="sec4.html">Widgets (1)</a></li>
-<li><a href="sec5.html">Widgets (2)</a></li>
-<li><a href="sec6.html">Strings and memory management</a></li>
-<li><a href="sec7.html">Widgets (3)</a></li>
-<li><a href="sec8.html">Defining a final class</a></li>
-<li><a href="sec9.html">GtkBuilder and UI file</a></li>
-<li><a href="sec10.html">Build system</a></li>
-<li><a href="sec11.html">Instance Initialization and
-destruction</a></li>
-<li><a href="sec12.html">Signals</a></li>
-<li><a href="sec13.html">TfeTextView class</a></li>
-<li><a href="sec14.html">Functions in GtkNotebook</a></li>
-<li><a href="sec15.html">Tfe main program</a></li>
-<li><a href="sec16.html">How to build tfe (text file editor)</a></li>
-<li><a href="sec17.html">Menus and actions</a></li>
-<li><a href="sec18.html">Stateful action</a></li>
-<li><a href="sec19.html">Ui file for menu and action entries</a></li>
-<li><a href="sec20.html">Composite widgets and alert dialog</a></li>
-<li><a href="sec21.html">GtkFontDialogButton and Gsettings</a></li>
-<li><a href="sec22.html">TfeWindow</a></li>
-<li><a href="sec23.html">Pango, CSS and Application</a></li>
-<li><a href="sec24.html">GtkDrawingArea and Cairo</a></li>
-<li><a href="sec25.html">Periodic Events</a></li>
-<li><a href="sec26.html">Custom drawing</a></li>
-<li><a href="sec27.html">Tiny turtle graphics interpreter</a></li>
-<li><a href="sec28.html">Drag and drop</a></li>
-<li><a href="sec29.html">GtkListView</a></li>
-<li><a href="sec30.html">GtkGridView and activate signal</a></li>
-<li><a href="sec31.html">GtkExpression</a></li>
-<li><a href="sec32.html">GtkColumnView</a></li>
-<li><a href="sec33.html">GtkSignalListItemFactory</a></li>
-</ol>
-<p>This website uses <a
-href="https://getbootstrap.jp/">Bootstrap</a>.</p>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>GTK4 Tutorial</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                      </ul>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="gtk-4-tutorial-for-beginners">GTK 4 Tutorial for
+        beginners</h1>
+        <p>Now that GTK 4 is widely used, “GTK” usually means GTK 4.
+        Therefore, this tutorial simply says “GTK” except where the
+        version needs to be explicitly mentioned.</p>
+        <p>This tutorial illustrates how to write C programs with the
+        GTK library. It focuses on beginners, so the contents are
+        limited to the basics. The table of contents is at the end of
+        this README.md.</p>
+        <ul>
+        <li>Section 3 to 23 describe the basics, with the example of a
+        simple editor <code>tfe</code> (Text File Editor).</li>
+        <li>Section 24 to 27 describe GtkDrawingArea.</li>
+        <li>Section 28 describes Drag and Drop.</li>
+        <li>Section 29 to 33 describe the list model and the list view
+        (GtkListView, GtkGridView, and GtkColumnView). It also describes
+        GtkExpression.</li>
+        </ul>
+        <p>The latest version of the tutorial is located at the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">GTK4-tutorial
+        GitHub repository</a>. You can read it directly without
+        downloading.</p>
+        <p>There’s a <a
+        href="https://toshiocp.github.io/Gtk4-tutorial/">GitHub Page</a>
+        which is the HTML version of the tutorial.</p>
+        <h4 id="gtk-documentation">GTK Documentation</h4>
+        <p>Please refer to the <a
+        href="https://docs.gtk.org/gtk4/index.html">GTK API
+        Reference</a> and the <a
+        href="https://developer.gnome.org/">GNOME Developer
+        Documentation Website</a> for further information. These
+        websites were opened in August 2021.</p>
+        <p>If you want to know about GObject and the type system, please
+        refer to the <a
+        href="https://github.com/ToshioCP/Gobject-tutorial">GObject
+        tutorial</a>. GObject is the base of GTK, so it is important for
+        developers to understand it as well as GTK.</p>
+        <h4 id="contribution">Contribution</h4>
+        <p>This tutorial is still under development and unstable. Even
+        though the example codes have been tested on GTK (version
+        4.10.1), bugs may still exist. If you find any bugs, errors, or
+        mistakes in the tutorial and C examples, please let me know. You
+        can post them to <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/issues">GitHub
+        issues</a>. You can also post updated files to <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/pulls">pull
+        request</a>. One thing you need to be careful about is to
+        correct the source files, which are under the ‘src’ directory.
+        Don’t modify the files under <code>gfm</code> or
+        <code>html</code> directories. After modifying some source
+        files, run <code>rake</code> to create GFM (GitHub Flavoured
+        Markdown) files and run <code>rake html</code> to create HTML
+        files.</p>
+        <p>If you have a question, feel free to post it to
+        <code>issue</code>. All questions are helpful and will make this
+        tutorial better.</p>
+        <h4 id="how-to-get-gtk-4-tutorial-in-html-or-pdf-format">How to
+        get Gtk 4 tutorial in HTML or PDF format</h4>
+        <p>If you want to get the tutorial in HTML or PDF format, build
+        them with <code>rake</code> command, which is a ruby version of
+        make. Type <code>rake html</code> for HTML. Type
+        <code>rake pdf</code> for PDF. There is a document (“<a
+        href="Readme_for_developers.html">How to build GTK 4
+        Tutorial</a>”) for further information.</p>
+        <h4 id="license">License</h4>
+        <p>The license of this repository is written in <a
+        href="sec1.html">Section1</a>.</p>
+        <p>In short:</p>
+        <ul>
+        <li>GFDL1.3 for documents</li>
+        <li>GPL3 for programs</li>
+        </ul>
+        <h2 id="table-of-contents">Table of contents</h2>
+        <ol type="1">
+        <li><a href="sec1.html">Prerequisite and License</a></li>
+        <li><a href="sec2.html">Preparation</a></li>
+        <li><a href="sec3.html">GtkApplication and
+        GtkApplicationWindow</a></li>
+        <li><a href="sec4.html">Widgets (1)</a></li>
+        <li><a href="sec5.html">Widgets (2)</a></li>
+        <li><a href="sec6.html">Strings and memory management</a></li>
+        <li><a href="sec7.html">Widgets (3)</a></li>
+        <li><a href="sec8.html">Defining a final class</a></li>
+        <li><a href="sec9.html">GtkBuilder and UI file</a></li>
+        <li><a href="sec10.html">Build system</a></li>
+        <li><a href="sec11.html">Instance Initialization and
+        destruction</a></li>
+        <li><a href="sec12.html">Signals</a></li>
+        <li><a href="sec13.html">TfeTextView class</a></li>
+        <li><a href="sec14.html">Functions in GtkNotebook</a></li>
+        <li><a href="sec15.html">Tfe main program</a></li>
+        <li><a href="sec16.html">How to build tfe (text file
+        editor)</a></li>
+        <li><a href="sec17.html">Menus and actions</a></li>
+        <li><a href="sec18.html">Stateful action</a></li>
+        <li><a href="sec19.html">Ui file for menu and action
+        entries</a></li>
+        <li><a href="sec20.html">Composite widgets and alert
+        dialog</a></li>
+        <li><a href="sec21.html">GtkFontDialogButton and
+        Gsettings</a></li>
+        <li><a href="sec22.html">TfeWindow</a></li>
+        <li><a href="sec23.html">Pango, CSS and Application</a></li>
+        <li><a href="sec24.html">GtkDrawingArea and Cairo</a></li>
+        <li><a href="sec25.html">Periodic Events</a></li>
+        <li><a href="sec26.html">Custom drawing</a></li>
+        <li><a href="sec27.html">Tiny Turtle Graphics
+        Interpreter</a></li>
+        <li><a href="sec28.html">Drag and drop</a></li>
+        <li><a href="sec29.html">GtkListView</a></li>
+        <li><a href="sec30.html">GtkGridView and activate
+        signal</a></li>
+        <li><a href="sec31.html">GtkExpression</a></li>
+        <li><a href="sec32.html">GtkColumnView</a></li>
+        <li><a href="sec33.html">GtkSignalListItemFactory</a></li>
+        </ol>
+      </div>
+    </div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -229,7 +229,7 @@ You can't free `vtype` before `g_print` because the string `type_string` is owne
 The following code includes stateful actions above.
 This program has menus like this:
 
-![menu2](../image/menu2.png){width=6.03cm height=5.115cm}
+![menu2](/images/menu2.png){width=6.03cm height=5.115cm}
 
 - Fullscreen menu toggles the size of the window between maximum and non-maximum.
 If the window is maximum size, which is called full screen, then a check mark is put before "fullscreen" label.

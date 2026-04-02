@@ -1,0 +1,5 @@
+pdf-engine: lualatex
+standalone: true
+top-level-division: chapter
+number-sections: true
+shift-heading-level-by: 1

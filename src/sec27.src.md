@@ -1,15 +1,15 @@
-# Tiny turtle graphics interpreter
+# Tiny Turtle Graphics Interpreter
 
 A program `turtle` is an example with the combination of TfeTextView and GtkDrawingArea objects.
 It is a very small interpreter but you can draw fractal curves with it.
 The following diagram is a Koch curve, which is one of the famous fractal curves.
 
-![Koch curve](turtle/image/turtle_koch.png){width=8cm height=5.11cm}
+![Koch curve](turtle/images/turtle_koch.png){width=8cm height=5.11cm}
 
 The following is a snow-crystal-shaped curve.
 It is composed of six Koch curves.
 
-![Snow](../image/turtle_snow.png){width=8cm height=5.11cm}
+![Snow](/images/turtle_snow.png){width=8cm height=5.11cm}
 
 This program uses flex and bison.
 Flex is a lexical analyzer.
@@ -63,7 +63,7 @@ The surface isn't the one in the GtkDrawingArea widget.
 5. The widget is added to the queue.
 It will be redrawn with the drawing function, which just copies the surface into the one in the GtkDrawingArea.
 
-![Parser, interpreter and drawing function](../image/turtle.png)
+![Parser, interpreter and drawing function](/images/turtle.png)
 
 The body of the interpreter is written with flex and bison.
 The codes are not thread safe.
@@ -146,7 +146,7 @@ The function `yylex` is called lexical analyzer or scanner.
 - The application `turtle` makes a tree structured data.
 This part of `turtle` is called parser.
 
-![turtle parser tree](../image/turtle_parser_tree.png){width=12cm height=5.34cm}
+![turtle parser tree](/images/turtle_parser_tree.png){width=12cm height=5.34cm}
 
 - `Turtle` analyzes the tree and executes it.
 This part of `turtle` is called runtime routine or interpreter.
@@ -209,7 +209,7 @@ It also generates `resources.h`.
 4. gcc compiles `application.c`, `resources.c`, `turtle_parser.c` and `turtle_lex.c` with `turtle_lex.h`, `resources.h` and `turtle_parser.h`.
 It generates an executable file `turtle`.
 
-![compile process](../image/turtle_compile_process.png){width=12cm height=9cm}
+![compile process](/images/turtle_compile_process.png){width=12cm height=9cm}
 
 Meson controls the process.
 The instruction is described in `meson.build`.
@@ -275,7 +275,7 @@ turtle/turtle.lex
 The file consists of three sections which are separated by "%%" (line 19 and 59).
 They are definitions, rules and user code sections.
 
-### Definitions section
+### Definitions Section
 
 - 1-12: Lines between "%top{" and "}" are C source codes.
 They will be copied to the top of the generated C source file.
@@ -300,7 +300,7 @@ A name begins with a letter or an underscore followed by zero or more letters, d
 They are followed by regular expressions which are their definitions.
 They will be used in rules section and will expand to the definition.
 
-### Rules section
+### Rules Section
 
 This section is the most important part.
 Rules consist of patterns and actions.
@@ -357,7 +357,7 @@ The token kind is the same as the symbol itself.
 - 58: If the input doesn't match the patterns, then it is an error.
 A special token kind `YYUNDEF` is returned.
 
-### User code section
+### User Code Section
 
 This section is just copied to C source file.
 
@@ -368,7 +368,7 @@ It is a C structure and has four members, `first_line`, `first_column`, `last_li
 They point the start and end of the current input text.
 - 68: `YY_BUFFER_STATE` is a pointer points the input buffer.
 Flex makes the definition of `YY_BUFFER_STATE` in the C file (scanner source file `turtle_lex.c`).
-See your flex document, section 11 Multiple Input Buffers, for further information.
+See your flex document, Section 11 Multiple Input Buffers, for further information.
 - 70-73: A function `init_flex` is called by `run_cb` which is a "clicked" signal handler on the `Run` button.
 It has one string type parameter.
 The caller assigns it with the content of the GtkTextBuffer instance.
@@ -1039,7 +1039,7 @@ which points to the node `N_FD`.
 The semantic value of `statement` is assigned to the one of `program` and the static variable `node_top`.
 6. Finally `node_top` points the node `N_FD` and the node `N_FD` points the node `N_NUM`.
 
-![tree](../image/tree.png){width=6.51cm height=5.46cm}
+![tree](/images/tree.png){width=6.51cm height=5.46cm}
 
 The following is the grammar rule extracted from `turtle.y`.
 The rules there are based on the same idea above.
@@ -1586,7 +1586,7 @@ That is the order of the address.
 However, "the top of the stack" is the last pushed data and "the bottom of the stack" is the first pushed data.
 Therefore, "the top of the stack" is the bottom of the rectangle in the diagram and "the bottom of the stack" is the top of the rectangle.
 
-![Stack](../image/stack.png){width=6.64cm height=8.05cm}
+![Stack](/images/stack.png){width=6.64cm height=8.05cm}
 
 There are four functions to access the stack.
 
@@ -1763,7 +1763,7 @@ A plane with the surface's coordinate is called device space.
 Cairo provides a transformation which is an affine transformation.
 It transforms a user-space coordinate (x, y) into a device-space coordinate (z, w).
 
-![transformation](../image/transformation.png){width=6.3cm height=2.04cm}
+![transformation](/images/transformation.png){width=6.3cm height=2.04cm}
 
 The function `init_cairo` gets the width and height of the `surface` (See the program below).
 
@@ -2351,15 +2351,15 @@ This example draws a square.
 
 When The parser reads the lines from one to four, it creates nodes like this:
 
-![Nodes of drawline](../image/tree2.png){width=10cm height=6cm}
+![Nodes of drawline](/images/tree2.png){width=10cm height=6cm}
 
 Runtime routine just stores the procedure to the symbol table with its name and node.
 
-![Symbol table](../image/table.png){width=10cm height=5cm}
+![Symbol table](/images/table.png){width=10cm height=5cm}
 
 When the parser reads the fifth line in the example, it creates nodes like this:
 
-![Nodes of procedure call](../image/proc_call.png){width=10cm height=5cm}
+![Nodes of procedure call](/images/proc_call.png){width=10cm height=5cm}
 
 When the runtime routine meets `N_procedure_call` node, it behaves like this:
 

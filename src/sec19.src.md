@@ -65,7 +65,7 @@ For further information, see [GTK 4 API reference -- PopoverMenu](https://docs.g
 The following is a screenshot of the sample program `menu3`.
 It is located in the directory [src/menu3](menu3).
 
-![menu3](../image/menu3.png){width=6.0cm height=5.055cm}
+![menu3](/images/menu3.png){width=6.0cm height=5.055cm}
 
 The following is the ui file for `menu3`.
 

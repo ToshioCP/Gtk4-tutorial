@@ -37,7 +37,7 @@ $ comp tfv1
 $ ./a.out
 ```
 
-![GtkTextView](../image/screenshot_tfv1.png){width=6.3cm height=5.325cm}
+![GtkTextView](/images/screenshot_tfv1.png){width=6.3cm height=5.325cm}
 
 There's an I-beam pointer in the window.
 You can add or delete any characters on the GtkTextView, and your changes are kept in the GtkTextBuffer.

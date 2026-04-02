@@ -1,140 +1,122 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec12.html">Prev: section12</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec14.html">Next: section14</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>TfeTextView class</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec12.html">Prev: Section 12</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec14.html">Next: Section 14</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="tfetextview-class">TfeTextView class</h1>
-<p>The TfeTextView class will be finally completed in this section. The
-remaining topic is functions. TfeTextView functions, which are
-constructors and instance methods, are described in this section.</p>
-<p>The source files are in the directory <code>src/tfetextview</code>.
-You can get them by downloading the <a
-href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.</p>
-<h2 id="tfetextview.h">tfetextview.h</h2>
-<p>The header file <code>tfetextview.h</code> provides:</p>
-<ul>
-<li>The type of TfeTextView, which is
-<code>TFE_TYPE_TEXT_VIEW</code>.</li>
-<li>The macro <code>G_DECLARE_FINAL_TYPE</code>, the expansion of which
-includes some useful functions and definitions.</li>
-<li>Constants for the <code>open-response</code> signal.</li>
-<li>Public functions of <code>tfetextview.c</code>. They are
-constructors and instance methods.</li>
-</ul>
-<p>Therefore, Any programs use TfeTextView needs to include
-<code>tfetextview.h</code>.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#pragma once</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="tfetextview-class">TfeTextView class</h1>
+        <p>The TfeTextView class will be finally completed in this
+        section. The remaining topic is functions. TfeTextView
+        functions, which are constructors and instance methods, are
+        described in this section.</p>
+        <p>The source files are in the directory
+        <code>src/tfetextview</code>. You can get them by downloading
+        the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.</p>
+        <h2 id="tfetextview.h">tfetextview.h</h2>
+        <p>The header file <code>tfetextview.h</code> provides:</p>
+        <ul>
+        <li>The type of TfeTextView, which is
+        <code>TFE_TYPE_TEXT_VIEW</code>.</li>
+        <li>The macro <code>G_DECLARE_FINAL_TYPE</code>, the expansion
+        of which includes some useful functions and definitions.</li>
+        <li>Constants for the <code>open-response</code> signal.</li>
+        <li>Public functions of <code>tfetextview.c</code>. They are
+        constructors and instance methods.</li>
+        </ul>
+        <p>Therefore, Any programs use TfeTextView needs to include
+        <code>tfetextview.h</code>.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#pragma once</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb1-4"><a href="#cb1-4"></a></span>
@@ -166,43 +148,49 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb1-30"><a href="#cb1-30"></a></span>
 <span id="cb1-31"><a href="#cb1-31"></a>GtkWidget <span class="op">*</span></span>
 <span id="cb1-32"><a href="#cb1-32"></a>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div>
-<ul>
-<li>1: The preprocessor directive <code>#pragma once</code> makes the
-header file be included only once. It is non-standard but widely
-used.</li>
-<li>3: Includes gtk4 header files. The header file <code>gtk4</code>
-also has the same mechanism to avoid being included multiple times.</li>
-<li>5-6: These two lines define TfeTextView type, its class structure
-and some useful definitions.
-<ul>
-<li><code>TfeTextView</code> and <code>TfeTextViewClass</code> are
-declared as typedef of C structures.</li>
-<li>You need to define a structure <code>_TfeTextView</code> later.</li>
-<li>The class structure <code>_TfeTextViewClass</code> is defined here.
-You don’t need to define it by yourself.</li>
-<li>Convenience functions <code>TFE_TEXT_VIEW ()</code> for casting and
-<code>TFE_IS_TEXT_VIEW</code> for type check are defined.</li>
-</ul></li>
-<li>8-14: A definition of the values of the “open-response” signal
-parameters.</li>
-<li>16-32: Declarations of public functions on TfeTextView.</li>
-</ul>
-<h2 id="constructors">Constructors</h2>
-<p>A TfeTextView instance is created with <code>tfe_text_view_new</code>
-or <code>tfe_text_view_new_with_file</code>. These functions are called
-constructors.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div>
-<p>It just creates a new TfeTextView instance and returns the pointer to
-the new instance.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span>tfe_text_view_new_with_file <span class="op">(</span>GFile <span class="op">*</span>file<span class="op">);</span></span></code></pre></div>
-<p>It is given a Gfile object as an argument and it loads the file into
-the GtkTextBuffer instance, then returns the pointer to the new
-instance. The argument <code>file</code> is owned by the caller and the
-function doesn’t change it. If an error occurs during the creation
-process, NULL will be returned.</p>
-<p>Each function is defined as follows.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>GtkWidget <span class="op">*</span></span>
+        <ul>
+        <li>1: The preprocessor directive <code>#pragma once</code>
+        makes the header file be included only once. It is non-standard
+        but widely used.</li>
+        <li>3: Includes gtk4 header files. The header file
+        <code>gtk4</code> also has the same mechanism to avoid being
+        included multiple times.</li>
+        <li>5-6: These two lines define TfeTextView type, its class
+        structure and some useful definitions.
+        <ul>
+        <li><code>TfeTextView</code> and <code>TfeTextViewClass</code>
+        are declared as typedef of C structures.</li>
+        <li>You need to define a structure <code>_TfeTextView</code>
+        later.</li>
+        <li>The class structure <code>_TfeTextViewClass</code> is
+        defined here. You don’t need to define it by yourself.</li>
+        <li>Convenience functions <code>TFE_TEXT_VIEW ()</code> for
+        casting and <code>TFE_IS_TEXT_VIEW</code> for type check are
+        defined.</li>
+        </ul></li>
+        <li>8-14: A definition of the values of the “open-response”
+        signal parameters.</li>
+        <li>16-32: Declarations of public functions on TfeTextView.</li>
+        </ul>
+        <h2 id="constructors">Constructors</h2>
+        <p>A TfeTextView instance is created with
+        <code>tfe_text_view_new</code> or
+        <code>tfe_text_view_new_with_file</code>. These functions are
+        called constructors.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div>
+        <p>It just creates a new TfeTextView instance and returns the
+        pointer to the new instance.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span>tfe_text_view_new_with_file <span class="op">(</span>GFile <span class="op">*</span>file<span class="op">);</span></span></code></pre></div>
+        <p>It is given a Gfile object as an argument and it loads the
+        file into the GtkTextBuffer instance, then returns the pointer
+        to the new instance. The argument <code>file</code> is owned by
+        the caller and the function doesn’t change it. If an error
+        occurs during the creation process, NULL will be returned.</p>
+        <p>Each function is defined as follows.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a>GtkWidget <span class="op">*</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>tfe_text_view_new_with_file <span class="op">(</span>GFile <span class="op">*</span>file<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>  g_return_val_if_fail <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a></span>
@@ -227,69 +215,83 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb4-23"><a href="#cb4-23"></a>tfe_text_view_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-24"><a href="#cb4-24"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_TEXT_VIEW<span class="op">,</span> <span class="st">&quot;wrap-mode&quot;</span><span class="op">,</span> GTK_WRAP_WORD_CHAR<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb4-25"><a href="#cb4-25"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>22-25: <code>tfe_text_view_new</code> function. Just returns the
-value from the function <code>g_object_new</code> but casts it to the
-pointer to GtkWidget. The function <code>g_object_new</code> creates any
-instances of its descendant class. The arguments are the type of the
-class, property list and NULL, which is the end mark of the property
-list. TfeTextView “wrap-mode” property has GTK_WRAP_WORD_CHAR as the
-default value.</li>
-<li>1-20: <code>tfe_text_view_new_with_file</code> function.</li>
-<li>3: <code>g_return_val_if_fail</code> is described in <a
-href="https://docs.gtk.org/glib/func.return_val_if_fail.html">GLib API
-Reference – g_return_val_if_fail</a>. And also <a
-href="https://docs.gtk.org/glib/logging.html">GLib API Reference –
-Message Logging</a>. It tests whether the argument <code>file</code> is
-a pointer to GFile. If it’s true, the program goes on to the next line.
-If it’s false, it returns NULL (the second argument) immediately. And at
-the same time it logs out the error message (usually the log is
-outputted to stderr or stdout). This function is used to check the
-programmer’s error. If an error occurs, the solution is usually to
-change the (caller) program and fix the bug. You need to distinguish
-programmer’s errors and runtime errors. You shouldn’t use this function
-to find runtime errors.</li>
-<li>10-11: Reads the file. If an error occurs, NULL is returned.</li>
-<li>13: Calls the function <code>tfe_text_view_new</code>. The function
-creates TfeTextView instance and returns the pointer to the
-instance.</li>
-<li>14: Gets the pointer to the GtkTextBuffer instance corresponds to
-<code>tv</code>. The pointer is assigned to <code>tb</code></li>
-<li>15: Assigns the contents read from the file to <code>tb</code>.</li>
-<li>16: Duplicates <code>file</code> and sets <code>tv-&gt;file</code>
-to point it. GFile is <em>not</em> thread safe. The duplication makes
-sure that the GFile instance of <code>tv</code> keeps the file
-information even if the original one is changed by other thread.</li>
-<li>17: The function
-<code>gtk_text_buffer_set_modified (tb, FALSE)</code> sets the
-modification flag of <code>tb</code> to FALSE. The modification flag
-indicates that the contents has been modified. It is used when the
-contents are saved. If the modification flag is FALSE, it doesn’t need
-to save the contents.</li>
-<li>18: Frees the memories pointed by <code>contents</code>.</li>
-<li>19: Returns <code>tv</code>, which is a pointer to the newly created
-TfeTextView instance. If an error happens, NULL is returned.</li>
-</ul>
-<h2 id="save-and-saveas-functions">Save and saveas functions</h2>
-<p>Save and saveas functions write the contents in the GtkTextBuffer to
-a file.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tfe_text_view_save <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span></span></code></pre></div>
-<p>The function <code>tfe_text_view_save</code> writes the contents in
-the GtkTextBuffer to a file specified by <code>tv-&gt;file</code>. If
-<code>tv-&gt;file</code> is NULL, then it shows file chooser dialog and
-prompts the user to choose a file to save. Then it saves the contents to
-the file and sets <code>tv-&gt;file</code> to point the GFile instance
-for the file.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tfe_text_view_saveas <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span></span></code></pre></div>
-<p>The function <code>saveas</code> shows a file chooser dialog and
-prompts the user to select a existed file or specify a new file to save.
-Then, the function changes <code>tv-&gt;file</code> and save the
-contents to the specified file. If an error occurs, it is shown to the
-user through the alert dialog. The error is managed only in the
-TfeTextView and no information is notified to the caller.</p>
-<h3 id="save_file-function">save_file function</h3>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> gboolean</span>
+        <ul>
+        <li>22-25: <code>tfe_text_view_new</code> function. Just returns
+        the value from the function <code>g_object_new</code> but casts
+        it to the pointer to GtkWidget. The function
+        <code>g_object_new</code> creates any instances of its
+        descendant class. The arguments are the type of the class,
+        property list and NULL, which is the end mark of the property
+        list. TfeTextView “wrap-mode” property has GTK_WRAP_WORD_CHAR as
+        the default value.</li>
+        <li>1-20: <code>tfe_text_view_new_with_file</code>
+        function.</li>
+        <li>3: <code>g_return_val_if_fail</code> is described in <a
+        href="https://docs.gtk.org/glib/func.return_val_if_fail.html">GLib
+        API Reference – g_return_val_if_fail</a>. And also <a
+        href="https://docs.gtk.org/glib/logging.html">GLib API Reference
+        – Message Logging</a>. It tests whether the argument
+        <code>file</code> is a pointer to GFile. If it’s true, the
+        program goes on to the next line. If it’s false, it returns NULL
+        (the second argument) immediately. And at the same time it logs
+        out the error message (usually the log is outputted to stderr or
+        stdout). This function is used to check the programmer’s error.
+        If an error occurs, the solution is usually to change the
+        (caller) program and fix the bug. You need to distinguish
+        programmer’s errors and runtime errors. You shouldn’t use this
+        function to find runtime errors.</li>
+        <li>10-11: Reads the file. If an error occurs, NULL is
+        returned.</li>
+        <li>13: Calls the function <code>tfe_text_view_new</code>. The
+        function creates TfeTextView instance and returns the pointer to
+        the instance.</li>
+        <li>14: Gets the pointer to the GtkTextBuffer instance
+        corresponds to <code>tv</code>. The pointer is assigned to
+        <code>tb</code></li>
+        <li>15: Assigns the contents read from the file to
+        <code>tb</code>.</li>
+        <li>16: Duplicates <code>file</code> and sets
+        <code>tv-&gt;file</code> to point it. GFile is <em>not</em>
+        thread safe. The duplication makes sure that the GFile instance
+        of <code>tv</code> keeps the file information even if the
+        original one is changed by other thread.</li>
+        <li>17: The function
+        <code>gtk_text_buffer_set_modified (tb, FALSE)</code> sets the
+        modification flag of <code>tb</code> to FALSE. The modification
+        flag indicates that the contents has been modified. It is used
+        when the contents are saved. If the modification flag is FALSE,
+        it doesn’t need to save the contents.</li>
+        <li>18: Frees the memories pointed by
+        <code>contents</code>.</li>
+        <li>19: Returns <code>tv</code>, which is a pointer to the newly
+        created TfeTextView instance. If an error happens, NULL is
+        returned.</li>
+        </ul>
+        <h2 id="save-and-saveas-functions">Save and saveas
+        functions</h2>
+        <p>Save and saveas functions write the contents in the
+        GtkTextBuffer to a file.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tfe_text_view_save <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span></span></code></pre></div>
+        <p>The function <code>tfe_text_view_save</code> writes the
+        contents in the GtkTextBuffer to a file specified by
+        <code>tv-&gt;file</code>. If <code>tv-&gt;file</code> is NULL,
+        then it shows file chooser dialog and prompts the user to choose
+        a file to save. Then it saves the contents to the file and sets
+        <code>tv-&gt;file</code> to point the GFile instance for the
+        file.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tfe_text_view_saveas <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span></span></code></pre></div>
+        <p>The function <code>saveas</code> shows a file chooser dialog
+        and prompts the user to select a existed file or specify a new
+        file to save. Then, the function changes
+        <code>tv-&gt;file</code> and save the contents to the specified
+        file. If an error occurs, it is shown to the user through the
+        alert dialog. The error is managed only in the TfeTextView and
+        no information is notified to the caller.</p>
+        <h3 id="save_file-function">save_file function</h3>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> gboolean</span>
 <span id="cb7-2"><a href="#cb7-2"></a>save_file <span class="op">(</span>GFile <span class="op">*</span>file<span class="op">,</span> GtkTextBuffer <span class="op">*</span>tb<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a>  GtkTextIter start_iter<span class="op">;</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a>  GtkTextIter end_iter<span class="op">;</span></span>
@@ -312,59 +314,63 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb7-21"><a href="#cb7-21"></a>  g_free <span class="op">(</span>contents<span class="op">);</span></span>
 <span id="cb7-22"><a href="#cb7-22"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb7-23"><a href="#cb7-23"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>The function <code>save_file</code> is called from
-<code>saveas_dialog_response</code> and <code>tfe_text_view_save</code>.
-This function saves the contents of the buffer to the file given as an
-argument. If error happens, it displays an error message. So, a caller
-of this function don’t need to take care of errors. The class of this
-function is <code>static</code>. Therefore, only functions in this file
-(<code>tfetextview.c</code>) call this function. Such static functions
-usually don’t have <code>g_return_val_if_fail</code> functions.</li>
-<li>10-11: Gets the text contents from the buffer.</li>
-<li>12: The function <code>g_file_replace_contents</code> writes the
-contents to the file and returns the status (true = success/ false =
-fail). It has many parameters, but some of them are almost always given
-the same values.
-<ul>
-<li>GFile* file: GFile to which the contents are saved.</li>
-<li>const char* contents: contents to be saved. The string is owned by
-the caller.</li>
-<li>gsize length: the length of the contents</li>
-<li>const char* etag: entity tag. It is usually NULL.</li>
-<li>gboolean make_backup: true to make a backup if the file exists.
-false not to make it. the file will be overwritten.</li>
-<li>GFileCreateFlags flags: usually <code>G_FILE_CREATE_NONE</code> is
-fine.</li>
-<li>char** new_etag: new entity tag. It is usually NULL.</li>
-<li>GCancellable* cancellable: If a cancellable instance is set, the
-other thread can cancel this operation. it is usually NULL.</li>
-<li>GError** error: If error happens, GError will be set.</li>
-</ul></li>
-<li>13,14: If no error happens, set the modified flag to be FALSE. This
-means that the buffer is not modified since it has been saved.</li>
-<li>16-19: If it fails to save the contents, an error message will be
-displayed.</li>
-<li>16: Creates an alert dialog. The parameters are printf-like format
-string followed by values to insert into the string. GtkAlertDialog is
-available since version 4.10. If your version is older than 4.10, use
-GtkMessageDialog instead. GtkMessageDialog is deprecated since version
-4.10.</li>
-<li>17: Show the alert dialog. The parameters are the dialog and the
-transient parent window. This allows window managers to keep the dialog
-on top of the parent window, or center the dialog over the parent
-window. It is possible to give no parent window to the dialog by giving
-NULL as the argument. However, it is encouraged to give parents to
-dialogs.</li>
-<li>18: Releases the dialog.</li>
-<li>19: Frees the GError struct pointed by <code>err</code> with
-<code>g_error_free</code> function.</li>
-<li>21: Frees <code>contents</code>.</li>
-<li>22: Returns the status to the caller.</li>
-</ul>
-<h3 id="save_dialog_cb-function">save_dialog_cb function</h3>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>The function <code>save_file</code> is called from
+        <code>saveas_dialog_response</code> and
+        <code>tfe_text_view_save</code>. This function saves the
+        contents of the buffer to the file given as an argument. If
+        error happens, it displays an error message. So, a caller of
+        this function don’t need to take care of errors. The class of
+        this function is <code>static</code>. Therefore, only functions
+        in this file (<code>tfetextview.c</code>) call this function.
+        Such static functions usually don’t have
+        <code>g_return_val_if_fail</code> functions.</li>
+        <li>10-11: Gets the text contents from the buffer.</li>
+        <li>12: The function <code>g_file_replace_contents</code> writes
+        the contents to the file and returns the status (true = success/
+        false = fail). It has many parameters, but some of them are
+        almost always given the same values.
+        <ul>
+        <li>GFile* file: GFile to which the contents are saved.</li>
+        <li>const char* contents: contents to be saved. The string is
+        owned by the caller.</li>
+        <li>gsize length: the length of the contents</li>
+        <li>const char* etag: entity tag. It is usually NULL.</li>
+        <li>gboolean make_backup: true to make a backup if the file
+        exists. false not to make it. the file will be overwritten.</li>
+        <li>GFileCreateFlags flags: usually
+        <code>G_FILE_CREATE_NONE</code> is fine.</li>
+        <li>char** new_etag: new entity tag. It is usually NULL.</li>
+        <li>GCancellable* cancellable: If a cancellable instance is set,
+        the other thread can cancel this operation. it is usually
+        NULL.</li>
+        <li>GError** error: If error happens, GError will be set.</li>
+        </ul></li>
+        <li>13,14: If no error happens, set the modified flag to be
+        FALSE. This means that the buffer is not modified since it has
+        been saved.</li>
+        <li>16-19: If it fails to save the contents, an error message
+        will be displayed.</li>
+        <li>16: Creates an alert dialog. The parameters are printf-like
+        format string followed by values to insert into the string.
+        GtkAlertDialog is available since version 4.10. If your version
+        is older than 4.10, use GtkMessageDialog instead.
+        GtkMessageDialog is deprecated since version 4.10.</li>
+        <li>17: Show the alert dialog. The parameters are the dialog and
+        the transient parent window. This allows window managers to keep
+        the dialog on top of the parent window, or center the dialog
+        over the parent window. It is possible to give no parent window
+        to the dialog by giving NULL as the argument. However, it is
+        encouraged to give parents to dialogs.</li>
+        <li>18: Releases the dialog.</li>
+        <li>19: Frees the GError struct pointed by <code>err</code> with
+        <code>g_error_free</code> function.</li>
+        <li>21: Frees <code>contents</code>.</li>
+        <li>22: Returns the status to the caller.</li>
+        </ul>
+        <h3 id="save_dialog_cb-function">save_dialog_cb function</h3>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>save_dialog_cb<span class="op">(</span>GObject <span class="op">*</span>source_object<span class="op">,</span> GAsyncResult <span class="op">*</span>res<span class="op">,</span> gpointer data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  GtkFileDialog <span class="op">*</span>dialog <span class="op">=</span> GTK_FILE_DIALOG <span class="op">(</span>source_object<span class="op">);</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> TFE_TEXT_VIEW <span class="op">(</span>data<span class="op">);</span></span>
@@ -393,44 +399,49 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-27"><a href="#cb8-27"></a>    g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
 <span id="cb8-28"><a href="#cb8-28"></a>  <span class="op">}</span></span>
 <span id="cb8-29"><a href="#cb8-29"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>The function <code>save_dialog_cb</code> is a call back function
-that is given to the <code>gtk_file_dialog_save</code> function as an
-argument. The <code>gtk_file_dialog_save</code> shows a file chooser
-dialog to the user. The user chooses or types a filename and clicks on
-the <code>Save</code> button or just clicks on the <code>Cancel</code>
-button. Then the call back function is called with the result. This is
-the general way in GIO to manage asynchronous operations. A pair of
-functions <code>g_data_input_stream_read_line_async</code> and
-<code>g_data_input_stream_read_line_finish</code> are one example. These
-functions are thread-safe. The arguments of <code>save_dialog_cb</code>
-are:
-<ul>
-<li>GObject *source_object: The GObject instance that the operation was
-started with. It is actually the GtkFileDialog instance that is shown to
-the user. However, the call back function is defined as
-<code>AsyncReadyCallback</code>, which is a general call back function
-for an asynchronous operation. So the type is GObject and you need to
-cast it to GtkFileDialog later.</li>
-<li>GAsyncResult *res: The result of the asynchronous operation. It will
-be given to the <code>gtk_dialog_save_finish</code> function.</li>
-<li>gpointer data: A user data set in the <code>gtk_dialog_save</code>
-function.</li>
-</ul></li>
-<li>11: Calls <code>gtk_dialog_save_finish</code>. It is given the
-result <code>res</code> as an argument and returns a pointer to a GFile
-object the user has chosen. If the user has canceled or an error
-happens, it returns NULL, creates a GError object and sets
-<code>err</code> to point it. If <code>gtk_dialog_save_finish</code>
-returns a GFile, the function <code>save_file</code> is called.</li>
-<li>12-21: If the file is successfully saved, these lines are executed.
-See the comments, line 12-15, for the details.</li>
-<li>23-28: If an error happens, show the error message through the alert
-dialog.</li>
-</ul>
-<h3 id="tfe_text_view_save-function">tfe_text_view_save function</h3>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">void</span></span>
+        <ul>
+        <li>The function <code>save_dialog_cb</code> is a call back
+        function that is given to the <code>gtk_file_dialog_save</code>
+        function as an argument. The <code>gtk_file_dialog_save</code>
+        shows a file chooser dialog to the user. The user chooses or
+        types a filename and clicks on the <code>Save</code> button or
+        just clicks on the <code>Cancel</code> button. Then the call
+        back function is called with the result. This is the general way
+        in GIO to manage asynchronous operations. A pair of functions
+        <code>g_data_input_stream_read_line_async</code> and
+        <code>g_data_input_stream_read_line_finish</code> are one
+        example. These functions are thread-safe. The arguments of
+        <code>save_dialog_cb</code> are:
+        <ul>
+        <li>GObject *source_object: The GObject instance that the
+        operation was started with. It is actually the GtkFileDialog
+        instance that is shown to the user. However, the call back
+        function is defined as <code>AsyncReadyCallback</code>, which is
+        a general call back function for an asynchronous operation. So
+        the type is GObject and you need to cast it to GtkFileDialog
+        later.</li>
+        <li>GAsyncResult *res: The result of the asynchronous operation.
+        It will be given to the <code>gtk_dialog_save_finish</code>
+        function.</li>
+        <li>gpointer data: A user data set in the
+        <code>gtk_dialog_save</code> function.</li>
+        </ul></li>
+        <li>11: Calls <code>gtk_dialog_save_finish</code>. It is given
+        the result <code>res</code> as an argument and returns a pointer
+        to a GFile object the user has chosen. If the user has canceled
+        or an error happens, it returns NULL, creates a GError object
+        and sets <code>err</code> to point it. If
+        <code>gtk_dialog_save_finish</code> returns a GFile, the
+        function <code>save_file</code> is called.</li>
+        <li>12-21: If the file is successfully saved, these lines are
+        executed. See the comments, line 12-15, for the details.</li>
+        <li>23-28: If an error happens, show the error message through
+        the alert dialog.</li>
+        </ul>
+        <h3 id="tfe_text_view_save-function">tfe_text_view_save
+        function</h3>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">void</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>tfe_text_view_save <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a>  g_return_if_fail <span class="op">(</span>TFE_IS_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
 <span id="cb9-4"><a href="#cb9-4"></a></span>
@@ -444,43 +455,47 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb9-12"><a href="#cb9-12"></a>  <span class="cf">else</span></span>
 <span id="cb9-13"><a href="#cb9-13"></a>    save_file <span class="op">(</span>tv<span class="op">-&gt;</span>file<span class="op">,</span> tb<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb9-14"><a href="#cb9-14"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>The function <code>tfe_text_view_save</code> writes the contents to
-the <code>tv-&gt;file</code> file. It calls
-<code>tfe_text_view_saveas</code> or <code>save_file</code>.</li>
-<li>1-3: The function is public, i.e. it is open to the other objects.
-So, it doesn’t have <code>static</code> class. Public functions should
-check the parameter type with <code>g_return_if_fail</code> function. If
-<code>tv</code> is not a pointer to a TfeTextView instance, then it logs
-an error message and immediately returns. This function is similar to
-<code>g_return_val_if_fail</code>, but no value is returned because
-<code>tfe_text_view_save</code> doesn’t return a value (void).</li>
-<li>5-6: GtkTextBuffer <code>tb</code> and GtkWidget (GtkWindow)
-<code>win</code> are set. The function
-<code>gtk_widget_get_ancestor (widget, type)</code> returns the first
-ancestor of the widget with the type, which is a GType. The parent-child
-relationship here is the one for widgets, not classes. More precisely,
-the returned widget’s type is the <code>type</code> or a descendant
-object type of the <code>type</code>. Be careful, the “descendant
-object” in the previous sentence is <em>not</em> “descendant widget”.
-For example, the type of GtkWindow is <code>GTK_TYPE_WINDOW</code> and
-the one of TfeTextView is <code>TFE_TYPE_TEXT_VIEW</code>. The top level
-window may be a GtkApplicationWindow, but it is a descendant of
-GtkWindow. Therefore,
-<code>gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW)</code>
-possibly returns GtkWindow or GtkApplicationWindow.</li>
-<li>8-9: If the buffer hasn’t modified, it doesn’t need to be
-saved.</li>
-<li>10-11: If <code>tv-&gt;file</code> is NULL, which means no file has
-given yet, it calls <code>tfe_text_view_saveas</code> to prompt a user
-to select a file and save the contents.</li>
-<li>12-13: Otherwise, it calls <code>save_file</code> to save the
-contents to the file <code>tv-&gt;file</code>.</li>
-</ul>
-<h3 id="tfe_text_view_saveas-function">tfe_text_view_saveas
-function</h3>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">void</span></span>
+        <ul>
+        <li>The function <code>tfe_text_view_save</code> writes the
+        contents to the <code>tv-&gt;file</code> file. It calls
+        <code>tfe_text_view_saveas</code> or
+        <code>save_file</code>.</li>
+        <li>1-3: The function is public, i.e. it is open to the other
+        objects. So, it doesn’t have <code>static</code> class. Public
+        functions should check the parameter type with
+        <code>g_return_if_fail</code> function. If <code>tv</code> is
+        not a pointer to a TfeTextView instance, then it logs an error
+        message and immediately returns. This function is similar to
+        <code>g_return_val_if_fail</code>, but no value is returned
+        because <code>tfe_text_view_save</code> doesn’t return a value
+        (void).</li>
+        <li>5-6: GtkTextBuffer <code>tb</code> and GtkWidget (GtkWindow)
+        <code>win</code> are set. The function
+        <code>gtk_widget_get_ancestor (widget, type)</code> returns the
+        first ancestor of the widget with the type, which is a GType.
+        The parent-child relationship here is the one for widgets, not
+        classes. More precisely, the returned widget’s type is the
+        <code>type</code> or a descendant object type of the
+        <code>type</code>. Be careful, the “descendant object” in the
+        previous sentence is <em>not</em> “descendant widget”. For
+        example, the type of GtkWindow is <code>GTK_TYPE_WINDOW</code>
+        and the one of TfeTextView is <code>TFE_TYPE_TEXT_VIEW</code>.
+        The top level window may be a GtkApplicationWindow, but it is a
+        descendant of GtkWindow. Therefore,
+        <code>gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW)</code>
+        possibly returns GtkWindow or GtkApplicationWindow.</li>
+        <li>8-9: If the buffer hasn’t modified, it doesn’t need to be
+        saved.</li>
+        <li>10-11: If <code>tv-&gt;file</code> is NULL, which means no
+        file has given yet, it calls <code>tfe_text_view_saveas</code>
+        to prompt a user to select a file and save the contents.</li>
+        <li>12-13: Otherwise, it calls <code>save_file</code> to save
+        the contents to the file <code>tv-&gt;file</code>.</li>
+        </ul>
+        <h3 id="tfe_text_view_saveas-function">tfe_text_view_saveas
+        function</h3>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">void</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>tfe_text_view_saveas <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  g_return_if_fail <span class="op">(</span>TFE_IS_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a></span>
@@ -491,67 +506,73 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb10-9"><a href="#cb10-9"></a>  gtk_file_dialog_save <span class="op">(</span>dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">,</span> save_dialog_cb<span class="op">,</span> tv<span class="op">);</span></span>
 <span id="cb10-10"><a href="#cb10-10"></a>  g_object_unref <span class="op">(</span>dialog<span class="op">);</span></span>
 <span id="cb10-11"><a href="#cb10-11"></a><span class="op">}</span></span></code></pre></div>
-<p>The function <code>tfe_text_view_saveas</code> shows a file chooser
-dialog and prompts the user to choose a file and save the contents.</p>
-<ul>
-<li>1-3: Check the type of <code>tv</code> because the function is
-public.</li>
-<li>6: GtkWidget <code>win</code> is set to the window which is an
-ancestor ot <code>tv</code>.</li>
-<li>8: Creates a GtkFileDialog instance. GtkFileDialog is available
-since version 4.10. If your Gtk version is older than 4.10, use
-GtkFileChooserDialog instead. GtkFileChooserDialog is deprecated since
-version 4.10.</li>
-<li>9: Calls <code>gtk_file_dialog_save</code> function. The arguments
-are:
-<ul>
-<li>dialog: GtkFileDialog.</li>
-<li>GTK_WINDOW (win): transient parent window.</li>
-<li>NULL: NULL means no cancellable object. If you put a cancellable
-object here, you can cancel the operation by other thread. In many
-cases, it is NULL. See <a
-href="https://docs.gtk.org/gio/class.Cancellable.html">GCancellable</a>
-for further information.</li>
-<li><code>save_dialog_cb</code>: A callback to call when the operation
-is complete. The type of the pointer to the callback function is <a
-href="https://docs.gtk.org/gio/callback.AsyncReadyCallback.html">GAsyncReadyCallback</a>.
-If a cancellable object is given and the operation is cancelled, the
-callback won’t be called.</li>
-<li><code>tv</code>: This is an optional user data which is gpointer
-type. It is used in the callback function.</li>
-</ul></li>
-<li>10: Releases the GtkFileDialog instance because it is useless
-anymore.</li>
-</ul>
-<p>This function just shows the file chooser dialog. The rest of the
-operation is done by the callback function.</p>
-<figure>
-<img src="image/saveas.png" alt="Saveas process" />
-<figcaption aria-hidden="true">Saveas process</figcaption>
-</figure>
-<h2 id="open-related-functions">Open related functions</h2>
-<p>Open function shows a file chooser dialog to a user and prompts them
-to choose a file. Then it reads the file and puts the text into
-GtkTextBuffer.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tfe_text_view_open <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">);</span></span></code></pre></div>
-<p>The parameter <code>win</code> is the transient window. A file
-chooser dialog will be shown at the center of the window.</p>
-<p>This function may be called just after <code>tv</code> has been
-created. In that case, <code>tv</code> has not been incorporated into
-the widget hierarchy. Therefore it is impossible to get the top-level
-window from <code>tv</code>. That’s why the function needs
-<code>win</code> parameter.</p>
-<p>This function is usually called when the buffer of <code>tv</code> is
-empty. However, even if the buffer is not empty,
-<code>tfe_text_view_open</code> doesn’t treat it as an error. If you
-want to revert the buffer, calling this function is appropriate.</p>
-<p>Open and read process is divided into two phases. One is creating and
-showing a file chooser dialog and the other is the callback function.
-The former is <code>tfe_text_view_open</code> and the latter is
-<code>open_dialog_cb</code>.</p>
-<h3 id="open_dialog_cb-function">open_dialog_cb function</h3>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <p>The function <code>tfe_text_view_saveas</code> shows a file
+        chooser dialog and prompts the user to choose a file and save
+        the contents.</p>
+        <ul>
+        <li>1-3: Check the type of <code>tv</code> because the function
+        is public.</li>
+        <li>6: GtkWidget <code>win</code> is set to the window which is
+        an ancestor ot <code>tv</code>.</li>
+        <li>8: Creates a GtkFileDialog instance. GtkFileDialog is
+        available since version 4.10. If your Gtk version is older than
+        4.10, use GtkFileChooserDialog instead. GtkFileChooserDialog is
+        deprecated since version 4.10.</li>
+        <li>9: Calls <code>gtk_file_dialog_save</code> function. The
+        arguments are:
+        <ul>
+        <li>dialog: GtkFileDialog.</li>
+        <li>GTK_WINDOW (win): transient parent window.</li>
+        <li>NULL: NULL means no cancellable object. If you put a
+        cancellable object here, you can cancel the operation by other
+        thread. In many cases, it is NULL. See <a
+        href="https://docs.gtk.org/gio/class.Cancellable.html">GCancellable</a>
+        for further information.</li>
+        <li><code>save_dialog_cb</code>: A callback to call when the
+        operation is complete. The type of the pointer to the callback
+        function is <a
+        href="https://docs.gtk.org/gio/callback.AsyncReadyCallback.html">GAsyncReadyCallback</a>.
+        If a cancellable object is given and the operation is cancelled,
+        the callback won’t be called.</li>
+        <li><code>tv</code>: This is an optional user data which is
+        gpointer type. It is used in the callback function.</li>
+        </ul></li>
+        <li>10: Releases the GtkFileDialog instance because it is
+        useless anymore.</li>
+        </ul>
+        <p>This function just shows the file chooser dialog. The rest of
+        the operation is done by the callback function.</p>
+        <figure>
+        <img src="/images/saveas.png" style="width:10.7cm;height:5.16cm"
+        alt="Saveas process" />
+        <figcaption aria-hidden="true">Saveas process</figcaption>
+        </figure>
+        <h2 id="open-related-functions">Open related functions</h2>
+        <p>Open function shows a file chooser dialog to a user and
+        prompts them to choose a file. Then it reads the file and puts
+        the text into GtkTextBuffer.</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> tfe_text_view_open <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">);</span></span></code></pre></div>
+        <p>The parameter <code>win</code> is the transient window. A
+        file chooser dialog will be shown at the center of the
+        window.</p>
+        <p>This function may be called just after <code>tv</code> has
+        been created. In that case, <code>tv</code> has not been
+        incorporated into the widget hierarchy. Therefore it is
+        impossible to get the top-level window from <code>tv</code>.
+        That’s why the function needs <code>win</code> parameter.</p>
+        <p>This function is usually called when the buffer of
+        <code>tv</code> is empty. However, even if the buffer is not
+        empty, <code>tfe_text_view_open</code> doesn’t treat it as an
+        error. If you want to revert the buffer, calling this function
+        is appropriate.</p>
+        <p>Open and read process is divided into two phases. One is
+        creating and showing a file chooser dialog and the other is the
+        callback function. The former is <code>tfe_text_view_open</code>
+        and the latter is <code>open_dialog_cb</code>.</p>
+        <h3 id="open_dialog_cb-function">open_dialog_cb function</h3>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>open_dialog_cb <span class="op">(</span>GObject <span class="op">*</span>source_object<span class="op">,</span> GAsyncResult <span class="op">*</span>res<span class="op">,</span> gpointer data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a>  GtkFileDialog <span class="op">*</span>dialog <span class="op">=</span> GTK_FILE_DIALOG <span class="op">(</span>source_object<span class="op">);</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a>  TfeTextView <span class="op">*</span>tv <span class="op">=</span> TFE_TEXT_VIEW <span class="op">(</span>data<span class="op">);</span></span>
@@ -593,50 +614,56 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-40"><a href="#cb12-40"></a>    g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
 <span id="cb12-41"><a href="#cb12-41"></a>  <span class="op">}</span></span>
 <span id="cb12-42"><a href="#cb12-42"></a><span class="op">}</span></span></code></pre></div>
-<p>This function is similar to <code>save_dialog_cb</code>. Both are
-callback functions on a GtkFileDialog object.</p>
-<ul>
-<li>2: It has three parameters like <code>save_dialog_cb</code>. They
-are:
-<ul>
-<li>GObject *source_object: The GObject instance that the operation was
-started with. It is actually the GtkFileDialog instance that is shown to
-the user. It will be casted to GtkFileDialog later.</li>
-<li>GAsyncResult *res: The result of the asynchronous operation. It will
-be given to the <code>gtk_dialog_open_finish</code> function.</li>
-<li>gpointer data: A user data set in the <code>gtk_dialog_open</code>
-function. It is actually a TfeTextView instance and it will be casted to
-TfeTextView later.</li>
-</ul></li>
-<li>14: The function <code>gtk_file_dialog_open_finish</code> returns a
-GFile object if the operation has succeeded. Otherwise it returns
-NULL.</li>
-<li>16-30: If the user selects a file and the file has successfully been
-read, the codes from 16 to 30 will be executed.</li>
-<li>16-18: Sets the buffer of <code>tv</code> with the text read from
-the file. And frees <code>contents</code>. Then sets the modified status
-to false.</li>
-<li>19-30: The codes are a bit complicated. See the comments. If the
-file (<code>tv-&gt;file</code>) is changed, “change-file” signal is
-emitted. The signal “open-response” is emitted with the parameter
-<code>TFE_OPEN_RESPONSE_SUCCESS</code>.</li>
-<li>31-41: If the operation failed, the codes from 31 to 41 will be
-executed.</li>
-<li>32-33: If the error code is <code>GTK_DIALOG_ERROR_DISMISSED</code>,
-it means that the user has clicked on the “Cancel” button or close
-button on the header bar. Then, “open-response” signal is emitted with
-the parameter <code>TFE_OPEN_RESPONSE_CANCEL</code>. The Dialog error is
-described <a
-href="https://docs.gtk.org/gtk4/error.DialogError.html">here</a> in the
-GTK API reference.</li>
-<li>35-38: If another error occurs, it shows an alert dialog to report
-the error and emits “open-response” signal with the parameter
-<code>TFE_OPEN_RESPONSE_ERROR</code>.</li>
-<li>40: Clears the error structure.</li>
-</ul>
-<h3 id="tfe_text_view_open-function">tfe_text_view_open function</h3>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">void</span></span>
+        <p>This function is similar to <code>save_dialog_cb</code>. Both
+        are callback functions on a GtkFileDialog object.</p>
+        <ul>
+        <li>2: It has three parameters like <code>save_dialog_cb</code>.
+        They are:
+        <ul>
+        <li>GObject *source_object: The GObject instance that the
+        operation was started with. It is actually the GtkFileDialog
+        instance that is shown to the user. It will be casted to
+        GtkFileDialog later.</li>
+        <li>GAsyncResult *res: The result of the asynchronous operation.
+        It will be given to the <code>gtk_dialog_open_finish</code>
+        function.</li>
+        <li>gpointer data: A user data set in the
+        <code>gtk_dialog_open</code> function. It is actually a
+        TfeTextView instance and it will be casted to TfeTextView
+        later.</li>
+        </ul></li>
+        <li>14: The function <code>gtk_file_dialog_open_finish</code>
+        returns a GFile object if the operation has succeeded. Otherwise
+        it returns NULL.</li>
+        <li>16-30: If the user selects a file and the file has
+        successfully been read, the codes from 16 to 30 will be
+        executed.</li>
+        <li>16-18: Sets the buffer of <code>tv</code> with the text read
+        from the file. And frees <code>contents</code>. Then sets the
+        modified status to false.</li>
+        <li>19-30: The codes are a bit complicated. See the comments. If
+        the file (<code>tv-&gt;file</code>) is changed, “change-file”
+        signal is emitted. The signal “open-response” is emitted with
+        the parameter <code>TFE_OPEN_RESPONSE_SUCCESS</code>.</li>
+        <li>31-41: If the operation failed, the codes from 31 to 41 will
+        be executed.</li>
+        <li>32-33: If the error code is
+        <code>GTK_DIALOG_ERROR_DISMISSED</code>, it means that the user
+        has clicked on the “Cancel” button or close button on the header
+        bar. Then, “open-response” signal is emitted with the parameter
+        <code>TFE_OPEN_RESPONSE_CANCEL</code>. The Dialog error is
+        described <a
+        href="https://docs.gtk.org/gtk4/error.DialogError.html">here</a>
+        in the GTK API reference.</li>
+        <li>35-38: If another error occurs, it shows an alert dialog to
+        report the error and emits “open-response” signal with the
+        parameter <code>TFE_OPEN_RESPONSE_ERROR</code>.</li>
+        <li>40: Clears the error structure.</li>
+        </ul>
+        <h3 id="tfe_text_view_open-function">tfe_text_view_open
+        function</h3>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">void</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>tfe_text_view_open <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb13-3"><a href="#cb13-3"></a>  g_return_if_fail <span class="op">(</span>TFE_IS_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
 <span id="cb13-4"><a href="#cb13-4"></a>  <span class="co">// &#39;win&#39; is used for a transient window of the GtkFileDialog.</span></span>
@@ -649,51 +676,58 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb13-11"><a href="#cb13-11"></a>  gtk_file_dialog_open <span class="op">(</span>dialog<span class="op">,</span> win<span class="op">,</span> NULL<span class="op">,</span> open_dialog_cb<span class="op">,</span> tv<span class="op">);</span></span>
 <span id="cb13-12"><a href="#cb13-12"></a>  g_object_unref <span class="op">(</span>dialog<span class="op">);</span></span>
 <span id="cb13-13"><a href="#cb13-13"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>3-6: Check the type of the arguments <code>tv</code> and
-<code>win</code>. Public functions always need to check the
-arguments.</li>
-<li>10: Creates a GtkFileDialog instance.</li>
-<li>11: Calls <code>gtk_file_dialog_open</code>. The arguments are:
-<ul>
-<li><code>dialog</code>: the GtkFileDialog instance</li>
-<li><code>win</code>: the transient window for the file chooser
-dialog</li>
-<li><code>NULL</code>: NULL means no cancellable object</li>
-<li><code>open_dialog_cb</code>: callback function</li>
-<li><code>tv</code>: user data which is used in the callback
-function</li>
-</ul></li>
-<li>12: Releases the dialog instance because it is useless anymore.</li>
-</ul>
-<p>The whole process between the caller and TfeTextView is shown in the
-following diagram. It is really complicated. Because
-<code>gtk_file_dialog_open</code> can’t return the status of the
-operation.</p>
-<figure>
-<img src="image/open.png" alt="Caller and TfeTextView" />
-<figcaption aria-hidden="true">Caller and TfeTextView</figcaption>
-</figure>
-<ol type="1">
-<li>A caller gets a pointer <code>tv</code> to a TfeTextView instance by
-calling <code>tfe_text_view_new</code>.</li>
-<li>The caller connects the handler (left bottom in the diagram) and the
-signal “open-response”.</li>
-<li>It calls <code>tfe_text_view_open</code> to prompt the user to
-select a file from the file chooser dialog.</li>
-<li>When the dialog is closed, the callback <code>open_dialog_cb</code>
-is called.</li>
-<li>The callback function reads the file and inserts the text into
-GtkTextBuffer and emits a signal to inform the status as a response
-code.</li>
-<li>The handler of the “open-response” signal is invoked and the
-operation status is given to it as an argument (signal parameter).</li>
-</ol>
-<h2 id="getting-gfile-in-tfetextview">Getting GFile in TfeTextView</h2>
-<p>You can get the GFile in a TfeTextView instance with
-<code>tfe_text_view_get_file</code>. It is very simple.</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a>GFile <span class="op">*</span></span>
+        <ul>
+        <li>3-6: Check the type of the arguments <code>tv</code> and
+        <code>win</code>. Public functions always need to check the
+        arguments.</li>
+        <li>10: Creates a GtkFileDialog instance.</li>
+        <li>11: Calls <code>gtk_file_dialog_open</code>. The arguments
+        are:
+        <ul>
+        <li><code>dialog</code>: the GtkFileDialog instance</li>
+        <li><code>win</code>: the transient window for the file chooser
+        dialog</li>
+        <li><code>NULL</code>: NULL means no cancellable object</li>
+        <li><code>open_dialog_cb</code>: callback function</li>
+        <li><code>tv</code>: user data which is used in the callback
+        function</li>
+        </ul></li>
+        <li>12: Releases the dialog instance because it is useless
+        anymore.</li>
+        </ul>
+        <p>The whole process between the caller and TfeTextView is shown
+        in the following diagram. It is really complicated. Because
+        <code>gtk_file_dialog_open</code> can’t return the status of the
+        operation.</p>
+        <figure>
+        <img src="/images/open.png"
+        style="width:12.405cm;height:9.225cm"
+        alt="Caller and TfeTextView" />
+        <figcaption aria-hidden="true">Caller and
+        TfeTextView</figcaption>
+        </figure>
+        <ol type="1">
+        <li>A caller gets a pointer <code>tv</code> to a TfeTextView
+        instance by calling <code>tfe_text_view_new</code>.</li>
+        <li>The caller connects the handler (left bottom in the diagram)
+        and the signal “open-response”.</li>
+        <li>It calls <code>tfe_text_view_open</code> to prompt the user
+        to select a file from the file chooser dialog.</li>
+        <li>When the dialog is closed, the callback
+        <code>open_dialog_cb</code> is called.</li>
+        <li>The callback function reads the file and inserts the text
+        into GtkTextBuffer and emits a signal to inform the status as a
+        response code.</li>
+        <li>The handler of the “open-response” signal is invoked and the
+        operation status is given to it as an argument (signal
+        parameter).</li>
+        </ol>
+        <h2 id="getting-gfile-in-tfetextview">Getting GFile in
+        TfeTextView</h2>
+        <p>You can get the GFile in a TfeTextView instance with
+        <code>tfe_text_view_get_file</code>. It is very simple.</p>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a>GFile <span class="op">*</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a>tfe_text_view_get_file <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a>  g_return_val_if_fail <span class="op">(</span>TFE_IS_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb14-4"><a href="#cb14-4"></a></span>
@@ -702,25 +736,26 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb14-7"><a href="#cb14-7"></a>  <span class="cf">else</span></span>
 <span id="cb14-8"><a href="#cb14-8"></a>    <span class="cf">return</span> NULL<span class="op">;</span></span>
 <span id="cb14-9"><a href="#cb14-9"></a><span class="op">}</span></span></code></pre></div>
-<p>The important thing is to duplicate <code>tv-&gt;file</code>.
-Otherwise, if the caller frees the GFile object,
-<code>tv-&gt;file</code> is no more guaranteed to point the GFile.
-Another reason to use <code>g_file_dup</code> is that GFile isn’t
-thread-safe. If you use GFile in the different thread, the duplication
-is necessary. See <a
-href="https://docs.gtk.org/gio/method.File.dup.html">Gio API Reference –
-g_file_dup</a>.</p>
-<h2 id="the-api-document-and-source-file-of-tfetextview.c">The API
-document and source file of tfetextview.c</h2>
-<p>Refer <a
-href="https://toshiocp.github.io/Gtk4-tutorial/tfetextview_doc.html">API
-document of TfeTextView</a>. The markdown file is under the directory
-<code>src/tfetextview</code>.</p>
-<p>You can find all the TfeTextView source codes under src/tfetextview
-directories.</p>
-        </div>
+        <p>The important thing is to duplicate <code>tv-&gt;file</code>.
+        Otherwise, if the caller frees the GFile object,
+        <code>tv-&gt;file</code> is no more guaranteed to point the
+        GFile. Another reason to use <code>g_file_dup</code> is that
+        GFile isn’t thread-safe. If you use GFile in the different
+        thread, the duplication is necessary. See <a
+        href="https://docs.gtk.org/gio/method.File.dup.html">Gio API
+        Reference – g_file_dup</a>.</p>
+        <h2 id="the-api-document-and-source-file-of-tfetextview.c">The
+        API document and source file of tfetextview.c</h2>
+        <p>Refer <a
+        href="https://toshiocp.github.io/Gtk4-tutorial/tfetextview_doc.html">API
+        document of TfeTextView</a>. The markdown file is under the
+        directory <code>src/tfetextview</code>.</p>
+        <p>You can find all the TfeTextView source codes under <a
+        href="tfetextview">src/tfetextview</a> directories.</p>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,9 +1,13 @@
+# Run this from the project root using: 'rake -f test/Rakefile'
+# Or from within the 'test' directory using: 'rake'
+
 require "rake/testtask"
 
-FileList['test*.rb'].each do |file|
-  Rake::TestTask.new do |t|
-    t.libs << "test"
-    t.test_files = [file]
-    t.verbose = true
-  end
+pattern = Dir.getwd == __dir__ ? "test*.rb" : "test/test*.rb"
+
+Rake::TestTask.new do |t|
+  t.test_files = FileList[pattern]
+  t.verbose = true
 end
+
+task default: :test

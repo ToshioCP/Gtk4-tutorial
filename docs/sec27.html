@@ -1,192 +1,177 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec26.html">Prev: section26</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec28.html">Next: section28</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>Tiny Turtle Graphics Interpreter</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec26.html">Prev: Section 26</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec28.html">Next: Section 28</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="tiny-turtle-graphics-interpreter">Tiny turtle graphics
-interpreter</h1>
-<p>A program <code>turtle</code> is an example with the combination of
-TfeTextView and GtkDrawingArea objects. It is a very small interpreter
-but you can draw fractal curves with it. The following diagram is a Koch
-curve, which is one of the famous fractal curves.</p>
-<figure>
-<img src="image/turtle_koch.png" alt="Koch curve" />
-<figcaption aria-hidden="true">Koch curve</figcaption>
-</figure>
-<p>The following is a snow-crystal-shaped curve. It is composed of six
-Koch curves.</p>
-<figure>
-<img src="image/turtle_snow.png" alt="Snow" />
-<figcaption aria-hidden="true">Snow</figcaption>
-</figure>
-<p>This program uses flex and bison. Flex is a lexical analyzer. Bison
-is a parser generator. These two programs are similar to lex and yacc
-which are proprietary software developed in Bell Laboratory. However,
-flex and bison are open source software. This section describes them and
-they are not the topics about GTK 4. So, readers can skip this
-section.</p>
-<h2 id="how-to-use-turtle">How to use turtle</h2>
-<p>The turtle document is <a
-href="https://toshiocp.github.io/Gtk4-tutorial/turtle_doc.html">here</a>.
-I’ll show you a simple example.</p>
-<pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="tiny-turtle-graphics-interpreter">Tiny Turtle Graphics
+        Interpreter</h1>
+        <p>A program <code>turtle</code> is an example with the
+        combination of TfeTextView and GtkDrawingArea objects. It is a
+        very small interpreter but you can draw fractal curves with it.
+        The following diagram is a Koch curve, which is one of the
+        famous fractal curves.</p>
+        <figure>
+        <img src="turtle/images/turtle_koch.png"
+        style="width:8cm;height:5.11cm" alt="Koch curve" />
+        <figcaption aria-hidden="true">Koch curve</figcaption>
+        </figure>
+        <p>The following is a snow-crystal-shaped curve. It is composed
+        of six Koch curves.</p>
+        <figure>
+        <img src="/images/turtle_snow.png"
+        style="width:8cm;height:5.11cm" alt="Snow" />
+        <figcaption aria-hidden="true">Snow</figcaption>
+        </figure>
+        <p>This program uses flex and bison. Flex is a lexical analyzer.
+        Bison is a parser generator. These two programs are similar to
+        lex and yacc which are proprietary software developed in Bell
+        Laboratory. However, flex and bison are open source software.
+        This section describes them and they are not the topics about
+        GTK 4. So, readers can skip this section.</p>
+        <h2 id="how-to-use-turtle">How to use turtle</h2>
+        <p>The turtle document is <a
+        href="https://toshiocp.github.io/Gtk4-tutorial/turtle_doc.html">here</a>.
+        I’ll show you a simple example.</p>
+        <pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
 pd         # Pen down.
 rp (4) {   # Repeat four times.
   fd 100   # Go forward by 100 pixels.
   tr 90    # Turn right by 90 degrees.
 }</code></pre>
-<ol type="1">
-<li>Compile and install <code>turtle</code> (See the documentation
-above). Then, run <code>turtle</code>.</li>
-<li>Type the program above in the editor (left part of the window).</li>
-<li>Click on the <code>Run</code> button, then a red square appears on
-the right part of the window. The side of the square is 100 pixels
-long.</li>
-</ol>
-<p>In the same way, you can draw other curves. The turtle document
-includes some fractal curves such as tree, snow and square-koch. The
-source codes are located at src/turtle/example directory. You can read
-these files into <code>turtle</code> editor by clicking on the
-<code>Open</code> button.</p>
-<h2
-id="combination-of-tfetextview-and-gtkdrawingarea-objects">Combination
-of TfeTextView and GtkDrawingArea objects</h2>
-<p>Turtle uses TfeTextView and GtkDrawingArea.</p>
-<ol type="1">
-<li>A user inputs/reads a turtle program into the buffer in the
-TfeTextView instance.</li>
-<li>The user clicks on the “Run” button.</li>
-<li>The parser reads the program and generates tree-structured
-data.</li>
-<li>The interpriter reads the data and executes it step by step. And it
-draws shapes on a surface. The surface isn’t the one in the
-GtkDrawingArea widget.</li>
-<li>The widget is added to the queue. It will be redrawn with the
-drawing function, which just copies the surface into the one in the
-GtkDrawingArea.</li>
-</ol>
-<figure>
-<img src="image/turtle.png"
-alt="Parser, interpreter and drawing function" />
-<figcaption aria-hidden="true">Parser, interpreter and drawing
-function</figcaption>
-</figure>
-<p>The body of the interpreter is written with flex and bison. The codes
-are not thread safe. So the callback function <code>run_cb</code>, which
-is the handler of “clicked” signal on the <code>Run</code> button,
-prevents reentering.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">void</span></span>
+        <ol type="1">
+        <li>Compile and install <code>turtle</code> (See the
+        documentation above). Then, run <code>turtle</code>.</li>
+        <li>Type the program above in the editor (left part of the
+        window).</li>
+        <li>Click on the <code>Run</code> button, then a red square
+        appears on the right part of the window. The side of the square
+        is 100 pixels long.</li>
+        </ol>
+        <p>In the same way, you can draw other curves. The turtle
+        document includes some fractal curves such as tree, snow and
+        square-koch. The source codes are located at <a
+        href="turtle/example">src/turtle/example</a> directory. You can
+        read these files into <code>turtle</code> editor by clicking on
+        the <code>Open</code> button.</p>
+        <h2
+        id="combination-of-tfetextview-and-gtkdrawingarea-objects">Combination
+        of TfeTextView and GtkDrawingArea objects</h2>
+        <p>Turtle uses TfeTextView and GtkDrawingArea.</p>
+        <ol type="1">
+        <li>A user inputs/reads a turtle program into the buffer in the
+        TfeTextView instance.</li>
+        <li>The user clicks on the “Run” button.</li>
+        <li>The parser reads the program and generates tree-structured
+        data.</li>
+        <li>The interpriter reads the data and executes it step by step.
+        And it draws shapes on a surface. The surface isn’t the one in
+        the GtkDrawingArea widget.</li>
+        <li>The widget is added to the queue. It will be redrawn with
+        the drawing function, which just copies the surface into the one
+        in the GtkDrawingArea.</li>
+        </ol>
+        <figure>
+        <img src="/images/turtle.png"
+        alt="Parser, interpreter and drawing function" />
+        <figcaption aria-hidden="true">Parser, interpreter and drawing
+        function</figcaption>
+        </figure>
+        <p>The body of the interpreter is written with flex and bison.
+        The codes are not thread safe. So the callback function
+        <code>run_cb</code>, which is the handler of “clicked” signal on
+        the <code>Run</code> button, prevents reentering.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">void</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>run_cb <span class="op">(</span>GtkWidget <span class="op">*</span>btnr<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>  GtkTextIter start_iter<span class="op">;</span></span>
@@ -229,44 +214,48 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb2-41"><a href="#cb2-41"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_ARGB32<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
 <span id="cb2-42"><a href="#cb2-42"></a>  run_cb <span class="op">(</span>NULL<span class="op">);</span> <span class="co">// NULL is a fake (run button).</span></span>
 <span id="cb2-43"><a href="#cb2-43"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>8, 13-15: The static value <code>busy</code> holds a status of the
-interpreter. If it is <code>TRUE</code>, the interpreter is running and
-it is not possible to call the interpreter because it’s not a re-entrant
-program. If it is <code>FALSE</code>, it is safe to call the interpreter
-and set the variable <code>busy</code> to TRUE.</li>
-<li>16-17: Gets the contents of <code>tb</code>.</li>
-<li>18-30: The variable <code>surface</code> is a static variable. It
-points to a <code>cairo_surface_t</code> instance. It is created when
-the GtkDrawingArea instance is realized and whenever it is resized.
-Therefore, <code>surface</code> isn’t NULL usually. But if it is NULL,
-the interpreter won’t be called.</li>
-<li>18-24: If <code>surface</code> points a surface instance and the
-string <code>contents</code> isn’t empty, it calls the interpreter.
-<ul>
-<li>Initializes the lexical analyzer.</li>
-<li>Calls the parser. The parser analyzes the program codes
-syntactically and generates a tree structured data.</li>
-<li>If the parser successfully parsed, it calls the runtime routine
-‘run’.</li>
-<li>Finalizes the lexical analyzer.</li>
-</ul></li>
-<li>25-29: If <code>surface</code> points a surface instance and the
-string <code>contents</code> is empty, it clears the surface
-<code>surface</code>.</li>
-<li>31: Frees <code>contents</code>.</li>
-<li>32: Adds the drawing area widget to the queue to draw.</li>
-<li>33: Sets the variable <code>busy</code> to FALSE.</li>
-<li>36-43: The “resized” signal handler. If the <code>surface</code>
-isn’t NULL, it is destroyed. A new surface is created. Its size is the
-same as the surface of the GtkDrawingArea instance. It calls the
-callback function <code>run_cb</code> to redraw the shape on the drawing
-area.</li>
-</ul>
-<p>If the open button is clicked and a file is read, the filename will
-be shown on the header bar.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+        <ul>
+        <li>8, 13-15: The static value <code>busy</code> holds a status
+        of the interpreter. If it is <code>TRUE</code>, the interpreter
+        is running and it is not possible to call the interpreter
+        because it’s not a re-entrant program. If it is
+        <code>FALSE</code>, it is safe to call the interpreter and set
+        the variable <code>busy</code> to TRUE.</li>
+        <li>16-17: Gets the contents of <code>tb</code>.</li>
+        <li>18-30: The variable <code>surface</code> is a static
+        variable. It points to a <code>cairo_surface_t</code> instance.
+        It is created when the GtkDrawingArea instance is realized and
+        whenever it is resized. Therefore, <code>surface</code> isn’t
+        NULL usually. But if it is NULL, the interpreter won’t be
+        called.</li>
+        <li>18-24: If <code>surface</code> points a surface instance and
+        the string <code>contents</code> isn’t empty, it calls the
+        interpreter.
+        <ul>
+        <li>Initializes the lexical analyzer.</li>
+        <li>Calls the parser. The parser analyzes the program codes
+        syntactically and generates a tree structured data.</li>
+        <li>If the parser successfully parsed, it calls the runtime
+        routine ‘run’.</li>
+        <li>Finalizes the lexical analyzer.</li>
+        </ul></li>
+        <li>25-29: If <code>surface</code> points a surface instance and
+        the string <code>contents</code> is empty, it clears the surface
+        <code>surface</code>.</li>
+        <li>31: Frees <code>contents</code>.</li>
+        <li>32: Adds the drawing area widget to the queue to draw.</li>
+        <li>33: Sets the variable <code>busy</code> to FALSE.</li>
+        <li>36-43: The “resized” signal handler. If the
+        <code>surface</code> isn’t NULL, it is destroyed. A new surface
+        is created. Its size is the same as the surface of the
+        GtkDrawingArea instance. It calls the callback function
+        <code>run_cb</code> to redraw the shape on the drawing
+        area.</li>
+        </ul>
+        <p>If the open button is clicked and a file is read, the
+        filename will be shown on the header bar.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>show_filename <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
@@ -283,178 +272,191 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-15"><a href="#cb3-15"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> title<span class="op">);</span></span>
 <span id="cb3-16"><a href="#cb3-16"></a>  g_free <span class="op">(</span>title<span class="op">);</span></span>
 <span id="cb3-17"><a href="#cb3-17"></a><span class="op">}</span></span></code></pre></div>
-<p>This function is the callback function of the “change-file” signal on
-the TfeTextView instance. It calls
-<code>tfe_text_view_get_file</code>.</p>
-<ul>
-<li>If the return value is a GFile instance, the title will be “Turtle
-(the filename)”.</li>
-<li>Otherwise, the title will be “Turtle”.</li>
-</ul>
-<p>Other part of <code>turtleapplication.c</code> is very simple and
-similar to the codes in the former applications. The codes of
-<code>turtleapplication.c</code> is in the turtle directory.</p>
-<h2 id="what-does-the-interpreter-do">What does the interpreter do?</h2>
-<p>Suppose that the turtle application runs with the following
-program.</p>
-<pre><code>distance = 100
+        <p>This function is the callback function of the “change-file”
+        signal on the TfeTextView instance. It calls
+        <code>tfe_text_view_get_file</code>.</p>
+        <ul>
+        <li>If the return value is a GFile instance, the title will be
+        “Turtle (the filename)”.</li>
+        <li>Otherwise, the title will be “Turtle”.</li>
+        </ul>
+        <p>Other part of <code>turtleapplication.c</code> is very simple
+        and similar to the codes in the former applications. The codes
+        of <code>turtleapplication.c</code> is in the <a
+        href="turtle">turtle directory</a>.</p>
+        <h2 id="what-does-the-interpreter-do">What does the interpreter
+        do?</h2>
+        <p>Suppose that the turtle application runs with the following
+        program.</p>
+        <pre><code>distance = 100
 fd distance*2</code></pre>
-<p>The application recognizes the program and works as follows.</p>
-<ul>
-<li>Generally, a program consists of tokens. Tokens are “distance”, “=”,
-“100”, “fd”, “*” and “2” in the above example..</li>
-<li>The parser calls a function <code>yylex</code> to read a token in
-the source file. <code>yylex</code> returns a code which is called
-“token kind” and sets a global variable <code>yylval</code> to a value,
-which is called a semantic value. The type of <code>yylval</code> is
-union. The type of <code>yylval.ID</code> and <code>yylval.NUM</code>
-are string and double respectively. There are seven tokens in the
-program so <code>yylex</code> is called seven times.</li>
-</ul>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;">token kind</th>
-<th style="text-align: center;">yylval.ID</th>
-<th style="text-align: center;">yylval.NUM</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">distance</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">=</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">100</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">FD</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">5</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">distance</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">6</td>
-<td style="text-align: center;">*</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">7</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">2</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>The function <code>yylex</code> returns a token kind every time, but
-it doesn’t set <code>yylval.ID</code> or <code>yylval.NUM</code> every
-time. It is because keywords (<code>FD</code>) and symbols
-(<code>=</code> and <code>*</code>) don’t have any semantic values. The
-function <code>yylex</code> is called lexical analyzer or scanner.</li>
-<li>The application <code>turtle</code> makes a tree structured data.
-This part of <code>turtle</code> is called parser.</li>
-</ul>
-<figure>
-<img src="image/turtle_parser_tree.png" alt="turtle parser tree" />
-<figcaption aria-hidden="true">turtle parser tree</figcaption>
-</figure>
-<ul>
-<li><code>Turtle</code> analyzes the tree and executes it. This part of
-<code>turtle</code> is called runtime routine or interpreter. The tree
-consists of rectangles and line segments between the rectangles. The
-rectangles are called nodes. For example, N_PROGRAM, N_ASSIGN, N_FD and
-N_MUL are nodes.
-<ol type="1">
-<li>Goes down from N_PROGRAM to N_ASSIGN.</li>
-<li>N_ASSIGN node has two children, ID and NUM. This node comes from
-“distance = 100” which is “ID = NUM” syntactically. First,
-<code>turtle</code> checks if the first child is ID. If it’s ID, then
-<code>turtle</code> looks for the variable in the variable table. If it
-doesn’t exist, it registers the ID (<code>distance</code>) to the table.
-Then go back to the N_ASSIGN node.</li>
-<li><code>Turtle</code> calculates the second child. In this case its a
-number 100. Saves 100 to the variable table at the <code>distance</code>
-record.</li>
-<li><code>Turtle</code> goes back to N_PROGRAM then go to the next node
-N_FD. It has only one child. Goes down to the child N_MUL.</li>
-<li>The first child is ID (distance). Searches the variable table for
-the variable <code>distance</code> and gets the value 100. The second
-child is a number 2. Multiplies 100 by 2 and gets 200. Then
-<code>turtle</code> goes back to N_FD.</li>
-<li>Now <code>turtle</code> knows the distance is 200. It moves the
-cursor forward by 200 pixels. The segment is drawn on the
-<code>surface</code>.</li>
-<li>There are no node follows. Runtime routine returns to the function
-<code>run_cb</code>.</li>
-</ol></li>
-<li>The function <code>run_cb</code> calls
-<code>gtk_widget_queue_draw</code> and put the GtkDrawingArea widget to
-the queue.</li>
-<li>The system redraws the widget. At that time drawing function
-<code>draw_func</code> is called. The function copies the
-<code>surface</code> to the surface in the GtkDrawingArea.</li>
-</ul>
-<p>Actual turtle program is more complicated than the example above.
-However, what turtle does is basically the same. Interpretation consists
-of three parts.</p>
-<ul>
-<li>Lexical analysis</li>
-<li>Syntax Parsing and tree generation</li>
-<li>Interpretation and execution of the tree.</li>
-</ul>
-<h2 id="compilation-flow">Compilation flow</h2>
-<p>The source files are:</p>
-<ul>
-<li>flex source file =&gt; <code>turtle.lex</code></li>
-<li>bison source file =&gt; <code>turtle.y</code></li>
-<li>C header file =&gt; <code>turtle_lex.h</code></li>
-<li>C source file =&gt; <code>turtleapplication.c</code></li>
-<li>other files =&gt; <code>turtle.ui</code>,
-<code>turtle.gresources.xml</code> and <code>meson.build</code></li>
-</ul>
-<p>The compilation process is a bit complicated.</p>
-<ol type="1">
-<li>glib-compile-resources compiles <code>turtle.ui</code> to
-<code>resources.c</code> according to <code>turtle.gresource.xml</code>.
-It also generates <code>resources.h</code>.</li>
-<li>bison compiles <code>turtle.y</code> to <code>turtle_parser.c</code>
-and generates <code>turtle_parser.h</code></li>
-<li>flex compiles <code>turtle.lex</code> to
-<code>turtle_lex.c</code>.</li>
-<li>gcc compiles <code>application.c</code>, <code>resources.c</code>,
-<code>turtle_parser.c</code> and <code>turtle_lex.c</code> with
-<code>turtle_lex.h</code>, <code>resources.h</code> and
-<code>turtle_parser.h</code>. It generates an executable file
-<code>turtle</code>.</li>
-</ol>
-<figure>
-<img src="image/turtle_compile_process.png" alt="compile process" />
-<figcaption aria-hidden="true">compile process</figcaption>
-</figure>
-<p>Meson controls the process. The instruction is described in
-<code>meson.build</code>.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>project(&#39;turtle&#39;, &#39;c&#39;)</span>
+        <p>The application recognizes the program and works as
+        follows.</p>
+        <ul>
+        <li>Generally, a program consists of tokens. Tokens are
+        “distance”, “=”, “100”, “fd”, “*” and “2” in the above
+        example..</li>
+        <li>The parser calls a function <code>yylex</code> to read a
+        token in the source file. <code>yylex</code> returns a code
+        which is called “token kind” and sets a global variable
+        <code>yylval</code> to a value, which is called a semantic
+        value. The type of <code>yylval</code> is union. The type of
+        <code>yylval.ID</code> and <code>yylval.NUM</code> are string
+        and double respectively. There are seven tokens in the program
+        so <code>yylex</code> is called seven times.</li>
+        </ul>
+        <table>
+        <thead>
+        <tr class="header">
+        <th style="text-align: center;"></th>
+        <th style="text-align: center;">token kind</th>
+        <th style="text-align: center;">yylval.ID</th>
+        <th style="text-align: center;">yylval.NUM</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td style="text-align: center;">1</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">distance</td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">2</td>
+        <td style="text-align: center;">=</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">3</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">100</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">4</td>
+        <td style="text-align: center;">FD</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">5</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">distance</td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">6</td>
+        <td style="text-align: center;">*</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">7</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">2</td>
+        </tr>
+        </tbody>
+        </table>
+        <ul>
+        <li>The function <code>yylex</code> returns a token kind every
+        time, but it doesn’t set <code>yylval.ID</code> or
+        <code>yylval.NUM</code> every time. It is because keywords
+        (<code>FD</code>) and symbols (<code>=</code> and
+        <code>*</code>) don’t have any semantic values. The function
+        <code>yylex</code> is called lexical analyzer or scanner.</li>
+        <li>The application <code>turtle</code> makes a tree structured
+        data. This part of <code>turtle</code> is called parser.</li>
+        </ul>
+        <figure>
+        <img src="/images/turtle_parser_tree.png"
+        style="width:12cm;height:5.34cm" alt="turtle parser tree" />
+        <figcaption aria-hidden="true">turtle parser tree</figcaption>
+        </figure>
+        <ul>
+        <li><code>Turtle</code> analyzes the tree and executes it. This
+        part of <code>turtle</code> is called runtime routine or
+        interpreter. The tree consists of rectangles and line segments
+        between the rectangles. The rectangles are called nodes. For
+        example, N_PROGRAM, N_ASSIGN, N_FD and N_MUL are nodes.
+        <ol type="1">
+        <li>Goes down from N_PROGRAM to N_ASSIGN.</li>
+        <li>N_ASSIGN node has two children, ID and NUM. This node comes
+        from “distance = 100” which is “ID = NUM” syntactically. First,
+        <code>turtle</code> checks if the first child is ID. If it’s ID,
+        then <code>turtle</code> looks for the variable in the variable
+        table. If it doesn’t exist, it registers the ID
+        (<code>distance</code>) to the table. Then go back to the
+        N_ASSIGN node.</li>
+        <li><code>Turtle</code> calculates the second child. In this
+        case its a number 100. Saves 100 to the variable table at the
+        <code>distance</code> record.</li>
+        <li><code>Turtle</code> goes back to N_PROGRAM then go to the
+        next node N_FD. It has only one child. Goes down to the child
+        N_MUL.</li>
+        <li>The first child is ID (distance). Searches the variable
+        table for the variable <code>distance</code> and gets the value
+        100. The second child is a number 2. Multiplies 100 by 2 and
+        gets 200. Then <code>turtle</code> goes back to N_FD.</li>
+        <li>Now <code>turtle</code> knows the distance is 200. It moves
+        the cursor forward by 200 pixels. The segment is drawn on the
+        <code>surface</code>.</li>
+        <li>There are no node follows. Runtime routine returns to the
+        function <code>run_cb</code>.</li>
+        </ol></li>
+        <li>The function <code>run_cb</code> calls
+        <code>gtk_widget_queue_draw</code> and put the GtkDrawingArea
+        widget to the queue.</li>
+        <li>The system redraws the widget. At that time drawing function
+        <code>draw_func</code> is called. The function copies the
+        <code>surface</code> to the surface in the GtkDrawingArea.</li>
+        </ul>
+        <p>Actual turtle program is more complicated than the example
+        above. However, what turtle does is basically the same.
+        Interpretation consists of three parts.</p>
+        <ul>
+        <li>Lexical analysis</li>
+        <li>Syntax Parsing and tree generation</li>
+        <li>Interpretation and execution of the tree.</li>
+        </ul>
+        <h2 id="compilation-flow">Compilation flow</h2>
+        <p>The source files are:</p>
+        <ul>
+        <li>flex source file =&gt; <code>turtle.lex</code></li>
+        <li>bison source file =&gt; <code>turtle.y</code></li>
+        <li>C header file =&gt; <code>turtle_lex.h</code></li>
+        <li>C source file =&gt; <code>turtleapplication.c</code></li>
+        <li>other files =&gt; <code>turtle.ui</code>,
+        <code>turtle.gresources.xml</code> and
+        <code>meson.build</code></li>
+        </ul>
+        <p>The compilation process is a bit complicated.</p>
+        <ol type="1">
+        <li>glib-compile-resources compiles <code>turtle.ui</code> to
+        <code>resources.c</code> according to
+        <code>turtle.gresource.xml</code>. It also generates
+        <code>resources.h</code>.</li>
+        <li>bison compiles <code>turtle.y</code> to
+        <code>turtle_parser.c</code> and generates
+        <code>turtle_parser.h</code></li>
+        <li>flex compiles <code>turtle.lex</code> to
+        <code>turtle_lex.c</code>.</li>
+        <li>gcc compiles <code>application.c</code>,
+        <code>resources.c</code>, <code>turtle_parser.c</code> and
+        <code>turtle_lex.c</code> with <code>turtle_lex.h</code>,
+        <code>resources.h</code> and <code>turtle_parser.h</code>. It
+        generates an executable file <code>turtle</code>.</li>
+        </ol>
+        <figure>
+        <img src="/images/turtle_compile_process.png"
+        style="width:12cm;height:9cm" alt="compile process" />
+        <figcaption aria-hidden="true">compile process</figcaption>
+        </figure>
+        <p>Meson controls the process. The instruction is described in
+        <code>meson.build</code>.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb5-1"><a href="#cb5-1"></a>project(&#39;turtle&#39;, &#39;c&#39;)</span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a>compiler = meson.get_compiler(&#39;c&#39;)</span>
 <span id="cb5-4"><a href="#cb5-4"></a>mathdep = compiler.find_library(&#39;m&#39;, required : true)</span>
@@ -472,63 +474,71 @@ class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="c
 <span id="cb5-16"><a href="#cb5-16"></a>sourcefiles=files(&#39;turtleapplication.c&#39;, &#39;../tfetextview/tfetextview.c&#39;)</span>
 <span id="cb5-17"><a href="#cb5-17"></a></span>
 <span id="cb5-18"><a href="#cb5-18"></a>executable(&#39;turtle&#39;, sourcefiles, resources, turtleparser, turtlelexer, turtleparser[1], dependencies: [mathdep, gtkdep], export_dynamic: true, install: true)</span></code></pre></div>
-<ul>
-<li>1: The project name is “turtle” and the program language is C.</li>
-<li>3: Gets C compiler. It is usually <code>gcc</code> in linux.</li>
-<li>4: Gets math library. This program uses trigonometric functions.
-They are defined in the math library, but the library is optional. So,
-it is necessary to include it by <code>#include &lt;math.h&gt;</code>
-and also link the library with the linker.</li>
-<li>6: Gets gtk4 library.</li>
-<li>8: Gets gnome module.See <a
-href="https://mesonbuild.com/Gnome-module.html#gnome-module">Meson build
-system website – GNOME module</a> for further information.</li>
-<li>9: Compiles ui file to C source file according to the XML file
-<code>turtle.gresource.xml</code>.</li>
-<li>11: Gets flex.</li>
-<li>12: Gets bison.</li>
-<li>13: Compiles <code>turtle.y</code> to <code>turtle_parser.c</code>
-and <code>turtle_parser.h</code> by bison. The function
-<code>custom_target</code> creates a custom top level target. See <a
-href="https://mesonbuild.com/Reference-manual_functions.html#custom_target">Meson
-build system website – custom target</a> for further information.</li>
-<li>14: Compiles <code>turtle.lex</code> to <code>turtle_lex.c</code> by
-flex.</li>
-<li>16: The variable <code>sourcefiles</code> is a file object created
-with the C source files.</li>
-<li>18: Compiles C source files including generated files by
-glib-compile-resources, bison and flex. The argument
-<code>turtleparser[1]</code> refers to <code>tirtle_parser.h</code>
-which is the second output in the line 13.</li>
-</ul>
-<h2 id="turtle.lex">Turtle.lex</h2>
-<h3 id="what-does-flex-do">What does flex do?</h3>
-<p>Flex creates lexical analyzer from flex source file. Flex source file
-is a text file. Its syntactic rule will be explained later. Generated
-lexical analyzer is a C source file. It is also called scanner. It reads
-a text file, which is a source file of a program language, and gets
-variable names, numbers and symbols. Suppose here is a turtle source
-file.</p>
-<pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
+        <ul>
+        <li>1: The project name is “turtle” and the program language is
+        C.</li>
+        <li>3: Gets C compiler. It is usually <code>gcc</code> in
+        linux.</li>
+        <li>4: Gets math library. This program uses trigonometric
+        functions. They are defined in the math library, but the library
+        is optional. So, it is necessary to include it by
+        <code>#include &lt;math.h&gt;</code> and also link the library
+        with the linker.</li>
+        <li>6: Gets gtk4 library.</li>
+        <li>8: Gets gnome module.See <a
+        href="https://mesonbuild.com/Gnome-module.html#gnome-module">Meson
+        build system website – GNOME module</a> for further
+        information.</li>
+        <li>9: Compiles ui file to C source file according to the XML
+        file <code>turtle.gresource.xml</code>.</li>
+        <li>11: Gets flex.</li>
+        <li>12: Gets bison.</li>
+        <li>13: Compiles <code>turtle.y</code> to
+        <code>turtle_parser.c</code> and <code>turtle_parser.h</code> by
+        bison. The function <code>custom_target</code> creates a custom
+        top level target. See <a
+        href="https://mesonbuild.com/Reference-manual_functions.html#custom_target">Meson
+        build system website – custom target</a> for further
+        information.</li>
+        <li>14: Compiles <code>turtle.lex</code> to
+        <code>turtle_lex.c</code> by flex.</li>
+        <li>16: The variable <code>sourcefiles</code> is a file object
+        created with the C source files.</li>
+        <li>18: Compiles C source files including generated files by
+        glib-compile-resources, bison and flex. The argument
+        <code>turtleparser[1]</code> refers to
+        <code>tirtle_parser.h</code> which is the second output in the
+        line 13.</li>
+        </ul>
+        <h2 id="turtle.lex">Turtle.lex</h2>
+        <h3 id="what-does-flex-do">What does flex do?</h3>
+        <p>Flex creates lexical analyzer from flex source file. Flex
+        source file is a text file. Its syntactic rule will be explained
+        later. Generated lexical analyzer is a C source file. It is also
+        called scanner. It reads a text file, which is a source file of
+        a program language, and gets variable names, numbers and
+        symbols. Suppose here is a turtle source file.</p>
+        <pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
 pd         # Pen down.
 distance = 100
 angle = 90
 fd distance    # Go forward by distance (100) pixels.
 tr angle     # Turn right by angle (90) degrees.</code></pre>
-<p>The content of the text file is separated into <code>fc</code>,
-<code>(</code>, <code>1</code> and so on. The words <code>fc</code>,
-<code>pd</code>, <code>distance</code>, <code>angle</code>,
-<code>tr</code>, <code>1</code>, <code>0</code>, <code>100</code> and
-<code>90</code> are called tokens. The characters ‘<code>(</code>’ (left
-parenthesis), ‘<code>,</code>’ (comma), ‘<code>)</code>’ (right
-parenthesis) and ‘<code>=</code>’ (equal sign) are called symbols. (
-Sometimes those symbols called tokens, too.)</p>
-<p>Flex reads <code>turtle.lex</code> and generates the C source file of
-a scanner. The file <code>turtle.lex</code> specifies tokens, symbols
-and the behavior which corresponds to each token or symbol. Turtle.lex
-isn’t a big program.</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode numberSource lex numberLines"><code class="sourceCode lex"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">%top{</span></span>
+        <p>The content of the text file is separated into
+        <code>fc</code>, <code>(</code>, <code>1</code> and so on. The
+        words <code>fc</code>, <code>pd</code>, <code>distance</code>,
+        <code>angle</code>, <code>tr</code>, <code>1</code>,
+        <code>0</code>, <code>100</code> and <code>90</code> are called
+        tokens. The characters ‘<code>(</code>’ (left parenthesis),
+        ‘<code>,</code>’ (comma), ‘<code>)</code>’ (right parenthesis)
+        and ‘<code>=</code>’ (equal sign) are called symbols. (
+        Sometimes those symbols called tokens, too.)</p>
+        <p>Flex reads <code>turtle.lex</code> and generates the C source
+        file of a scanner. The file <code>turtle.lex</code> specifies
+        tokens, symbols and the behavior which corresponds to each token
+        or symbol. Turtle.lex isn’t a big program.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode numberSource lex numberLines"><code class="sourceCode lex"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">%top{</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>#include &lt;string.h&gt;</span>
 <span id="cb7-3"><a href="#cb7-3"></a>#include &lt;stdlib.h&gt;</span>
 <span id="cb7-4"><a href="#cb7-4"></a>#include &lt;glib.h&gt;</span>
@@ -606,301 +616,314 @@ class="sourceCode numberSource lex numberLines"><code class="sourceCode lex"><sp
 <span id="cb7-76"><a href="#cb7-76"></a>finalize_flex <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb7-77"><a href="#cb7-77"></a>  yy_delete_buffer <span class="op">(</span>state<span class="op">);</span></span>
 <span id="cb7-78"><a href="#cb7-78"></a><span class="op">}</span></span></code></pre></div>
-<p>The file consists of three sections which are separated by “%%” (line
-19 and 59). They are definitions, rules and user code sections.</p>
-<h3 id="definitions-section">Definitions section</h3>
-<ul>
-<li>1-12: Lines between “%top{” and “}” are C source codes. They will be
-copied to the top of the generated C source file.</li>
-<li>2-3: This program uses two functions <code>strlen</code> (l.65) and
-<code>atof</code> (l.40). They are defined in <code>string.h</code> and
-<code>stdlib.h</code> respectively. These two header files are included
-here.</li>
-<li>4: This program uses some GLib functions and structures like
-<code>g_strdup</code> and <code>GSList</code>. GLib header file is
-<code>glib.h</code> and it is included here.</li>
-<li>5: The header file “turtle_parser.h” is generated from “turtle.y” by
-bison. It defines some constants and functions like <code>PU</code> and
-<code>yylloc</code>. The header file is included here.</li>
-<li>7-9: The current input position is pointed by <code>nline</code> and
-<code>ncolumn</code>. The function <code>get_location</code> is declared
-here so that it can be called before the function is defined
-(l.61-65).</li>
-<li>12: GSlist is a structure for a singly-linked list. The variable
-<code>list</code> is defined in <code>turtle.y</code> so its class is
-<code>extern</code>. It is the start point of the list. The list is used
-to keep allocated memories.</li>
-<li>15: This option <code>%option noyywrap</code> must be specified when
-you have only single source file to the scanner. Refer to “9 The
-Generated Scanner” in the flex documentation in your distribution. (The
-documentation is not on the internet.)</li>
-<li>17-18: <code>REAL_NUMBER</code> and <code>IDENTIFIER</code> are
-names. A name begins with a letter or an underscore followed by zero or
-more letters, digits, underscores (<code>_</code>) or dashes
-(<code>-</code>). They are followed by regular expressions which are
-their definitions. They will be used in rules section and will expand to
-the definition.</li>
-</ul>
-<h3 id="rules-section">Rules section</h3>
-<p>This section is the most important part. Rules consist of patterns
-and actions. The patterns are regular expressions or names surrounded by
-braces. The names must be defined in the definitions section. The
-definition of the regular expression is written in the flex
-documentation.</p>
-<p>For example, line 40 is a rule.</p>
-<ul>
-<li><code>{REAL_NUMBER}</code> is a pattern</li>
-<li><code>get_location (yytext); yylval.NUM = atof (yytext); return NUM;</code>
-is an action.</li>
-</ul>
-<p><code>{REAL_NUMBER}</code> is defined in the line 17, so it expands
-to <code>(0|[1-9][0-9]*)(\.[0-9]+)?</code>. This regular expression
-matches numbers like <code>0</code>, <code>12</code> and
-<code>1.5</code>. If an input is a number, it matches the pattern in
-line 40. Then the matched text is assigned to <code>yytext</code> and
-corresponding action is executed. A function <code>get_location</code>
-changes the location variables to the position at the text. It assigns
-<code>atof (yytext)</code>, which is double sized number converted from
-<code>yytext</code>, to <code>yylval.NUM</code> and return
-<code>NUM</code>. <code>NUM</code> is a token kind and it represents
-(double type) numbers. It is defined in <code>turtle.y</code>.</p>
-<p>The scanner generated by flex has <code>yylex</code> function. If
-<code>yylex</code> is called and the input is “123.4”, then it works as
-follows.</p>
-<ol type="1">
-<li>A string “123.4” matches <code>{REAL_NUMBER}</code>.</li>
-<li>Updates the location variable <code>ncolumn</code>. The structure
-<code>yylloc</code> is set by <code>get_location</code>.</li>
-<li>The function <code>atof</code> converts the string “123.4” to double
-type number 123.4.</li>
-<li>It is assigned to <code>yylval.NUM</code>.</li>
-<li><code>yylex</code> returns <code>NUM</code> to the caller.</li>
-</ol>
-<p>Then the caller knows the input is a number (<code>NUM</code>), and
-its value is 123.4.</p>
-<ul>
-<li>20-58: Rules section.</li>
-<li>21: The symbol <code>.</code> (dot) matches any character except
-newline. Therefore, a comment begins <code>#</code> followed by any
-characters except newline. No action happens. That means that comments
-are ignored.</li>
-<li>22: White space just increases the variable <code>ncolumn</code> by
-one.</li>
-<li>23: Tab is assumed to be equal to eight spaces.</li>
-<li>24: New line increases a variable <code>nline</code> by one and
-resets <code>ncolumn</code>.</li>
-<li>26-38: Keywords updates the location variables <code>ncolumn</code>
-and <code>yylloc</code>, and returns the token kinds of the
-keywords.</li>
-<li>40: Real number constant. The action converts the
-text<code>yytext</code> to a double type number, puts it into
-<code>yylval.NUM</code> and returns <code>NUM</code>.</li>
-<li>42: <code>IDENTIFIER</code> is defined in line 18. The identifier is
-a name of variable or procedure. It begins with a letter and followed by
-letters or digits. The location variables are updated and the name of
-the identifier is assigned to <code>yylval.ID</code>. The memory of the
-name is allocated by the function <code>g_strdup</code>. The memory is
-registered to the list (GSlist type list). The memory will be freed
-after the runtime routine finishes. A token kind <code>ID</code> is
-returned.</li>
-<li>46-57: Symbols update the location variable and return the token
-kinds. The token kind is the same as the symbol itself.</li>
-<li>58: If the input doesn’t match the patterns, then it is an error. A
-special token kind <code>YYUNDEF</code> is returned.</li>
-</ul>
-<h3 id="user-code-section">User code section</h3>
-<p>This section is just copied to C source file.</p>
-<ul>
-<li>61-66: A function <code>get_location</code>. The location of the
-input is recorded to <code>nline</code> and <code>ncolumn</code>. A
-variable <code>yylloc</code> is referred by the parser. It is a C
-structure and has four members, <code>first_line</code>,
-<code>first_column</code>, <code>last_line</code> and
-<code>last_column</code>. They point the start and end of the current
-input text.</li>
-<li>68: <code>YY_BUFFER_STATE</code> is a pointer points the input
-buffer. Flex makes the definition of <code>YY_BUFFER_STATE</code> in the
-C file (scanner source file <code>turtle_lex.c</code>). See your flex
-document, section 11 Multiple Input Buffers, for further
-information.</li>
-<li>70-73: A function <code>init_flex</code> is called by
-<code>run_cb</code> which is a “clicked” signal handler on the
-<code>Run</code> button. It has one string type parameter. The caller
-assigns it with the content of the GtkTextBuffer instance. A function
-<code>yy_scan_string</code> sets the input buffer for the scanner.</li>
-<li>75-78: A function <code>finalize_flex</code> is called after runtime
-routine finishes. It deletes the input buffer.</li>
-</ul>
-<h2 id="turtle.y">Turtle.y</h2>
-<p>Turtle.y has more than 800 lines so it is difficult to explain all
-the source code. So I will explain the key points and leave out other
-less important parts.</p>
-<h3 id="what-does-bison-do">What does bison do?</h3>
-<p>Bison creates C source file of a parser from a bison source file. The
-bison source file is a text file. A parser analyzes a program source
-code according to its grammar. Suppose here is a turtle source file.</p>
-<pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
+        <p>The file consists of three sections which are separated by
+        “%%” (line 19 and 59). They are definitions, rules and user code
+        sections.</p>
+        <h3 id="definitions-section">Definitions Section</h3>
+        <ul>
+        <li>1-12: Lines between “%top{” and “}” are C source codes. They
+        will be copied to the top of the generated C source file.</li>
+        <li>2-3: This program uses two functions <code>strlen</code>
+        (l.65) and <code>atof</code> (l.40). They are defined in
+        <code>string.h</code> and <code>stdlib.h</code> respectively.
+        These two header files are included here.</li>
+        <li>4: This program uses some GLib functions and structures like
+        <code>g_strdup</code> and <code>GSList</code>. GLib header file
+        is <code>glib.h</code> and it is included here.</li>
+        <li>5: The header file “turtle_parser.h” is generated from
+        “turtle.y” by bison. It defines some constants and functions
+        like <code>PU</code> and <code>yylloc</code>. The header file is
+        included here.</li>
+        <li>7-9: The current input position is pointed by
+        <code>nline</code> and <code>ncolumn</code>. The function
+        <code>get_location</code> is declared here so that it can be
+        called before the function is defined (l.61-65).</li>
+        <li>12: GSlist is a structure for a singly-linked list. The
+        variable <code>list</code> is defined in <code>turtle.y</code>
+        so its class is <code>extern</code>. It is the start point of
+        the list. The list is used to keep allocated memories.</li>
+        <li>15: This option <code>%option noyywrap</code> must be
+        specified when you have only single source file to the scanner.
+        Refer to “9 The Generated Scanner” in the flex documentation in
+        your distribution. (The documentation is not on the
+        internet.)</li>
+        <li>17-18: <code>REAL_NUMBER</code> and <code>IDENTIFIER</code>
+        are names. A name begins with a letter or an underscore followed
+        by zero or more letters, digits, underscores (<code>_</code>) or
+        dashes (<code>-</code>). They are followed by regular
+        expressions which are their definitions. They will be used in
+        rules section and will expand to the definition.</li>
+        </ul>
+        <h3 id="rules-section">Rules Section</h3>
+        <p>This section is the most important part. Rules consist of
+        patterns and actions. The patterns are regular expressions or
+        names surrounded by braces. The names must be defined in the
+        definitions section. The definition of the regular expression is
+        written in the flex documentation.</p>
+        <p>For example, line 40 is a rule.</p>
+        <ul>
+        <li><code>{REAL_NUMBER}</code> is a pattern</li>
+        <li><code>get_location (yytext); yylval.NUM = atof (yytext); return NUM;</code>
+        is an action.</li>
+        </ul>
+        <p><code>{REAL_NUMBER}</code> is defined in the line 17, so it
+        expands to <code>(0|[1-9][0-9]*)(\.[0-9]+)?</code>. This regular
+        expression matches numbers like <code>0</code>, <code>12</code>
+        and <code>1.5</code>. If an input is a number, it matches the
+        pattern in line 40. Then the matched text is assigned to
+        <code>yytext</code> and corresponding action is executed. A
+        function <code>get_location</code> changes the location
+        variables to the position at the text. It assigns
+        <code>atof (yytext)</code>, which is double sized number
+        converted from <code>yytext</code>, to <code>yylval.NUM</code>
+        and return <code>NUM</code>. <code>NUM</code> is a token kind
+        and it represents (double type) numbers. It is defined in
+        <code>turtle.y</code>.</p>
+        <p>The scanner generated by flex has <code>yylex</code>
+        function. If <code>yylex</code> is called and the input is
+        “123.4”, then it works as follows.</p>
+        <ol type="1">
+        <li>A string “123.4” matches <code>{REAL_NUMBER}</code>.</li>
+        <li>Updates the location variable <code>ncolumn</code>. The
+        structure <code>yylloc</code> is set by
+        <code>get_location</code>.</li>
+        <li>The function <code>atof</code> converts the string “123.4”
+        to double type number 123.4.</li>
+        <li>It is assigned to <code>yylval.NUM</code>.</li>
+        <li><code>yylex</code> returns <code>NUM</code> to the
+        caller.</li>
+        </ol>
+        <p>Then the caller knows the input is a number
+        (<code>NUM</code>), and its value is 123.4.</p>
+        <ul>
+        <li>20-58: Rules section.</li>
+        <li>21: The symbol <code>.</code> (dot) matches any character
+        except newline. Therefore, a comment begins <code>#</code>
+        followed by any characters except newline. No action happens.
+        That means that comments are ignored.</li>
+        <li>22: White space just increases the variable
+        <code>ncolumn</code> by one.</li>
+        <li>23: Tab is assumed to be equal to eight spaces.</li>
+        <li>24: New line increases a variable <code>nline</code> by one
+        and resets <code>ncolumn</code>.</li>
+        <li>26-38: Keywords updates the location variables
+        <code>ncolumn</code> and <code>yylloc</code>, and returns the
+        token kinds of the keywords.</li>
+        <li>40: Real number constant. The action converts the
+        text<code>yytext</code> to a double type number, puts it into
+        <code>yylval.NUM</code> and returns <code>NUM</code>.</li>
+        <li>42: <code>IDENTIFIER</code> is defined in line 18. The
+        identifier is a name of variable or procedure. It begins with a
+        letter and followed by letters or digits. The location variables
+        are updated and the name of the identifier is assigned to
+        <code>yylval.ID</code>. The memory of the name is allocated by
+        the function <code>g_strdup</code>. The memory is registered to
+        the list (GSlist type list). The memory will be freed after the
+        runtime routine finishes. A token kind <code>ID</code> is
+        returned.</li>
+        <li>46-57: Symbols update the location variable and return the
+        token kinds. The token kind is the same as the symbol
+        itself.</li>
+        <li>58: If the input doesn’t match the patterns, then it is an
+        error. A special token kind <code>YYUNDEF</code> is
+        returned.</li>
+        </ul>
+        <h3 id="user-code-section">User Code Section</h3>
+        <p>This section is just copied to C source file.</p>
+        <ul>
+        <li>61-66: A function <code>get_location</code>. The location of
+        the input is recorded to <code>nline</code> and
+        <code>ncolumn</code>. A variable <code>yylloc</code> is referred
+        by the parser. It is a C structure and has four members,
+        <code>first_line</code>, <code>first_column</code>,
+        <code>last_line</code> and <code>last_column</code>. They point
+        the start and end of the current input text.</li>
+        <li>68: <code>YY_BUFFER_STATE</code> is a pointer points the
+        input buffer. Flex makes the definition of
+        <code>YY_BUFFER_STATE</code> in the C file (scanner source file
+        <code>turtle_lex.c</code>). See your flex document, Section 11
+        Multiple Input Buffers, for further information.</li>
+        <li>70-73: A function <code>init_flex</code> is called by
+        <code>run_cb</code> which is a “clicked” signal handler on the
+        <code>Run</code> button. It has one string type parameter. The
+        caller assigns it with the content of the GtkTextBuffer
+        instance. A function <code>yy_scan_string</code> sets the input
+        buffer for the scanner.</li>
+        <li>75-78: A function <code>finalize_flex</code> is called after
+        runtime routine finishes. It deletes the input buffer.</li>
+        </ul>
+        <h2 id="turtle.y">Turtle.y</h2>
+        <p>Turtle.y has more than 800 lines so it is difficult to
+        explain all the source code. So I will explain the key points
+        and leave out other less important parts.</p>
+        <h3 id="what-does-bison-do">What does bison do?</h3>
+        <p>Bison creates C source file of a parser from a bison source
+        file. The bison source file is a text file. A parser analyzes a
+        program source code according to its grammar. Suppose here is a
+        turtle source file.</p>
+        <pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
 pd         # Pen down.
 distance = 100
 angle = 90
 fd distance    # Go forward by distance (100) pixels.
 tr angle     # Turn right by angle (90) degrees.</code></pre>
-<p>The parser calls <code>yylex</code> to get a token. The token
-consists of its type (token kind) and value (semantic value). So, the
-parser gets items in the following table whenever it calls
-<code>yylex</code>.</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;">token kind</th>
-<th style="text-align: center;">yylval.ID</th>
-<th style="text-align: center;">yylval.NUM</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">FC</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">(</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">1.0</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">,</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">5</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">0.0</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">6</td>
-<td style="text-align: center;">,</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">7</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">0.0</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">8</td>
-<td style="text-align: center;">)</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">9</td>
-<td style="text-align: center;">PD</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">10</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">distance</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">11</td>
-<td style="text-align: center;">=</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">12</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">100.0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">13</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">angle</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">14</td>
-<td style="text-align: center;">=</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">15</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">90.0</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">16</td>
-<td style="text-align: center;">FD</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">17</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">distance</td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">18</td>
-<td style="text-align: center;">TR</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">19</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">angle</td>
-<td style="text-align: center;"></td>
-</tr>
-</tbody>
-</table>
-<p>Bison source code specifies the grammar rules of turtle language. For
-example, <code>fc (1,0,0)</code> is called primary procedure. A
-procedure is like a void type C function. It doesn’t return any values.
-Programmers can define their own procedures. On the other hand,
-<code>fc</code> is a built-in procedure. Such procedures are called
-primary procedures. It is described in bison source code like:</p>
-<pre><code>primary_procedure: FC &#39;(&#39; expression &#39;,&#39; expression &#39;,&#39; expression &#39;)&#39;;
+        <p>The parser calls <code>yylex</code> to get a token. The token
+        consists of its type (token kind) and value (semantic value).
+        So, the parser gets items in the following table whenever it
+        calls <code>yylex</code>.</p>
+        <table>
+        <thead>
+        <tr class="header">
+        <th style="text-align: center;"></th>
+        <th style="text-align: center;">token kind</th>
+        <th style="text-align: center;">yylval.ID</th>
+        <th style="text-align: center;">yylval.NUM</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td style="text-align: center;">1</td>
+        <td style="text-align: center;">FC</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">2</td>
+        <td style="text-align: center;">(</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">3</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">1.0</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">4</td>
+        <td style="text-align: center;">,</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">5</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">0.0</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">6</td>
+        <td style="text-align: center;">,</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">7</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">0.0</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">8</td>
+        <td style="text-align: center;">)</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">9</td>
+        <td style="text-align: center;">PD</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">10</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">distance</td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">11</td>
+        <td style="text-align: center;">=</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">12</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">100.0</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">13</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">angle</td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">14</td>
+        <td style="text-align: center;">=</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">15</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">90.0</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">16</td>
+        <td style="text-align: center;">FD</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">17</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">distance</td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">18</td>
+        <td style="text-align: center;">TR</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">19</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">angle</td>
+        <td style="text-align: center;"></td>
+        </tr>
+        </tbody>
+        </table>
+        <p>Bison source code specifies the grammar rules of turtle
+        language. For example, <code>fc (1,0,0)</code> is called primary
+        procedure. A procedure is like a void type C function. It
+        doesn’t return any values. Programmers can define their own
+        procedures. On the other hand, <code>fc</code> is a built-in
+        procedure. Such procedures are called primary procedures. It is
+        described in bison source code like:</p>
+        <pre><code>primary_procedure: FC &#39;(&#39; expression &#39;,&#39; expression &#39;,&#39; expression &#39;)&#39;;
 expression: ID | NUM;</code></pre>
-<p>This means:</p>
-<ul>
-<li>Primary procedure is FC followed by ‘(’, expression, ‘,’,
-expression, ‘,’, expression and ‘)’.</li>
-<li>expression is ID or NUM.</li>
-</ul>
-<p>The description above is called BNF (Backus-Naur form). Precisely
-speaking, it is not exactly the same as BNF. But the difference is
-small.</p>
-<p>The first line is:</p>
-<pre><code>FC &#39;(&#39; NUM &#39;,&#39; NUM &#39;,&#39; NUM &#39;)&#39;;</code></pre>
-<p>The parser analyzes the turtle source code and if the input matches
-the definition above, the parser recognizes it as a primary
-procedure.</p>
-<p>The grammar of turtle is described in the <a
-href="https://toshiocp.github.io/Gtk4-tutorial/turtle_doc.html">Turtle
-manual</a>. The following is an extract from the document.</p>
-<pre><code>program:
+        <p>This means:</p>
+        <ul>
+        <li>Primary procedure is FC followed by ‘(’, expression, ‘,’,
+        expression, ‘,’, expression and ‘)’.</li>
+        <li>expression is ID or NUM.</li>
+        </ul>
+        <p>The description above is called BNF (Backus-Naur form).
+        Precisely speaking, it is not exactly the same as BNF. But the
+        difference is small.</p>
+        <p>The first line is:</p>
+        <pre><code>FC &#39;(&#39; NUM &#39;,&#39; NUM &#39;,&#39; NUM &#39;)&#39;;</code></pre>
+        <p>The parser analyzes the turtle source code and if the input
+        matches the definition above, the parser recognizes it as a
+        primary procedure.</p>
+        <p>The grammar of turtle is described in the <a
+        href="https://toshiocp.github.io/Gtk4-tutorial/turtle_doc.html">Turtle
+        manual</a>. The following is an extract from the document.</p>
+        <pre><code>program:
   statement
 | program statement
 ;
@@ -961,413 +984,418 @@ expression:
 | ID
 | NUM
 ;</code></pre>
-<p>The grammar rule defines <code>program</code> first.</p>
-<ul>
-<li>program is a statement or a program followed by a statement.</li>
-</ul>
-<p>The definition is recursive.</p>
-<ul>
-<li><code>statement</code> is program.</li>
-<li><code>statement statement</code> is <code>program statement</code>.
-Therefore, it is program.</li>
-<li><code>statement statement statement</code> is
-<code>program statement</code> because the first two statements are
-<code>program</code>. Therefore, it is program.</li>
-</ul>
-<p>You can find that a sequence of statements is program as well.</p>
-<p>The symbols <code>program</code> and <code>statement</code> aren’t
-tokens. They don’t appear in the input. They are called non terminal
-symbols. On the other hand, tokens are called terminal symbols. The word
-“token” used here has wide meaning, it includes tokens and symbols which
-appear in the input. Non terminal symbols are often shortened to
-nterm.</p>
-<p>Let’s analyze the program above as bison does.</p>
-<table>
-<colgroup>
-<col style="width: 4%" />
-<col style="width: 14%" />
-<col style="width: 12%" />
-<col style="width: 14%" />
-<col style="width: 50%" />
-<col style="width: 4%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;">token kind</th>
-<th style="text-align: center;">yylval.ID</th>
-<th style="text-align: center;">yylval.NUM</th>
-<th style="text-align: left;">parse</th>
-<th style="text-align: center;">S/R</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">FC</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">(</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">1.0</td>
-<td style="text-align: left;">FC(NUM</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">,</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(expression,</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">5</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">0.0</td>
-<td style="text-align: left;">FC(expression,NUM</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(expression,expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">6</td>
-<td style="text-align: center;">,</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(expression,expression,</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">7</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">0.0</td>
-<td style="text-align: left;">FC(expression,expression,NUM</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(expression,expression,expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">8</td>
-<td style="text-align: center;">)</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">FC(expression,expression,expression)</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">primary_procedure</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">statement</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">9</td>
-<td style="text-align: center;">PD</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program PD</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program primary_procedure</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program statement</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">10</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">distance</td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program ID</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">11</td>
-<td style="text-align: center;">=</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program ID=</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">12</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">100.0</td>
-<td style="text-align: left;">program ID=NUM</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program ID=expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program primary_procedure</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program statement</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">13</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">angle</td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program ID</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">14</td>
-<td style="text-align: center;">=</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program ID=</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">15</td>
-<td style="text-align: center;">NUM</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">90.0</td>
-<td style="text-align: left;">program ID=NUM</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program ID=expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program primary_procedure</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program statement</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">16</td>
-<td style="text-align: center;">FD</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program FD</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">17</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">distance</td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program FD ID</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program FD expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program primary_procedure</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program statement</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">18</td>
-<td style="text-align: center;">TR</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program TR</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">19</td>
-<td style="text-align: center;">ID</td>
-<td style="text-align: center;">angle</td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program TR ID</td>
-<td style="text-align: center;">S</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program TR expression</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program primary_procedure</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program statement</td>
-<td style="text-align: center;">R</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: left;">program</td>
-<td style="text-align: center;">R</td>
-</tr>
-</tbody>
-</table>
-<p>The right most column shows shift/reduce. Shift is appending an input
-to the buffer. Reduce is substituting a higher nterm for the pattern in
-the buffer. For example, NUM is replaced by expression in the forth row.
-This substitution is “reduce”.</p>
-<p>Bison repeats shift and reduction until the end of the input. If the
-result is reduced to <code>program</code>, the input is syntactically
-valid. Bison executes an action whenever reduction occurs. Actions build
-a tree. The tree is analyzed and executed by runtime routine later.</p>
-<p>Bison source files are called bison grammar files. A bison grammar
-file consists of four sections, prologue, declarations, rules and
-epilogue. The format is as follows.</p>
-<pre><code>%{
+        <p>The grammar rule defines <code>program</code> first.</p>
+        <ul>
+        <li>program is a statement or a program followed by a
+        statement.</li>
+        </ul>
+        <p>The definition is recursive.</p>
+        <ul>
+        <li><code>statement</code> is program.</li>
+        <li><code>statement statement</code> is
+        <code>program statement</code>. Therefore, it is program.</li>
+        <li><code>statement statement statement</code> is
+        <code>program statement</code> because the first two statements
+        are <code>program</code>. Therefore, it is program.</li>
+        </ul>
+        <p>You can find that a sequence of statements is program as
+        well.</p>
+        <p>The symbols <code>program</code> and <code>statement</code>
+        aren’t tokens. They don’t appear in the input. They are called
+        non terminal symbols. On the other hand, tokens are called
+        terminal symbols. The word “token” used here has wide meaning,
+        it includes tokens and symbols which appear in the input. Non
+        terminal symbols are often shortened to nterm.</p>
+        <p>Let’s analyze the program above as bison does.</p>
+        <table>
+        <colgroup>
+        <col style="width: 4%" />
+        <col style="width: 14%" />
+        <col style="width: 12%" />
+        <col style="width: 14%" />
+        <col style="width: 50%" />
+        <col style="width: 4%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th style="text-align: center;"></th>
+        <th style="text-align: center;">token kind</th>
+        <th style="text-align: center;">yylval.ID</th>
+        <th style="text-align: center;">yylval.NUM</th>
+        <th style="text-align: left;">parse</th>
+        <th style="text-align: center;">S/R</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td style="text-align: center;">1</td>
+        <td style="text-align: center;">FC</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">FC</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">2</td>
+        <td style="text-align: center;">(</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">FC(</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">3</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">1.0</td>
+        <td style="text-align: left;">FC(NUM</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">FC(expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">4</td>
+        <td style="text-align: center;">,</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">FC(expression,</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">5</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">0.0</td>
+        <td style="text-align: left;">FC(expression,NUM</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">FC(expression,expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">6</td>
+        <td style="text-align: center;">,</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">FC(expression,expression,</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">7</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">0.0</td>
+        <td style="text-align: left;">FC(expression,expression,NUM</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td
+        style="text-align: left;">FC(expression,expression,expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">8</td>
+        <td style="text-align: center;">)</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td
+        style="text-align: left;">FC(expression,expression,expression)</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">primary_procedure</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">statement</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">9</td>
+        <td style="text-align: center;">PD</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program PD</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program primary_procedure</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program statement</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">10</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">distance</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program ID</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">11</td>
+        <td style="text-align: center;">=</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program ID=</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">12</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">100.0</td>
+        <td style="text-align: left;">program ID=NUM</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program ID=expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program primary_procedure</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program statement</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">13</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">angle</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program ID</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">14</td>
+        <td style="text-align: center;">=</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program ID=</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">15</td>
+        <td style="text-align: center;">NUM</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;">90.0</td>
+        <td style="text-align: left;">program ID=NUM</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program ID=expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program primary_procedure</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program statement</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">16</td>
+        <td style="text-align: center;">FD</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program FD</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">17</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">distance</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program FD ID</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program FD expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program primary_procedure</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program statement</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;">18</td>
+        <td style="text-align: center;">TR</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program TR</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;">19</td>
+        <td style="text-align: center;">ID</td>
+        <td style="text-align: center;">angle</td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program TR ID</td>
+        <td style="text-align: center;">S</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program TR expression</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program primary_procedure</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program statement</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: center;"></td>
+        <td style="text-align: left;">program</td>
+        <td style="text-align: center;">R</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>The right most column shows shift/reduce. Shift is appending
+        an input to the buffer. Reduce is substituting a higher nterm
+        for the pattern in the buffer. For example, NUM is replaced by
+        expression in the forth row. This substitution is “reduce”.</p>
+        <p>Bison repeats shift and reduction until the end of the input.
+        If the result is reduced to <code>program</code>, the input is
+        syntactically valid. Bison executes an action whenever reduction
+        occurs. Actions build a tree. The tree is analyzed and executed
+        by runtime routine later.</p>
+        <p>Bison source files are called bison grammar files. A bison
+        grammar file consists of four sections, prologue, declarations,
+        rules and epilogue. The format is as follows.</p>
+        <pre><code>%{
 prologue
 %}
 declarations
@@ -1375,12 +1403,13 @@ declarations
 rules
 %%
 epilogue</code></pre>
-<h3 id="prologue">Prologue</h3>
-<p>Prologue section consists of C codes and the codes are copied to the
-parser implementation file. You can use <code>%code</code> directives to
-qualify the prologue and identifies the purpose explicitly. The
-following is an extract from <code>turtle.y</code>.</p>
-<pre class="bison"><code>%code top{
+        <h3 id="prologue">Prologue</h3>
+        <p>Prologue section consists of C codes and the codes are copied
+        to the parser implementation file. You can use
+        <code>%code</code> directives to qualify the prologue and
+        identifies the purpose explicitly. The following is an extract
+        from <code>turtle.y</code>.</p>
+        <pre class="bison"><code>%code top{
   #include &lt;stdarg.h&gt;
   #include &lt;setjmp.h&gt;
   #include &lt;math.h&gt;
@@ -1408,16 +1437,17 @@ following is an extract from <code>turtle.y</code>.</p>
  ... ... ...
   };
 }</code></pre>
-<p>The directive <code>%code top</code> copies its contents to the top
-of the parser implementation file. It usually includes
-<code>#include</code> directives, declarations of functions and
-definitions of constants. A function <code>yyerror</code> reports a
-syntax error and is called by the parser. Node type identifies a node in
-the tree.</p>
-<p>Another directive <code>%code requires</code> copies its contents to
-both the parser implementation file and header file. The header file is
-read by the scanner C source file and other files.</p>
-<pre class="bison"><code>%code requires {
+        <p>The directive <code>%code top</code> copies its contents to
+        the top of the parser implementation file. It usually includes
+        <code>#include</code> directives, declarations of functions and
+        definitions of constants. A function <code>yyerror</code>
+        reports a syntax error and is called by the parser. Node type
+        identifies a node in the tree.</p>
+        <p>Another directive <code>%code requires</code> copies its
+        contents to both the parser implementation file and header file.
+        The header file is read by the scanner C source file and other
+        files.</p>
+        <pre class="bison"><code>%code requires {
   int yylex (void);
   int yyparse (void);
   void run (void);
@@ -1435,17 +1465,18 @@ read by the scanner C source file and other files.</p>
     } content;
   };
 }</code></pre>
-<ul>
-<li><code>yylex</code> is shared by the parser implementation file and
-scanner file.</li>
-<li><code>yyparse</code> and <code>run</code> is called by
-<code>run_cb</code> in <code>turtleapplication.c</code>.</li>
-<li><code>node_t</code> is the type of the semantic value of nterms. The
-header file defines <code>YYSTYPE</code>, which is the semantic value
-type, with all the token and nterm value types. The following is
-extracted from the header file.</li>
-</ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Value type.  */</span></span>
+        <ul>
+        <li><code>yylex</code> is shared by the parser implementation
+        file and scanner file.</li>
+        <li><code>yyparse</code> and <code>run</code> is called by
+        <code>run_cb</code> in <code>turtleapplication.c</code>.</li>
+        <li><code>node_t</code> is the type of the semantic value of
+        nterms. The header file defines <code>YYSTYPE</code>, which is
+        the semantic value type, with all the token and nterm value
+        types. The following is extracted from the header file.</li>
+        </ul>
+        <div class="sourceCode" id="cb15"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Value type.  */</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#if ! defined YYSTYPE &amp;&amp; ! defined YYSTYPE_IS_DECLARED</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">union</span> YYSTYPE</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
@@ -1460,9 +1491,9 @@ extracted from the header file.</li>
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  node_t <span class="op">*</span> argument_list<span class="op">;</span>                  <span class="co">/* argument_list  */</span></span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  node_t <span class="op">*</span> expression<span class="op">;</span>                     <span class="co">/* expression  */</span></span>
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
-<p>Other useful macros and declarations are put into the
-<code>%code</code> directive.</p>
-<pre><code>%code {
+        <p>Other useful macros and declarations are put into the
+        <code>%code</code> directive.</p>
+        <pre><code>%code {
 /* The following macro is convenient to get the member of the node. */
   #define child1(n) (n)-&gt;content.child.child1
   #define child2(n) (n)-&gt;content.child.child2
@@ -1477,10 +1508,10 @@ extracted from the header file.</li>
   static node_t *tree2 (int type, double value);
   static node_t *tree3 (int type, char *name);
 }</code></pre>
-<h3 id="bison-declarations">Bison declarations</h3>
-<p>Bison declarations defines terminal and non-terminal symbols. It also
-specifies some directives.</p>
-<pre><code>%locations
+        <h3 id="bison-declarations">Bison declarations</h3>
+        <p>Bison declarations defines terminal and non-terminal symbols.
+        It also specifies some directives.</p>
+        <pre><code>%locations
 %define api.value.type union /* YYSTYPE, the type of semantic values, is union of following types */
  /* key words */
 %token PU
@@ -1515,9 +1546,10 @@ specifies some directives.</p>
 %left &#39;+&#39; &#39;-&#39;
 %left &#39;*&#39; &#39;/&#39;
 %precedence UMINUS /* unary minus */</code></pre>
-<p><code>%locations</code> directive inserts the location structure into
-the header file. It is like this.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> YYLTYPE YYLTYPE<span class="op">;</span></span>
+        <p><code>%locations</code> directive inserts the location
+        structure into the header file. It is like this.</p>
+        <div class="sourceCode" id="cb18"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> YYLTYPE YYLTYPE<span class="op">;</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> YYLTYPE</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> first_line<span class="op">;</span></span>
@@ -1525,22 +1557,24 @@ the header file. It is like this.</p>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> last_line<span class="op">;</span></span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> last_column<span class="op">;</span></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
-<p>This type is shared by the scanner file and the parser implementation
-file. The error report function <code>yyerror</code> uses it so that it
-can inform the location that error occurs.</p>
-<p><code>%define api.value.type union</code> generates semantic value
-type with tokens and nterms and inserts it to the header file. The
-inserted part is shown in the previous subsection as the extracts that
-shows the value type (YYSTYPE).</p>
-<p><code>%token</code> and <code>%nterm</code> directives define tokens
-and non terminal symbols respectively.</p>
-<pre><code>%token PU
+        <p>This type is shared by the scanner file and the parser
+        implementation file. The error report function
+        <code>yyerror</code> uses it so that it can inform the location
+        that error occurs.</p>
+        <p><code>%define api.value.type union</code> generates semantic
+        value type with tokens and nterms and inserts it to the header
+        file. The inserted part is shown in the previous subsection as
+        the extracts that shows the value type (YYSTYPE).</p>
+        <p><code>%token</code> and <code>%nterm</code> directives define
+        tokens and non terminal symbols respectively.</p>
+        <pre><code>%token PU
 ... ...
 %token &lt;double&gt; NUM</code></pre>
-<p>These directives define a token <code>PU</code> and <code>NUM</code>.
-The values of token kinds <code>PU</code> and <code>NUM</code> are
-defined as an enumeration constant in the header file.</p>
-<pre><code>  enum yytokentype
+        <p>These directives define a token <code>PU</code> and
+        <code>NUM</code>. The values of token kinds <code>PU</code> and
+        <code>NUM</code> are defined as an enumeration constant in the
+        header file.</p>
+        <pre><code>  enum yytokentype
   {
   ... ... ...
     PU = 258,                      /* PU  */
@@ -1549,62 +1583,63 @@ defined as an enumeration constant in the header file.</p>
   ... ... ...
   };
   typedef enum yytokentype yytoken_kind_t;</code></pre>
-<p>In addition, the type of the semantic value of <code>NUM</code> is
-defined as double in the header file because of
-<code>&lt;double&gt;</code> tag.</p>
-<pre><code>union YYSTYPE
+        <p>In addition, the type of the semantic value of
+        <code>NUM</code> is defined as double in the header file because
+        of <code>&lt;double&gt;</code> tag.</p>
+        <pre><code>union YYSTYPE
 {
   char * ID;                               /* ID  */
   double NUM;                              /* NUM  */
   ... ...
 }</code></pre>
-<p>All the nterm symbols have the same type <code>*node_t</code> of the
-semantic value.</p>
-<p><code>%left</code> and <code>%precedence</code> directives define the
-precedence of operation symbols.</p>
-<pre><code> /* logical relation symbol */
+        <p>All the nterm symbols have the same type <code>*node_t</code>
+        of the semantic value.</p>
+        <p><code>%left</code> and <code>%precedence</code> directives
+        define the precedence of operation symbols.</p>
+        <pre><code> /* logical relation symbol */
 %left &#39;=&#39; &#39;&lt;&#39; &#39;&gt;&#39;
  /* arithmetic symbol */
 %left &#39;+&#39; &#39;-&#39;
 %left &#39;*&#39; &#39;/&#39;
 %precedence UMINUS /* unary minus */</code></pre>
-<p><code>%left</code> directive defines the following symbols as
-left-associated operators. If an operator <code>+</code> is
-left-associated, then</p>
-<pre><code>A + B + C = (A + B) + C</code></pre>
-<p>That is, the calculation is carried out the left operator first, then
-the right operator. If an operator <code>*</code> is right-associated,
-then:</p>
-<pre><code>A * B * C = A * (B * C)</code></pre>
-<p>The definition above decides the behavior of the parser. Addition and
-multiplication hold associative law so the result of
-<code>(A+B)+C</code> and <code>A+(B+C)</code> are equal in terms of
-mathematics. However, the parser will be confused if left (or right)
-associativity is not specified.</p>
-<p><code>%left</code> and <code>%precedence</code> directives show the
-precedence of operators. Later declared operators have higher precedence
-than former declared ones. The declaration above says, for example,</p>
-<pre><code>v=w+z*5+7 is the same as v=((w+(z*5))+7)</code></pre>
-<p>Be careful. The operator <code>=</code> above is an assignment.
-Assignment is not expression in turtle language. It is
-primary_procedure. But if <code>=</code> appears in an expression, it is
-a logical operator, not an assignment. The logical equal
-‘<code>=</code>’ usually used in the conditional expression, for
-example, in <code>if</code> statement. (Turtle language uses ‘=’ instead
-of ‘==’ in C language).</p>
-<h3 id="grammar-rules">Grammar rules</h3>
-<p>Grammar rules section defines the syntactic grammar of the language.
-It is similar to BNF form.</p>
-<pre><code>result: components { action };</code></pre>
-<ul>
-<li>result is a nterm.</li>
-<li>components are list of tokens or nterms.</li>
-<li>action is C codes. It is executed whenever the components are
-reduced to the result. Action can be left out.</li>
-</ul>
-<p>The following is a part of the grammar rule in <code>turtle.y</code>.
-But it is not exactly the same.</p>
-<pre><code>program:
+        <p><code>%left</code> directive defines the following symbols as
+        left-associated operators. If an operator <code>+</code> is
+        left-associated, then</p>
+        <pre><code>A + B + C = (A + B) + C</code></pre>
+        <p>That is, the calculation is carried out the left operator
+        first, then the right operator. If an operator <code>*</code> is
+        right-associated, then:</p>
+        <pre><code>A * B * C = A * (B * C)</code></pre>
+        <p>The definition above decides the behavior of the parser.
+        Addition and multiplication hold associative law so the result
+        of <code>(A+B)+C</code> and <code>A+(B+C)</code> are equal in
+        terms of mathematics. However, the parser will be confused if
+        left (or right) associativity is not specified.</p>
+        <p><code>%left</code> and <code>%precedence</code> directives
+        show the precedence of operators. Later declared operators have
+        higher precedence than former declared ones. The declaration
+        above says, for example,</p>
+        <pre><code>v=w+z*5+7 is the same as v=((w+(z*5))+7)</code></pre>
+        <p>Be careful. The operator <code>=</code> above is an
+        assignment. Assignment is not expression in turtle language. It
+        is primary_procedure. But if <code>=</code> appears in an
+        expression, it is a logical operator, not an assignment. The
+        logical equal ‘<code>=</code>’ usually used in the conditional
+        expression, for example, in <code>if</code> statement. (Turtle
+        language uses ‘=’ instead of ‘==’ in C language).</p>
+        <h3 id="grammar-rules">Grammar rules</h3>
+        <p>Grammar rules section defines the syntactic grammar of the
+        language. It is similar to BNF form.</p>
+        <pre><code>result: components { action };</code></pre>
+        <ul>
+        <li>result is a nterm.</li>
+        <li>components are list of tokens or nterms.</li>
+        <li>action is C codes. It is executed whenever the components
+        are reduced to the result. Action can be left out.</li>
+        </ul>
+        <p>The following is a part of the grammar rule in
+        <code>turtle.y</code>. But it is not exactly the same.</p>
+        <pre><code>program:
   statement { node_top = $$ = $1; }
 ;
 statement:
@@ -1616,83 +1651,91 @@ primary_procedure:
 expression:
   NUM   { $$ = tree2 (N_NUM, $1); }
 ;</code></pre>
-<ul>
-<li>The first two lines tell that <code>program</code> is
-<code>statement</code>.</li>
-<li>Whenever <code>statement</code> is reduced to <code>program</code>,
-an action <code>node_top=$$=$1;</code> is executed.</li>
-<li><code>node_top</code> is a static variable. It points the top node
-of the tree.</li>
-<li>The symbol <code>$$</code> is a semantic value of the result. For
-example, <code>$$</code> in line 2 is the semantic value of
-<code>program</code>. It is a pointer to a <code>node_t</code> type
-structure.</li>
-<li>The symbol <code>$1</code> is a semantic value of the first
-component. For example, <code>$1</code> in line 2 is the semantic value
-of <code>statement</code>. It is also a pointer to
-<code>node_t</code>.</li>
-<li>The next rule is that <code>statement</code> is
-<code>primary_procedure</code>. There’s no action specified. Then, the
-default action <code>$$ = $1</code> is executed.</li>
-<li>The next rule is that <code>primary_procedure</code> is
-<code>FD</code> followed by expression. The action calls
-<code>tree1</code> and assigns its return value to <code>$$</code>. The
-function <code>tree1</code> makes a tree node. The tree node has type
-and union of three pointers to children nodes, string or double.</li>
-</ul>
-<pre><code>node --+-- type
+        <ul>
+        <li>The first two lines tell that <code>program</code> is
+        <code>statement</code>.</li>
+        <li>Whenever <code>statement</code> is reduced to
+        <code>program</code>, an action <code>node_top=$$=$1;</code> is
+        executed.</li>
+        <li><code>node_top</code> is a static variable. It points the
+        top node of the tree.</li>
+        <li>The symbol <code>$$</code> is a semantic value of the
+        result. For example, <code>$$</code> in line 2 is the semantic
+        value of <code>program</code>. It is a pointer to a
+        <code>node_t</code> type structure.</li>
+        <li>The symbol <code>$1</code> is a semantic value of the first
+        component. For example, <code>$1</code> in line 2 is the
+        semantic value of <code>statement</code>. It is also a pointer
+        to <code>node_t</code>.</li>
+        <li>The next rule is that <code>statement</code> is
+        <code>primary_procedure</code>. There’s no action specified.
+        Then, the default action <code>$$ = $1</code> is executed.</li>
+        <li>The next rule is that <code>primary_procedure</code> is
+        <code>FD</code> followed by expression. The action calls
+        <code>tree1</code> and assigns its return value to
+        <code>$$</code>. The function <code>tree1</code> makes a tree
+        node. The tree node has type and union of three pointers to
+        children nodes, string or double.</li>
+        </ul>
+        <pre><code>node --+-- type
        +-- union contents
                     +---struct {node_t *child1, *child2, *child3;};
                     +---char *name
                     +---double value</code></pre>
-<ul>
-<li><code>tree1</code> assigns the four arguments to type, child1,
-child2 and child3 members.</li>
-<li>The last rule is that <code>expression</code> is
-<code>NUM</code>.</li>
-<li><code>tree2</code> makes a tree node. The paremeters of
-<code>tree2</code> are a type and a semantic value.</li>
-</ul>
-<p>Suppose the parser reads the following program.</p>
-<pre><code>fd 100</code></pre>
-<p>What does the parser do?</p>
-<ol type="1">
-<li>The parser recognizes the input is <code>FD</code>. Maybe it is the
-start of <code>primary_procedure</code>, but parser needs to read the
-next token.</li>
-<li><code>yylex</code> returns the token kind <code>NUM</code> and sets
-<code>yylval.NUM</code> to 100.0 (the type is double). The parser
-reduces <code>NUM</code> to <code>expression</code>. At the same time,
-it sets the semantic value of the <code>expression</code> to point a new
-node. The node has the type <code>N_NUM</code> and a semantic value
-100.0.</li>
-<li>After the reduction, the buffer has <code>FD</code> and
-<code>expression</code>. The parser reduces it to
-<code>primary_procedure</code>. And it sets the semantic value of the
-<code>primary_procedure</code> to point a new node. The node has the
-type <code>N_FD</code> and its member child1 points the node of
-<code>expression</code>, whose type is <code>N_NUM</code>.</li>
-<li>The parser reduces <code>primary_procedure</code> to
-<code>statement</code>. The semantic value of <code>statement</code> is
-the same as the one of <code>primary_procedure</code>, which points to
-the node <code>N_FD</code>.</li>
-<li>The parser reduces <code>statement</code> to <code>program</code>.
-The semantic value of <code>statement</code> is assigned to the one of
-<code>program</code> and the static variable <code>node_top</code>.</li>
-<li>Finally <code>node_top</code> points the node <code>N_FD</code> and
-the node <code>N_FD</code> points the node <code>N_NUM</code>.</li>
-</ol>
-<figure>
-<img src="image/tree.png" alt="tree" />
-<figcaption aria-hidden="true">tree</figcaption>
-</figure>
-<p>The following is the grammar rule extracted from
-<code>turtle.y</code>. The rules there are based on the same idea above.
-I don’t want to explain the whole rules below. Please look into each
-line carefully so that you will understand all the rules and
-actions.</p>
-<div class="sourceCode" id="cb30"><pre
-class="sourceCode yacc"><code class="sourceCode yacc"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>program:</span>
+        <ul>
+        <li><code>tree1</code> assigns the four arguments to type,
+        child1, child2 and child3 members.</li>
+        <li>The last rule is that <code>expression</code> is
+        <code>NUM</code>.</li>
+        <li><code>tree2</code> makes a tree node. The paremeters of
+        <code>tree2</code> are a type and a semantic value.</li>
+        </ul>
+        <p>Suppose the parser reads the following program.</p>
+        <pre><code>fd 100</code></pre>
+        <p>What does the parser do?</p>
+        <ol type="1">
+        <li>The parser recognizes the input is <code>FD</code>. Maybe it
+        is the start of <code>primary_procedure</code>, but parser needs
+        to read the next token.</li>
+        <li><code>yylex</code> returns the token kind <code>NUM</code>
+        and sets <code>yylval.NUM</code> to 100.0 (the type is double).
+        The parser reduces <code>NUM</code> to <code>expression</code>.
+        At the same time, it sets the semantic value of the
+        <code>expression</code> to point a new node. The node has the
+        type <code>N_NUM</code> and a semantic value 100.0.</li>
+        <li>After the reduction, the buffer has <code>FD</code> and
+        <code>expression</code>. The parser reduces it to
+        <code>primary_procedure</code>. And it sets the semantic value
+        of the <code>primary_procedure</code> to point a new node. The
+        node has the type <code>N_FD</code> and its member child1 points
+        the node of <code>expression</code>, whose type is
+        <code>N_NUM</code>.</li>
+        <li>The parser reduces <code>primary_procedure</code> to
+        <code>statement</code>. The semantic value of
+        <code>statement</code> is the same as the one of
+        <code>primary_procedure</code>, which points to the node
+        <code>N_FD</code>.</li>
+        <li>The parser reduces <code>statement</code> to
+        <code>program</code>. The semantic value of
+        <code>statement</code> is assigned to the one of
+        <code>program</code> and the static variable
+        <code>node_top</code>.</li>
+        <li>Finally <code>node_top</code> points the node
+        <code>N_FD</code> and the node <code>N_FD</code> points the node
+        <code>N_NUM</code>.</li>
+        </ol>
+        <figure>
+        <img src="/images/tree.png" style="width:6.51cm;height:5.46cm"
+        alt="tree" />
+        <figcaption aria-hidden="true">tree</figcaption>
+        </figure>
+        <p>The following is the grammar rule extracted from
+        <code>turtle.y</code>. The rules there are based on the same
+        idea above. I don’t want to explain the whole rules below.
+        Please look into each line carefully so that you will understand
+        all the rules and actions.</p>
+        <div class="sourceCode" id="cb30"><pre
+        class="sourceCode yacc"><code class="sourceCode yacc"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>program:</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  statement { node_top = $$ = $1; }</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>| program statement {</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>        node_top = $$ = tree1 (N_program, $1, $2, NULL);</span>
@@ -1767,29 +1810,30 @@ class="sourceCode yacc"><code class="sourceCode yacc"><span id="cb30-1"><a href=
 <span id="cb30-73"><a href="#cb30-73" aria-hidden="true" tabindex="-1"></a>| ID    { $$ = tree3 (N_ID, $1); }</span>
 <span id="cb30-74"><a href="#cb30-74" aria-hidden="true" tabindex="-1"></a>| NUM   { $$ = tree2 (N_NUM, $1); }</span>
 <span id="cb30-75"><a href="#cb30-75" aria-hidden="true" tabindex="-1"></a>;</span></code></pre></div>
-<h3 id="epilogue">Epilogue</h3>
-<p>The epilogue is written in C language and copied to the parser
-implementation file. Generally, you can put anything into the epilogue.
-In the case of turtle interpreter, the runtime routine and some other
-functions are in the epilogue.</p>
-<h4 id="functions-to-create-tree-nodes">Functions to create tree
-nodes</h4>
-<p>There are three functions, <code>tree1</code>, <code>tree2</code> and
-<code>tree3</code>.</p>
-<ul>
-<li><code>tree1</code> creates a node and sets the node type and
-pointers to its three children (NULL is possible).</li>
-<li><code>tree2</code> creates a node and sets the node type and a value
-(double).</li>
-<li><code>tree3</code> creates a node and sets the node type and a
-pointer to a string.</li>
-</ul>
-<p>Each function gets memories first and build a node on them. The
-memories are inserted to the list. They will be freed when runtime
-routine finishes.</p>
-<p>The three functions are called in the actions in the rules
-section.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Dynamically allocated memories are added to the single list. They will be freed in the finalize function. */</span></span>
+        <h3 id="epilogue">Epilogue</h3>
+        <p>The epilogue is written in C language and copied to the
+        parser implementation file. Generally, you can put anything into
+        the epilogue. In the case of turtle interpreter, the runtime
+        routine and some other functions are in the epilogue.</p>
+        <h4 id="functions-to-create-tree-nodes">Functions to create tree
+        nodes</h4>
+        <p>There are three functions, <code>tree1</code>,
+        <code>tree2</code> and <code>tree3</code>.</p>
+        <ul>
+        <li><code>tree1</code> creates a node and sets the node type and
+        pointers to its three children (NULL is possible).</li>
+        <li><code>tree2</code> creates a node and sets the node type and
+        a value (double).</li>
+        <li><code>tree3</code> creates a node and sets the node type and
+        a pointer to a string.</li>
+        </ul>
+        <p>Each function gets memories first and build a node on them.
+        The memories are inserted to the list. They will be freed when
+        runtime routine finishes.</p>
+        <p>The three functions are called in the actions in the rules
+        section.</p>
+        <div class="sourceCode" id="cb31"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Dynamically allocated memories are added to the single list. They will be freed in the finalize function. */</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>GSList <span class="op">*</span>list <span class="op">=</span> NULL<span class="op">;</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>node_t <span class="op">*</span></span>
@@ -1826,23 +1870,24 @@ section.</p>
 <span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>  name<span class="op">(</span>new_node<span class="op">)</span> <span class="op">=</span> name<span class="op">;</span></span>
 <span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> new_node<span class="op">;</span></span>
 <span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="symbol-table">Symbol table</h4>
-<p>Variables and user defined procedures are registered in the symbol
-table. This table is a C array. It should be replaced by better
-algorithm and data structure, for example hash, in the future
-version</p>
-<ul>
-<li>Variables are registered with its name and value.</li>
-<li>Procedures are registered with its name and a pointer to the node of
-the procedure.</li>
-</ul>
-<p>Therefore the table has the following fields.</p>
-<ul>
-<li>type to identify variable or procedure</li>
-<li>name</li>
-<li>value or pointer to a node</li>
-</ul>
-<div class="sourceCode" id="cb32"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MAX_TABLE_SIZE </span><span class="dv">100</span></span>
+        <h4 id="symbol-table">Symbol table</h4>
+        <p>Variables and user defined procedures are registered in the
+        symbol table. This table is a C array. It should be replaced by
+        better algorithm and data structure, for example hash, in the
+        future version</p>
+        <ul>
+        <li>Variables are registered with its name and value.</li>
+        <li>Procedures are registered with its name and a pointer to the
+        node of the procedure.</li>
+        </ul>
+        <p>Therefore the table has the following fields.</p>
+        <ul>
+        <li>type to identify variable or procedure</li>
+        <li>name</li>
+        <li>value or pointer to a node</li>
+        </ul>
+        <div class="sourceCode" id="cb32"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MAX_TABLE_SIZE </span><span class="dv">100</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> <span class="op">{</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  PROC<span class="op">,</span></span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  VAR</span>
@@ -1862,21 +1907,24 @@ the procedure.</li>
 <span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>init_table <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>  tp <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>The function <code>init_table</code> initializes the table. This must
-be called before registrations.</p>
-<p>There are five functions to access the table,</p>
-<ul>
-<li><code>proc_install</code> installs a procedure.</li>
-<li><code>var_install</code> installs a variable.</li>
-<li><code>proc_lookup</code> looks up a procedure. If the procedure is
-found, it returns a pointer to the node. Otherwise it returns NULL.</li>
-<li><code>var_lookup</code> looks up a variable. If the variable is
-found, it returns TRUE and sets the pointer (argument) to point the
-value. Otherwise it returns FALSE.</li>
-<li><code>var_replace</code> replaces the value of a variable. If the
-variable hasn’t registered yet, it installs the variable.</li>
-</ul>
-<div class="sourceCode" id="cb33"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span></span>
+        <p>The function <code>init_table</code> initializes the table.
+        This must be called before registrations.</p>
+        <p>There are five functions to access the table,</p>
+        <ul>
+        <li><code>proc_install</code> installs a procedure.</li>
+        <li><code>var_install</code> installs a variable.</li>
+        <li><code>proc_lookup</code> looks up a procedure. If the
+        procedure is found, it returns a pointer to the node. Otherwise
+        it returns NULL.</li>
+        <li><code>var_lookup</code> looks up a variable. If the variable
+        is found, it returns TRUE and sets the pointer (argument) to
+        point the value. Otherwise it returns FALSE.</li>
+        <li><code>var_replace</code> replaces the value of a variable.
+        If the variable hasn’t registered yet, it installs the
+        variable.</li>
+        </ul>
+        <div class="sourceCode" id="cb33"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>tbl_lookup <span class="op">(</span><span class="dt">int</span> type<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>name<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1942,15 +1990,16 @@ variable hasn’t registered yet, it installs the variable.</li>
 <span id="cb33-64"><a href="#cb33-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb33-65"><a href="#cb33-65" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb33-66"><a href="#cb33-66" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="stack-for-parameters-and-arguments">Stack for parameters and
-arguments</h4>
-<p>Stack is a last-in first-out data structure. It is shortened to LIFO.
-Turtle uses a stack to keep parameters and arguments. They are like
-<code>auto</code> class variables in C language. They are pushed to the
-stack whenever the procedure is called. LIFO structure is useful for
-recursive calls.</p>
-<p>Each element of the stack has name and value.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MAX_STACK_SIZE </span><span class="dv">500</span></span>
+        <h4 id="stack-for-parameters-and-arguments">Stack for parameters
+        and arguments</h4>
+        <p>Stack is a last-in first-out data structure. It is shortened
+        to LIFO. Turtle uses a stack to keep parameters and arguments.
+        They are like <code>auto</code> class variables in C language.
+        They are pushed to the stack whenever the procedure is called.
+        LIFO structure is useful for recursive calls.</p>
+        <p>Each element of the stack has name and value.</p>
+        <div class="sourceCode" id="cb34"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MAX_STACK_SIZE </span><span class="dv">500</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> <span class="op">{</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span>name<span class="op">;</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> value<span class="op">;</span></span>
@@ -1961,64 +2010,72 @@ recursive calls.</p>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>init_stack <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  sp <span class="op">=</span> sp_biggest <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><code>sp</code> is a stack pointer. It is an index of the array
-<code>stack</code> and it always points an element of the array to store
-the next data. <code>sp_biggest</code> is the biggest number assigned to
-<code>sp</code>. We can know the amount of elements used in the array
-during the runtime. The purpose of the variable is to find appropriate
-<code>MAX_STACK_SIZE</code>. It will be unnecessary in the future
-version if the stack is implemented with better data structure and
-memory allocation.</p>
-<p>The runtime routine push data to the stack when it executes a node of
-a procedure call. (The type of the node is
-<code>N_procedure_call</code>.)</p>
-<pre><code>dp drawline (angle, distance) { ... ... ... }
+        <p><code>sp</code> is a stack pointer. It is an index of the
+        array <code>stack</code> and it always points an element of the
+        array to store the next data. <code>sp_biggest</code> is the
+        biggest number assigned to <code>sp</code>. We can know the
+        amount of elements used in the array during the runtime. The
+        purpose of the variable is to find appropriate
+        <code>MAX_STACK_SIZE</code>. It will be unnecessary in the
+        future version if the stack is implemented with better data
+        structure and memory allocation.</p>
+        <p>The runtime routine push data to the stack when it executes a
+        node of a procedure call. (The type of the node is
+        <code>N_procedure_call</code>.)</p>
+        <pre><code>dp drawline (angle, distance) { ... ... ... }
 drawline (90, 100)</code></pre>
-<ul>
-<li>The first line defines a procedure <code>drawline</code>. The
-runtime routine stores the name <code>drawline</code> and the node of
-the procedure to the symbol table.</li>
-<li>The second line calls the procedure. First, it looks for the
-procedure in the symbol table and gets its node. Then it searches the
-node for the parameters and gets <code>angle</code> and
-<code>distance</code>.</li>
-<li>It pushes (“angle”, 90.0) to the stack.</li>
-<li>It pushes (“distance”, 100.0) to the stack.</li>
-<li>It pushes (NULL, 2.0) to the stack. The number 2.0 is the number of
-parameters (or arguments). It is used when the procedure returns.</li>
-</ul>
-<p>The following diagram shows the structure of the stack. First,
-<code>procedure 1</code> is called. The procedure has two parameters. In
-the <code>procedure 1</code>, another procedure <code>procedure 2</code>
-is called. It has one parameter. In the <code>procedure 2</code>,
-another procedure <code>procedure 3</code> is called. It has three
-parameters. These three procedures are nested.</p>
-<p>Programs push data to a stack from a low address memory to a high
-address memory. In the following diagram, the lowest address is at the
-top and the highest address is at the bottom. That is the order of the
-address. However, “the top of the stack” is the last pushed data and
-“the bottom of the stack” is the first pushed data. Therefore, “the top
-of the stack” is the bottom of the rectangle in the diagram and “the
-bottom of the stack” is the top of the rectangle.</p>
-<figure>
-<img src="image/stack.png" alt="Stack" />
-<figcaption aria-hidden="true">Stack</figcaption>
-</figure>
-<p>There are four functions to access the stack.</p>
-<ul>
-<li><code>stack_push</code> pushes data to the stack.</li>
-<li><code>stack_lookup</code> searches the stack for the variable given
-its name as an argument. It searches only the parameters of the latest
-procedure. It returns TRUE and sets the argument <code>value</code> to
-point the value, if the variable has been found. Otherwise it returns
-FALSE.</li>
-<li><code>stack_replace</code> replaces the value of the variable in the
-stack. If it succeeds, it returns TRUE. Otherwise returns FALSE.</li>
-<li><code>stack_return</code> throws away the latest parameters. The
-stack pointer goes back to the point before the latest procedure call so
-that it points to parameters of the previous called procedure.</li>
-</ul>
-<div class="sourceCode" id="cb36"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+        <ul>
+        <li>The first line defines a procedure <code>drawline</code>.
+        The runtime routine stores the name <code>drawline</code> and
+        the node of the procedure to the symbol table.</li>
+        <li>The second line calls the procedure. First, it looks for the
+        procedure in the symbol table and gets its node. Then it
+        searches the node for the parameters and gets <code>angle</code>
+        and <code>distance</code>.</li>
+        <li>It pushes (“angle”, 90.0) to the stack.</li>
+        <li>It pushes (“distance”, 100.0) to the stack.</li>
+        <li>It pushes (NULL, 2.0) to the stack. The number 2.0 is the
+        number of parameters (or arguments). It is used when the
+        procedure returns.</li>
+        </ul>
+        <p>The following diagram shows the structure of the stack.
+        First, <code>procedure 1</code> is called. The procedure has two
+        parameters. In the <code>procedure 1</code>, another procedure
+        <code>procedure 2</code> is called. It has one parameter. In the
+        <code>procedure 2</code>, another procedure
+        <code>procedure 3</code> is called. It has three parameters.
+        These three procedures are nested.</p>
+        <p>Programs push data to a stack from a low address memory to a
+        high address memory. In the following diagram, the lowest
+        address is at the top and the highest address is at the bottom.
+        That is the order of the address. However, “the top of the
+        stack” is the last pushed data and “the bottom of the stack” is
+        the first pushed data. Therefore, “the top of the stack” is the
+        bottom of the rectangle in the diagram and “the bottom of the
+        stack” is the top of the rectangle.</p>
+        <figure>
+        <img src="/images/stack.png" style="width:6.64cm;height:8.05cm"
+        alt="Stack" />
+        <figcaption aria-hidden="true">Stack</figcaption>
+        </figure>
+        <p>There are four functions to access the stack.</p>
+        <ul>
+        <li><code>stack_push</code> pushes data to the stack.</li>
+        <li><code>stack_lookup</code> searches the stack for the
+        variable given its name as an argument. It searches only the
+        parameters of the latest procedure. It returns TRUE and sets the
+        argument <code>value</code> to point the value, if the variable
+        has been found. Otherwise it returns FALSE.</li>
+        <li><code>stack_replace</code> replaces the value of the
+        variable in the stack. If it succeeds, it returns TRUE.
+        Otherwise returns FALSE.</li>
+        <li><code>stack_return</code> throws away the latest parameters.
+        The stack pointer goes back to the point before the latest
+        procedure call so that it points to parameters of the previous
+        called procedure.</li>
+        </ul>
+        <div class="sourceCode" id="cb36"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>stack_push <span class="op">(</span><span class="dt">char</span> <span class="op">*</span>name<span class="op">,</span> <span class="dt">double</span> value<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>sp <span class="op">&gt;=</span> MAX_STACK_SIZE<span class="op">)</span></span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    runtime_error <span class="op">(</span><span class="st">&quot;Stack overflow.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
@@ -2080,65 +2137,72 @@ that it points to parameters of the previous called procedure.</li>
 <span id="cb36-60"><a href="#cb36-60" aria-hidden="true" tabindex="-1"></a>    runtime_error <span class="op">(</span><span class="st">&quot;Stack error.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb36-61"><a href="#cb36-61" aria-hidden="true" tabindex="-1"></a>  sp <span class="op">-=</span> depth <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
 <span id="cb36-62"><a href="#cb36-62" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="surface-and-cairo">Surface and cairo</h4>
-<p>A global variable <code>surface</code> is shared by
-<code>turtleapplication.c</code> and <code>turtle.y</code>. It is
-initialized in <code>turtleapplication.c</code>.</p>
-<p>The runtime routine has its own cairo context. This is different from
-the cairo in the GtkDrawingArea instance. The runtime routine draws a
-shape on the <code>surface</code> with the cairo context. After runtime
-routine returns to <code>run_cb</code>, <code>run_cb</code> adds the
-GtkDrawingArea widget to the queue to redraw. When the widget is
-redraw,the drawing function <code>draw_func</code> is called. It copies
-the <code>surface</code> to the surface in the GtkDrawingArea
-object.</p>
-<p><code>turtle.y</code> has two functions <code>init_cairo</code> and
-<code>destroy_cairo</code>.</p>
-<ul>
-<li><code>init_cairo</code> initializes static variables and cairo
-context. The variables keep pen status (up or down), direction, initial
-location, line width and color. The size of the <code>surface</code>
-changes according to the size of the window. Whenever a user drags and
-resizes the window, the <code>surface</code> is also resized.
-<code>init_cairo</code> gets the size first and sets the initial
-location of the turtle (center of the surface) and the transformation
-matrix.</li>
-<li><code>destroy_cairo</code> just destroys the cairo context.</li>
-</ul>
-<p>Turtle has its own coordinate. The origin is at the center of the
-surface, and positive direction of x and y axes are right and up
-respectively. But surfaces have its own coordinate. Its origin is at the
-top-left corner of the surface and positive direction of x and y are
-right and down respectively. A plane with the turtle’s coordinate is
-called user space, which is the same as cairo’s user space. A plane with
-the surface’s coordinate is called device space.</p>
-<p>Cairo provides a transformation which is an affine transformation. It
-transforms a user-space coordinate (x, y) into a device-space coordinate
-(z, w).</p>
-<figure>
-<img src="image/transformation.png" alt="transformation" />
-<figcaption aria-hidden="true">transformation</figcaption>
-</figure>
-<p>The function <code>init_cairo</code> gets the width and height of the
-<code>surface</code> (See the program below).</p>
-<ul>
-<li>The center of the surface is (0,0) with regard to the user-space
-coordinate and (width/2, height/2) with regard to the device-space
-coordinate.</li>
-<li>The positive direction of x axis in the two spaces are the same. So,
-(1,0) is transformed into (1+width/2,height/2).</li>
-<li>The positive direction of y axis in the two spaces are opposite. So,
-(0,1) is transformed into (width/2,-1+height/2).</li>
-</ul>
-<p>You can determine a, b, c, d, p and q by substituting the numbers
-above for x, y, z and w in the equation above. The solution of the
-simultaneous equations is:</p>
-<pre><code>a = 1, b = 0, c = 0, d = -1, p = width/2, q = height/2</code></pre>
-<p>Cairo provides a structure <code>cairo_matrix_t</code>. The function
-<code>init_cairo</code> uses it and sets the cairo transformation (See
-the program below). Once the matrix is set, the transformation always
-performs whenever <code>cairo_stroke</code> function is invoked.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* status of the surface */</span></span>
+        <h4 id="surface-and-cairo">Surface and cairo</h4>
+        <p>A global variable <code>surface</code> is shared by
+        <code>turtleapplication.c</code> and <code>turtle.y</code>. It
+        is initialized in <code>turtleapplication.c</code>.</p>
+        <p>The runtime routine has its own cairo context. This is
+        different from the cairo in the GtkDrawingArea instance. The
+        runtime routine draws a shape on the <code>surface</code> with
+        the cairo context. After runtime routine returns to
+        <code>run_cb</code>, <code>run_cb</code> adds the GtkDrawingArea
+        widget to the queue to redraw. When the widget is redraw,the
+        drawing function <code>draw_func</code> is called. It copies the
+        <code>surface</code> to the surface in the GtkDrawingArea
+        object.</p>
+        <p><code>turtle.y</code> has two functions
+        <code>init_cairo</code> and <code>destroy_cairo</code>.</p>
+        <ul>
+        <li><code>init_cairo</code> initializes static variables and
+        cairo context. The variables keep pen status (up or down),
+        direction, initial location, line width and color. The size of
+        the <code>surface</code> changes according to the size of the
+        window. Whenever a user drags and resizes the window, the
+        <code>surface</code> is also resized. <code>init_cairo</code>
+        gets the size first and sets the initial location of the turtle
+        (center of the surface) and the transformation matrix.</li>
+        <li><code>destroy_cairo</code> just destroys the cairo
+        context.</li>
+        </ul>
+        <p>Turtle has its own coordinate. The origin is at the center of
+        the surface, and positive direction of x and y axes are right
+        and up respectively. But surfaces have its own coordinate. Its
+        origin is at the top-left corner of the surface and positive
+        direction of x and y are right and down respectively. A plane
+        with the turtle’s coordinate is called user space, which is the
+        same as cairo’s user space. A plane with the surface’s
+        coordinate is called device space.</p>
+        <p>Cairo provides a transformation which is an affine
+        transformation. It transforms a user-space coordinate (x, y)
+        into a device-space coordinate (z, w).</p>
+        <figure>
+        <img src="/images/transformation.png"
+        style="width:6.3cm;height:2.04cm" alt="transformation" />
+        <figcaption aria-hidden="true">transformation</figcaption>
+        </figure>
+        <p>The function <code>init_cairo</code> gets the width and
+        height of the <code>surface</code> (See the program below).</p>
+        <ul>
+        <li>The center of the surface is (0,0) with regard to the
+        user-space coordinate and (width/2, height/2) with regard to the
+        device-space coordinate.</li>
+        <li>The positive direction of x axis in the two spaces are the
+        same. So, (1,0) is transformed into (1+width/2,height/2).</li>
+        <li>The positive direction of y axis in the two spaces are
+        opposite. So, (0,1) is transformed into
+        (width/2,-1+height/2).</li>
+        </ul>
+        <p>You can determine a, b, c, d, p and q by substituting the
+        numbers above for x, y, z and w in the equation above. The
+        solution of the simultaneous equations is:</p>
+        <pre><code>a = 1, b = 0, c = 0, d = -1, p = width/2, q = height/2</code></pre>
+        <p>Cairo provides a structure <code>cairo_matrix_t</code>. The
+        function <code>init_cairo</code> uses it and sets the cairo
+        transformation (See the program below). Once the matrix is set,
+        the transformation always performs whenever
+        <code>cairo_stroke</code> function is invoked.</p>
+        <div class="sourceCode" id="cb38"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* status of the surface */</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> gboolean pen <span class="op">=</span> TRUE<span class="op">;</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> angle <span class="op">=</span> <span class="fl">90.0</span><span class="op">;</span> <span class="co">/* angle starts from x axis and measured counterclockwise */</span></span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                   <span class="co">/* Initially facing to the north */</span></span>
@@ -2190,18 +2254,20 @@ performs whenever <code>cairo_stroke</code> function is invoked.</p>
 <span id="cb38-50"><a href="#cb38-50" aria-hidden="true" tabindex="-1"></a>destroy_cairo <span class="op">()</span> <span class="op">{</span></span>
 <span id="cb38-51"><a href="#cb38-51" aria-hidden="true" tabindex="-1"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb38-52"><a href="#cb38-52" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="eval-function">Eval function</h4>
-<p>A function <code>eval</code> evaluates an expression and returns the
-value of the expression. It calls itself recursively. For example, if
-the node is <code>N_ADD</code>, then:</p>
-<ol type="1">
-<li>Calls eval(child1(node)) and gets the value1.</li>
-<li>Calls eval(child2(node)) and gets the value2.</li>
-<li>Returns value1+value2.</li>
-</ol>
-<p>This is performed by a macro <code>calc</code> defined in the sixth
-line in the following program.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span></span>
+        <h4 id="eval-function">Eval function</h4>
+        <p>A function <code>eval</code> evaluates an expression and
+        returns the value of the expression. It calls itself
+        recursively. For example, if the node is <code>N_ADD</code>,
+        then:</p>
+        <ol type="1">
+        <li>Calls eval(child1(node)) and gets the value1.</li>
+        <li>Calls eval(child2(node)) and gets the value2.</li>
+        <li>Returns value1+value2.</li>
+        </ol>
+        <p>This is performed by a macro <code>calc</code> defined in the
+        sixth line in the following program.</p>
+        <div class="sourceCode" id="cb39"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>eval <span class="op">(</span>node_t <span class="op">*</span>node<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> value <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>node <span class="op">==</span> NULL<span class="op">)</span></span>
@@ -2247,14 +2313,16 @@ line in the following program.</p>
 <span id="cb39-44"><a href="#cb39-44" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb39-45"><a href="#cb39-45" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> value<span class="op">;</span></span>
 <span id="cb39-46"><a href="#cb39-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="execute-function">Execute function</h4>
-<p>Primary procedures and procedure definitions are analyzed and
-executed by the function <code>execute</code>. It doesn’t return any
-values. It calls itself recursively. The process of <code>N_RT</code>
-and <code>N_procedure_call</code> is complicated. It will explained
-after the following program. Other parts are not so difficult. Read the
-program below carefully so that you will understand the process.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* procedure - return status */</span></span>
+        <h4 id="execute-function">Execute function</h4>
+        <p>Primary procedures and procedure definitions are analyzed and
+        executed by the function <code>execute</code>. It doesn’t return
+        any values. It calls itself recursively. The process of
+        <code>N_RT</code> and <code>N_procedure_call</code> is
+        complicated. It will explained after the following program.
+        Other parts are not so difficult. Read the program below
+        carefully so that you will understand the process.</p>
+        <div class="sourceCode" id="cb40"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* procedure - return status */</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> proc_level <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">int</span> ret_level <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -2408,11 +2476,11 @@ program below carefully so that you will understand the process.</p>
 <span id="cb40-152"><a href="#cb40-152" aria-hidden="true" tabindex="-1"></a>      runtime_error <span class="op">(</span><span class="st">&quot;Unknown statement.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb40-153"><a href="#cb40-153" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb40-154"><a href="#cb40-154" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>A node <code>N_procedure_call</code> is created by the parser when it
-has found a user defined procedure call. The procedure has been defined
-in the prior statement. Suppose the parser reads the following example
-code.</p>
-<pre><code>dp drawline (angle, distance) {
+        <p>A node <code>N_procedure_call</code> is created by the parser
+        when it has found a user defined procedure call. The procedure
+        has been defined in the prior statement. Suppose the parser
+        reads the following example code.</p>
+        <pre><code>dp drawline (angle, distance) {
   tr angle
   fd distance
 }
@@ -2420,76 +2488,89 @@ drawline (90, 100)
 drawline (90, 100)
 drawline (90, 100)
 drawline (90, 100)</code></pre>
-<p>This example draws a square.</p>
-<p>When The parser reads the lines from one to four, it creates nodes
-like this:</p>
-<figure>
-<img src="image/tree2.png" alt="Nodes of drawline" />
-<figcaption aria-hidden="true">Nodes of drawline</figcaption>
-</figure>
-<p>Runtime routine just stores the procedure to the symbol table with
-its name and node.</p>
-<figure>
-<img src="image/table.png" alt="Symbol table" />
-<figcaption aria-hidden="true">Symbol table</figcaption>
-</figure>
-<p>When the parser reads the fifth line in the example, it creates nodes
-like this:</p>
-<figure>
-<img src="image/proc_call.png" alt="Nodes of procedure call" />
-<figcaption aria-hidden="true">Nodes of procedure call</figcaption>
-</figure>
-<p>When the runtime routine meets <code>N_procedure_call</code> node, it
-behaves like this:</p>
-<ol type="1">
-<li>Searches the symbol table for the procedure with the name.</li>
-<li>Gets pointers to the node to parameters and the node to the
-body.</li>
-<li>Creates a temporary stack. Makes a tuple of each parameter name and
-argument value. Pushes the tuples into the stack, and (NULL, number of
-parameters) finally. If no error occurs, copies them from the temporary
-stack to the parameter stack.</li>
-<li>Increases <code>prc_level</code> by one. Sets <code>ret_level</code>
-to the same value as <code>proc_level</code>. <code>proc_level</code> is
-zero when runtime routine runs on the main routine. If it goes into a
-procedure, <code>proc_level</code> increases by one. Therefore,
-<code>proc_level</code> is the depth of the procedure call.
-<code>ret_level</code> is the level to return. If it is the same as
-<code>proc_level</code>, runtime routine executes commands in order of
-the commands in the procedure. If it is smaller than
-<code>proc_level</code>, runtime routine doesn’t execute commands until
-it becomes the same level as <code>proc_level</code>.
-<code>ret_level</code> is used to return the procedure.</li>
-<li>Executes the node of the body of the procedure.</li>
-<li>Decreases <code>proc_level</code> by one. Sets
-<code>ret_level</code> to the same value as <code>proc_level</code>.
-Calls <code>stack_return</code>.</li>
-</ol>
-<p>When the runtime routine meets <code>N_RT</code> node, it decreases
-<code>ret_level</code> by one so that the following commands in the
-procedure are ignored by the runtime routine.</p>
-<h4 id="runtime-entry-and-error-functions">Runtime entry and error
-functions</h4>
-<p>A function <code>run</code> is the entry of the runtime routine. A
-function <code>runtime_error</code> reports an error occurred during the
-runtime routine runs. (Errors which occur during the parsing are called
-syntax error and reported by <code>yyerror</code>.) After
-<code>runtime_error</code> reports an error, it stops the command
-execution and goes back to <code>run</code> to exit.</p>
-<p>Setjmp and longjmp functions are used. They are declared in
-<code>&lt;setjmp.h&gt;</code>. <code>setjmp (buf)</code> saves state
-information in <code>buf</code> and returns zero.
-<code>longjmp(buf, 1)</code> restores the state information from
-<code>buf</code> and returns <code>1</code> (the second argument).
-Because the information is the status at the time <code>setjmp</code> is
-called, so longjmp resumes the execution at the next of setjmp function
-call. In the following program, longjmp resumes at the assignment to the
-variable <code>i</code>. When setjmp is called, 0 is assigned to
-<code>i</code> and <code>execute(node_top)</code> is called. On the
-other hand, when longjmp is called, 1 is assigned to <code>i</code> and
-<code>execute(node_top)</code> is not called..</p>
-<p><code>g_slist_free_full</code> frees all the allocated memories.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> jmp_buf buf<span class="op">;</span></span>
+        <p>This example draws a square.</p>
+        <p>When The parser reads the lines from one to four, it creates
+        nodes like this:</p>
+        <figure>
+        <img src="/images/tree2.png" style="width:10cm;height:6cm"
+        alt="Nodes of drawline" />
+        <figcaption aria-hidden="true">Nodes of drawline</figcaption>
+        </figure>
+        <p>Runtime routine just stores the procedure to the symbol table
+        with its name and node.</p>
+        <figure>
+        <img src="/images/table.png" style="width:10cm;height:5cm"
+        alt="Symbol table" />
+        <figcaption aria-hidden="true">Symbol table</figcaption>
+        </figure>
+        <p>When the parser reads the fifth line in the example, it
+        creates nodes like this:</p>
+        <figure>
+        <img src="/images/proc_call.png" style="width:10cm;height:5cm"
+        alt="Nodes of procedure call" />
+        <figcaption aria-hidden="true">Nodes of procedure
+        call</figcaption>
+        </figure>
+        <p>When the runtime routine meets <code>N_procedure_call</code>
+        node, it behaves like this:</p>
+        <ol type="1">
+        <li>Searches the symbol table for the procedure with the
+        name.</li>
+        <li>Gets pointers to the node to parameters and the node to the
+        body.</li>
+        <li>Creates a temporary stack. Makes a tuple of each parameter
+        name and argument value. Pushes the tuples into the stack, and
+        (NULL, number of parameters) finally. If no error occurs, copies
+        them from the temporary stack to the parameter stack.</li>
+        <li>Increases <code>prc_level</code> by one. Sets
+        <code>ret_level</code> to the same value as
+        <code>proc_level</code>. <code>proc_level</code> is zero when
+        runtime routine runs on the main routine. If it goes into a
+        procedure, <code>proc_level</code> increases by one. Therefore,
+        <code>proc_level</code> is the depth of the procedure call.
+        <code>ret_level</code> is the level to return. If it is the same
+        as <code>proc_level</code>, runtime routine executes commands in
+        order of the commands in the procedure. If it is smaller than
+        <code>proc_level</code>, runtime routine doesn’t execute
+        commands until it becomes the same level as
+        <code>proc_level</code>. <code>ret_level</code> is used to
+        return the procedure.</li>
+        <li>Executes the node of the body of the procedure.</li>
+        <li>Decreases <code>proc_level</code> by one. Sets
+        <code>ret_level</code> to the same value as
+        <code>proc_level</code>. Calls <code>stack_return</code>.</li>
+        </ol>
+        <p>When the runtime routine meets <code>N_RT</code> node, it
+        decreases <code>ret_level</code> by one so that the following
+        commands in the procedure are ignored by the runtime
+        routine.</p>
+        <h4 id="runtime-entry-and-error-functions">Runtime entry and
+        error functions</h4>
+        <p>A function <code>run</code> is the entry of the runtime
+        routine. A function <code>runtime_error</code> reports an error
+        occurred during the runtime routine runs. (Errors which occur
+        during the parsing are called syntax error and reported by
+        <code>yyerror</code>.) After <code>runtime_error</code> reports
+        an error, it stops the command execution and goes back to
+        <code>run</code> to exit.</p>
+        <p>Setjmp and longjmp functions are used. They are declared in
+        <code>&lt;setjmp.h&gt;</code>. <code>setjmp (buf)</code> saves
+        state information in <code>buf</code> and returns zero.
+        <code>longjmp(buf, 1)</code> restores the state information from
+        <code>buf</code> and returns <code>1</code> (the second
+        argument). Because the information is the status at the time
+        <code>setjmp</code> is called, so longjmp resumes the execution
+        at the next of setjmp function call. In the following program,
+        longjmp resumes at the assignment to the variable
+        <code>i</code>. When setjmp is called, 0 is assigned to
+        <code>i</code> and <code>execute(node_top)</code> is called. On
+        the other hand, when longjmp is called, 1 is assigned to
+        <code>i</code> and <code>execute(node_top)</code> is not
+        called..</p>
+        <p><code>g_slist_free_full</code> frees all the allocated
+        memories.</p>
+        <div class="sourceCode" id="cb42"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> jmp_buf buf<span class="op">;</span></span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>run <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
@@ -2553,41 +2634,47 @@ other hand, when longjmp is called, 1 is assigned to <code>i</code> and
 <span id="cb42-62"><a href="#cb42-62" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-63"><a href="#cb42-63" aria-hidden="true" tabindex="-1"></a>  longjmp <span class="op">(</span>buf<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
 <span id="cb42-64"><a href="#cb42-64" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>A function <code>runtime_error</code> has a variable-length argument
-list.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> runtime_error <span class="op">(</span><span class="dt">char</span> <span class="op">*</span>format<span class="op">,</span> <span class="op">...)</span></span></code></pre></div>
-<p>This is implemented with <code>&lt;stdarg.h&gt;</code> header file.
-The <code>va_list</code> type variable <code>args</code> will refer to
-each argument in turn. A function <code>va_start</code> initializes
-<code>args</code>. A function <code>va_arg</code> returns an argument
-and moves the reference of <code>args</code> to the next. A function
-<code>va_end</code> cleans up everything necessary at the end.</p>
-<p>The function <code>runtime_error</code> has a similar format of
-printf standard function. But its format has only <code>%s</code>,
-<code>%f</code> and <code>%d</code>.</p>
-<p>The functions declared in <code>&lt;setjmp.h&gt;</code> and
-<code>&lt;stdarg.h&gt;</code> are explained in the very famous book “The
-C programming language” written by Brian Kernighan and Dennis Ritchie. I
-referred to the book to write the program above.</p>
-<p>The program <code>turtle</code> is unsophisticated and unpolished. If
-you want to make your own language, you need to know more and more. I
-don’t know any good textbook about compilers and interpreters. If you
-know a good book, please let me know.</p>
-<p>However, the following information is very useful (but old).</p>
-<ul>
-<li>Bison documentation</li>
-<li>Flex documentation</li>
-<li>Software tools written by Brian W. Kernighan &amp; P. J. Plauger
-(1976)</li>
-<li>Unix programming environment written by Brian W. Kernighan and Rob
-Pike (1984)</li>
-<li>Source code of a language, for example, ruby.</li>
-</ul>
-<p>Lately, lots of source codes are in the internet. Maybe reading
-source codes is the most useful for programmers.</p>
-        </div>
+        <p>A function <code>runtime_error</code> has a variable-length
+        argument list.</p>
+        <div class="sourceCode" id="cb43"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> runtime_error <span class="op">(</span><span class="dt">char</span> <span class="op">*</span>format<span class="op">,</span> <span class="op">...)</span></span></code></pre></div>
+        <p>This is implemented with <code>&lt;stdarg.h&gt;</code> header
+        file. The <code>va_list</code> type variable <code>args</code>
+        will refer to each argument in turn. A function
+        <code>va_start</code> initializes <code>args</code>. A function
+        <code>va_arg</code> returns an argument and moves the reference
+        of <code>args</code> to the next. A function <code>va_end</code>
+        cleans up everything necessary at the end.</p>
+        <p>The function <code>runtime_error</code> has a similar format
+        of printf standard function. But its format has only
+        <code>%s</code>, <code>%f</code> and <code>%d</code>.</p>
+        <p>The functions declared in <code>&lt;setjmp.h&gt;</code> and
+        <code>&lt;stdarg.h&gt;</code> are explained in the very famous
+        book “The C programming language” written by Brian Kernighan and
+        Dennis Ritchie. I referred to the book to write the program
+        above.</p>
+        <p>The program <code>turtle</code> is unsophisticated and
+        unpolished. If you want to make your own language, you need to
+        know more and more. I don’t know any good textbook about
+        compilers and interpreters. If you know a good book, please let
+        me know.</p>
+        <p>However, the following information is very useful (but
+        old).</p>
+        <ul>
+        <li>Bison documentation</li>
+        <li>Flex documentation</li>
+        <li>Software tools written by Brian W. Kernighan &amp; P. J.
+        Plauger (1976)</li>
+        <li>Unix programming environment written by Brian W. Kernighan
+        and Rob Pike (1984)</li>
+        <li>Source code of a language, for example, ruby.</li>
+        </ul>
+        <p>Lately, lots of source codes are in the internet. Maybe
+        reading source codes is the most useful for programmers.</p>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

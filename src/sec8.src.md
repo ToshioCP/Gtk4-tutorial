@@ -52,7 +52,7 @@ A child class inherits everything from the parent and, in addition, extends its 
 We will define TfeTextView as a child class of GtkTextView.
 It has everything that GtkTextView has and adds a pointer to a GFile.
 
-![Child object of GtkTextView](../image/child.png){width=9.675cm height=4.89cm}
+![Child object of GtkTextView](/images/child.png){width=9.675cm height=4.89cm}
 
 ## How to define a child class of GtkTextView
 

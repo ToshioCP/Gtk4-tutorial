@@ -34,7 +34,7 @@ They are mathematically represented by matrix multiplication and vector addition
 In this section we don't use it, instead we will only use the identity transformation.
 This means that the coordinates in the source and mask are the same as the coordinates in destination.
 
-![Stroke a rectangle](../image/cairo.png){width=9.0cm height=6.0cm}
+![Stroke a rectangle](/images/cairo.png){width=9.0cm height=6.0cm}
 
 The instruction is as follows:
 
@@ -89,7 +89,7 @@ To compile this, change your current directory to `src/misc` and type the follow
 $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
 ```
 s
-![rectangle.png](../image/rectangle.png)
+![rectangle.png](/images/rectangle.png)
 
 See the [Cairo's website](https://www.cairographics.org/) for further information.
 
@@ -138,4 +138,4 @@ Compile and run it, then a window with a black rectangle (square) appears.
 Try resizing the window.
 The square always appears at the center of the window because the drawing function is invoked each time the window is resized.
 
-![Square in the window](../image/da1.png){width=8cm height=3.4cm}
+![Square in the window](/images/da1.png){width=8cm height=3.4cm}

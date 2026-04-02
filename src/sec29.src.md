@@ -30,7 +30,7 @@ There's another object GtkListView which is a widget to display the list.
 The items in the list need to be connected to the items in GtkListView.
 GtkListItemFactory instance maps items in the list to GtkListView.
 
-![List](../image/list.png){width=10cm height=7.5cm}
+![List](/images/list.png){width=10cm height=7.5cm}
 
 ## GListModel and GtkStringList
 
@@ -94,7 +94,7 @@ GtkListItem is used by GtkListView to represent items of a list model.
 But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
 "item" property of GtkListItem points an object that belongs to the list model.
 
-![GtkListItem](../image/gtklistitem.png){width=10cm height=7.5cm}
+![GtkListItem](/images/gtklistitem.png){width=10cm height=7.5cm}
 
 In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
 This recycle makes the number of GtkListItem objects fairly small, less than 200.
@@ -163,7 +163,7 @@ $ ./a.out
 
 Then, the following window appears.
 
-![list1](../image/list1.png){width=6.04cm height=4.40cm}
+![list1](/images/list1.png){width=6.04cm height=4.40cm}
 
 The program is not so difficult.
 If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.
@@ -228,7 +228,7 @@ There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
 Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in [section 31](sec31).
+`this` object will be explained in [Section 31](sec31.src.md).
 
 The C source code is as follows.
 Its name is `list2.c` and located under [src/misc](misc) directory.
@@ -359,7 +359,7 @@ The contents of closure tag (it is between \<closure...\> and\</closure\>) is pa
 `<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
 This will be the second argument of the function.
 The first parameter is always the GListItem instance, which is a 'this' object.
-The 'this' object is explained in section 31.
+The 'this' object is explained in Section 31.
 - `gtk_file_name` function is the callback function for the closure tag.
 It first checks the `info` parameter.
 Because it can be NULL when GListItem `item` is unbounded.
@@ -424,4 +424,4 @@ $ comp list3
 $ ./a.out
 ~~~
 
-![screenshot list3](../image/list3.png){width=10cm height=7.3cm}
+![screenshot list3](/images/list3.png){width=10cm height=7.3cm}

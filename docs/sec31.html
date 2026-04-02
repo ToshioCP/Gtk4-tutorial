@@ -1,226 +1,212 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="pandoc" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <title>GTK 4 tutorial</title>
-    <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-      ul.task-list{list-style: none;}
-      pre{overflow: visible;}
-      pre > code.sourceCode { white-space: pre; position: relative; }
-      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-      pre > code.sourceCode > span:empty { height: 1.2em; }
-      code.sourceCode > span { color: inherit; text-decoration: inherit; }
-      div.sourceCode { margin: 1em 0; }
-      pre.sourceCode { margin: 0; }
-      @media screen {
-      div.sourceCode { overflow: auto; }
-      }
-      @media print {
-      pre > code.sourceCode { white-space: pre-wrap; }
-      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-      }
-      pre.numberSource code
-        { counter-reset: source-line 0; }
-      pre.numberSource code > span
-        { position: relative; left: -4em; counter-increment: source-line; }
-      pre.numberSource code > span > a:first-child::after
-        { content: counter(source-line);
-          position: relative; left: -1em; text-align: right; vertical-align: baseline;
-          border: none; display: inline-block;
-          -webkit-touch-callout: none; -webkit-user-select: none;
-          -khtml-user-select: none; -moz-user-select: none;
-          -ms-user-select: none; user-select: none;
-          padding: 0 4px; width: 4em;
-          color: #aaaaaa;
-        }
-      pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-      div.sourceCode
-        {   }
-      @media screen {
-      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-      }
-      code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-      code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-      code span.at { color: #7d9029; } /* Attribute */
-      code span.bn { color: #40a070; } /* BaseN */
-      code span.bu { } /* BuiltIn */
-      code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-      code span.ch { color: #4070a0; } /* Char */
-      code span.cn { color: #880000; } /* Constant */
-      code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-      code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-      code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-      code span.dt { color: #902000; } /* DataType */
-      code span.dv { color: #40a070; } /* DecVal */
-      code span.er { color: #ff0000; font-weight: bold; } /* Error */
-      code span.ex { } /* Extension */
-      code span.fl { color: #40a070; } /* Float */
-      code span.fu { color: #06287e; } /* Function */
-      code span.im { } /* Import */
-      code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-      code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-      code span.op { color: #666666; } /* Operator */
-      code span.ot { color: #007020; } /* Other */
-      code span.pp { color: #bc7a00; } /* Preprocessor */
-      code span.sc { color: #4070a0; } /* SpecialChar */
-      code span.ss { color: #bb6688; } /* SpecialString */
-      code span.st { color: #4070a0; } /* String */
-      code span.va { color: #19177c; } /* Variable */
-      code span.vs { color: #4070a0; } /* VerbatimString */
-      code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-      div.sourceCode { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      pre:not(.sourceCode) { margin: 10px; padding: 16px 10px 8px 10px; border: 2px solid silver; background-color: ghostwhite; overflow-x:scroll}
-      table {margin-left: auto; margin-right: auto; border-collapse: collapse; border: 1px solid;}
-      th {padding: 2px 6px; border: 1px solid; background-color: ghostwhite;}
-      td {padding: 2px 6px; border: 1px solid;}
-      img {display: block; margin-left: auto; margin-right: auto;}
-      figcaption {text-align: center;}
-    </style>
-  </head>
-  <body style="padding-top: 70px;">
-    <div class="container">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
-        <span class="navbar-brand">Gtk4 tutorial</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-<a class="nav-link" href="index.html">Home</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec30.html">Prev: section30</a>
-</li>
-
-            <li class="nav-item">
-<a class="nav-link" href="sec32.html">Next: section32</a>
-</li>
-
-          </ul>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>GtkExpression</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec30.html">Prev: Section 30</a></li>
+                              <li class="nav-item"><a class="nav-link" href="sec32.html">Next: Section 32</a></li>
+                  </ul>
       </div>
-    </nav>
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-xxl-9">
-<h1 id="gtkexpression">GtkExpression</h1>
-<p>GtkExpression is a fundamental type. It is not a descendant of
-GObject. GtkExpression provides a way to describe references to values.
-GtkExpression needs to be evaluated to obtain a value.</p>
-<p>It is similar to arithmetic calculation.</p>
-<pre><code>1 + 2 = 3</code></pre>
-<p><code>1+2</code> is an expression. It shows the way how to calculate.
-<code>3</code> is the value comes from the expression. Evaluation is to
-calculate the expression and get the value.</p>
-<p>GtkExpression is a way to get a value. Evaluation is like a
-calculation. A value is got by evaluating the expression.</p>
-<h2 id="constant-expression">Constant expression</h2>
-<p>A constant expression (GtkConstantExpression) provides constant value
-or instance when it is evaluated.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="gtkexpression">GtkExpression</h1>
+        <p>GtkExpression is a fundamental type. It is not a descendant
+        of GObject. GtkExpression provides a way to describe references
+        to values. GtkExpression needs to be evaluated to obtain a
+        value.</p>
+        <p>It is similar to arithmetic calculation.</p>
+        <pre><code>1 + 2 = 3</code></pre>
+        <p><code>1+2</code> is an expression. It shows the way how to
+        calculate. <code>3</code> is the value comes from the
+        expression. Evaluation is to calculate the expression and get
+        the value.</p>
+        <p>GtkExpression is a way to get a value. Evaluation is like a
+        calculation. A value is got by evaluating the expression.</p>
+        <h2 id="constant-expression">Constant expression</h2>
+        <p>A constant expression (GtkConstantExpression) provides
+        constant value or instance when it is evaluated.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  GValue value <span class="op">=</span> G_VALUE_INIT<span class="op">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  expression <span class="op">=</span> gtk_constant_expression_new <span class="op">(</span>G_TYPE_INT<span class="op">,</span><span class="dv">100</span><span class="op">);</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  gtk_expression_evaluate <span class="op">(</span>expression<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>value<span class="op">);</span></span></code></pre></div>
-<ul>
-<li>GtkExpression uses GValue to hold a value. GValue is a structure and
-container to hold a type and value. It must be initialized with
-<code>G_VALUE_INIT</code>, first. Be careful that <code>value</code> is
-a structure, not a pointer to a structure.</li>
-<li>Constant expression is created with
-<code>gtk_constant_expression_new</code> function. The parameter of the
-function is a type (GType) and a value (or instance). This expression
-holds a constant value. <code>G_TYPE_INT</code> is a type that is
-registered to the type system. It is integer type. Some types are shown
-in the following table.</li>
-<li><code>gtk_expression_evaluate</code> evaluates the expression. It
-has three parameters, the expression to evaluate, <code>this</code>
-instance and a pointer to a GValue for being set with the value.
-<code>this</code> instance isn’t necessary for constant expressions.
-Therefore, the second argument is NULL.
-<code>gtk_expression_evaluate</code> returns TRUE if it successfully
-evaluates the expression. Otherwise it returns FALSE.</li>
-<li>If it returns TRUE, the GValue <code>value</code> is set with the
-value of the expression. The type of the value is int.</li>
-</ul>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">GType</th>
-<th style="text-align: left;">C type</th>
-<th style="text-align: left;">type name</th>
-<th style="text-align: left;">notes</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">G_TYPE_CHAR</td>
-<td style="text-align: left;">char</td>
-<td style="text-align: left;">gchar</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">G_TYPE_BOOLEAN</td>
-<td style="text-align: left;">int</td>
-<td style="text-align: left;">gboolean</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">G_TYPE_INT</td>
-<td style="text-align: left;">int</td>
-<td style="text-align: left;">gint</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">G_TYPE_FLOAT</td>
-<td style="text-align: left;">float</td>
-<td style="text-align: left;">gfloat</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">G_TYPE_DOUBLE</td>
-<td style="text-align: left;">double</td>
-<td style="text-align: left;">gdouble</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">G_TYPE_POINTER</td>
-<td style="text-align: left;">void *</td>
-<td style="text-align: left;">gpointer</td>
-<td style="text-align: left;">general pointer</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">G_TYPE_STRING</td>
-<td style="text-align: left;">char *</td>
-<td style="text-align: left;">gchararray</td>
-<td style="text-align: left;">null-terminated Cstring</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">G_TYPE_OBJECT</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">GObject</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">GTK_TYPE_WINDOW</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">GtkWindow</td>
-<td style="text-align: left;"></td>
-</tr>
-</tbody>
-</table>
-<p>A sample program <code>exp_constant_simple.c</code> is in
-<code>src/expression</code> directory.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <ul>
+        <li>GtkExpression uses GValue to hold a value. GValue is a
+        structure and container to hold a type and value. It must be
+        initialized with <code>G_VALUE_INIT</code>, first. Be careful
+        that <code>value</code> is a structure, not a pointer to a
+        structure.</li>
+        <li>Constant expression is created with
+        <code>gtk_constant_expression_new</code> function. The parameter
+        of the function is a type (GType) and a value (or instance).
+        This expression holds a constant value. <code>G_TYPE_INT</code>
+        is a type that is registered to the type system. It is integer
+        type. Some types are shown in the following table.</li>
+        <li><code>gtk_expression_evaluate</code> evaluates the
+        expression. It has three parameters, the expression to evaluate,
+        <code>this</code> instance and a pointer to a GValue for being
+        set with the value. <code>this</code> instance isn’t necessary
+        for constant expressions. Therefore, the second argument is
+        NULL. <code>gtk_expression_evaluate</code> returns TRUE if it
+        successfully evaluates the expression. Otherwise it returns
+        FALSE.</li>
+        <li>If it returns TRUE, the GValue <code>value</code> is set
+        with the value of the expression. The type of the value is
+        int.</li>
+        </ul>
+        <table>
+        <thead>
+        <tr class="header">
+        <th style="text-align: left;">GType</th>
+        <th style="text-align: left;">C type</th>
+        <th style="text-align: left;">type name</th>
+        <th style="text-align: left;">notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td style="text-align: left;">G_TYPE_CHAR</td>
+        <td style="text-align: left;">char</td>
+        <td style="text-align: left;">gchar</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: left;">G_TYPE_BOOLEAN</td>
+        <td style="text-align: left;">int</td>
+        <td style="text-align: left;">gboolean</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: left;">G_TYPE_INT</td>
+        <td style="text-align: left;">int</td>
+        <td style="text-align: left;">gint</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: left;">G_TYPE_FLOAT</td>
+        <td style="text-align: left;">float</td>
+        <td style="text-align: left;">gfloat</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: left;">G_TYPE_DOUBLE</td>
+        <td style="text-align: left;">double</td>
+        <td style="text-align: left;">gdouble</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: left;">G_TYPE_POINTER</td>
+        <td style="text-align: left;">void *</td>
+        <td style="text-align: left;">gpointer</td>
+        <td style="text-align: left;">general pointer</td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: left;">G_TYPE_STRING</td>
+        <td style="text-align: left;">char *</td>
+        <td style="text-align: left;">gchararray</td>
+        <td style="text-align: left;">null-terminated Cstring</td>
+        </tr>
+        <tr class="even">
+        <td style="text-align: left;">G_TYPE_OBJECT</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: left;">GObject</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        <tr class="odd">
+        <td style="text-align: left;">GTK_TYPE_WINDOW</td>
+        <td style="text-align: left;"></td>
+        <td style="text-align: left;">GtkWindow</td>
+        <td style="text-align: left;"></td>
+        </tr>
+        </tbody>
+        </table>
+        <p>A sample program <code>exp_constant_simple.c</code> is in
+        <code>src/expression</code> directory.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="dt">int</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -239,45 +225,52 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb3-17"><a href="#cb3-17"></a></span>
 <span id="cb3-18"><a href="#cb3-18"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb3-19"><a href="#cb3-19"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>9: A constant expression is created. It holds an int value 100. The
-variable <code>expression</code> points the expression.</li>
-<li>11-14: Evaluates the expression. If it successes, show the value to
-the stdout. Otherwise show an error message.</li>
-<li>15-16: Releases the expression and unsets the GValue.</li>
-</ul>
-<p>Constant expression is usually used to give a constant value or
-instance to another expression.</p>
-<h2 id="property-expression">Property expression</h2>
-<p>A property expression (GtkPropertyExpression) looks up a property in
-a GObject instance. For example, a property expression that refers
-“label” property in a GtkLabel object is created like this.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> another_expression<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span></code></pre></div>
-<p>The second parameter <code>another_expression</code> is one of:</p>
-<ul>
-<li>An expression that gives a GtkLabel instance when it is
-evaluated.</li>
-<li>NULL. When NULL is given, a GtkLabel instance will be given when it
-is evaluated. The instance is called <code>this</code> object.</li>
-</ul>
-<p>For example,</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span>
+        <ul>
+        <li>9: A constant expression is created. It holds an int value
+        100. The variable <code>expression</code> points the
+        expression.</li>
+        <li>11-14: Evaluates the expression. If it successes, show the
+        value to the stdout. Otherwise show an error message.</li>
+        <li>15-16: Releases the expression and unsets the GValue.</li>
+        </ul>
+        <p>Constant expression is usually used to give a constant value
+        or instance to another expression.</p>
+        <h2 id="property-expression">Property expression</h2>
+        <p>A property expression (GtkPropertyExpression) looks up a
+        property in a GObject instance. For example, a property
+        expression that refers “label” property in a GtkLabel object is
+        created like this.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> another_expression<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span></code></pre></div>
+        <p>The second parameter <code>another_expression</code> is one
+        of:</p>
+        <ul>
+        <li>An expression that gives a GtkLabel instance when it is
+        evaluated.</li>
+        <li>NULL. When NULL is given, a GtkLabel instance will be given
+        when it is evaluated. The instance is called <code>this</code>
+        object.</li>
+        </ul>
+        <p>For example,</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>another_expression <span class="op">=</span> gtk_constant_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> label<span class="op">);</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>expression <span class="op">=</span> gtk_property_expression_new <span class="op">(</span>GTK_TYPE_LABEL<span class="op">,</span> another_expression<span class="op">,</span> <span class="st">&quot;label&quot;</span><span class="op">);</span></span></code></pre></div>
-<p>If <code>expression</code> is evaluated, the second parameter
-<code>another_expression</code> is evaluated in advance. The value of
-<code>another_expression</code> is the <code>label</code> (GtkLabel
-instance). Then, <code>expression</code> looks up “label” property of
-the label and the evaluation results in “Hello”.</p>
-<p>In the example above, the second argument of
-<code>gtk_property_expression_new</code> is another expression. But the
-second argument can be NULL. If it is NULL, <code>this</code> instance
-is used instead. <code>this</code> is given by
-<code>gtk_expression_evaluate</code> function.</p>
-<p>There’s a simple program <code>exp_property_simple.c</code> in
-<code>src/expression</code> directory.</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>If <code>expression</code> is evaluated, the second parameter
+        <code>another_expression</code> is evaluated in advance. The
+        value of <code>another_expression</code> is the
+        <code>label</code> (GtkLabel instance). Then,
+        <code>expression</code> looks up “label” property of the label
+        and the evaluation results in “Hello”.</p>
+        <p>In the example above, the second argument of
+        <code>gtk_property_expression_new</code> is another expression.
+        But the second argument can be NULL. If it is NULL,
+        <code>this</code> instance is used instead. <code>this</code> is
+        given by <code>gtk_expression_evaluate</code> function.</p>
+        <p>There’s a simple program <code>exp_property_simple.c</code>
+        in <code>src/expression</code> directory.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="dt">int</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
@@ -299,49 +292,54 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb6-20"><a href="#cb6-20"></a></span>
 <span id="cb6-21"><a href="#cb6-21"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb6-22"><a href="#cb6-22"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>9-10: <code>gtk_init</code> initializes GTK GUI toolkit. It isn’t
-usually necessary because the GtkApplication default startup handler
-does the initialization. A GtkLabel instance is created with the text
-“Hello world.”.</li>
-<li>12: A property expression is created. It looks a “label” property of
-a GtkLabel instance. But at the creation, no instance is given because
-the second argument is NULL. The expression just knows how to take the
-property from a future-given GtkLabel instance.</li>
-<li>14-17: The function <code>gtk_expression_evaluate</code> evaluates
-the expression with a ‘this’ instance <code>label</code>. The result is
-stored in the GValue <code>value</code>. The function
-<code>g_value_get_string</code> gets a string from the GValue. But the
-string is owned by the GValue so you must not free the string.</li>
-<li>18-19: Releases the expression and unset the GValue. At the same
-time the string in the GValue is freed.</li>
-</ul>
-<p>If the second argument of <code>gtk_property_expression_new</code>
-isn’t NULL, it is another expression. The expression is owned by a newly
-created property expression. So, when the expressions are useless, you
-just release the last expression. Then it releases another expression it
-has.</p>
-<h2 id="closure-expression">Closure expression</h2>
-<p>A closure expression calls closure when it is evaluated. A closure is
-a generic representation of a callback (a pointer to a function). For
-information about closure, see <a
-href="https://docs.gtk.org/gobject/concepts.html#the-gobject-messaging-system">GObject
-API Reference – The GObject messaging system</a>. There are simple
-closure example files <code>closure.c</code> and
-<code>closure_each.c</code> in the <code>src/expression</code>
-directory.</p>
-<p>There are two types of closure expressions, GtkCClosureExpression and
-GtkClosureExpression. They corresponds to GCClosure and GClosure
-respectively. When you program in C language, GtkCClosureExpression and
-GCClosure are appropriate.</p>
-<p>A closure expression is created with
-<code>gtk_cclosure_expression_new</code> function.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span></span>
+        <ul>
+        <li>9-10: <code>gtk_init</code> initializes GTK GUI toolkit. It
+        isn’t usually necessary because the GtkApplication default
+        startup handler does the initialization. A GtkLabel instance is
+        created with the text “Hello world.”.</li>
+        <li>12: A property expression is created. It looks a “label”
+        property of a GtkLabel instance. But at the creation, no
+        instance is given because the second argument is NULL. The
+        expression just knows how to take the property from a
+        future-given GtkLabel instance.</li>
+        <li>14-17: The function <code>gtk_expression_evaluate</code>
+        evaluates the expression with a ‘this’ instance
+        <code>label</code>. The result is stored in the GValue
+        <code>value</code>. The function <code>g_value_get_string</code>
+        gets a string from the GValue. But the string is owned by the
+        GValue so you must not free the string.</li>
+        <li>18-19: Releases the expression and unset the GValue. At the
+        same time the string in the GValue is freed.</li>
+        </ul>
+        <p>If the second argument of
+        <code>gtk_property_expression_new</code> isn’t NULL, it is
+        another expression. The expression is owned by a newly created
+        property expression. So, when the expressions are useless, you
+        just release the last expression. Then it releases another
+        expression it has.</p>
+        <h2 id="closure-expression">Closure expression</h2>
+        <p>A closure expression calls closure when it is evaluated. A
+        closure is a generic representation of a callback (a pointer to
+        a function). For information about closure, see <a
+        href="https://docs.gtk.org/gobject/concepts.html#the-gobject-messaging-system">GObject
+        API Reference – The GObject messaging system</a>. There are
+        simple closure example files <code>closure.c</code> and
+        <code>closure_each.c</code> in the <code>src/expression</code>
+        directory.</p>
+        <p>There are two types of closure expressions,
+        GtkCClosureExpression and GtkClosureExpression. They corresponds
+        to GCClosure and GClosure respectively. When you program in C
+        language, GtkCClosureExpression and GCClosure are
+        appropriate.</p>
+        <p>A closure expression is created with
+        <code>gtk_cclosure_expression_new</code> function.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>callback <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">,</span> <span class="dt">int</span> x<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s<span class="op">)</span></span></code></pre></div>
-<p>The following is <code>exp_closure_simple.c</code> in
-<code>src/expression</code>.</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>The following is <code>exp_closure_simple.c</code> in
+        <code>src/expression</code>.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a></span>
 <span id="cb8-3"><a href="#cb8-3"></a><span class="dt">static</span> <span class="dt">int</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a>calc <span class="op">(</span>GtkLabel <span class="op">*</span>label<span class="op">)</span> <span class="op">{</span> <span class="co">/* this object */</span></span>
@@ -374,66 +372,77 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb8-31"><a href="#cb8-31"></a>  </span>
 <span id="cb8-32"><a href="#cb8-32"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb8-33"><a href="#cb8-33"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>3-11: A call back function. The parameter is only one and it is a
-‘this’ object. It is a GtkLabel and its label is assumed to be
-“(number)+(number)”.</li>
-<li>8-10: Retrieves two integers from the label and returns the sum of
-them. This function has no error report. If you want to return error
-report, change the return value type to be a pointer to a structure of
-gboolean and integer. One for error and the other for the sum. The first
-argument of <code>gtk_cclosure_expression_new</code> is
-<code>G_TYPE_POINTER</code>. There is a sample program
-<code>exp_closure_with_error_report</code> in
-<code>src/expression</code> directory.</li>
-<li>19: The function `gtk_init`` initializes GTK. It is necessary for
-GtkLabel.</li>
-<li>20: A GtkLabel instance is created with “123+456”.</li>
-<li>21: The instance has floating reference. It is changed to an
-ordinary reference count.</li>
-<li>22-23: Creates a closure expression. Its return value type is
-<code>G_TYPE_INT</code> and no parameters or ‘this’ object.</li>
-<li>24: Evaluates the expression with the label as a ‘this’ object.</li>
-<li>25: If the evaluation successes, the sum of “123+456”, which is 579,
-is shown.</li>
-<li>27: If it fails, an error message appears.</li>
-<li>28-30: Releases the expression and the label. Unsets the value.</li>
-</ul>
-<p>Closure expression is flexible than other type of expression because
-you can specify your own callback function.</p>
-<h2 id="gtkexpressionwatch">GtkExpressionWatch</h2>
-<p>GtkExpressionWatch is a structure, not an object. It represents a
-watched GtkExpression. Two functions create GtkExpressionWatch
-structure. They are <code>gtk_expression_bind</code> and
-<code>gtk_expression_watch</code>.</p>
-<h3 id="gtk_expression_bind-function">gtk_expression_bind function</h3>
-<p>This function binds the target object’s property to the expression.
-If the value of the expression changes, the property reflects the value
-immediately.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GtkExpressionWatch<span class="op">*</span></span>
+        <ul>
+        <li>3-11: A call back function. The parameter is only one and it
+        is a ‘this’ object. It is a GtkLabel and its label is assumed to
+        be “(number)+(number)”.</li>
+        <li>8-10: Retrieves two integers from the label and returns the
+        sum of them. This function has no error report. If you want to
+        return error report, change the return value type to be a
+        pointer to a structure of gboolean and integer. One for error
+        and the other for the sum. The first argument of
+        <code>gtk_cclosure_expression_new</code> is
+        <code>G_TYPE_POINTER</code>. There is a sample program
+        <code>exp_closure_with_error_report</code> in
+        <code>src/expression</code> directory.</li>
+        <li>19: The function `gtk_init`` initializes GTK. It is
+        necessary for GtkLabel.</li>
+        <li>20: A GtkLabel instance is created with “123+456”.</li>
+        <li>21: The instance has floating reference. It is changed to an
+        ordinary reference count.</li>
+        <li>22-23: Creates a closure expression. Its return value type
+        is <code>G_TYPE_INT</code> and no parameters or ‘this’
+        object.</li>
+        <li>24: Evaluates the expression with the label as a ‘this’
+        object.</li>
+        <li>25: If the evaluation successes, the sum of “123+456”, which
+        is 579, is shown.</li>
+        <li>27: If it fails, an error message appears.</li>
+        <li>28-30: Releases the expression and the label. Unsets the
+        value.</li>
+        </ul>
+        <p>Closure expression is flexible than other type of expression
+        because you can specify your own callback function.</p>
+        <h2 id="gtkexpressionwatch">GtkExpressionWatch</h2>
+        <p>GtkExpressionWatch is a structure, not an object. It
+        represents a watched GtkExpression. Two functions create
+        GtkExpressionWatch structure. They are
+        <code>gtk_expression_bind</code> and
+        <code>gtk_expression_watch</code>.</p>
+        <h3 id="gtk_expression_bind-function">gtk_expression_bind
+        function</h3>
+        <p>This function binds the target object’s property to the
+        expression. If the value of the expression changes, the property
+        reflects the value immediately.</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GtkExpressionWatch<span class="op">*</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>gtk_expression_bind <span class="op">(</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  GtkExpression<span class="op">*</span> self<span class="op">,</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> target<span class="op">,</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> property<span class="op">,</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> this_</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
-<p>This function takes the ownership of the expression. So, if you want
-to own the expression, call <code>gtk_expression_ref ()</code> to
-increase the reference count of the expression. And you should unref it
-when it is useless. If you don’t own the expression, you don’t care
-about releasing the expression.</p>
-<p>An example <code>exp_bind.c</code> and <code>exp_bind.ui</code> is in
-<code>src/expression</code> directory.</p>
-<figure>
-<img src="image/exp_bind.png" alt="exp_bind" />
-<figcaption aria-hidden="true">exp_bind</figcaption>
-</figure>
-<p>It includes a label and a scale. If you move the slider to the right,
-the scale value increases and the number on the label also increases. In
-the same way, if you move it to the left, the number on the label
-decreases. The label is bound to the scale value via an adjustment.</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&#39;1.0&#39;</span><span class="ot"> encoding=</span><span class="st">&#39;UTF-8&#39;</span><span class="fu">?&gt;</span></span>
+        <p>This function takes the ownership of the expression. So, if
+        you want to own the expression, call
+        <code>gtk_expression_ref ()</code> to increase the reference
+        count of the expression. And you should unref it when it is
+        useless. If you don’t own the expression, you don’t care about
+        releasing the expression.</p>
+        <p>An example <code>exp_bind.c</code> and
+        <code>exp_bind.ui</code> is in <a
+        href="expression"><code>src/expression</code></a> directory.</p>
+        <figure>
+        <img src="/images/exp_bind.png" style="width:9.2cm;height:1.9cm"
+        alt="exp_bind" />
+        <figcaption aria-hidden="true">exp_bind</figcaption>
+        </figure>
+        <p>It includes a label and a scale. If you move the slider to
+        the right, the scale value increases and the number on the label
+        also increases. In the same way, if you move it to the left, the
+        number on the label decreases. The label is bound to the scale
+        value via an adjustment.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&#39;1.0&#39;</span><span class="ot"> encoding=</span><span class="st">&#39;UTF-8&#39;</span><span class="fu">?&gt;</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb10-3"><a href="#cb10-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&#39;GtkApplicationWindow&#39;</span><span class="ot"> id=</span><span class="st">&#39;win&#39;</span>&gt;</span>
 <span id="cb10-4"><a href="#cb10-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&#39;default-width&#39;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
@@ -467,33 +476,35 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb10-32"><a href="#cb10-32"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb10-33"><a href="#cb10-33"></a>  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb10-34"><a href="#cb10-34"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>The ui file describes the following parent-child relationship.</p>
-<pre><code>GtkApplicationWindow (win) -- GtkBox -+- GtkLabel (label)
+        <p>The ui file describes the following parent-child
+        relationship.</p>
+        <pre><code>GtkApplicationWindow (win) -- GtkBox -+- GtkLabel (label)
                                       +- GtkScale</code></pre>
-<p>Four GtkScale properties are defined.</p>
-<ul>
-<li>adjustment. GtkAdjustment provides the followings.
-<ul>
-<li>upper and lower: the range of the scale.</li>
-<li>value: current value of the scale. It reflects the value of the
-scale.</li>
-<li>step increment and page increment: When a user press an arrow key or
-page up/down key, the scale moves by the step increment or page
-increment respectively.</li>
-<li>page-size: When an adjustment is used with a scale, page-size is
-zero.</li>
-</ul></li>
-<li>digits: The number of decimal places that are displayed in the
-value.</li>
-<li>draw-value: Whether the value is displayed.</li>
-<li>has-origin: Whether the scale has the origin. If it’s true, an
-orange bar appears between the origin and the current point.</li>
-<li>round-digits: The number of digits to round the value to when it
-changes. For example, if it is zero, the slider moves to an integer
-point.</li>
-</ul>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>Four GtkScale properties are defined.</p>
+        <ul>
+        <li>adjustment. GtkAdjustment provides the followings.
+        <ul>
+        <li>upper and lower: the range of the scale.</li>
+        <li>value: current value of the scale. It reflects the value of
+        the scale.</li>
+        <li>step increment and page increment: When a user press an
+        arrow key or page up/down key, the scale moves by the step
+        increment or page increment respectively.</li>
+        <li>page-size: When an adjustment is used with a scale,
+        page-size is zero.</li>
+        </ul></li>
+        <li>digits: The number of decimal places that are displayed in
+        the value.</li>
+        <li>draw-value: Whether the value is displayed.</li>
+        <li>has-origin: Whether the scale has the origin. If it’s true,
+        an orange bar appears between the origin and the current
+        point.</li>
+        <li>round-digits: The number of digits to round the value to
+        when it changes. For example, if it is zero, the slider moves to
+        an integer point.</li>
+        </ul>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a></span>
 <span id="cb12-3"><a href="#cb12-3"></a>GtkExpressionWatch <span class="op">*</span>watch<span class="op">;</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a></span>
@@ -554,34 +565,40 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb12-59"><a href="#cb12-59"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb12-60"><a href="#cb12-60"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb12-61"><a href="#cb12-61"></a><span class="op">}</span></span></code></pre></div>
-<p>The point of the program is:</p>
-<ul>
-<li>41-42: Two expressions are defined. One is a property expression and
-the other is a closure expression. The property expression looks up the
-“value” property of the adjustment instance. The closure expression just
-converts the double into an integer.</li>
-<li>43: <code>gtk_expression_bind</code> binds the label property of the
-GtkLabel instance to the integer returned by the closure expression. It
-creates a GtkExpressionWatch structure. The binding works during the
-watch lives. When the window is destroyed, the scale and adjustment are
-also destroyed. And the watch recognizes the value of the expression
-changes and tries to change the property of the label. Obviously, it is
-not a correct behavior. The watch should be unwatched before the window
-is destroyed.</li>
-<li>37: Connects the “close-request” signal on the window to a handler
-<code>close_request_cb</code>. This signal is emitted when the close
-button is clicked. The handler is called just before the window closes.
-It is the right moment to make the GtkExpressionWatch unwatched.</li>
-<li>10-14: “close-request” signal handler. The function
-<code>gtk_expression_watch_unwatch (watch)</code> makes the watch stop
-watching the expression. It also releases the expression.</li>
-</ul>
-<p>If you want to bind a property to an expression,
-<code>gtk_expression_bind</code> is the best choice. You can do it with
-<code>gtk_expression_watch</code> function, but it is less suitable.</p>
-<h3 id="gtk_expression_watch-function">gtk_expression_watch
-function</h3>
-<div class="sourceCode" id="cb13"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>GtkExpressionWatch<span class="op">*</span></span>
+        <p>The point of the program is:</p>
+        <ul>
+        <li>41-42: Two expressions are defined. One is a property
+        expression and the other is a closure expression. The property
+        expression looks up the “value” property of the adjustment
+        instance. The closure expression just converts the double into
+        an integer.</li>
+        <li>43: <code>gtk_expression_bind</code> binds the label
+        property of the GtkLabel instance to the integer returned by the
+        closure expression. It creates a GtkExpressionWatch structure.
+        The binding works during the watch lives. When the window is
+        destroyed, the scale and adjustment are also destroyed. And the
+        watch recognizes the value of the expression changes and tries
+        to change the property of the label. Obviously, it is not a
+        correct behavior. The watch should be unwatched before the
+        window is destroyed.</li>
+        <li>37: Connects the “close-request” signal on the window to a
+        handler <code>close_request_cb</code>. This signal is emitted
+        when the close button is clicked. The handler is called just
+        before the window closes. It is the right moment to make the
+        GtkExpressionWatch unwatched.</li>
+        <li>10-14: “close-request” signal handler. The function
+        <code>gtk_expression_watch_unwatch (watch)</code> makes the
+        watch stop watching the expression. It also releases the
+        expression.</li>
+        </ul>
+        <p>If you want to bind a property to an expression,
+        <code>gtk_expression_bind</code> is the best choice. You can do
+        it with <code>gtk_expression_watch</code> function, but it is
+        less suitable.</p>
+        <h3 id="gtk_expression_watch-function">gtk_expression_watch
+        function</h3>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>GtkExpressionWatch<span class="op">*</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>gtk_expression_watch <span class="op">(</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  GtkExpression<span class="op">*</span> self<span class="op">,</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> this_<span class="op">,</span></span>
@@ -589,33 +606,36 @@ function</h3>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  gpointer user_data<span class="op">,</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  GDestroyNotify user_destroy</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
-<p>The function doesn’t take the ownership of the expression. It differs
-from <code>gtk_expression_bind</code>. So, you need to release the
-expression when it is useless. It creates a GtkExpressionWatch
-structure. The third parameter <code>notify</code> is a callback to
-invoke when the expression changes. You can set <code>user_data</code>
-to give it to the callback. The last parameter is a function to destroy
-the <code>user_data</code> when the watch is unwatched. Put NULL if you
-don’t need them.</p>
-<p>Notify callback has the following format.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode C"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+        <p>The function doesn’t take the ownership of the expression. It
+        differs from <code>gtk_expression_bind</code>. So, you need to
+        release the expression when it is useless. It creates a
+        GtkExpressionWatch structure. The third parameter
+        <code>notify</code> is a callback to invoke when the expression
+        changes. You can set <code>user_data</code> to give it to the
+        callback. The last parameter is a function to destroy the
+        <code>user_data</code> when the watch is unwatched. Put NULL if
+        you don’t need them.</p>
+        <p>Notify callback has the following format.</p>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>notify <span class="op">(</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
-<p>This function is used to do something when the value of the
-expression changes. But if you want to bind a property to the value, use
-<code>gtk_expression_bind</code> instead.</p>
-<p>There’s a sample program <code>exp_watch.c</code> in
-<code>src/expression</code> directory. It outputs the width of the
-window to the standard output.</p>
-<figure>
-<img src="image/exp_watch.png" alt="exp_watch" />
-<figcaption aria-hidden="true">exp_watch</figcaption>
-</figure>
-<p>When you resize the window, the width is displayed in the
-terminal.</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <p>This function is used to do something when the value of the
+        expression changes. But if you want to bind a property to the
+        value, use <code>gtk_expression_bind</code> instead.</p>
+        <p>There’s a sample program <code>exp_watch.c</code> in <a
+        href="expression"><code>src/expression</code></a> directory. It
+        outputs the width of the window to the standard output.</p>
+        <figure>
+        <img src="/images/exp_watch.png"
+        style="width:9.6cm;height:6.9cm" alt="exp_watch" />
+        <figcaption aria-hidden="true">exp_watch</figcaption>
+        </figure>
+        <p>When you resize the window, the width is displayed in the
+        terminal.</p>
+        <div class="sourceCode" id="cb15"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a></span>
 <span id="cb15-3"><a href="#cb15-3"></a>GtkExpression <span class="op">*</span>expression<span class="op">;</span></span>
 <span id="cb15-4"><a href="#cb15-4"></a>GtkExpressionWatch <span class="op">*</span>watch<span class="op">;</span></span>
@@ -671,51 +691,56 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb15-54"><a href="#cb15-54"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb15-55"><a href="#cb15-55"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb15-56"><a href="#cb15-56"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>37: A property expression looks up the “default-width” property of
-the window.</li>
-<li>38: Create a watch structure for the expression. The callback
-<code>notify</code> is called every time the value of the expression
-changes. The ‘this’ object is <code>win</code>, so the expression
-returns the default width of the window.</li>
-<li>6-14: The callback function <code>notify</code>. It uses
-<code>gtk_expression_watch_evaluate</code> to get the value of the
-expression. The ‘this’ object is given in advance (when the watch is
-created). It outputs the window width to the standard output.</li>
-<li>16-21: A handler for the “close-request”signal on the window. It
-stops the watch. In addition, it releases the reference to the
-expression. Because <code>gtk_expression_watch</code> doesn’t take the
-ownership of the expression, you own it. So, the release is
-necessary.</li>
-</ul>
-<h2 id="gtkexpression-in-ui-files">Gtkexpression in ui files</h2>
-<p>GtkBuilder supports GtkExpressions. There are four tags.</p>
-<ul>
-<li>constant tag to create constant expression. Type attribute specifies
-the type name of the value. If no type is specified, the type is assumed
-to be an object. The content is the value of the expression.</li>
-<li>lookup tag to create property expression. Type attribute specifies
-the type of the object. Name attribute specifies the property name. The
-content is an expression or object which has the property to look up. If
-there’s no content, ‘this’ object is used.</li>
-<li>closure tag to create closure expression. Type attribute specifies
-the type of the returned value. Function attribute specifies the
-callback function. The contents of the tag are arguments that are
-expressions.</li>
-<li>binding tag to bind a property to an expression. It is put in the
-content of an object tag. Name attribute specifies the property name of
-the object. The content is an expression.</li>
-</ul>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode xml"><code class="sourceCode xml"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">constant</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span>&gt;Hello world&lt;/<span class="kw">constant</span>&gt;</span>
+        <ul>
+        <li>37: A property expression looks up the “default-width”
+        property of the window.</li>
+        <li>38: Create a watch structure for the expression. The
+        callback <code>notify</code> is called every time the value of
+        the expression changes. The ‘this’ object is <code>win</code>,
+        so the expression returns the default width of the window.</li>
+        <li>6-14: The callback function <code>notify</code>. It uses
+        <code>gtk_expression_watch_evaluate</code> to get the value of
+        the expression. The ‘this’ object is given in advance (when the
+        watch is created). It outputs the window width to the standard
+        output.</li>
+        <li>16-21: A handler for the “close-request”signal on the
+        window. It stops the watch. In addition, it releases the
+        reference to the expression. Because
+        <code>gtk_expression_watch</code> doesn’t take the ownership of
+        the expression, you own it. So, the release is necessary.</li>
+        </ul>
+        <h2 id="gtkexpression-in-ui-files">Gtkexpression in ui
+        files</h2>
+        <p>GtkBuilder supports GtkExpressions. There are four tags.</p>
+        <ul>
+        <li>constant tag to create constant expression. Type attribute
+        specifies the type name of the value. If no type is specified,
+        the type is assumed to be an object. The content is the value of
+        the expression.</li>
+        <li>lookup tag to create property expression. Type attribute
+        specifies the type of the object. Name attribute specifies the
+        property name. The content is an expression or object which has
+        the property to look up. If there’s no content, ‘this’ object is
+        used.</li>
+        <li>closure tag to create closure expression. Type attribute
+        specifies the type of the returned value. Function attribute
+        specifies the callback function. The contents of the tag are
+        arguments that are expressions.</li>
+        <li>binding tag to bind a property to an expression. It is put
+        in the content of an object tag. Name attribute specifies the
+        property name of the object. The content is an expression.</li>
+        </ul>
+        <div class="sourceCode" id="cb16"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">constant</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span>&gt;Hello world&lt;/<span class="kw">constant</span>&gt;</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span><span class="ot"> type=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;label&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gint&quot;</span><span class="ot"> function=</span><span class="st">&quot;callback_function&quot;</span>&gt;&lt;/<span class="kw">closure</span>&gt;</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">bind</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;win&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">bind</span>&gt;</span></code></pre></div>
-<p>These tags are usually used for GtkBuilderListItemFactory.</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode xml"><code class="sourceCode xml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
+        <p>These tags are usually used for
+        GtkBuilderListItemFactory.</p>
+        <div class="sourceCode" id="cb17"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
@@ -728,41 +753,47 @@ class="sourceCode xml"><code class="sourceCode xml"><span id="cb17-1"><a href="#
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">template</span>&gt;</span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<p>GtkBuilderListItemFactory uses GtkBuilder to extends the GtkListItem
-with the XML data.</p>
-<p>In the xml file above, “GtkListItem” is an instance of the
-GtkListItem template. It is the ‘this’ object given to the expressions.
-(The information is in the <a href="https://blog.gtk.org/2020/09/">GTK
-Development Blog</a>).</p>
-<p>GtkBuilder calls <code>gtk_expression_bind</code> function when it
-finds a binding tag. The function sets the ‘this’ object like this:</p>
-<ol type="1">
-<li>If the binding tag has object attribute, the object will be the
-‘this’ object.</li>
-<li>If the current object of the GtkBuilder exists, it will be the
-‘this’ object. That’s why a GtkListItem instance is the ‘this’ object of
-the XML data for a GtkBuilderListItemFactory.</li>
-<li>Otherwise, the target object of the binding tag will be the ‘this’
-object.</li>
-</ol>
-<p>GTK 4 document doesn’t describe information about “this” object when
-expressions are defined in a ui file. The information above is found
-from the GTK 4 source files and it is possible to include mistakes. If
-you have accurate information, please let me know.</p>
-<p>A sample program <code>exp.c</code> and a ui file <code>exp.ui</code>
-is in <code>src/expression</code> directory. The ui file includes
-lookup, closure and bind tags. No constant tag is included. However,
-constant tags are not used so often.</p>
-<figure>
-<img src="image/exp.png" alt="exp.c" />
-<figcaption aria-hidden="true">exp.c</figcaption>
-</figure>
-<p>If you resize the window, the size is shown at the title of the
-window. If you type characters in the entry, the same characters appear
-on the label.</p>
-<p>The ui file is as follows.</p>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb18-1"><a href="#cb18-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        <p>GtkBuilderListItemFactory uses GtkBuilder to extends the
+        GtkListItem with the XML data.</p>
+        <p>In the xml file above, “GtkListItem” is an instance of the
+        GtkListItem template. It is the ‘this’ object given to the
+        expressions. (The information is in the <a
+        href="https://blog.gtk.org/2020/09/">GTK Development
+        Blog</a>).</p>
+        <p>GtkBuilder calls <code>gtk_expression_bind</code> function
+        when it finds a binding tag. The function sets the ‘this’ object
+        like this:</p>
+        <ol type="1">
+        <li>If the binding tag has object attribute, the object will be
+        the ‘this’ object.</li>
+        <li>If the current object of the GtkBuilder exists, it will be
+        the ‘this’ object. That’s why a GtkListItem instance is the
+        ‘this’ object of the XML data for a
+        GtkBuilderListItemFactory.</li>
+        <li>Otherwise, the target object of the binding tag will be the
+        ‘this’ object.</li>
+        </ol>
+        <p>GTK 4 document doesn’t describe information about “this”
+        object when expressions are defined in a ui file. The
+        information above is found from the GTK 4 source files and it is
+        possible to include mistakes. If you have accurate information,
+        please let me know.</p>
+        <p>A sample program <code>exp.c</code> and a ui file
+        <code>exp.ui</code> is in <a
+        href="expression"><code>src/expression</code></a> directory. The
+        ui file includes lookup, closure and bind tags. No constant tag
+        is included. However, constant tags are not used so often.</p>
+        <figure>
+        <img src="/images/exp.png" style="width:10.3cm;height:7.6cm"
+        alt="exp.c" />
+        <figcaption aria-hidden="true">exp.c</figcaption>
+        </figure>
+        <p>If you resize the window, the size is shown at the title of
+        the window. If you type characters in the entry, the same
+        characters appear on the label.</p>
+        <p>The ui file is as follows.</p>
+        <div class="sourceCode" id="cb18"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb18-1"><a href="#cb18-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb18-3"><a href="#cb18-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
 <span id="cb18-4"><a href="#cb18-4"></a>    &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;</span>
@@ -796,23 +827,25 @@ class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><sp
 <span id="cb18-32"><a href="#cb18-32"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb18-33"><a href="#cb18-33"></a>  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb18-34"><a href="#cb18-34"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-<ul>
-<li>4-9: The title property of the main window is bound to a closure
-expression. Its callback function <code>set_title</code> is defined in
-the C source file. It returns a string because the type attribute of the
-tag is “gchararray”. Two parameters are given to the function. They are
-width and height of the window. Lookup tags don’t have contents, so
-‘this’ object is used to look up the properties. The ‘this’ object is
-<code>win</code>, which is the target of the binding (<code>win</code>
-includes the binding tag).</li>
-<li>17-21: The “label” property of the GtkLabel instance is bound to the
-“text” property of <code>buffer</code>, which is the buffer of GtkEntry
-defined in line 25. If a user types characters in the entry, the same
-characters appear on the label.</li>
-</ul>
-<p>The C source file is as follows.</p>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+        <ul>
+        <li>4-9: The title property of the main window is bound to a
+        closure expression. Its callback function <code>set_title</code>
+        is defined in the C source file. It returns a string because the
+        type attribute of the tag is “gchararray”. Two parameters are
+        given to the function. They are width and height of the window.
+        Lookup tags don’t have contents, so ‘this’ object is used to
+        look up the properties. The ‘this’ object is <code>win</code>,
+        which is the target of the binding (<code>win</code> includes
+        the binding tag).</li>
+        <li>17-21: The “label” property of the GtkLabel instance is
+        bound to the “text” property of <code>buffer</code>, which is
+        the buffer of GtkEntry defined in line 25. If a user types
+        characters in the entry, the same characters appear on the
+        label.</li>
+        </ul>
+        <p>The C source file is as follows.</p>
+        <div class="sourceCode" id="cb19"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb19-2"><a href="#cb19-2"></a></span>
 <span id="cb19-3"><a href="#cb19-3"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb19-4"><a href="#cb19-4"></a>set_title <span class="op">(</span>GtkWidget <span class="op">*</span>win<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">)</span> <span class="op">{</span></span>
@@ -853,44 +886,47 @@ class="sourceCode numberSource C numberLines"><code class="sourceCode c"><span i
 <span id="cb19-39"><a href="#cb19-39"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb19-40"><a href="#cb19-40"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb19-41"><a href="#cb19-41"></a><span class="op">}</span></span></code></pre></div>
-<ul>
-<li>4-6: The callback function. It returns a string (w)x(h), where the w
-and h are the width and height of the window. String duplication is
-necessary.</li>
-</ul>
-<p>The C source file is very simple because almost everything is done in
-the ui file.</p>
-<h2 id="conversion-between-gvalues">Conversion between GValues</h2>
-<p>If you bind different type properties, type conversion is
-automatically done. Suppose a label property (string) is bound to
-default-width property (int).</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode xml"><code class="sourceCode xml"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+        <ul>
+        <li>4-6: The callback function. It returns a string (w)x(h),
+        where the w and h are the width and height of the window. String
+        duplication is necessary.</li>
+        </ul>
+        <p>The C source file is very simple because almost everything is
+        done in the ui file.</p>
+        <h2 id="conversion-between-gvalues">Conversion between
+        GValues</h2>
+        <p>If you bind different type properties, type conversion is
+        automatically done. Suppose a label property (string) is bound
+        to default-width property (int).</p>
+        <div class="sourceCode" id="cb20"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>      win</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">binding</span>&gt;</span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
-<p>The expression created by the lookup tag returns a int type GValue.
-On the other hand “label” property holds a string type GValue. When a
-GValue is copied to another GValue, the type is automatically converted
-if possible. If the current width is 100, an int <code>100</code> is
-converted to a string <code>"100"</code>.</p>
-<p>If you use <code>g_object_get</code> and <code>g_object_set</code> to
-copy properties, the value is automatically converted.</p>
-<h2 id="meson.build">Meson.build</h2>
-<p>The source files are in <code>src/expression</code> directory. You
-can build all the files at once.</p>
-<pre><code>$ cd src/expression
+        <p>The expression created by the lookup tag returns a int type
+        GValue. On the other hand “label” property holds a string type
+        GValue. When a GValue is copied to another GValue, the type is
+        automatically converted if possible. If the current width is
+        100, an int <code>100</code> is converted to a string
+        <code>"100"</code>.</p>
+        <p>If you use <code>g_object_get</code> and
+        <code>g_object_set</code> to copy properties, the value is
+        automatically converted.</p>
+        <h2 id="meson.build">Meson.build</h2>
+        <p>The source files are in <code>src/expression</code>
+        directory. You can build all the files at once.</p>
+        <pre><code>$ cd src/expression
 $ meson setup _build
 $ ninja -C _build</code></pre>
-<p>For example, if you want to run “exp”, which is the executable file
-from “exp.c”, type <code>_build/exp</code>. You can run other programs
-as well.</p>
-<p>The file <code>meson.build</code> is as follows.</p>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb22-1"><a href="#cb22-1"></a>project(&#39;exp&#39;, &#39;c&#39;)</span>
+        <p>For example, if you want to run “exp”, which is the
+        executable file from “exp.c”, type <code>_build/exp</code>. You
+        can run other programs as well.</p>
+        <p>The file <code>meson.build</code> is as follows.</p>
+        <div class="sourceCode" id="cb22"><pre
+        class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb22-1"><a href="#cb22-1"></a>project(&#39;exp&#39;, &#39;c&#39;)</span>
 <span id="cb22-2"><a href="#cb22-2"></a></span>
 <span id="cb22-3"><a href="#cb22-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
 <span id="cb22-4"><a href="#cb22-4"></a></span>
@@ -910,9 +946,10 @@ class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="c
 <span id="cb22-18"><a href="#cb22-18"></a>executable(&#39;exp_bind&#39;, &#39;exp_bind.c&#39;, resources, dependencies: gtkdep, export_dynamic: true, install: false)</span>
 <span id="cb22-19"><a href="#cb22-19"></a>executable(&#39;exp_watch&#39;, &#39;exp_watch.c&#39;, dependencies: gtkdep, export_dynamic: true, install: false)</span>
 <span id="cb22-20"><a href="#cb22-20"></a>executable(&#39;exp_test&#39;, &#39;exp_test.c&#39;, resources, dependencies: gtkdep, export_dynamic: true, install: false)</span></code></pre></div>
-        </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-  </html>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
