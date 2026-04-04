@@ -27,10 +27,10 @@ module G4T
     src_files = self.get_src_files(src_dir: src_dir)
 
     # 1. Create README.md from index.src.md
-    index_src_md = File.join(src_dir, "index.src.md")
-    raise "Error: index.src.md not exist." unless File.exist?(index_src_md)
+    index_file = File.join(src_dir, "index.src.md")
+    raise "Error: index.src.md not exist." unless File.exist?(index_file)
     
-    s = self.convert(File.read(index_src_md), "gfm", index_src_md)
+    s = self.convert(File.read(index_file), "gfm", index_file)
     s += "\n## Table of contents\n\n"
 
     pn_src_dir = Pathname.new(src_dir)
@@ -48,7 +48,7 @@ module G4T
     File.write(File.join(root_dir, "README.md"), s)
 
     # 2. Convert and copy all other files
-    convert_files = src_files[:all].reject { |f| f == index_src_md }
+    convert_files = src_files[:all].reject { |f| f == index_file }
     
     convert_files.each do |file|
       content = File.read(file)

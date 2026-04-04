@@ -1,11 +1,15 @@
+@@@if pdf
+# GTK 4 Tutorial for beginners {-}
+@@@else
 # GTK 4 Tutorial for beginners
+@@@end
 
 @@@if gfm
 The GitHub Pages site of this tutorial is available.
 Click [here](https://toshiocp.github.io/Gtk4-tutorial/).
 It is more readable than this repository.
 
-#### Contents of this Repository
+## Contents of this Repository
 @@@end
 
 Now that GTK 4 is widely used, "GTK" usually means GTK 4.
@@ -26,7 +30,11 @@ You can read it directly without downloading.
 
 There's a [GitHub Page](https://toshiocp.github.io/Gtk4-tutorial/) which is the HTML version of the tutorial.
 
-#### GTK Documentation
+@@@if pdf
+## GTK Documentation {-}
+@@@else
+## GTK Documentation
+@@@end
 
 Please refer to the [GTK API Reference](https://docs.gtk.org/gtk4/index.html)
 and the [GNOME Developer Documentation Website](https://developer.gnome.org/) for further information.
@@ -35,7 +43,11 @@ These websites were opened in August 2021.
 If you want to know about GObject and the type system, please refer to the [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial).
 GObject is the base of GTK, so it is important for developers to understand it as well as GTK.
 
-#### Contribution
+@@@if pdf
+## Contribution {-}
+@@@else
+## Contribution
+@@@end
 
 This tutorial is still under development and unstable.
 Even though the example codes have been tested on GTK (version 4.10.1), bugs may still exist.
@@ -49,7 +61,11 @@ After modifying some source files, run `rake` to create GFM (GitHub Flavoured Ma
 If you have a question, feel free to post it to `issue`.
 All questions are helpful and will make this tutorial better.
 
-#### How to get Gtk 4 tutorial in HTML or PDF format
+@@@if pdf
+## How to get Gtk 4 tutorial in HTML or PDF format {-}
+@@@else
+## How to get Gtk 4 tutorial in HTML or PDF format
+@@@end
 
 If you want to get the tutorial in HTML or PDF format, build them with `rake` command, which is a ruby version of make.
 Type `rake html` for HTML.
@@ -62,7 +78,11 @@ There is a document \("[How to build GTK 4 Tutorial](Readme_for_developers.html)
 An appendix "How to build GTK 4 Tutorial" describes how to make them.
 @@@end
 
-#### License
+@@@if pdf
+## License {-}
+@@@else
+## License
+@@@end
 
 @@@if gfm
 The license of this repository is written in [Section1](gfm/sec1.md).

@@ -27,10 +27,11 @@ module G4T
       pn_src_dir = Pathname.new(src_dir)
       index_file = File.join(src_dir, "index.src.md")
       pn_index_file = Pathname(index_file)
-      sec_files = get_src_files[:sections]
-      other_src_md_files = get_src_files[:all].reject{|file| file == index_file || get_src_files[:sections].include?(file)}.select{|file| file =~ /\.src\.md\z/}
+      src_files = self.get_src_files(src_dir: src_dir)
+      sec_files = src_files[:sections]
+      other_src_md_files = src_files[:all].reject{|file| file == index_file || sec_files.include?(file)}.select{|file| file =~ /\.src\.md\z/}
       # Most of the image files are in the '/src/images' directory, but some of them are located in other directories.
-      image_files = get_src_files[:all].select{|file| image?(file)}
+      image_files = src_files[:all].select{|file| image?(file)}
       style_file = File.join(src_dir, "style.css")
 
       docs_dir = PathManager.get_path(:docs) # Output target for HTML

@@ -1,5 +1,21 @@
 ---
-title: 'GTK4 Tutorial'
+title: 'GTK4 Tutorial for Beginners'
 author: 'Toshio Sekiya'
+lang: en-US
 documentclass: book
+papersize: a4
+geometry:
+  - top=25mm
+  - bottom=25mm
+  - left=25mm
+  - right=25mm
+  - footskip=10mm
+# Stretch line spacing to make source code and explanations easier to read
+linestretch: 1.1
+# Allow chapter starts on any page, not just right pages, and remove blank pages
+classoption: openany
+# Link color
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
 ---

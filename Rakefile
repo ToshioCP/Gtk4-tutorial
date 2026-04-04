@@ -71,11 +71,18 @@ end
 
 # == Maintenance Tasks
 
+desc "Build a LaTeX file for debugging purposes (not a complete PDF)"
+task :latex => :common_check do
+  puts "Target: LaTeX file"
+  G4T.src2pdf("latex")
+  puts "LaTeX generation completed successfully."
+end
+
 desc "Remove the generated PDF directory safely"
 task :clobber do
   pdf_path = PathManager.get_path(:pdf)
   if Dir.exist?(pdf_path)
-    puts "Removing directory safely: #{pdf_path}"
+    puts "Removing directory: #{pdf_path}"
     # Use remove_entry_secure for enhanced security over rm_rf
     FileUtils.remove_entry_secure(pdf_path)
   else

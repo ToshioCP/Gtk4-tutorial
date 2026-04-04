@@ -143,7 +143,7 @@ module G4T
           end
         else # pdf
           if image_link
-            File.expand_path(url_to_path, PathManager.get_path(:src))
+            File.expand_path(url_to_path[1..-1], PathManager.get_path(:src)) # Remove the leading "/"
           else
             url_to_path # No conversion
           end

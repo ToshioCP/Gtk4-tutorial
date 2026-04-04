@@ -1,4 +1,3 @@
-pdf-engine: lualatex
 standalone: true
 top-level-division: chapter
 number-sections: true
