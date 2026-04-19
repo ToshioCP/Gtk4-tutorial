@@ -21,20 +21,20 @@ GObject -- GInitiallyUnowned -- GtkWidget -- GtkTextView -- TfeTextView
 
 ## Constructors
 
-- [tfe_text_view_new ()](../src/tfetextview/#tfe_text_view_new)
-- [tfe_text_view_new_with_file ()](../src/tfetextview/#tfe_text_view_new_with_file)
+- [tfe_text_view_new ()](#tfe_text_view_new)
+- [tfe_text_view_new_with_file ()](#tfe_text_view_new_with_file)
 
 ## Instance methods
 
-- [tfe_text_view_get_file ()](../src/tfetextview/#tfe_text_view_get_file)
-- [tfe_text_view_open ()](../src/tfetextview/#tfe_text_view_open)
-- [tfe_text_view_save ()](../src/tfetextview/#tfe_text_view_save)
-- [tfe_text_view_saveas ()](../src/tfetextview/#tfe_text_view_saveas)
+- [tfe_text_view_get_file ()](#tfe_text_view_get_file)
+- [tfe_text_view_open ()](#tfe_text_view_open)
+- [tfe_text_view_save ()](#tfe_text_view_save)
+- [tfe_text_view_saveas ()](#tfe_text_view_saveas)
 
 ## Signals
 
-- [Tfe.TextView::change-file](../src/tfetextview/#change-file)
-- [Tfe.TextView::open-response](../src/tfetextview/#open-response)
+- [Tfe.TextView::change-file](#change-file)
+- [Tfe.TextView::open-response](#open-response)
 
 ## API for constructors, instance methods and signals
 

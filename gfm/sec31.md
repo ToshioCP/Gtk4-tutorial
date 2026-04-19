@@ -66,27 +66,27 @@ The type of the value is int.
 
 A sample program `exp_constant_simple.c` is in `src/expression` directory.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 int
- 4 main (int argc, char **argv) {
- 5   GtkExpression *expression;
- 6   GValue value = G_VALUE_INIT;
- 7 
- 8   /* Create an expression */
- 9   expression = gtk_constant_expression_new (G_TYPE_INT,100);
-10   /* Evaluate the expression */
-11   if (gtk_expression_evaluate (expression, NULL, &value))
-12     g_print ("The value is %d.\n", g_value_get_int (&value));
-13   else
-14     g_print ("The constant expression wasn't evaluated correctly.\n");
-15   gtk_expression_unref (expression);
-16   g_value_unset (&value);
-17 
-18   return 0;
-19 }
-~~~
+```c
+#include <gtk/gtk.h>
+
+int
+main (int argc, char **argv) {
+  GtkExpression *expression;
+  GValue value = G_VALUE_INIT;
+
+  /* Create an expression */
+  expression = gtk_constant_expression_new (G_TYPE_INT,100);
+  /* Evaluate the expression */
+  if (gtk_expression_evaluate (expression, NULL, &value))
+    g_print ("The value is %d.\n", g_value_get_int (&value));
+  else
+    g_print ("The constant expression wasn't evaluated correctly.\n");
+  gtk_expression_unref (expression);
+  g_value_unset (&value);
+
+  return 0;
+}
+```
 
 - 9: A constant expression is created. It holds an int value 100. The variable `expression` points the expression.
 - 11-14: Evaluates the expression. If it successes, show the value to the stdout. Otherwise show an error message.
@@ -128,30 +128,30 @@ If it is NULL, `this` instance is used instead.
 
 There's a simple program `exp_property_simple.c` in `src/expression` directory.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 int
- 4 main (int argc, char **argv) {
- 5   GtkWidget *label;
- 6   GtkExpression *expression;
- 7   GValue value = G_VALUE_INIT;
- 8 
- 9   gtk_init ();
-10   label = gtk_label_new ("Hello world.");
-11   /* Create an expression */
-12   expression = gtk_property_expression_new (GTK_TYPE_LABEL, NULL, "label");
-13   /* Evaluate the expression */
-14   if (gtk_expression_evaluate (expression, label, &value))
-15     g_print ("The value is %s.\n", g_value_get_string (&value));
-16   else
-17     g_print ("The property expression wasn't evaluated correctly.\n");
-18   gtk_expression_unref (expression);
-19   g_value_unset (&value);
-20 
-21   return 0;
-22 }
-~~~
+```c
+#include <gtk/gtk.h>
+
+int
+main (int argc, char **argv) {
+  GtkWidget *label;
+  GtkExpression *expression;
+  GValue value = G_VALUE_INIT;
+
+  gtk_init ();
+  label = gtk_label_new ("Hello world.");
+  /* Create an expression */
+  expression = gtk_property_expression_new (GTK_TYPE_LABEL, NULL, "label");
+  /* Evaluate the expression */
+  if (gtk_expression_evaluate (expression, label, &value))
+    g_print ("The value is %s.\n", g_value_get_string (&value));
+  else
+    g_print ("The property expression wasn't evaluated correctly.\n");
+  gtk_expression_unref (expression);
+  g_value_unset (&value);
+
+  return 0;
+}
+```
 
 - 9-10: `gtk_init` initializes GTK GUI toolkit.
 It isn't usually necessary because the GtkApplication default startup handler does the initialization.
@@ -244,41 +244,9 @@ callback (GObject *object, int x, const char *s)
 
 The following is `exp_closure_simple.c` in `src/expression`.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 static int
- 4 calc (GtkLabel *label) { /* this object */
- 5   const char * s;
- 6   int i, j;
- 7 
- 8   s = gtk_label_get_text (label); /* s is owned by the label. */
- 9   sscanf (s, "%d+%d", &i, &j);
-10   return i+j;
-11 }
-12 
-13 int
-14 main (int argc, char **argv) {
-15   GtkExpression *expression;
-16   GValue value = G_VALUE_INIT;
-17   GtkLabel *label;
-18 
-19   gtk_init ();
-20   label = GTK_LABEL (gtk_label_new ("123+456"));
-21   g_object_ref_sink (label);
-22   expression = gtk_cclosure_expression_new (G_TYPE_INT, NULL, 0, NULL,
-23                  G_CALLBACK (calc), NULL, NULL);
-24   if (gtk_expression_evaluate (expression, label, &value)) /* 'this' object is the label. */
-25     g_print ("%d\n", g_value_get_int (&value));
-26   else
-27     g_print ("The closure expression wasn't evaluated correctly.\n");
-28   gtk_expression_unref (expression);
-29   g_value_unset (&value);
-30   g_object_unref (label);
-31   
-32   return 0;
-33 }
-~~~
+@@@include
+expression/exp_closure_simple.c
+@@@
 
 - 3-11: A call back function.
 The parameter is only one and it is a 'this' object.
@@ -329,49 +297,16 @@ If you don't own the expression, you don't care about releasing the expression.
 
 An example `exp_bind.c` and `exp_bind.ui` is in [`src/expression`](../src/expression) directory.
 
-![exp\_bind](../image/exp_bind.png)
+![exp\_bind](/src/images/exp_bind.png)
 
 It includes a label and a scale.
 If you move the slider to the right, the scale value increases and the number on the label also increases.
 In the same way, if you move it to the left, the number on the label decreases.
 The label is bound to the scale value via an adjustment.
 
-~~~xml
- 1 <?xml version='1.0' encoding='UTF-8'?>
- 2 <interface>
- 3   <object class='GtkApplicationWindow' id='win'>
- 4     <property name='default-width'>600</property>
- 5     <child>
- 6       <object class='GtkBox'>
- 7         <property name='orientation'>GTK_ORIENTATION_VERTICAL</property>
- 8         <child>
- 9           <object class='GtkLabel' id='label'>
-10             <property name="label">10</property>
-11           </object>
-12         </child>
-13         <child>
-14           <object class='GtkScale'>
-15             <property name='adjustment'>
-16               <object class='GtkAdjustment' id='adjustment'>
-17                 <property name='upper'>20.0</property>
-18                 <property name='lower'>0.0</property>
-19                 <property name='value'>10.0</property>
-20                 <property name='step-increment'>1.0</property>
-21                 <property name='page-increment'>5.0</property>
-22                 <property name='page-size'>0.0</property>
-23               </object>
-24             </property>
-25             <property name='digits'>0</property>
-26             <property name='draw-value'>true</property>
-27             <property name='has-origin'>true</property>
-28             <property name='round-digits'>0</property>
-29           </object>
-30         </child>
-31       </object>
-32     </child>
-33   </object>
-34 </interface>
-~~~
+@@@include
+expression/exp_bind.ui
+@@@
 
 The ui file describes the following parent-child relationship.
 
@@ -394,69 +329,9 @@ the scale moves by the step increment or page increment respectively.
 - round-digits: The number of digits to round the value to when it changes.
 For example, if it is zero, the slider moves to an integer point.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 GtkExpressionWatch *watch;
- 4 
- 5 static int
- 6 f2i (GObject *object, double d) {
- 7   return (int) d;
- 8 }
- 9 
-10 static int
-11 close_request_cb (GtkWindow *win) {
-12   gtk_expression_watch_unwatch (watch);
-13   return false;
-14 }
-15 
-16 static void
-17 app_activate (GApplication *application) {
-18   GtkApplication *app = GTK_APPLICATION (application);
-19   gtk_window_present (gtk_application_get_active_window(app));
-20 }
-21 
-22 static void
-23 app_startup (GApplication *application) {
-24   GtkApplication *app = GTK_APPLICATION (application);
-25   GtkBuilder *build;
-26   GtkWidget *win, *label;
-27   GtkAdjustment *adjustment;
-28   GtkExpression *expression, *params[1];
-29 
-30   /* Builds a window with exp.ui resource */
-31   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp_bind.ui");
-32   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-33   label = GTK_WIDGET (gtk_builder_get_object (build, "label"));
-34   // scale = GTK_WIDGET (gtk_builder_get_object (build, "scale"));
-35   adjustment = GTK_ADJUSTMENT (gtk_builder_get_object (build, "adjustment"));
-36   gtk_window_set_application (GTK_WINDOW (win), app);
-37   g_signal_connect (win, "close-request", G_CALLBACK (close_request_cb), NULL);
-38   g_object_unref (build);
-39 
-40   /* GtkExpressionWatch */
-41   params[0] = gtk_property_expression_new (GTK_TYPE_ADJUSTMENT, NULL, "value");
-42   expression = gtk_cclosure_expression_new (G_TYPE_INT, NULL, 1, params, G_CALLBACK (f2i), NULL, NULL);
-43   watch = gtk_expression_bind (expression, label, "label", adjustment); /* watch takes the ownership of the expression. */
-44 }
-45 
-46 #define APPLICATION_ID "com.github.ToshioCP.exp_watch"
-47 
-48 int
-49 main (int argc, char **argv) {
-50   GtkApplication *app;
-51   int stat;
-52 
-53   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-54 
-55   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-56   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-57 
-58   stat = g_application_run (G_APPLICATION (app), argc, argv);
-59   g_object_unref (app);
-60   return stat;
-61 }
-~~~
+@@@include
+expression/exp_bind.c
+@@@
 
 The point of the program is:
 
@@ -519,68 +394,13 @@ But if you want to bind a property to the value, use `gtk_expression_bind` inste
 There's a sample program `exp_watch.c` in [`src/expression`](../src/expression) directory.
 It outputs the width of the window to the standard output.
 
-![exp\_watch](../image/exp_watch.png)
+![exp\_watch](/src/images/exp_watch.png)
 
 When you resize the window, the width is displayed in the terminal.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 GtkExpression *expression;
- 4 GtkExpressionWatch *watch;
- 5 
- 6 static void
- 7 notify (gpointer user_data) {
- 8   GValue value = G_VALUE_INIT;
- 9 
-10   if (gtk_expression_watch_evaluate (watch, &value))
-11     g_print ("width = %d\n", g_value_get_int (&value));
-12   else
-13     g_print ("evaluation failed.\n");
-14 }
-15 
-16 static int
-17 close_request_cb (GtkWindow *win) {
-18   gtk_expression_watch_unwatch (watch);
-19   gtk_expression_unref (expression);
-20   return false;
-21 }
-22 
-23 static void
-24 app_activate (GApplication *application) {
-25   GtkApplication *app = GTK_APPLICATION (application);
-26   gtk_window_present (gtk_application_get_active_window(app));
-27 }
-28 
-29 static void
-30 app_startup (GApplication *application) {
-31   GtkApplication *app = GTK_APPLICATION (application);
-32   GtkWidget *win;
-33 
-34   win = GTK_WIDGET (gtk_application_window_new (app));
-35   g_signal_connect (win, "close-request", G_CALLBACK (close_request_cb), NULL);
-36 
-37   expression = gtk_property_expression_new (GTK_TYPE_WINDOW, NULL, "default-width");
-38   watch = gtk_expression_watch (expression, win, notify, NULL, NULL);
-39 }
-40 
-41 #define APPLICATION_ID "com.github.ToshioCP.exp_watch"
-42 
-43 int
-44 main (int argc, char **argv) {
-45   GtkApplication *app;
-46   int stat;
-47 
-48   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-49 
-50   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-51   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-52 
-53   stat = g_application_run (G_APPLICATION (app), argc, argv);
-54   g_object_unref (app);
-55   return stat;
-56 }
-~~~
+@@@include
+expression/exp_watch.c
+@@@
 
 - 37: A property expression looks up the "default-width" property of the window.
 - 38: Create a watch structure for the expression.
@@ -666,49 +486,16 @@ The ui file includes lookup, closure and bind tags.
 No constant tag is included.
 However, constant tags are not used so often.
 
-![exp.c](../image/exp.png)
+![exp.c](/src/images/exp.png)
 
 If you resize the window, the size is shown at the title of the window.
 If you type characters in the entry, the same characters appear on the label.
 
 The ui file is as follows.
 
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <object class="GtkApplicationWindow" id="win">
- 4     <binding name="title">
- 5       <closure type="gchararray" function="set_title">
- 6         <lookup name="default-width" type="GtkWindow"></lookup>
- 7         <lookup name="default-height" type="GtkWindow"></lookup>
- 8       </closure>
- 9     </binding>
-10     <property name="default-width">600</property>
-11     <property name="default-height">400</property>
-12     <child>
-13       <object class="GtkBox">
-14         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-15         <child>
-16           <object class="GtkLabel">
-17             <binding name="label">
-18               <lookup name="text">
-19                 buffer
-20               </lookup>
-21             </binding>
-22           </object>
-23         </child>
-24         <child>
-25           <object class="GtkEntry">
-26             <property name="buffer">
-27               <object class="GtkEntryBuffer" id="buffer"></object>
-28             </property>
-29           </object>
-30         </child>
-31       </object>
-32     </child>
-33   </object>
-34 </interface>
-~~~
+@@@include
+expression/exp.ui
+@@@
 
 - 4-9: The title property of the main window is bound to a closure expression.
 Its callback function `set_title` is defined in the C source file.
@@ -723,49 +510,9 @@ If a user types characters in the entry, the same characters appear on the label
 
 The C source file is as follows.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 char *
- 4 set_title (GtkWidget *win, int width, int height) {
- 5   return g_strdup_printf ("%d x %d", width, height);
- 6 }
- 7 
- 8 static void
- 9 app_activate (GApplication *application) {
-10   GtkApplication *app = GTK_APPLICATION (application);
-11   gtk_window_present (gtk_application_get_active_window(app));
-12 }
-13 
-14 static void
-15 app_startup (GApplication *application) {
-16   GtkApplication *app = GTK_APPLICATION (application);
-17   GtkBuilder *build;
-18   GtkWidget *win;
-19 
-20   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/exp/exp.ui");
-21   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-22   gtk_window_set_application (GTK_WINDOW (win), app);
-23   g_object_unref (build);
-24 }
-25 
-26 #define APPLICATION_ID "com.github.ToshioCP.exp"
-27 
-28 int
-29 main (int argc, char **argv) {
-30   GtkApplication *app;
-31   int stat;
-32 
-33   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-34 
-35   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-36   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-37 
-38   stat = g_application_run (G_APPLICATION (app), argc, argv);
-39   g_object_unref (app);
-40   return stat;
-41 }
-~~~
+@@@include
+expression/exp.c
+@@@
 
 - 4-6: The callback function.
 It returns a string (w)x(h), where the w and h are the width and height of the window.
@@ -811,27 +558,8 @@ You can run other programs as well.
 
 The file `meson.build` is as follows.
 
-~~~meson
- 1 project('exp', 'c')
- 2 
- 3 gtkdep = dependency('gtk4')
- 4 
- 5 gnome=import('gnome')
- 6 resources = gnome.compile_resources('resources','exp.gresource.xml')
- 7 
- 8 sourcefiles=files('exp.c')
- 9 
-10 executable('exp', sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: false)
-11 executable('exp_constant', 'exp_constant.c', dependencies: gtkdep, export_dynamic: true, install: false)
-12 executable('exp_constant_simple', 'exp_constant_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
-13 executable('exp_property_simple', 'exp_property_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
-14 executable('closure', 'closure.c', dependencies: gtkdep, export_dynamic: true, install: false)
-15 executable('closure_each', 'closure_each.c', dependencies: gtkdep, export_dynamic: true, install: false)
-16 executable('exp_closure_simple', 'exp_closure_simple.c', dependencies: gtkdep, export_dynamic: true, install: false)
-17 executable('exp_closure_with_error_report', 'exp_closure_with_error_report.c', dependencies: gtkdep, export_dynamic: true, install: false)
-18 executable('exp_bind', 'exp_bind.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)
-19 executable('exp_watch', 'exp_watch.c', dependencies: gtkdep, export_dynamic: true, install: false)
-20 executable('exp_test', 'exp_test.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)
-~~~
+@@@include
+expression/meson.build
+@@@
 
 Up: [README.md](../README.md),  Prev: [Section 30](sec30.md), Next: [Section 32](sec32.md)

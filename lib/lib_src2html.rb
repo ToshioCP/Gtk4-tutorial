@@ -25,27 +25,24 @@ module G4T
     def src2html
       src_dir = PathManager.get_path(:src)
       pn_src_dir = Pathname.new(src_dir)
-      index_file = File.join(src_dir, "index.src.md")
-      pn_index_file = Pathname(index_file)
-      src_files = self.get_src_files(src_dir: src_dir)
-      sec_files = src_files[:sections]
-      other_src_md_files = src_files[:all].reject{|file| file == index_file || sec_files.include?(file)}.select{|file| file =~ /\.src\.md\z/}
-      # Most of the image files are in the '/src/images' directory, but some of them are located in other directories.
-      image_files = src_files[:all].select{|file| image?(file)}
+      index_src_md = File.join(src_dir, "index.src.md")
+      src_files = get_src_files(src_dir: src_dir)
+      sec_files = src_files[:sections].to_a
+      other_src_md_files = src_files[:src_md_files].to_a.reject{|file| file == index_src_md || sec_files.include?(file)}
+      image_files = src_files[:images].to_a
       style_file = File.join(src_dir, "style.css")
 
       docs_dir = PathManager.get_path(:docs) # Output target for HTML
       template_path = File.join(PathManager.get_path(:data), "template.html")
 
-      raise "Error: index.src.md does not exist." unless File.exist?(index_file)
+      raise "Error: index.src.md does not exist." unless File.exist?(index_src_md)
       raise "Error: template.html does not exist." unless File.exist?(template_path)
 
-      Dir.children(docs_dir).each do |child|
-        FileUtils.remove_entry_secure(File.join(docs_dir, child))
-      end
+      FileUtils.rm_rf(docs_dir) if Dir.exist?(docs_dir)
+      FileUtils.mkdir_p(docs_dir)
 
       # 1. Create index.html (Main portal)
-      s = convert(File.read(index_file), "html", index_file)
+      s = convert(File.read(index_src_md), "html", index_src_md)
       s += "\n## Table of contents\n\n"
 
       sec_files.each do |file|

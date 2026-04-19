@@ -90,7 +90,7 @@ In each structure, its parent is declared at the top of the members.
 So, all the ancestors are included in the child object.
 The structure of `TfeTextView` is like the following diagram.
 
-![The structure of the instance TfeTextView](../image/TfeTextView.png)
+![The structure of the instance TfeTextView](/src/images/TfeTextView.png)
 
 Derivable classes (ancestor classes) have their own private data area which are not included by the structure above.
 For example, GtkWidget has GtkWidgetPrivate (C structure) for its private data.
@@ -129,12 +129,12 @@ Therefore, multiple TfeTextView instances can exist.
 
 The function `tfe_text_view_new` creates a new TfeTextView instance.
 
-~~~C
-1 GtkWidget *
-2 tfe_text_view_new (void) {
-3   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, "wrap-mode", GTK_WRAP_WORD_CHAR, NULL));
-4 }
-~~~
+```c
+GtkWidget *
+tfe_text_view_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, "wrap-mode", GTK_WRAP_WORD_CHAR, NULL));
+}
+```
 
 When this function is invoked, a TfeTextView instance is created and initialized.
 The initialization process is as follows.
@@ -149,12 +149,12 @@ The step two through four is done by `g_object_init`, `gtk_widget_init` and `gtk
 They are called by the system automatically and you don't need to care about them.
 Step five is done by the function `tfe_text_view_init` in `tfetextview.c`.
 
-~~~C
-1 static void
-2 tfe_text_view_init (TfeTextView *tv) {
-3   tv->file = NULL;
-4 }
-~~~
+```c
+static void
+tfe_text_view_init (TfeTextView *tv) {
+  tv->file = NULL;
+}
+```
 
 This function just initializes `tv->file` to be `NULL`.
 
@@ -190,57 +190,57 @@ Class (C structure) mainly consists of pointers to C functions.
 They are called *class methods* and used by the object itself or its descendant objects.
 For example, GObject class is declared in `gobject.h` in GLib source files.
 
-~~~C
- 1 typedef struct _GObjectClass             GObjectClass;
- 2 typedef struct _GObjectClass             GInitiallyUnownedClass;
- 3 
- 4 struct  _GObjectClass
- 5 {
- 6   GTypeClass   g_type_class;
- 7 
- 8   /*< private >*/
- 9   GSList      *construct_properties;
-10 
-11   /*< public >*/
-12   /* seldom overridden */
-13   GObject*   (*constructor)     (GType                  type,
-14                                  guint                  n_construct_properties,
-15                                  GObjectConstructParam *construct_properties);
-16   /* overridable methods */
-17   void       (*set_property)		(GObject        *object,
-18                                          guint           property_id,
-19                                          const GValue   *value,
-20                                          GParamSpec     *pspec);
-21   void       (*get_property)		(GObject        *object,
-22                                          guint           property_id,
-23                                          GValue         *value,
-24                                          GParamSpec     *pspec);
-25   void       (*dispose)			(GObject        *object);
-26   void       (*finalize)		(GObject        *object);
-27   /* seldom overridden */
-28   void       (*dispatch_properties_changed) (GObject      *object,
-29 					     guint	   n_pspecs,
-30 					     GParamSpec  **pspecs);
-31   /* signals */
-32   void	     (*notify)			(GObject	*object,
-33 					 GParamSpec	*pspec);
-34 
-35   /* called when done constructing */
-36   void	     (*constructed)		(GObject	*object);
-37 
-38   /*< private >*/
-39   gsize		flags;
-40 
-41   gsize         n_construct_properties;
-42 
-43   gpointer pspecs;
-44   gsize n_pspecs;
-45 
-46   /* padding */
-47   gpointer	pdummy[3];
-48 };
-49 
-~~~
+```c
+typedef struct _GObjectClass             GObjectClass;
+typedef struct _GObjectClass             GInitiallyUnownedClass;
+
+struct  _GObjectClass
+{
+  GTypeClass   g_type_class;
+
+  /*< private >*/
+  GSList      *construct_properties;
+
+  /*< public >*/
+  /* seldom overridden */
+  GObject*   (*constructor)     (GType                  type,
+                                 guint                  n_construct_properties,
+                                 GObjectConstructParam *construct_properties);
+  /* overridable methods */
+  void       (*set_property)		(GObject        *object,
+                                         guint           property_id,
+                                         const GValue   *value,
+                                         GParamSpec     *pspec);
+  void       (*get_property)		(GObject        *object,
+                                         guint           property_id,
+                                         GValue         *value,
+                                         GParamSpec     *pspec);
+  void       (*dispose)			(GObject        *object);
+  void       (*finalize)		(GObject        *object);
+  /* seldom overridden */
+  void       (*dispatch_properties_changed) (GObject      *object,
+					     guint	   n_pspecs,
+					     GParamSpec  **pspecs);
+  /* signals */
+  void	     (*notify)			(GObject	*object,
+					 GParamSpec	*pspec);
+
+  /* called when done constructing */
+  void	     (*constructed)		(GObject	*object);
+
+  /*< private >*/
+  gsize		flags;
+
+  gsize         n_construct_properties;
+
+  gpointer pspecs;
+  gsize n_pspecs;
+
+  /* padding */
+  gpointer	pdummy[3];
+};
+
+```
 
 There's a pointer to the function `dispose` in line 25.
 
@@ -283,131 +283,131 @@ GObjectClass (GInitiallyUnownedClass) -- GtkWidgetClass -- GtkTextViewClass -- T
 
 The following is extracted from the source codes (not exactly the same).
 
-~~~C
-  1 struct _GtkWidgetClass
-  2 {
-  3   GInitiallyUnownedClass parent_class;
-  4 
-  5   /*< public >*/
-  6 
-  7   /* basics */
-  8   void (* show)                (GtkWidget        *widget);
-  9   void (* hide)                (GtkWidget        *widget);
- 10   void (* map)                 (GtkWidget        *widget);
- 11   void (* unmap)               (GtkWidget        *widget);
- 12   void (* realize)             (GtkWidget        *widget);
- 13   void (* unrealize)           (GtkWidget        *widget);
- 14   void (* root)                (GtkWidget        *widget);
- 15   void (* unroot)              (GtkWidget        *widget);
- 16   void (* size_allocate)       (GtkWidget           *widget,
- 17                                 int                  width,
- 18                                 int                  height,
- 19                                 int                  baseline);
- 20   void (* state_flags_changed) (GtkWidget        *widget,
- 21                                 GtkStateFlags     previous_state_flags);
- 22   void (* direction_changed)   (GtkWidget        *widget,
- 23                                 GtkTextDirection  previous_direction);
- 24 
- 25   /* size requests */
- 26   GtkSizeRequestMode (* get_request_mode)               (GtkWidget      *widget);
- 27   void              (* measure) (GtkWidget      *widget,
- 28                                  GtkOrientation  orientation,
- 29                                  int             for_size,
- 30                                  int            *minimum,
- 31                                  int            *natural,
- 32                                  int            *minimum_baseline,
- 33                                  int            *natural_baseline);
- 34 
- 35   /* Mnemonics */
- 36   gboolean (* mnemonic_activate)        (GtkWidget           *widget,
- 37                                          gboolean             group_cycling);
- 38 
- 39   /* explicit focus */
- 40   gboolean (* grab_focus)               (GtkWidget           *widget);
- 41   gboolean (* focus)                    (GtkWidget           *widget,
- 42                                          GtkDirectionType     direction);
- 43   void     (* set_focus_child)          (GtkWidget           *widget,
- 44                                          GtkWidget           *child);
- 45 
- 46   /* keyboard navigation */
- 47   void     (* move_focus)               (GtkWidget           *widget,
- 48                                          GtkDirectionType     direction);
- 49   gboolean (* keynav_failed)            (GtkWidget           *widget,
- 50                                          GtkDirectionType     direction);
- 51 
- 52   gboolean     (* query_tooltip)      (GtkWidget  *widget,
- 53                                        int         x,
- 54                                        int         y,
- 55                                        gboolean    keyboard_tooltip,
- 56                                        GtkTooltip *tooltip);
- 57 
- 58   void         (* compute_expand)     (GtkWidget  *widget,
- 59                                        gboolean   *hexpand_p,
- 60                                        gboolean   *vexpand_p);
- 61 
- 62   void         (* css_changed)                 (GtkWidget            *widget,
- 63                                                 GtkCssStyleChange    *change);
- 64 
- 65   void         (* system_setting_changed)      (GtkWidget            *widget,
- 66                                                 GtkSystemSetting      settings);
- 67 
- 68   void         (* snapshot)                    (GtkWidget            *widget,
- 69                                                 GtkSnapshot          *snapshot);
- 70 
- 71   gboolean     (* contains)                    (GtkWidget *widget,
- 72                                                 double     x,
- 73                                                 double     y);
- 74 
- 75   /*< private >*/
- 76 
- 77   GtkWidgetClassPrivate *priv;
- 78 
- 79   gpointer padding[8];
- 80 };
- 81 
- 82 struct _GtkTextViewClass
- 83 {
- 84   GtkWidgetClass parent_class;
- 85 
- 86   /*< public >*/
- 87 
- 88   void (* move_cursor)           (GtkTextView      *text_view,
- 89                                   GtkMovementStep   step,
- 90                                   int               count,
- 91                                   gboolean          extend_selection);
- 92   void (* set_anchor)            (GtkTextView      *text_view);
- 93   void (* insert_at_cursor)      (GtkTextView      *text_view,
- 94                                   const char       *str);
- 95   void (* delete_from_cursor)    (GtkTextView      *text_view,
- 96                                   GtkDeleteType     type,
- 97                                   int               count);
- 98   void (* backspace)             (GtkTextView      *text_view);
- 99   void (* cut_clipboard)         (GtkTextView      *text_view);
-100   void (* copy_clipboard)        (GtkTextView      *text_view);
-101   void (* paste_clipboard)       (GtkTextView      *text_view);
-102   void (* toggle_overwrite)      (GtkTextView      *text_view);
-103   GtkTextBuffer * (* create_buffer) (GtkTextView   *text_view);
-104   void (* snapshot_layer)        (GtkTextView      *text_view,
-105 			          GtkTextViewLayer  layer,
-106 			          GtkSnapshot      *snapshot);
-107   gboolean (* extend_selection)  (GtkTextView            *text_view,
-108                                   GtkTextExtendSelection  granularity,
-109                                   const GtkTextIter      *location,
-110                                   GtkTextIter            *start,
-111                                   GtkTextIter            *end);
-112   void (* insert_emoji)          (GtkTextView      *text_view);
-113 
-114   /*< private >*/
-115 
-116   gpointer padding[8];
-117 };
-118 
-119 /* The following definition is generated by the macro G_DECLARE_FINAL_TYPE */
-120 typedef struct {
-121   GtkTextView parent_class;
-122 } TfeTextViewClass;
-123 
-~~~
+```c
+struct _GtkWidgetClass
+{
+  GInitiallyUnownedClass parent_class;
+
+  /*< public >*/
+
+  /* basics */
+  void (* show)                (GtkWidget        *widget);
+  void (* hide)                (GtkWidget        *widget);
+  void (* map)                 (GtkWidget        *widget);
+  void (* unmap)               (GtkWidget        *widget);
+  void (* realize)             (GtkWidget        *widget);
+  void (* unrealize)           (GtkWidget        *widget);
+  void (* root)                (GtkWidget        *widget);
+  void (* unroot)              (GtkWidget        *widget);
+  void (* size_allocate)       (GtkWidget           *widget,
+                                int                  width,
+                                int                  height,
+                                int                  baseline);
+  void (* state_flags_changed) (GtkWidget        *widget,
+                                GtkStateFlags     previous_state_flags);
+  void (* direction_changed)   (GtkWidget        *widget,
+                                GtkTextDirection  previous_direction);
+
+  /* size requests */
+  GtkSizeRequestMode (* get_request_mode)               (GtkWidget      *widget);
+  void              (* measure) (GtkWidget      *widget,
+                                 GtkOrientation  orientation,
+                                 int             for_size,
+                                 int            *minimum,
+                                 int            *natural,
+                                 int            *minimum_baseline,
+                                 int            *natural_baseline);
+
+  /* Mnemonics */
+  gboolean (* mnemonic_activate)        (GtkWidget           *widget,
+                                         gboolean             group_cycling);
+
+  /* explicit focus */
+  gboolean (* grab_focus)               (GtkWidget           *widget);
+  gboolean (* focus)                    (GtkWidget           *widget,
+                                         GtkDirectionType     direction);
+  void     (* set_focus_child)          (GtkWidget           *widget,
+                                         GtkWidget           *child);
+
+  /* keyboard navigation */
+  void     (* move_focus)               (GtkWidget           *widget,
+                                         GtkDirectionType     direction);
+  gboolean (* keynav_failed)            (GtkWidget           *widget,
+                                         GtkDirectionType     direction);
+
+  gboolean     (* query_tooltip)      (GtkWidget  *widget,
+                                       int         x,
+                                       int         y,
+                                       gboolean    keyboard_tooltip,
+                                       GtkTooltip *tooltip);
+
+  void         (* compute_expand)     (GtkWidget  *widget,
+                                       gboolean   *hexpand_p,
+                                       gboolean   *vexpand_p);
+
+  void         (* css_changed)                 (GtkWidget            *widget,
+                                                GtkCssStyleChange    *change);
+
+  void         (* system_setting_changed)      (GtkWidget            *widget,
+                                                GtkSystemSetting      settings);
+
+  void         (* snapshot)                    (GtkWidget            *widget,
+                                                GtkSnapshot          *snapshot);
+
+  gboolean     (* contains)                    (GtkWidget *widget,
+                                                double     x,
+                                                double     y);
+
+  /*< private >*/
+
+  GtkWidgetClassPrivate *priv;
+
+  gpointer padding[8];
+};
+
+struct _GtkTextViewClass
+{
+  GtkWidgetClass parent_class;
+
+  /*< public >*/
+
+  void (* move_cursor)           (GtkTextView      *text_view,
+                                  GtkMovementStep   step,
+                                  int               count,
+                                  gboolean          extend_selection);
+  void (* set_anchor)            (GtkTextView      *text_view);
+  void (* insert_at_cursor)      (GtkTextView      *text_view,
+                                  const char       *str);
+  void (* delete_from_cursor)    (GtkTextView      *text_view,
+                                  GtkDeleteType     type,
+                                  int               count);
+  void (* backspace)             (GtkTextView      *text_view);
+  void (* cut_clipboard)         (GtkTextView      *text_view);
+  void (* copy_clipboard)        (GtkTextView      *text_view);
+  void (* paste_clipboard)       (GtkTextView      *text_view);
+  void (* toggle_overwrite)      (GtkTextView      *text_view);
+  GtkTextBuffer * (* create_buffer) (GtkTextView   *text_view);
+  void (* snapshot_layer)        (GtkTextView      *text_view,
+			          GtkTextViewLayer  layer,
+			          GtkSnapshot      *snapshot);
+  gboolean (* extend_selection)  (GtkTextView            *text_view,
+                                  GtkTextExtendSelection  granularity,
+                                  const GtkTextIter      *location,
+                                  GtkTextIter            *start,
+                                  GtkTextIter            *end);
+  void (* insert_emoji)          (GtkTextView      *text_view);
+
+  /*< private >*/
+
+  gpointer padding[8];
+};
+
+/* The following definition is generated by the macro G_DECLARE_FINAL_TYPE */
+typedef struct {
+  GtkTextView parent_class;
+} TfeTextViewClass;
+
+```
 
 - 120-122: This three lines are generated by the macro `G_DECLARE_FINAL_TYPE`.
 So, they are not written in either `tfe_text_view.h` or `tfe_text_view.c`.
@@ -424,7 +424,7 @@ Override is rewriting ancestors' class methods in the descendant class.)
 TfeTextViewClass includes its ancestors' class in it.
 It is illustrated in the following diagram.
 
-![The structure of TfeTextView Class](../image/TfeTextViewClass.png)
+![The structure of TfeTextView Class](/src/images/TfeTextViewClass.png)
 
 ## Destruction of TfeTextView
 
@@ -440,7 +440,7 @@ At this moment, no object refers to C and the reference count of C is zero.
 This means C is no longer useful.
 Then C destructs itself and finally the memories allocated to C is freed.
 
-![Reference count of B](../image/refcount.png)
+![Reference count of B](/src/images/refcount.png)
 
 The idea above is based on an assumption that an object referred by nothing has reference count of zero.
 When the reference count drops to zero, the object starts its destruction process.
@@ -451,17 +451,17 @@ After that, it invokes the function pointed by `finalize` in its class to comple
 In the destruction process, TfeTextView needs to unref the GFile pointed by `tv->file`.
 You must write the dispose handler `tfe_text_view_dispose`.
 
-~~~C
-1 static void
-2 tfe_text_view_dispose (GObject *gobject) {
-3   TfeTextView *tv = TFE_TEXT_VIEW (gobject);
-4 
-5   if (G_IS_FILE (tv->file))
-6     g_clear_object (&tv->file);
-7 
-8   G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject);
-9 }
-~~~
+```c
+static void
+tfe_text_view_dispose (GObject *gobject) {
+  TfeTextView *tv = TFE_TEXT_VIEW (gobject);
+
+  if (G_IS_FILE (tv->file))
+    g_clear_object (&tv->file);
+
+  G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject);
+}
+```
 
 - 5,6: If `tv->file` points a GFile, it decreases the reference count of the GFile instance.
 The function `g_clear_object` decreases the reference count and assigns NULL to `tv->file`.
@@ -487,7 +487,7 @@ Look at the following diagram.
 There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass.
 Each class has its own dispose handler -- `dh1`, `dh2`, `dh3` and `tfe_text_view_dispose`.
 
-![dispose handlers](../image/dispose_handler.png)
+![dispose handlers](/src/images/dispose_handler.png)
 
 Now, look at the `tfe_text_view_dispose` program above.
 It first releases the reference to GFile object pointed by `tv->file`.

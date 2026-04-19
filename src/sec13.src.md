@@ -347,16 +347,6 @@ See [Gio API Reference -- g\_file\_dup](https://docs.gtk.org/gio/method.File.dup
 
 ## The API document and source file of tfetextview.c
 
-@@@if gfm
-Refer [API document of TfeTextView](../gfm/tfetextview_doc.md).
-It is under the directory `src/tfetextview`.
-@@@elif html
-Refer [API document of TfeTextView](https://toshiocp.github.io/Gtk4-tutorial/tfetextview_doc.html).
-The markdown file is under the directory `src/tfetextview`.
-@@@elif latex
-Refer API document of TfeTextView in the appendix.
-The markdown file is under the directory `src/tfetextview`.
-@@@end
+Refer [API document of TfeTextView](tfetextview/tfetextview_doc.src.md).
 
-You can find all the TfeTextView source codes under [src/tfetextview](tfetextview) directories.
-
+You can find all the TfeTextView source codes under [/src/tfetextview](tfetextview) directories.

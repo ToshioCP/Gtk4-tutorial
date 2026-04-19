@@ -3,8 +3,8 @@
 require "minitest/autorun"
 require "minitest/mock"
 require "fileutils"
-
-require_relative "../lib/lib_src2pdf"
+require_relative '../path_manager'
+require PathManager.get_path(:lib, 'lib_src2pdf')
 
 class TestSrc2Pdf < Minitest::Test
   def setup
@@ -18,8 +18,8 @@ class TestSrc2Pdf < Minitest::Test
 
     # fake files
     File.write(File.join(@src_dir, "index.src.md"), "# Preface\n")
-    File.write(File.join(@src_dir, "sec1.md"), "# Sec1\n")
-    File.write(File.join(@src_dir, "sec2.md"), "# Sec2\n")
+    File.write(File.join(@src_dir, "sec1.src.md"), "# Sec1\n")
+    File.write(File.join(@src_dir, "sec2.src.md"), "# Sec2\n")
 
     File.write(File.join(@data_dir, "settings.yml"), "")
     File.write(File.join(@data_dir, "yaml-metadata.yml"), "---\ntitle: Test\n---\n")
@@ -29,11 +29,13 @@ class TestSrc2Pdf < Minitest::Test
         from: 1
         to: 2
     YAML
+    File.write(File.join(@data_dir, "cover.tex"), "This is a cover.\n" )
     @original_get_path_method = PathManager.method(:get_path)
+    @mock = Minitest::Mock.new
   end
 
   def teardown
-    FileUtils.remove_entry(@root)
+    FileUtils.rm_rf(@root)
   end
 
   # Stub PathManager.get_path so the library
@@ -42,7 +44,7 @@ class TestSrc2Pdf < Minitest::Test
     dir_names = {
       root: @root,
       src:  @src_dir,
-      docs: @pdf_dir,
+      pdf:  @pdf_dir,
       data: @data_dir
     }
     stub_get_path = ->(type, path = "") do
@@ -52,68 +54,61 @@ class TestSrc2Pdf < Minitest::Test
     PathManager.stub(:get_path, stub_get_path, &block)
   end
 
-  def test_src2pdf_success
+  def test_src2pdf_success_or_raise
     # ---- PathManager stub ----
     with_stubbed_paths do
       # ---- stub get_src_files ----
       G4T.stub :get_src_files, {
         sections: [
-          File.join(@src_dir, "sec1.md"),
-          File.join(@src_dir, "sec2.md")
+          File.join(@src_dir, "sec1.src.md"),
+          File.join(@src_dir, "sec2.src.md")
         ],
         all: [
           File.join(@src_dir, "index.src.md"),
-          File.join(@src_dir, "sec1.md"),
-          File.join(@src_dir, "sec2.md")
+          File.join(@src_dir, "sec1.src.md"),
+          File.join(@src_dir, "sec2.src.md")
+        ],
+        src_md_files: [
+          File.join(@src_dir, "index.src.md"),
+          File.join(@src_dir, "sec1.src.md"),
+          File.join(@src_dir, "sec2.src.md")
         ]
       } do
 
         # ---- stub convert (identity) ----
-        G4T.stub :convert, ->(content, _type) { content } do
-
-          # ---- mock Open3.capture3 ----
-          open3_mock = Minitest::Mock.new
-          open3_mock.expect :call,
-                            ["", "", Minitest::Mock.new.expect(:success?, true)],
-                            [String, String, String, String, String],
-                            stdin_data: String,
-                            chdir: String
-
-          Open3.stub :capture3, open3_mock do
-            assert G4T.src2pdf
+        G4T.stub(:convert, (->(content, _type, src_path=nil){ content })) do
+          capture3_result = ->(*args, **kwargs) do
+            # Pandoc creates include_before.tex
+            file = args.select{|f| f.is_a?(String) && f =~ /.*\.tex$/}
+            file.each{|f| File.write(File.join(@pdf_dir, File.basename(f)), "")}
+            ["", "", @mock]
           end
-
-          open3_mock.verify
-        end
-      end
-    end
-  end
-
-  def test_src2pdf_raises_on_pandoc_failure
-    with_stubbed_paths do
-      G4T.stub :get_src_files, {
-        sections: [
-          File.join(@src_dir, "sec1.md"),
-          File.join(@src_dir, "sec2.md")
-        ],
-        all: [
-          File.join(@src_dir, "index.src.md"),
-          File.join(@src_dir, "sec1.md"),
-          File.join(@src_dir, "sec2.md")
-        ]
-      } do
-
-        G4T.stub :convert, ->(content, _type) { content } do
-          status_mock = Minitest::Mock.new
-          status_mock.expect :success?, false
-
-          Open3.stub :capture3, ["", "pandoc error", status_mock] do
+          Open3.stub(:capture3, capture3_result) do
+            @mock.expect(:success?, true)
+            @mock.expect(:success?, true)
+            assert G4T.src2pdf
+            @mock.verify
+            @mock.verify
+            @mock.expect(:success?, true)
+            @mock.expect(:success?, true)
+            assert G4T.src2pdf("latex")
+            @mock.verify
+            @mock.verify
             assert_raises RuntimeError do
+              @mock.expect(:success?, true)
+              @mock.expect(:success?, false)
               G4T.src2pdf
+              @mock.verify
+              @mock.verify
+            end
+            assert_raises RuntimeError do
+              @mock.expect(:success?, true)
+              @mock.expect(:success?, false)
+              G4T.src2pdf("latex")
+              @mock.verify
+              @mock.verify
             end
           end
-
-          status_mock.verify
         end
       end
     end
@@ -129,12 +124,12 @@ class TestSrc2Pdf < Minitest::Test
     with_stubbed_paths do
       G4T.stub :get_src_files, {
         sections: [
-          File.join(@src_dir, "sec1.md"),
-          File.join(@src_dir, "sec2.md")
+          File.join(@src_dir, "sec1.src.md"),
+          File.join(@src_dir, "sec2.src.md")
         ],
         all: []
       } do
-        G4T.stub :convert, ->(c, _type) { c } do
+        G4T.stub :convert, ->(c, _type, src_path=nil) { c } do
           assert_raises RuntimeError do
             G4T.src2pdf
           end

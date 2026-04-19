@@ -2,9 +2,11 @@ production:
   site_url: https://toshiocp.github.io
   base_url: /Gtk4-tutorial
   repository_url: https://github.com/ToshioCP
-  repository_base_url: /Gtk4-tutorial/blob/main
+  repository_blob_base_url: /Gtk4-tutorial/blob/main
+  repository_tree_base_url: /Gtk4-tutorial/tree/main
 development:
   site_url: http://localhost:8000
   base_url: ""
-  repository_url: ""
-  repository_base_url: ""
+  repository_url: https://github.com/ToshioCP
+  repository_blob_base_url: /Gtk4-tutorial/blob/main
+  repository_tree_base_url: /Gtk4-tutorial/tree/main

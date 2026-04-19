@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         and object are terminologies in Object Oriented Programming. I
         use these words in the same way. But, I will often use “object”
         instead of “instance” in this tutorial. That means “object” and
-        “instance” is the same. Object is a bit ambiguous word. In a
+        “instance” are the same. Object is a bit ambiguous word. In a
         broad sense, object has wider meaning than instance. So, readers
         should be careful of the contexts to find the meaning of
         “object”. In many cases, object and instance are
@@ -171,10 +171,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>pr1.c</code> is the filename of the C source code
         above.</p>
         <p>If you’ve downloaded this repository, you don’t need to
-        create the file. There’s the same file at
-        <code>src/misc/pr1.c</code> in your local repository. All the
-        example codes are under the <code>src</code> directory as
-        well.</p>
+        create the file. There’s the same file at <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/pr1.c"><code>/src/misc/pr1.c</code></a>
+        in your local repository. All the example codes are under the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src"><code>src</code></a>
+        directory as well.</p>
         <pre><code>$ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`</code></pre>
         <p>The C compiler gcc generates an executable file,
         <code>a.out</code>. Let’s run it.</p>
@@ -259,7 +260,7 @@ $</code></pre>
         <li>An instance to which the signal belongs.</li>
         <li>The name of the signal.</li>
         <li>A handler function (also called callback), which needs to be
-        casted by <code>G_CALLBACK</code>.</li>
+        cast by <code>G_CALLBACK</code>.</li>
         <li>Data to pass to the handler. If no data is necessary, NULL
         is given.</li>
         </ol>
@@ -288,10 +289,12 @@ $</code></pre>
         can use any name instead of “activate” in the declaration above.
         The parameters are:</p>
         <ul>
-        <li>self is an instance to which the signal belongs.</li>
-        <li>user_data is a data defined in the fourth argument of the
-        <code>g_signal_connect</code> function. If it is NULL, then you
-        can ignore and leave out the second parameter.</li>
+        <li><code>self</code> is an instance to which the signal
+        belongs.</li>
+        <li><code>user_data</code> is a data defined in the fourth
+        argument of the <code>g_signal_connect</code> function. If it is
+        <code>NULL</code>, then you can ignore and leave out the second
+        parameter.</li>
         </ul>
         <p>API reference manual is very important. You should see and
         understand it.</p>
@@ -357,7 +360,7 @@ GtkWidget -- GtkWindow</code></pre>
         <p>GtkWindow includes GtkWidget at the top of its object.</p>
         <figure>
         <img src="/images/window_widget.png"
-        style="width:9cm;height:6cm" alt="GtkWindow and GtkWidget" />
+        alt="GtkWindow and GtkWidget" />
         <figcaption aria-hidden="true">GtkWindow and
         GtkWidget</figcaption>
         </figure>
@@ -379,8 +382,8 @@ GtkWidget -- GtkWindow</code></pre>
         <code>GTK_WINDOW</code> macro is used.</p>
         <div class="sourceCode" id="cb16"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>GTK_WINDOW <span class="op">(</span>win<span class="op">)</span></span></code></pre></div>
-        <p>The macro is recommended because it does not only cast the
-        pointer but it also checks the type.</p>
+        <p>The macro is recommended because it not only casts the
+        pointer but also checks the type.</p>
         <h4 id="connect-it-to-the-gtkapplication.">Connect it to the
         GtkApplication.</h4>
         <p>The function <code>gtk_window_set_application</code> is used
@@ -396,7 +399,7 @@ GtkWidget -- GtkWindow</code></pre>
         connected to GtkApplication, GtkApplication doesn’t need to wait
         anything. As it destroys itself, the GtkWindow is also
         destroyed.</p>
-        <h4 id="show-the-window.">Show the window.</h4>
+        <h4 id="show-the-window.">Show the Window.</h4>
         <p>The function <code>gtk_window_present</code> presents the
         window to a user (shows it to the user).</p>
         <p>GTK 4 changes the default widget visibility to on, so every
@@ -416,7 +419,7 @@ GtkWidget -- GtkWindow</code></pre>
         want to present the window, you should use
         <code>gtk_window_present</code>.</p>
         <p>Two functions <code>gtk_widget_show</code> and
-        <code>gtk_widget_hide</code> is deprecated since GTK 4.10. You
+        <code>gtk_widget_hide</code> are deprecated since GTK 4.10. You
         should use <code>gtk_widget_set_visible</code> instead.</p>
         <p>Save the program as <code>pr3.c</code>, then compile and run
         it.</p>
@@ -425,7 +428,6 @@ $ ./a.out</code></pre>
         <p>A small window appears.</p>
         <figure>
         <img src="/images/screenshot_pr3.png"
-        style="width:3.3cm;height:3.825cm"
         alt="Screenshot of the window" />
         <figcaption aria-hidden="true">Screenshot of the
         window</figcaption>
@@ -457,7 +459,6 @@ $ ./a.out</code></pre>
         a bigger window with the title “pr4”.</p>
         <figure>
         <img src="/images/screenshot_pr4.png"
-        style="width:6.3cm;height:5.325cm"
         alt="Screenshot of the window" />
         <figcaption aria-hidden="true">Screenshot of the
         window</figcaption>

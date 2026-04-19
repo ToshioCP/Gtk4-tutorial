@@ -29,7 +29,7 @@ class TestLibRenumber < Minitest::Test
 
   # Removes the temporary directory after each test execution.
   def teardown
-    FileUtils.remove_entry_secure(@src_dir)
+    FileUtils.rm_rf(@src_dir)
   end
 
   # Stub PathManager.get_path so the library

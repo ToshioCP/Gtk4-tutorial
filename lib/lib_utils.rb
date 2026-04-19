@@ -4,6 +4,7 @@
 # This module requires PathManager to be loaded.
 
 require 'fileutils'
+require 'yaml'
 require_relative '../path_manager'
 
 module G4T
@@ -42,14 +43,15 @@ module G4T
     #   * :sections - Array of sec<int>.src.md sorted by number
     #   * :images - Array of all files under the 'images/' directory
     def get_src_files(src_dir:  PathManager.get_path(:src))
-      all_source_files = Dir[File.join(src_dir, "**/*")].reject { |f| File.directory?(f) }
-      sections = Dir[File.join(src_dir, "sec*.src.md")]
-                .select{|f| File.basename(f) =~ /\Asec\d+\.src\.md\z/}
-                .sort_by { |f| File.basename(f)[/\d+/].to_i }
-      images = Dir[File.join(src_dir, "images/**/*")].reject { |f| File.directory?(f) }
+      all_source_files = Dir[File.join(src_dir, "**/*")].reject{|f| File.directory?(f)}
+      sections = Dir.children(src_dir).select{|f| f =~ /\Asec\d+\.src\.md\z/}.sort_by{|f| f[/\d+/].to_i }
+      sections = sections.map{|f| File.join(src_dir, f)}
+      src_md_files = all_source_files.select{|f| f =~ /\.src\.md\z/ }
+      images = all_source_files.select{|f| image?(f) }
       {
         all: all_source_files,
         sections: sections,
+        src_md_files: src_md_files,
         images: images
       }
     end
@@ -72,15 +74,8 @@ module G4T
     # This method only checks the extension matches JPEG, PNG or GIF patterns.
     # For more accurate checking, the 'marcel' Gem is recommended.
     def image?(file)
-      # Ignore cases with i option
-      file.to_s.match?(/\.(?:jpe?g|png|gif)\z/i)
-    end
-
-    # Check whether the file is a source code.
-    # This method only checks the extension matches .c, .h, .lex, .ui, .xml and .y.
-    def source_code?(file)
-      # Ignore cases with i option
-      file.to_s.match?(/\.(?:c|h|lex|ui|xml|y)\z/i)
+      image_extensions = YAML.load_file(PathManager.get_path(:data, "image_extensions.yml"))
+      image_extensions.include?(File.extname(file).downcase)
     end
   end
 end

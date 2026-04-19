@@ -37,39 +37,44 @@
         is primarily designed for Linux using the C compiler, it is now
         widely used on other platforms, including Windows and macOS,
         through various language bindings such as Vala, Python, Rust,
-        and Ruby. However, this tutorial describes only <em>C programs
-        on Linux</em>.</p>
+        and Ruby. However, this tutorial describes only <strong>C
+        programs on Linux</strong>.</p>
         <p>If you want to try the examples in the tutorial, you
         need:</p>
         <ul>
-        <li>PC with Linux distribution like Ubuntu or Debian.</li>
+        <li>PC with a Linux distribution like Ubuntu or Debian
+        (including WSL - Windows Subsystem for Linux).</li>
         <li>GCC.</li>
         <li>GTK 4 (version 4.10.1 or later).</li>
         </ul>
         <p>The stable version of GTK is 4.20.3 at present (December 28,
         2025). The examples in this tutorial have been tested with GTK
-        version 4.10. The version 4.10 added some new classes and
-        functions and makes some classes and functions deprecated. Some
-        example programs in this tutorial don’t work on the older
-        version.</p>
-        <h3 id="ruby-and-rake-for-making-the-document">Ruby and rake for
-        making the document</h3>
+        version 4.10. Version 4.10 added some new classes and functions
+        and deprecated some old ones. Some example programs in this
+        tutorial don’t work on older versions.</p>
+        <h3 id="ruby-and-rake-for-making-the-document">Ruby and Rake for
+        Making the Document</h3>
         <p>This repository includes Ruby programs. They are used to make
-        GFM (GitHub Flavoured Markdown) files, HTML files, LaTeX files
-        and a PDF file.</p>
+        GFM (GitHub Flavored Markdown), HTML, and PDF files.</p>
         <p>You need:</p>
         <ul>
-        <li>Linux.</li>
-        <li>Ruby programming language. There are two ways to install it.
-        One is installing the distribution’s package. The other is using
-        a Ruby version manager such as rbenv, asdf, or mise. Using a
-        version manager is recommended if you want to use the latest
-        version of Ruby.</li>
-        <li>Rake.</li>
+        <li>Linux OS (including WSL)</li>
+        <li>Ruby 3.0 or later (tested on 4.0.1)</li>
+        <li>Rake</li>
         </ul>
+        <p>There are two ways to install Ruby.</p>
+        <ul>
+        <li>Install your distribution’s package.</li>
+        <li>Use a Ruby version manager such as rbenv or mise.</li>
+        </ul>
+        <p><strong>Note:</strong> If you choose to use a Ruby version
+        other than 4.0.1, you must update the version settings in
+        <code>Gemfile</code>. Additionally, depending on your version
+        manager, you may need to modify <code>.ruby-version</code> or
+        <code>mise.toml</code> as well.</p>
         <h2 id="license">License</h2>
-        <p>Copyright (C) 2020,2023 ToshioCP (Toshio Sekiya)</p>
-        <p>GTK4-tutorial repository contains tutorial documents and
+        <p>Copyright (C) 2020, 2023 ToshioCP (Toshio Sekiya)</p>
+        <p>The GTK4-tutorial repository contains tutorial documents and
         programs such as converters, generators and controllers. All of
         them comprise the ‘GTK4-tutorial’ package. This package is
         simply called ‘GTK4-tutorial’ in the following description.</p>

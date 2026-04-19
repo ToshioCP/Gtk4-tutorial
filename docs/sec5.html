@@ -115,12 +115,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-9"><a href="#cb1-9"></a></span>
 <span id="cb1-10"><a href="#cb1-10"></a>  text <span class="op">=</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a>      <span class="st">&quot;Once upon a time, there was an old man who was called Taketori-no-Okina. &quot;</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>      <span class="st">&quot;It is a japanese word that means a man whose work is making bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>      <span class="st">&quot;It is a Japanese word that means a man whose work is making bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
 <span id="cb1-13"><a href="#cb1-13"></a>      <span class="st">&quot;One day, he went into a hill and found a shining bamboo. &quot;</span></span>
 <span id="cb1-14"><a href="#cb1-14"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">What a mysterious bamboo it is!,</span><span class="sc">\&quot;</span><span class="st"> he said. &quot;</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a>      <span class="st">&quot;He cut it, then there was a small cute baby girl in it. &quot;</span></span>
 <span id="cb1-16"><a href="#cb1-16"></a>      <span class="st">&quot;The girl was shining faintly. &quot;</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>      <span class="st">&quot;He thought this baby girl is a gift from Heaven and took her home.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>      <span class="st">&quot;He thought this baby girl was a gift from Heaven and took her home.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
 <span id="cb1-18"><a href="#cb1-18"></a>      <span class="st">&quot;His wife was surprized at his story. &quot;</span></span>
 <span id="cb1-19"><a href="#cb1-19"></a>      <span class="st">&quot;They were very happy because they had no children. &quot;</span></span>
 <span id="cb1-20"><a href="#cb1-20"></a>      <span class="op">;</span></span>
@@ -158,7 +158,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         assigned to <code>tb</code>. Then, the text from line 10 to 20
         is assigned to the buffer. If the third argument of
         <code>gtk_text_buffer_set_text</code> is a positive integer, it
-        is the length of the text. It it is -1, the string terminates
+        is the length of the text. If it is -1, the string terminates
         with NULL.</p>
         <p>GtkTextView has a wrap mode. When it is set to
         <code>GTK_WRAP_WORD_CHAR</code>, text wraps in between words, or
@@ -184,9 +184,9 @@ $ ./a.out</code></pre>
         limit of the window, the height increases and the window
         extends. If the height gets bigger than the height of the
         screen, you won’t be able to control the size of the window or
-        change it back to the original size. This is a problem, that is
-        to say a bug. This can be solved by adding a GtkScrolledWindow
-        between the GtkApplicationWindow and GtkTextView.</p>
+        change it back to the original size. This is essentially a bug.
+        This can be solved by adding a GtkScrolledWindow between the
+        GtkApplicationWindow and GtkTextView.</p>
         <h3 id="gtkscrolledwindow">GtkScrolledWindow</h3>
         <p>What we need to do is:</p>
         <ul>
@@ -196,11 +196,19 @@ $ ./a.out</code></pre>
         child.</li>
         </ul>
         <p>Modify <code>tfv1.c</code> and save it as
-        <code>tfv2.c</code>. There is only a few difference between
+        <code>tfv2.c</code>. There are only a few differences between
         these two files.</p>
         <pre><code>$ cd tfv; diff tfv1.c tfv2.c
 5a6
 &gt;   GtkWidget *scr;
+12c13
+&lt;       &quot;It is a Japanese word that means a man whose work is making bamboo baskets.\n&quot;
+---
+&gt;       &quot;It is a japanese word that means a man whose work is making bamboo baskets.\n&quot;
+17c18
+&lt;       &quot;He thought this baby girl was a gift from Heaven and took her home.\n&quot;
+---
+&gt;       &quot;He thought this baby girl is a gift from Heaven and took her home.\n&quot;
 24a26,28
 &gt;   scr = gtk_scrolled_window_new ();
 &gt;   gtk_window_set_child (GTK_WINDOW (win), scr);

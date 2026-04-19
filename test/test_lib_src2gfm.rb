@@ -9,8 +9,8 @@ require 'minitest/mock'
 require 'fileutils'
 require 'tmpdir'
 require 'pathname'
-require_relative '../lib/lib_src2gfm'
 require_relative '../path_manager'
+require PathManager.get_path(:lib, 'lib_src2gfm')
 
 class TestLibSrc2Md < Minitest::Test
   def setup
@@ -101,9 +101,8 @@ class TestLibSrc2Md < Minitest::Test
     # Verification: Non-section markdown
     assert File.exist?(File.join(@gfm_dir, "extra.md"))
     
-    # Verification: Asset file copy (or "conversion" to .md if you treat all as .src.md)
-    # Note: In your current script, if it's not .src.md, it's still "read" and saved.
-    assert File.exist?(File.join(@gfm_dir, "diagram.png"))
+    # Verification: Asset files aren't copied.
+    refute File.exist?(File.join(@gfm_dir, "diagram.png"))
 
     # Verification: Subdirectory structure preservation
     assert File.exist?(File.join(@gfm_dir, "sub", "nested.md"))

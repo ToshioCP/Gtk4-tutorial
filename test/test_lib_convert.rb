@@ -8,7 +8,8 @@
 require 'minitest/autorun'
 require 'minitest/mock'
 require 'stringio'
-require_relative '../lib/lib_convert'
+require_relative '../path_manager'
+require PathManager.get_path(:lib, 'lib_convert')
 
 class TestLibConvert < Minitest::Test
 
@@ -109,12 +110,12 @@ class TestLibConvert < Minitest::Test
 
   
   #
-  # _split_directive_blocks
+  # split_directive_blocks
   #
 
   def test_split_directive_blocks_plain_text_only
     input = "hello\nworld\n"
-    result = G4T.send(:_split_directive_blocks, input)
+    result = G4T.send(:split_directive_blocks, input)
 
     assert_equal ["hello\nworld\n"], result
   end
@@ -132,7 +133,7 @@ class TestLibConvert < Minitest::Test
       after
     TEXT
 
-    result = G4T.send(:_split_directive_blocks, input)
+    result = G4T.send(:split_directive_blocks, input)
     assert_equal 3, result.size
     assert_match(/^before/, result[0])
     assert_match(/^@@@if/, result[1])
@@ -151,7 +152,7 @@ class TestLibConvert < Minitest::Test
       after
     TEXT
 
-    result = G4T.send(:_split_directive_blocks, input)
+    result = G4T.send(:split_directive_blocks, input)
 
     assert_equal 3, result.size
     assert_match(/^@@@shell/, result[0])

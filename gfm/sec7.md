@@ -88,65 +88,65 @@ Our file viewer is as follows.
 
 The program is shown below.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 static void
- 4 app_activate (GApplication *app) {
- 5   g_printerr ("You need a filename argument.\n");
- 6 }
- 7 
- 8 static void
- 9 app_open (GApplication *app, GFile ** files, int n_files, char *hint) {
-10   GtkWidget *win;
-11   GtkWidget *scr;
-12   GtkWidget *tv;
-13   GtkTextBuffer *tb;
-14   char *contents;
-15   gsize length;
-16   char *filename;
-17   GError *err = NULL;
-18 
-19   win = gtk_application_window_new (GTK_APPLICATION (app));
-20   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-21 
-22   scr = gtk_scrolled_window_new ();
-23   gtk_window_set_child (GTK_WINDOW (win), scr);
-24 
-25   tv = gtk_text_view_new ();
-26   tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-27   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-28   gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
-29   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-30 
-31   if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
-32     gtk_text_buffer_set_text (tb, contents, length);
-33     g_free (contents);
-34     if ((filename = g_file_get_basename (files[0])) != NULL) {
-35       gtk_window_set_title (GTK_WINDOW (win), filename);
-36       g_free (filename);
-37     }
-38     gtk_window_present (GTK_WINDOW (win));
-39   } else {
-40     g_printerr ("%s.\n", err->message);
-41     g_error_free (err);
-42     gtk_window_destroy (GTK_WINDOW (win));
-43   }
-44 }
-45 
-46 int
-47 main (int argc, char **argv) {
-48   GtkApplication *app;
-49   int stat;
-50 
-51   app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
-52   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-53   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-54   stat = g_application_run (G_APPLICATION (app), argc, argv);
-55   g_object_unref (app);
-56   return stat;
-57 }
-~~~
+```c
+#include <gtk/gtk.h>
+
+static void
+app_activate (GApplication *app) {
+  g_printerr ("You need a filename argument.\n");
+}
+
+static void
+app_open (GApplication *app, GFile ** files, int n_files, char *hint) {
+  GtkWidget *win;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkTextBuffer *tb;
+  char *contents;
+  gsize length;
+  char *filename;
+  GError *err = NULL;
+
+  win = gtk_application_window_new (GTK_APPLICATION (app));
+  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+
+  scr = gtk_scrolled_window_new ();
+  gtk_window_set_child (GTK_WINDOW (win), scr);
+
+  tv = gtk_text_view_new ();
+  tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+  gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
+  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+
+  if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
+    gtk_text_buffer_set_text (tb, contents, length);
+    g_free (contents);
+    if ((filename = g_file_get_basename (files[0])) != NULL) {
+      gtk_window_set_title (GTK_WINDOW (win), filename);
+      g_free (filename);
+    }
+    gtk_window_present (GTK_WINDOW (win));
+  } else {
+    g_printerr ("%s.\n", err->message);
+    g_error_free (err);
+    gtk_window_destroy (GTK_WINDOW (win));
+  }
+}
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+```
 
 Save it as `tfv3.c`.
 If you've downloaded this repository, the file is `src/tfv/tfv3.c`.
@@ -157,7 +157,7 @@ $ comp tfv3
 $ ./a.out tfv3.c
 ~~~
 
-![File viewer](../image/screenshot_tfv3.png)
+![File viewer](/src/images/screenshot_tfv3.png)
 
 The function `main` has only two changes from the previous version.
 
@@ -235,7 +235,7 @@ GtkNotebook is a container widget that contains multiple widgets with tabs.
 It shows only one child at a time.
 Another child will be shown when its tab is clicked.
 
-![GtkNotebook](../image/screenshot_gtk_notebook.png)
+![GtkNotebook](/src/images/screenshot_gtk_notebook.png)
 
 The left image is the window at the startup.
 The file `pr1.c` is shown and its filename is in the left tab.
@@ -245,78 +245,78 @@ The following is `tfv4.c`.
 It has GtkNoteBook widget.
 It is inserted as a child of GtkApplicationWindow and contains multiple GtkScrolledWindow.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 static void
- 4 app_activate (GApplication *app) {
- 5   g_printerr ("You need filename arguments.\n");
- 6 }
- 7 
- 8 static void
- 9 app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
-10   GtkWidget *win;
-11   GtkWidget *nb;
-12   GtkWidget *lab;
-13   GtkNotebookPage *nbp;
-14   GtkWidget *scr;
-15   GtkWidget *tv;
-16   GtkTextBuffer *tb;
-17   char *contents;
-18   gsize length;
-19   char *filename;
-20   int i;
-21   GError *err = NULL;
-22 
-23   win = gtk_application_window_new (GTK_APPLICATION (app));
-24   gtk_window_set_title (GTK_WINDOW (win), "file viewer");
-25   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-26   nb = gtk_notebook_new ();
-27   gtk_window_set_child (GTK_WINDOW (win), nb);
-28 
-29   for (i = 0; i < n_files; i++) {
-30     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
-31       scr = gtk_scrolled_window_new ();
-32       tv = gtk_text_view_new ();
-33       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-34       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-35       gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
-36       gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-37 
-38       gtk_text_buffer_set_text (tb, contents, length);
-39       g_free (contents);
-40       if ((filename = g_file_get_basename (files[i])) != NULL) {
-41         lab = gtk_label_new (filename);
-42         g_free (filename);
-43       } else
-44         lab = gtk_label_new ("");
-45       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
-46       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
-47       g_object_set (nbp, "tab-expand", TRUE, NULL);
-48     } else {
-49       g_printerr ("%s.\n", err->message);
-50       g_clear_error (&err);
-51     }
-52   }
-53   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0)
-54     gtk_window_present (GTK_WINDOW (win));
-55   else
-56     gtk_window_destroy (GTK_WINDOW (win));
-57 }
-58 
-59 int
-60 main (int argc, char **argv) {
-61   GtkApplication *app;
-62   int stat;
-63 
-64   app = gtk_application_new ("com.github.ToshioCP.tfv4", G_APPLICATION_HANDLES_OPEN);
-65   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-66   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-67   stat = g_application_run (G_APPLICATION (app), argc, argv);
-68   g_object_unref (app);
-69   return stat;
-70 }
-~~~
+```c
+#include <gtk/gtk.h>
+
+static void
+app_activate (GApplication *app) {
+  g_printerr ("You need filename arguments.\n");
+}
+
+static void
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
+  GtkWidget *win;
+  GtkWidget *nb;
+  GtkWidget *lab;
+  GtkNotebookPage *nbp;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkTextBuffer *tb;
+  char *contents;
+  gsize length;
+  char *filename;
+  int i;
+  GError *err = NULL;
+
+  win = gtk_application_window_new (GTK_APPLICATION (app));
+  gtk_window_set_title (GTK_WINDOW (win), "file viewer");
+  gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+  nb = gtk_notebook_new ();
+  gtk_window_set_child (GTK_WINDOW (win), nb);
+
+  for (i = 0; i < n_files; i++) {
+    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
+      scr = gtk_scrolled_window_new ();
+      tv = gtk_text_view_new ();
+      tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+      gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+      gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
+      gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+
+      gtk_text_buffer_set_text (tb, contents, length);
+      g_free (contents);
+      if ((filename = g_file_get_basename (files[i])) != NULL) {
+        lab = gtk_label_new (filename);
+        g_free (filename);
+      } else
+        lab = gtk_label_new ("");
+      gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
+      nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
+      g_object_set (nbp, "tab-expand", TRUE, NULL);
+    } else {
+      g_printerr ("%s.\n", err->message);
+      g_clear_error (&err);
+    }
+  }
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0)
+    gtk_window_present (GTK_WINDOW (win));
+  else
+    gtk_window_destroy (GTK_WINDOW (win));
+}
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new ("com.github.ToshioCP.tfv4", G_APPLICATION_HANDLES_OPEN);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+```
 
 Most of the changes are in the function `app_open`.
 The numbers at the left of the following items are line numbers in the source code.

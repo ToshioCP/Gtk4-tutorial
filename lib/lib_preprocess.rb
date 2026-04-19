@@ -10,6 +10,9 @@ require PathManager.get_path(:lib, 'lib_utils')
 
 module G4T
   class << self
+
+    private
+
     # Processes a single @@@if block by selecting the matching section.
     #
     # This method expects a block that starts with @@@if and ends with @@@end.
@@ -25,12 +28,12 @@ module G4T
         s = io.gets
         return "" unless s =~ /^@@@if\s+(.+)/
         condition = $1
-        status, block_in_clause, s = _get_block_in_if_elsif_clause(io, condition, target)
+        status, block_in_clause, s = get_block_in_if_elsif_clause(io, condition, target)
         return block_in_clause if status
 
         while (s =~ /^@@@elif\s+(.+)/)
           condition = $1
-          status, block_in_clause, s = _get_block_in_if_elsif_clause(io, condition, target)
+          status, block_in_clause, s = get_block_in_if_elsif_clause(io, condition, target)
           return block_in_clause if status
         end
 
@@ -53,35 +56,23 @@ module G4T
       end
     end
 
-    private
-
     # Private method only for preprocess_block method.
     #
     # @param io [StringIO] The StringIO object.
     # @param condition [String] The condition in the @@@if or @@@elif directive.
     # @param target [String] The target (gfm, html or pdf).
     # @return [Array] [The result of the matching, content of the matching branch, input string].
-    def _get_block_in_if_elsif_clause(io, condition, target)
+    def get_block_in_if_elsif_clause(io, condition, target)
       content = []
       while (s = io.gets)
         if s =~ /^@@@(elif|else|end)/
-          return [true, content.join, s] if _match_condition?(condition, target)
+          return [true, content.join, s] if condition.split('|').map(&:strip).include?(target)
           break
         else
           content << s
         end
       end
       [false, "", s]
-    end
-
-    # Checks if the build target matches the condition (supports OR logic with '|').
-    #
-    # @param condition [String] The condition string from the directive (e.g., 'html|gfm').
-    # @param target [String] The current build target.
-    # @return [Boolean] True if the target matches any part of the condition.
-    # @private
-    def _match_condition?(condition, target)
-      condition.split('|').map(&:strip).include?(target)
     end
   end
 end

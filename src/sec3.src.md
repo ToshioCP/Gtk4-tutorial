@@ -37,7 +37,7 @@ Here I used the word `instance`.
 Instance, class and object are terminologies in Object Oriented Programming.
 I use these words in the same way.
 But, I will often use "object" instead of "instance" in this tutorial.
-That means "object" and "instance" is the same.
+That means "object" and "instance" are the same.
 Object is a bit ambiguous word.
 In a broad sense, object has wider meaning than instance.
 So, readers should be careful of the contexts to find the meaning of "object".
@@ -62,8 +62,8 @@ To compile this, run the following command.
 The string `pr1.c` is the filename of the C source code above.
 
 If you've downloaded this repository, you don't need to create the file.
-There's the same file at `src/misc/pr1.c` in your local repository.
-All the example codes are under the `src` directory as well.
+There's the same file at [`/src/misc/pr1.c`](misc/pr1.c) in your local repository.
+All the example codes are under the [`src`](.) directory as well.
 
 ~~~
 $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
@@ -139,7 +139,7 @@ The function `g_signal_connect` has four arguments.
 
 1. An instance to which the signal belongs.
 2. The name of the signal.
-3. A handler function (also called callback), which needs to be casted by `G_CALLBACK`.
+3. A handler function (also called callback), which needs to be cast by `G_CALLBACK`.
 4. Data to pass to the handler. If no data is necessary, NULL is given.
 
 It is described in the [GObject API Reference](https://docs.gtk.org/gobject/func.signal_connect.html).
@@ -169,9 +169,9 @@ This is a declaration of the "activate" signal handler.
 You can use any name instead of "activate" in the declaration above.
 The parameters are:
 
-- self is an instance to which the signal belongs.
-- user\_data is a data defined in the fourth argument of the `g_signal_connect` function.
-If it is NULL, then you can ignore and leave out the second parameter.
+- `self` is an instance to which the signal belongs.
+- `user_data` is a data defined in the fourth argument of the `g_signal_connect` function.
+If it is `NULL`, then you can ignore and leave out the second parameter.
 
 API reference manual is very important.
 You should see and understand it.
@@ -248,7 +248,11 @@ GtkWidget -- GtkWindow
 
 GtkWindow includes GtkWidget at the top of its object.
 
+@@@if pdf
 ![GtkWindow and GtkWidget](/images/window_widget.png){width=9.0cm height=6.0cm}
+@@@else
+![GtkWindow and GtkWidget](/images/window_widget.png)
+@@@end
 
 The function `gtk_window_new` is defined as follows.
 
@@ -274,7 +278,7 @@ Instead, `GTK_WINDOW` macro is used.
 GTK_WINDOW (win)
 ~~~
 
-The macro is recommended because it does not only cast the pointer but it also checks the type.
+The macro is recommended because it not only casts the pointer but also checks the type.
 
 #### Connect it to the GtkApplication.
 
@@ -291,7 +295,7 @@ If you didn't connect GtkWindow and GtkApplication, GtkApplication destroys itse
 Because no window is connected to GtkApplication, GtkApplication doesn't need to wait anything.
 As it destroys itself, the GtkWindow is also destroyed.
 
-#### Show the window.
+#### Show the Window.
 
 The function `gtk_window_present` presents the window to a user (shows it to the user).
 
@@ -309,7 +313,7 @@ So, win1 is still behind win2.
 The other function `gtk_window_present (win1)` moves win1 to the top of the stack of the windows.
 Therefore, if you want to present the window, you should use `gtk_window_present`.
 
-Two functions `gtk_widget_show` and `gtk_widget_hide` is deprecated since GTK 4.10.
+Two functions `gtk_widget_show` and `gtk_widget_hide` are deprecated since GTK 4.10.
 You should use `gtk_widget_set_visible` instead.
 
 Save the program as `pr3.c`, then compile and run it.
@@ -321,7 +325,11 @@ $ ./a.out
 
 A small window appears.
 
+@@@if pdf
 ![Screenshot of the window](/images/screenshot_pr3.png){width=3.3cm height=3.825cm}
+@@@else
+![Screenshot of the window](/images/screenshot_pr3.png)
+@@@end
 
 Click on the close button then the window disappears and the program finishes.
 
@@ -344,4 +352,8 @@ So you don't need to call `gtk_window_set_application` any more.
 The program sets the title and the default size of the window.
 Compile it and run `a.out`, then you will see a bigger window with the title "pr4".
 
+@@@if pdf
 ![Screenshot of the window](/images/screenshot_pr4.png){width=6.3cm height=5.325cm}
+@@@else
+![Screenshot of the window](/images/screenshot_pr4.png)
+@@@end

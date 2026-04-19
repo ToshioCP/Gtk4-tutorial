@@ -83,8 +83,7 @@ task :clobber do
   pdf_path = PathManager.get_path(:pdf)
   if Dir.exist?(pdf_path)
     puts "Removing directory: #{pdf_path}"
-    # Use remove_entry_secure for enhanced security over rm_rf
-    FileUtils.remove_entry_secure(pdf_path)
+    FileUtils.rm_rf(pdf_path)
   else
     puts "No PDF directory found to remove."
   end

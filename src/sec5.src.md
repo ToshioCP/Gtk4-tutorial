@@ -19,7 +19,7 @@ When the GtkTextView instance is created, a GtkTextBuffer instance is also creat
 In the next line, the pointer to the buffer is assigned to `tb`.
 Then, the text from line 10 to 20 is assigned to the buffer.
 If the third argument of `gtk_text_buffer_set_text` is a positive integer, it is the length of the text.
-It it is -1, the string terminates with NULL.
+If it is -1, the string terminates with NULL.
 
 GtkTextView has a wrap mode.
 When it is set to `GTK_WRAP_WORD_CHAR`, text wraps in between words, or if that is not enough, also between graphemes.
@@ -44,7 +44,7 @@ You can add or delete any characters on the GtkTextView, and your changes are ke
 If you add more characters beyond the limit of the window, the height increases and the window extends.
 If the height gets bigger than the height of the screen,
 you won't be able to control the size of the window or change it back to the original size.
-This is a problem, that is to say a bug.
+This is essentially a bug.
 This can be solved by adding a GtkScrolledWindow between the GtkApplicationWindow and GtkTextView.
 
 ### GtkScrolledWindow
@@ -55,7 +55,7 @@ What we need to do is:
 - Insert the GtkTextView widget to the GtkScrolledWindow as a child.
 
 Modify `tfv1.c` and save it as `tfv2.c`.
-There is only a few difference between these two files.
+There are only a few differences between these two files.
 
 @@@shell
 cd tfv; diff tfv1.c tfv2.c

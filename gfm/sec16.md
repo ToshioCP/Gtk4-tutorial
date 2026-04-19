@@ -32,7 +32,7 @@ It is a good practice for you to add more features.
 
 ## Total number of lines, words and characters
 
-~~~
+```
 $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
   110   335  3602 tfe5/tfeapplication.c
@@ -43,6 +43,7 @@ $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/t
    32    54   624 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
   613  1747 19128 total
-~~~
+$
+```
 
 Up: [README.md](../README.md),  Prev: [Section 15](sec15.md), Next: [Section 17](sec17.md)

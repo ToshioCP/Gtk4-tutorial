@@ -7,7 +7,7 @@ Up: [README.md](../README.md),  Prev: [Section 16](sec16.md), Next: [Section 18]
 Users often use menus to tell a command to the application.
 It is like this:
 
-![Menu](../image/menu.png)
+![Menu](/src/images/menu.png)
 
 There are two types of objects.
 
@@ -19,7 +19,7 @@ They are called "menu".
 Menu is an ordered list of items.
 They are similar to arrays.
 
-![Menu structure](../image/menu_structure.png)
+![Menu structure](/src/images/menu_structure.png)
 
 - Menubar is a menu which has three items, which are "File", "Edit" and "View".
 - The menu item labeled "Edit" has a link to the submenu which has two items.
@@ -162,64 +162,64 @@ app_startup (GApplication *app) {
 The following is a simple example of menus and actions.
 The source file `menu1.c` is located at [src/menu](../src/menu) directory.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 static void
- 4 quit_activated(GSimpleAction *action, GVariant *parameter, GApplication *application) {
- 5   g_application_quit (application);
- 6 }
- 7 
- 8 static void
- 9 app_activate (GApplication *application) {
-10   GtkApplication *app = GTK_APPLICATION (application);
-11   GtkWidget *win = gtk_application_window_new (app);
-12   gtk_window_set_title (GTK_WINDOW (win), "menu1");
-13   gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-14 
-15   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
-16   gtk_window_present (GTK_WINDOW (win));
-17 }
-18 
-19 static void
-20 app_startup (GApplication *application) {
-21   GtkApplication *app = GTK_APPLICATION (application);
-22 
-23   GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
-24   g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
-25   g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), application);
-26 
-27   GMenu *menubar = g_menu_new ();
-28   GMenuItem *menu_item_menu = g_menu_item_new ("Menu", NULL);
-29   GMenu *menu = g_menu_new ();
-30   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
-31   g_menu_append_item (menu, menu_item_quit);
-32   g_object_unref (menu_item_quit);
-33   g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));
-34   g_object_unref (menu);
-35   g_menu_append_item (menubar, menu_item_menu);
-36   g_object_unref (menu_item_menu);
-37 
-38   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
-39 }
-40 
-41 #define APPLICATION_ID "com.github.ToshioCP.menu1"
-42 
-43 int
-44 main (int argc, char **argv) {
-45   GtkApplication *app;
-46   int stat;
-47 
-48   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-49   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-50   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-51 
-52   stat = g_application_run (G_APPLICATION (app), argc, argv);
-53   g_object_unref (app);
-54   return stat;
-55 }
-56 
-~~~
+```c
+#include <gtk/gtk.h>
+
+static void
+quit_activated(GSimpleAction *action, GVariant *parameter, GApplication *application) {
+  g_application_quit (application);
+}
+
+static void
+app_activate (GApplication *application) {
+  GtkApplication *app = GTK_APPLICATION (application);
+  GtkWidget *win = gtk_application_window_new (app);
+  gtk_window_set_title (GTK_WINDOW (win), "menu1");
+  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+
+  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
+  gtk_window_present (GTK_WINDOW (win));
+}
+
+static void
+app_startup (GApplication *application) {
+  GtkApplication *app = GTK_APPLICATION (application);
+
+  GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
+  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
+  g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), application);
+
+  GMenu *menubar = g_menu_new ();
+  GMenuItem *menu_item_menu = g_menu_item_new ("Menu", NULL);
+  GMenu *menu = g_menu_new ();
+  GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
+  g_menu_append_item (menu, menu_item_quit);
+  g_object_unref (menu_item_quit);
+  g_menu_item_set_submenu (menu_item_menu, G_MENU_MODEL (menu));
+  g_object_unref (menu);
+  g_menu_append_item (menubar, menu_item_menu);
+  g_object_unref (menu_item_menu);
+
+  gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
+}
+
+#define APPLICATION_ID "com.github.ToshioCP.menu1"
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+
+```
 
 - 3-6: `quit_activated` is a handler of the "activate" signal on the action `act_quit`.
 Handlers of the "activate" signal have three parameters.
@@ -263,7 +263,7 @@ GMenu and GMenuItem are built and finally connected to the variable `menubar`.
 The structure of the menu is shown in the diagram below.
 - 38: The menubar is inserted to the application.
 
-![menu and action](../image/menu1.png)
+![menu and action](/src/images/menu1.png)
 
 ## Compiling
 
@@ -279,7 +279,7 @@ Then, a window appears.
 Click on "Menu" on the menubar, then a menu appears.
 Click on "Quit" menu, then the application quits.
 
-![Screenshot of menu1](../image/menu1_screenshot.png)
+![Screenshot of menu1](/src/images/menu1_screenshot.png)
 
 ## Primary and remote application instances
 
@@ -311,7 +311,7 @@ The two windows belong to the primary instance.
 
 If you click on the "Quit" menu, the application (the primary instance) quits.
 
-![menu1 -- two windows](../image/menu1_two_windows.png)
+![menu1 -- two windows](/src/images/menu1_two_windows.png)
 
 The second execution makes a new window.
 However, it depends on the "activate" handler.

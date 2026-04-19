@@ -25,40 +25,43 @@ module G4T
   # This class ensures that file handling, sequence validation, and 
   # text parsing logic work as expected.
   class LibUtilsTest < Minitest::Test
+    # Sets up a temporary directory to act as a mock source for each test.
+    def setup
+      @src_dir = Dir.mktmpdir
+    end
+
+    # Removes the temporary directory after each test execution.
+    def teardown
+      FileUtils.rm_rf(@src_dir)
+    end
 
     #
     # sec_files_check
     #
 
     def test_sec_files_check_valid_sequence
-      Dir.mktmpdir do |dir|
-        File.write(File.join(dir, "sec1.src.md"), "")
-        File.write(File.join(dir, "sec2.src.md"), "")
-        File.write(File.join(dir, "sec3.src.md"), "")
+      File.write(File.join(@src_dir, "sec1.src.md"), "")
+      File.write(File.join(@src_dir, "sec2.src.md"), "")
+      File.write(File.join(@src_dir, "sec3.src.md"), "")
 
-        assert G4T.send(:sec_files_check, src_dir: dir)
-      end
+      assert G4T.send(:sec_files_check, src_dir: @src_dir)
     end
 
     def testsec_files_check_missing_number
-      Dir.mktmpdir do |dir|
-        File.write(File.join(dir, "sec1.src.md"), "")
-        File.write(File.join(dir, "sec3.src.md"), "")
+      File.write(File.join(@src_dir, "sec1.src.md"), "")
+      File.write(File.join(@src_dir, "sec3.src.md"), "")
 
-        assert_raises(RuntimeError) do
-          G4T.send(:sec_files_check, src_dir: dir)
-        end
+      assert_raises(RuntimeError) do
+        G4T.send(:sec_files_check, src_dir: @src_dir)
       end
     end
 
     def test_sec_files_check_decimal_number
-      Dir.mktmpdir do |dir|
-        File.write(File.join(dir, "sec1.src.md"), "")
-        File.write(File.join(dir, "sec1.5.src.md"), "")
+      File.write(File.join(@src_dir, "sec1.src.md"), "")
+      File.write(File.join(@src_dir, "sec1.5.src.md"), "")
 
-        assert_raises(RuntimeError) do
-          G4T.send(:sec_files_check, src_dir: dir)
-        end
+      assert_raises(RuntimeError) do
+        G4T.send(:sec_files_check, src_dir: @src_dir)
       end
     end
 
@@ -74,30 +77,32 @@ module G4T
     #
 
     def test_get_src_files_returns_all_and_sections
-      Dir.mktmpdir do |dir|
-        File.write(File.join(dir, "sec2.src.md"), "")
-        File.write(File.join(dir, "sec1.src.md"), "")
-        File.write(File.join(dir, "other.txt"), "")
+      File.write(File.join(@src_dir, "sec2.src.md"), "")
+      File.write(File.join(@src_dir, "sec1.src.md"), "")
+      File.write(File.join(@src_dir, "other.txt"), "")
 
-        [%w(sub nested.src.md), %w(images image.png)].each do |sub, file|
-          subdir = File.join(dir, sub)
-          Dir.mkdir(subdir)
-          File.write(File.join(subdir, file), "")
-        end
-
-        result = G4T.send(:get_src_files, src_dir: dir)
-
-        assert_includes result[:all], File.join(dir, "sec1.src.md")
-        assert_includes result[:all], File.join(dir, "sub", "nested.src.md")
-        assert_includes result[:all], File.join(dir, "images", "image.png")
-
-        assert_equal [
-          File.join(dir, "sec1.src.md"),
-          File.join(dir, "sec2.src.md")
-        ], result[:sections]
-
-        assert_equal [File.join(dir, "images/image.png")], result[:images]
+      [%w(sub nested.src.md), %w(images image.png)].each do |sub, file|
+        subdir = File.join(@src_dir, sub)
+        Dir.mkdir(subdir)
+        File.write(File.join(subdir, file), "")
       end
+
+      result = G4T.send(:get_src_files, src_dir: @src_dir)
+
+      assert_includes result[:all], File.join(@src_dir, "sec1.src.md")
+      assert_includes result[:all], File.join(@src_dir, "sub", "nested.src.md")
+      assert_includes result[:all], File.join(@src_dir, "images", "image.png")
+
+      assert_equal [
+        File.join(@src_dir, "sec1.src.md"),
+        File.join(@src_dir, "sec2.src.md")
+      ], result[:sections]
+
+      assert_equal [File.join(@src_dir, "images/image.png")], result[:images]
+
+      assert_includes result[:src_md_files], File.join(@src_dir, "sec1.src.md")
+      assert_includes result[:src_md_files], File.join(@src_dir, "sec2.src.md")
+      assert_includes result[:src_md_files], File.join(@src_dir, "sub/nested.src.md")
     end
 
 
@@ -106,15 +111,13 @@ module G4T
     #
 
     def test_write_with_directory_creates_parent_dirs
-      Dir.mktmpdir do |dir|
-        path = File.join(dir, "a/b/c.txt")
+      path = File.join(@src_dir, "a/b/c.txt")
 
-        bytes = G4T.send(:write_with_directory, path, "hello")
+      bytes = G4T.send(:write_with_directory, path, "hello")
 
-        assert_equal 5, bytes
-        assert File.exist?(path)
-        assert_equal "hello", File.read(path)
-      end
+      assert_equal 5, bytes
+      assert File.exist?(path)
+      assert_equal "hello", File.read(path)
     end
 
     def test_image?
@@ -124,18 +127,9 @@ module G4T
       assert G4T.send(:image?, "image.jpg")
       assert G4T.send(:image?, "image.PNG")
       assert G4T.send(:image?, "image.png")
-      assert G4T.send(:image?, "image.GIF")
-      assert G4T.send(:image?, "image.gif")
+      assert G4T.send(:image?, "image.PDF")
+      assert G4T.send(:image?, "image.pdf")
       refute G4T.send(:image?, "sec2.src.md")
-    end
-
-    def test_source_code?
-      assert G4T.send(:source_code?, "sample.c")
-      assert G4T.send(:source_code?, "sample.h")
-      assert G4T.send(:source_code?, "sample.lex")
-      assert G4T.send(:source_code?, "sample.ui")
-      assert G4T.send(:source_code?, "sample.xml")
-      assert G4T.send(:source_code?, "sample.y")
     end
   end
 end

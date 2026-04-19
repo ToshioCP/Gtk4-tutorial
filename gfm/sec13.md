@@ -20,40 +20,40 @@ The header file `tfetextview.h` provides:
 
 Therefore, Any programs use TfeTextView needs to include `tfetextview.h`.
 
-~~~C
- 1 #pragma once
- 2 
- 3 #include <gtk/gtk.h>
- 4 
- 5 #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
- 6 G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
- 7 
- 8 /* "open-response" signal response */
- 9 enum TfeTextViewOpenResponseType
-10 {
-11   TFE_OPEN_RESPONSE_SUCCESS,
-12   TFE_OPEN_RESPONSE_CANCEL,
-13   TFE_OPEN_RESPONSE_ERROR
-14 };
-15 
-16 GFile *
-17 tfe_text_view_get_file (TfeTextView *tv);
-18 
-19 void
-20 tfe_text_view_open (TfeTextView *tv, GtkWindow *win);
-21 
-22 void
-23 tfe_text_view_save (TfeTextView *tv);
-24 
-25 void
-26 tfe_text_view_saveas (TfeTextView *tv);
-27 
-28 GtkWidget *
-29 tfe_text_view_new_with_file (GFile *file);
-30 
-31 GtkWidget *
-32 tfe_text_view_new (void);
-~~~
+```c
+#pragma once
+
+#include <gtk/gtk.h>
+
+#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
+G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
+
+/* "open-response" signal response */
+enum TfeTextViewOpenResponseType
+{
+  TFE_OPEN_RESPONSE_SUCCESS,
+  TFE_OPEN_RESPONSE_CANCEL,
+  TFE_OPEN_RESPONSE_ERROR
+};
+
+GFile *
+tfe_text_view_get_file (TfeTextView *tv);
+
+void
+tfe_text_view_open (TfeTextView *tv, GtkWindow *win);
+
+void
+tfe_text_view_save (TfeTextView *tv);
+
+void
+tfe_text_view_saveas (TfeTextView *tv);
+
+GtkWidget *
+tfe_text_view_new_with_file (GFile *file);
+
+GtkWidget *
+tfe_text_view_new (void);
+```
 
 - 1: The preprocessor directive `#pragma once` makes the header file be included only once.
 It is non-standard but widely used.
@@ -88,33 +88,33 @@ If an error occurs during the creation process, NULL will be returned.
 
 Each function is defined as follows.
 
-~~~C
- 1 GtkWidget *
- 2 tfe_text_view_new_with_file (GFile *file) {
- 3   g_return_val_if_fail (G_IS_FILE (file), NULL);
- 4 
- 5   GtkWidget *tv;
- 6   GtkTextBuffer *tb;
- 7   char *contents;
- 8   gsize length;
- 9 
-10   if (! g_file_load_contents (file, NULL, &contents, &length, NULL, NULL)) /* read error */
-11     return NULL;
-12 
-13   tv = tfe_text_view_new();
-14   tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-15   gtk_text_buffer_set_text (tb, contents, length);
-16   TFE_TEXT_VIEW (tv)->file = g_file_dup (file);
-17   gtk_text_buffer_set_modified (tb, FALSE);
-18   g_free (contents);
-19   return tv;
-20 }
-21 
-22 GtkWidget *
-23 tfe_text_view_new (void) {
-24   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, "wrap-mode", GTK_WRAP_WORD_CHAR, NULL));
-25 }
-~~~
+```c
+GtkWidget *
+tfe_text_view_new_with_file (GFile *file) {
+  g_return_val_if_fail (G_IS_FILE (file), NULL);
+
+  GtkWidget *tv;
+  GtkTextBuffer *tb;
+  char *contents;
+  gsize length;
+
+  if (! g_file_load_contents (file, NULL, &contents, &length, NULL, NULL)) /* read error */
+    return NULL;
+
+  tv = tfe_text_view_new();
+  tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  gtk_text_buffer_set_text (tb, contents, length);
+  TFE_TEXT_VIEW (tv)->file = g_file_dup (file);
+  gtk_text_buffer_set_modified (tb, FALSE);
+  g_free (contents);
+  return tv;
+}
+
+GtkWidget *
+tfe_text_view_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, "wrap-mode", GTK_WRAP_WORD_CHAR, NULL));
+}
+```
 
 - 22-25: `tfe_text_view_new` function.
 Just returns the value from the function `g_object_new` but casts it to the pointer to GtkWidget.
@@ -172,31 +172,31 @@ The error is managed only in the TfeTextView and no information is notified to t
 
 ### save\_file function
 
-~~~C
- 1 static gboolean
- 2 save_file (GFile *file, GtkTextBuffer *tb, GtkWindow *win) {
- 3   GtkTextIter start_iter;
- 4   GtkTextIter end_iter;
- 5   char *contents;
- 6   gboolean stat;
- 7   GtkAlertDialog *alert_dialog;
- 8   GError *err = NULL;
- 9 
-10   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
-11   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-12   stat = g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err);
-13   if (stat)
-14     gtk_text_buffer_set_modified (tb, FALSE);
-15   else {
-16     alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-17     gtk_alert_dialog_show (alert_dialog, win);
-18     g_object_unref (alert_dialog);
-19     g_error_free (err);
-20   }
-21   g_free (contents);
-22   return stat;
-23 }
-~~~
+```c
+static gboolean
+save_file (GFile *file, GtkTextBuffer *tb, GtkWindow *win) {
+  GtkTextIter start_iter;
+  GtkTextIter end_iter;
+  char *contents;
+  gboolean stat;
+  GtkAlertDialog *alert_dialog;
+  GError *err = NULL;
+
+  gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+  contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+  stat = g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err);
+  if (stat)
+    gtk_text_buffer_set_modified (tb, FALSE);
+  else {
+    alert_dialog = gtk_alert_dialog_new ("%s", err->message);
+    gtk_alert_dialog_show (alert_dialog, win);
+    g_object_unref (alert_dialog);
+    g_error_free (err);
+  }
+  g_free (contents);
+  return stat;
+}
+```
 
 - The function `save_file` is called from `saveas_dialog_response` and `tfe_text_view_save`.
 This function saves the contents of the buffer to the file given as an argument.
@@ -235,37 +235,37 @@ However, it is encouraged to give parents to dialogs.
 
 ### save\_dialog\_cb function
 
-~~~C
- 1 static void
- 2 save_dialog_cb(GObject *source_object, GAsyncResult *res, gpointer data) {
- 3   GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
- 4   TfeTextView *tv = TFE_TEXT_VIEW (data);
- 5   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
- 6   GFile *file;
- 7   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
- 8   GError *err = NULL;
- 9   GtkAlertDialog *alert_dialog;
-10 
-11   if (((file = gtk_file_dialog_save_finish (dialog, res, &err)) != NULL) && save_file(file, tb, GTK_WINDOW (win))) {
-12     // The following is complicated. The comments here will help your understanding
-13     // G_IS_FILE(tv->file) && tv->file == file  => nothing to do
-14     // G_IS_FILE(tv->file) && tv->file != file  => unref(tv->file), tv->file=file, emit change_file signal
-15     // tv->file==NULL                           =>                  tv->file=file, emit change_file signal
-16     if (! (G_IS_FILE (tv->file) && g_file_equal (tv->file, file))) {
-17       if (G_IS_FILE (tv->file))
-18         g_object_unref (tv->file);
-19       tv->file = file; // The ownership of 'file' moves to TfeTextView.
-20       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-21     }
-22   }
-23   if (err) {
-24     alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-25     gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
-26     g_object_unref (alert_dialog);
-27     g_clear_error (&err);
-28   }
-29 }
-~~~
+```c
+static void
+save_dialog_cb(GObject *source_object, GAsyncResult *res, gpointer data) {
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  TfeTextView *tv = TFE_TEXT_VIEW (data);
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  GFile *file;
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+  GError *err = NULL;
+  GtkAlertDialog *alert_dialog;
+
+  if (((file = gtk_file_dialog_save_finish (dialog, res, &err)) != NULL) && save_file(file, tb, GTK_WINDOW (win))) {
+    // The following is complicated. The comments here will help your understanding
+    // G_IS_FILE(tv->file) && tv->file == file  => nothing to do
+    // G_IS_FILE(tv->file) && tv->file != file  => unref(tv->file), tv->file=file, emit change_file signal
+    // tv->file==NULL                           =>                  tv->file=file, emit change_file signal
+    if (! (G_IS_FILE (tv->file) && g_file_equal (tv->file, file))) {
+      if (G_IS_FILE (tv->file))
+        g_object_unref (tv->file);
+      tv->file = file; // The ownership of 'file' moves to TfeTextView.
+      g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+    }
+  }
+  if (err) {
+    alert_dialog = gtk_alert_dialog_new ("%s", err->message);
+    gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
+    g_object_unref (alert_dialog);
+    g_clear_error (&err);
+  }
+}
+```
 
 - The function `save_dialog_cb` is a call back function that is given to the `gtk_file_dialog_save` function as an argument.
 The `gtk_file_dialog_save` shows a file chooser dialog to the user.
@@ -292,22 +292,22 @@ See the comments, line 12-15, for the details.
 
 ### tfe\_text\_view\_save function
 
-~~~C
- 1 void
- 2 tfe_text_view_save (TfeTextView *tv) {
- 3   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
- 4 
- 5   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
- 6   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
- 7 
- 8   if (! gtk_text_buffer_get_modified (tb))
- 9     return; /* no need to save it */
-10   else if (tv->file == NULL)
-11     tfe_text_view_saveas (tv);
-12   else
-13     save_file (tv->file, tb, GTK_WINDOW (win));
-14 }
-~~~
+```c
+void
+tfe_text_view_save (TfeTextView *tv) {
+  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+
+  if (! gtk_text_buffer_get_modified (tb))
+    return; /* no need to save it */
+  else if (tv->file == NULL)
+    tfe_text_view_saveas (tv);
+  else
+    save_file (tv->file, tb, GTK_WINDOW (win));
+}
+```
 
 - The function `tfe_text_view_save` writes the contents to the `tv->file` file.
 It calls `tfe_text_view_saveas` or `save_file`.
@@ -330,19 +330,19 @@ Therefore, `gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW)` possibly
 
 ### tfe\_text\_view\_saveas function
 
-~~~C
- 1 void
- 2 tfe_text_view_saveas (TfeTextView *tv) {
- 3   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
- 4 
- 5   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
- 6   GtkFileDialog *dialog;
- 7 
- 8   dialog = gtk_file_dialog_new ();
- 9   gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
-10   g_object_unref (dialog);
-11 }
-~~~
+```c
+void
+tfe_text_view_saveas (TfeTextView *tv) {
+  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+  GtkFileDialog *dialog;
+
+  dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
+  g_object_unref (dialog);
+}
+```
 
 The function `tfe_text_view_saveas` shows a file chooser dialog and prompts the user to choose a file and save the contents.
 
@@ -369,7 +369,7 @@ It is used in the callback function.
 This function just shows the file chooser dialog.
 The rest of the operation is done by the callback function.
 
-![Saveas process](../image/saveas.png)
+![Saveas process](/src/images/saveas.png)
 
 ## Open related functions
 
@@ -398,50 +398,50 @@ The former is `tfe_text_view_open` and the latter is `open_dialog_cb`.
 
 ### open\_dialog\_cb function
 
-~~~C
- 1 static void
- 2 open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
- 3   GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
- 4   TfeTextView *tv = TFE_TEXT_VIEW (data);
- 5   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
- 6   GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
- 7   GFile *file;
- 8   char *contents;
- 9   gsize length;
-10   gboolean file_changed;
-11   GtkAlertDialog *alert_dialog;
-12   GError *err = NULL;
-13 
-14   if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) != NULL
-15       && g_file_load_contents (file, NULL, &contents, &length, NULL, &err)) {
-16     gtk_text_buffer_set_text (tb, contents, length);
-17     g_free (contents);
-18     gtk_text_buffer_set_modified (tb, FALSE);
-19     // G_IS_FILE(tv->file) && tv->file == file => unref(tv->file), tv->file=file, emit response with SUCCESS
-20     // G_IS_FILE(tv->file) && tv->file != file => unref(tv->file), tv->file=file, emit response with SUCCESS, emit change-file
-21     // tv->file==NULL =>                                           tv->file=file, emit response with SUCCESS, emit change-file
-22     // The order is important. If you unref tv->file first, you can't compare tv->file and file anymore.
-23     // And the signals are emitted after new tv->file is set. Or the handler can't catch the new file.
-24     file_changed = (G_IS_FILE (tv->file) && g_file_equal (tv->file, file)) ? FALSE : TRUE;
-25     if (G_IS_FILE (tv->file))
-26       g_object_unref (tv->file);
-27     tv->file = file; // The ownership of 'file' moves to TfeTextView
-28     if (file_changed)
-29       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-30     g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
-31   } else {
-32     if (err->code == GTK_DIALOG_ERROR_DISMISSED) // The user canceled the file chooser dialog
-33       g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
-34     else {
-35       alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-36       gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
-37       g_object_unref (alert_dialog);
-38       g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
-39     }
-40     g_clear_error (&err);
-41   }
-42 }
-~~~
+```c
+static void
+open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  TfeTextView *tv = TFE_TEXT_VIEW (data);
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
+  GFile *file;
+  char *contents;
+  gsize length;
+  gboolean file_changed;
+  GtkAlertDialog *alert_dialog;
+  GError *err = NULL;
+
+  if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) != NULL
+      && g_file_load_contents (file, NULL, &contents, &length, NULL, &err)) {
+    gtk_text_buffer_set_text (tb, contents, length);
+    g_free (contents);
+    gtk_text_buffer_set_modified (tb, FALSE);
+    // G_IS_FILE(tv->file) && tv->file == file => unref(tv->file), tv->file=file, emit response with SUCCESS
+    // G_IS_FILE(tv->file) && tv->file != file => unref(tv->file), tv->file=file, emit response with SUCCESS, emit change-file
+    // tv->file==NULL =>                                           tv->file=file, emit response with SUCCESS, emit change-file
+    // The order is important. If you unref tv->file first, you can't compare tv->file and file anymore.
+    // And the signals are emitted after new tv->file is set. Or the handler can't catch the new file.
+    file_changed = (G_IS_FILE (tv->file) && g_file_equal (tv->file, file)) ? FALSE : TRUE;
+    if (G_IS_FILE (tv->file))
+      g_object_unref (tv->file);
+    tv->file = file; // The ownership of 'file' moves to TfeTextView
+    if (file_changed)
+      g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
+    g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
+  } else {
+    if (err->code == GTK_DIALOG_ERROR_DISMISSED) // The user canceled the file chooser dialog
+      g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
+    else {
+      alert_dialog = gtk_alert_dialog_new ("%s", err->message);
+      gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
+      g_object_unref (alert_dialog);
+      g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
+    }
+    g_clear_error (&err);
+  }
+}
+```
 
 This function is similar to `save_dialog_cb`.
 Both are callback functions on a GtkFileDialog object.
@@ -473,21 +473,21 @@ The Dialog error is described [here](https://docs.gtk.org/gtk4/error.DialogError
 
 ### tfe\_text\_view\_open function
 
-~~~C
- 1 void
- 2 tfe_text_view_open (TfeTextView *tv, GtkWindow *win) {
- 3   g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
- 4   // 'win' is used for a transient window of the GtkFileDialog.
- 5   // It can be NULL.
- 6   g_return_if_fail (GTK_IS_WINDOW (win) || win == NULL);
- 7 
- 8   GtkFileDialog *dialog;
- 9 
-10   dialog = gtk_file_dialog_new ();
-11   gtk_file_dialog_open (dialog, win, NULL, open_dialog_cb, tv);
-12   g_object_unref (dialog);
-13 }
-~~~
+```c
+void
+tfe_text_view_open (TfeTextView *tv, GtkWindow *win) {
+  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+  // 'win' is used for a transient window of the GtkFileDialog.
+  // It can be NULL.
+  g_return_if_fail (GTK_IS_WINDOW (win) || win == NULL);
+
+  GtkFileDialog *dialog;
+
+  dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_open (dialog, win, NULL, open_dialog_cb, tv);
+  g_object_unref (dialog);
+}
+```
 
 - 3-6: Check the type of the arguments `tv` and `win`.
 Public functions always need to check the arguments.
@@ -504,7 +504,7 @@ The whole process between the caller and TfeTextView is shown in the following d
 It is really complicated.
 Because `gtk_file_dialog_open` can't return the status of the operation.
 
-![Caller and TfeTextView](../image/open.png)
+![Caller and TfeTextView](/src/images/open.png)
 
 1. A caller gets a pointer `tv` to a TfeTextView instance by calling `tfe_text_view_new`.
 2. The caller connects the handler (left bottom in the diagram) and the signal "open-response".
@@ -518,17 +518,17 @@ Because `gtk_file_dialog_open` can't return the status of the operation.
 You can get the GFile in a TfeTextView instance with `tfe_text_view_get_file`.
 It is very simple.
 
-~~~C
-1 GFile *
-2 tfe_text_view_get_file (TfeTextView *tv) {
-3   g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
-4 
-5   if (G_IS_FILE (tv->file))
-6     return g_file_dup (tv->file);
-7   else
-8     return NULL;
-9 }
-~~~
+```c
+GFile *
+tfe_text_view_get_file (TfeTextView *tv) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
+
+  if (G_IS_FILE (tv->file))
+    return g_file_dup (tv->file);
+  else
+    return NULL;
+}
+```
 
 The important thing is to duplicate `tv->file`.
 Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.
@@ -538,10 +538,8 @@ See [Gio API Reference -- g\_file\_dup](https://docs.gtk.org/gio/method.File.dup
 
 ## The API document and source file of tfetextview.c
 
-Refer [API document of TfeTextView](tfetextview_doc.md).
-It is under the directory `src/tfetextview`.
+Refer [API document of TfeTextView](tfetextview/tfetextview_doc.md).
 
-You can find all the TfeTextView source codes under [src/tfetextview](../src/tfetextview) directories.
-
+You can find all the TfeTextView source codes under [/src/tfetextview](../src/tfetextview) directories.
 
 Up: [README.md](../README.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)

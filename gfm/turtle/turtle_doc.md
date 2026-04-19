@@ -37,14 +37,14 @@ Type the following command then turtle shows the following window.
 $ turtle
 ~~~
 
-![Screenshot just after it's executed](../src/turtle/image/turtle1.png)
+![Screenshot just after it's executed](../../src/turtle/images/turtle1.png)
 
 The left half is a text editor and the right half is a surface.
 Surface is like a canvas to draw shapes.
 
 Write turtle language in the text editor and click on `run` button, then the program will be executed and it draws shapes on the surface.
 
-![Tree](../src/turtle/image/turtle_tree.png)
+![Tree](../../src/turtle/images/turtle_tree.png)
 
 If you uncomment the following line in `turtle.y`, then codes for debug will also be compiled.
 Turtle shows the status to the standard output, but the speed is quite slow.
@@ -97,7 +97,7 @@ Therefore, `tr 90` means "Turn right by 90 degrees".
 If you click on the `run`button, then two line segments appears.
 One is vertical and the other is horizontal.
 
-![Two line segments on the surface](../src/turtle/image/turtle2.png)
+![Two line segments on the surface](../../src/turtle/images/turtle2.png)
 
 You can use `tl` (Turn Left) as well.
 
@@ -126,7 +126,7 @@ This command changes the pen color.
 The prior shapes on the surface aren't affected.
 After this command, the turtle draws lines with the new color.
 
-![Change the foreground color](../src/turtle/image/turtle3.png)
+![Change the foreground color](../../src/turtle/images/turtle3.png)
 
 ## Other simple commands
 
@@ -332,7 +332,7 @@ Recursive call can be applied to draw fractal curves.
 Fractal curves appear when a procedure is applied to it repeatedly.
 The procedure replaces a part of the curve with the contracted curve.
 
-![Tree](../src/turtle/image/turtle_tree.png)
+![Tree](../../src/turtle/images/turtle_tree.png)
 
 This shape is called tree.
 The basic pattern of this shape is a line segment.
@@ -346,9 +346,9 @@ This repeating is programmed by recursive call.
 Two more examples are shown here.
 They are Koch curve and Square Koch curve.
 
-![Koch curve](../src/turtle/image/turtle_koch.png)
+![Koch curve](../../src/turtle/images/turtle_koch.png)
 
-![Square Koch curve](../src/turtle/image/turtle_square_koch.png)
+![Square Koch curve](../../src/turtle/images/turtle_square_koch.png)
 
 ## Tokens and punctuations
 

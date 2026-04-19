@@ -36,7 +36,7 @@ They are mathematically represented by matrix multiplication and vector addition
 In this section we don't use it, instead we will only use the identity transformation.
 This means that the coordinates in the source and mask are the same as the coordinates in destination.
 
-![Stroke a rectangle](../image/cairo.png)
+![Stroke a rectangle](/src/images/cairo.png)
 
 The instruction is as follows:
 
@@ -51,44 +51,44 @@ This will be the destination.
 Here's a simple example program that draws a small square and saves it as a png file.
 The path of the file is `src/misc/cairo.c`.
 
-~~~C
- 1 #include <cairo.h>
- 2 
- 3 int
- 4 main (int argc, char **argv)
- 5 {
- 6   cairo_surface_t *surface;
- 7   cairo_t *cr;
- 8   int width = 100;
- 9   int height = 100;
-10   int square_size = 40.0;
-11 
-12   /* Create surface and cairo */
-13   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
-14   cr = cairo_create (surface);
-15 
-16   /* Drawing starts here. */
-17   /* Paint the background white */
-18   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-19   cairo_paint (cr);
-20   /* Draw a black rectangle */
-21   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-22   cairo_set_line_width (cr, 2.0);
-23   cairo_rectangle (cr,
-24                    width/2.0 - square_size/2,
-25                    height/2.0 - square_size/2,
-26                    square_size,
-27                    square_size);
-28   cairo_stroke (cr);
-29 
-30   /* Write the surface to a png file and clean up cairo and surface. */
-31   cairo_surface_write_to_png (surface, "rectangle.png");
-32   cairo_destroy (cr);
-33   cairo_surface_destroy (surface);
-34 
-35   return 0;
-36 }
-~~~
+```c
+#include <cairo.h>
+
+int
+main (int argc, char **argv)
+{
+  cairo_surface_t *surface;
+  cairo_t *cr;
+  int width = 100;
+  int height = 100;
+  int square_size = 40.0;
+
+  /* Create surface and cairo */
+  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+  cr = cairo_create (surface);
+
+  /* Drawing starts here. */
+  /* Paint the background white */
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_paint (cr);
+  /* Draw a black rectangle */
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+  cairo_set_line_width (cr, 2.0);
+  cairo_rectangle (cr,
+                   width/2.0 - square_size/2,
+                   height/2.0 - square_size/2,
+                   square_size,
+                   square_size);
+  cairo_stroke (cr);
+
+  /* Write the surface to a png file and clean up cairo and surface. */
+  cairo_surface_write_to_png (surface, "rectangle.png");
+  cairo_destroy (cr);
+  cairo_surface_destroy (surface);
+
+  return 0;
+}
+```
 
 - 1: Includes the header file of Cairo.
 - 6: `cairo_surface_t` is the type of a surface.
@@ -126,7 +126,7 @@ To compile this, change your current directory to `src/misc` and type the follow
 $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
 ```
 s
-![rectangle.png](../image/rectangle.png)
+![rectangle.png](/src/images/rectangle.png)
 
 See the [Cairo's website](https://www.cairographics.org/) for further information.
 
@@ -134,51 +134,51 @@ See the [Cairo's website](https://www.cairographics.org/) for further informatio
 
 The following is a very simple example.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 static void
- 4 draw_function (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
- 5   int square_size = 40.0;
- 6 
- 7   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
- 8   cairo_paint (cr);
- 9   cairo_set_line_width (cr, 2.0);
-10   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
-11   cairo_rectangle (cr,
-12                    width/2.0 - square_size/2,
-13                    height/2.0 - square_size/2,
-14                    square_size,
-15                    square_size);
-16   cairo_stroke (cr);
-17 }
-18 
-19 static void
-20 app_activate (GApplication *app, gpointer user_data) {
-21   GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
-22   GtkWidget *area = gtk_drawing_area_new ();
-23 
-24   gtk_window_set_title (GTK_WINDOW (win), "da1");
-25   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (area), draw_function, NULL, NULL);
-26   gtk_window_set_child (GTK_WINDOW (win), area);
-27 
-28   gtk_window_present (GTK_WINDOW (win));
-29 }
-30 
-31 #define APPLICATION_ID "com.github.ToshioCP.da1"
-32 
-33 int
-34 main (int argc, char **argv) {
-35   GtkApplication *app;
-36   int stat;
-37 
-38   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-39   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-40   stat = g_application_run (G_APPLICATION (app), argc, argv);
-41   g_object_unref (app);
-42   return stat;
-43 }
-~~~
+```c
+#include <gtk/gtk.h>
+
+static void
+draw_function (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
+  int square_size = 40.0;
+
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+  cairo_paint (cr);
+  cairo_set_line_width (cr, 2.0);
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+  cairo_rectangle (cr,
+                   width/2.0 - square_size/2,
+                   height/2.0 - square_size/2,
+                   square_size,
+                   square_size);
+  cairo_stroke (cr);
+}
+
+static void
+app_activate (GApplication *app, gpointer user_data) {
+  GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+  GtkWidget *area = gtk_drawing_area_new ();
+
+  gtk_window_set_title (GTK_WINDOW (win), "da1");
+  gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (area), draw_function, NULL, NULL);
+  gtk_window_set_child (GTK_WINDOW (win), area);
+
+  gtk_window_present (GTK_WINDOW (win));
+}
+
+#define APPLICATION_ID "com.github.ToshioCP.da1"
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+```
 
 The function `main` is almost same as before.
 The two functions `app_activate` and `draw_function` are important in this example.
@@ -217,6 +217,6 @@ Compile and run it, then a window with a black rectangle (square) appears.
 Try resizing the window.
 The square always appears at the center of the window because the drawing function is invoked each time the window is resized.
 
-![Square in the window](../image/da1.png)
+![Square in the window](/src/images/da1.png)
 
 Up: [README.md](../README.md),  Prev: [Section 23](sec23.md), Next: [Section 25](sec25.md)

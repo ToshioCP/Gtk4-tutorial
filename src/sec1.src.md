@@ -6,39 +6,43 @@
 
 This tutorial describes GTK version 4 libraries.
 Although GTK is primarily designed for Linux using the C compiler, it is now widely used on other platforms, including Windows and macOS, through various language bindings such as Vala, Python, Rust, and Ruby.
-However, this tutorial describes only *C programs on Linux*.
+However, this tutorial describes only **C programs on Linux**.
 
 If you want to try the examples in the tutorial, you need:
 
-- PC with Linux distribution like Ubuntu or Debian.
+- PC with a Linux distribution like Ubuntu or Debian (including WSL - Windows Subsystem for Linux). 
 - GCC.
 - GTK 4 (version 4.10.1 or later).
 
 The stable version of GTK is 4.20.3 at present (December 28, 2025).
 The examples in this tutorial have been tested with GTK version 4.10.
-The version 4.10 added some new classes and functions and makes some classes and functions deprecated.
-Some example programs in this tutorial don't work on the older version.
+Version 4.10 added some new classes and functions and deprecated some old ones.
+Some example programs in this tutorial don't work on older versions.
 
-### Ruby and rake for making the document
+### Ruby and Rake for Making the Document
 
 This repository includes Ruby programs.
-They are used to make GFM (GitHub Flavoured Markdown) files, HTML files, LaTeX files and a PDF file.
+They are used to make GFM (GitHub Flavored Markdown), HTML, and PDF files.
 
 You need:
 
-- Linux.
-- Ruby programming language.
-There are two ways to install it.
-One is installing the distribution's package.
-The other is using a Ruby version manager such as rbenv, asdf, or mise.
-Using a version manager is recommended if you want to use the latest version of Ruby.
-- Rake.
+- Linux OS (including WSL)
+- Ruby 3.0 or later (tested on 4.0.1) 
+- Rake
+
+There are two ways to install Ruby.
+
+- Install your distribution's package.
+- Use a Ruby version manager such as rbenv or mise.
+
+**Note:** If you choose to use a Ruby version other than 4.0.1, you must update the version settings in `Gemfile`.
+Additionally, depending on your version manager, you may need to modify `.ruby-version` or `mise.toml` as well.
 
 ## License
 
-Copyright (C) 2020,2023  ToshioCP (Toshio Sekiya)
+Copyright (C) 2020, 2023 ToshioCP (Toshio Sekiya)
 
-GTK4-tutorial repository contains tutorial documents and programs such as converters, generators and controllers.
+The GTK4-tutorial repository contains tutorial documents and programs such as converters, generators and controllers.
 All of them comprise the 'GTK4-tutorial' package.
 This package is simply called 'GTK4-tutorial' in the following description.
 

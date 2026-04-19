@@ -34,7 +34,7 @@
         Therefore, this tutorial simply says “GTK” except where the
         version needs to be explicitly mentioned.</p>
         <p>This tutorial illustrates how to write C programs with the
-        GTK library. It focuses on beginners, so the contents are
+        GTK library. It is aimed at beginners, so the contents are
         limited to the basics. The table of contents is at the end of
         this README.md.</p>
         <ul>
@@ -53,7 +53,7 @@
         <p>There’s a <a
         href="https://toshiocp.github.io/Gtk4-tutorial/">GitHub Page</a>
         which is the HTML version of the tutorial.</p>
-        <h4 id="gtk-documentation">GTK Documentation</h4>
+        <h2 id="gtk-documentation">GTK Documentation</h2>
         <p>Please refer to the <a
         href="https://docs.gtk.org/gtk4/index.html">GTK API
         Reference</a> and the <a
@@ -65,7 +65,7 @@
         href="https://github.com/ToshioCP/Gobject-tutorial">GObject
         tutorial</a>. GObject is the base of GTK, so it is important for
         developers to understand it as well as GTK.</p>
-        <h4 id="contribution">Contribution</h4>
+        <h2 id="contribution">Contribution</h2>
         <p>This tutorial is still under development and unstable. Even
         though the example codes have been tested on GTK (version
         4.10.1), bugs may still exist. If you find any bugs, errors, or
@@ -74,25 +74,28 @@
         href="https://github.com/ToshioCP/Gtk4-tutorial/issues">GitHub
         issues</a>. You can also post updated files to <a
         href="https://github.com/ToshioCP/Gtk4-tutorial/pulls">pull
-        request</a>. One thing you need to be careful about is to
-        correct the source files, which are under the ‘src’ directory.
+        request</a>. When submitting a pull request, please ensure that
+        you only modify the files in the <code>src</code> directory.
         Don’t modify the files under <code>gfm</code> or
         <code>html</code> directories. After modifying some source
-        files, run <code>rake</code> to create GFM (GitHub Flavoured
-        Markdown) files and run <code>rake html</code> to create HTML
-        files.</p>
+        files, run <code>bundle exec rake</code> to create GFM (GitHub
+        Flavoured Markdown) files and run
+        <code>bundle exec rake html</code> to create HTML files. Please
+        refer to the <a href="author_guide.html">Author Guide</a> for
+        further information.</p>
         <p>If you have a question, feel free to post it to
-        <code>issue</code>. All questions are helpful and will make this
-        tutorial better.</p>
-        <h4 id="how-to-get-gtk-4-tutorial-in-html-or-pdf-format">How to
-        get Gtk 4 tutorial in HTML or PDF format</h4>
+        <code>issue</code> of this repository. Your questions and
+        feedback are welcome and invaluable for improving this
+        tutorial.</p>
+        <h2 id="how-to-get-gtk-4-tutorial-in-html-or-pdf-format">How to
+        Get Gtk 4 Tutorial in HTML or PDF Format</h2>
         <p>If you want to get the tutorial in HTML or PDF format, build
         them with <code>rake</code> command, which is a ruby version of
-        make. Type <code>rake html</code> for HTML. Type
-        <code>rake pdf</code> for PDF. There is a document (“<a
-        href="Readme_for_developers.html">How to build GTK 4
-        Tutorial</a>”) for further information.</p>
-        <h4 id="license">License</h4>
+        make. Type <code>bundle exec rake html</code> for HTML. Type
+        <code>bundle exec rake pdf</code> for PDF. The <a
+        href="author_guide.html">Author Guide</a> describes how to write
+        source files.</p>
+        <h2 id="license">License</h2>
         <p>The license of this repository is written in <a
         href="sec1.html">Section1</a>.</p>
         <p>In short:</p>

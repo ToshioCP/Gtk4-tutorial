@@ -1,17 +1,17 @@
 Up: [README.md](../README.md),  Prev: [Section 26](sec26.md), Next: [Section 28](sec28.md)
 
-# Tiny turtle graphics interpreter
+# Tiny Turtle Graphics Interpreter
 
 A program `turtle` is an example with the combination of TfeTextView and GtkDrawingArea objects.
 It is a very small interpreter but you can draw fractal curves with it.
 The following diagram is a Koch curve, which is one of the famous fractal curves.
 
-![Koch curve](../src/turtle/image/turtle_koch.png)
+![Koch curve](../src/turtle/images/turtle_koch.png)
 
 The following is a snow-crystal-shaped curve.
 It is composed of six Koch curves.
 
-![Snow](../image/turtle_snow.png)
+![Snow](/src/images/turtle_snow.png)
 
 This program uses flex and bison.
 Flex is a lexical analyzer.
@@ -23,7 +23,7 @@ So, readers can skip this section.
 
 ## How to use turtle
 
-The turtle document is [here](turtle_doc.md).
+The turtle document is [here](turtle/turtle_doc.md).
 I'll show you a simple example.
 
 ~~~
@@ -59,57 +59,57 @@ The surface isn't the one in the GtkDrawingArea widget.
 5. The widget is added to the queue.
 It will be redrawn with the drawing function, which just copies the surface into the one in the GtkDrawingArea.
 
-![Parser, interpreter and drawing function](../image/turtle.png)
+![Parser, interpreter and drawing function](/src/images/turtle.png)
 
 The body of the interpreter is written with flex and bison.
 The codes are not thread safe.
 So the callback function `run_cb`, which is the handler of "clicked" signal on the `Run` button, prevents reentering.
 
-~~~C
- 1 void
- 2 run_cb (GtkWidget *btnr) {
- 3   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
- 4   GtkTextIter start_iter;
- 5   GtkTextIter end_iter;
- 6   char *contents;
- 7   int stat;
- 8   static gboolean busy = FALSE; /* initialized only once */
- 9   cairo_t *cr;
-10 
-11   /* yyparse() and run() are NOT thread safe. */
-12   /* The variable busy avoids reentrance. */
-13   if (busy)
-14     return;
-15   busy = TRUE;
-16   gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
-17   contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-18   if (surface && contents[0] != '\0') {
-19     init_flex (contents);
-20     stat = yyparse ();
-21     if (stat == 0) { /* No error */
-22       run ();
-23     }
-24     finalize_flex ();
-25   } else if (surface) {
-26     cr = cairo_create (surface);
-27     cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-28     cairo_paint (cr);
-29     cairo_destroy (cr);
-30   }
-31   g_free (contents);
-32   gtk_widget_queue_draw (GTK_WIDGET (da));
-33   busy = FALSE;
-34 }
-35 
-36 static void
-37 resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
-38 
-39   if (surface)
-40     cairo_surface_destroy (surface);
-41   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-42   run_cb (NULL); // NULL is a fake (run button).
-43 }
-~~~
+```c
+void
+run_cb (GtkWidget *btnr) {
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  GtkTextIter start_iter;
+  GtkTextIter end_iter;
+  char *contents;
+  int stat;
+  static gboolean busy = FALSE; /* initialized only once */
+  cairo_t *cr;
+
+  /* yyparse() and run() are NOT thread safe. */
+  /* The variable busy avoids reentrance. */
+  if (busy)
+    return;
+  busy = TRUE;
+  gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+  contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+  if (surface && contents[0] != '\0') {
+    init_flex (contents);
+    stat = yyparse ();
+    if (stat == 0) { /* No error */
+      run ();
+    }
+    finalize_flex ();
+  } else if (surface) {
+    cr = cairo_create (surface);
+    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    cairo_paint (cr);
+    cairo_destroy (cr);
+  }
+  g_free (contents);
+  gtk_widget_queue_draw (GTK_WIDGET (da));
+  busy = FALSE;
+}
+
+static void
+resize_cb (GtkDrawingArea *drawing_area, int width, int height, gpointer user_data) {
+
+  if (surface)
+    cairo_surface_destroy (surface);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+  run_cb (NULL); // NULL is a fake (run button).
+}
+```
 
 - 8, 13-15: The static value `busy` holds a status of the interpreter.
 If it is `TRUE`, the interpreter is running and it is not possible to call the interpreter because it's not a re-entrant program.
@@ -137,25 +137,25 @@ It calls the callback function `run_cb` to redraw the shape on the drawing area.
 
 If the open button is clicked and a file is read, the filename will be shown on the header bar.
 
-~~~C
- 1 static void
- 2 show_filename (TfeTextView *tv) {
- 3   GFile *file;
- 4   char *filename;
- 5   char *title;
- 6 
- 7   file = tfe_text_view_get_file (tv);
- 8   if (G_IS_FILE (file)) {
- 9     filename = g_file_get_basename (file);
-10     title = g_strdup_printf ("Turtle (%s)", filename);
-11     g_free (filename);
-12     g_object_unref (file);
-13   } else
-14     title = g_strdup ("Turtle");
-15   gtk_window_set_title (GTK_WINDOW (win), title);
-16   g_free (title);
-17 }
-~~~
+```c
+static void
+show_filename (TfeTextView *tv) {
+  GFile *file;
+  char *filename;
+  char *title;
+
+  file = tfe_text_view_get_file (tv);
+  if (G_IS_FILE (file)) {
+    filename = g_file_get_basename (file);
+    title = g_strdup_printf ("Turtle (%s)", filename);
+    g_free (filename);
+    g_object_unref (file);
+  } else
+    title = g_strdup ("Turtle");
+  gtk_window_set_title (GTK_WINDOW (win), title);
+  g_free (title);
+}
+```
 
 This function is the callback function of the "change-file" signal on the TfeTextView instance.
 It calls `tfe_text_view_get_file`.
@@ -200,7 +200,7 @@ The function `yylex` is called lexical analyzer or scanner.
 - The application `turtle` makes a tree structured data.
 This part of `turtle` is called parser.
 
-![turtle parser tree](../image/turtle_parser_tree.png)
+![turtle parser tree](/src/images/turtle_parser_tree.png)
 
 - `Turtle` analyzes the tree and executes it.
 This part of `turtle` is called runtime routine or interpreter.
@@ -263,32 +263,32 @@ It also generates `resources.h`.
 4. gcc compiles `application.c`, `resources.c`, `turtle_parser.c` and `turtle_lex.c` with `turtle_lex.h`, `resources.h` and `turtle_parser.h`.
 It generates an executable file `turtle`.
 
-![compile process](../image/turtle_compile_process.png)
+![compile process](/src/images/turtle_compile_process.png)
 
 Meson controls the process.
 The instruction is described in `meson.build`.
 
-~~~meson
- 1 project('turtle', 'c')
- 2 
- 3 compiler = meson.get_compiler('c')
- 4 mathdep = compiler.find_library('m', required : true)
- 5 
- 6 gtkdep = dependency('gtk4')
- 7 
- 8 gnome=import('gnome')
- 9 resources = gnome.compile_resources('resources','turtle.gresource.xml')
-10 
-11 flex = find_program('flex')
-12 bison = find_program('bison')
-13 turtleparser = custom_target('turtleparser', input: 'turtle.y', output: ['turtle_parser.c', 'turtle_parser.h'], command: [bison, '-d', '-o', 'turtle_parser.c', '@INPUT@'])
-14 turtlelexer = custom_target('turtlelexer', input: 'turtle.lex', output: 'turtle_lex.c', command: [flex, '-o', '@OUTPUT@', '@INPUT@'])
-15 
-16 sourcefiles=files('turtleapplication.c', '../tfetextview/tfetextview.c')
-17 
-18 executable('turtle', sourcefiles, resources, turtleparser, turtlelexer, turtleparser[1], dependencies: [mathdep, gtkdep], export_dynamic: true, install: true)
-19 
-~~~
+```
+project('turtle', 'c')
+
+compiler = meson.get_compiler('c')
+mathdep = compiler.find_library('m', required : true)
+
+gtkdep = dependency('gtk4')
+
+gnome=import('gnome')
+resources = gnome.compile_resources('resources','turtle.gresource.xml')
+
+flex = find_program('flex')
+bison = find_program('bison')
+turtleparser = custom_target('turtleparser', input: 'turtle.y', output: ['turtle_parser.c', 'turtle_parser.h'], command: [bison, '-d', '-o', 'turtle_parser.c', '@INPUT@'])
+turtlelexer = custom_target('turtlelexer', input: 'turtle.lex', output: 'turtle_lex.c', command: [flex, '-o', '@OUTPUT@', '@INPUT@'])
+
+sourcefiles=files('turtleapplication.c', '../tfetextview/tfetextview.c')
+
+executable('turtle', sourcefiles, resources, turtleparser, turtlelexer, turtleparser[1], dependencies: [mathdep, gtkdep], export_dynamic: true, install: true)
+
+```
 
 - 1: The project name is "turtle" and the program language is C.
 - 3: Gets C compiler.
@@ -340,91 +340,91 @@ Flex reads `turtle.lex` and generates the C source file of a scanner.
 The file `turtle.lex` specifies tokens, symbols and the behavior which corresponds to each token or symbol.
 Turtle.lex isn't a big program.
 
-~~~lex
- 1 %top{
- 2 #include <string.h>
- 3 #include <stdlib.h>
- 4 #include <glib.h>
- 5 #include "turtle_parser.h"
- 6 
- 7   static int nline = 1;
- 8   static int ncolumn = 1;
- 9   static void get_location (char *text);
-10 
-11   /* Dinamically allocated memories are added to the single list. They will be freed in the finalize function. */
-12   extern GSList *list;
-13 }
-14 
-15 %option noyywrap
-16 
-17 REAL_NUMBER (0|[1-9][0-9]*)(\.[0-9]+)?
-18 IDENTIFIER [a-zA-Z][a-zA-Z0-9]*
-19 %%
-20   /* rules */
-21 #.*               ; /* comment. Be careful. Dot symbol (.) matches any character but new line. */
-22 [ ]               ncolumn++; /* white space. [ and ] is a "character class". */
-23 \t                ncolumn += 8; /* assume that tab is 8 spaces. */
-24 \n                nline++; ncolumn = 1;
-25   /* reserved keywords */
-26 pu                get_location (yytext); return PU; /* pen up */
-27 pd                get_location (yytext); return PD; /* pen down */
-28 pw                get_location (yytext); return PW; /* pen width = line width */
-29 fd                get_location (yytext); return FD; /* forward */
-30 tr                get_location (yytext); return TR; /* turn right */
-31 tl                get_location (yytext); return TL; /* turn left, since ver 0.5 */
-32 bc                get_location (yytext); return BC; /* background color */
-33 fc                get_location (yytext); return FC; /* foreground color */
-34 dp                get_location (yytext); return DP; /* define procedure */
-35 if                get_location (yytext); return IF; /* if statement */
-36 rt                get_location (yytext); return RT; /* return statement */
-37 rs                get_location (yytext); return RS; /* reset the status */
-38 rp                get_location (yytext); return RP; /* repeat, since ver 0.5 */
-39   /* constant */
-40 {REAL_NUMBER}     get_location (yytext); yylval.NUM = atof (yytext); return NUM;
-41   /* identifier */
-42 {IDENTIFIER}      { get_location (yytext); yylval.ID = g_strdup(yytext);
-43                     list = g_slist_prepend (list, yylval.ID);
-44                     return ID;
-45                   }
-46 "="               get_location (yytext); return '=';
-47 ">"               get_location (yytext); return '>';
-48 "<"               get_location (yytext); return '<';
-49 "+"               get_location (yytext); return '+';
-50 "-"               get_location (yytext); return '-';
-51 "*"               get_location (yytext); return '*';
-52 "/"               get_location (yytext); return '/';
-53 "("               get_location (yytext); return '(';
-54 ")"               get_location (yytext); return ')';
-55 "{"               get_location (yytext); return '{';
-56 "}"               get_location (yytext); return '}';
-57 ","               get_location (yytext); return ',';
-58 .                 ncolumn++;             return YYUNDEF;
-59 %%
-60 
-61 static void
-62 get_location (char *text) {
-63   yylloc.first_line = yylloc.last_line = nline;
-64   yylloc.first_column = ncolumn;
-65   yylloc.last_column = (ncolumn += strlen(text)) - 1;
-66 }
-67 
-68 static YY_BUFFER_STATE state;
-69 
-70 void
-71 init_flex (const char *text) {
-72   state = yy_scan_string (text);
-73 }
-74 
-75 void
-76 finalize_flex (void) {
-77   yy_delete_buffer (state);
-78 }
-~~~
+```lex
+%top{
+#include <string.h>
+#include <stdlib.h>
+#include <glib.h>
+#include "turtle_parser.h"
+
+  static int nline = 1;
+  static int ncolumn = 1;
+  static void get_location (char *text);
+
+  /* Dinamically allocated memories are added to the single list. They will be freed in the finalize function. */
+  extern GSList *list;
+}
+
+%option noyywrap
+
+REAL_NUMBER (0|[1-9][0-9]*)(\.[0-9]+)?
+IDENTIFIER [a-zA-Z][a-zA-Z0-9]*
+%%
+  /* rules */
+#.*               ; /* comment. Be careful. Dot symbol (.) matches any character but new line. */
+[ ]               ncolumn++; /* white space. [ and ] is a "character class". */
+\t                ncolumn += 8; /* assume that tab is 8 spaces. */
+\n                nline++; ncolumn = 1;
+  /* reserved keywords */
+pu                get_location (yytext); return PU; /* pen up */
+pd                get_location (yytext); return PD; /* pen down */
+pw                get_location (yytext); return PW; /* pen width = line width */
+fd                get_location (yytext); return FD; /* forward */
+tr                get_location (yytext); return TR; /* turn right */
+tl                get_location (yytext); return TL; /* turn left, since ver 0.5 */
+bc                get_location (yytext); return BC; /* background color */
+fc                get_location (yytext); return FC; /* foreground color */
+dp                get_location (yytext); return DP; /* define procedure */
+if                get_location (yytext); return IF; /* if statement */
+rt                get_location (yytext); return RT; /* return statement */
+rs                get_location (yytext); return RS; /* reset the status */
+rp                get_location (yytext); return RP; /* repeat, since ver 0.5 */
+  /* constant */
+{REAL_NUMBER}     get_location (yytext); yylval.NUM = atof (yytext); return NUM;
+  /* identifier */
+{IDENTIFIER}      { get_location (yytext); yylval.ID = g_strdup(yytext);
+                    list = g_slist_prepend (list, yylval.ID);
+                    return ID;
+                  }
+"="               get_location (yytext); return '=';
+">"               get_location (yytext); return '>';
+"<"               get_location (yytext); return '<';
+"+"               get_location (yytext); return '+';
+"-"               get_location (yytext); return '-';
+"*"               get_location (yytext); return '*';
+"/"               get_location (yytext); return '/';
+"("               get_location (yytext); return '(';
+")"               get_location (yytext); return ')';
+"{"               get_location (yytext); return '{';
+"}"               get_location (yytext); return '}';
+","               get_location (yytext); return ',';
+.                 ncolumn++;             return YYUNDEF;
+%%
+
+static void
+get_location (char *text) {
+  yylloc.first_line = yylloc.last_line = nline;
+  yylloc.first_column = ncolumn;
+  yylloc.last_column = (ncolumn += strlen(text)) - 1;
+}
+
+static YY_BUFFER_STATE state;
+
+void
+init_flex (const char *text) {
+  state = yy_scan_string (text);
+}
+
+void
+finalize_flex (void) {
+  yy_delete_buffer (state);
+}
+```
 
 The file consists of three sections which are separated by "%%" (line 19 and 59).
 They are definitions, rules and user code sections.
 
-### Definitions section
+### Definitions Section
 
 - 1-12: Lines between "%top{" and "}" are C source codes.
 They will be copied to the top of the generated C source file.
@@ -449,7 +449,7 @@ A name begins with a letter or an underscore followed by zero or more letters, d
 They are followed by regular expressions which are their definitions.
 They will be used in rules section and will expand to the definition.
 
-### Rules section
+### Rules Section
 
 This section is the most important part.
 Rules consist of patterns and actions.
@@ -506,7 +506,7 @@ The token kind is the same as the symbol itself.
 - 58: If the input doesn't match the patterns, then it is an error.
 A special token kind `YYUNDEF` is returned.
 
-### User code section
+### User Code Section
 
 This section is just copied to C source file.
 
@@ -517,7 +517,7 @@ It is a C structure and has four members, `first_line`, `first_column`, `last_li
 They point the start and end of the current input text.
 - 68: `YY_BUFFER_STATE` is a pointer points the input buffer.
 Flex makes the definition of `YY_BUFFER_STATE` in the C file (scanner source file `turtle_lex.c`).
-See your flex document, section 11 Multiple Input Buffers, for further information.
+See your flex document, Section 11 Multiple Input Buffers, for further information.
 - 70-73: A function `init_flex` is called by `run_cb` which is a "clicked" signal handler on the `Run` button.
 It has one string type parameter.
 The caller assigns it with the content of the GtkTextBuffer instance.
@@ -1105,7 +1105,7 @@ which points to the node `N_FD`.
 The semantic value of `statement` is assigned to the one of `program` and the static variable `node_top`.
 6. Finally `node_top` points the node `N_FD` and the node `N_FD` points the node `N_NUM`.
 
-![tree](../image/tree.png)
+![tree](/src/images/tree.png)
 
 The following is the grammar rule extracted from `turtle.y`.
 The rules there are based on the same idea above.
@@ -1434,7 +1434,7 @@ That is the order of the address.
 However, "the top of the stack" is the last pushed data and "the bottom of the stack" is the first pushed data.
 Therefore, "the top of the stack" is the bottom of the rectangle in the diagram and "the bottom of the stack" is the top of the rectangle.
 
-![Stack](../image/stack.png)
+![Stack](/src/images/stack.png)
 
 There are four functions to access the stack.
 
@@ -1544,7 +1544,7 @@ A plane with the surface's coordinate is called device space.
 Cairo provides a transformation which is an affine transformation.
 It transforms a user-space coordinate (x, y) into a device-space coordinate (z, w).
 
-![transformation](../image/transformation.png)
+![transformation](/src/images/transformation.png)
 
 The function `init_cairo` gets the width and height of the `surface` (See the program below).
 
@@ -1865,15 +1865,15 @@ This example draws a square.
 
 When The parser reads the lines from one to four, it creates nodes like this:
 
-![Nodes of drawline](../image/tree2.png)
+![Nodes of drawline](/src/images/tree2.png)
 
 Runtime routine just stores the procedure to the symbol table with its name and node.
 
-![Symbol table](../image/table.png)
+![Symbol table](/src/images/table.png)
 
 When the parser reads the fifth line in the example, it creates nodes like this:
 
-![Nodes of procedure call](../image/proc_call.png)
+![Nodes of procedure call](/src/images/proc_call.png)
 
 When the runtime routine meets `N_procedure_call` node, it behaves like this:
 

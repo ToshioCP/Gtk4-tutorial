@@ -6,14 +6,14 @@ Up: [README.md](../README.md),  Prev: [Section 20](sec20.md), Next: [Section 22]
 
 If the user clicks on the preference menu, a preference dialog appears.
 
-![Preference dialog](../image/pref_dialog.png)
+![Preference dialog](/src/images/pref_dialog.png)
 
 It has only one button, which is a GtkFontDialogButton widget.
 You can add more widgets on the dialog but this simple dialog isn't so bad for the first example program.
 
 If the button is clicked, a FontDialog appears like this.
 
-![Font dialog](../image/fontdialog.png)
+![Font dialog](/src/images/fontdialog.png)
 
 If the user chooses a font and clicks on the select button, the font is changed.
 
@@ -25,40 +25,40 @@ They replace GtkFontButton and GtkFontChooserDialog, which are deprecated since 
 The preference dialog has GtkBox, GtkLabel and GtkFontButton in it and is defined as a composite widget.
 The following is the template ui file for TfePref.
 
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <template class="TfePref" parent="GtkWindow">
- 4     <property name="title">Preferences</property>
- 5     <property name="resizable">FALSE</property>
- 6     <property name="modal">TRUE</property>
- 7     <child>
- 8       <object class="GtkBox">
- 9         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-10         <property name="spacing">12</property>
-11         <property name="halign">GTK_ALIGN_CENTER</property>
-12         <property name="margin-start">12</property>
-13         <property name="margin-end">12</property>
-14         <property name="margin-top">12</property>
-15         <property name="margin-bottom">12</property>
-16         <child>
-17           <object class="GtkLabel">
-18             <property name="label">Font:</property>
-19             <property name="xalign">1</property>
-20           </object>
-21         </child>
-22         <child>
-23           <object class="GtkFontDialogButton" id="font_dialog_btn">
-24             <property name="dialog">
-25               <object class="GtkFontDialog"/>
-26             </property>
-27           </object>
-28         </child>
-29       </object>
-30     </child>
-31   </template>
-32 </interface>
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TfePref" parent="GtkWindow">
+    <property name="title">Preferences</property>
+    <property name="resizable">FALSE</property>
+    <property name="modal">TRUE</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="spacing">12</property>
+        <property name="halign">GTK_ALIGN_CENTER</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Font:</property>
+            <property name="xalign">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkFontDialogButton" id="font_dialog_btn">
+            <property name="dialog">
+              <object class="GtkFontDialog"/>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
+```
 
 - Template tag specifies a composite widget.
 The class attribute specifies the class name, which is "TfePref".
@@ -74,17 +74,17 @@ The box has two children GtkLabel and GtkFontDialogButton.
 
 The file `tfepref.h` defines types and declares a public function.
 
-~~~C
-1 #pragma once
-2 
-3 #include <gtk/gtk.h>
-4 
-5 #define TFE_TYPE_PREF tfe_pref_get_type ()
-6 G_DECLARE_FINAL_TYPE (TfePref, tfe_pref, TFE, PREF, GtkWindow)
-7 
-8 GtkWidget *
-9 tfe_pref_new (void);
-~~~
+```c
+#pragma once
+
+#include <gtk/gtk.h>
+
+#define TFE_TYPE_PREF tfe_pref_get_type ()
+G_DECLARE_FINAL_TYPE (TfePref, tfe_pref, TFE, PREF, GtkWindow)
+
+GtkWidget *
+tfe_pref_new (void);
+```
 
 - 5: Defines the type `TFE_TYPE_PREF`, which is a macro replaced by `tfe_pref_get_type ()`.
 - 6: The macro `G_DECLAER_FINAL_TYPE` expands to:
@@ -220,18 +220,18 @@ The type of values needs to be defined in the schema.
 Schemas are described in an XML format.
 For example,
 
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <schemalist>
- 3   <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
- 4     <key name="font-desc" type="s">
- 5       <default>'Monospace 12'</default>
- 6       <summary>Font</summary>
- 7       <description>A font to be used for textview.</description>
- 8     </key>
- 9   </schema>
-10 </schemalist>
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
+    <key name="font-desc" type="s">
+      <default>'Monospace 12'</default>
+      <summary>Font</summary>
+      <description>A font to be used for textview.</description>
+    </key>
+  </schema>
+</schemalist>
+```
 
 - 4: The type attribute is "s".
 It is GVariant type string.
@@ -323,12 +323,12 @@ Run the calculator and change the mode, then check the schema again.
 $ gnome-calculator
 ~~~
 
-![gnome-calculator basic mode](../image/gnome_calculator_basic.png)
+![gnome-calculator basic mode](/src/images/gnome_calculator_basic.png)
 
 
 Change the mode to advanced and quit.
 
-![gnome-calculator advanced mode](../image/gnome_calculator_advanced.png)
+![gnome-calculator advanced mode](/src/images/gnome_calculator_advanced.png)
 
 Run gsettings and check the value of `button-mode`.
 
@@ -353,18 +353,18 @@ GSettings schemas are specified with an XML format.
 The XML schema files must have the filename extension `.gschema.xml`.
 The following is the XML schema file for the application `tfe`.
 
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <schemalist>
- 3   <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
- 4     <key name="font-desc" type="s">
- 5       <default>'Monospace 12'</default>
- 6       <summary>Font</summary>
- 7       <description>A font to be used for textview.</description>
- 8     </key>
- 9   </schema>
-10 </schemalist>
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
+    <key name="font-desc" type="s">
+      <default>'Monospace 12'</default>
+      <summary>Font</summary>
+      <description>A font to be used for textview.</description>
+    </key>
+  </schema>
+</schemalist>
+```
 
 The filename is "com.github.ToshioCP.tfe.gschema.xml".
 Schema XML filenames are usually the schema id followed by ".gschema.xml" suffix.
@@ -488,29 +488,29 @@ GVariant*
 
 The following codes are extracted from `tfepref.c`.
 
-~~~C
- 1 static gboolean // GSettings => property
- 2 get_mapping (GValue* value, GVariant* variant, gpointer user_data) {
- 3   const char *s = g_variant_get_string (variant, NULL);
- 4   PangoFontDescription *font_desc = pango_font_description_from_string (s);
- 5   g_value_take_boxed (value, font_desc);
- 6   return TRUE;
- 7 }
- 8 
- 9 static GVariant* // Property => GSettings
-10 set_mapping (const GValue* value, const GVariantType* expected_type, gpointer user_data) {
-11   char*font_desc_string = pango_font_description_to_string (g_value_get_boxed (value));
-12   return g_variant_new_take_string (font_desc_string);
-13 }
-14 
-15 static void
-16 tfe_pref_init (TfePref *pref) {
-17   gtk_widget_init_template (GTK_WIDGET (pref));
-18   pref->settings = g_settings_new ("com.github.ToshioCP.tfe");
-19   g_settings_bind_with_mapping (pref->settings, "font-desc", pref->font_dialog_btn, "font-desc", G_SETTINGS_BIND_DEFAULT,
-20       get_mapping, set_mapping, NULL, NULL);
-21 }
-~~~
+```c
+static gboolean // GSettings => property
+get_mapping (GValue* value, GVariant* variant, gpointer user_data) {
+  const char *s = g_variant_get_string (variant, NULL);
+  PangoFontDescription *font_desc = pango_font_description_from_string (s);
+  g_value_take_boxed (value, font_desc);
+  return TRUE;
+}
+
+static GVariant* // Property => GSettings
+set_mapping (const GValue* value, const GVariantType* expected_type, gpointer user_data) {
+  char*font_desc_string = pango_font_description_to_string (g_value_get_boxed (value));
+  return g_variant_new_take_string (font_desc_string);
+}
+
+static void
+tfe_pref_init (TfePref *pref) {
+  gtk_widget_init_template (GTK_WIDGET (pref));
+  pref->settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_settings_bind_with_mapping (pref->settings, "font-desc", pref->font_dialog_btn, "font-desc", G_SETTINGS_BIND_DEFAULT,
+      get_mapping, set_mapping, NULL, NULL);
+}
+```
 
 - 15-21: This function `tfe_pref_init` initializes the new TfePref instance.
 - 18: Creates a new GSettings instance. The id is "com.github.ToshioCP.tfe".
@@ -535,120 +535,120 @@ The ownership of the string `font_desc_string` moves to the returned value.
 
 The following is the full codes of `tfepref.c`
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 #include "tfepref.h"
- 3 
- 4 struct _TfePref
- 5 {
- 6   GtkWindow parent;
- 7   GSettings *settings;
- 8   GtkFontDialogButton *font_dialog_btn;
- 9 };
-10 
-11 G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
-12 
-13 static void
-14 tfe_pref_dispose (GObject *gobject) {
-15   TfePref *pref = TFE_PREF (gobject);
-16 
-17   /* GSetting bindings are automatically removed when the object is finalized, so it isn't necessary to unbind them explicitly.*/
-18   g_clear_object (&pref->settings);
-19   gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
-20   G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
-21 }
-22 
-23 /* ---------- get_mapping/set_mapping ---------- */
-24 static gboolean // GSettings => property
-25 get_mapping (GValue* value, GVariant* variant, gpointer user_data) {
-26   const char *s = g_variant_get_string (variant, NULL);
-27   PangoFontDescription *font_desc = pango_font_description_from_string (s);
-28   g_value_take_boxed (value, font_desc);
-29   return TRUE;
-30 }
-31 
-32 static GVariant* // Property => GSettings
-33 set_mapping (const GValue* value, const GVariantType* expected_type, gpointer user_data) {
-34   char*font_desc_string = pango_font_description_to_string (g_value_get_boxed (value));
-35   return g_variant_new_take_string (font_desc_string);
-36 }
-37 
-38 static void
-39 tfe_pref_init (TfePref *pref) {
-40   gtk_widget_init_template (GTK_WIDGET (pref));
-41   pref->settings = g_settings_new ("com.github.ToshioCP.tfe");
-42   g_settings_bind_with_mapping (pref->settings, "font-desc", pref->font_dialog_btn, "font-desc", G_SETTINGS_BIND_DEFAULT,
-43       get_mapping, set_mapping, NULL, NULL);
-44 }
-45 
-46 static void
-47 tfe_pref_class_init (TfePrefClass *class) {
-48   G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
-49   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfepref.ui");
-50   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
-51 }
-52 
-53 GtkWidget *
-54 tfe_pref_new (void) {
-55   return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
-56 }
-~~~
+```c
+#include <gtk/gtk.h>
+#include "tfepref.h"
+
+struct _TfePref
+{
+  GtkWindow parent;
+  GSettings *settings;
+  GtkFontDialogButton *font_dialog_btn;
+};
+
+G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
+
+static void
+tfe_pref_dispose (GObject *gobject) {
+  TfePref *pref = TFE_PREF (gobject);
+
+  /* GSetting bindings are automatically removed when the object is finalized, so it isn't necessary to unbind them explicitly.*/
+  g_clear_object (&pref->settings);
+  gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
+  G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
+}
+
+/* ---------- get_mapping/set_mapping ---------- */
+static gboolean // GSettings => property
+get_mapping (GValue* value, GVariant* variant, gpointer user_data) {
+  const char *s = g_variant_get_string (variant, NULL);
+  PangoFontDescription *font_desc = pango_font_description_from_string (s);
+  g_value_take_boxed (value, font_desc);
+  return TRUE;
+}
+
+static GVariant* // Property => GSettings
+set_mapping (const GValue* value, const GVariantType* expected_type, gpointer user_data) {
+  char*font_desc_string = pango_font_description_to_string (g_value_get_boxed (value));
+  return g_variant_new_take_string (font_desc_string);
+}
+
+static void
+tfe_pref_init (TfePref *pref) {
+  gtk_widget_init_template (GTK_WIDGET (pref));
+  pref->settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_settings_bind_with_mapping (pref->settings, "font-desc", pref->font_dialog_btn, "font-desc", G_SETTINGS_BIND_DEFAULT,
+      get_mapping, set_mapping, NULL, NULL);
+}
+
+static void
+tfe_pref_class_init (TfePrefClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfepref.ui");
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
+}
+
+GtkWidget *
+tfe_pref_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
+}
+```
 
 ## Test program
 
 There's a test program located at `src/tfe6/test` directory.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 #include "../tfepref.h"
- 3 
- 4 GSettings *settings;
- 5 
- 6 // "changed::font-desc" signal handler
- 7 static void
- 8 changed_font_desc_cb (GSettings *settings, char *key, gpointer user_data) {
- 9   char *s;
-10   s = g_settings_get_string (settings, key);
-11   g_print ("%s\n", s);
-12   g_free (s);
-13 }
-14 
-15 static void
-16 app_shutdown (GApplication *application) {
-17   g_object_unref (settings);
-18 }
-19 
-20 static void
-21 app_activate (GApplication *application) {
-22   GtkWidget *pref = tfe_pref_new ();
-23 
-24   gtk_window_set_application (GTK_WINDOW (pref), GTK_APPLICATION (application));
-25   gtk_window_present (GTK_WINDOW (pref));
-26 }
-27 
-28 static void
-29 app_startup (GApplication *application) {
-30   settings = g_settings_new ("com.github.ToshioCP.tfe");
-31   g_signal_connect (settings, "changed::font-desc", G_CALLBACK (changed_font_desc_cb), NULL);
-32   g_print ("%s\n", "Change the font with the font button. Then the new font will be printed out.\n");
-33 }
-34 
-35 #define APPLICATION_ID "com.github.ToshioCP.test_tfe_pref"
-36 
-37 int
-38 main (int argc, char **argv) {
-39   GtkApplication *app;
-40   int stat;
-41 
-42   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-43   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-44   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-45   g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), NULL);
-46   stat = g_application_run (G_APPLICATION (app), argc, argv);
-47   g_object_unref (app);
-48   return stat;
-49 }
-~~~
+```c
+#include <gtk/gtk.h>
+#include "../tfepref.h"
+
+GSettings *settings;
+
+// "changed::font-desc" signal handler
+static void
+changed_font_desc_cb (GSettings *settings, char *key, gpointer user_data) {
+  char *s;
+  s = g_settings_get_string (settings, key);
+  g_print ("%s\n", s);
+  g_free (s);
+}
+
+static void
+app_shutdown (GApplication *application) {
+  g_object_unref (settings);
+}
+
+static void
+app_activate (GApplication *application) {
+  GtkWidget *pref = tfe_pref_new ();
+
+  gtk_window_set_application (GTK_WINDOW (pref), GTK_APPLICATION (application));
+  gtk_window_present (GTK_WINDOW (pref));
+}
+
+static void
+app_startup (GApplication *application) {
+  settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_signal_connect (settings, "changed::font-desc", G_CALLBACK (changed_font_desc_cb), NULL);
+  g_print ("%s\n", "Change the font with the font button. Then the new font will be printed out.\n");
+}
+
+#define APPLICATION_ID "com.github.ToshioCP.test_tfe_pref"
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+```
 
 This program sets its active window to TfePref instance, which is a child object of GtkWindow.
 

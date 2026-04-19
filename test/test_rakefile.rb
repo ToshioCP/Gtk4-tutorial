@@ -61,8 +61,8 @@ class TestRakefile < Minitest::Test
     # to avoid actual file system modifications.
     
     # Assert that the task can be invoked successfully.
-    FileUtils.stub(:remove_entry_secure, ->(file){puts file}) do
-      out, err = capture_io do
+    FileUtils.stub(:rm_rf, ->(file){puts file}) do
+      out, _ = capture_io do
         @rake['clobber'].invoke
       end
       s1 = "No PDF directory found to remove."

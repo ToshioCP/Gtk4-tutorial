@@ -130,14 +130,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-27"><a href="#cb1-27"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb1-28"><a href="#cb1-28"></a><span class="op">}</span></span></code></pre></div>
         <p>Save this program to a file <code>lb1.c</code>. (You can use
-        <code>src/misc/lb1.c</code> if you’ve downloaded this
-        repository.) Then compile and run it.</p>
-        <pre><code>$ comp lb1
+        <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/lb1.c"><code>/src/misc/lb1.c</code></a>
+        if you’ve downloaded this repository.) Then compile and run
+        it.</p>
+        <pre><code>$ cd src/misc
+$ comp lb1
 $ ./a.out</code></pre>
         <p>A window with a message “Hello.” appears.</p>
         <figure>
         <img src="/images/screenshot_lb1.png"
-        style="width:6.3cm;height:5.325cm"
         alt="Screenshot of the label" />
         <figcaption aria-hidden="true">Screenshot of the
         label</figcaption>
@@ -191,7 +193,7 @@ $</code></pre>
         the screen. The application window includes the label.</p>
         <p>The window <code>win</code> doesn’t have any parents. We call
         such a window top-level window. An application can have more
-        than one top-level windows.</p>
+        than one top-level window.</p>
         <h3 id="gtkbutton">GtkButton</h3>
         <p>The next widget is GtkButton. It displays a button on the
         screen with a label or icon on it. In this subsection, we will
@@ -244,7 +246,6 @@ $</code></pre>
         and run it.</p>
         <figure>
         <img src="/images/screenshot_lb2.png"
-        style="width:11.205cm;height:6.945cm"
         alt="Screenshot of the label" />
         <figcaption aria-hidden="true">Screenshot of the
         label</figcaption>
@@ -255,9 +256,9 @@ $</code></pre>
         was invoked by clicking the button.</p>
         <p>It’s good that we’ve made sure that the clicked signal was
         caught and the handler was invoked by using
-        <code>g_print</code>. However, using <code>g_print</code> is out
-        of harmony with GTK, which is a GUI library. So, we will change
-        the handler. The following code is extracted from
+        <code>g_print</code>. However, using <code>g_print</code>
+        doesn’t fit well with GTK, which is a GUI library. So, we will
+        change the handler. The following code is extracted from
         <code>lb3.c</code>.</p>
         <div class="sourceCode" id="cb5"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -326,7 +327,7 @@ $</code></pre>
         descendant of GtkWindow and GtkWidget class, so both
         <code>GtkWindow *</code> and <code>GtkWidget *</code> are
         correct types of the instance.</li>
-        <li><code>gtk_destroy (win)</code> destroys the top-level
+        <li><code>gtk_window_destroy (win)</code> destroys the top-level
         window. Then the application quits.</li>
         </ul></li>
         <li>The label of <code>btn</code> is changed from “Click me” to
@@ -354,11 +355,10 @@ $</code></pre>
         <li>Create another GtkButton instance and append it to the
         GtkBox.</li>
         </ul>
-        <p>After this, the Widgets are connected as the following
-        diagram.</p>
+        <p>After this, the widgets are connected as shown in the
+        following diagram.</p>
         <figure>
-        <img src="/images/box.png" style="width:7.725cm;height:2.055cm"
-        alt="Parent-child relationship" />
+        <img src="/images/box.png" alt="Parent-child relationship" />
         <figcaption aria-hidden="true">Parent-child
         relationship</figcaption>
         </figure>
@@ -436,8 +436,8 @@ $</code></pre>
         </ul>
         <p>The second argument is the size of the space between the
         children. The unit of the length is pixel.</p>
-        <p>The next function fills the box with the children, giving
-        them the same space.</p>
+        <p>The next function <code>gtk_box_set_homogeneous</code> fills
+        the box with the children, giving them the same space.</p>
         <p>After that, two buttons <code>btn1</code> and
         <code>btn2</code> are created and the signal handlers are set.
         Then, these two buttons are appended to the box.</p>
@@ -452,16 +452,15 @@ $</code></pre>
 <span id="cb9-8"><a href="#cb9-8"></a>  <span class="cf">else</span></span>
 <span id="cb9-9"><a href="#cb9-9"></a>    gtk_button_set_label <span class="op">(</span>btn<span class="op">,</span> <span class="st">&quot;Hello.&quot;</span><span class="op">);</span></span>
 <span id="cb9-10"><a href="#cb9-10"></a><span class="op">}</span></span></code></pre></div>
-        <p>The function <code>gtk_button_get_label</code> returns a text
-        from the label. The string is owned by the button and you can’t
-        modify or free it. The <code>const</code> qualifier is necessary
-        for the string <code>s</code>. If you change the string, your
-        compiler will give you a warning.</p>
+        <p>The function <code>gtk_button_get_label</code> returns the
+        text from the label. The string is owned by the button and you
+        can’t modify or free it. The <code>const</code> qualifier is
+        necessary for the string <code>s</code>. If you change the
+        string, your compiler will give you a warning.</p>
         <p>You always need to be careful with the const qualifier when
         you see the GTK 4 API reference.</p>
         <figure>
         <img src="/images/screenshot_lb4.png"
-        style="width:6.3cm;height:5.325cm"
         alt="Screenshot of the box" />
         <figcaption aria-hidden="true">Screenshot of the
         box</figcaption>

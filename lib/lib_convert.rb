@@ -13,7 +13,7 @@ require PathManager.get_path(:lib, 'lib_rewrite_links')
 
 module G4T
   class << self
-    # Directive patterns used by _split_directive_blocks
+    # Directive patterns used by split_directive_blocks
     DIRECTIVE_START_IF = /\A@@@if\s/
     DIRECTIVE_START_INCLUDE = /\A@@@include\s*$/
     DIRECTIVE_START_SHELL = /\A@@@shell\s*$/
@@ -32,7 +32,7 @@ module G4T
     # @return [String] The fully converted content.
     def convert(str, target, src_path = nil)
       # Pass 1: Conditional Preprocessing (@@@if...@@@end)
-      blocks = _split_directive_blocks(str)
+      blocks = split_directive_blocks(str)
       buf = []
       blocks.each do |block|
         if block =~ DIRECTIVE_START_IF
@@ -53,7 +53,7 @@ module G4T
       #   2: html type => [Section 1](sec1.html)
       #   3: pdf type  => Section 1
       # Note: These rewrites are applied except within verbatim blocks.
-      blocks = _split_directive_blocks(str)
+      blocks = split_directive_blocks(str)
       buf = []
       blocks.each do |block|
         if block =~ DIRECTIVE_START_INCLUDE
@@ -82,7 +82,7 @@ module G4T
     #
     # @param str [String] The source text to be processed.
     # @return [Array<String>] An ordered list of parsed segments.
-    def _split_directive_blocks(str)
+    def split_directive_blocks(str)
       array_blocks = []
       block = []
       block_end_mark = nil # keep alive anywhere in the block below

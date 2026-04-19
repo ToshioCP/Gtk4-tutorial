@@ -63,35 +63,35 @@ static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
 
 Signals are registered in the class initialization function.
 
-~~~C
- 1 static void
- 2 tfe_text_view_class_init (TfeTextViewClass *class) {
- 3   GObjectClass *object_class = G_OBJECT_CLASS (class);
- 4 
- 5   object_class->dispose = tfe_text_view_dispose;
- 6   tfe_text_view_signals[CHANGE_FILE] = g_signal_new ("change-file",
- 7                                  G_TYPE_FROM_CLASS (class),
- 8                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
- 9                                  0 /* class offset */,
-10                                  NULL /* accumulator */,
-11                                  NULL /* accumulator data */,
-12                                  NULL /* C marshaller */,
-13                                  G_TYPE_NONE /* return_type */,
-14                                  0     /* n_params */
-15                                  );
-16   tfe_text_view_signals[OPEN_RESPONSE] = g_signal_new ("open-response",
-17                                  G_TYPE_FROM_CLASS (class),
-18                                  G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-19                                  0 /* class offset */,
-20                                  NULL /* accumulator */,
-21                                  NULL /* accumulator data */,
-22                                  NULL /* C marshaller */,
-23                                  G_TYPE_NONE /* return_type */,
-24                                  1     /* n_params */,
-25                                  G_TYPE_INT
-26                                  );
-27 }
-~~~
+```c
+static void
+tfe_text_view_class_init (TfeTextViewClass *class) {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->dispose = tfe_text_view_dispose;
+  tfe_text_view_signals[CHANGE_FILE] = g_signal_new ("change-file",
+                                 G_TYPE_FROM_CLASS (class),
+                                 G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                                 0 /* class offset */,
+                                 NULL /* accumulator */,
+                                 NULL /* accumulator data */,
+                                 NULL /* C marshaller */,
+                                 G_TYPE_NONE /* return_type */,
+                                 0     /* n_params */
+                                 );
+  tfe_text_view_signals[OPEN_RESPONSE] = g_signal_new ("open-response",
+                                 G_TYPE_FROM_CLASS (class),
+                                 G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                                 0 /* class offset */,
+                                 NULL /* accumulator */,
+                                 NULL /* accumulator data */,
+                                 NULL /* C marshaller */,
+                                 G_TYPE_NONE /* return_type */,
+                                 1     /* n_params */,
+                                 G_TYPE_INT
+                                 );
+}
+```
 
 - 6-15: Registers "change-file" signal.
 `g_signal_new` function is used.

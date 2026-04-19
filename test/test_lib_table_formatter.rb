@@ -30,7 +30,7 @@ class TestLibfTableFormatter < Minitest::Test
       |long value|  x  |                      y|
     EOS
 
-    assert_equal expected, G4T.format_table(input)
+    assert_equal expected, G4T.send(:format_table, input)
   end
 
   # Tests the case where the separator row is the longest element.
@@ -48,7 +48,7 @@ class TestLibfTableFormatter < Minitest::Test
       |    1    |2  |
     EOS
 
-    assert_equal expected, G4T.format_table(input)
+    assert_equal expected, G4T.send(:format_table, input)
   end
 
   # Tests that non-table content or invalid structures (like 4+ spaces)
@@ -56,11 +56,11 @@ class TestLibfTableFormatter < Minitest::Test
   def test_validation_gatekeeper
     # Case 1: No separator row
     invalid_table = "|a|b|\n|c|d|\n"
-    assert_equal invalid_table, G4T.format_table(invalid_table)
+    assert_equal invalid_table, G4T.send(:format_table, invalid_table)
 
     # Case 2: Indented with 4 spaces (Code Block)
     indented_table = "    |a|b|\n    |-|-|\n    |1|2|\n"
-    assert_equal indented_table, G4T.format_table(indented_table)
+    assert_equal indented_table, G4T.send(:format_table, indented_table)
   end
 
   # Tests the @@@table directive processing.

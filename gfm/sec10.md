@@ -41,149 +41,149 @@ The source files are shown below.
 
 `tfetextview.h`
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 
- 3 #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
- 4 G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
- 5 
- 6 void
- 7 tfe_text_view_set_file (TfeTextView *tv, GFile *f);
- 8 
- 9 GFile *
-10 tfe_text_view_get_file (TfeTextView *tv);
-11 
-12 GtkWidget *
-13 tfe_text_view_new (void);
-14 
-~~~
+```c
+#include <gtk/gtk.h>
+
+#define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
+G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
+
+void
+tfe_text_view_set_file (TfeTextView *tv, GFile *f);
+
+GFile *
+tfe_text_view_get_file (TfeTextView *tv);
+
+GtkWidget *
+tfe_text_view_new (void);
+
+```
 
 `tfetextview.c`
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 #include "tfetextview.h"
- 3 
- 4 struct _TfeTextView
- 5 {
- 6   GtkTextView parent;
- 7   GFile *file;
- 8 };
- 9 
-10 G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
-11 
-12 static void
-13 tfe_text_view_init (TfeTextView *tv) {
-14 }
-15 
-16 static void
-17 tfe_text_view_class_init (TfeTextViewClass *class) {
-18 }
-19 
-20 void
-21 tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
-22   tv->file = f;
-23 }
-24 
-25 GFile *
-26 tfe_text_view_get_file (TfeTextView *tv) {
-27   return tv->file;
-28 }
-29 
-30 GtkWidget *
-31 tfe_text_view_new (void) {
-32   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
-33 }
-34 
-~~~
+```c
+#include <gtk/gtk.h>
+#include "tfetextview.h"
+
+struct _TfeTextView
+{
+  GtkTextView parent;
+  GFile *file;
+};
+
+G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+
+static void
+tfe_text_view_init (TfeTextView *tv) {
+}
+
+static void
+tfe_text_view_class_init (TfeTextViewClass *class) {
+}
+
+void
+tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
+  tv->file = f;
+}
+
+GFile *
+tfe_text_view_get_file (TfeTextView *tv) {
+  return tv->file;
+}
+
+GtkWidget *
+tfe_text_view_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
+}
+
+```
 
 `tfe.c`
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 #include "tfetextview.h"
- 3 
- 4 static void
- 5 app_activate (GApplication *app) {
- 6   g_print ("You need a filename argument.\n");
- 7 }
- 8 
- 9 static void
-10 app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
-11   GtkWidget *win;
-12   GtkWidget *nb;
-13   GtkWidget *lab;
-14   GtkNotebookPage *nbp;
-15   GtkWidget *scr;
-16   GtkWidget *tv;
-17   GtkTextBuffer *tb;
-18   char *contents;
-19   gsize length;
-20   char *filename;
-21   int i;
-22   GError *err = NULL;
-23   GtkBuilder *build;
-24 
-25   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
-26   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-27   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-28   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
-29   g_object_unref (build);
-30   for (i = 0; i < n_files; i++) {
-31     if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
-32       scr = gtk_scrolled_window_new ();
-33       tv = tfe_text_view_new ();
-34       tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-35       gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-36       gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-37 
-38       tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
-39       gtk_text_buffer_set_text (tb, contents, length);
-40       g_free (contents);
-41       filename = g_file_get_basename (files[i]);
-42       lab = gtk_label_new (filename);
-43       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
-44       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
-45       g_object_set (nbp, "tab-expand", TRUE, NULL);
-46       g_free (filename);
-47     } else {
-48       g_printerr ("%s.\n", err->message);
-49       g_clear_error (&err);
-50     }
-51   }
-52   if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-53     gtk_window_present (GTK_WINDOW (win));
-54   } else
-55     gtk_window_destroy (GTK_WINDOW (win));
-56 }
-57 
-58 int
-59 main (int argc, char **argv) {
-60   GtkApplication *app;
-61   int stat;
-62 
-63   app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
-64   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-65   g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-66   stat = g_application_run (G_APPLICATION (app), argc, argv);
-67   g_object_unref (app);
-68   return stat;
-69 }
-70 
-~~~
+```c
+#include <gtk/gtk.h>
+#include "tfetextview.h"
+
+static void
+app_activate (GApplication *app) {
+  g_print ("You need a filename argument.\n");
+}
+
+static void
+app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
+  GtkWidget *win;
+  GtkWidget *nb;
+  GtkWidget *lab;
+  GtkNotebookPage *nbp;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkTextBuffer *tb;
+  char *contents;
+  gsize length;
+  char *filename;
+  int i;
+  GError *err = NULL;
+  GtkBuilder *build;
+
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
+  win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+  gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+  nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+  g_object_unref (build);
+  for (i = 0; i < n_files; i++) {
+    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
+      scr = gtk_scrolled_window_new ();
+      tv = tfe_text_view_new ();
+      tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+      gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+      gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+
+      tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
+      gtk_text_buffer_set_text (tb, contents, length);
+      g_free (contents);
+      filename = g_file_get_basename (files[i]);
+      lab = gtk_label_new (filename);
+      gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
+      nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
+      g_object_set (nbp, "tab-expand", TRUE, NULL);
+      g_free (filename);
+    } else {
+      g_printerr ("%s.\n", err->message);
+      g_clear_error (&err);
+    }
+  }
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
+    gtk_window_present (GTK_WINDOW (win));
+  } else
+    gtk_window_destroy (GTK_WINDOW (win));
+}
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new ("com.github.ToshioCP.tfe", G_APPLICATION_HANDLES_OPEN);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+
+```
 
 The ui file `tfe.ui` is the same as `tfe3.ui` in the previous section.
 
 `tfe.gresource.xml`
 
-~~~xml
-1 <?xml version="1.0" encoding="UTF-8"?>
-2 <gresources>
-3   <gresource prefix="/com/github/ToshioCP/tfe">
-4     <file>tfe.ui</file>
-5   </gresource>
-6 </gresources>
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/tfe">
+    <file>tfe.ui</file>
+  </gresource>
+</gresources>
+```
 
 Dividing a file makes it easy to maintain.
 But now we face a new problem.
@@ -208,18 +208,18 @@ For example, GTK 4 uses them.
 
 You need to create `meson.build` file first.
 
-~~~meson
- 1 project('tfe', 'c')
- 2 
- 3 gtkdep = dependency('gtk4')
- 4 
- 5 gnome=import('gnome')
- 6 resources = gnome.compile_resources('resources','tfe.gresource.xml')
- 7 
- 8 sourcefiles=files('tfe.c', 'tfetextview.c')
- 9 
-10 executable('tfe', sourcefiles, resources, dependencies: gtkdep, install: false)
-~~~
+```
+project('tfe', 'c')
+
+gtkdep = dependency('gtk4')
+
+gnome=import('gnome')
+resources = gnome.compile_resources('resources','tfe.gresource.xml')
+
+sourcefiles=files('tfe.c', 'tfetextview.c')
+
+executable('tfe', sourcefiles, resources, dependencies: gtkdep, install: false)
+```
 
 - 1: The function `project` defines things about the project.
 The first argument is the name of the project and the second is the programming language.

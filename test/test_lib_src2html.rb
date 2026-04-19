@@ -56,6 +56,7 @@ class TestLibSrc2Html < Minitest::Test
     FileUtils.mkdir_p(@data_dir)
 
     setup_template
+    setup_image_extensions_yaml
     setup_site_env_yaml
     setup_test_files
 
@@ -64,7 +65,7 @@ class TestLibSrc2Html < Minitest::Test
 
   # Remove the temporary directory after the test.
   def teardown
-    FileUtils.remove_entry_secure(@tmp_root)
+    FileUtils.rm_rf(@tmp_root)
   end
 
 
@@ -98,6 +99,18 @@ class TestLibSrc2Html < Minitest::Test
 
     @template_path = File.join(@data_dir, "template.html")
     File.write(@template_path, template)
+  end
+
+  def setup_image_extensions_yaml
+    image_extensions = <<~YAML
+    # Extensions for images
+    - .jpg
+    - .jpeg
+    - .png
+    - .pdf
+    YAML
+    @image_extensions_path = File.join(@data_dir, "image_extensions.yml")
+    File.write(@image_extensions_path, image_extensions)
   end
 
   # Create a mode definition YAML file.

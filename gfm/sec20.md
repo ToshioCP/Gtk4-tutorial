@@ -24,7 +24,7 @@ Others will be explained in the following sections.
 
 The alert dialog is like this:
 
-![Alert dialog](../image/alert.png)
+![Alert dialog](/src/images/alert.png)
 
 Tfe uses it when a user quits the application or closes a notebook without saving data to files.
 
@@ -49,65 +49,65 @@ It is defined with the three files.
 
 A template tag is used in a composite widget XML.
 
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <interface>
- 3   <template class="TfeAlert" parent="GtkWindow">
- 4     <property name="resizable">FALSE</property>
- 5     <property name="modal">TRUE</property>
- 6     <property name="titlebar">
- 7       <object class="GtkHeaderBar">
- 8         <property name="show-title-buttons">FALSE</property>
- 9         <property name="title-widget">
-10           <object class="GtkLabel" id="lb_title">
-11             <property name="label">Are you sure?</property>
-12             <property name="single-line-mode">True</property>
-13           </object>
-14         </property>
-15         <child type="start">
-16           <object class="GtkButton" id="btn_cancel">
-17             <property name="label">Cancel</property>
-18             <style>
-19               <class name="suggested-action"/>
-20             </style>
-21             <signal name="clicked" handler="cancel_cb" swapped="TRUE" object="TfeAlert"></signal>
-22           </object>
-23         </child>
-24         <child type="end">
-25           <object class="GtkButton" id="btn_accept">
-26             <property name="label">Close</property>
-27             <style>
-28               <class name="destructive-action"/>
-29             </style>
-30             <signal name="clicked" handler="accept_cb" swapped="TRUE" object="TfeAlert"></signal>
-31           </object>
-32         </child>
-33       </object>
-34     </property>
-35     <child>
-36       <object class="GtkBox">
-37         <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-38         <property name="spacing">12</property>
-39         <property name="margin-top">12</property>
-40         <property name="margin-bottom">12</property>
-41         <property name="margin-start">12</property>
-42         <property name="margin-end">12</property>
-43         <child>
-44           <object class="GtkImage">
-45             <property name="icon-name">dialog-warning</property>
-46             <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
-47           </object>
-48         </child>
-49         <child>
-50           <object class="GtkLabel" id="lb_message">
-51           </object>
-52         </child>
-53       </object>
-54     </child>
-55   </template>
-56 </interface>
-57 
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TfeAlert" parent="GtkWindow">
+    <property name="resizable">FALSE</property>
+    <property name="modal">TRUE</property>
+    <property name="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="show-title-buttons">FALSE</property>
+        <property name="title-widget">
+          <object class="GtkLabel" id="lb_title">
+            <property name="label">Are you sure?</property>
+            <property name="single-line-mode">True</property>
+          </object>
+        </property>
+        <child type="start">
+          <object class="GtkButton" id="btn_cancel">
+            <property name="label">Cancel</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+            <signal name="clicked" handler="cancel_cb" swapped="TRUE" object="TfeAlert"></signal>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkButton" id="btn_accept">
+            <property name="label">Close</property>
+            <style>
+              <class name="destructive-action"/>
+            </style>
+            <signal name="clicked" handler="accept_cb" swapped="TRUE" object="TfeAlert"></signal>
+          </object>
+        </child>
+      </object>
+    </property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="spacing">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon-name">dialog-warning</property>
+            <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lb_message">
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
+
+```
 
 - 3: A template tag defines a composite widget.
 The class attribute tells the class name of the composite widget.
@@ -147,7 +147,7 @@ $ gtk4-icon-browser
 
 The "dialog-warning" icon is something like this.
 
-![dialog-warning icon is like ...](../image/dialog_warning.png)
+![dialog-warning icon is like ...](/src/images/dialog_warning.png)
 
 These are made by my hand.
 The real image on the alert dialog is nicer.
@@ -160,45 +160,45 @@ And users should use GtkWindow instead of GtkDialog.
 
 The header file is similar to the one of TfeTextView.
 
-~~~C
- 1 #pragma once
- 2 
- 3 #include <gtk/gtk.h>
- 4 
- 5 #define TFE_TYPE_ALERT tfe_alert_get_type ()
- 6 G_DECLARE_FINAL_TYPE (TfeAlert, tfe_alert, TFE, ALERT, GtkWindow)
- 7 
- 8 /* "response" signal id */
- 9 enum TfeAlertResponseType
-10 {
-11   TFE_ALERT_RESPONSE_ACCEPT,
-12   TFE_ALERT_RESPONSE_CANCEL
-13 };
-14 
-15 const char *
-16 tfe_alert_get_title (TfeAlert *alert);
-17 
-18 const char *
-19 tfe_alert_get_message (TfeAlert *alert);
-20 
-21 const char *
-22 tfe_alert_get_button_label (TfeAlert *alert);
-23 
-24 void
-25 tfe_alert_set_title (TfeAlert *alert, const char *title);
-26 
-27 void
-28 tfe_alert_set_message (TfeAlert *alert, const char *message);
-29 
-30 void
-31 tfe_alert_set_button_label (TfeAlert *alert, const char *btn_label);
-32 
-33 GtkWidget *
-34 tfe_alert_new (void);
-35 
-36 GtkWidget *
-37 tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label);
-~~~
+```c
+#pragma once
+
+#include <gtk/gtk.h>
+
+#define TFE_TYPE_ALERT tfe_alert_get_type ()
+G_DECLARE_FINAL_TYPE (TfeAlert, tfe_alert, TFE, ALERT, GtkWindow)
+
+/* "response" signal id */
+enum TfeAlertResponseType
+{
+  TFE_ALERT_RESPONSE_ACCEPT,
+  TFE_ALERT_RESPONSE_CANCEL
+};
+
+const char *
+tfe_alert_get_title (TfeAlert *alert);
+
+const char *
+tfe_alert_get_message (TfeAlert *alert);
+
+const char *
+tfe_alert_get_button_label (TfeAlert *alert);
+
+void
+tfe_alert_set_title (TfeAlert *alert, const char *title);
+
+void
+tfe_alert_set_message (TfeAlert *alert, const char *message);
+
+void
+tfe_alert_set_button_label (TfeAlert *alert, const char *btn_label);
+
+GtkWidget *
+tfe_alert_new (void);
+
+GtkWidget *
+tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label);
+```
 
 - 5-6: These two lines are always needed to define a new object.
 `TFE_TYPE_ALERT` is the type of TfeAlert object and it is a macro expanded into `tfe_alert_get_type ()`.
@@ -307,118 +307,118 @@ It creates not only TfeAlert itself but also all the child widgets that the comp
 
 The following is the full codes of `tfealert.c`.
 
-~~~C
-  1 #include <gtk/gtk.h>
-  2 #include "tfealert.h"
-  3 
-  4 struct _TfeAlert {
-  5   GtkWindow parent;
-  6   GtkLabel *lb_title;
-  7   GtkLabel *lb_message;
-  8   GtkButton *btn_accept;
-  9   GtkButton *btn_cancel;
- 10 };
- 11 
- 12 G_DEFINE_FINAL_TYPE (TfeAlert, tfe_alert, GTK_TYPE_WINDOW);
- 13 
- 14 enum {
- 15   RESPONSE,
- 16   NUMBER_OF_SIGNALS
- 17 };
- 18 
- 19 static guint tfe_alert_signals[NUMBER_OF_SIGNALS];
- 20 
- 21 static void
- 22 cancel_cb (TfeAlert *alert) {
- 23   g_signal_emit (alert, tfe_alert_signals[RESPONSE], 0, TFE_ALERT_RESPONSE_CANCEL);
- 24   gtk_window_destroy (GTK_WINDOW (alert));
- 25 }
- 26 
- 27 static void
- 28 accept_cb (TfeAlert *alert) {
- 29   g_signal_emit (alert, tfe_alert_signals[RESPONSE], 0, TFE_ALERT_RESPONSE_ACCEPT);
- 30   gtk_window_destroy (GTK_WINDOW (alert));
- 31 }
- 32 
- 33 const char *
- 34 tfe_alert_get_title (TfeAlert *alert) {
- 35   return gtk_label_get_text (alert->lb_title);
- 36 }
- 37 
- 38 const char *
- 39 tfe_alert_get_message (TfeAlert *alert) {
- 40     return gtk_label_get_text (alert->lb_message);
- 41 }
- 42 
- 43 const char *
- 44 tfe_alert_get_button_label (TfeAlert *alert) {
- 45   return gtk_button_get_label (alert->btn_accept);
- 46 }
- 47 
- 48 void
- 49 tfe_alert_set_title (TfeAlert *alert, const char *title) {
- 50   gtk_label_set_text (alert->lb_title, title);
- 51 }
- 52 
- 53 void
- 54 tfe_alert_set_message (TfeAlert *alert, const char *message) {
- 55   gtk_label_set_text (alert->lb_message, message);
- 56 }
- 57 
- 58 void
- 59 tfe_alert_set_button_label (TfeAlert *alert, const char *btn_label) {
- 60   gtk_button_set_label (alert->btn_accept, btn_label);
- 61 }
- 62 
- 63 static void
- 64 tfe_alert_dispose (GObject *gobject) { // gobject is actually a TfeAlert instance.
- 65   gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_ALERT);
- 66   G_OBJECT_CLASS (tfe_alert_parent_class)->dispose (gobject);
- 67 }
- 68 
- 69 static void
- 70 tfe_alert_init (TfeAlert *alert) {
- 71   gtk_widget_init_template (GTK_WIDGET (alert));
- 72 }
- 73 
- 74 static void
- 75 tfe_alert_class_init (TfeAlertClass *class) {
- 76   G_OBJECT_CLASS (class)->dispose = tfe_alert_dispose;
- 77   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfealert.ui");
- 78   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_title);
- 79   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_message);
- 80   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);
- 81   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_cancel);
- 82   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), cancel_cb);
- 83   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), accept_cb);
- 84 
- 85   tfe_alert_signals[RESPONSE] = g_signal_new ("response",
- 86                                 G_TYPE_FROM_CLASS (class),
- 87                                 G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
- 88                                 0 /* class offset */,
- 89                                 NULL /* accumulator */,
- 90                                 NULL /* accumulator data */,
- 91                                 NULL /* C marshaller */,
- 92                                 G_TYPE_NONE /* return_type */,
- 93                                 1     /* n_params */,
- 94                                 G_TYPE_INT
- 95                                 );
- 96 }
- 97 
- 98 GtkWidget *
- 99 tfe_alert_new (void) {
-100   return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
-101 }
-102 
-103 GtkWidget *
-104 tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label) {
-105   GtkWidget *alert = tfe_alert_new ();
-106   tfe_alert_set_title (TFE_ALERT (alert), title);
-107   tfe_alert_set_message (TFE_ALERT (alert), message);
-108   tfe_alert_set_button_label (TFE_ALERT (alert), btn_label);
-109   return alert;
-110 }
-~~~
+```c
+#include <gtk/gtk.h>
+#include "tfealert.h"
+
+struct _TfeAlert {
+  GtkWindow parent;
+  GtkLabel *lb_title;
+  GtkLabel *lb_message;
+  GtkButton *btn_accept;
+  GtkButton *btn_cancel;
+};
+
+G_DEFINE_FINAL_TYPE (TfeAlert, tfe_alert, GTK_TYPE_WINDOW);
+
+enum {
+  RESPONSE,
+  NUMBER_OF_SIGNALS
+};
+
+static guint tfe_alert_signals[NUMBER_OF_SIGNALS];
+
+static void
+cancel_cb (TfeAlert *alert) {
+  g_signal_emit (alert, tfe_alert_signals[RESPONSE], 0, TFE_ALERT_RESPONSE_CANCEL);
+  gtk_window_destroy (GTK_WINDOW (alert));
+}
+
+static void
+accept_cb (TfeAlert *alert) {
+  g_signal_emit (alert, tfe_alert_signals[RESPONSE], 0, TFE_ALERT_RESPONSE_ACCEPT);
+  gtk_window_destroy (GTK_WINDOW (alert));
+}
+
+const char *
+tfe_alert_get_title (TfeAlert *alert) {
+  return gtk_label_get_text (alert->lb_title);
+}
+
+const char *
+tfe_alert_get_message (TfeAlert *alert) {
+    return gtk_label_get_text (alert->lb_message);
+}
+
+const char *
+tfe_alert_get_button_label (TfeAlert *alert) {
+  return gtk_button_get_label (alert->btn_accept);
+}
+
+void
+tfe_alert_set_title (TfeAlert *alert, const char *title) {
+  gtk_label_set_text (alert->lb_title, title);
+}
+
+void
+tfe_alert_set_message (TfeAlert *alert, const char *message) {
+  gtk_label_set_text (alert->lb_message, message);
+}
+
+void
+tfe_alert_set_button_label (TfeAlert *alert, const char *btn_label) {
+  gtk_button_set_label (alert->btn_accept, btn_label);
+}
+
+static void
+tfe_alert_dispose (GObject *gobject) { // gobject is actually a TfeAlert instance.
+  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_ALERT);
+  G_OBJECT_CLASS (tfe_alert_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_alert_init (TfeAlert *alert) {
+  gtk_widget_init_template (GTK_WIDGET (alert));
+}
+
+static void
+tfe_alert_class_init (TfeAlertClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_alert_dispose;
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfealert.ui");
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_title);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_message);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_cancel);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), cancel_cb);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), accept_cb);
+
+  tfe_alert_signals[RESPONSE] = g_signal_new ("response",
+                                G_TYPE_FROM_CLASS (class),
+                                G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                                0 /* class offset */,
+                                NULL /* accumulator */,
+                                NULL /* accumulator data */,
+                                NULL /* C marshaller */,
+                                G_TYPE_NONE /* return_type */,
+                                1     /* n_params */,
+                                G_TYPE_INT
+                                );
+}
+
+GtkWidget *
+tfe_alert_new (void) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
+}
+
+GtkWidget *
+tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label) {
+  GtkWidget *alert = tfe_alert_new ();
+  tfe_alert_set_title (TFE_ALERT (alert), title);
+  tfe_alert_set_message (TFE_ALERT (alert), message);
+  tfe_alert_set_button_label (TFE_ALERT (alert), btn_label);
+  return alert;
+}
+```
 
 The function `tfe_alert_new_with_data` is used more often than `tfe_alert_new` to create a new instance.
 It creates the instance and sets three data at the same time.
@@ -447,51 +447,51 @@ There's an example in the `src/tfe6/example` directory.
 It shows how to use TfeAlert.
 The program is `src/example/ex_alert.c`.
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 #include "../tfealert.h"
- 3 
- 4 static void
- 5 alert_response_cb (TfeAlert *alert, int response, gpointer user_data) {
- 6   if (response == TFE_ALERT_RESPONSE_ACCEPT)
- 7     g_print ("%s\n", tfe_alert_get_button_label (alert));
- 8   else if (response == TFE_ALERT_RESPONSE_CANCEL)
- 9     g_print ("Cancel\n");
-10   else
-11     g_print ("Unexpected error\n");
-12 }
-13 
-14 static void
-15 app_activate (GApplication *application) {
-16   GtkWidget *alert;
-17   char *title, *message, *btn_label;
-18 
-19   title = "Example for TfeAlert"; message = "Click on Cancel or Accept button"; btn_label = "Accept";
-20   alert = tfe_alert_new_with_data (title, message, btn_label);
-21   g_signal_connect (TFE_ALERT (alert), "response", G_CALLBACK (alert_response_cb), NULL);
-22   gtk_window_set_application (GTK_WINDOW (alert), GTK_APPLICATION (application));
-23   gtk_window_present (GTK_WINDOW (alert));
-24 }
-25 
-26 static void
-27 app_startup (GApplication *application) {
-28 }
-29 
-30 #define APPLICATION_ID "com.github.ToshioCP.example_tfe_alert"
-31 
-32 int
-33 main (int argc, char **argv) {
-34   GtkApplication *app;
-35   int stat;
-36 
-37   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-38   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-39   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-40   stat = g_application_run (G_APPLICATION (app), argc, argv);
-41   g_object_unref (app);
-42   return stat;
-43 }
-~~~
+```c
+#include <gtk/gtk.h>
+#include "../tfealert.h"
+
+static void
+alert_response_cb (TfeAlert *alert, int response, gpointer user_data) {
+  if (response == TFE_ALERT_RESPONSE_ACCEPT)
+    g_print ("%s\n", tfe_alert_get_button_label (alert));
+  else if (response == TFE_ALERT_RESPONSE_CANCEL)
+    g_print ("Cancel\n");
+  else
+    g_print ("Unexpected error\n");
+}
+
+static void
+app_activate (GApplication *application) {
+  GtkWidget *alert;
+  char *title, *message, *btn_label;
+
+  title = "Example for TfeAlert"; message = "Click on Cancel or Accept button"; btn_label = "Accept";
+  alert = tfe_alert_new_with_data (title, message, btn_label);
+  g_signal_connect (TFE_ALERT (alert), "response", G_CALLBACK (alert_response_cb), NULL);
+  gtk_window_set_application (GTK_WINDOW (alert), GTK_APPLICATION (application));
+  gtk_window_present (GTK_WINDOW (alert));
+}
+
+static void
+app_startup (GApplication *application) {
+}
+
+#define APPLICATION_ID "com.github.ToshioCP.example_tfe_alert"
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+```
 
 The "activate" signal handler `app_activate` initializes the alert dialog.
 

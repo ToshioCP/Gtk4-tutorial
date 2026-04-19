@@ -30,7 +30,7 @@ The one is a button, which shows if the line is a current line.
 If the line is the current line, the button is colored with red.
 The other is a string which is the contents of the corresponding item of the list.
 
-![List editor](../image/listeditor.png)
+![List editor](/src/images/listeditor.png)
 
 The source files are located at `src/listeditor` directory.
 You can compile end execute it as follows.
@@ -64,37 +64,37 @@ The second column (GtkColumnViewColumn) sets its factory property to GtkSignalLi
 It uses three signals setup, bind and unbind.
 The following shows the signal handlers.
 
-~~~C
- 1 static void
- 2 setup2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
- 3   GtkWidget *text = gtk_text_new ();
- 4   gtk_list_item_set_child (listitem, GTK_WIDGET (text));
- 5   gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
- 6 }
- 7 
- 8 static void
- 9 bind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-10   GtkWidget *text = gtk_list_item_get_child (listitem);
-11   GtkEntryBuffer *buffer = gtk_text_get_buffer (GTK_TEXT (text));
-12   LeData *data = LE_DATA (gtk_list_item_get_item(listitem));
-13   GBinding *bind;
-14 
-15   gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
-16   gtk_editable_set_position (GTK_EDITABLE (text), 0);
-17 
-18   bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
-19   g_object_set_data (G_OBJECT (listitem), "bind", bind);
-20 }
-21 
-22 static void
-23 unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-24   GBinding *bind = G_BINDING (g_object_get_data (G_OBJECT (listitem), "bind"));
-25 
-26   if (bind)
-27     g_binding_unbind(bind);
-28   g_object_set_data (G_OBJECT (listitem), "bind", NULL);
-29 }
-~~~
+```c
+static void
+setup2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GtkWidget *text = gtk_text_new ();
+  gtk_list_item_set_child (listitem, GTK_WIDGET (text));
+  gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
+}
+
+static void
+bind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GtkWidget *text = gtk_list_item_get_child (listitem);
+  GtkEntryBuffer *buffer = gtk_text_get_buffer (GTK_TEXT (text));
+  LeData *data = LE_DATA (gtk_list_item_get_item(listitem));
+  GBinding *bind;
+
+  gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
+  gtk_editable_set_position (GTK_EDITABLE (text), 0);
+
+  bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
+  g_object_set_data (G_OBJECT (listitem), "bind", bind);
+}
+
+static void
+unbind2_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GBinding *bind = G_BINDING (g_object_get_data (G_OBJECT (listitem), "bind"));
+
+  if (bind)
+    g_binding_unbind(bind);
+  g_object_set_data (G_OBJECT (listitem), "bind", NULL);
+}
+```
 
 - 1-6: `setup2_cb` is a setup signal handler on the GtkSignalListItemFactory.
 This factory is inserted to the factory property of the second GtkColumnViewColumn.
@@ -169,37 +169,37 @@ The LeWindow instance has two instance variables for recording the current line.
 If the current line moves, the following two functions are called.
 They updates the two varables.
 
-~~~C
- 1 static void
- 2 update_current_position (LeWindow *win, int new) {
- 3   char *s;
- 4 
- 5   win->position = new;
- 6   if (win->position >= 0)
- 7     s = g_strdup_printf ("%d", win->position);
- 8   else
- 9     s = "";
-10   gtk_label_set_text (GTK_LABEL (win->position_label), s);
-11   if (*s) // s isn't an empty string
-12     g_free (s);
-13 }
-14 
-15 static void
-16 update_current_button (LeWindow *win, GtkButton *new_button) {
-17   const char *non_current[1] = {NULL};
-18   const char *current[2] = {"current", NULL};
-19 
-20   if (win->current_button) {
-21     gtk_widget_set_css_classes (GTK_WIDGET (win->current_button), non_current);
-22     g_object_unref (win->current_button);
-23   }
-24   win->current_button = new_button;
-25   if (win->current_button) {
-26     g_object_ref (win->current_button);
-27     gtk_widget_set_css_classes (GTK_WIDGET (win->current_button), current);
-28   }
-29 }
-~~~
+```c
+static void
+update_current_position (LeWindow *win, int new) {
+  char *s;
+
+  win->position = new;
+  if (win->position >= 0)
+    s = g_strdup_printf ("%d", win->position);
+  else
+    s = "";
+  gtk_label_set_text (GTK_LABEL (win->position_label), s);
+  if (*s) // s isn't an empty string
+    g_free (s);
+}
+
+static void
+update_current_button (LeWindow *win, GtkButton *new_button) {
+  const char *non_current[1] = {NULL};
+  const char *current[2] = {"current", NULL};
+
+  if (win->current_button) {
+    gtk_widget_set_css_classes (GTK_WIDGET (win->current_button), non_current);
+    g_object_unref (win->current_button);
+  }
+  win->current_button = new_button;
+  if (win->current_button) {
+    g_object_ref (win->current_button);
+    gtk_widget_set_css_classes (GTK_WIDGET (win->current_button), current);
+  }
+}
+```
 
 The varable `win->position_label` points a GtkLabel instance.
 The label shows the current line position.
@@ -215,32 +215,32 @@ Then, the second function is called.
 The following functions call the two functions above.
 Be careful about the order of the call.
 
-~~~C
- 1 void
- 2 select_cb (GtkButton *btn, GtkListItem *listitem) {
- 3   LeWindow *win = LE_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (btn), LE_TYPE_WINDOW));
- 4 
- 5   update_current_position (win, gtk_list_item_get_position (listitem));
- 6   update_current_button (win, btn);
- 7 }
- 8 
- 9 static void
-10 setup1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
-11   GtkWidget *button = gtk_button_new ();
-12   gtk_list_item_set_child (listitem, button);
-13   gtk_widget_set_focusable (GTK_WIDGET (button), FALSE);
-14   g_signal_connect (button, "clicked", G_CALLBACK (select_cb), listitem);
-15 }
-16 
-17 static void
-18 bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
-19   LeWindow *win = LE_WINDOW (user_data);
-20   GtkWidget *button = gtk_list_item_get_child (listitem);
-21 
-22   if (win->position == gtk_list_item_get_position (listitem))
-23     update_current_button (win, GTK_BUTTON (button));
-24 }
-~~~
+```c
+void
+select_cb (GtkButton *btn, GtkListItem *listitem) {
+  LeWindow *win = LE_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (btn), LE_TYPE_WINDOW));
+
+  update_current_position (win, gtk_list_item_get_position (listitem));
+  update_current_button (win, btn);
+}
+
+static void
+setup1_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GtkWidget *button = gtk_button_new ();
+  gtk_list_item_set_child (listitem, button);
+  gtk_widget_set_focusable (GTK_WIDGET (button), FALSE);
+  g_signal_connect (button, "clicked", G_CALLBACK (select_cb), listitem);
+}
+
+static void
+bind1_cb (GtkListItemFactory *factory, GtkListItem *listitem, gpointer user_data) {
+  LeWindow *win = LE_WINDOW (user_data);
+  GtkWidget *button = gtk_list_item_get_child (listitem);
+
+  if (win->position == gtk_list_item_get_position (listitem))
+    update_current_button (win, GTK_BUTTON (button));
+}
+```
 
 - 1-7: `select_cb` is a "clicked" signal handler.
 The handler just calls the two functions and update the position and button.
@@ -257,47 +257,47 @@ No unbind handler is necessary.
 
 When a line is added, the current position is updated in advance.
 
-~~~C
- 1 static void
- 2 app_cb (GtkButton *btn, LeWindow *win) {
- 3   LeData *data = le_data_new_with_data ("");
- 4 
- 5   if (win->position >= 0) {
- 6     update_current_position (win, win->position + 1);
- 7     g_list_store_insert (win->liststore, win->position, data);
- 8   } else {
- 9     update_current_position (win, g_list_model_get_n_items (G_LIST_MODEL (win->liststore)));
-10     g_list_store_append (win->liststore, data);
-11   }
-12   g_object_unref (data);
-13 }
-14 
-15 static void
-16 ins_cb (GtkButton *btn, LeWindow *win) {
-17   LeData *data = le_data_new_with_data ("");
-18 
-19   if (win->position >= 0)
-20     g_list_store_insert (win->liststore, win->position, data);
-21   else {
-22     update_current_position (win, 0);
-23     g_list_store_insert (win->liststore, 0, data);
-24   }
-25   g_object_unref (data);
-26 }
-~~~
+```c
+static void
+app_cb (GtkButton *btn, LeWindow *win) {
+  LeData *data = le_data_new_with_data ("");
+
+  if (win->position >= 0) {
+    update_current_position (win, win->position + 1);
+    g_list_store_insert (win->liststore, win->position, data);
+  } else {
+    update_current_position (win, g_list_model_get_n_items (G_LIST_MODEL (win->liststore)));
+    g_list_store_append (win->liststore, data);
+  }
+  g_object_unref (data);
+}
+
+static void
+ins_cb (GtkButton *btn, LeWindow *win) {
+  LeData *data = le_data_new_with_data ("");
+
+  if (win->position >= 0)
+    g_list_store_insert (win->liststore, win->position, data);
+  else {
+    update_current_position (win, 0);
+    g_list_store_insert (win->liststore, 0, data);
+  }
+  g_object_unref (data);
+}
+```
 
 When a line is removed, the current position becomes -1 and no button is current.
 
-~~~C
-1 static void
-2 rm_cb (GtkButton *btn, LeWindow *win) {
-3   if (win->position >= 0) {
-4     g_list_store_remove (win->liststore, win->position);
-5     update_current_position (win, -1);
-6     update_current_button (win, NULL);
-7   }
-8 }
-~~~
+```c
+static void
+rm_cb (GtkButton *btn, LeWindow *win) {
+  if (win->position >= 0) {
+    g_list_store_remove (win->liststore, win->position);
+    update_current_position (win, -1);
+    update_current_button (win, NULL);
+  }
+}
+```
 
 The color of buttons are determined by the "background" CSS style.
 The following CSS node is a bit complicated.
@@ -345,13 +345,13 @@ The following is extracted from the ui file and C source file.
 ... ... ...  
 ~~~
 
-~~~C
-1 static void
-2 adjustment_value_changed_cb (GtkAdjustment *adjustment, gpointer user_data) {
-3   GtkWidget *win = GTK_WIDGET (user_data);
-4 
-5   gtk_window_set_focus (GTK_WINDOW (win), NULL);
-6 }
-~~~
+```c
+static void
+adjustment_value_changed_cb (GtkAdjustment *adjustment, gpointer user_data) {
+  GtkWidget *win = GTK_WIDGET (user_data);
+
+  gtk_window_set_focus (GTK_WINDOW (win), NULL);
+}
+```
 
 Up: [README.md](../README.md),  Prev: [Section 32](sec32.md)

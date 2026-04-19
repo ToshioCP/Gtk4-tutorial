@@ -30,117 +30,117 @@ and [W3C CSS Fonts Module Level 3](https://www.w3.org/TR/css-fonts-3/) for furth
 
 Two files `pfd2css.h` and `pfd2css.c` include the converter from PangoFontDescription to CSS.
 
-~~~C
- 1 #pragma once
- 2 
- 3 #include <pango/pango.h>
- 4 
- 5 // Pango font description to CSS style string
- 6 // Returned string is owned by the caller. The caller should free it when it becomes useless.
- 7 
- 8 char*
- 9 pfd2css (PangoFontDescription *pango_font_desc);
-10 
-11 // Each element (family, style, weight and size)
-12 
-13 const char*
-14 pfd2css_family (PangoFontDescription *pango_font_desc);
-15 
-16 const char*
-17 pfd2css_style (PangoFontDescription *pango_font_desc);
-18 
-19 int
-20 pfd2css_weight (PangoFontDescription *pango_font_desc);
-21 
-22 // Returned string is owned by the caller. The caller should free it when it becomes useless.
-23 char *
-24 pfd2css_size (PangoFontDescription *pango_font_desc);
-~~~
+```c
+#pragma once
+
+#include <pango/pango.h>
+
+// Pango font description to CSS style string
+// Returned string is owned by the caller. The caller should free it when it becomes useless.
+
+char*
+pfd2css (PangoFontDescription *pango_font_desc);
+
+// Each element (family, style, weight and size)
+
+const char*
+pfd2css_family (PangoFontDescription *pango_font_desc);
+
+const char*
+pfd2css_style (PangoFontDescription *pango_font_desc);
+
+int
+pfd2css_weight (PangoFontDescription *pango_font_desc);
+
+// Returned string is owned by the caller. The caller should free it when it becomes useless.
+char *
+pfd2css_size (PangoFontDescription *pango_font_desc);
+```
 
 The five functions are public.
 The first function is a convenient function to set other four CSS at once.
 
-~~~C
- 1 #include <pango/pango.h>
- 2 #include "pfd2css.h"
- 3 
- 4 // Pango font description to CSS style string
- 5 // Returned string is owned by caller. The caller should free it when it is useless.
- 6 
- 7 char*
- 8 pfd2css (PangoFontDescription *pango_font_desc) {
- 9   char *fontsize;
-10 
-11   fontsize = pfd2css_size (pango_font_desc);
-12   return g_strdup_printf ("font-family: \"%s\"; font-style: %s; font-weight: %d; font-size: %s;",
-13               pfd2css_family (pango_font_desc), pfd2css_style (pango_font_desc),
-14               pfd2css_weight (pango_font_desc), fontsize);
-15   g_free (fontsize); 
-16 }
-17 
-18 // Each element (family, style, weight and size)
-19 
-20 const char*
-21 pfd2css_family (PangoFontDescription *pango_font_desc) {
-22   return pango_font_description_get_family (pango_font_desc);
-23 }
-24 
-25 const char*
-26 pfd2css_style (PangoFontDescription *pango_font_desc) {
-27   PangoStyle pango_style = pango_font_description_get_style (pango_font_desc);
-28   switch (pango_style) {
-29   case PANGO_STYLE_NORMAL:
-30     return "normal";
-31   case PANGO_STYLE_ITALIC:
-32     return "italic";
-33   case PANGO_STYLE_OBLIQUE:
-34     return "oblique";
-35   default:
-36     return "normal";
-37   }
-38 }
-39 
-40 int
-41 pfd2css_weight (PangoFontDescription *pango_font_desc) {
-42   PangoWeight pango_weight = pango_font_description_get_weight (pango_font_desc);
-43   switch (pango_weight) {
-44   case PANGO_WEIGHT_THIN:
-45     return 100;
-46   case PANGO_WEIGHT_ULTRALIGHT:
-47     return 200;
-48   case PANGO_WEIGHT_LIGHT:
-49     return 300;
-50   case PANGO_WEIGHT_SEMILIGHT:
-51     return 350;
-52   case PANGO_WEIGHT_BOOK:
-53     return 380;
-54   case PANGO_WEIGHT_NORMAL:
-55     return 400; /* or "normal" */
-56   case PANGO_WEIGHT_MEDIUM:
-57     return 500;
-58   case PANGO_WEIGHT_SEMIBOLD:
-59     return 600;
-60   case PANGO_WEIGHT_BOLD:
-61     return 700; /* or "bold" */
-62   case PANGO_WEIGHT_ULTRABOLD:
-63     return 800;
-64   case PANGO_WEIGHT_HEAVY:
-65     return 900;
-66   case PANGO_WEIGHT_ULTRAHEAVY:
-67     return 900; /* 1000 is available since CSS Fonts level 4 but GTK currently supports level 3. */
-68   default:
-69     return 400; /* "normal" */
-70   }
-71 }
-72 
-73 char *
-74 pfd2css_size (PangoFontDescription *pango_font_desc) {
-75   if (pango_font_description_get_size_is_absolute (pango_font_desc))
-76     return g_strdup_printf ("%dpx", pango_font_description_get_size (pango_font_desc) / PANGO_SCALE);
-77   else
-78     return g_strdup_printf ("%dpt", pango_font_description_get_size (pango_font_desc) / PANGO_SCALE);
-79 }
-~~~
+```c
+#include <pango/pango.h>
+#include "pfd2css.h"
+
+// Pango font description to CSS style string
+// Returned string is owned by caller. The caller should free it when it is useless.
+
+char*
+pfd2css (PangoFontDescription *pango_font_desc) {
+  char *fontsize;
+
+  fontsize = pfd2css_size (pango_font_desc);
+  return g_strdup_printf ("font-family: \"%s\"; font-style: %s; font-weight: %d; font-size: %s;",
+              pfd2css_family (pango_font_desc), pfd2css_style (pango_font_desc),
+              pfd2css_weight (pango_font_desc), fontsize);
+  g_free (fontsize); 
+}
+
+// Each element (family, style, weight and size)
+
+const char*
+pfd2css_family (PangoFontDescription *pango_font_desc) {
+  return pango_font_description_get_family (pango_font_desc);
+}
+
+const char*
+pfd2css_style (PangoFontDescription *pango_font_desc) {
+  PangoStyle pango_style = pango_font_description_get_style (pango_font_desc);
+  switch (pango_style) {
+  case PANGO_STYLE_NORMAL:
+    return "normal";
+  case PANGO_STYLE_ITALIC:
+    return "italic";
+  case PANGO_STYLE_OBLIQUE:
+    return "oblique";
+  default:
+    return "normal";
+  }
+}
+
+int
+pfd2css_weight (PangoFontDescription *pango_font_desc) {
+  PangoWeight pango_weight = pango_font_description_get_weight (pango_font_desc);
+  switch (pango_weight) {
+  case PANGO_WEIGHT_THIN:
+    return 100;
+  case PANGO_WEIGHT_ULTRALIGHT:
+    return 200;
+  case PANGO_WEIGHT_LIGHT:
+    return 300;
+  case PANGO_WEIGHT_SEMILIGHT:
+    return 350;
+  case PANGO_WEIGHT_BOOK:
+    return 380;
+  case PANGO_WEIGHT_NORMAL:
+    return 400; /* or "normal" */
+  case PANGO_WEIGHT_MEDIUM:
+    return 500;
+  case PANGO_WEIGHT_SEMIBOLD:
+    return 600;
+  case PANGO_WEIGHT_BOLD:
+    return 700; /* or "bold" */
+  case PANGO_WEIGHT_ULTRABOLD:
+    return 800;
+  case PANGO_WEIGHT_HEAVY:
+    return 900;
+  case PANGO_WEIGHT_ULTRAHEAVY:
+    return 900; /* 1000 is available since CSS Fonts level 4 but GTK currently supports level 3. */
+  default:
+    return 400; /* "normal" */
+  }
+}
+
+char *
+pfd2css_size (PangoFontDescription *pango_font_desc) {
+  if (pango_font_description_get_size_is_absolute (pango_font_desc))
+    return g_strdup_printf ("%dpx", pango_font_description_get_size (pango_font_desc) / PANGO_SCALE);
+  else
+    return g_strdup_printf ("%dpt", pango_font_description_get_size (pango_font_desc) / PANGO_SCALE);
+}
+```
 
 - The function `pfd2css_family` returns font family.
 - The function `pfd2css_style` returns font style which is one of "normal", "italic" or "oblique".
@@ -175,17 +175,17 @@ TfeApplication class is a child of GtkApplication.
 It has some instance variables.
 The header file defines the type macro and a public function.
 
-~~~C
-1 #pragma once
-2 
-3 #include <gtk/gtk.h>
-4 
-5 #define TFE_TYPE_APPLICATION tfe_application_get_type ()
-6 G_DECLARE_FINAL_TYPE (TfeApplication, tfe_application, TFE, APPLICATION, GtkApplication)
-7 
-8 TfeApplication *
-9 tfe_application_new (const char* application_id, GApplicationFlags flag);
-~~~
+```c
+#pragma once
+
+#include <gtk/gtk.h>
+
+#define TFE_TYPE_APPLICATION tfe_application_get_type ()
+G_DECLARE_FINAL_TYPE (TfeApplication, tfe_application, TFE, APPLICATION, GtkApplication)
+
+TfeApplication *
+tfe_application_new (const char* application_id, GApplicationFlags flag);
+```
 
 The following code is extracted from `tfeapplication.c`.
 It builds TfeApplication class and instance.
@@ -259,45 +259,45 @@ See [GObject document](https://docs.gtk.org/gobject/tutorial.html#chaining-up).
 
 ### Startup signal handlers
 
-~~~C
- 1 static void
- 2 app_startup (GApplication *application) {
- 3   TfeApplication *app = TFE_APPLICATION (application);
- 4   int i;
- 5   GtkCssProvider *provider = gtk_css_provider_new ();
- 6   GdkDisplay *display;
- 7 
- 8   G_APPLICATION_CLASS (tfe_application_parent_class)->startup (application);
- 9 
-10   app->win = TFE_WINDOW (tfe_window_new (GTK_APPLICATION (app)));
-11 
-12   gtk_css_provider_load_from_data (provider, "textview {padding: 10px;}", -1);
-13   display = gdk_display_get_default ();
-14   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-15                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-16   g_object_unref (provider);
-17   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (app->provider),
-18                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-19 
-20   changed_font_cb (app->settings, "font-desc", app); // Sets the text view font to the font from the gsettings data base.
-21 
-22 /* ----- accelerator ----- */ 
-23   struct {
-24     const char *action;
-25     const char *accels[2];
-26   } action_accels[] = {
-27     { "win.open", { "<Control>o", NULL } },
-28     { "win.save", { "<Control>s", NULL } },
-29     { "win.close", { "<Control>w", NULL } },
-30     { "win.new", { "<Control>n", NULL } },
-31     { "win.saveas", { "<Shift><Control>s", NULL } },
-32     { "win.close-all", { "<Control>q", NULL } },
-33   };
-34 
-35   for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
-36     gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
-37 }
-~~~
+```c
+static void
+app_startup (GApplication *application) {
+  TfeApplication *app = TFE_APPLICATION (application);
+  int i;
+  GtkCssProvider *provider = gtk_css_provider_new ();
+  GdkDisplay *display;
+
+  G_APPLICATION_CLASS (tfe_application_parent_class)->startup (application);
+
+  app->win = TFE_WINDOW (tfe_window_new (GTK_APPLICATION (app)));
+
+  gtk_css_provider_load_from_data (provider, "textview {padding: 10px;}", -1);
+  display = gdk_display_get_default ();
+  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  g_object_unref (provider);
+  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (app->provider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+  changed_font_cb (app->settings, "font-desc", app); // Sets the text view font to the font from the gsettings data base.
+
+/* ----- accelerator ----- */ 
+  struct {
+    const char *action;
+    const char *accels[2];
+  } action_accels[] = {
+    { "win.open", { "<Control>o", NULL } },
+    { "win.save", { "<Control>s", NULL } },
+    { "win.close", { "<Control>w", NULL } },
+    { "win.new", { "<Control>n", NULL } },
+    { "win.saveas", { "<Shift><Control>s", NULL } },
+    { "win.close-all", { "<Control>q", NULL } },
+  };
+
+  for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
+    gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
+}
+```
 
 The function `app_startup` replace the default signal handlers.
 It does five things.
@@ -336,49 +336,49 @@ Such relation between lower case and symbol (character code) is specified in [`g
 
 Two functions `app_activate` and `app_open` replace the default signal handlers.
 
-~~~C
- 1 static void
- 2 app_activate (GApplication *application) {
- 3   TfeApplication *app = TFE_APPLICATION (application);
- 4 
- 5   tfe_window_notebook_page_new (app->win);
- 6   gtk_window_present (GTK_WINDOW (app->win));
- 7 }
- 8 
- 9 static void
-10 app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
-11   TfeApplication *app = TFE_APPLICATION (application);
-12 
-13   tfe_window_notebook_page_new_with_files (app->win, files, n_files);
-14   gtk_window_present (GTK_WINDOW (app->win));
-15 }
-~~~
+```c
+static void
+app_activate (GApplication *application) {
+  TfeApplication *app = TFE_APPLICATION (application);
+
+  tfe_window_notebook_page_new (app->win);
+  gtk_window_present (GTK_WINDOW (app->win));
+}
+
+static void
+app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+  TfeApplication *app = TFE_APPLICATION (application);
+
+  tfe_window_notebook_page_new_with_files (app->win, files, n_files);
+  gtk_window_present (GTK_WINDOW (app->win));
+}
+```
  
 The original default handlers don't do useful works and you don't need to chain up to the parent's default handlers.
 They just create notebook pages and show the top level window.
 
 ### CSS font setting
 
-~~~C
- 1 static void
- 2 changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
- 3   TfeApplication *app = TFE_APPLICATION (user_data);
- 4   char *font, *s, *css;
- 5   PangoFontDescription *pango_font_desc;
- 6 
- 7   if (g_strcmp0(key, "font-desc") != 0)
- 8     return;
- 9   font = g_settings_get_string (app->settings, "font-desc");
-10   pango_font_desc = pango_font_description_from_string (font);
-11   g_free (font);
-12   s = pfd2css (pango_font_desc); // converts Pango Font Description into CSS style string
-13   pango_font_description_free (pango_font_desc);
-14   css = g_strdup_printf ("textview {%s}", s);
-15   gtk_css_provider_load_from_data (app->provider, css, -1);
-16   g_free (s);
-17   g_free (css);
-18 }
-~~~
+```c
+static void
+changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
+  TfeApplication *app = TFE_APPLICATION (user_data);
+  char *font, *s, *css;
+  PangoFontDescription *pango_font_desc;
+
+  if (g_strcmp0(key, "font-desc") != 0)
+    return;
+  font = g_settings_get_string (app->settings, "font-desc");
+  pango_font_desc = pango_font_description_from_string (font);
+  g_free (font);
+  s = pfd2css (pango_font_desc); // converts Pango Font Description into CSS style string
+  pango_font_description_free (pango_font_desc);
+  css = g_strdup_printf ("textview {%s}", s);
+  gtk_css_provider_load_from_data (app->provider, css, -1);
+  g_free (s);
+  g_free (css);
+}
+```
 
 The function `changed_font_cb` is a handler for "changed::font-desc" signal on the GSettings instance.
 The signal name is "changed" and "font-desc" is a key name.
@@ -396,73 +396,73 @@ So, the font is applied to the display.
 
 main.c
 
-~~~C
- 1 #include <gtk/gtk.h>
- 2 #include "tfeapplication.h"
- 3 
- 4 #define APPLICATION_ID "com.github.ToshioCP.tfe"
- 5 
- 6 int
- 7 main (int argc, char **argv) {
- 8   TfeApplication *app;
- 9   int stat;
-10 
-11   app = tfe_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
-12   stat = g_application_run (G_APPLICATION (app), argc, argv);
-13   g_object_unref (app);
-14   return stat;
-15 }
-16 
-~~~
+```c
+#include <gtk/gtk.h>
+#include "tfeapplication.h"
+
+#define APPLICATION_ID "com.github.ToshioCP.tfe"
+
+int
+main (int argc, char **argv) {
+  TfeApplication *app;
+  int stat;
+
+  app = tfe_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
+}
+
+```
 
 Resource XML file.
 
-~~~xml
-1 <?xml version="1.0" encoding="UTF-8"?>
-2 <gresources>
-3   <gresource prefix="/com/github/ToshioCP/tfe">
-4     <file>tfewindow.ui</file>
-5     <file>tfepref.ui</file>
-6     <file>tfealert.ui</file>
-7     <file>menu.ui</file>
-8   </gresource>
-9 </gresources>
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ToshioCP/tfe">
+    <file>tfewindow.ui</file>
+    <file>tfepref.ui</file>
+    <file>tfealert.ui</file>
+    <file>menu.ui</file>
+  </gresource>
+</gresources>
+```
 
 GSchema XML file
 
-~~~xml
- 1 <?xml version="1.0" encoding="UTF-8"?>
- 2 <schemalist>
- 3   <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
- 4     <key name="font-desc" type="s">
- 5       <default>'Monospace 12'</default>
- 6       <summary>Font</summary>
- 7       <description>A font to be used for textview.</description>
- 8     </key>
- 9   </schema>
-10 </schemalist>
-~~~
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/com/github/ToshioCP/tfe/" id="com.github.ToshioCP.tfe">
+    <key name="font-desc" type="s">
+      <default>'Monospace 12'</default>
+      <summary>Font</summary>
+      <description>A font to be used for textview.</description>
+    </key>
+  </schema>
+</schemalist>
+```
 
 Meson.build
 
-~~~meson
- 1 project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:'>=1.0.1', version: '0.5')
- 2 
- 3 gtkdep = dependency('gtk4')
- 4 
- 5 gnome = import('gnome')
- 6 resources = gnome.compile_resources('resources','tfe.gresource.xml')
- 7 gnome.compile_schemas(depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
- 8 
- 9 sourcefiles = files('main.c', 'tfeapplication.c', 'tfewindow.c', 'tfepref.c', 'tfealert.c', 'pfd2css.c', '../tfetextview/tfetextview.c')
-10 
-11 executable(meson.project_name(), sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
-12 
-13 schema_dir = get_option('prefix') / get_option('datadir') / 'glib-2.0/schemas/'
-14 install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
-15 gnome.post_install (glib_compile_schemas: true)
-~~~
+```
+project('tfe', 'c', license : 'GPL-3.0-or-later', meson_version:'>=1.0.1', version: '0.5')
+
+gtkdep = dependency('gtk4')
+
+gnome = import('gnome')
+resources = gnome.compile_resources('resources','tfe.gresource.xml')
+gnome.compile_schemas(depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
+
+sourcefiles = files('main.c', 'tfeapplication.c', 'tfewindow.c', 'tfepref.c', 'tfealert.c', 'pfd2css.c', '../tfetextview/tfetextview.c')
+
+executable(meson.project_name(), sourcefiles, resources, dependencies: gtkdep, export_dynamic: true, install: true)
+
+schema_dir = get_option('prefix') / get_option('datadir') / 'glib-2.0/schemas/'
+install_data('com.github.ToshioCP.tfe.gschema.xml', install_dir: schema_dir)
+gnome.post_install (glib_compile_schemas: true)
+```
 
 - The function `project` defines project and initialize meson.
 The first argument is the project name and the second is the language name.

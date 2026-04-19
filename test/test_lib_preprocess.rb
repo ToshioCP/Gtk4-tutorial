@@ -16,8 +16,8 @@ class TestLibPreprocess < Minitest::Test
       Inside HTML
       @@@end
     BLOCK
-    assert_equal "Inside HTML\n", G4T.preprocess_block(block, "html")
-    assert_equal "", G4T.preprocess_block(block, "gfm")
+    assert_equal "Inside HTML\n", G4T.send(:preprocess_block, block, "html")
+    assert_equal "", G4T.send(:preprocess_block, block, "gfm")
   end
 
   # Test if-else structure
@@ -29,8 +29,8 @@ class TestLibPreprocess < Minitest::Test
       Other Content
       @@@end
     BLOCK
-    assert_equal "HTML Content\n", G4T.preprocess_block(block, "html")
-    assert_equal "Other Content\n", G4T.preprocess_block(block, "gfm")
+    assert_equal "HTML Content\n", G4T.send(:preprocess_block, block, "html")
+    assert_equal "Other Content\n", G4T.send(:preprocess_block, block, "gfm")
   end
 
   # Test if-elif-else structure
@@ -46,10 +46,10 @@ class TestLibPreprocess < Minitest::Test
       ELSE
       @@@end
     BLOCK
-    assert_equal "HTML\n", G4T.preprocess_block(block, "html")
-    assert_equal "GFM\n", G4T.preprocess_block(block, "gfm")
-    assert_equal "PDF\n", G4T.preprocess_block(block, "pdf")
-    assert_equal "ELSE\n", G4T.preprocess_block(block, "latex")
+    assert_equal "HTML\n", G4T.send(:preprocess_block, block, "html")
+    assert_equal "GFM\n", G4T.send(:preprocess_block, block, "gfm")
+    assert_equal "PDF\n", G4T.send(:preprocess_block, block, "pdf")
+    assert_equal "ELSE\n", G4T.send(:preprocess_block, block, "latex")
   end
 
   # Test multi-target conditions using '|'
@@ -61,9 +61,9 @@ class TestLibPreprocess < Minitest::Test
       Print Content
       @@@end
     BLOCK
-    assert_equal "Web Content\n", G4T.preprocess_block(block, "html")
-    assert_equal "Web Content\n", G4T.preprocess_block(block, "gfm")
-    assert_equal "Print Content\n", G4T.preprocess_block(block, "pdf")
+    assert_equal "Web Content\n", G4T.send(:preprocess_block, block, "html")
+    assert_equal "Web Content\n", G4T.send(:preprocess_block, block, "gfm")
+    assert_equal "Print Content\n", G4T.send(:preprocess_block, block, "pdf")
   end
 
   # Test behavior when no match is found and no @@@else exists
@@ -73,12 +73,12 @@ class TestLibPreprocess < Minitest::Test
       Only HTML
       @@@end
     BLOCK
-    assert_equal "", G4T.preprocess_block(block, "gfm")
+    assert_equal "", G4T.send(:preprocess_block, block, "gfm")
   end
 
   # Test potential syntax error (starting without @@@if)
   def test_invalid_start_returns_empty
     block = "Just text without if"
-    assert_equal "", G4T.preprocess_block(block, "html")
+    assert_equal "", G4T.send(:preprocess_block, block, "html")
   end
 end

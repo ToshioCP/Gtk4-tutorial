@@ -21,7 +21,7 @@ module G4T
     # @param path_from [String] The absolute path of the current source file being processed.
     # @return [String] The processed string.
     def rewrite_links(str, target, path_from)
-      segments = _split_verbatim_blocks(str)
+      segments = split_verbatim_blocks(str)
       segments.map do |seg_type, text|
         if seg_type == :other
           # Parse the text to identify link syntax, and rewrite internal links accordingly.
@@ -55,8 +55,8 @@ module G4T
               buf << sub_text
             elsif stat == 3
               if sub_type == :')' || sub_type == :'){'
+                url = url_buf.join
                 if changable
-                  url = url_buf.join
                   buf << rewrite_url_path(path_from, url, target, image_link)
                 else
                   buf << url
@@ -116,77 +116,114 @@ module G4T
       raise "Unexpected G4T_ENV. It must be development or production" unless mode == "development" || mode == "production"
       site = YAML.load_file(PathManager.get_path(:data, "site.yml"))
       base_url = site[mode]["base_url"]
-      repository_prefix = site[mode]["repository_url"] + site[mode]["repository_base_url"]
+      repository_blob_prefix = site[mode]["repository_url"] + site[mode]["repository_blob_base_url"]
+      repository_tree_prefix = site[mode]["repository_url"] + site[mode]["repository_tree_base_url"]
 
-      gfm_from_root = Pathname(PathManager.get_path(:gfm)).relative_path_from(Pathname(PathManager.get_path(:root))).to_s
-      root_from_gfm = Pathname(PathManager.get_path(:root)).relative_path_from(Pathname(PathManager.get_path(:gfm))).to_s
-      src_from_root = Pathname(PathManager.get_path(:src)).relative_path_from(Pathname(PathManager.get_path(:root))).to_s
-      src_from_gfm = Pathname(PathManager.get_path(:src)).relative_path_from(Pathname(PathManager.get_path(:gfm))).to_s
+      root_dir = PathManager.get_path(:root)
+      src_dir = PathManager.get_path(:src)
+      gfm_dir = PathManager.get_path(:gfm)
+      index_src_path = PathManager.get_path(:src, "index.src.md")
+      gfm_from_root = Pathname(gfm_dir).relative_path_from(Pathname(root_dir)).to_s
+      root_from_gfm = Pathname(root_dir).relative_path_from(Pathname(gfm_dir)).to_s
+      src_from_root = Pathname(src_dir).relative_path_from(Pathname(root_dir)).to_s
+      src_from_gfm = Pathname(src_dir).relative_path_from(Pathname(gfm_dir)).to_s
       gfm_prefix = "/" + gfm_from_root
       src_prefix = "/" + src_from_root
 
-      if url_to_path[0].to_s == '/' # Root-relative URL
+      if url_to_path =~ /\Ahttps?:\/\// || url_to_path =~ /\A#/ || url_to_path == "" # Absolute URL, fragment, or empty URL (Dummy URL)
+        url_to_path # No conversion
+      elsif url_to_path[0].to_s == '/' # Root-relative URL
+        internal_url_check(url_to_path,File.expand_path(url_to_path[1..-1], src_dir), src_dir)
         if target == 'gfm'
           if url_to_path == "/index.src.md"
             "/README.md"
-          # image and program source files stay in the src directory.
-          elsif image_link || source_code?(url_to_path)
-            File.join(src_prefix, url_to_path)
-          else
+          elsif url_to_path =~ /\.src\.md\z/
             File.join(gfm_prefix, url_to_path.sub(/\.src\.md\z/, ".md"))
+          else # non .src.md files, including images
+            File.join(src_prefix, url_to_path)
           end
-        elsif target == 'html'
-          if source_code?(url_to_path)
-            repository_prefix + url_to_path
-          else
+        else # html or pdf, **except fragments**, which points to an ATX heading in the same file
+          if target == 'html' && (url_to_path =~ /\.src\.md\z/ || image_link)
             File.join(base_url, url_to_path.sub(/\.src\.md\z/, ".html"))
-          end
-        else # pdf
-          if image_link
-            File.expand_path(url_to_path[1..-1], PathManager.get_path(:src)) # Remove the leading "/"
-          else
-            url_to_path # No conversion
+          elsif target == 'pdf' && url_to_path =~ /\.src\.md\z/
+            header = File.open(File.join(src_dir, url_to_path[1..-1])){|f| f.gets}
+            "#" + generate_id_pandoc(header)
+          elsif target == 'pdf' && image_link
+            File.expand_path(url_to_path[1..-1], src_dir) # Remove the leading "/"
+          elsif url_to_path =~ /\/\z/ # directory
+            File.join(repository_tree_prefix, src_prefix, url_to_path) # tree
+          else # non .src..md files
+            File.join(repository_blob_prefix, src_prefix, url_to_path) # blob
           end
         end
       else #Relative URL
+        internal_url_check(url_to_path, File.expand_path(url_to_path, File.dirname(path_from)), src_dir)
         if target == 'gfm'
-          if url_to_path == "" # link to the file itself
-            ""
-          end
-          if path_from == PathManager.get_path(:src, "index.src.md")
-            if File.expand_path(url_to_path, File.dirname(path_from)) == PathManager.get_path(:src, "index.src.md")
-              ""
-            # image and program source files stay in the src directory.
-            elsif image_link || source_code?(url_to_path)
-              File.join(src_from_root, url_to_path)
-            else
+          if path_from == index_src_path
+            if File.expand_path(url_to_path, File.dirname(path_from)) == index_src_path
+              "#"
+            elsif url_to_path =~ /\.src\.md\z/
               File.join(gfm_from_root, url_to_path).sub(/\.src\.md$/, ".md")
-            end
-          else
-            if File.expand_path(url_to_path, File.dirname(path_from)) == PathManager.get_path(:src, "index.src.md")
-              File.join(root_from_gfm, "README.md")
-            elsif image_link || source_code?(url_to_path)
-              File.join(src_from_gfm, url_to_path)
             else
+              File.join(src_from_root, url_to_path)
+            end
+          else
+            url_to_path_abs = File.expand_path(url_to_path, File.dirname(path_from))
+            path_from_relative_from_src = Pathname(path_from).relative_path_from(Pathname(src_dir)).to_s
+            path_from_after_move = File.join(gfm_dir, path_from_relative_from_src).sub(/\.src\.md\z/, ".md")
+            # path_from is a file, not a directory
+            path_from_after_move_dir = File.dirname(path_from_after_move)
+            if url_to_path_abs == index_src_path
+              Pathname(File.join(root_dir, "README.md")).relative_path_from(Pathname(path_from_after_move_dir)).to_s
+            elsif url_to_path =~ /\.src\.md\z/
               url_to_path.sub(/\.src\.md$/, ".md")
+            else
+              r = Pathname(url_to_path_abs).relative_path_from(Pathname(path_from_after_move_dir)).to_s
+              (url_to_path[-1] == "/" && r[-1] != "/") ? r + "/" : r
             end
           end
-        elsif target == 'html'
-          if source_code?(url_to_path)
-            url_to_path_abs = File.expand_path(url_to_path, File.dirname(path_from))
-            url_to_path_rr = "/" + Pathname(url_to_path_abs).relative_path_from(Pathname(PathManager.get_path(:root))).to_s
-            repository_prefix + url_to_path_rr
-          else
+        else # html or pdf, **except fragments**, which points to an ATX heading in the same file
+          if  target == 'html' && (url_to_path =~ /\.src\.md\z/ || image_link)
             url_to_path.sub(/\.src\.md/, '.html')
-          end
-        else # pdf
-          if image_link
+          elsif target == 'pdf' && url_to_path =~ /\.src\.md\z/
+            header = File.open(File.expand_path(url_to_path, File.dirname(path_from))){|f| f.gets}
+            "#" + generate_id_pandoc(header)
+          elsif target == 'pdf' && image_link
             File.expand_path(url_to_path, File.dirname(path_from))
           else
-            url_to_path # No conversion
+            url_to_path_abs = File.expand_path(url_to_path, File.dirname(path_from))
+            url_to_path_root_relative = File.join("/", Pathname(url_to_path_abs).relative_path_from(Pathname(root_dir)).to_s)
+            if url_to_path =~ /\/\z/ # directory
+              File.join(repository_tree_prefix, url_to_path_root_relative, "/")
+            else
+              File.join(repository_blob_prefix, url_to_path_root_relative)
+            end
           end
         end
       end
+    end
+
+    # Check if url_to_path is within the src directory. If not, raise an error.
+    def internal_url_check(url_to_path, url_to_path_abs, src_dir)
+      url_to_path_abs = Pathname(url_to_path_abs).cleanpath.to_s
+      unless url_to_path_abs.start_with?(src_dir)
+        raise "Invalid URL: #{url_to_path}. It points outside of the source directory."
+      end
+    end
+
+    def generate_id_pandoc(header)
+      # Remove formatting, etc.
+      id = header.gsub(/\[([^\]]+)\]\([^\)]+\)/, '\1') # links
+      id = id.gsub(/`([^`]+)`/, '\1')               # inline code
+      id = id.gsub(/\*{1,2}([^\*]+)\*{1,2}/, '\1') # bold
+      id = id.gsub(/_{1,2}([^_]+)_{1,2}/, '\1') # italic
+      id = id.gsub(/\[\^[^\]]+\]/, '') # footnotes
+      id = id.gsub(/[^A-Za-z0-9\-_. ]/, '')
+      id = id.downcase
+      id = id.strip.gsub(/[\s\n]+/, '-')
+      id = id.sub(/^[^a-z]+/, '')
+      id = "section" if id.empty?
+      id
     end
 
     # Parses the input string and splits it into three types of segments:
@@ -202,7 +239,7 @@ module G4T
     #
     # @param str [String] The source text to be processed.
     # @return [Array<Array(Symbol, String)>] A list of [type, text] pairs.
-    def _split_verbatim_blocks(str)
+    def split_verbatim_blocks(str)
       # Pass 1. -- Fenced code block.
       # An element of `segments` is [type, content].
       # `type` is one of :fenced and :others
@@ -253,7 +290,7 @@ module G4T
           was_blank = false
           type = :other
         end
-        segments <<[type, ss.string.byteslice(start_pos, ss.pos - start_pos)]
+        segments << [type, ss.string.byteslice(start_pos, ss.pos - start_pos)]
       end
       segments
     end
