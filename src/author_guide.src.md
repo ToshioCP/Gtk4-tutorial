@@ -201,7 +201,7 @@ Info strings like c, ruby, or xml are determined by the file extension:
 - `.rb`  => ruby
 - `.xml` => xml
 
-A list of supported languages is defined in [/data/ext.yml](/data/ext.yml).
+A list of supported languages is defined in [/data/ext.yml](https://github.com/ToshioCP/Gtk4-tutorial/blob/main/data/ext.yml).
 Note that this path starts with a slash to represent the repository root, not the operating system root.
 
 If the output target is `html` or `pdf`, attributes of Pandoc's Markdown are added after the starting fence.
