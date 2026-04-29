@@ -14,7 +14,7 @@ misc/lb1.c
 @@@
 
 Save this program to a file `lb1.c`.
-(You can use [`/src/misc/lb1.c`](misc/lb1.c) if you've downloaded this repository.)
+(You can use [/src/misc/lb1.c](misc/lb1.c) if you've downloaded this repository.)
 Then compile and run it.
 
     $ cd src/misc
@@ -113,14 +113,14 @@ The changes are:
 One thing to be careful is the types are different between the second parameter of `click_cb` and the fourth argument of `g_signal_connect`.
 The former is `GtkWindow *` and the latter is `GtkWidget *`.
 The compiler doesn't complain because `g_signal_connect` uses gpointer (general type of pointer).
-In this program the instance pointed by `win` is a GtkApplicationWindow object.
+In this program the instance pointed to by `win` is a GtkApplicationWindow object.
 It is a descendant of GtkWindow and GtkWidget class, so both `GtkWindow *` and `GtkWidget *` are correct types of the instance.
   - `gtk_window_destroy (win)` destroys the top-level window. Then the application quits.
 - The label of `btn` is changed from "Click me" to "Close".
 - The fourth argument of `g_signal_connect` is changed from `NULL` to `win`.
 
 The most important change is the fourth argument of the `g_signal_connect`.
-This argument is described as "data to pass to the handler" in the definition of [`g_signal_connect`](https://docs.gtk.org/gobject/func.signal_connect.html).
+This argument is described as "data to pass to the handler" in the definition of [g\_signal\_connect](https://docs.gtk.org/gobject/func.signal_connect.html).
 
 ### GtkBox
 

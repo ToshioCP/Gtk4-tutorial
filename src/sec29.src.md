@@ -14,31 +14,33 @@ GtkListView, GtkGridView, GtkColumnView and related objects are described in Sec
 ## Outline
 
 A list is a sequential data structure.
-For example, an ordered string sequence "one", "two", "three", "four" is a list.
-Each element is called item.
+For example, an ordered string sequence "one", "two", "three", and "four" is a list.
+Each element is called an item.
 A list is like an array, but in many cases it is implemented with pointers which point to the next items of the list.
 And it has a start point.
-So, each item can be referred by the index of the item (first item, second item, ..., nth item, ...).
-There are two cases.
-The one is the index starts from one (one-based) and the other is from zero (zero-based).
+So, each item can be referred to by the index of the item (first item, second item, ..., nth item, ...).
 
 Gio provides GListModel interface.
 It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
-An object implements GListModel is not a widget.
+An object that implements GListModel is not a widget.
 So, the list is not displayed on the screen directly.
 There's another object GtkListView which is a widget to display the list.
 The items in the list need to be connected to the items in GtkListView.
 GtkListItemFactory instance maps items in the list to GtkListView.
 
+@@@if pdf
 ![List](/images/list.png){width=10cm height=7.5cm}
+@@@else
+![List](/images/list.png)
+@@@end
 
 ## GListModel and GtkStringList
 
 If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
 Because GListModel is a list of GObject objects and strings aren't GObject objects.
-The word "GObject" here means "GObject class or its descendant class".
+The word "GObject" here means GObject class or its derived class.
 So, you need a wrapper which is a GObject and contains a string.
-GtkStringObject is the wrapper object and GtkStringList, implements GListModel, is a list of GtkStringObject.
+GtkStringObject is the wrapper object and GtkStringList, which implements GListModel, is a list of GtkStringObject.
 
 @@@if gfm
 ~~~C
@@ -76,8 +78,8 @@ Other list objects will be explained later.
 
 ## GtkSelectionModel
 
-GtkSelectionModel is an interface to support for selections.
-Thanks to this model, user can select items by clicking on them.
+GtkSelectionModel is an interface to support for selection.
+Thanks to this model, a user can select items by clicking on them.
 It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
 These three objects are usually enough to build an application.
 They are created with another GListModel.
@@ -91,10 +93,14 @@ You can also create them alone and add a GListModel later.
 
 GtkListView is a widget to show GListModel items.
 GtkListItem is used by GtkListView to represent items of a list model.
-But, GtkListItem itself is not a widget, so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
-"item" property of GtkListItem points an object that belongs to the list model.
+But, GtkListItem is not a widget (not a descendant of GtkWidget), so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
+"item" property of GtkListItem points to an object that belongs to the list model.
 
+@@@if pdf
 ![GtkListItem](/images/gtklistitem.png){width=10cm height=7.5cm}
+@@@else
+![GtkListItem](/images/gtklistitem.png)
+@@@end
 
 In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
 This recycle makes the number of GtkListItem objects fairly small, less than 200.
@@ -113,11 +119,11 @@ There are four signals.
 1. "setup" is emitted to set up GtkListItem object.
 A user sets its child widget in the handler.
 For example, creates a GtkLabel widget and sets the child property of the GtkListItem to it.
-This setting is kept even the GtkListItem instance is recycled (to bind to another item of GListModel).
+This setting is kept even when the GtkListItem instance is recycled (to bind to another item of GListModel).
 2. "bind" is emitted to bind an item in the list model to the widget.
 For example, a user gets the item from "item" property of the GtkListItem instance.
 Then gets the string of the item and sets the label property of the GtkLabel instance with the string.
-This signal is emitted when the GtkListItem is newly created, recycled or some changes has happened to the item of the list.
+This signal is emitted when the GtkListItem is newly created, recycled or some changes have happened to the item of the list.
 3. "unbind" is emitted to unbind an item.
 A user undoes everything done in step 2 in the signal handler.
 If some object are created in step 2, they must be destroyed.
@@ -125,14 +131,14 @@ If some object are created in step 2, they must be destroyed.
 So, the widget created in step 1 must be destroyed.
 After this signal, the list item will be destroyed.
 
-The following program `list1.c` shows the list of strings "one", "two", "three" and "four".
+The following program `list1.c` shows a list of strings "one", "two", "three" and "four".
 GtkNoSelection is used, so user can't select any item.
 
 @@@include
 misc/list1.c
 @@@
 
-The file `list1.c` is located under the directory [src/misc](misc).
+The file `list1.c` is located under the directory [/src/misc](misc/).
 Make a shell script below and save it to your bin directory, for example `$HOME/bin`.
 
 @@@if gfm
@@ -163,7 +169,11 @@ $ ./a.out
 
 Then, the following window appears.
 
+@@@if pdf
 ![list1](/images/list1.png){width=6.04cm height=4.40cm}
+@@@else
+![list1](/images/list1.png)
+@@@end
 
 The program is not so difficult.
 If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.
@@ -171,7 +181,7 @@ If you feel some difficulty, read this section again, especially GtkSignalListIt
 ### GtkBuilderListItemFactory
 
 GtkBuilderListItemFactory is another GtkListItemFactory.
-Its behavior is defined with ui file.
+Its behavior is defined in a UI file.
 
 @@@if gfm
 ~~~xml
@@ -231,16 +241,16 @@ Therefore, GtkListItem instance is used as the `this` object of the lookup tag w
 `this` object will be explained in [Section 31](sec31.src.md).
 
 The C source code is as follows.
-Its name is `list2.c` and located under [src/misc](misc) directory.
+Its name is `list2.c` and located under [/src/misc](misc/) directory.
 
 @@@include
 misc/list2.c
 @@@
 
-No signal handler is needed for GtkBulderListItemFactory.
+No signal handler is needed for GtkBuilderListItemFactory.
 GtkSingleSelection is used, so user can select one item at a time.
 
-Because this is a small program, the ui data is given as a string.
+Because this is a small program, the UI data is given as a string.
 
 ## GtkDirectoryList
 
@@ -291,11 +301,11 @@ g_object_unref (file);
 ~~~
 @@@end
 
-It is not so difficult to make file listing program by changing `list2.c` in the previous subsection.
-One problem is that GInfoFile doesn't have properties.
+It is not so difficult to make a file listing program by changing `list2.c` in the previous subsection.
+One problem is that GFileInfo doesn't have properties.
 Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
-Instead, closure tag is appropriate in this case.
-Closure tag specifies a function and the type of the return value of the function.
+Instead, a closure tag is appropriate in this case.
+A closure tag specifies a function and the type of the return value of the function.
 
 @@@if gfm
 ~~~C
@@ -345,22 +355,19 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
 ~~~
 @@@end
 
-- The string "gchararray" is a type name.
-The type "gchar" is a type name and it is the same as C type "char".
-Therefore, "gchararray" is "an array of char type", which is the same as string type.
-It is used to get the type of GValue object.
-GValue is a generic value and it can contain various type of values.
-For example, the type name can be gboolean, gchar (char), gint (int), gfloat (float), gdouble (double), gchararray (char *) and so on.
-These type names are the names of the fundamental types that are registered to the type system.
-See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue).
+- The string "gchararray" is a type name registered in the GObject type system.
+While the type "gchar" is the same as the C "char" type, "gchararray" specifically represents a NULL-terminated string (char *).
+In GtkBuilder XML files, you must use these registered type names instead of native C types to let the GValue system handle the data correctly.
+For example, common type names include gboolean, gchar, gint, gfloat, gdouble, and gchararray.
+See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue) for further information.
 - Closure tag has type attribute and function attribute.
 Function attribute specifies the function name and type attribute specifies the type of the return value of the function.
-The contents of closure tag (it is between \<closure...\> and\</closure\>) is parameters of the function.
+The content of closure tag (it is between \<closure...\> and\</closure\>) consists of the parameters for the function.
 `<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
 This will be the second argument of the function.
 The first parameter is always the GListItem instance, which is a 'this' object.
 The 'this' object is explained in Section 31.
-- `gtk_file_name` function is the callback function for the closure tag.
+- `get_file_name` function is the callback function for the closure tag.
 It first checks the `info` parameter.
 Because it can be NULL when GListItem `item` is unbounded.
 If it's GFileInfo, it returns the copied filename.
@@ -369,7 +376,7 @@ So, the the string needs to be duplicated to give the ownership to the caller.
 Binding tag binds the "label" property of the GtkLabel to the closure tag.
 
 The whole program (`list3.c`) is as follows.
-The program is located in [src/misc](misc) directory.
+The program is located in [/src/misc](misc/) directory.
 
 @@@include
 misc/list3.c
@@ -424,4 +431,8 @@ $ comp list3
 $ ./a.out
 ~~~
 
+@@@if pdf
 ![screenshot list3](/images/list3.png){width=10cm height=7.3cm}
+@@@else
+![screenshot list3](/images/list3.png)
+@@@end

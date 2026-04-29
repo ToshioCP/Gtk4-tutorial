@@ -104,15 +104,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         instances. For example,
         <code>tb = gtk_text_view_get_buffer (tv)</code> is an instance
         method on the instance <code>tv</code>. The caller requests
-        <code>tv</code> to give <code>tb</code>, which is a
-        GtkTextBuffer instance connected to <code>tv</code>.</li>
+        <code>tv</code> for <code>tb</code>, which is a GtkTextBuffer
+        instance connected to <code>tv</code>.</li>
         <li>Signals: For example, <code>activate</code> signal on
         GApplication object. When the application is activated, the
         signal is emitted. Then the handler, which has been connected to
         the signal, is invoked.</li>
         </ul>
         <p>The caller of methods or signals are usually out of the
-        object. One of the difference between these two is that the
+        object. One of the differences between these two is that the
         object is active or passive. In methods, objects passively
         respond to the caller. In signals, objects actively send signals
         to handlers.</p>
@@ -127,14 +127,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Signals are connected to handlers by the macro
         <code>g_signal_connect</code> or its family functions. The
         connection is usually done out of the object. One important
-        thing is that signals are connected on a certain instance.
+        thing is that signals are connected on a specific instance.
         Suppose there exist two GtkButton instances A, B and a function
         C. Even if you connected the “clicked” signal on A to C, B and C
         are <em>not</em> connected.</li>
         <li>When Signals are emitted, the connected handlers are
         invoked. Signals are emitted on the instance of the class.</li>
         </ol>
-        <h2 id="signal-registration">Signal registration</h2>
+        <h2 id="signal-registration">Signal Registration</h2>
         <p>In TfeTextView, two signals are registered.</p>
         <ul>
         <li>“change-file” signal. This signal is emitted when
@@ -195,7 +195,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         href="https://docs.gtk.org/gobject/func.signal_new_class_handler.html">GObject
         API Reference</a> for further information.</li>
         <li>The return value of <code>g_signal_new</code> is the signal
-        id. The type of signal id is guint, which is the same as
+        id. The type of signal id is guint, which is an alias for
         unsigned int. It is used in the function
         <code>g_signal_emit</code>.</li>
         <li>16-26: Registers “open-response” signal. This signal has a
@@ -204,8 +204,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         parameter.</li>
         <li>25: The type of the parameter. <code>G_TYPE_INT</code> is a
         type of integer. Such fundamental types are described in <a
-        href="https://developer-old.gnome.org/gobject/stable/gobject-Type-Information.html">GObject
-        reference manual</a>.</li>
+        href="https://gitlab.gnome.org/GNOME/glib/-/blob/main/gobject/gtype.h?ref_type=heads">gtype.h</a>.</li>
         </ul>
         <p>The handlers are declared as follows.</p>
         <div class="sourceCode" id="cb3"><pre
@@ -217,20 +216,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">/* &quot;open-response&quot; signal handler */</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>user_function <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">,</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>               TfeTextViewOpenResponseType response<span class="op">-</span>id<span class="op">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>               TfeTextViewOpenResponseType response_id<span class="op">,</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>               gpointer user_data<span class="op">)</span></span></code></pre></div>
         <ul>
-        <li>The signal “change-file” doesn’t have parameter, so the
+        <li>The signal “change-file” doesn’t have any parameters, so the
         handler’s arguments are a TfeTextView instance and a user
         data.</li>
-        <li>The signal “open-response” signal has one parameter and its
+        <li>The signal “open-response” has one parameter and its
         arguments are a TfeTextView instance, the signal’s parameter and
         user data.</li>
-        <li>The variable <code>tv</code> points the instance on which
+        <li>The variable <code>tv</code> points to the instance on which
         the signal is emitted.</li>
         <li>The last argument <code>user_data</code> comes from the
         fourth argument of <code>g_signal_connect</code>.</li>
-        <li>The <code>parameter</code> (<code>response-id</code>) comes
+        <li>The <code>parameter</code> (<code>response_id</code>) comes
         from the fourth argument of <code>g_signal_emit</code>.</li>
         </ul>
         <p>The values of the type
@@ -255,7 +254,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>The parameter is set to <code>TFE_OPEN_RESPONSE_ERROR</code>
         when an error has occurred.</li>
         </ul>
-        <h2 id="signal-connection">Signal connection</h2>
+        <h2 id="signal-connection">Signal Connection</h2>
         <p>A signal and a handler are connected by the function macro
         <code>g_signal_connect</code>. There are some similar function
         macros like <code>g_signal_connect_after</code>,
@@ -269,10 +268,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>file_changed_cb</code> and <code>open_response_cb</code>.
         They will be explained later.</p>
         <div class="sourceCode" id="cb5"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> nb<span class="op">);</span></span>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> nb<span class="op">);</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> nb<span class="op">);</span></span></code></pre></div>
-        <h2 id="signal-emission">Signal emission</h2>
+        <h2 id="signal-emission">Signal Emission</h2>
         <p>A signal is emitted on the instance. A function
         <code>g_signal_emit</code> is used to emit the signal. The
         following lines are extracted from

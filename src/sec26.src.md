@@ -1,20 +1,32 @@
-# Custom drawing
+# Custom Drawing
 
 Custom drawing is to draw shapes dynamically.
 This section shows an example of custom drawing.
 You can draw rectangles by dragging the mouse.
 
-Down the button.
+Press down the button.
 
-![down the button](/images/cd0.png){width=6cm height=4.83cm}
+@@@if pdf
+![Press down the button](/images/cd0.png){width=6cm height=4.83cm}
+@@@else
+![Press down the button](/images/cd0.png)
+@@@end
 
-Move the mouse
+Move the mouse.
 
+@@@if pdf
 ![Move the mouse](/images/cd1.png){width=6cm height=4.83cm}
+@@@else
+![Move the mouse](/images/cd1.png)
+@@@end
 
-Up the button.
+Release the button.
 
-![Up the button](/images/cd2.png){width=6cm height=4.83cm}
+@@@if pdf
+![Release the button](/images/cd2.png){width=6cm height=4.83cm}
+@@@else
+![Release the button](/images/cd2.png)
+@@@end
 
 The programs are at `src/custom_drawing` directory.
 Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial) and see the directory.
@@ -27,7 +39,7 @@ There are four files.
 
 ## rect.gresource.xml
 
-This file describes a ui file to compile.
+This file describes a UI file to compile.
 The compiler glib-compile-resources uses it.
 
 @@@include
@@ -39,7 +51,7 @@ Therefore, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui
 
 ## rect.ui
 
-The following is the ui file that defines the widgets.
+The following is the UI file that defines the widgets.
 There are two widgets which are GtkApplicationWindow and GtkDrawingArea.
 The ids are `win` and `da` respectively.
 
@@ -76,14 +88,14 @@ It connects three signals and handlers.
 custom_drawing/rect.c app_startup
 @@@
 
-The startup handler does three things.
+The startup handler performs the following three tasks:
 
 - Builds the widgets.
 - Initializes the GtkDrawingArea instance.
   - Sets the drawing function
   - Connects the "resize" signal and the handler.
 - Creates the GtkGestureDrag instance and initializes it.
-Gesture will be explained in this section later.
+Gestures will be explained in this section later.
 
 @@@include
 custom_drawing/rect.c app_activate
@@ -93,7 +105,7 @@ The activate handler just shows the window.
 
 ### GtkDrawingArea
 
-The program has two cairo surfaces and they are pointed by the global variables.
+The program has two cairo surfaces and they are pointed to by the global variables.
 
 @@@if gfm
 ```C
@@ -120,7 +132,7 @@ custom_drawing/rect.c resize_cb
 @@@
 
 This callback is called when the GtkDrawingArea is shown.
-It is the only call because the window is not resizable.
+This is called only once since the window is not resizable.
 
 It creates image surfaces for `surface` and `surface_save`.
 The `surface` surface is painted white, which is the background color.
@@ -149,17 +161,17 @@ GtkGesture class is abstract and there are several implementations.
 - GtkGestureDrag
 - GtkGesturePan
 - GtkGestureSwipe
-- other implementations
+- And others
 
 The program `rect.c` uses GtkGestureDrag.
-It is the implementation for drags.
+It is the implementation for drag gestures.
 The parent-child relationship is as follows.
 
 ```
 GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag
 ```
 
-GtkGestureSingle is a subclass of GtkGesture and optimized for singe-touch and mouse gestures.
+GtkGestureSingle is a subclass of GtkGesture and optimized for single-touch and mouse interactions.
 
 A GtkGestureDrag instance is created and initialized in the startup signal handler in `rect.c`.
 See line 18 to 23 in the following.
@@ -171,10 +183,10 @@ custom_drawing/rect.c app_startup
 - The function `gtk_gesture_drag_new` creates a new GtkGestureDrag instance.
 - The function `gtk_gesture_single_set_button` sets the button number to listen to.
 The constant `GDK_BUTTON_PRIMARY` is the left button of a mouse.
-- The function `gtk_widget_add_controller` adds an event controller, gestures are descendants of the event controller, to a widget.
+- The function `gtk_widget_add_controller` adds an event controller, which is a base class for gestures.
 - Three signals and handlers are connected.
   - drag-begin: Emitted when dragging starts.
-  - drag-update: Emitted when the dragging point moves.
+  - drag-update: Emitted when the dragging pointer moves.
   - drag-end: Emitted when the dragging ends.
 
 The process during the drag is as follows.
@@ -222,7 +234,7 @@ custom_drawing/rect.c drag_end
 - Draws a rectangle with thick lines.
 - Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
 
-## Build and run
+## Build and Run
 
 Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 Change your current directory to `src/custom_drawing`.
@@ -237,4 +249,8 @@ $ ninja -C _build
 $ _build/rect
 ```
 
+@@@if pdf
 ![The screen of rect program](/images/rect.png){width=12.4cm height=10cm}
+@@@else
+![The screen of rect program](/images/rect.png)
+@@@end

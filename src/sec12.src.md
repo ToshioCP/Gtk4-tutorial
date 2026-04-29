@@ -10,14 +10,14 @@ There are two ways to do so.
 - Instance methods:
 Instance methods are functions on instances.
 For example, `tb = gtk_text_view_get_buffer (tv)` is an instance method on the instance `tv`.
-The caller requests `tv` to give `tb`, which is a GtkTextBuffer instance connected to `tv`.
+The caller requests `tv` for `tb`, which is a GtkTextBuffer instance connected to `tv`.
 - Signals:
 For example, `activate` signal on GApplication object.
 When the application is activated, the signal is emitted.
 Then the handler, which has been connected to the signal, is invoked.
 
 The caller of methods or signals are usually out of the object.
-One of the difference between these two is that the object is active or passive.
+One of the differences between these two is that the object is active or passive.
 In methods, objects passively respond to the caller.
 In signals, objects actively send signals to handlers.
 
@@ -30,13 +30,13 @@ It is not a user handler connected by `g_signal_connect` family functions.
 A default handler is always called on any instance of the class.
 1. Signals are connected to handlers by the macro `g_signal_connect` or its family functions.
 The connection is usually done out of the object.
-One important thing is that signals are connected on a certain instance.
+One important thing is that signals are connected on a specific instance.
 Suppose there exist two GtkButton instances A, B and a function C.
 Even if you connected the "clicked" signal on A to C, B and C are *not* connected.
 1. When Signals are emitted, the connected handlers are invoked.
 Signals are emitted on the instance of the class.
 
-## Signal registration
+## Signal Registration
 
 In TfeTextView, two signals are registered.
 
@@ -72,7 +72,7 @@ You usually don't need a default handler.
 If you need it, use `g_signal_new_class_handler` function instead of `g_signal_new`.
 See [GObject API Reference](https://docs.gtk.org/gobject/func.signal_new_class_handler.html) for further information.
 - The return value of `g_signal_new` is the signal id.
-The type of signal id is guint, which is the same as unsigned int.
+The type of signal id is guint, which is an alias for unsigned int.
 It is used in the function `g_signal_emit`.
 - 16-26: Registers "open-response" signal.
 This signal has a parameter.
@@ -80,7 +80,7 @@ This signal has a parameter.
 "open-response" signal has one parameter.
 - 25: The type of the parameter.
 `G_TYPE_INT` is a type of integer.
-Such fundamental types are described in [GObject reference manual](https://developer-old.gnome.org/gobject/stable/gobject-Type-Information.html).
+Such fundamental types are described in [gtype.h](https://gitlab.gnome.org/GNOME/glib/-/blob/main/gobject/gtype.h?ref_type=heads).
 
 The handlers are declared as follows.
 
@@ -93,15 +93,15 @@ user_function (TfeTextView *tv,
 /* "open-response" signal handler */
 void
 user_function (TfeTextView *tv,
-               TfeTextViewOpenResponseType response-id,
+               TfeTextViewOpenResponseType response_id,
                gpointer user_data)
 ~~~
 
-- The signal "change-file" doesn't have parameter, so the handler's arguments are a TfeTextView instance and a user data.
-- The signal "open-response" signal has one parameter and its arguments are a TfeTextView instance, the signal's parameter and user data.
-- The variable `tv` points the instance on which the signal is emitted.
+- The signal "change-file" doesn't have any parameters, so the handler's arguments are a TfeTextView instance and a user data.
+- The signal "open-response" has one parameter and its arguments are a TfeTextView instance, the signal's parameter and user data.
+- The variable `tv` points to the instance on which the signal is emitted.
 - The last argument `user_data` comes from the fourth argument of `g_signal_connect`.
-- The `parameter` (`response-id`) comes from the fourth argument of `g_signal_emit`.
+- The `parameter` (`response_id`) comes from the fourth argument of `g_signal_emit`.
 
 The values of the type `TfeTextViewOpenResponseType` are defined in `tfetextview.h`.
 
@@ -119,7 +119,7 @@ enum TfeTextViewOpenResponseType
 - The parameter is set to `TFE_OPEN_RESPONSE_CANCEL` when the user has canceled.
 - The parameter is set to `TFE_OPEN_RESPONSE_ERROR` when an error has occurred.
  
-## Signal connection
+## Signal Connection
 
 A signal and a handler are connected by the function macro `g_signal_connect`.
 There are some similar function macros like `g_signal_connect_after`, `g_signal_connect_swapped` and so on.
@@ -131,12 +131,12 @@ For example, callback functions are defined in `src/tfe6/tfewindow.c` and their 
 They will be explained later.
 
 ~~~C
-g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
+g_signal_connect (TFE_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
 
 g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), nb);
 ~~~
 
-## Signal emission
+## Signal Emission
 
 A signal is emitted on the instance.
 A function `g_signal_emit` is used to emit the signal.

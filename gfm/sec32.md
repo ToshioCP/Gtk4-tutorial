@@ -10,18 +10,18 @@ Each column is GtkColumnViewColumn.
 ![Column View](/src/images/column_view.png)
 
 - GtkColumnView has "model" property.
-The property points a GtkSelectionModel object.
-- Each GtkColumnViewColumn has "factory" property.
-The property points a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).
+The property points to a GtkSelectionModel object.
+- Each GtkColumnViewColumn has the "factory" property.
+The property points to a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).
 - The factory connects GtkListItem and items of GtkSelectionModel.
-And the factory builds the descendant widgets of GtkColumnView to display the item on the display.
+And the factory builds the descendant widgets of GtkColumnView to display the items on the screen.
 This process is the same as the one in GtkListView.
 
 The following diagram shows how it works.
 
 ![ColumnView](/src/images/column.png)
 
-The example in this section is a window that displays information of files in a current directory.
+The example in this section is a window that displays information of files in the current directory.
 The information is the name, size and last modified datetime of files.
 So, there are three columns.
 
@@ -29,7 +29,7 @@ In addition, the example uses GtkSortListModel and GtkSorter to sort the informa
 
 ## column.ui
 
-Ui file specifies widgets and list item templates.
+UI file specifies widgets and list item templates.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -192,23 +192,23 @@ Ui file specifies widgets and list item templates.
 ```
 
 - 3-12: GtkApplicationWindow has a child widget GtkScrolledWindow.
-GtkScrolledWindoww has a child widget GtkColumnView.
+GtkScrolledWindow has a child widget GtkColumnView.
 - 12-18: GtkColumnView has "model" property.
-It points GtkSelectionModel interface.
+It points to GtkSelectionModel interface.
 GtkNoSelection class is used as GtkSelectionModel.
-And again, it has "model" property.
-It points GtkSortListModel.
+Similarly, it also has a "model" property.
+It points to GtkSortListModel.
 This list model supports sorting the list.
 It will be explained in the later subsection.
 And it also has "model" property.
-It points GtkDirectoryList.
+It points to GtkDirectoryList.
 Therefore, the chain is: GtkColumnView => GtkNoSelection => GtkSortListModel => GtkDirectoryList.
 - 18-20: GtkDirectoryList.
 It is a list of GFileInfo, which holds information of files under a directory.
 It has "attributes" property.
-It specifies what attributes is kept in each GFileInfo.
-  - "standard::name" is a name of the file.
-  - "standard::icon" is a GIcon object of the file
+It specifies which attributes are kept in each GFileInfo.
+  - "standard::name" is the name of the file.
+  - "standard::icon" is the GIcon object of the file
   - "standard::size" is the file size.
   - "time::modified" is the date and time the file was last modified.
 - 29-79: The first GtkColumnViewColumn object.
@@ -218,9 +218,9 @@ This is the title on the header of the column.
 - 32: Sets the "expand" property to TRUE to allow the column to expand as much as possible.
 (See the image above).
 - 33- 69: Sets the "factory" property to GtkBuilderListItemFactory.
-The factory has "bytes" property which holds a ui string to define a template to extend GtkListItem class.
-The CDATA section (line 36-66) is the ui string to put into the "bytes" property.
-The contents are the same as the ui file `factory_list.ui` in Section 30.
+The factory has "bytes" property which holds a UI string to define a template to extend GtkListItem class.
+The CDATA section (line 36-66) is the UI string to put into the "bytes" property.
+The contents are the same as the UI file `factory_list.ui` in Section 30.
 - 70-77: Sets the "sorter" property to GtkStringSorter object.
 This object provides a sorter that compares strings.
 It has "expression" property.
@@ -244,13 +244,11 @@ The property is bound to "sorter" property of GtkColumnView in line 22 to 24.
   </binding>
 ~~~
 
-Therefore, `columnview` determines the way how to sort the list model.
-The "sorter" property of GtkColumnView is read-only property and it is a special sorter.
-It reflects the user's sorting choice.
-If a user clicks the header of a column, then the sorter ("sorter" property) of the column is referenced by "sorter" property of the GtkColumnView.
-If the user clicks the header of another column, then the "sorter" property of the GtkColumnView refers to the newly clicked column's "sorter" property.
+Therefore, `columnview` determines how to sort the list model.
+The "sorter" property of GtkColumnView is a read-only GtkSorter and it always refers to the current column's "sorter" property.
+When a user clicks a column header, GtkColumnView updates its own "sorter" property to point to that column's sorter.
 
-The binding above makes a indirect connection between the "sorter" property of GtkSortListModel and the "sorter" property of each column.
+The binding above makes an indirect connection between the "sorter" property of GtkSortListModel and the "sorter" property of each column.
 
 GtkSorter compares two items (GObject or its descendant).
 GtkSorter has several child objects.
@@ -267,7 +265,7 @@ The GtkExpression is stored in the "expression" property of the GtkStringSorter.
 When GtkStringSorter compares two items, it evaluates the expression by calling `gtk_expression_evaluate` function.
 It assigns each item to the second argument ('this' object) of the function.
 
-In the ui file above, the GtkExpression is in the line 71 to 76.
+In the UI file above, the GtkExpression is in the line 71 to 76.
 
 ~~~xml
 <object class="GtkStringSorter">
@@ -283,7 +281,7 @@ The GtkExpression calls `get_file_name` function when it is evaluated.
 ```c
 char *
 get_file_name (GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
 ```
 
@@ -346,14 +344,14 @@ get_file_unixtime_modified (GFileInfo *info) {
 ```
 
 It gets the modification date and time (GDateTime type) of `info`.
-Then it gets a unix time from `dt`.
-Unix time, sometimes called unix epoch, is the number of seconds that have elapsed since 00:00:00 UTC on 1 January 1970.
-It returns the unix time (gint64 type).
+Then it gets a Unix time from `dt`.
+Unix time, sometimes called Unix epoch, is the number of seconds that have elapsed since 00:00:00 UTC on 1 January 1970.
+It returns the Unix time as a gint64.
 
 ## column.c
 
 `column.c` is as follows.
-It is simple and short thanks to `column.ui`.
+The code is simple and short thanks to `column.ui`.
 
 ```c
 #include <gtk/gtk.h>
@@ -392,7 +390,7 @@ get_file_time_modified_factory (GtkListItem *item, GFileInfo *info) {
 /* Functions (closures) for GtkSorter */
 char *
 get_file_name (GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
 
 goffset
@@ -450,13 +448,13 @@ main (int argc, char **argv) {
 ```
 
 
-## Compilation and execution.
+## Compilation and Execution.
 
-All the source files are in [`src/column`](../src/column) directory.
+All the source files are in [src/column](../src/column/) directory.
 Change your current directory to the directory and type the following.
 
 ~~~
-$ cd src/colomn
+$ cd src/column
 $ meson setup _build
 $ ninja -C _build
 $ _build/column
@@ -466,8 +464,8 @@ Then, a window appears.
 
 ![Column View](/src/images/column_view.png)
 
-If you click the header of a column, then the whole lists are sorted by the column.
-If you click the header of another column, then the whole lists are sorted by the newly selected column.
+If you click the header of a column, then the entire list is sorted by the column.
+If you click the header of another column, then the list is sorted by the newly selected column.
 
 GtkColumnView is very useful and it can manage very big GListModel.
 It is possible to use it for file list, application list, database frontend and so on.

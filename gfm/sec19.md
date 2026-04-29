@@ -1,16 +1,16 @@
 Up: [README.md](../README.md),  Prev: [Section 18](sec18.md), Next: [Section 20](sec20.md)
 
-# Ui file for menu and action entries
+# Ui File for Menu and Action Entries
 
-## Ui file for menu
+## Ui File for Menu
 
 You may have thought that building menus was really bothersome.
 Yes, the program was complicated and it needs lots of time to code them.
 The situation is similar to building widgets.
-When we built widgets, using ui file was a good way to avoid such complication.
+When we built widgets, using UI files was a good way to avoid such complication.
 The same goes for menus.
 
-The ui file for menus has interface and menu tags.
+The UI file for menus has interface and `<menu>` tags.
 The file starts and ends with interface tags.
 
 ~~~xml
@@ -20,8 +20,8 @@ The file starts and ends with interface tags.
 </interface>
 ~~~
 
-`menu` tag corresponds to GMenu object.
-`id` attribute defines the name of the object.
+The `<menu>` tag corresponds to a GMenu object.
+The `id` attribute defines the name of the object.
 It will be referred by GtkBuilder.
 
 ~~~xml
@@ -34,15 +34,15 @@ It will be referred by GtkBuilder.
 </submenu>
 ~~~
 
-`item` tag corresponds to an item in the GMenu which has the same structure as GMenuItem.
+The `<item>` tag corresponds to an item in the GMenu which has the same structure as GMenuItem.
 The item above has a label attribute.
 Its value is "New".
 The item also has an action attribute and its value is "win.new".
 "win" is a prefix and "new" is an action name.
-`submenu` tag corresponds to both GMenuItem and GMenu.
+The `<submenu>` tag corresponds to both GMenuItem and GMenu.
 The GMenuItem has a link to GMenu.
 
-The ui file above can be described as follows.
+The UI file above can be described as follows.
 
 ~~~xml
 <item>
@@ -56,20 +56,20 @@ The ui file above can be described as follows.
 </item>
 ~~~
 
-`link` tag expresses the link to submenu.
+The `<link>` tag expresses the link to submenu.
 And at the same time it also expresses the submenu itself.
-This file illustrates the relationship between the menus and items better than the prior ui file.
-But `submenu` tag is simple and easy to understand.
-So, we usually prefer the former ui style.
+This file illustrates the relationship between the menus and items better than the prior UI file.
+But `<submenu>` tags are simple and easy to understand.
+So, we usually prefer the former UI style.
 
 For further information, see [GTK 4 API reference -- PopoverMenu](https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models).
 
 The following is a screenshot of the sample program `menu3`.
-It is located in the directory [src/menu3](../src/menu3).
+It is located in the directory [/src/menu3](../src/menu3/).
 
 ![menu3](/src/images/menu3.png)
 
-The following is the ui file for `menu3`.
+The following is the UI file for `menu3`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -146,7 +146,7 @@ The following is the ui file for `menu3`.
 </interface>
 ```
 
-The ui file is converted to the resource by the resource compiler `glib-compile-resouces` with xml file.
+The UI file is converted to the resource by the resource compiler `glib-compile-resouces` with xml file.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -173,9 +173,9 @@ It is because you don't own the `menubar` instance.
 The function `gtk_builder_get_object` just returns the pointer to `menubar` and doesn't increase the reference count of `menubar`.
 So, if you released `bulder` before `gtk_application_set_menubar`, `builder` would be destroyed and `menubar` as well.
 
-## Action entry
+## Action Entry
 
-The coding for building actions and signal handlers is bothersome work as well.
+The coding for building actions and signal handlers is complex work as well.
 Therefore, it should be automated.
 You can implement them easily with GActionEntry structure and `g_action_map_add_action_entries` function.
 
@@ -210,7 +210,7 @@ For example, the actions in the previous section are:
 
 - Fullscreen action is stateful, but doesn't have parameters.
 So, the third element (parameter type) is NULL.
-[GVariant text format](https://docs.gtk.org/glib/gvariant-text.html) provides "true" and "false" as boolean GVariant values.
+[GVariant text format](https://docs.gtk.org/glib/gvariant-text-format.html) provides "true" and "false" as boolean GVariant values.
 The initial state of the action is false (the fourth element).
 It doesn't have activate handler, so the second element is NULL.
 Instead, it has change-state handler.
@@ -257,7 +257,7 @@ const GActionEntry win_entries[] = {
 g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries,
                                  G_N_ELEMENTS (win_entries), win);
 ~~~
-The code above does:
+The code above performs the following:
 
 - Builds the "fullscreen" action.
 - Connects the action and the signal handler `fullscreen_changed`
@@ -267,7 +267,7 @@ The code above does:
 ## Example
 
 Source files are `menu3.c`, `menu3.ui`, `menu3.gresource.xml` and `meson.build`.
-They are in the directory [src/menu3](../src/menu3).
+They are in the directory [/src/menu3](../src/menu3/).
 The following are `menu3.c` and `meson.build`.
 
 ```c
@@ -413,7 +413,7 @@ You can't write, for example, "GApplication *app" instead of "gpointer user_data
 Because `g_action_map_add_action_entries` expects that handlers follow the format above.
 
 There are `menu2_ui.c` and `menu2.ui` under the `menu` directory.
-They are other examples to show menu ui file and `g_action_map_add_action_entries`.
+They are other examples to show a menu UI file and `g_action_map_add_action_entries`.
 It includes a stateful action with parameters.
 
 ~~~xml

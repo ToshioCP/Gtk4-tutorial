@@ -109,25 +109,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         are described in Section 29 to 33.</p>
         <h2 id="outline">Outline</h2>
         <p>A list is a sequential data structure. For example, an
-        ordered string sequence “one”, “two”, “three”, “four” is a list.
-        Each element is called item. A list is like an array, but in
-        many cases it is implemented with pointers which point to the
-        next items of the list. And it has a start point. So, each item
-        can be referred by the index of the item (first item, second
-        item, …, nth item, …). There are two cases. The one is the index
-        starts from one (one-based) and the other is from zero
-        (zero-based).</p>
+        ordered string sequence “one”, “two”, “three”, and “four” is a
+        list. Each element is called an item. A list is like an array,
+        but in many cases it is implemented with pointers which point to
+        the next items of the list. And it has a start point. So, each
+        item can be referred to by the index of the item (first item,
+        second item, …, nth item, …).</p>
         <p>Gio provides GListModel interface. It is a zero-based list
         and its items are the same type of GObject descendants, or
-        objects that implement the same interface. An object implements
-        GListModel is not a widget. So, the list is not displayed on the
-        screen directly. There’s another object GtkListView which is a
-        widget to display the list. The items in the list need to be
-        connected to the items in GtkListView. GtkListItemFactory
-        instance maps items in the list to GtkListView.</p>
+        objects that implement the same interface. An object that
+        implements GListModel is not a widget. So, the list is not
+        displayed on the screen directly. There’s another object
+        GtkListView which is a widget to display the list. The items in
+        the list need to be connected to the items in GtkListView.
+        GtkListItemFactory instance maps items in the list to
+        GtkListView.</p>
         <figure>
-        <img src="/images/list.png" style="width:10cm;height:7.5cm"
-        alt="List" />
+        <img src="/images/list.png" alt="List" />
         <figcaption aria-hidden="true">List</figcaption>
         </figure>
         <h2 id="glistmodel-and-gtkstringlist">GListModel and
@@ -136,9 +134,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         example, “one”, “two”, “three”, “four”, note that strings can’t
         be items of the list. Because GListModel is a list of GObject
         objects and strings aren’t GObject objects. The word “GObject”
-        here means “GObject class or its descendant class”. So, you need
-        a wrapper which is a GObject and contains a string.
-        GtkStringObject is the wrapper object and GtkStringList,
+        here means GObject class or its derived class. So, you need a
+        wrapper which is a GObject and contains a string.
+        GtkStringObject is the wrapper object and GtkStringList, which
         implements GListModel, is a list of GtkStringObject.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>array<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;one&quot;</span><span class="op">,</span> <span class="st">&quot;two&quot;</span><span class="op">,</span> <span class="st">&quot;three&quot;</span><span class="op">,</span> <span class="st">&quot;four&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
@@ -161,9 +159,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         Reference – GtkStringList</a> for further information.</p>
         <p>Other list objects will be explained later.</p>
         <h2 id="gtkselectionmodel">GtkSelectionModel</h2>
-        <p>GtkSelectionModel is an interface to support for selections.
-        Thanks to this model, user can select items by clicking on them.
-        It is implemented by GtkMultiSelection, GtkNoSelection and
+        <p>GtkSelectionModel is an interface to support for selection.
+        Thanks to this model, a user can select items by clicking on
+        them. It is implemented by GtkMultiSelection, GtkNoSelection and
         GtkSingleSelection objects. These three objects are usually
         enough to build an application. They are created with another
         GListModel. You can also create them alone and add a GListModel
@@ -177,13 +175,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h2 id="gtklistview-1">GtkListView</h2>
         <p>GtkListView is a widget to show GListModel items. GtkListItem
         is used by GtkListView to represent items of a list model. But,
-        GtkListItem itself is not a widget, so a user needs to set a
-        widget, for example GtkLabel, as a child of GtkListItem to
-        display an item of the list model. “item” property of
-        GtkListItem points an object that belongs to the list model.</p>
+        GtkListItem is not a widget (not a descendant of GtkWidget), so
+        a user needs to set a widget, for example GtkLabel, as a child
+        of GtkListItem to display an item of the list model. “item”
+        property of GtkListItem points to an object that belongs to the
+        list model.</p>
         <figure>
-        <img src="/images/gtklistitem.png"
-        style="width:10cm;height:7.5cm" alt="GtkListItem" />
+        <img src="/images/gtklistitem.png" alt="GtkListItem" />
         <figcaption aria-hidden="true">GtkListItem</figcaption>
         </figure>
         <p>In case the number of items is very big, for example more
@@ -205,14 +203,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>“setup” is emitted to set up GtkListItem object. A user sets
         its child widget in the handler. For example, creates a GtkLabel
         widget and sets the child property of the GtkListItem to it.
-        This setting is kept even the GtkListItem instance is recycled
-        (to bind to another item of GListModel).</li>
+        This setting is kept even when the GtkListItem instance is
+        recycled (to bind to another item of GListModel).</li>
         <li>“bind” is emitted to bind an item in the list model to the
         widget. For example, a user gets the item from “item” property
         of the GtkListItem instance. Then gets the string of the item
         and sets the label property of the GtkLabel instance with the
         string. This signal is emitted when the GtkListItem is newly
-        created, recycled or some changes has happened to the item of
+        created, recycled or some changes have happened to the item of
         the list.</li>
         <li>“unbind” is emitted to unbind an item. A user undoes
         everything done in step 2 in the signal handler. If some object
@@ -221,7 +219,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         the widget created in step 1 must be destroyed. After this
         signal, the list item will be destroyed.</li>
         </ol>
-        <p>The following program <code>list1.c</code> shows the list of
+        <p>The following program <code>list1.c</code> shows a list of
         strings “one”, “two”, “three” and “four”. GtkNoSelection is
         used, so user can’t select any item.</p>
         <div class="sourceCode" id="cb2"><pre
@@ -301,7 +299,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-74"><a href="#cb2-74"></a><span class="op">}</span></span></code></pre></div>
         <p>The file <code>list1.c</code> is located under the directory
         <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc">src/misc</a>.
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/misc/">/src/misc</a>.
         Make a shell script below and save it to your bin directory, for
         example <code>$HOME/bin</code>.</p>
         <div class="sourceCode" id="cb3"><pre
@@ -313,8 +311,7 @@ $ comp list1
 $ ./a.out</code></pre>
         <p>Then, the following window appears.</p>
         <figure>
-        <img src="/images/list1.png" style="width:6.04cm;height:4.4cm"
-        alt="list1" />
+        <img src="/images/list1.png" alt="list1" />
         <figcaption aria-hidden="true">list1</figcaption>
         </figure>
         <p>The program is not so difficult. If you feel some difficulty,
@@ -323,7 +320,7 @@ $ ./a.out</code></pre>
         <h3
         id="gtkbuilderlistitemfactory">GtkBuilderListItemFactory</h3>
         <p>GtkBuilderListItemFactory is another GtkListItemFactory. Its
-        behavior is defined with ui file.</p>
+        behavior is defined in a UI file.</p>
         <div class="sourceCode" id="cb5"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
@@ -365,7 +362,7 @@ $ ./a.out</code></pre>
         href="sec31.html">Section 31</a>.</p>
         <p>The C source code is as follows. Its name is
         <code>list2.c</code> and located under <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc">src/misc</a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/misc/">/src/misc</a>
         directory.</p>
         <div class="sourceCode" id="cb7"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
@@ -429,10 +426,10 @@ $ ./a.out</code></pre>
 <span id="cb7-59"><a href="#cb7-59"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb7-60"><a href="#cb7-60"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb7-61"><a href="#cb7-61"></a><span class="op">}</span></span></code></pre></div>
-        <p>No signal handler is needed for GtkBulderListItemFactory.
+        <p>No signal handler is needed for GtkBuilderListItemFactory.
         GtkSingleSelection is used, so user can select one item at a
         time.</p>
-        <p>Because this is a small program, the ui data is given as a
+        <p>Because this is a small program, the UI data is given as a
         string.</p>
         <h2 id="gtkdirectorylist">GtkDirectoryList</h2>
         <p>GtkDirectoryList is a list model containing GFileInfo objects
@@ -492,13 +489,13 @@ $ ./a.out</code></pre>
         class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>GtkDirectoryList <span class="op">*</span>dl <span class="op">=</span> gtk_directory_list_new <span class="op">(</span><span class="st">&quot;standard::name&quot;</span><span class="op">,</span> file<span class="op">);</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>file<span class="op">);</span></span></code></pre></div>
-        <p>It is not so difficult to make file listing program by
+        <p>It is not so difficult to make a file listing program by
         changing <code>list2.c</code> in the previous subsection. One
-        problem is that GInfoFile doesn’t have properties. Lookup tag
+        problem is that GFileInfo doesn’t have properties. Lookup tag
         look for a property, so it is useless for looking for a filename
-        from a GFileInfo object. Instead, closure tag is appropriate in
-        this case. Closure tag specifies a function and the type of the
-        return value of the function.</p>
+        from a GFileInfo object. Instead, a closure tag is appropriate
+        in this case. A closure tag specifies a function and the type of
+        the return value of the function.</p>
         <div class="sourceCode" id="cb10"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
@@ -521,29 +518,28 @@ $ ./a.out</code></pre>
 <span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;/template&gt;&quot;</span></span>
 <span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;/interface&gt;&quot;</span></span></code></pre></div>
         <ul>
-        <li>The string “gchararray” is a type name. The type “gchar” is
-        a type name and it is the same as C type “char”. Therefore,
-        “gchararray” is “an array of char type”, which is the same as
-        string type. It is used to get the type of GValue object. GValue
-        is a generic value and it can contain various type of values.
-        For example, the type name can be gboolean, gchar (char), gint
-        (int), gfloat (float), gdouble (double), gchararray (char *) and
-        so on. These type names are the names of the fundamental types
-        that are registered to the type system. See <a
+        <li>The string “gchararray” is a type name registered in the
+        GObject type system. While the type “gchar” is the same as the C
+        “char” type, “gchararray” specifically represents a
+        NULL-terminated string (char *). In GtkBuilder XML files, you
+        must use these registered type names instead of native C types
+        to let the GValue system handle the data correctly. For example,
+        common type names include gboolean, gchar, gint, gfloat,
+        gdouble, and gchararray. See <a
         href="https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue">GObject
-        tutorial</a>.</li>
+        tutorial</a> for further information.</li>
         <li>Closure tag has type attribute and function attribute.
         Function attribute specifies the function name and type
         attribute specifies the type of the return value of the
-        function. The contents of closure tag (it is between
-        &lt;closure…&gt; and&lt;/closure&gt;) is parameters of the
-        function.
+        function. The content of closure tag (it is between
+        &lt;closure…&gt; and&lt;/closure&gt;) consists of the parameters
+        for the function.
         <code>&lt;lookup name="item"&gt;GtkListItem&lt;/lookup&gt;</code>
         gives the value of the item property of the GtkListItem. This
         will be the second argument of the function. The first parameter
         is always the GListItem instance, which is a ‘this’ object. The
         ‘this’ object is explained in Section 31.</li>
-        <li><code>gtk_file_name</code> function is the callback function
+        <li><code>get_file_name</code> function is the callback function
         for the closure tag. It first checks the <code>info</code>
         parameter. Because it can be NULL when GListItem
         <code>item</code> is unbounded. If it’s GFileInfo, it returns
@@ -555,7 +551,7 @@ $ ./a.out</code></pre>
         </ul>
         <p>The whole program (<code>list3.c</code>) is as follows. The
         program is located in <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc">src/misc</a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/misc/">/src/misc</a>
         directory.</p>
         <div class="sourceCode" id="cb11"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
@@ -659,8 +655,7 @@ $ chmod +x $HOME/bin/comp</code></pre>
         <pre><code>$ comp list3
 $ ./a.out</code></pre>
         <figure>
-        <img src="/images/list3.png" style="width:10cm;height:7.3cm"
-        alt="screenshot list3" />
+        <img src="/images/list3.png" alt="screenshot list3" />
         <figcaption aria-hidden="true">screenshot list3</figcaption>
         </figure>
       </div>

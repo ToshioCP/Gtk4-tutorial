@@ -98,35 +98,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>GtkColumnView is like GtkListView, but it has multiple
         columns. Each column is GtkColumnViewColumn.</p>
         <figure>
-        <img src="/images/column_view.png"
-        style="width:11.3cm;height:9cm" alt="Column View" />
+        <img src="/images/column_view.png" alt="Column View" />
         <figcaption aria-hidden="true">Column View</figcaption>
         </figure>
         <ul>
-        <li>GtkColumnView has “model” property. The property points a
+        <li>GtkColumnView has “model” property. The property points to a
         GtkSelectionModel object.</li>
-        <li>Each GtkColumnViewColumn has “factory” property. The
-        property points a GtkListItemFactory (GtkSignalListItemFactory
-        or GtkBuilderListItemFactory).</li>
+        <li>Each GtkColumnViewColumn has the “factory” property. The
+        property points to a GtkListItemFactory
+        (GtkSignalListItemFactory or GtkBuilderListItemFactory).</li>
         <li>The factory connects GtkListItem and items of
         GtkSelectionModel. And the factory builds the descendant widgets
-        of GtkColumnView to display the item on the display. This
+        of GtkColumnView to display the items on the screen. This
         process is the same as the one in GtkListView.</li>
         </ul>
         <p>The following diagram shows how it works.</p>
         <figure>
-        <img src="/images/column.png" style="width:12cm;height:9cm"
-        alt="ColumnView" />
+        <img src="/images/column.png" alt="ColumnView" />
         <figcaption aria-hidden="true">ColumnView</figcaption>
         </figure>
         <p>The example in this section is a window that displays
-        information of files in a current directory. The information is
-        the name, size and last modified datetime of files. So, there
+        information of files in the current directory. The information
+        is the name, size and last modified datetime of files. So, there
         are three columns.</p>
         <p>In addition, the example uses GtkSortListModel and GtkSorter
         to sort the information.</p>
         <h2 id="column.ui">column.ui</h2>
-        <p>Ui file specifies widgets and list item templates.</p>
+        <p>UI file specifies widgets and list item templates.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
@@ -287,23 +285,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-157"><a href="#cb1-157"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
         <ul>
         <li>3-12: GtkApplicationWindow has a child widget
-        GtkScrolledWindow. GtkScrolledWindoww has a child widget
+        GtkScrolledWindow. GtkScrolledWindow has a child widget
         GtkColumnView.</li>
-        <li>12-18: GtkColumnView has “model” property. It points
+        <li>12-18: GtkColumnView has “model” property. It points to
         GtkSelectionModel interface. GtkNoSelection class is used as
-        GtkSelectionModel. And again, it has “model” property. It points
-        GtkSortListModel. This list model supports sorting the list. It
-        will be explained in the later subsection. And it also has
-        “model” property. It points GtkDirectoryList. Therefore, the
-        chain is: GtkColumnView =&gt; GtkNoSelection =&gt;
+        GtkSelectionModel. Similarly, it also has a “model” property. It
+        points to GtkSortListModel. This list model supports sorting the
+        list. It will be explained in the later subsection. And it also
+        has “model” property. It points to GtkDirectoryList. Therefore,
+        the chain is: GtkColumnView =&gt; GtkNoSelection =&gt;
         GtkSortListModel =&gt; GtkDirectoryList.</li>
         <li>18-20: GtkDirectoryList. It is a list of GFileInfo, which
         holds information of files under a directory. It has
-        “attributes” property. It specifies what attributes is kept in
+        “attributes” property. It specifies which attributes are kept in
         each GFileInfo.
         <ul>
-        <li>“standard::name” is a name of the file.</li>
-        <li>“standard::icon” is a GIcon object of the file</li>
+        <li>“standard::name” is the name of the file.</li>
+        <li>“standard::icon” is the GIcon object of the file</li>
         <li>“standard::size” is the file size.</li>
         <li>“time::modified” is the date and time the file was last
         modified.</li>
@@ -316,10 +314,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         to expand as much as possible. (See the image above).</li>
         <li>33- 69: Sets the “factory” property to
         GtkBuilderListItemFactory. The factory has “bytes” property
-        which holds a ui string to define a template to extend
-        GtkListItem class. The CDATA section (line 36-66) is the ui
+        which holds a UI string to define a template to extend
+        GtkListItem class. The CDATA section (line 36-66) is the UI
         string to put into the “bytes” property. The contents are the
-        same as the ui file <code>factory_list.ui</code> in Section
+        same as the UI file <code>factory_list.ui</code> in Section
         30.</li>
         <li>70-77: Sets the “sorter” property to GtkStringSorter object.
         This object provides a sorter that compares strings. It has
@@ -343,16 +341,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;sorter&quot;</span>&gt;columnview&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">binding</span>&gt;</span></code></pre></div>
-        <p>Therefore, <code>columnview</code> determines the way how to
-        sort the list model. The “sorter” property of GtkColumnView is
-        read-only property and it is a special sorter. It reflects the
-        user’s sorting choice. If a user clicks the header of a column,
-        then the sorter (“sorter” property) of the column is referenced
-        by “sorter” property of the GtkColumnView. If the user clicks
-        the header of another column, then the “sorter” property of the
-        GtkColumnView refers to the newly clicked column’s “sorter”
-        property.</p>
-        <p>The binding above makes a indirect connection between the
+        <p>Therefore, <code>columnview</code> determines how to sort the
+        list model. The “sorter” property of GtkColumnView is a
+        read-only GtkSorter and it always refers to the current column’s
+        “sorter” property. When a user clicks a column header,
+        GtkColumnView updates its own “sorter” property to point to that
+        column’s sorter.</p>
+        <p>The binding above makes an indirect connection between the
         “sorter” property of GtkSortListModel and the “sorter” property
         of each column.</p>
         <p>GtkSorter compares two items (GObject or its descendant).
@@ -371,7 +366,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         by calling <code>gtk_expression_evaluate</code> function. It
         assigns each item to the second argument (‘this’ object) of the
         function.</p>
-        <p>In the ui file above, the GtkExpression is in the line 71 to
+        <p>In the UI file above, the GtkExpression is in the line 71 to
         76.</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkStringSorter&quot;</span>&gt;</span>
@@ -385,7 +380,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <div class="sourceCode" id="cb4"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>get_file_name <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup<span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a><span class="op">}</span></span></code></pre></div>
         <p>The function is given the item (GFileInfo) of the
         GtkSortListModel as an argument (<code>this</code> object). But
@@ -435,13 +430,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-6"><a href="#cb8-6"></a>  <span class="cf">return</span> dt <span class="op">?</span> g_date_time_to_unix <span class="op">(</span>dt<span class="op">)</span> <span class="op">:</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a><span class="op">}</span></span></code></pre></div>
         <p>It gets the modification date and time (GDateTime type) of
-        <code>info</code>. Then it gets a unix time from
-        <code>dt</code>. Unix time, sometimes called unix epoch, is the
+        <code>info</code>. Then it gets a Unix time from
+        <code>dt</code>. Unix time, sometimes called Unix epoch, is the
         number of seconds that have elapsed since 00:00:00 UTC on 1
-        January 1970. It returns the unix time (gint64 type).</p>
+        January 1970. It returns the Unix time as a gint64.</p>
         <h2 id="column.c">column.c</h2>
-        <p><code>column.c</code> is as follows. It is simple and short
-        thanks to <code>column.ui</code>.</p>
+        <p><code>column.c</code> is as follows. The code is simple and
+        short thanks to <code>column.ui</code>.</p>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
@@ -479,7 +474,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-34"><a href="#cb9-34"></a><span class="co">/* Functions (closures) for GtkSorter */</span></span>
 <span id="cb9-35"><a href="#cb9-35"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb9-36"><a href="#cb9-36"></a>get_file_name <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-37"><a href="#cb9-37"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup<span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
+<span id="cb9-37"><a href="#cb9-37"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
 <span id="cb9-38"><a href="#cb9-38"></a><span class="op">}</span></span>
 <span id="cb9-39"><a href="#cb9-39"></a></span>
 <span id="cb9-40"><a href="#cb9-40"></a>goffset</span>
@@ -534,25 +529,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-89"><a href="#cb9-89"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb9-90"><a href="#cb9-90"></a><span class="op">}</span></span></code></pre></div>
         <h2 id="compilation-and-execution.">Compilation and
-        execution.</h2>
+        Execution.</h2>
         <p>All the source files are in <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/column"><code>src/column</code></a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/column/">src/column</a>
         directory. Change your current directory to the directory and
         type the following.</p>
-        <pre><code>$ cd src/colomn
+        <pre><code>$ cd src/column
 $ meson setup _build
 $ ninja -C _build
 $ _build/column</code></pre>
         <p>Then, a window appears.</p>
         <figure>
-        <img src="/images/column_view.png"
-        style="width:11.3cm;height:9cm" alt="Column View" />
+        <img src="/images/column_view.png" alt="Column View" />
         <figcaption aria-hidden="true">Column View</figcaption>
         </figure>
-        <p>If you click the header of a column, then the whole lists are
+        <p>If you click the header of a column, then the entire list is
         sorted by the column. If you click the header of another column,
-        then the whole lists are sorted by the newly selected
-        column.</p>
+        then the list is sorted by the newly selected column.</p>
         <p>GtkColumnView is very useful and it can manage very big
         GListModel. It is possible to use it for file list, application
         list, database frontend and so on.</p>

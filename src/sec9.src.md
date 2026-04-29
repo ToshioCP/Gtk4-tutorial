@@ -1,6 +1,6 @@
-# GtkBuilder and UI file
+# GtkBuilder and UI Files
 
-## New, Open, Save and Close buttons
+## New, Open, Save and Close Buttons
 
 We made a very simple editor in the previous section.
 It reads files at the start and writes them out at the end of the program.
@@ -8,7 +8,11 @@ It works, but is not so good.
 It would be better if we had "New", "Open", "Save" and "Close" buttons.
 This section describes how to put those buttons into the window.
 
+@@@if pdf
 ![Screenshot of the file editor](/images/screenshot_tfe2.png){width=9.3cm height=6.825cm}
+@@@else
+![Screenshot of the file editor](/images/screenshot_tfe2.png)
+@@@end
 
 The screenshot above shows the layout.
 The function `app_open` in the source code `tfe2.c` is as follows.
@@ -27,7 +31,7 @@ The first child is a horizontal box.
 The second child is a GtkNotebook.
 - 33-34: Creates a GtkBox instance `boxh` and appends it to `boxv` as the first child.
 - 36-41: Creates three dummy labels.
-The labels `dmy1` and `dmy3` has a character width of ten.
+The labels `dmy1` and `dmy3` have ten characters wide.
 The other label `dmy2` has the hexpand property set to TRUE.
 This makes the label expand horizontally to be as long as possible.
 - 42-45: Creates four buttons.
@@ -36,15 +40,15 @@ This makes the label expand horizontally to be as long as possible.
 This makes it expand horizontally and vertically to be as big as possible.
 It is appended to `boxv` as the second child.
 
-The number of widget-build lines is 33(=58-26+1).
+The number of lines for building widgets is 33 (= 58-26+1).
 We also needed many variables (`boxv`, `boxh`, `dmy1`, ...), and most of them are used only for building the widgets.
-Is there any good solution to reduce this work?
+Is there a better way to reduce this overhead?
 
 Gtk provides GtkBuilder.
 It reads user interface (UI) data and builds a window.
-It reduces this cumbersome work.
+It simplifies this tedious process.
 
-## The UI File
+## UI Files
 
 Look at the UI file `tfe3.ui` that defines the widget structure.
 
@@ -68,26 +72,26 @@ the `title` property is "file editor", the `default-width` property is 600, and 
 - 7: Child tag means a child widget.
 For example, line 7 tells us that GtkBox object is a child widget of `win`.
 
-Compare this ui file and the lines 26-58 in the `app_open` function of `tfe2.c`.
+Compare this UI file with lines 26-58 in the `app_open` function of `tfe2.c`.
 Both build the same window with its descendant widgets.
 
-You can check the ui file with `gtk4-builder-tool`.
+You can check the UI file with `gtk4-builder-tool`.
 
-- `gtk4-builder-tool validate <ui file name>` validates the ui file.
-If the ui file includes some syntactical error, `gtk4-builder-tool` prints the error.
-- `gtk4-builder-tool simplify <ui file name>` simplifies the ui file and prints the result.
-If the `--replace` option is given, it replaces the ui file with the simplified one.
-If the ui file specifies the default value of a property, that property will be removed.
+- `gtk4-builder-tool validate <ui file name>` validates the UI file.
+If the UI file contains any syntax errors, `gtk4-builder-tool` prints the error.
+- `gtk4-builder-tool simplify <ui file name>` simplifies the UI file and prints the result.
+If the `--replace` option is given, it replaces the UI file with the simplified one.
+If the UI file specifies the default value of a property, that property will be removed.
 For example, the default orientation is horizontal so the simplification removes line 12.
 Some values are simplified too.
 For example, "TRUE" and "FALSE" become "1" and "0", respectively.
 However, "TRUE" and "FALSE" are better for maintenance.
 
-It is a good idea to check your ui file before compiling.
+It is a good idea to check your UI file before compiling.
 
 ## GtkBuilder
 
-GtkBuilder builds widgets based on a ui file.
+GtkBuilder builds widgets based on a UI file.
 
 ~~~C
 GtkBuilder *build;
@@ -101,15 +105,15 @@ g_object_unref(build);
 
 The function `gtk_builder_new_from_file` reads the file `tfe3.ui`.
 Then, it builds the widgets and creates a GtkBuilder object.
-All the widgets are connected based on the parent-children relationship described in the ui file.
-We can retrieve objects from the builder object with the `gtk_builder_get_object` function.
-The top level window, which has an id of "win" in the ui file, is taken and assigned to the variable `win`.
+All the widgets are connected based on the parent-children relationship described in the UI file.
+We can retrieve objects from the builder object using the `gtk_builder_get_object` function.
+The top level window, which has an id of "win" in the UI file, is taken and assigned to the variable `win`.
 The window's application property is set to `app` with the `gtk_window_set_application` function.
-The GtkNotebook, which has the id "nb" in the ui file, is also taken and assigned to the variable `nb`.
+The GtkNotebook, which has the id "nb" in the UI file, is also taken and assigned to the variable `nb`.
 After the window and application are connected, we no longer need the GtkBuilder instance.
 It is released with the `g_object_unref` function.
 
-The ui file reduces lines in the C source file.
+The UI file reduces lines in the C source file.
 
 @@@shell
 cd tfe; diff tfe2.c tfe3.c
@@ -117,7 +121,7 @@ cd tfe; diff tfe2.c tfe3.c
 
 `61,104c62,66` means that 44 (=104-61+1) lines are changed to 5 (=66-62+1) lines.
 Therefore, 39 lines are reduced.
-Using a ui file not only shortens C source files, but also makes the widgets' structure clear.
+Using a UI file not only shortens C source files, but also makes the widgets' structure clear.
 
 Now I'll show you the `app_open` function in the C file `tfe3.c`.
 
@@ -125,9 +129,9 @@ Now I'll show you the `app_open` function in the C file `tfe3.c`.
 tfe/tfe3.c app_open
 @@@
 
-The whole source code of `tfe3.c` is stored in the [src/tfe](tfe) directory.
+The whole source code of `tfe3.c` is stored in the [/src/tfe](tfe/) directory.
 
-### Using ui string
+### Using UI String
 
 GtkBuilder can build widgets with a string.
 Use `gtk_builder_new_from_string` instead of `gtk_builder_new_from_file`.
@@ -152,11 +156,11 @@ build = gtk_builder_new_from_string (uistring, -1);
 ~~~
 
 This method has an advantage and disadvantage.
-The advantage is that the ui string is written in the source code.
-So, no ui file is needed at runtime.
-The disadvantage is that writing the C string is a bit bothersome,
+The advantage is that the UI string is written in the source code.
+So, no UI file is needed at runtime.
+The disadvantage is that defining the UI as a C string can be tedious,
 as the xml needs quoting and special characters need escaping.
-If you want to use this method, you should write a script that transforms ui files into C-strings.
+If you want to use this method, you should write a script that converts UI files into C string literals.
 
 - Replace backslashes with two backslashes.
 - Add a backslash before each double quote.
@@ -164,10 +168,10 @@ If you want to use this method, you should write a script that transforms ui fil
 
 Or, if you have `jq` installed, you can use `jq -R < tfe3.ui` to do the quoting and escaping for you.
 
-### Gresource
+### Gresources
 
-A Gresource is similar to a string, except that a Gresource is compressed binary data, not text data.
-The `glib-compile-resources` program compiles ui files into Gresources.
+A Gresource is similar to a string, except that a Gresource is a binary data.
+The `glib-compile-resources` program compiles UI files into Gresources.
 It can compile not only text files but also binary files such as images, sounds and so on.
 After compilation, it bundles them up into one Gresource object.
 
@@ -182,7 +186,7 @@ tfe/tfe3.gresource.xml
 However, this xml has only one gresource.
 - 3: The gresource has a prefix `/com/github/ToshioCP/tfe3`.
 - 4: The name of the gresource is `tfe3.ui`.
-The resource will be pointed with `/com/github/ToshioCP/tfe3/tfe3.ui` by GtkBuilder.
+The resource will be referred to as /com/github/ToshioCP/tfe3/tfe3.ui by GtkBuilder.
 The pattern is "prefix" + "name".
 If you want to add more files, insert them between line 4 and 5.
 
@@ -247,5 +251,5 @@ $ ./a.out tfe2.c
 
 A window appears and it is the same as the screenshot at the beginning of this page.
 
-Generally, resources are best for C programs.
-If you use other languages like Ruby, strings are better than resources.
+Generally, resources are the best for C programs.
+Strings are easier to handle in some interpreted languages, but resources are still a powerful option.

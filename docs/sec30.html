@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>GtkGridView and activate signal</title>
+  <title>GtkGridView and Activate Signal</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -94,30 +94,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
         <h1 id="gtkgridview-and-activate-signal">GtkGridView and
-        activate signal</h1>
+        Activate Signal</h1>
         <p>GtkGridView is similar to GtkListView. It displays a
         GListModel as a grid, which is like a square tessellation.</p>
         <figure>
-        <img src="/images/list4.png" style="width:10cm;height:6.6cm"
-        alt="Grid" />
+        <img src="/images/list4.png" alt="Grid" />
         <figcaption aria-hidden="true">Grid</figcaption>
         </figure>
         <p>This is often seen when you use a file browser like GNOME
         Files (Nautilus).</p>
         <p>In this section, let’s make a very simple file browser
         <code>list4</code>. It just shows the files in the current
-        directory. And a user can choose list or grid by clicking on
-        buttons in the tool bar. Each item in the list or grid has an
-        icon and a filename. In addition, <code>list4</code> provides
-        the way to open the <code>tfe</code> text editor to show a text
-        file. A user can do that by double clicking on an item or
-        pressing enter key when an item is selected.</p>
+        directory. And a user can choose either list or grid layout by
+        clicking on buttons in the tool bar. Each item in the list or
+        grid has an icon and a filename. In addition, <code>list4</code>
+        provides the way to open the <code>tfe</code> text editor to
+        show a text file. A user can do that by double clicking on an
+        item or pressing enter key when an item is selected.</p>
         <h2 id="gtkdirectorylist">GtkDirectoryList</h2>
         <p>GtkDirectoryList implements GListModel and it contains
         information of files in a certain directory. The items of the
         list are GFileInfo objects.</p>
         <p>In the <code>list4</code> source files, GtkDirectoryList is
-        described in a ui file and built by GtkBuilder. The
+        described in a UI file and built by GtkBuilder. The
         GtkDirectoryList instance is assigned to the “model” property of
         a GtkSingleSelection instance. And the GtkSingleSelection
         instance is assigned to the “model” property of a GListView or
@@ -125,18 +124,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <pre><code>GtkListView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList
 GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList</code></pre>
         <figure>
-        <img src="/images/directorylist.png"
-        style="width:10cm;height:7.5cm" alt="DirectoryList" />
+        <img src="/images/directorylist.png" alt="DirectoryList" />
         <figcaption aria-hidden="true">DirectoryList</figcaption>
         </figure>
-        <p>The following is a part of the ui file
+        <p>The following is a part of the UI file
         <code>list4.ui</code>.</p>
         <div class="sourceCode" id="cb2"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directorylist&quot;</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">property</span>&gt;</span>
@@ -146,7 +144,7 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkGridView&quot;</span><span class="ot"> id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
-        <p>GtkDirectoryList has an “attributes” property. It is
+        <p>GtkDirectoryList has an “attributes” property. They are
         attributes of GFileInfo such as “standard::name”,
         “standard::icon” and “standard::content-type”.</p>
         <ul>
@@ -154,17 +152,17 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
         <li>standard::icon is an icon of the file. It is a GIcon
         object.</li>
         <li>standard::content-type is a content-type. Content-type is
-        the same as mime type for the internet. For example,
-        “text/plain” is a text file, “text/x-csrc” is a C source code
-        and so on. (“text/x-csrc”is not registered to IANA media types.
-        Such “x-” subtype is not a standard mime type.) Content type is
-        also used by desktop systems.</li>
+        the same as MIME type. For example, “text/plain” is a text file,
+        “text/x-csrc” is a C source code and so on. (“text/x-csrc”is not
+        registered to IANA media types. Such “x-” subtype is not a
+        standard mime type.) Content type is also used by desktop
+        systems.</li>
         </ul>
         <p>GtkGridView uses the same GtkSingleSelection instance
         (<code>singleselection</code>). So, its model property is set to
         it.</p>
-        <h2 id="ui-file-of-the-window">Ui file of the window</h2>
-        <p>The window is built with the following ui file. (See the
+        <h2 id="ui-file-of-the-window">Ui File of the Window</h2>
+        <p>The window is built with the following UI file. (See the
         screenshot at the beginning of this section).</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
@@ -254,25 +252,26 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
         <code>win.view</code>. This action has a parameter. Such action
         consists of prefix, action name and parameter. The prefix of the
         action is <code>win</code>, which means the action belongs to
-        the top level window. The prefix gives the scope of the action.
-        The action name is <code>view</code>. The parameters are
-        <code>list</code> or <code>grid</code>, which show the state of
-        the action. A parameter is also called a target, because it is a
-        target to which the action changes its state. We often write the
-        detailed action like “win.view::list” or “win.view::grid”.</li>
+        the top level window (GtkApplicationWindow). The prefix defines
+        the scope of the action. The action name is <code>view</code>.
+        The parameters are <code>list</code> or <code>grid</code>, which
+        show the state of the action. A parameter is also called a
+        target, because it is a target to which the action changes its
+        state. We often write the detailed action like “win.view::list”
+        or “win.view::grid”.</li>
         <li>21-22: The properties “action-name” and “action-target”
-        belong to GtkActionable interface. GtkButton implements
-        GtkActionable. The action name is “win.view” and the target is
-        “list”. Generally, a target is GVariant, which can be string,
-        integer, float and so on. You need to use GVariant text format
-        to write GVariant value in ui files. If the type of the GVariant
-        value is string, then the value with GVariant text format is
-        bounded by single quotes or double quotes. Because ui file is
-        xml format text, single quote cannot be written without escape.
-        Its escape sequence is &amp;apos;. Therefore, the target ‘list’
-        is written as &amp;apos;list&amp;apos;. Because the button is
-        connected to the action, “clicked” signal handler isn’t
-        needed.</li>
+        belong to GtkActionable interface. The GtkButton class
+        implements the GtkActionable interface. The action name is
+        “win.view” and the target is “list”. Generally, a target is
+        GVariant, which can be string, integer, float and so on. You
+        need to use GVariant text format to write GVariant value in UI
+        files. If the type of the GVariant value is string, then the
+        value with GVariant text format is enclosed in single quotes or
+        double quotes. Because UI files are xml format text, single
+        quote cannot be written without escaping it. Its escape sequence
+        is &amp;apos;. Therefore, the target ‘list’ is written as
+        &amp;apos;list&amp;apos;. Because the button is connected to the
+        action, “clicked” signal handler isn’t needed.</li>
         <li>23-27: The child widget of the button is GtkImage. GtkImage
         has a “resource” property. It is a GResource and GtkImage reads
         an image data from the resource and sets the image. This
@@ -293,7 +292,7 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
         <h2 id="factories">Factories</h2>
         <p>Each view (GtkListView and GtkGridView) has its own factory
         because its items have different structure of widgets. The
-        factories are GtkBuilderListItemFactory objects. Their ui files
+        factories are GtkBuilderListItemFactory objects. Their UI files
         are as follows.</p>
         <p>factory_list.ui</p>
         <div class="sourceCode" id="cb5"><pre
@@ -381,7 +380,7 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
 &gt;             &lt;property name=&quot;xalign&quot;&gt;0.5&lt;/property&gt;
 $</code></pre>
         <p>Two properties “gicon” (property of GtkImage) and “label”
-        (property of GtkLabel) are in the ui files above. Because
+        (property of GtkLabel) are in the UI files above. Because
         GFileInfo doesn’t have properties correspond to icon or
         filename, the factory uses closure tag to bind “gicon” and
         “label” properties to GFileInfo information. A function
@@ -404,10 +403,10 @@ $</code></pre>
 <span id="cb8-13"><a href="#cb8-13"></a><span class="op">}</span></span></code></pre></div>
         <p>One important thing is the ownership of the return values.
         The return value is owned by the caller. So,
-        <code>g_obect_ref</code> or <code>g_strdup</code> is
+        <code>g_object_ref</code> or <code>g_strdup</code> is
         necessary.</p>
         <h2 id="an-activate-signal-handler-of-the-button-action">An
-        activate signal handler of the button action</h2>
+        Activate Signal Handler of the Button Action</h2>
         <p>An activate signal handler <code>view_activate</code>
         switches the view. It does two things.</p>
         <ul>
@@ -433,16 +432,16 @@ $</code></pre>
 <span id="cb9-16"><a href="#cb9-16"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
 <span id="cb9-17"><a href="#cb9-17"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
 <span id="cb9-18"><a href="#cb9-18"></a><span class="op">}</span></span></code></pre></div>
-        <p>The second parameter of this handler is the target of the
-        clicked button. Its type is GVariant.</p>
+        <p>The second parameter of this handler is the target value
+        associated with the clicked button. Its type is GVariant.</p>
         <ul>
         <li>If <code>btnlist</code> has been clicked, then
         <code>parameter</code> is a GVariant of the string “list”.</li>
         <li>If <code>btngrid</code> has been clicked, then
         <code>parameter</code> is a GVariant of the string “grid”.</li>
         </ul>
-        <p>The third parameter <code>user_data</code> points NULL and it
-        is ignored here.</p>
+        <p>The third parameter <code>user_data</code> points to NULL and
+        it is ignored here.</p>
         <ul>
         <li>3: <code>g_variant_get_string</code> gets the string from
         the GVariant variable.</li>
@@ -456,7 +455,7 @@ $</code></pre>
         <li>17: Changes the state of the action.</li>
         </ul>
         <h2 id="activate-signal-on-gtklistview-and-gtkgridview">Activate
-        signal on GtkListView and GtkGridView</h2>
+        Signal on GtkListView and GtkGridView</h2>
         <p>Views (GtkListView and GtkGridView) have an “activate”
         signal. It is emitted when an item in the view is double clicked
         or the enter key is pressed. You can do anything you like by
@@ -484,14 +483,14 @@ $</code></pre>
         <p>The second parameter of each handler is the position of the
         item (GFileInfo) of the GListModel. So you can get the item with
         <code>g_list_model_get_item</code> function.</p>
-        <h3 id="content-type-and-application-launch">Content type and
-        application launch</h3>
+        <h3 id="content-type-and-application-launch">Content Type and
+        Application Launch</h3>
         <p>The function <code>launch_tfe_with_file</code> gets a file
         from the GFileInfo instance. If the file is a text file, it
         launches <code>tfe</code> with the file.</p>
         <p>GFileInfo has information about file type. The file type is
-        like “text/plain”, “text/x-csrc” and so on. It is called content
-        type. Content type can be got with
+        like “text/plain”, “text/x-csrc” and so on. This is referred to
+        as the content type. Content type can be got with
         <code>g_file_info_get_content_type</code> function.</p>
         <div class="sourceCode" id="cb11"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -537,13 +536,13 @@ $</code></pre>
         <li>14-16: Prints the content type if “debug” is defined. This
         is only useful to know a content type of a file. If you don’t
         want this, delete or uncomment the definition
-        <code>#define debug 1</code> iat line 6 in the source file.</li>
-        <li>17-22: If no content type or the content type doesn’t begin
-        with “text/”,the function returns.</li>
+        <code>#define debug 1</code> at line 6 in the source file.</li>
+        <li>17-22: If there is no content type, or if it doesn’t begin
+        with “text/”, the function returns.</li>
         <li>23: Creates GAppInfo object of <code>tfe</code> application.
         GAppInfo is an interface and the variable <code>appinfo</code>
-        points a GDesktopAppInfo instance. GAppInfo is a collection of
-        information of applications.</li>
+        points to a GDesktopAppInfo instance. GAppInfo is a collection
+        of information of applications.</li>
         <li>32: Launches the application (<code>tfe</code>) with an
         argument <code>file</code>. <code>g_app_info_launch</code> has
         four parameters. The first parameter is GAppInfo object. The
@@ -562,9 +561,9 @@ $</code></pre>
         then it launches GNOME text editor with the file. Such feature
         comes from desktop.</p>
         <h2 id="compilation-and-execution">Compilation and
-        execution</h2>
+        Execution</h2>
         <p>The source files are located in <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/list4">src/list4</a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/list4/">/src/list4</a>
         directory. To compile and execute list4, type as follows.</p>
         <pre><code>$ cd list4 # or cd src/list4. It depends your current directory.
 $ meson setup _build
@@ -576,17 +575,16 @@ $ _build/list4</code></pre>
         editor runs with the argument “list4.c”. The following is the
         screenshot.</p>
         <figure>
-        <img src="/images/screenshot_list4.png"
-        style="width:8cm;height:5.62cm" alt="Screenshot" />
+        <img src="/images/screenshot_list4.png" alt="Screenshot" />
         <figcaption aria-hidden="true">Screenshot</figcaption>
         </figure>
         <h2 id="gbytes-property-of-gtkbuilderlistitemfactory">“gbytes”
-        property of GtkBuilderListItemFactory</h2>
+        Property of GtkBuilderListItemFactory</h2>
         <p>GtkBuilderListItemFactory has “gbytes” property. The property
-        contains a byte sequence of ui data. If you use this property,
+        contains a byte sequence of UI data. If you use this property,
         you can put the contents of <code>factory_list.ui</code> and
-        <code>factory_grid.ui</code>into <code>list4.ui</code>. The
-        following shows a part of the new ui file
+        <code>factory_grid.ui</code> into <code>list4.ui</code>. The
+        following shows a part of the new UI file
         (<code>list5.ui</code>).</p>
         <div class="sourceCode" id="cb13"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
@@ -643,13 +641,13 @@ $ _build/list4</code></pre>
         ‘&lt;’ or ‘&gt;’, is recognized literally. Therefore, the text
         between “&lt;[CDATA[” and ”]]&gt;” is inserted to “bytes”
         property as it is.</p>
-        <p>This method decreases the number of ui files. But, the new ui
+        <p>This approach reduces the number of UI files. But, the new UI
         file is a bit complicated especially for the beginners. If you
-        feel some difficulty, it is better for you to separate the ui
+        feel some difficulty, it is better for you to separate the UI
         file.</p>
         <p>A directory <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/list5">src/list5</a>
-        includes the ui file above.</p>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/list5/">/src/list5</a>
+        includes the UI file above.</p>
       </div>
     </div>
   </main>

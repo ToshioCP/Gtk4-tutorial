@@ -115,7 +115,7 @@ save_dialog_cb(GObject *source_object, GAsyncResult *res, gpointer data) {
       g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
     }
   }
-  if (err) {
+  if (err && err->code != GTK_DIALOG_ERROR_DISMISSED) {
     alert_dialog = gtk_alert_dialog_new ("%s", err->message);
     gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
     g_object_unref (alert_dialog);

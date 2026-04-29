@@ -172,9 +172,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         above.</p>
         <p>If you’ve downloaded this repository, you don’t need to
         create the file. There’s the same file at <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/pr1.c"><code>/src/misc/pr1.c</code></a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/pr1.c">/src/misc/pr1.c</a>
         in your local repository. All the example codes are under the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src"><code>src</code></a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/">/src</a>
         directory as well.</p>
         <pre><code>$ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`</code></pre>
         <p>The C compiler gcc generates an executable file,
@@ -372,8 +372,8 @@ GtkWidget -- GtkWindow</code></pre>
         <p>By this definition, it returns a pointer to GtkWidget, not
         GtkWindow. It actually creates a new GtkWindow instance (not
         GtkWidget) but returns a pointer to GtkWidget. However,the
-        pointer points the GtkWidget and at the same time it also points
-        GtkWindow that contains GtkWidget in it.</p>
+        pointer points to the GtkWidget and at the same time it also
+        points to the GtkWindow that contains the GtkWidget in it.</p>
         <p>If you want to use <code>win</code> as a pointer to a
         GtkWindow type instance, you need to cast it.</p>
         <div class="sourceCode" id="cb15"><pre

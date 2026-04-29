@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>How to build tfe (text file editor)</title>
+  <title>How to Build tfe (Text File Editor)</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -31,20 +31,20 @@
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="how-to-build-tfe-text-file-editor">How to build tfe
-        (text file editor)</h1>
+        <h1 id="how-to-build-tfe-text-file-editor">How to Build tfe
+        (Text File Editor)</h1>
         <h2 id="how-to-compile-and-execute-the-text-editor-tfe.">How to
-        compile and execute the text editor ‘tfe’.</h2>
-        <p>First, source files are in the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4-tutorila
+        Compile and Execute the Text Editor ‘tfe’.</h2>
+        <p>First, the source files are in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4-tutorial
         repository</a>. How to download them is written at the end of
         the <a href="sec15.html">previous section</a>.</p>
-        <p>The following is the instruction of compilation and
+        <p>The following is the instruction for compilation and
         execution.</p>
         <ul>
         <li>You need meson and ninja.</li>
-        <li>If you have installed gtk4 from the source, you need to set
-        environment variables to suit your installation.</li>
+        <li>If you have installed gtk4 from source, you need to set
+        environment variables to match your installation.</li>
         <li>Change your current directory to <code>src/tfe5</code>
         directory.</li>
         <li>Type <code>meson setup _build</code> for configuration.</li>
@@ -58,7 +58,7 @@
         <code>Close</code>.</p>
         <ul>
         <li>Click on <code>Open</code> button, then a file chooser
-        dialog appears. Choose a file in the list and click on
+        dialog appears. Choose a file from the list and click on
         <code>Open</code> button. Then the file is read and a new
         Notebook Page appears.</li>
         <li>Edit the file and click on <code>Save</code> button, then
@@ -71,18 +71,20 @@
         </ul>
         <p>This is a very simple editor. It is a good practice for you
         to add more features.</p>
-        <h2 id="total-number-of-lines-words-and-characters">Total number
-        of lines, words and characters</h2>
+        <h2 id="total-number-of-lines-words-and-characters">Total Number
+        of Lines, Words and Characters</h2>
+        <p>The command below is the output of <code>wc</code> executed
+        in the <code>src</code> directory.</p>
         <pre><code>$ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
   110   335  3602 tfe5/tfeapplication.c
     6     9   153 tfe5/tfe.gresource.xml
   144   390  3668 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
-  235   821  8473 tfetextview/tfetextview.c
+  235   825  8516 tfetextview/tfetextview.c
    32    54   624 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  613  1747 19128 total
+  613  1751 19171 total
 $</code></pre>
       </div>
     </div>

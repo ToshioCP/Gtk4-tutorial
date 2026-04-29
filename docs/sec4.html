@@ -131,7 +131,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-28"><a href="#cb1-28"></a><span class="op">}</span></span></code></pre></div>
         <p>Save this program to a file <code>lb1.c</code>. (You can use
         <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/lb1.c"><code>/src/misc/lb1.c</code></a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/lb1.c">/src/misc/lb1.c</a>
         if you’ve downloaded this repository.) Then compile and run
         it.</p>
         <pre><code>$ cd src/misc
@@ -322,7 +322,7 @@ $</code></pre>
         <code>GtkWindow *</code> and the latter is
         <code>GtkWidget *</code>. The compiler doesn’t complain because
         <code>g_signal_connect</code> uses gpointer (general type of
-        pointer). In this program the instance pointed by
+        pointer). In this program the instance pointed to by
         <code>win</code> is a GtkApplicationWindow object. It is a
         descendant of GtkWindow and GtkWidget class, so both
         <code>GtkWindow *</code> and <code>GtkWidget *</code> are
@@ -338,7 +338,7 @@ $</code></pre>
         <p>The most important change is the fourth argument of the
         <code>g_signal_connect</code>. This argument is described as
         “data to pass to the handler” in the definition of <a
-        href="https://docs.gtk.org/gobject/func.signal_connect.html"><code>g_signal_connect</code></a>.</p>
+        href="https://docs.gtk.org/gobject/func.signal_connect.html">g_signal_connect</a>.</p>
         <h3 id="gtkbox">GtkBox</h3>
         <p>GtkWindow and GtkApplicationWindow can have only one child.
         If you want to add two or more widgets in a window, you need a

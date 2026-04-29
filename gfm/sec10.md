@@ -1,8 +1,8 @@
 Up: [README.md](../README.md),  Prev: [Section 9](sec9.md), Next: [Section 11](sec11.md)
 
-# Build system
+# Build System
 
-## Managing big source files
+## Managing Big Source Files
 
 We've compiled a small editor so far.
 The program is not complicated yet, but if it grows bigger, it will be difficult to maintain.
@@ -13,7 +13,7 @@ We need to divide and organize it.
 - There are two compilers, `gcc` and `glib-compile-resources`.
 We should control them with one build tool.
 
-## Divide a C source file into two parts.
+## Divide a C Source File into Two Parts.
 
 When you divide C source file into several parts, each file should contain one thing.
 For example, our source has two things, the definition of TfeTextView and functions related to GtkApplication and GtkApplicationWindow.
@@ -25,12 +25,12 @@ It is a good idea to separate them into two files, `tfetextview.c` and `tfe.c`.
 Now we have three source files, `tfetextview.c`, `tfe.c` and `tfe3.ui`.
 The `3` of `tfe3.ui` is like a version number.
 Managing version with filenames is one possible idea but it also has a problem.
-You need to rewrite filename in each version and it affects to contents of source files that refer to filenames.
+You need to rename files in each version, and this affects the contents of source files that refer to those filenames.
 So, we should take `3` away from the filename.
 
 In `tfe.c` the function `tfe_text_view_new` is invoked to create a TfeTextView instance.
 But it is defined in `tfetextview.c`, not `tfe.c`.
-The lack of the declaration (not definition) of `tfe_text_view_new` makes an error when `tfe.c` is compiled.
+The absence of a declaration (not definition) of `tfe_text_view_new` will cause a compilation error when `tfe.c` is compiled.
 The declaration is necessary in `tfe.c`.
 That public information is usually written in header files.
 These have a `.h` suffix like `tfetextview.h`.
@@ -172,7 +172,7 @@ main (int argc, char **argv) {
 
 ```
 
-The ui file `tfe.ui` is the same as `tfe3.ui` in the previous section.
+The UI file `tfe.ui` is the same as `tfe3.ui` in the previous section.
 
 `tfe.gresource.xml`
 
@@ -185,11 +185,11 @@ The ui file `tfe.ui` is the same as `tfe3.ui` in the previous section.
 </gresources>
 ```
 
-Dividing a file makes it easy to maintain.
+Splitting the source code into multiple files makes maintenance easier.
 But now we face a new problem.
-The number of build steps increased.
+The number of build steps has increased.
 
-- Compiling the ui file `tfe.ui` into `resources.c`.
+- Compiling the UI file `tfe.ui` into `resources.c`, using `tfe.gresource.xml`.
 - Compiling `tfe.c` into `tfe.o` (object file).
 - Compiling `tfetextview.c` into `tfetextview.o`.
 - Compiling `resources.c` into `resources.o`.
@@ -199,11 +199,11 @@ Build tools manage the steps.
 
 ## Meson and Ninja
 
-I'll explain the Meson and Ninja build tools.
+I will explain the Meson and Ninja build systems.
 
 Other possible tools are Make and Autotools.
 They are traditional tools but slower than Ninja.
-So, many developers have switched to Meson and Ninja lately.
+Many developers have recently migrated to Meson and Ninja.
 For example, GTK 4 uses them.
 
 You need to create `meson.build` file first.
@@ -240,14 +240,14 @@ For example, the fourth argument has a key `dependencies` , a delimiter (`:`) an
 This type of parameter is called *keyword parameter* or *kwargs*.
 The value `gtkdep` is defined in line 3.
 The last argument tells Meson and Ninja that this project shouldn't install the executable file.
-So it is just compiled in the build directory.
+it is only built within the build directory.
 
 Now run meson and ninja.
 
     $ meson setup _build
     $ ninja -C _build
 
-meson has two arguments.
+The meson command takes two arguments.
 
 - setup: The first argument is a command of meson.
 Setup is the default, so you can leave it out.

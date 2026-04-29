@@ -1,19 +1,19 @@
 # Widgets (3)
 
-## Open signal
+## Open Signal
 
 ### G\_APPLICATION\_HANDLES\_OPEN flag
 
 We made a very simple editor in the previous section with GtkTextView, GtkTextBuffer and GtkScrolledWindow.
 We will add file-read ability to the program and improve it to a file viewer.
 
-The easiest way to give a filename is to use a command line argument.
+The simplest way to specify a filename is to use a command line argument.
 
 ~~~
 $ ./a.out filename
 ~~~
 
-The program will open the file and insert its contents into the GtkTextBuffer.
+The program will open the file and insert its contents into a GtkTextBuffer.
 
 To do this, we need to know how GtkApplication (or GApplication) recognizes arguments.
 This is described in the [GIO API Reference -- Application](https://docs.gtk.org/gio/class.Application.html).
@@ -37,13 +37,13 @@ We've already used `G_APPLICATION_DEFAULT_FLAGS`, as it is the simplest option, 
 If you give arguments, an error will occur.
 
 The flag `G_APPLICATION_HANDLES_OPEN` is the second simplest option.
-It allows arguments but only filenames.
+It allows command line arguments, specifically filenames.
 
 ~~~C
 app = gtk_application_new ("com.github.ToshioCP.tfv3", G_APPLICATION_HANDLES_OPEN);
 ~~~
 
-### open signal
+### Open Signal
 
 When `G_APPLICATION_HANDLES_OPEN` flag is given to the application, two signals are available.
 
@@ -68,19 +68,19 @@ The parameters are:
 - self: the application instance (usually GtkApplication)
 - files: an array of GFiles. [array length=n\_files] [element-type GFile]
 - n_files: the number of the elements of `files`
-- hint: a hint provided by the calling instance (usually it can be ignored)
+- hint: an optional context string provided by the caller (often unused)
 - user_data: user data that is set when the signal handler was connected.
 
-## File viewer
+## File Viewer
 
-### What is a file viewer?
+### What is a File Viewer?
 
 A file viewer is a program that displays text files.
 Our file viewer is as follows.
 
 - When arguments are given, it recognizes the first argument as a filename and opens it.
 - The second argument and after are ignored.
-- If there's no argument, it shows an error message and quit.
+- If there is no argument, it shows an error message and quits.
 - If it successfully opens the file, it reads the contents of the file, inserts them to GtkTextBuffer and shows the window.
 - If it fails to open the file, it shows an error message and quit.
 
@@ -91,7 +91,7 @@ tfv/tfv3.c
 @@@
 
 Save it as `tfv3.c`.
-If you've downloaded this repository, the file is `src/tfv/tfv3.c`.
+The source code can be found at [/src/tfv/tfv3.c](tfv/tfv3.c) in this repository.
 Compile and run it.
 
 ~~~
@@ -99,7 +99,11 @@ $ comp tfv3
 $ ./a.out tfv3.c
 ~~~
 
+@@@if pdf
 ![File viewer](/images/screenshot_tfv3.png){width=6.3cm height=5.325cm}
+@@@else
+![File viewer](/images/screenshot_tfv3.png)
+@@@end
 
 The function `main` has only two changes from the previous version.
 
@@ -121,7 +125,7 @@ The main work is done in the handler `app_open`.
 - Sets wrap mode to `GTK_WRAP_WORD_CHAR` in GtktextView
 - Sets GtkTextView to non-editable because the program isn't an editor but only a viewer
 - Reads the file and inserts the text into GtkTextBuffer (this will be explained later)
-- If the file is not opened, outputs an error message and destroys the window. This makes the application quit.
+- If the file is not opened, outputs an error message and destroys the window. This causes the application to exit.
 
 The following is the file reading part of the program.
 
@@ -142,18 +146,17 @@ if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
 ~~~
 
 The function `g_file_load_contents` loads the file contents into a temporary buffer,
-which is automatically allocated and sets `contents` to point the buffer.
+which is automatically allocated and sets `contents` to point to the buffer.
 The length of the buffer is assigned to `length`.
 It returns `TRUE` if the file's contents are successfully loaded.
-If an error occurs, it returns `FALSE` and sets the variable `err` to point a newly created GError structure.
+If an error occurs, it returns `FALSE` and sets the variable `err` to point to a newly created GError structure.
 The caller takes ownership of the GError structure and is responsible for freeing it.
 If you want to know the details about g\_file\_load\_contents, see [g file load contents](https://docs.gtk.org/gio/method.File.load_contents.html).
 
-If it has successfully read the file, it inserts the contents into GtkTextBuffer,
-frees the temporary buffer pointed by `contents`, sets the title of the window,
-frees the memories pointed by `filename` and then shows the window.
+If the file is read successfully, the contents are inserted into GtkTextBuffer.
+The temporary buffer in contents is then freed, the window title is set, the memory for filename is freed, and the window is shown.
 
-If it fails, `g_file_load_contents` sets `err` to point a newly created GError structure.
+If it fails, `g_file_load_contents` sets `err` to point to a newly created GError structure.
 The structure is:
 
 ~~~C
@@ -164,8 +167,8 @@ struct GError {
 }
 ~~~
 
-The `message` member is used most often.
-It points an error message.
+The `message` member is the most commonly used.
+It points to an error message.
 A function `g_error_free` is used to free the memory of the structure.
 See [GError](https://docs.gtk.org/glib/struct.Error.html).
 
@@ -177,15 +180,19 @@ GtkNotebook is a container widget that contains multiple widgets with tabs.
 It shows only one child at a time.
 Another child will be shown when its tab is clicked.
 
+@@@if pdf
 ![GtkNotebook](/images/screenshot_gtk_notebook.png){width=13.2cm height=5.325cm}
+@@@else
+![GtkNotebook](/images/screenshot_gtk_notebook.png)
+@@@end
 
 The left image is the window at the startup.
 The file `pr1.c` is shown and its filename is in the left tab.
 After clicking on the right tab, the contents of the file `tfv1.c` is shown (the right image).
 
 The following is `tfv4.c`.
-It has GtkNoteBook widget.
-It is inserted as a child of GtkApplicationWindow and contains multiple GtkScrolledWindow.
+It has a GtkNoteBook widget.
+It is inserted as a child of a GtkApplicationWindow and contains multiple GtkScrolledWindow widgets.
 
 @@@include
 tfv/tfv4.c
@@ -194,16 +201,16 @@ tfv/tfv4.c
 Most of the changes are in the function `app_open`.
 The numbers at the left of the following items are line numbers in the source code.
 
-- 11-13: Variables `nb`, `lab` and `nbp` are defined. They point GtkNotebook, GtkLabel and GtkNotebookPage respectively.
+- 11-13: Variables `nb`, `lab` and `nbp` are defined. They point to a GtkNotebook, GtkLabel and GtkNotebookPage respectively.
 - 24: The window's title is set to "file viewer".
 - 25: The default size of the window is 600x400.
 - 26-27: GtkNotebook is created and inserted to the GtkApplicationWindow as a child.
-- 29-57: For-loop. The variable `files[i]` points i-th GFile, which is created by the GtkApplication from the i-th command line argument.
-- 31-36: GtkScrollledWindow, GtkTextView are created. GtkTextBuffer is got from the GtkTextView.
+- 29-57: For-loop. The variable `files[i]` points to i-th GFile, which is created by the GtkApplication from the i-th command line argument.
+- 31-36: A GtkScrollledWindow and a GtkTextView are created. A GtkTextBuffer is obtained from the GtkTextView.
 The GtkTextView is connected to the GtkScrolledWindow as a child.
-- 38-39: inserts the contents of the file into GtkTextBuffer and frees the memory pointed by `contents`.
+- 38-39: inserts the contents of the file into the GtkTextBuffer and frees the memory referenced by `contents`.
 - 40-42: If the filename is taken from the GFile, GtkLabel is created with the filename. The string `filename` is freed..
-- 43-44: If it fails to take the filename, empty string GtkLabel is created.
+- 43-44: If it fails to take the filename, a GtkLabel with an empty string is created.
 - 45-46: Appends a GtkScrolledWindow to the GtkNotebook as a child.
 And the GtkLabel is set as the child's tab.
 At the same time, a GtkNoteBookPage is created automatically.

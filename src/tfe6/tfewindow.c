@@ -116,7 +116,7 @@ notebook_page_close (TfeWindow *win){
 
 static void
 notebook_page_build (TfeWindow *win, GtkWidget *tv, char *filename) {
-  // The arguments win, tb and filename are owned by the caller.
+  // The arguments win, tv and filename are owned by the caller.
   // If tv has a floating reference, it is consumed by the function.
   GtkWidget *scr = gtk_scrolled_window_new ();
   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));

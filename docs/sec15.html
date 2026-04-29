@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Tfe main program</title>
+  <title>Tfe Main Program</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,7 +93,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="tfe-main-program">Tfe main program</h1>
+        <h1 id="tfe-main-program">Tfe Main Program</h1>
         <p>The file <code>tfeapplication.c</code> is a main program of
         Tfe. It includes all the code other than
         <code>tfetextview.c</code> and <code>tfenotebook.c</code>. It
@@ -101,11 +101,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>Application support, mainly handling command line
         arguments.</li>
-        <li>Builds widgets using ui file.</li>
+        <li>Builds widgets using UI files.</li>
         <li>Connects button signals and their handlers.</li>
         <li>Manages CSS.</li>
         </ul>
-        <h2 id="the-function-main">The function main</h2>
+        <h2 id="the-function-main">The Function main</h2>
         <p>The function <code>main</code> is the first invoked function
         in C language. It connects the command line given by the user
         and Gtk application.</p>
@@ -138,13 +138,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>15-16: Releases the reference to the application and returns
         the status.</li>
         </ul>
-        <h2 id="startup-signal-handler">Startup signal handler</h2>
-        <p>Startup signal is emitted just after the GtkApplication
+        <h2 id="startup-signal-handler">Startup Signal Handler</h2>
+        <p>A startup signal is emitted just after the GtkApplication
         instance is initialized. The handler initializes the whole
         application which includes not only GtkApplication instance but
         also widgets and some other objects.</p>
         <ul>
-        <li>Builds the widgets using ui file.</li>
+        <li>Builds the widgets using a UI file.</li>
         <li>Connects button signals and their handlers.</li>
         <li>Sets CSS.</li>
         </ul>
@@ -186,7 +186,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-34"><a href="#cb2-34"></a>  g_object_unref <span class="op">(</span>provider<span class="op">);</span></span>
 <span id="cb2-35"><a href="#cb2-35"></a><span class="op">}</span></span></code></pre></div>
         <ul>
-        <li>12-15: Builds widgets using ui resource. Connects the
+        <li>12-15: Builds widgets using a UI resource. Connects the
         top-level window and the application with
         <code>gtk_window_set_application</code>.</li>
         <li>16-23: Gets buttons and connects their signals and handlers.
@@ -204,9 +204,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         and font size of GtkTextView. CSS will be explained in the next
         subsection.</li>
         <li>26-28: GdkDisplay is used to set CSS. The default GdkDisplay
-        object can be obtain with the function
-        <code>gfk_display_get_default</code>. This function needs to be
-        called after the window creation.</li>
+        object can be obtained with the function
+        <code>gdk_display_get_default</code>. This function needs to be
+        called after the application is registered.</li>
         <li>33: Connects “destroy” signal on the main window and
         before_destroy handler. This handler is explained in the next
         subsection.</li>
@@ -219,23 +219,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>CSS is an abbreviation of Cascading Style Sheet. It is
         originally used with HTML to describe the presentation semantics
         of a document. You might have found that widgets in Gtk is
-        similar to elements in HTML. It tells that CSS can be applied to
+        similar to elements in HTML. It shows that CSS can be applied to
         Gtk windowing system, too.</p>
-        <h3 id="css-nodes-selectors">CSS nodes, selectors</h3>
+        <h3 id="css-nodes-and-selectors">CSS Nodes and Selectors</h3>
         <p>The syntax of CSS is as follows.</p>
-        <pre><code>selector { color: yellow; padding-top: 10px; ...}</code></pre>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode css"><code class="sourceCode css"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>selector { <span class="kw">color</span>: <span class="cn">yellow</span><span class="op">;</span> <span class="kw">padding-top</span>: <span class="dv">10</span><span class="dt">px</span><span class="op">;</span> <span class="fu">...</span>}</span></code></pre></div>
         <p>Every widget has CSS node. For example, GtkTextView has
         <code>textview</code> node. If you want to set style to
         GtkTextView, substitute “textview” for <code>selector</code>
         above.</p>
-        <pre><code>textview {color: yellow; ...}</code></pre>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode css"><code class="sourceCode css"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>textview {<span class="kw">color</span>: <span class="cn">yellow</span><span class="op">;</span> <span class="fu">...</span>}</span></code></pre></div>
         <p>Class, ID and some other things can be applied to the
         selector like Web CSS. Refer to <a
         href="https://docs.gtk.org/gtk4/css-overview.html">GTK 4 API
         Reference – CSS in Gtk</a> for further information.</p>
         <p>The codes of the startup handler has a CSS string on line
         30.</p>
-        <pre><code>textview {padding: 10px; font-family: monospace; font-size: 12pt;}</code></pre>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode css"><code class="sourceCode css"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>textview {<span class="kw">padding</span>: <span class="dv">10</span><span class="dt">px</span><span class="op">;</span> <span class="kw">font-family</span>: <span class="dv">monospace</span><span class="op">;</span> <span class="kw">font-size</span>: <span class="dv">12</span><span class="dt">pt</span><span class="op">;</span>}</span></code></pre></div>
         <ul>
         <li>Padding is a space between the border and contents. This
         space makes the textview easier to read.</li>
@@ -260,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         the function <code>gdk_display_get_default</code>. The returned
         object is owned by the function and you don’t have its
         ownership. So, you don’t need to care about releasing it.</p>
-        <p>Look at the source file of <code>startup</code> handler
+        <p>Look at the source file of the <code>startup</code> handler
         again.</p>
         <ul>
         <li>28: The display is obtained by
@@ -330,11 +333,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-25"><a href="#cb7-25"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>1-10: <code>app_activate</code>.</li>
+        <li>6: In this program, we traverse the widget hierarchy for the
+        sake of simplicity. However, the most robust design is to extend
+        GtkApplicationWindow and include a pointer to the notebook in
+        its instance structure (e.g., win-&gt;nb).</li>
         <li>8-10: Creates a new page and shows the window.</li>
         <li>12-25: <code>app_open</code>.</li>
         <li>20-21: Creates notebook pages with files.</li>
-        <li>22-23: If no page has created, maybe because of read error,
-        then it creates an empty page.</li>
+        <li>22-23: If no page has been created, maybe because of read
+        error, then it creates an empty page.</li>
         <li>24: Shows the window.</li>
         </ul>
         <p>These codes have become really simple thanks to tfenotebook.c
@@ -352,20 +359,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>When first instance is launched, then it registers itself
         with its application ID (for example,
         <code>com.github.ToshioCP.tfe</code>). Just after the
-        registration, startup signal is emitted, then activate or open
-        signal is emitted and the instance’s main loop runs. I wrote
-        “startup signal is emitted just after the application instance
-        is initialized” in the prior subsection. More precisely, it is
-        emitted after the registration.</p>
+        registration, the startup signal is emitted, then activate or
+        open signal is emitted and the instance’s main loop runs. I
+        wrote “a startup signal is emitted just after the application
+        instance is initialized” in the prior subsection. More
+        precisely, it is emitted after the registration.</p>
         <p>If another instance which has the same application ID is
         launched, it also tries to register itself. Because this is the
-        second instance, the registration of the ID has already done, so
-        it fails. Because of the failure startup signal isn’t emitted.
-        After that, activate or open signal is emitted in the primary
-        instance, not on the second instance. The primary instance
-        receives the signal and its handler is invoked. On the other
-        hand, the second instance doesn’t receive the signal and it
-        immediately quits.</p>
+        second instance, the registration of the ID has already been
+        done, so it fails. Because of the failure, a startup signal
+        isn’t emitted. After that, activate or open signal is emitted in
+        the primary instance, not on the second instance. The primary
+        instance receives the signal and its handler is invoked. On the
+        other hand, the second instance doesn’t receive the signal and
+        it immediately quits.</p>
         <p>Try running two instances in a row.</p>
         <pre><code>$ ./_build/tfe &amp;
 [1] 84453
@@ -377,8 +384,9 @@ $</code></pre>
         window. This is because the open signal is emitted in the
         primary instance. The second instance immediately quits so shell
         prompt soon appears.</p>
-        <h2 id="a-series-of-handlers-correspond-to-the-button-signals">A
-        series of handlers correspond to the button signals</h2>
+        <h2
+        id="a-series-of-handlers-corresponds-to-the-button-signals">A
+        series of handlers corresponds to the button signals</h2>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>open_cb <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">)</span> <span class="op">{</span></span>

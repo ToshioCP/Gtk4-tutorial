@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Stateful action</title>
+  <title>Stateful Action</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,23 +93,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="stateful-action">Stateful action</h1>
+        <h1 id="stateful-action">Stateful Action</h1>
         <p>Some actions have states. The typical values of states are
-        boolean or string. However, other types of states are possible
-        if you want.</p>
+        boolean or string values. However, other types of states are
+        possible if necessary.</p>
         <p>Actions which have states are called stateful.</p>
-        <h2 id="stateful-action-without-a-parameter">Stateful action
-        without a parameter</h2>
-        <p>Some menus are called toggle menu. For example, fullscreen
-        menu has a state which has two values – fullscreen and
+        <h2 id="stateful-action-without-a-parameter">Stateful Action
+        without a Parameter</h2>
+        <p>Some menus are called toggle menus. For example, the
+        fullscreen menu has two state values – fullscreen and
         non-fullscreen. The value of the state is changed every time the
-        menu is clicked. An action corresponds to the fullscreen menu
-        also have a state. Its value is TRUE or FALSE and it is called
-        boolean value. TRUE corresponds to fullscreen and FALSE to
-        non-fullscreen.</p>
+        menu is clicked. An action that corresponds to the fullscreen
+        menu also has a state. The value of the state is TRUE or FALSE
+        and it is called a boolean value. TRUE corresponds to fullscreen
+        and FALSE to non-fullscreen.</p>
         <p>The following is an example code to implement a fullscreen
-        menu except the signal handler. The signal handler will be shown
-        later.</p>
+        menu without the signal handler. The signal handler will be
+        shown later.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_fullscreen <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;fullscreen&quot;</span><span class="op">,</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                                NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
@@ -126,12 +126,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         third argument is the initial state of the action. It is a
         GVariant value. GVariant will be explained in the next
         subsection. The function
-        <code>g_variant_new_boolean (FALSE)</code> returns a boolean
-        type GVariant value which is <code>FALSE</code>. If there are
-        two or more top level windows, each window has its own
-        <code>act_fullscreen</code> action. So, the number of the
-        actions is the same as the number of the windows.</li>
-        <li>The action <code>act_fullscreen</code> has “change-state”
+        <code>g_variant_new_boolean (FALSE)</code> returns a GVariant
+        value of <code>FALSE</code>. If there are two or more top-level
+        windows, each window has its own <code>act_fullscreen</code>
+        action. So, the number of the actions is the same as the number
+        of the windows.</li>
+        <li>The action <code>act_fullscreen</code> has a “change-state”
         signal. The signal is connected to a handler
         <code>fullscreen_changed</code>. If the fullscreen menu is
         clicked, then the corresponding action
@@ -140,14 +140,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         for boolean-stated actions with a NULL parameter type like
         <code>act_fullscreen</code> is to toggle them via the
         “change-state” signal.</li>
-        <li>The action is added to the GtkWindow <code>win</code>.
+        <li>The action is added to the GtkWindow, <code>win</code>.
         Therefore, the scope of the action is “win”.</li>
         <li><code>menu_item_fullscreen</code> is a GMenuItem instance.
         There are two arguments. The first argument “Full Screen” is the
         label of <code>menu_item_fullscreen</code>. The second argument
         is an action. The action “win.fullscreen” has a prefix “win” and
-        an action name “fullscreen”. The prefix says that the action
-        belongs to the window.</li>
+        an action name “fullscreen”. The prefix indicates that the
+        action belongs to the window.</li>
         </ul>
         <div class="sourceCode" id="cb2"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -162,16 +162,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>The handler <code>fullscreen_changed</code> has three
         parameters. The first parameter is the action which emits the
         “change-state” signal. The second parameter is the value of the
-        new state of the action. The third parameter is a user data
-        which is set in <code>g_signal_connect</code>.</li>
-        <li>If the value is boolean type and <code>TRUE</code>, then it
-        maximizes the window. Otherwise it un-maximizes.</li>
+        new state of the action. The third parameter is the user data
+        that is passed to <code>g_signal_connect</code>.</li>
+        <li>If the value is of boolean type and <code>TRUE</code>, then
+        it maximizes the window. Otherwise it unmaximizes it.</li>
         <li>Sets the state of the action with <code>value</code>. Note:
-        At this stage, that means the stage before
-        <code>g_simple_action_set_state</code> is called, the state of
-        the action still has the original value. So, you need to set the
-        state with the new value by
-        <code>g_simple_action_set_state</code>.</li>
+        Before <code>g_simple_action_set_state</code> is called, the
+        action still holds its original state. You must call this
+        function to update the action to the new state.</li>
         </ul>
         <p>You can use “activate” signal instead of “change-state”
         signal, or both signals. But the way above is the simplest and
@@ -191,7 +189,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         int32, int64, double and so on.</p>
         <p>If you want to get the original value, use g_variant_get
         series functions. For example, you can get the boolean value
-        with g_variant_get_boolean.</p>
+        with <code>g_variant_get_boolean</code>.</p>
         <div class="sourceCode" id="cb5"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gboolean <span class="dt">bool</span> <span class="op">=</span> g_variant_get_boolean <span class="op">(</span>value<span class="op">);</span></span></code></pre></div>
         <p>Since <code>value</code> has been created as a boolean type
@@ -202,19 +200,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>str <span class="op">=</span> g_variant_get_string <span class="op">(</span>value2<span class="op">,</span> NULL<span class="op">);</span></span></code></pre></div>
         <p>The second parameter is a pointer to gsize type variable
         (gsize is defined as unsigned long). If it isn’t NULL, then the
-        pointed value is used as the length by the function. If it is
+        variable is used by the function for the string length. If it is
         NULL, nothing happens. The returned string <code>str</code> is
         owned by the instance and can’t be changed or freed by the
         caller.</p>
-        <h2 id="stateful-action-with-a-parameter">Stateful action with a
-        parameter</h2>
-        <p>Another example of stateful actions is an action corresponds
-        to color select menus. For example, there are three menus and
-        each menu has red, green or blue color respectively. They
-        determine the background color of a GtkLabel widget. One action
-        is connected to the three menus. The action has a state whose
-        value is “red”, “green” or “blue”. The values are string. Those
-        colors are given to the signal handler as a parameter.</p>
+        <h2 id="stateful-action-with-a-parameter">Stateful Action with a
+        Parameter</h2>
+        <p>Another example of stateful actions is an action that
+        corresponds to color select menus. For example, there are three
+        menus and each menu has red, green or blue color respectively.
+        They determine the background color of a GtkLabel widget. One
+        action is connected to the three menus. The action has a state
+        whose value is “red”, “green” or “blue”. The values are string.
+        Those colors are given to the signal handler as a parameter.</p>
         <div class="sourceCode" id="cb7"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>GVariantType <span class="op">*</span>vtype <span class="op">=</span> g_variant_type_new<span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">);</span></span>
@@ -231,11 +229,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         GVariant. It is created with the function
         <code>g_variant_type_new</code>. The argument of the function is
         a GVariant type string. So, <code>g_variant_type_new("s")</code>
-        returns a GVariantType structure contains a string type. The
+        returns a GVariantType structure containing a string type. The
         returned value, GVariantType structure, is owned by the caller.
-        So, you need to free it when it becomes useless.</li>
-        <li>The variable <code>act_color</code> points a GSimpleAction
-        instance. It is created with
+        So, you need to free it when it is no longer needed.</li>
+        <li>The variable <code>act_color</code> points to a
+        GSimpleAction instance. It is created with
         <code>g_simple_action_new_stateful</code>. The function has
         three arguments. The first argument “color” is the name of the
         action. The second argument is a parameter type which is
@@ -245,18 +243,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         initial state of the action. It is a GVariant. The function
         <code>g_variant_new_string ("red")</code> returns a GVariant
         value which has the string value “red”. GVariant has a reference
-        count and <code>g_variant_new_...</code> series functions
-        returns a GVariant value with a floating reference. That means
-        the caller doesn’t own the value at this point. And
+        count and <code>g_variant_new_...</code> series functions return
+        a GVariant value with a floating reference. That means the
+        caller doesn’t own the value at this point. And
         <code>g_simple_action_new_stateful</code> function consumes the
         floating reference so you don’t need to care about releasing the
         GVariant instance.</li>
         <li>The GVariantType structure <code>vtype</code> is useless
         after <code>g_simple_action_new_stateful</code>. It is released
         with the function <code>g_variant_type_free</code>.</li>
-        <li>The varable <code>menu_item_red</code> points a GMenuItem
-        instance. The function <code>g_menu_item_new</code> has two
-        arguments. The first argument “Red” is the label of
+        <li>The variable <code>menu_item_red</code> points to a
+        GMenuItem instance. The function <code>g_menu_item_new</code>
+        has two arguments. The first argument “Red” is the label of
         <code>menu_item_red</code>. The second argument is a detailed
         action. Its prefix is “app”, action name is “color” and target
         is “red”. Target is sent to the action as a parameter. The same
@@ -280,7 +278,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>The handler originally has three parameters. The third
-        parameter is a user data set in the
+        parameter is the user data set in the
         <code>g_signal_connect</code> function. But it is left out
         because the fourth argument of the <code>g_signal_connect</code>
         has been NULL. The first parameter is the action which emits the
@@ -299,7 +297,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>lb</code> class. For example, menus have GtkLabel to
         display their labels, but they don’t have <code>lb</code> class.
         So, the CSS doesn’t change their background color. The string
-        <code>{background-color %s}</code> makes the background color
+        <code>{background-color: %s;}</code> makes the background color
         <code>%s</code> to which the color from <code>parameter</code>
         is assigned.</li>
         <li>Frees the string <code>color</code>.</li>
@@ -309,7 +307,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>Note: If you haven’t set an “activate” signal handler, the
         signal is forwarded to “change-state” signal. So, you can use
         “change-state” signal instead of “activate” signal. See <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu/menu2_change_state.c"><code>src/menu/menu2_change_state.c</code></a>.</p>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu/menu2_change_state.c">src/menu/menu2_change_state.c</a>.</p>
         <h3 id="gvarianttype">GVariantType</h3>
         <p>GVariantType gives a type of GVariant. GVariantType is
         created with a type string.</p>
@@ -349,8 +347,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>The following code includes stateful actions above. This
         program has menus like this:</p>
         <figure>
-        <img src="/images/menu2.png" style="width:6.03cm;height:5.115cm"
-        alt="menu2" />
+        <img src="/images/menu2.png" alt="menu2" />
         <figcaption aria-hidden="true">menu2</figcaption>
         </figure>
         <ul>
@@ -509,10 +506,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>47: Shows the window.</li>
         <li>50-104: A startup signal handler.</li>
         <li>52-61: Two actions <code>act_color</code> and
-        <code>act_quit</code> are created. These actions exists only one
-        because the startup handler is called once. They are connected
-        to their handlers and added to the application. Their scopes are
-        “app”.</li>
+        <code>act_quit</code> are created. There is only one instance of
+        each of these actions, because the startup handler is called
+        once. They are connected to their handlers and added to the
+        application. Their scopes are “app”.</li>
         <li>63-92: Menus are built.</li>
         <li>94: The menubar is added to the application.</li>
         <li>96-103: A CSS provider is created with the CSS data and
@@ -529,12 +526,11 @@ $./a.out</code></pre>
         content is red. You can change the size to maximum and change
         back to the original size. You can change the background color
         to green or blue.</p>
-        <p>If you run the second application during the first
-        application is running, another window will appear in the same
-        screen. Both of the window have the same background color.
-        Because the <code>act_color</code> action has “app” scope and
-        the CSS is applied to the default display shared by the
-        windows.</p>
+        <p>If you run the second application while the first application
+        is running, another window will appear in the same screen. Both
+        of the windows have the same background color. Because the
+        <code>act_color</code> action has “app” scope and the CSS is
+        applied to the default display shared by the windows.</p>
         <pre><code>$ ./a.out &amp; # Run the first application
 [1] 82113
 $ ./a.out # Run the second application

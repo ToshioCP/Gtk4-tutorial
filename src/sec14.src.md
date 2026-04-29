@@ -3,7 +3,7 @@
 GtkNotebook is a very important object in the text file editor `tfe`.
 It connects the application and TfeTextView objects.
 A set of public functions are declared in `tfenotebook.h`.
-The word "tfenotebook" is used only in filenames.
+The name "tfenotebook" is used only for filenames; no "TfeNotebook" object type is defined.
 There's no "TfeNotebook" object.
 
 The source files are in the directory `src/tfe5`.
@@ -15,7 +15,7 @@ tfe5/tfenotebook.h
 
 This header file describes the public functions in `tfenotebook.c`.
 
-- 1-2: `notebook_page_save` saves the current page to the file of which the name specified in the tab.
+- 1-2: `notebook_page_save` saves the current page to the file with the name specified in the tab."
 If the name is `untitled` or `untitled` followed by digits, a file chooser dialog appears and a user can choose or specify a filename.
 - 4-5: `notebook_page_close` closes the current page.
 - 7-8: `notebook_page_open` shows a file chooser dialog and a user can choose a file. The contents of the file is inserted to a new page.
@@ -55,16 +55,16 @@ The caller of `get_untitled` is in charge of freeing the string.
 - 36: Calls `notebook_page_build` to build a new page.
 - 37: Frees `filename`.
 - 10- 24: The function `notebook_page_build`.
-A parameter with `const` qualifier doesn't change in the function.
+A parameter with the `const` qualifier cannot be modified within the function.
 It means that the argument `filename` is owned by the caller.
-The caller needs to free it when it becomes useless.
+The caller is responsible for freeing it when it is no longer needed.
 - 12: Creates GtkScrolledWindow.
 - 17: Inserts `tv` to GtkScrolledWindow as a child.
 - 18-19: Creates GtkLabel, then appends `scr` and `lab` to the GtkNotebook instance `nb`.
 - 20-21: Sets "tab-expand" property to TRUE.
 The function `g_object_set` sets properties on an object.
 The object can be any object derived from GObject.
-In many cases, an object has its own function to set its properties, but sometimes doesn't.
+In many cases, an object has its own function to set its properties, but sometimes does not.
 In that case, use `g_object_set` to set the property.
 - 22: Sets the current page to the newly created page.
 - 23: Connects "change-file" signal and the handler `file_changed_cb`.
@@ -100,7 +100,7 @@ After that, the function `g_object_unref` releases `tv` and decreases the refere
 Finally the reference count becomes zero and `tv` is destroyed.
 - 9-15: Otherwise, it builds a new page with `tv`.
 
-## Floating reference
+## Floating Reference
 
 All the widgets are derived from GInitiallyUnowned.
 GObject and GInitiallyUnowned are almost the same.
@@ -111,13 +111,13 @@ Their descendants inherits them, so every widget has a floating reference just a
 Non-widget class, for example, GtkTextBuffer is a direct sub class of GObject and it has normal reference.
 
 The function `g_object_ref_sink` converts the floating reference into a normal reference.
-If the instance doesn't have a floating reference, `g_object_ref_sink` simply increases the reference count by one.
+If the instance does not have a floating reference, `g_object_ref_sink` simply increases the reference count by one.
 It is used when an widget is added to another widget as a child.
 
 ~~~
 GtkTextView *tv = gtk_text_view_new (); // Floating reference
 GtkScrolledWindow *scr = gtk_scrolled_window_new ();
-gtk_scrolled_window_set_child (scr, tv); // Scrolled window sink the tv's floating reference and tv's reference count becomes one.
+gtk_scrolled_window_set_child (scr, tv); // Scrolled window sinks the tv's floating reference and tv's reference count becomes one.
 ~~~
 
 When `tv` is added to `scr` as a child, `g_object_ref_sink` is used.
@@ -128,8 +128,8 @@ g_object_ref_sink (tv);
 
 So, the floating reference is converted into an ordinary reference.
 That is to say, floating reference is removed, and the normal reference count is one.
-Thanks to this, the caller doesn't need to decrease tv's reference count.
-If an Object\_A is not a descendant of GInitiallyUnowned, the program is like this:
+Thanks to this, the caller does not need to decrease tv's reference count.
+If an Object\_A were not a descendant of GInitiallyUnowned, the program would be like this:
 
 ~~~
 Object_A *obj_a = object_a_new (); // reference count is one
@@ -165,16 +165,16 @@ tfe5/tfenotebook.c get_current_textview notebook_page_save
 
 - 13-21: `notebook_page_save`.
 - 19: Gets the TfeTextView instance belongs to the current page.
-The caller doesn't have the ownership of `tv` so you don't need to care about freeing it.
+The caller does not have the ownership of `tv` so you don't need to care about the reference count of `tv`.
 - 20: Calls `tfe_text_view_save`.
 - 1-11: `get_current_textview`.
 This function gets the TfeTextView object belongs to the current page.
 - 7: Gets the page number of the current page.
-- 8: Gets the child widget `scr`, which is a GtkScrolledWindow instance, of the current page. The object `scr` is owned by the notebook `nb`. So, the caller doesn't need to free it.
+- 8: Gets the child widget `scr`, which is a GtkScrolledWindow instance, of the current page. The object `scr` is owned by the notebook `nb`.
 - 9-10: Gets the child widget of `scr`, which is a TfeTextView instance, and returns it.
-The returned instance is owned by `scr` and the caller of `get_cuurent_textview` doesn't need to care about freeing it.
+The returned instance is owned by `scr`.
 
-## file\_changed\_cb handler
+## file\_changed\_cb Handler
 
 The function `file_changed_cb` is a handler connected to "change-file" signal.
 If a file in a TfeTextView instance is changed, the instance emits this signal.
@@ -186,7 +186,7 @@ tfe5/tfenotebook.c file_changed_cb
 
 - 8: Gets the GFile instance from `tv`.
 - 9: Gets the GkScrolledWindow instance which is the parent widget of `tv`.
-- 10-12: If `file` points a GFile instance, the filename of the GFile is assigned to `filename`.
+- 10-12: If `file` points to a GFile instance, the filename of the GFile is assigned to `filename`.
 Then, unref the GFile object `file`.
 - 13-14: Otherwise (file is NULL), a string `Untitled(number)` is assigned to `filename`.
 - 15-17: Creates a GtkLabel instance `label` with the filename and set the label of the GtkNotebookPage with `label`.

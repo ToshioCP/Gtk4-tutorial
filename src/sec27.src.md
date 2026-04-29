@@ -1,15 +1,23 @@
 # Tiny Turtle Graphics Interpreter
 
-A program `turtle` is an example with the combination of TfeTextView and GtkDrawingArea objects.
+The Turtle program is an example with the combination of TfeTextView and GtkDrawingArea objects.
 It is a very small interpreter but you can draw fractal curves with it.
 The following diagram is a Koch curve, which is one of the famous fractal curves.
 
+@@@if pdf
 ![Koch curve](turtle/images/turtle_koch.png){width=8cm height=5.11cm}
+@@@else
+![Koch curve](turtle/images/turtle_koch.png)
+@@@end
 
 The following is a snow-crystal-shaped curve.
 It is composed of six Koch curves.
 
+@@@if pdf
 ![Snow](/images/turtle_snow.png){width=8cm height=5.11cm}
+@@@else
+![Snow](/images/turtle_snow.png)
+@@@end
 
 This program uses flex and bison.
 Flex is a lexical analyzer.
@@ -19,15 +27,13 @@ However, flex and bison are open source software.
 This section describes them and they are not the topics about GTK 4.
 So, readers can skip this section.
 
-## How to use turtle
+- [Flex GitHub repository](https://github.com/westes/flex)
+- [Flex Documentation](https://westes.github.io/flex/manual/)
+- [Bison Project Page](https://www.gnu.org/software/bison/)
 
-@@@if gfm
+## How to Use Turtle
+
 The turtle document is [here](turtle/turtle_doc.src.md).
-@@@elif html
-The turtle document is [here](https://toshiocp.github.io/Gtk4-tutorial/turtle_doc.html).
-@@@elif latex
-The turtle document is in the appendix.
-@@@end
 I'll show you a simple example.
 
 ~~~
@@ -43,21 +49,21 @@ rp (4) {   # Repeat four times.
 Then, run `turtle`.
 2. Type the program above in the editor (left part of the window).
 3. Click on the `Run` button, then a red square appears on the right part of the window.
-The side of the square is 100 pixels long.
+Each side of the square is 100 pixels long.
 
 In the same way, you can draw other curves.
 The turtle document includes some fractal curves such as tree, snow and square-koch.
-The source codes are located at [src/turtle/example](turtle/example) directory.
+The source codes are located at [/src/turtle/example](turtle/example/) directory.
 You can read these files into `turtle` editor by clicking on the `Open` button.
 
-## Combination of TfeTextView and GtkDrawingArea objects
+## Combination of TfeTextView and GtkDrawingArea Objects
 
 Turtle uses TfeTextView and GtkDrawingArea.
 
 1. A user inputs/reads a turtle program into the buffer in the TfeTextView instance.
 2. The user clicks on the "Run" button.
 3. The parser reads the program and generates tree-structured data.
-4. The interpriter reads the data and executes it step by step.
+4. The interpreter reads the data and executes it step by step.
 And it draws shapes on a surface.
 The surface isn't the one in the GtkDrawingArea widget.
 5. The widget is added to the queue.
@@ -82,12 +88,12 @@ It points to a `cairo_surface_t` instance.
 It is created when the GtkDrawingArea instance is realized and whenever it is resized.
 Therefore, `surface` isn't NULL usually.
 But if it is NULL, the interpreter won't be called.
-- 18-24: If `surface` points a surface instance and the string `contents` isn't empty, it calls the interpreter.
+- 18-24: If `surface` points to a surface instance and the string `contents` isn't empty, it calls the interpreter.
   - Initializes the lexical analyzer.
   - Calls the parser. The parser analyzes the program codes syntactically and generates a tree structured data.
   - If the parser successfully parsed, it calls the runtime routine 'run'.
   - Finalizes the lexical analyzer.
-- 25-29: If `surface` points a surface instance and the string `contents` is empty, it clears the surface `surface`.
+- 25-29: If `surface` points to a surface instance and the string `contents` is empty, it clears the surface `surface`.
 - 31: Frees `contents`.
 - 32: Adds the drawing area widget to the queue to draw.
 - 33: Sets the variable `busy` to FALSE.
@@ -110,9 +116,9 @@ It calls `tfe_text_view_get_file`.
 - Otherwise, the title will be "Turtle".
 
 Other part of `turtleapplication.c` is very simple and similar to the codes in the former applications.
-The codes of `turtleapplication.c` is in the [turtle directory](turtle).
+The codes of `turtleapplication.c` is in the [turtle directory](turtle/).
 
-## What does the interpreter do?
+## What Does the Interpreter Do?
 
 Suppose that the turtle application runs with the following program.
 
@@ -142,11 +148,15 @@ There are seven tokens in the program so `yylex` is called seven times.
 
 - The function `yylex` returns a token kind every time, but it doesn't set `yylval.ID` or `yylval.NUM` every time.
 It is because keywords (`FD`) and symbols (`=` and `*`) don't have any semantic values.
-The function `yylex` is called lexical analyzer or scanner.
+The function `yylex` is called a lexical analyzer or a scanner.
 - The application `turtle` makes a tree structured data.
 This part of `turtle` is called parser.
 
+@@@if pdf
 ![turtle parser tree](/images/turtle_parser_tree.png){width=12cm height=5.34cm}
+@@@else
+![turtle parser tree](/images/turtle_parser_tree.png)
+@@@end
 
 - `Turtle` analyzes the tree and executes it.
 This part of `turtle` is called runtime routine or interpreter.
@@ -174,7 +184,7 @@ Then `turtle` goes back to N_FD.
   6. Now `turtle` knows the distance is 200.
 It moves the cursor forward by 200 pixels.
 The segment is drawn on the `surface`.
-  8. There are no node follows.
+  8. There is no following node.
 Runtime routine returns to the function `run_cb`.
 
 - The function `run_cb` calls `gtk_widget_queue_draw` and put the GtkDrawingArea widget to the queue.
@@ -190,7 +200,7 @@ Interpretation consists of three parts.
 - Syntax Parsing and tree generation
 - Interpretation and execution of the tree.
 
-## Compilation flow
+## Compilation Flow
 
 The source files are:
 
@@ -209,7 +219,11 @@ It also generates `resources.h`.
 4. gcc compiles `application.c`, `resources.c`, `turtle_parser.c` and `turtle_lex.c` with `turtle_lex.h`, `resources.h` and `turtle_parser.h`.
 It generates an executable file `turtle`.
 
+@@@if pdf
 ![compile process](/images/turtle_compile_process.png){width=12cm height=9cm}
+@@@else
+![compile process](/images/turtle_compile_process.png)
+@@@end
 
 Meson controls the process.
 The instruction is described in `meson.build`.
@@ -227,7 +241,7 @@ They are defined in the math library, but the library is optional.
 So, it is necessary to include it by `#include <math.h>` and also link the library with the linker.
 - 6: Gets gtk4 library.
 - 8: Gets gnome module.See [Meson build system website -- GNOME module](https://mesonbuild.com/Gnome-module.html#gnome-module) for further information.
-- 9: Compiles ui file to C source file according to the XML file `turtle.gresource.xml`.
+- 9: Compiles the UI file to C source file according to the XML file `turtle.gresource.xml`.
 - 11: Gets flex.
 - 12: Gets bison.
 - 13: Compiles `turtle.y` to `turtle_parser.c` and `turtle_parser.h` by bison.
@@ -236,11 +250,11 @@ See [Meson build system website -- custom target](https://mesonbuild.com/Referen
 - 14: Compiles `turtle.lex` to `turtle_lex.c` by flex.
 - 16: The variable `sourcefiles` is a file object created with the C source files.
 - 18: Compiles C source files including generated files by glib-compile-resources, bison and flex.
-The argument `turtleparser[1]` refers to `tirtle_parser.h` which is the second output in the line 13.
+The argument `turtleparser[1]` refers to `turtle_parser.h` which is the second output in the line 13.
 
 ## Turtle.lex
 
-### What does flex do?
+### What Does Flex Do?
 
 Flex creates lexical analyzer from flex source file.
 Flex source file is a text file.
@@ -287,14 +301,13 @@ GLib header file is `glib.h` and it is included here.
 - 5: The header file "turtle_parser.h" is generated from "turtle.y" by bison.
 It defines some constants and functions like `PU` and `yylloc`.
 The header file is included here.
-- 7-9: The current input position is pointed by `nline` and `ncolumn`.
+- 7-9: The current input position is pointed to by `nline` and `ncolumn`.
 The function `get_location` is declared here so that it can be called before the function is defined (l.61-65).
 - 12: GSlist is a structure for a singly-linked list.
 The variable `list` is defined in `turtle.y` so its class is `extern`.
 It is the start point of the list.
 The list is used to keep allocated memories.
 - 15: This option `%option noyywrap` must be specified when you have only single source file to the scanner. Refer to "9 The Generated Scanner" in the flex documentation in your distribution.
-(The documentation is not on the internet.)
 - 17-18: `REAL_NUMBER` and `IDENTIFIER` are names.
 A name begins with a letter or an underscore followed by zero or more letters, digits, underscores (`_`) or dashes (`-`).
 They are followed by regular expressions which are their definitions.
@@ -365,8 +378,8 @@ This section is just copied to C source file.
 The location of the input is recorded to `nline` and `ncolumn`.
 A variable `yylloc` is referred by the parser.
 It is a C structure and has four members, `first_line`, `first_column`, `last_line` and `last_column`.
-They point the start and end of the current input text.
-- 68: `YY_BUFFER_STATE` is a pointer points the input buffer.
+They point to the start and end of the current input text.
+- 68: `YY_BUFFER_STATE` is a pointer points to the input buffer.
 Flex makes the definition of `YY_BUFFER_STATE` in the C file (scanner source file `turtle_lex.c`).
 See your flex document, Section 11 Multiple Input Buffers, for further information.
 - 70-73: A function `init_flex` is called by `run_cb` which is a "clicked" signal handler on the `Run` button.
@@ -381,7 +394,7 @@ It deletes the input buffer.
 Turtle.y has more than 800 lines so it is difficult to explain all the source code.
 So I will explain the key points and leave out other less important parts.
 
-### What does bison do?
+### What Does Bison Do?
 
 Bison creates C source file of a parser from a bison source file.
 The bison source file is a text file.
@@ -423,7 +436,7 @@ So, the parser gets items in the following table whenever it calls `yylex`.
 |18 |    TR    |         |          |
 |19 |    ID    |  angle  |          |
 
-Bison source code specifies the grammar rules  of turtle language.
+Bison source code specifies the grammar rules of the turtle language.
 For example, `fc (1,0,0)` is called primary procedure.
 A procedure is like a void type C function.
 It doesn't return any values.
@@ -599,7 +612,7 @@ This substitution is "reduce".
 
 Bison repeats shift and reduction until the end of the input.
 If the result is reduced to `program`, the input is syntactically valid.
-Bison executes an action whenever reduction occurs.
+Bison executes an action whenever a reduction occurs.
 Actions build a tree.
 The tree is analyzed and executed by runtime routine later.
 
@@ -872,7 +885,7 @@ This type is shared by the scanner file and the parser implementation file.
 The error report function `yyerror` uses it so that it can inform the location that error occurs.
 
 `%define api.value.type union` generates semantic value type with tokens and nterms and inserts it to the header file.
-The inserted part is shown in the previous subsection as the extracts that shows the value type (YYSTYPE).
+The inserted part is shown in the previous subsection as the extracts that show the value type (YYSTYPE).
 
 `%token` and `%nterm` directives define tokens and non terminal symbols respectively.
 
@@ -990,7 +1003,7 @@ expression:
 - The first two lines tell that `program` is `statement`.
 - Whenever `statement` is reduced to `program`, an action `node_top=$$=$1;` is executed.
 - `node_top` is a static variable.
-It points the top node of the tree.
+It points to the top node of the tree.
 - The symbol `$$` is a semantic value of the result.
 For example, `$$` in line 2 is the semantic value of `program`.
 It is a pointer to a `node_t` type structure.
@@ -1026,20 +1039,24 @@ What does the parser do?
 1. The parser recognizes the input is `FD`.
 Maybe it is the start of `primary_procedure`, but parser needs to read the next token.
 2. `yylex` returns the token kind `NUM` and sets `yylval.NUM` to 100.0 (the type is double). The parser reduces `NUM` to `expression`.
-At the same time, it sets the semantic value of the `expression` to point a new node.
+At the same time, it sets the semantic value of the `expression` to point to a new node.
 The node has the type `N_NUM` and a semantic value 100.0.
 3. After the reduction, the buffer has `FD` and `expression`.
 The parser reduces it to `primary_procedure`.
-And it sets the semantic value of the `primary_procedure` to point a new node.
-The node has the type `N_FD` and its member child1 points the node of `expression`, whose type is `N_NUM`.
+And it sets the semantic value of the `primary_procedure` to point to a new node.
+The node has the type `N_FD` and its member child1 points to the node of `expression`, whose type is `N_NUM`.
 4. The parser reduces `primary_procedure` to `statement`.
 The semantic value of `statement` is the same as the one of `primary_procedure`,
 which points to the node `N_FD`.
 5. The parser reduces `statement` to `program`.
 The semantic value of `statement` is assigned to the one of `program` and the static variable `node_top`.
-6. Finally `node_top` points the node `N_FD` and the node `N_FD` points the node `N_NUM`.
+6. Finally `node_top` points to the node `N_FD` and the node `N_FD` points to the node `N_NUM`.
 
+@@@if pdf
 ![tree](/images/tree.png){width=6.51cm height=5.46cm}
+@@@else
+![tree](/images/tree.png)
+@@@end
 
 The following is the grammar rule extracted from `turtle.y`.
 The rules there are based on the same idea above.
@@ -1306,7 +1323,7 @@ tree3 (int type, char *name) {
 ```
 @@@end
 
-#### Symbol table
+#### Symbol Table
 
 Variables and user defined procedures are registered in the symbol table.
 This table is a C array.
@@ -1377,7 +1394,7 @@ There are five functions to access the table,
 - `proc_install` installs a procedure.
 - `var_install` installs a variable.
 - `proc_lookup` looks up a procedure. If the procedure is found, it returns a pointer to the node. Otherwise it returns NULL.
-- `var_lookup` looks up a variable. If the variable is found, it returns TRUE and sets the pointer (argument) to point the value. Otherwise it returns FALSE.
+- `var_lookup` looks up a variable. If the variable is found, it returns TRUE and sets the pointer (argument) to point to the value. Otherwise it returns FALSE.
 - `var_replace` replaces the value of a variable. If the variable hasn't registered yet, it installs the variable.
 
 @@@if gfm
@@ -1520,7 +1537,7 @@ var_lookup (char *name, double *value) {
 ```
 @@@end
 
-#### Stack for parameters and arguments
+#### Stack for Parameters and Arguments
 
 Stack is a last-in first-out data structure.
 It is shortened to  LIFO.
@@ -1546,7 +1563,7 @@ init_stack (void) {
 ~~~
 
 `sp` is a stack pointer.
-It is an index of the array `stack` and it always points an element of the array to store the next data.
+It is an index of the array `stack` and it always points to an element of the array to store the next data.
 `sp_biggest` is the biggest number assigned to `sp`.
 We can know the amount of elements used in the array during the runtime.
 The purpose of the variable is to find appropriate `MAX_STACK_SIZE`.
@@ -1586,19 +1603,23 @@ That is the order of the address.
 However, "the top of the stack" is the last pushed data and "the bottom of the stack" is the first pushed data.
 Therefore, "the top of the stack" is the bottom of the rectangle in the diagram and "the bottom of the stack" is the top of the rectangle.
 
+@@@if pdf
 ![Stack](/images/stack.png){width=6.64cm height=8.05cm}
+@@@else
+![Stack](/images/stack.png)
+@@@end
 
 There are four functions to access the stack.
 
 - `stack_push` pushes data to the stack.
 - `stack_lookup` searches the stack for the variable given its name as an argument.
 It searches only the parameters of the latest procedure.
-It returns TRUE and sets the argument `value` to point the value, if the variable has been found.
+It returns TRUE and sets the argument `value` to point to the value, if the variable has been found.
 Otherwise it returns FALSE.
 - `stack_replace` replaces the value of the variable in the stack.
 If it succeeds, it returns TRUE. Otherwise returns FALSE.
 - `stack_return` throws away the latest parameters.
-The stack pointer goes back to the point before the latest procedure call so that it points to parameters of the previous called procedure.
+The stack pointer goes back to the point before the latest procedure call so that it points to parameters of the previously called procedure.
 
 @@@if gfm
 ```C
@@ -1732,7 +1753,7 @@ stack_return(void) {
 ```
 @@@end
 
-#### Surface and cairo
+#### Surface and Cairo
 
 A global variable `surface` is shared by `turtleapplication.c` and `turtle.y`.
 It is initialized in `turtleapplication.c`.
@@ -1763,11 +1784,15 @@ A plane with the surface's coordinate is called device space.
 Cairo provides a transformation which is an affine transformation.
 It transforms a user-space coordinate (x, y) into a device-space coordinate (z, w).
 
+@@@if pdf
 ![transformation](/images/transformation.png){width=6.3cm height=2.04cm}
+@@@else
+![transformation](/images/transformation.png)
+@@@end
 
 The function `init_cairo` gets the width and height of the `surface` (See the program below).
 
-- The center of the surface is (0,0) with regard to the user-space coordinate and (width/2, height/2) with regard to the device-space coordinate.
+- The center of the surface is (0,0) in the user-space coordinate, while it is (width/2, height/2) in the device-space coordinate.
 - The positive direction of x axis in the two spaces are the same. So, (1,0) is transformed into (1+width/2,height/2).
 - The positive direction of y axis in the two spaces are opposite. So, (0,1) is transformed into (width/2,-1+height/2).
 
@@ -1894,7 +1919,7 @@ destroy_cairo () {
 ```
 @@@end
 
-#### Eval function
+#### Eval Function
 
 A function `eval` evaluates an expression and returns the value of the expression.
 It calls itself recursively.
@@ -1935,7 +1960,7 @@ double value = 0.0;
       break;
     case N_DIV:
       if (eval (child2(node)) == 0.0)
-        runtime_error ("Division by zerp.\n");
+        runtime_error ("Division by zero.\n");
       else
         value = calc(/);
       break;
@@ -2006,13 +2031,13 @@ double value = 0.0;
 ```
 @@@end
 
-#### Execute function
+#### Execute Function
 
 Primary procedures and procedure definitions are analyzed and executed by the function `execute`.
 It doesn't return any values.
 It calls itself recursively.
 The process of `N_RT` and `N_procedure_call` is complicated.
-It will explained after the following program.
+It will be explained after the following program.
 Other parts are not so difficult.
 Read the program below carefully so that you will understand the process.
 
@@ -2351,15 +2376,27 @@ This example draws a square.
 
 When The parser reads the lines from one to four, it creates nodes like this:
 
+@@@if pdf
 ![Nodes of drawline](/images/tree2.png){width=10cm height=6cm}
+@@@else
+![Nodes of drawline](/images/tree2.png)
+@@@end
 
 Runtime routine just stores the procedure to the symbol table with its name and node.
 
+@@@if pdf
 ![Symbol table](/images/table.png){width=10cm height=5cm}
+@@@else
+![Symbol table](/images/table.png)
+@@@end
 
 When the parser reads the fifth line in the example, it creates nodes like this:
 
+@@@if pdf
 ![Nodes of procedure call](/images/proc_call.png){width=10cm height=5cm}
+@@@else
+![Nodes of procedure call](/images/proc_call.png)
+@@@end
 
 When the runtime routine meets `N_procedure_call` node, it behaves like this:
 
@@ -2385,7 +2422,7 @@ Calls `stack_return`.
 
 When the runtime routine meets `N_RT` node, it decreases `ret_level` by one so that the following commands in the procedure are ignored by the runtime routine.
 
-#### Runtime entry and error functions
+#### Runtime Entry and Error Functions
 
 A function `run` is the entry of the runtime routine.
 A function `runtime_error` reports an error occurred during the runtime routine runs.
@@ -2576,5 +2613,5 @@ However, the following information is very useful (but old).
 - Unix programming environment written by Brian W. Kernighan and Rob Pike (1984)
 - Source code of a language, for example, ruby.
 
-Lately, lots of source codes are in the internet.
+Lately, lots of source codes are on the internet.
 Maybe reading source codes is the most useful for programmers.

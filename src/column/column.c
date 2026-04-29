@@ -34,7 +34,7 @@ get_file_time_modified_factory (GtkListItem *item, GFileInfo *info) {
 /* Functions (closures) for GtkSorter */
 char *
 get_file_name (GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup(g_file_info_get_name (info)) : NULL;
+  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
 }
 
 goffset

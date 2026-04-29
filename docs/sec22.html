@@ -94,12 +94,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
         <h1 id="tfewindow">TfeWindow</h1>
-        <h2 id="the-tfe-window-and-xml-files">The Tfe window and XML
-        files</h2>
+        <h2 id="the-tfe-window-and-xml-files">The Tfe Window and XML
+        Files</h2>
         <p>The following is the window of Tfe.</p>
         <figure>
-        <img src="/images/tfe6.png" style="width:9.06cm;height:6.615cm"
-        alt="tfe6" />
+        <img src="/images/tfe6.png" alt="tfe6" />
         <figcaption aria-hidden="true">tfe6</figcaption>
         </figure>
         <ul>
@@ -111,7 +110,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         menu.</li>
         </ul>
         <p>This makes the most frequently used operation bound to the
-        tool bar buttons. And the others are stored in behind the menus.
+        tool bar buttons. And the others are stored behind the menus.
         So, it is more practical.</p>
         <p>The window is a composite widget. The definition is described
         in the XML file <code>tfewindow.ui</code>.</p>
@@ -182,7 +181,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-64"><a href="#cb1-64"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
         <ul>
         <li>Three buttons “Open”, “Save” and “Close” are defined. You
-        can use two ways to catch the button click event. The one is
+        can use two ways to catch the button click event. One is
         “clicked” signal and the other is to register an action to the
         button. The first way is simple. You can connects the signal and
         your handler directly. The second way is like menu items. When
@@ -191,12 +190,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         its “activate” handler in advance. But one advantage is you can
         connect two or more things to the action. For example, an
         accelerator can be connected to the action. Accelerators are
-        keys that connects to actions. For example, Ctrl+O is often
+        keys that connect to actions. For example, Ctrl+O is often
         connected to a file open action. So, both open button and Ctrl+O
-        activates an open action. The latter way is used in the XML file
+        activate an open action. The latter way is used in the XML file
         above.</li>
         <li>You can specify a theme icon to GtkMenuButton with
-        “icon-name” poperty. The “open-menu-symbolic” is an image that
+        “icon-name” property. The “open-menu-symbolic” is an image that
         is called hamburger menu.</li>
         </ul>
         <p>The <code>menu.ui</code> XML file defines the menu for
@@ -231,7 +230,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-27"><a href="#cb2-27"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
         <p>There are four menu items and they are connected to
         actions.</p>
-        <h2 id="the-header-file">The header file</h2>
+        <h2 id="the-header-file">The Header File</h2>
         <p>The following is the codes of <code>tfewindow.h</code>.</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
@@ -252,11 +251,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>5-6: <code>TFE_TYPE_WINDOW</code> definition and the
         <code>G_DECLARE_FINAL_TYPE</code> macro.</li>
-        <li>8-15: Public functions. The first two functions creates a
+        <li>8-15: Public functions. The first two functions create a
         notebook page and the last function creates a window.</li>
         </ul>
-        <h2 id="c-file">C file</h2>
-        <h3 id="a-composite-widget">A composite widget</h3>
+        <h2 id="c-file">C File</h2>
+        <h3 id="composite-widget">Composite Widget</h3>
         <p>The following codes are extracted from
         <code>tfewindow.c</code>.</p>
         <div class="sourceCode" id="cb4"><pre
@@ -319,7 +318,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         and that brings the application to quit. You can make “app.quit”
         action instead of “win.close-all”. It’s your choice. If your
         application has two or more windows, both “app.quit” and
-        “win:close-all”, which closes all the notebook pages on the
+        “win.close-all”, which closes all the notebook pages on the
         window, may be necessary. Anyway, you need to consider that each
         action should belong to the application or a window.</p>
         <p>Actions are defined in the instance initialization
@@ -362,8 +361,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>All the handlers are in <code>tfewindow.c</code> program and
         shown in the following subsections.</li>
         </ul>
-        <h3 id="the-handlers-of-the-actions">The handlers of the
-        actions</h3>
+        <h3 id="the-handlers-of-the-actions">The Handlers of the
+        Actions</h3>
         <h4 id="open_activated">open_activated</h4>
         <p>The callback function <code>open_activated</code> is an
         activate signal handler on “open” action.</p>
@@ -402,17 +401,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-19"><a href="#cb7-19"></a><span class="op">}</span></span></code></pre></div>
         <p>If the TfeTextView instance failed to read a file, it
         destroys the instance with <code>g_object_ref_sink</code> and
-        <code>g_object_unref</code>. Since newly created widgets are
-        floating, you need to convert the floating reference to the
-        normal reference before you release it. The conversion is done
-        with <code>g_object_ref_sink</code>.</p>
+        <code>g_object_unref</code>. Since newly created widgets have a
+        floating reference, you need to convert the floating reference
+        to the normal reference before you release it. The conversion is
+        done with <code>g_object_ref_sink</code>.</p>
         <p>If the instance successfully read the file, it calls
         <code>notebook_page_build</code> to build a notebook page and
         add it to the GtkNotebook object.</p>
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>notebook_page_build <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GtkWidget <span class="op">*</span>tv<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="co">// The arguments win, tb and filename are owned by the caller.</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="co">// The arguments win, tv and filename are owned by the caller.</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a>  <span class="co">// If tv has a floating reference, it is consumed by the function.</span></span>
 <span id="cb8-5"><a href="#cb8-5"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
 <span id="cb8-6"><a href="#cb8-6"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
@@ -574,7 +573,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-9"><a href="#cb14-9"></a>      notebook_page_close <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb14-10"><a href="#cb14-10"></a>  <span class="op">}</span></span>
 <span id="cb14-11"><a href="#cb14-11"></a><span class="op">}</span></span></code></pre></div>
-        <p>If the user clicked on the cacel button, it does nothing. If
+        <p>If the user clicked on the cancel button, it does nothing. If
         the user clicked on the accept button, which is the same as
         close button, it calls <code>notebook_page_close</code>. Note
         that <code>win-&gt;is_quit</code> has been set to FALSE in the
@@ -602,8 +601,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-8"><a href="#cb16-8"></a>  notebook_page_build <span class="op">(</span>win<span class="op">,</span> tv<span class="op">,</span> filename<span class="op">);</span></span>
 <span id="cb16-9"><a href="#cb16-9"></a>  g_free <span class="op">(</span>filename<span class="op">);</span></span>
 <span id="cb16-10"><a href="#cb16-10"></a><span class="op">}</span></span></code></pre></div>
-        <p>This function creates a new TfeTextView instance, “Untitled”
-        family string and calls <code>notebook_page_build</code>.</p>
+        <p>This function creates a new TfeTextView instance, generates a
+        string like “Untitled”, and calls
+        <code>notebook_page_build</code>.</p>
         <h4 id="saveas_activated">saveas_activated</h4>
         <p>The callback function <code>saveas_activated</code> is an
         activate signal handler on “saveas” action.</p>
@@ -654,9 +654,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         shows an alert dialog and if the user clicks on the accept
         button, the window will be destroyed.</p>
         <h3 id="window-close-request-signal">Window “close-request”
-        signal</h3>
+        Signal</h3>
         <p>GtkWindow has a “close-request” signal and it is emitted when
-        the close button, which is x-shaped button at the top right
+        the close button, which is the x-shaped button at the top right
         corner, is clicked on. And the user handler is called before the
         default handler. If the user handler returns TRUE, the rest of
         the close process is skipped. If it returns FALSE, the rest will
@@ -705,7 +705,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb21-15"><a href="#cb21-15"></a>  <span class="op">}</span></span>
 <span id="cb21-16"><a href="#cb21-16"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb21-17"><a href="#cb21-17"></a><span class="op">}</span></span></code></pre></div>
-        <h3 id="public-functions">Public functions</h3>
+        <h3 id="public-functions">Public Functions</h3>
         <p>There are three public functions.</p>
         <ul>
         <li><code>void tfe_window_notebook_page_new (TfeWindow *win)</code></li>
@@ -736,7 +736,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         build a page with it.</p>
         <p>If an error happens and no page is created, it creates a new
         empty page.</p>
-        <h3 id="full-codes-of-tfewindow.c">Full codes of
+        <h3 id="full-codes-of-tfewindow.c">Full Codes of
         tfewindow.c</h3>
         <p>The following is the full source codes of
         <code>tfewindow.c</code>.</p>
@@ -859,7 +859,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-116"><a href="#cb23-116"></a></span>
 <span id="cb23-117"><a href="#cb23-117"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb23-118"><a href="#cb23-118"></a>notebook_page_build <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GtkWidget <span class="op">*</span>tv<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb23-119"><a href="#cb23-119"></a>  <span class="co">// The arguments win, tb and filename are owned by the caller.</span></span>
+<span id="cb23-119"><a href="#cb23-119"></a>  <span class="co">// The arguments win, tv and filename are owned by the caller.</span></span>
 <span id="cb23-120"><a href="#cb23-120"></a>  <span class="co">// If tv has a floating reference, it is consumed by the function.</span></span>
 <span id="cb23-121"><a href="#cb23-121"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
 <span id="cb23-122"><a href="#cb23-122"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>

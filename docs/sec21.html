@@ -95,21 +95,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="col-xl-10 col-xxl-9">
         <h1 id="gtkfontdialogbutton-and-gsettings">GtkFontDialogButton
         and Gsettings</h1>
-        <h2 id="the-preference-dialog">The preference dialog</h2>
+        <h2 id="the-preference-dialog">The Preference Dialog</h2>
         <p>If the user clicks on the preference menu, a preference
         dialog appears.</p>
         <figure>
-        <img src="/images/pref_dialog.png"
-        style="width:4cm;height:1.6cm" alt="Preference dialog" />
+        <img src="/images/pref_dialog.png" alt="Preference dialog" />
         <figcaption aria-hidden="true">Preference dialog</figcaption>
         </figure>
         <p>It has only one button, which is a GtkFontDialogButton
         widget. You can add more widgets on the dialog but this simple
         dialog isn’t so bad for the first example program.</p>
-        <p>If the button is clicked, a FontDialog appears like this.</p>
+        <p>If the button is clicked, a GtkFontDialog appears like
+        this.</p>
         <figure>
-        <img src="/images/fontdialog.png"
-        style="width:6.27cm;height:7.38cm" alt="Font dialog" />
+        <img src="/images/fontdialog.png" alt="Font dialog" />
         <figcaption aria-hidden="true">Font dialog</figcaption>
         </figure>
         <p>If the user chooses a font and clicks on the select button,
@@ -117,10 +116,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>GtkFontDialogButton and GtkFontDialog are available since GTK
         version 4.10. They replace GtkFontButton and
         GtkFontChooserDialog, which are deprecated since 4.10.</p>
-        <h2 id="a-composite-widget">A composite widget</h2>
+        <h2 id="composite-widget">Composite Widget</h2>
         <p>The preference dialog has GtkBox, GtkLabel and GtkFontButton
         in it and is defined as a composite widget. The following is the
-        template ui file for TfePref.</p>
+        template UI file for <code>TfePref</code>.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
@@ -157,7 +156,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>Template tag specifies a composite widget. The class
         attribute specifies the class name, which is “TfePref”. The
-        parent attribute is <code>GtkWindow</code>. Therefore.
+        parent attribute is <code>GtkWindow</code>. Therefore,
         <code>TfePref</code> is a child class of <code>GtkWindow</code>.
         A parent attribute is optional but it is recommended to write it
         explicitly. You can make TfePref as a child of
@@ -167,7 +166,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>TfePref has a child widget GtkBox which is horizontal. The
         box has two children GtkLabel and GtkFontDialogButton.</li>
         </ul>
-        <h2 id="the-header-file">The header file</h2>
+        <h2 id="the-header-file">The Header File</h2>
         <p>The file <code>tfepref.h</code> defines types and declares a
         public function.</p>
         <div class="sourceCode" id="cb2"><pre
@@ -183,22 +182,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>5: Defines the type <code>TFE_TYPE_PREF</code>, which is a
         macro replaced by <code>tfe_pref_get_type ()</code>.</li>
-        <li>6: The macro <code>G_DECLAER_FINAL_TYPE</code> expands to:
+        <li>6: The macro <code>G_DECLARE_FINAL_TYPE</code> expands to:
         <ul>
         <li>The function <code>tfe_pref_get_type ()</code> is
         declared.</li>
-        <li>TfePrep type is defined as a typedef of
-        <code>struct _TfePrep</code>.</li>
-        <li>TfePrepClass type is defined as a typedef of
+        <li>TfePref type is defined as a typedef of
+        <code>struct _TfePref</code>.</li>
+        <li>TfePrefClass type is defined as a typedef of
         <code>struct {GtkWindowClass *parent;}</code>.</li>
         <li>Two functions <code>TFE_PREF ()</code> and
-        <code>TFE_IS_PREF ()</code> is defined.</li>
+        <code>TFE_IS_PREF ()</code> are defined.</li>
         </ul></li>
         <li>8-9:The function <code>tfe_pref_new</code> is declared. It
         creates a new TfePref instance.</li>
         </ul>
-        <h2 id="the-c-file-for-composite-widget">The C file for
-        composite widget</h2>
+        <h2 id="the-c-file-for-the-composite-widget">The C File for the
+        Composite Widget</h2>
         <p>The following codes are extracted from the file
         <code>tfepref.c</code>.</p>
         <div class="sourceCode" id="cb3"><pre
@@ -238,7 +237,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>The structure <code>_TfePref</code> has
-        <code>font_dialog_btn</code> member. It points the
+        <code>font_dialog_btn</code> member. It points to the
         GtkFontDialogButton object specified in the XML file
         “tfepref.ui”. The member name <code>font_dialog_btn</code> must
         be the same as the GtkFontDialogButton id attribute in the XML
@@ -276,14 +275,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         GtkFontDialog dialog appears. A user can choose a font on the
         dialog. If the user clicks on the “select” button, the dialog
         disappears. And the font information is given to the
-        GtkFontDialogButton instance. The font data is taken with the
-        method <code>gtk_font_dialog_button_get_font_desc</code>. It
+        GtkFontDialogButton instance. The font data is retrieved with
+        the method <code>gtk_font_dialog_button_get_font_desc</code>. It
         returns a pointer to the PangoFontDescription structure.</p>
         <p>Pango is a text layout engine. The <a
         href="https://docs.gtk.org/Pango/index.html">documentation</a>
         is on the internet.</p>
         <p>PangoFontDescription is a C structure and it isn’t allowed to
-        access directly. The document is <a
+        be accessed directly. The document is <a
         href="https://docs.gtk.org/Pango/struct.FontDescription.html">here</a>.
         If you want to retrieve the font information, there are several
         functions.</p>
@@ -300,11 +299,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         PangoStretch constant like
         <code>PANGO_STRETCH_SEMI_EXPANDED</code>.</li>
         <li><code>pango_font_description_get_size</code> returns an
-        integer like <code>12</code>. Its unit is point or pixel (device
-        unit). The function
+        integer like <code>12</code>. Its unit is points or pixels
+        (device units). The function
         <code>pango_font_description_get_size_is_absolute</code> returns
-        TRUE if the unit is absolute that means device unit. Otherwise
-        the unit is point.</li>
+        TRUE if the unit is an absolute device unit. Otherwise the unit
+        is point.</li>
         </ul>
         <h2 id="gsettings">GSettings</h2>
         <p>We want to maintain the font data after the application
@@ -319,7 +318,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>GSettings is simple and easy to use but a bit hard to
         understand the concept. This subsection describes the concept
         first and then how to program it.</p>
-        <h3 id="gsettings-schema">GSettings schema</h3>
+        <h3 id="gsettings-schema">GSettings Schema</h3>
         <p>GSettings schema describes a set of keys, value types and
         some other information. GSettings object uses this schema and it
         writes/reads the value of a key to/from the right place in the
@@ -335,18 +334,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         key <code>font-desc</code> is defined with a path
         <code>/com/github/ToshioCP/tfe/</code>, the key’s location in
         the database is <code>/com/github/ToshioCP/tfe/font-desc</code>.
-        Path is a string begins with and ends with a slash
+        A path is a string begins with and ends with a slash
         (<code>/</code>). And it is delimited by slashes.</li>
-        <li>GSettings save information as key-value style. Key is a
-        string begins with a lower case character followed by lower
-        case, digit or dash (<code>-</code>) and ends with lower case or
-        digit. No consecutive dashes are allowed. Values can be any
-        type. GSettings stores values as GVariant type, which can be,
-        for example, integer, double, boolean, string or complex types
-        like an array. The type of values needs to be defined in the
-        schema.</li>
+        <li>GSettings save information as key-value style. A key is a
+        string that begins with a lower case character followed by lower
+        case letters, digits or dashes (<code>-</code>) and ends with a
+        lower case letter or digit. No consecutive dashes are allowed.
+        Values can be any type. GSettings stores values as GVariant
+        type, which can be, for example, integer, double, boolean,
+        string or complex types like an array. The type of values needs
+        to be defined in the schema.</li>
         <li>A default value needs to be set for each key.</li>
-        <li>A summery and description can be set for each key
+        <li>A summary and description can be set for each key
         optionally.</li>
         </ul>
         <p>Schemas are described in an XML format. For example,</p>
@@ -378,7 +377,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li><a
         href="https://docs.gtk.org/glib/gvariant-format-strings.html">GLib
         API Reference – GVariant Format Strings</a></li>
-        <li><a href="https://docs.gtk.org/glib/gvariant-text.html">GLib
+        <li><a
+        href="https://docs.gtk.org/glib/gvariant-text-format.html">GLib
         API Reference – GVariant Text Format</a></li>
         <li><a href="https://docs.gtk.org/glib/struct.Variant.html">GLib
         API Reference – GVariant</a></li>
@@ -386,7 +386,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         href="https://docs.gtk.org/glib/struct.VariantType.html">GLib
         API Reference – VariantType</a></li>
         </ul>
-        <h3 id="gsettings-command">Gsettings command</h3>
+        <h3 id="gsettings-command">Gsettings Command</h3>
         <p>First, let’s try <code>gsettings</code> application. It is a
         configuration tool for GSettings.</p>
         <pre><code>$ gsettings help
@@ -446,7 +446,6 @@ org.gnome.calculator word-size 64</code></pre>
         <pre><code>$ gnome-calculator</code></pre>
         <figure>
         <img src="/images/gnome_calculator_basic.png"
-        style="width:5.34cm;height:5.97cm"
         alt="gnome-calculator basic mode" />
         <figcaption aria-hidden="true">gnome-calculator basic
         mode</figcaption>
@@ -454,7 +453,6 @@ org.gnome.calculator word-size 64</code></pre>
         <p>Change the mode to advanced and quit.</p>
         <figure>
         <img src="/images/gnome_calculator_advanced.png"
-        style="width:10.74cm;height:7.14cm"
         alt="gnome-calculator advanced mode" />
         <figcaption aria-hidden="true">gnome-calculator advanced
         mode</figcaption>
@@ -474,7 +472,7 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         remains even the calculator quits. So when the calculator runs
         again, it will appear as an advanced mode.</p>
         <h3 id="glib-compile-schemas-utility">Glib-compile-schemas
-        utility</h3>
+        Utility</h3>
         <p>GSettings schemas are specified with an XML format. The XML
         schema files must have the filename extension
         <code>.gschema.xml</code>. The following is the XML schema file
@@ -506,7 +504,7 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         Format String.</li>
         <li>5: default value of the key <code>font-desc</code> is
         <code>Monospace 12</code>.</li>
-        <li>6: Summery and description elements describes the key. They
+        <li>6: Summary and description elements describe the key. They
         are optional, but it is recommended to add them in the XML
         file.</li>
         </ul>
@@ -549,8 +547,8 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         compiles all the schema files in the directory and creates or
         updates the database file <code>gschemas.compiled</code>.</li>
         </ol>
-        <h3 id="gsettings-object-and-binding">GSettings object and
-        binding</h3>
+        <h3 id="gsettings-object-and-binding">GSettings Object and
+        Binding</h3>
         <p>Now, we go on to the next topic, how to program
         GSettings.</p>
         <p>You need to compile your schema file in advance.</p>
@@ -651,7 +649,7 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         <li>1-7: The mapping function from GSettings to the property.
         The first argument <code>value</code> is a GValue to be stored
         in the property. The second argument <code>variant</code> is a
-        GVarinat structure that comes from the GSettings value.</li>
+        GVariant structure that comes from the GSettings value.</li>
         <li>3: Retrieves a string from the GVariant structure.</li>
         <li>4: Build a PangoFontDescription structure from the string
         and assigns its address to <code>font_desc</code>.</li>
@@ -670,7 +668,7 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         ownership of the string <code>font_desc_string</code> moves to
         the returned value.</li>
         </ul>
-        <h2 id="c-file">C file</h2>
+        <h2 id="c-file">C File</h2>
         <p>The following is the full codes of <code>tfepref.c</code></p>
         <div class="sourceCode" id="cb17"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
@@ -729,7 +727,7 @@ org.gnome.calculator button-mode &#39;advanced&#39;
 <span id="cb17-54"><a href="#cb17-54"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb17-55"><a href="#cb17-55"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb17-56"><a href="#cb17-56"></a><span class="op">}</span></span></code></pre></div>
-        <h2 id="test-program">Test program</h2>
+        <h2 id="test-program">Test Program</h2>
         <p>There’s a test program located at <code>src/tfe6/test</code>
         directory.</p>
         <div class="sourceCode" id="cb18"><pre
@@ -809,23 +807,23 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         <p>Commands are shown in the next four sub-subsections. You
         don’t need to try them. The final sub-subsection shows the
         meson-ninja way, which is the easiest.</p>
-        <h3 id="compile-the-schema-file">Compile the schema file</h3>
+        <h3 id="compile-the-schema-file">Compile the Schema File</h3>
         <pre><code>$ cd src/tef6/test
 $ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
 $ glib-compile-schemas .</code></pre>
         <p>Be careful. The commands <code>glib-compile-schemas</code>
         has an argument “.”, which means the current directory. This
         results in creating <code>gschemas.compiled</code> file.</p>
-        <h3 id="compile-the-xml-file">Compile the XML file</h3>
+        <h3 id="compile-the-xml-file">Compile the XML File</h3>
         <pre><code>$ glib-compile-resources --sourcedir=.. --generate-source --target=resource.c ../tfe.gresource.xml</code></pre>
-        <h3 id="compile-the-c-file">Compile the C file</h3>
+        <h3 id="compile-the-c-file">Compile the C File</h3>
         <pre><code>$ gcc `pkg-config --cflags gtk4` test_pref.c ../tfepref.c resource.c `pkg-config --libs gtk4`</code></pre>
-        <h3 id="run-the-executable-file">Run the executable file</h3>
+        <h3 id="run-the-executable-file">Run the Executable File</h3>
         <pre><code>$ GSETTINGS_SCHEMA_DIR=. ./a.out
 
 Jamrul Italic Semi-Expanded 12 # &lt;= select Jamrul Italic 12
 Monospace 12 #&lt;= select Monospace Regular 12</code></pre>
-        <h3 id="meson-ninja-way">Meson-ninja way</h3>
+        <h3 id="meson-ninja-way">Meson-Ninja Way</h3>
         <p>Meson wraps up the commands above. Create the following text
         and save it to <code>meson.build</code>.</p>
         <p>Note: Gtk4-tutorial repository has meson.build file that
@@ -850,7 +848,7 @@ executable(&#39;test_pref&#39;, [&#39;test_pref.c&#39;, &#39;../tfepref.c&#39;],
         <ul>
         <li>The target filename is resources.</li>
         <li>The definition XML file is ‘../tfe.gresource.xml’.</li>
-        <li>The source dir is ‘..’. All the ui files are located
+        <li>The source dir is ‘..’. All the UI files are located
         there.</li>
         </ul></li>
         <li>GNOME module has <code>compile_schemas</code> method. It

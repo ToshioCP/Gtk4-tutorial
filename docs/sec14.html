@@ -97,8 +97,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>GtkNotebook is a very important object in the text file
         editor <code>tfe</code>. It connects the application and
         TfeTextView objects. A set of public functions are declared in
-        <code>tfenotebook.h</code>. The word “tfenotebook” is used only
-        in filenames. There’s no “TfeNotebook” object.</p>
+        <code>tfenotebook.h</code>. The name “tfenotebook” is used only
+        for filenames; no “TfeNotebook” object type is defined. There’s
+        no “TfeNotebook” object.</p>
         <p>The source files are in the directory <code>src/tfe5</code>.
         You can get them by downloading the <a
         href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.</p>
@@ -121,8 +122,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>tfenotebook.c</code>.</p>
         <ul>
         <li>1-2: <code>notebook_page_save</code> saves the current page
-        to the file of which the name specified in the tab. If the name
-        is <code>untitled</code> or <code>untitled</code> followed by
+        to the file with the name specified in the tab.” If the name is
+        <code>untitled</code> or <code>untitled</code> followed by
         digits, a file chooser dialog appears and a user can choose or
         specify a filename.</li>
         <li>4-5: <code>notebook_page_close</code> closes the current
@@ -213,10 +214,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         page.</li>
         <li>37: Frees <code>filename</code>.</li>
         <li>10- 24: The function <code>notebook_page_build</code>. A
-        parameter with <code>const</code> qualifier doesn’t change in
-        the function. It means that the argument <code>filename</code>
-        is owned by the caller. The caller needs to free it when it
-        becomes useless.</li>
+        parameter with the <code>const</code> qualifier cannot be
+        modified within the function. It means that the argument
+        <code>filename</code> is owned by the caller. The caller is
+        responsible for freeing it when it is no longer needed.</li>
         <li>12: Creates GtkScrolledWindow.</li>
         <li>17: Inserts <code>tv</code> to GtkScrolledWindow as a
         child.</li>
@@ -227,7 +228,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>g_object_set</code> sets properties on an object. The
         object can be any object derived from GObject. In many cases, an
         object has its own function to set its properties, but sometimes
-        doesn’t. In that case, use <code>g_object_set</code> to set the
+        does not. In that case, use <code>g_object_set</code> to set the
         property.</li>
         <li>22: Sets the current page to the newly created page.</li>
         <li>23: Connects “change-file” signal and the handler
@@ -308,7 +309,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>9-15: Otherwise, it builds a new page with
         <code>tv</code>.</li>
         </ul>
-        <h2 id="floating-reference">Floating reference</h2>
+        <h2 id="floating-reference">Floating Reference</h2>
         <p>All the widgets are derived from GInitiallyUnowned. GObject
         and GInitiallyUnowned are almost the same. The difference is
         like this. When an instance of GInitiallyUnowned is created, the
@@ -319,23 +320,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         Non-widget class, for example, GtkTextBuffer is a direct sub
         class of GObject and it has normal reference.</p>
         <p>The function <code>g_object_ref_sink</code> converts the
-        floating reference into a normal reference. If the instance
-        doesn’t have a floating reference,
-        <code>g_object_ref_sink</code> simply increases the reference
-        count by one. It is used when an widget is added to another
-        widget as a child.</p>
+        floating reference into a normal reference. If the instance does
+        not have a floating reference, <code>g_object_ref_sink</code>
+        simply increases the reference count by one. It is used when an
+        widget is added to another widget as a child.</p>
         <pre><code>GtkTextView *tv = gtk_text_view_new (); // Floating reference
 GtkScrolledWindow *scr = gtk_scrolled_window_new ();
-gtk_scrolled_window_set_child (scr, tv); // Scrolled window sink the tv&#39;s floating reference and tv&#39;s reference count becomes one.</code></pre>
+gtk_scrolled_window_set_child (scr, tv); // Scrolled window sinks the tv&#39;s floating reference and tv&#39;s reference count becomes one.</code></pre>
         <p>When <code>tv</code> is added to <code>scr</code> as a child,
         <code>g_object_ref_sink</code> is used.</p>
         <pre><code>g_object_ref_sink (tv);</code></pre>
         <p>So, the floating reference is converted into an ordinary
         reference. That is to say, floating reference is removed, and
         the normal reference count is one. Thanks to this, the caller
-        doesn’t need to decrease tv’s reference count. If an Object_A is
-        not a descendant of GInitiallyUnowned, the program is like
-        this:</p>
+        does not need to decrease tv’s reference count. If an Object_A
+        were not a descendant of GInitiallyUnowned, the program would be
+        like this:</p>
         <pre><code>Object_A *obj_a = object_a_new (); // reference count is one
 GtkScrolledWindow *scr = gtk_scrolled_window_new ();
 gtk_scrolled_window_set_child (scr, obj_a); // obj_a&#39;s reference count is two
@@ -401,23 +401,21 @@ g_object_unref (obj_a); // obj_a&#39;s reference count is one because the caller
         <ul>
         <li>13-21: <code>notebook_page_save</code>.</li>
         <li>19: Gets the TfeTextView instance belongs to the current
-        page. The caller doesn’t have the ownership of <code>tv</code>
-        so you don’t need to care about freeing it.</li>
+        page. The caller does not have the ownership of <code>tv</code>
+        so you don’t need to care about the reference count of
+        <code>tv</code>.</li>
         <li>20: Calls <code>tfe_text_view_save</code>.</li>
         <li>1-11: <code>get_current_textview</code>. This function gets
         the TfeTextView object belongs to the current page.</li>
         <li>7: Gets the page number of the current page.</li>
         <li>8: Gets the child widget <code>scr</code>, which is a
         GtkScrolledWindow instance, of the current page. The object
-        <code>scr</code> is owned by the notebook <code>nb</code>. So,
-        the caller doesn’t need to free it.</li>
+        <code>scr</code> is owned by the notebook <code>nb</code>.</li>
         <li>9-10: Gets the child widget of <code>scr</code>, which is a
         TfeTextView instance, and returns it. The returned instance is
-        owned by <code>scr</code> and the caller of
-        <code>get_cuurent_textview</code> doesn’t need to care about
-        freeing it.</li>
+        owned by <code>scr</code>.</li>
         </ul>
-        <h2 id="file_changed_cb-handler">file_changed_cb handler</h2>
+        <h2 id="file_changed_cb-handler">file_changed_cb Handler</h2>
         <p>The function <code>file_changed_cb</code> is a handler
         connected to “change-file” signal. If a file in a TfeTextView
         instance is changed, the instance emits this signal. This
@@ -445,7 +443,7 @@ g_object_unref (obj_a); // obj_a&#39;s reference count is one because the caller
         <li>8: Gets the GFile instance from <code>tv</code>.</li>
         <li>9: Gets the GkScrolledWindow instance which is the parent
         widget of <code>tv</code>.</li>
-        <li>10-12: If <code>file</code> points a GFile instance, the
+        <li>10-12: If <code>file</code> points to a GFile instance, the
         filename of the GFile is assigned to <code>filename</code>.
         Then, unref the GFile object <code>file</code>.</li>
         <li>13-14: Otherwise (file is NULL), a string

@@ -94,7 +94,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
         <h1 id="widgets-3">Widgets (3)</h1>
-        <h2 id="open-signal">Open signal</h2>
+        <h2 id="open-signal">Open Signal</h2>
         <h3
         id="g_application_handles_open-flag">G_APPLICATION_HANDLES_OPEN
         flag</h3>
@@ -102,11 +102,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         GtkTextView, GtkTextBuffer and GtkScrolledWindow. We will add
         file-read ability to the program and improve it to a file
         viewer.</p>
-        <p>The easiest way to give a filename is to use a command line
-        argument.</p>
+        <p>The simplest way to specify a filename is to use a command
+        line argument.</p>
         <pre><code>$ ./a.out filename</code></pre>
-        <p>The program will open the file and insert its contents into
-        the GtkTextBuffer.</p>
+        <p>The program will open the file and insert its contents into a
+        GtkTextBuffer.</p>
         <p>To do this, we need to know how GtkApplication (or
         GApplication) recognizes arguments. This is described in the <a
         href="https://docs.gtk.org/gio/class.Application.html">GIO API
@@ -132,11 +132,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         as it is the simplest option, and no command line arguments are
         allowed. If you give arguments, an error will occur.</p>
         <p>The flag <code>G_APPLICATION_HANDLES_OPEN</code> is the
-        second simplest option. It allows arguments but only
-        filenames.</p>
+        second simplest option. It allows command line arguments,
+        specifically filenames.</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv3&quot;</span><span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span></code></pre></div>
-        <h3 id="open-signal-1">open signal</h3>
+        <h3 id="open-signal-1">Open Signal</h3>
         <p>When <code>G_APPLICATION_HANDLES_OPEN</code> flag is given to
         the application, two signals are available.</p>
         <ul>
@@ -162,21 +162,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         [element-type GFile]</li>
         <li>n_files: the number of the elements of
         <code>files</code></li>
-        <li>hint: a hint provided by the calling instance (usually it
-        can be ignored)</li>
+        <li>hint: an optional context string provided by the caller
+        (often unused)</li>
         <li>user_data: user data that is set when the signal handler was
         connected.</li>
         </ul>
-        <h2 id="file-viewer">File viewer</h2>
-        <h3 id="what-is-a-file-viewer">What is a file viewer?</h3>
+        <h2 id="file-viewer">File Viewer</h2>
+        <h3 id="what-is-a-file-viewer">What is a File Viewer?</h3>
         <p>A file viewer is a program that displays text files. Our file
         viewer is as follows.</p>
         <ul>
         <li>When arguments are given, it recognizes the first argument
         as a filename and opens it.</li>
         <li>The second argument and after are ignored.</li>
-        <li>If there’s no argument, it shows an error message and
-        quit.</li>
+        <li>If there is no argument, it shows an error message and
+        quits.</li>
         <li>If it successfully opens the file, it reads the contents of
         the file, inserts them to GtkTextBuffer and shows the
         window.</li>
@@ -242,14 +242,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-55"><a href="#cb5-55"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb5-56"><a href="#cb5-56"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb5-57"><a href="#cb5-57"></a><span class="op">}</span></span></code></pre></div>
-        <p>Save it as <code>tfv3.c</code>. If you’ve downloaded this
-        repository, the file is <code>src/tfv/tfv3.c</code>. Compile and
-        run it.</p>
+        <p>Save it as <code>tfv3.c</code>. The source code can be found
+        at <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/tfv/tfv3.c">/src/tfv/tfv3.c</a>
+        in this repository. Compile and run it.</p>
         <pre><code>$ comp tfv3
 $ ./a.out tfv3.c</code></pre>
         <figure>
-        <img src="/images/screenshot_tfv3.png"
-        style="width:6.3cm;height:5.325cm" alt="File viewer" />
+        <img src="/images/screenshot_tfv3.png" alt="File viewer" />
         <figcaption aria-hidden="true">File viewer</figcaption>
         </figure>
         <p>The function <code>main</code> has only two changes from the
@@ -285,7 +285,7 @@ $ ./a.out tfv3.c</code></pre>
         <li>Reads the file and inserts the text into GtkTextBuffer (this
         will be explained later)</li>
         <li>If the file is not opened, outputs an error message and
-        destroys the window. This makes the application quit.</li>
+        destroys the window. This causes the application to exit.</li>
         </ul>
         <p>The following is the file reading part of the program.</p>
         <div class="sourceCode" id="cb7"><pre
@@ -304,34 +304,33 @@ $ ./a.out tfv3.c</code></pre>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <p>The function <code>g_file_load_contents</code> loads the file
         contents into a temporary buffer, which is automatically
-        allocated and sets <code>contents</code> to point the buffer.
+        allocated and sets <code>contents</code> to point to the buffer.
         The length of the buffer is assigned to <code>length</code>. It
         returns <code>TRUE</code> if the file’s contents are
         successfully loaded. If an error occurs, it returns
         <code>FALSE</code> and sets the variable <code>err</code> to
-        point a newly created GError structure. The caller takes
+        point to a newly created GError structure. The caller takes
         ownership of the GError structure and is responsible for freeing
         it. If you want to know the details about g_file_load_contents,
         see <a
         href="https://docs.gtk.org/gio/method.File.load_contents.html">g
         file load contents</a>.</p>
-        <p>If it has successfully read the file, it inserts the contents
-        into GtkTextBuffer, frees the temporary buffer pointed by
-        <code>contents</code>, sets the title of the window, frees the
-        memories pointed by <code>filename</code> and then shows the
-        window.</p>
+        <p>If the file is read successfully, the contents are inserted
+        into GtkTextBuffer. The temporary buffer in contents is then
+        freed, the window title is set, the memory for filename is
+        freed, and the window is shown.</p>
         <p>If it fails, <code>g_file_load_contents</code> sets
-        <code>err</code> to point a newly created GError structure. The
-        structure is:</p>
+        <code>err</code> to point to a newly created GError structure.
+        The structure is:</p>
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> GError <span class="op">{</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  GQuark domain<span class="op">;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> code<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span><span class="op">*</span> message<span class="op">;</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <p>The <code>message</code> member is used most often. It points
-        an error message. A function <code>g_error_free</code> is used
-        to free the memory of the structure. See <a
+        <p>The <code>message</code> member is the most commonly used. It
+        points to an error message. A function <code>g_error_free</code>
+        is used to free the memory of the structure. See <a
         href="https://docs.gtk.org/glib/struct.Error.html">GError</a>.</p>
         <p>The program above outputs an error message, frees
         <code>err</code> and destroys the window and finally make the
@@ -342,16 +341,16 @@ $ ./a.out tfv3.c</code></pre>
         child will be shown when its tab is clicked.</p>
         <figure>
         <img src="/images/screenshot_gtk_notebook.png"
-        style="width:13.2cm;height:5.325cm" alt="GtkNotebook" />
+        alt="GtkNotebook" />
         <figcaption aria-hidden="true">GtkNotebook</figcaption>
         </figure>
         <p>The left image is the window at the startup. The file
         <code>pr1.c</code> is shown and its filename is in the left tab.
         After clicking on the right tab, the contents of the file
         <code>tfv1.c</code> is shown (the right image).</p>
-        <p>The following is <code>tfv4.c</code>. It has GtkNoteBook
-        widget. It is inserted as a child of GtkApplicationWindow and
-        contains multiple GtkScrolledWindow.</p>
+        <p>The following is <code>tfv4.c</code>. It has a GtkNoteBook
+        widget. It is inserted as a child of a GtkApplicationWindow and
+        contains multiple GtkScrolledWindow widgets.</p>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
@@ -428,25 +427,26 @@ $ ./a.out tfv3.c</code></pre>
         items are line numbers in the source code.</p>
         <ul>
         <li>11-13: Variables <code>nb</code>, <code>lab</code> and
-        <code>nbp</code> are defined. They point GtkNotebook, GtkLabel
-        and GtkNotebookPage respectively.</li>
+        <code>nbp</code> are defined. They point to a GtkNotebook,
+        GtkLabel and GtkNotebookPage respectively.</li>
         <li>24: The window’s title is set to “file viewer”.</li>
         <li>25: The default size of the window is 600x400.</li>
         <li>26-27: GtkNotebook is created and inserted to the
         GtkApplicationWindow as a child.</li>
         <li>29-57: For-loop. The variable <code>files[i]</code> points
-        i-th GFile, which is created by the GtkApplication from the i-th
-        command line argument.</li>
-        <li>31-36: GtkScrollledWindow, GtkTextView are created.
-        GtkTextBuffer is got from the GtkTextView. The GtkTextView is
-        connected to the GtkScrolledWindow as a child.</li>
-        <li>38-39: inserts the contents of the file into GtkTextBuffer
-        and frees the memory pointed by <code>contents</code>.</li>
+        to i-th GFile, which is created by the GtkApplication from the
+        i-th command line argument.</li>
+        <li>31-36: A GtkScrollledWindow and a GtkTextView are created. A
+        GtkTextBuffer is obtained from the GtkTextView. The GtkTextView
+        is connected to the GtkScrolledWindow as a child.</li>
+        <li>38-39: inserts the contents of the file into the
+        GtkTextBuffer and frees the memory referenced by
+        <code>contents</code>.</li>
         <li>40-42: If the filename is taken from the GFile, GtkLabel is
         created with the filename. The string <code>filename</code> is
         freed..</li>
-        <li>43-44: If it fails to take the filename, empty string
-        GtkLabel is created.</li>
+        <li>43-44: If it fails to take the filename, a GtkLabel with an
+        empty string is created.</li>
         <li>45-46: Appends a GtkScrolledWindow to the GtkNotebook as a
         child. And the GtkLabel is set as the child’s tab. At the same
         time, a GtkNoteBookPage is created automatically. The function

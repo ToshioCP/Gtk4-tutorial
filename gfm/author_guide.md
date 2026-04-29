@@ -201,8 +201,7 @@ Info strings like c, ruby, or xml are determined by the file extension:
 - `.rb`  => ruby
 - `.xml` => xml
 
-A list of supported languages is defined in
-[`/data/ext.yml`](/src/data/ext.yml).
+A list of supported languages is defined in [/data/ext.yml](/src/data/ext.yml).
 Note that this path starts with a slash to represent the repository root, not the operating system root.
 
 If the output target is `html` or `pdf`, attributes of Pandoc's Markdown are added after the starting fence.
@@ -279,7 +278,7 @@ The GFM documentation can be found in the [GitHub Flavored Markdown Spec](https:
 
 For internal links, use root-relative or relative URLs to ensure portability.
 When writing root-relative URLs in `.src.md` files, treat the `src` directory as the site root.
-The Ruby script automatically adjusts these paths to point to the appropriate locations during the conversion.
+The Ruby script automatically adjusts these paths to refer to the appropriate locations during the conversion.
 
 We recommend using root-relative links for image files, though relative links also work.
 
@@ -302,7 +301,7 @@ Relative URL:
 The requirements for the pdf target differ from the gfm or html targets:
 
 - Section links: Must use fragment identifiers (e.g., `#link-to-files`). They link to ATX header IDs created by Pandoc. For further information, see [Pandoc User's Manual - Extension: auto_identifiers](https://pandoc.org/MANUAL.html#extension-auto_identifiers).
-- Other files: Both root-relative and relative URLs are supported. The links usually point to C source files or directories. The Ruby script converts these links to point to the corresponding blob or tree pages in the GitHub Gtk4-tutorial repository.
+- Other files: Both root-relative and relative URLs are supported. The links usually refer to C source files or directories. The Ruby script converts these links to point to the corresponding blob or tree pages in the GitHub Gtk4-tutorial repository.
 
 Example:
 
@@ -314,7 +313,7 @@ Example:
 **Path Validation:**
 
 Ensure that all internal links remain within the `src` directory.
-The Ruby script will detect and warn you if a path (e.g., ../../../etc/passwd) attempts to point outside the directory.
+The Ruby script will detect and warn you if a path (e.g., ../../../etc/passwd) attempts to escape the directory.
 
 Note: This check prevents broken links and helps avoid "path traversal" issues, ensuring all referenced resources are correctly included in the final output.
 

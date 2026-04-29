@@ -2,14 +2,14 @@ Up: [README.md](../README.md),  Prev: [Section 32](sec32.md)
 
 # GtkSignalListItemFactory
 
-## GtkSignalListItemFactory and GtkBulderListItemFactory
+## GtkSignalListItemFactory and GtkBuilderListItemFactory
 
 GtkBuilderlistItemFactory is convenient when GtkListView just shows the contents of a list.
 Its binding direction is always from an item of a list to a child of GtkListItem.
 
-When it comes to dynamic connection, it's not enough.
+However, it is insufficient for dynamic connections.
 For example, suppose you want to edit the contents of a list.
-You set a child of GtkListItem to a GtkText instance so a user can edit a text with it.
+You set a child of GtkListItem to a GtkText instance so a user can edit text with it.
 You need to bind an item in the list with the buffer of the GtkText.
 The direction is opposite from the one with GtkBuilderListItemFactory.
 It is from the GtkText instance to the item in the list.
@@ -18,17 +18,17 @@ You can implement this with GtkSignalListItemFactory, which is more flexible tha
 This section shows just some parts of the source file `listeditor.c`.
 If you want to see the whole codes, see `src/listeditor` directory of the [Gtk4 tutorial repository](https://github.com/ToshioCP/Gtk4-tutorial).
 
-## A list editor
+## List Editor
 
-The sample program is a list editor and data of the list are strings.
+The sample program is a list editor and the data in the list are strings.
 It's the same as a line editor.
 It reads a text file line by line.
 Each line is an item of the list.
 The list is displayed with GtkColumnView.
 There are two columns.
-The one is a button, which shows if the line is a current line.
-If the line is the current line, the button is colored with red.
-The other is a string which is the contents of the corresponding item of the list.
+One column contains a button, which shows whether the line is a current line.
+If the line is the current line, the button is colored red.
+The other contains a string which is the contents of the corresponding item of the list.
 
 ![List editor](/src/images/listeditor.png)
 
@@ -50,15 +50,15 @@ $ _build/listeditor
 - Remove button: removes a current line.
 - Read button: reads a file.
 - Write button: writes the contents to a file.
-- close button: closes the contents.
-- quit button: quits the application.
-- Button on the select column: makes the line current.
+- Close button: closes the contents.
+- Quit button: quits the application.
+- Button in the `select` column: makes the row current.
 - String column: GtkText. You can edit a string in the field.
 
 The current line number (zero-based) is shown at the left of the tool bar.
 The file name is shown at the right of the write button.
 
-## Connect a GtkText instance and an item in the list
+## Connect a GtkText Instance and an Item in the List
 
 The second column (GtkColumnViewColumn) sets its factory property to GtkSignalListItemFactory.
 It uses three signals setup, bind and unbind.
@@ -108,7 +108,7 @@ LeData is defined in the file `listeditor.c` (the C source file of the list edit
 It is a child class of GObject and has string data which is the content of the line. 
   - 10-11: `text` is a child of the `listitem` and it is a GtkText instance.
 And `buffer` is a GtkEntryBuffer instance of the `text`.
-  - 12: The LeData instance `data` is an item pointed by the `listitem`.
+  - 12: The LeData instance `data` is an item pointed to by the `listitem`.
   - 15-16: Sets the text of `text` to `le_data_look_string (data)`.
 le\_data\_look\_string returns the string of the `data` and the ownership of the string is still taken by the `data`.
 So, the caller doesn't need to free the string.
@@ -119,7 +119,7 @@ When a user changes the GtkText text, the same string is immediately put into th
 The function returns a GBinding instance.
 This binding is different from bindings of GtkExpression.
 This binding needs the existence of the two properties.
-  - 19: GObjec has a table.
+  - 19: GObject has a table.
 The key is a string (or GQuark) and the value is a gpointer (pointer to any type).
 The function `g_object_set_data` sets the association from the key to the value.
 This line sets the association from "bind" to `bind` instance.
@@ -137,7 +137,7 @@ You can use "deleted-text" and "inserted-text" signal instead.
 The handler of the signals above copies the text in the GtkEntryBuffer instance to the LeData string.
 Connect the notify signal handler in `bind2_cb` and disconnect it in `unbind2_cb`.
 
-## Change the cell of GtkColumnView dynamically
+## Change the Cell of GtkColumnView Dynamically
 
 Next topic is to change the GtkColumnView (or GtkListView) cells dynamically.
 The example changes the color of the buttons, which are children of GtkListItem instances, as the current line position moves.
@@ -151,9 +151,9 @@ The line editor has the current position of the list.
 - It is necessary to set the line status (whether current or not) when a GtkListItem is bound to an item in the list.
 It is because GtkListItem is recycled.
 A GtkListItem was possibly current line before but not current after recycled.
-The opposite can also be happen.
+The opposite can also happen.
 
-The button of the current line is colored with red and otherwise white.
+The button of the current line is colored red and otherwise white.
 
 The current line has no relationship to GtkSingleSelection object.
 GtkSingleSelection selects a line on the display.
@@ -163,8 +163,8 @@ Actually, the program doesn't use GtkSingleSelection.
 
 The LeWindow instance has two instance variables for recording the current line.
 
-- `win->position`: An int type variable. It is the position of the current line. It is zero-based. If no current line exists, it is -1.
-- `win->current_button`: A variable points the button, located at the first column, on the current line. If no current line exists, it is NULL.
+- `win->position`: An `int` type variable. It is the position of the current line. It is zero-based. If no current line exists, it is -1.
+- `win->current_button`: A variable points to the button, located at the first column, on the current line. If no current line exists, it is NULL.
 
 If the current line moves, the following two functions are called.
 They updates the two varables.
@@ -201,7 +201,7 @@ update_current_button (LeWindow *win, GtkButton *new_button) {
 }
 ```
 
-The varable `win->position_label` points a GtkLabel instance.
+The varable `win->position_label` points to a GtkLabel instance.
 The label shows the current line position.
 
 The current button has CSS "current" class.
@@ -299,7 +299,7 @@ rm_cb (GtkButton *btn, LeWindow *win) {
 }
 ```
 
-The color of buttons are determined by the "background" CSS style.
+The color of the buttons is determined by the "background" CSS style.
 The following CSS node is a bit complicated.
 CSS node `column view` has `listview` child node.
 It covers the rows in the GtkColumnView.
@@ -312,7 +312,7 @@ In addition, it is applied to the "current" class.
 columnview listview row button.current {background: red;}
 ~~~
 
-## A waring from GtkText
+## A Warning from GtkText
 
 If your program has the following two, a warning message can be issued.
 
@@ -330,7 +330,7 @@ So it probably comes from focus and scroll.
 You can avoid this by unsetting any focus widget under the main window.
 When scroll begins, the "value-changed" signal on the vertical adjustment of the scrolled window is emitted.
 
-The following is extracted from the ui file and C source file.
+The following is extracted from the UI file and C source file.
 
 ~~~xml
 ... ... ...

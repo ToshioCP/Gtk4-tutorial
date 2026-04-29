@@ -1,14 +1,14 @@
-# How to build tfe (text file editor)
+# How to Build tfe (Text File Editor)
 
-## How to compile and execute the text editor 'tfe'.
+## How to Compile and Execute the Text Editor 'tfe'.
 
-First, source files are in the [Gtk4-tutorila repository](https://github.com/ToshioCP/Gtk4-tutorial).
+First, the source files are in the [Gtk4-tutorial repository](https://github.com/ToshioCP/Gtk4-tutorial).
 How to download them is written at the end of the [previous section](sec15.src.md).
 
-The following is the instruction of compilation and execution.
+The following is the instruction for compilation and execution.
 
 - You need meson and ninja.
-- If you have installed gtk4 from the source, you need to set environment variables to suit your installation.
+- If you have installed gtk4 from source, you need to set environment variables to match your installation.
 - Change your current directory to `src/tfe5` directory.
 - Type `meson setup _build` for configuration.
 - Type `ninja -C _build` for compilation.
@@ -19,7 +19,7 @@ Then the window appears.
 There are four buttons, `New`, `Open`, `Save` and `Close`.
 
 - Click on `Open` button, then a file chooser dialog appears.
-Choose a file in the list and click on `Open` button.
+Choose a file from the list and click on `Open` button.
 Then the file is read and a new Notebook Page appears.
 - Edit the file and click on `Save` button, then the text is saved to the original file.
 - Click `Close`, then the Notebook Page disappears.
@@ -28,7 +28,9 @@ Then the file is read and a new Notebook Page appears.
 This is a very simple editor.
 It is a good practice for you to add more features.
 
-## Total number of lines, words and characters
+## Total Number of Lines, Words and Characters
+
+The command below is the output of `wc` executed in the `src` directory.
 
 @@@shell
 LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>GtkBuilder and UI file</title>
+  <title>GtkBuilder and UI Files</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,9 +93,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="gtkbuilder-and-ui-file">GtkBuilder and UI file</h1>
+        <h1 id="gtkbuilder-and-ui-files">GtkBuilder and UI Files</h1>
         <h2 id="new-open-save-and-close-buttons">New, Open, Save and
-        Close buttons</h2>
+        Close Buttons</h2>
         <p>We made a very simple editor in the previous section. It
         reads files at the start and writes them out at the end of the
         program. It works, but is not so good. It would be better if we
@@ -103,7 +103,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         describes how to put those buttons into the window.</p>
         <figure>
         <img src="/images/screenshot_tfe2.png"
-        style="width:9.3cm;height:6.825cm"
         alt="Screenshot of the file editor" />
         <figcaption aria-hidden="true">Screenshot of the file
         editor</figcaption>
@@ -210,8 +209,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>33-34: Creates a GtkBox instance <code>boxh</code> and
         appends it to <code>boxv</code> as the first child.</li>
         <li>36-41: Creates three dummy labels. The labels
-        <code>dmy1</code> and <code>dmy3</code> has a character width of
-        ten. The other label <code>dmy2</code> has the hexpand property
+        <code>dmy1</code> and <code>dmy3</code> have ten characters
+        wide. The other label <code>dmy2</code> has the hexpand property
         set to TRUE. This makes the label expand horizontally to be as
         long as possible.</li>
         <li>42-45: Creates four buttons.</li>
@@ -222,14 +221,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         and vertically to be as big as possible. It is appended to
         <code>boxv</code> as the second child.</li>
         </ul>
-        <p>The number of widget-build lines is 33(=58-26+1). We also
-        needed many variables (<code>boxv</code>, <code>boxh</code>,
-        <code>dmy1</code>, …), and most of them are used only for
-        building the widgets. Is there any good solution to reduce this
-        work?</p>
+        <p>The number of lines for building widgets is 33 (= 58-26+1).
+        We also needed many variables (<code>boxv</code>,
+        <code>boxh</code>, <code>dmy1</code>, …), and most of them are
+        used only for building the widgets. Is there a better way to
+        reduce this overhead?</p>
         <p>Gtk provides GtkBuilder. It reads user interface (UI) data
-        and builds a window. It reduces this cumbersome work.</p>
-        <h2 id="the-ui-file">The UI File</h2>
+        and builds a window. It simplifies this tedious process.</p>
+        <h2 id="ui-files">UI Files</h2>
         <p>Look at the UI file <code>tfe3.ui</code> that defines the
         widget structure.</p>
         <div class="sourceCode" id="cb2"><pre
@@ -311,28 +310,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         us that GtkBox object is a child widget of
         <code>win</code>.</li>
         </ul>
-        <p>Compare this ui file and the lines 26-58 in the
+        <p>Compare this UI file with lines 26-58 in the
         <code>app_open</code> function of <code>tfe2.c</code>. Both
         build the same window with its descendant widgets.</p>
-        <p>You can check the ui file with
+        <p>You can check the UI file with
         <code>gtk4-builder-tool</code>.</p>
         <ul>
         <li><code>gtk4-builder-tool validate &lt;ui file name&gt;</code>
-        validates the ui file. If the ui file includes some syntactical
-        error, <code>gtk4-builder-tool</code> prints the error.</li>
+        validates the UI file. If the UI file contains any syntax
+        errors, <code>gtk4-builder-tool</code> prints the error.</li>
         <li><code>gtk4-builder-tool simplify &lt;ui file name&gt;</code>
-        simplifies the ui file and prints the result. If the
-        <code>--replace</code> option is given, it replaces the ui file
-        with the simplified one. If the ui file specifies the default
+        simplifies the UI file and prints the result. If the
+        <code>--replace</code> option is given, it replaces the UI file
+        with the simplified one. If the UI file specifies the default
         value of a property, that property will be removed. For example,
         the default orientation is horizontal so the simplification
         removes line 12. Some values are simplified too. For example,
         “TRUE” and “FALSE” become “1” and “0”, respectively. However,
         “TRUE” and “FALSE” are better for maintenance.</li>
         </ul>
-        <p>It is a good idea to check your ui file before compiling.</p>
+        <p>It is a good idea to check your UI file before compiling.</p>
         <h2 id="gtkbuilder">GtkBuilder</h2>
-        <p>GtkBuilder builds widgets based on a ui file.</p>
+        <p>GtkBuilder builds widgets based on a UI file.</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -344,19 +343,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>The function <code>gtk_builder_new_from_file</code> reads the
         file <code>tfe3.ui</code>. Then, it builds the widgets and
         creates a GtkBuilder object. All the widgets are connected based
-        on the parent-children relationship described in the ui file. We
-        can retrieve objects from the builder object with the
+        on the parent-children relationship described in the UI file. We
+        can retrieve objects from the builder object using the
         <code>gtk_builder_get_object</code> function. The top level
-        window, which has an id of “win” in the ui file, is taken and
+        window, which has an id of “win” in the UI file, is taken and
         assigned to the variable <code>win</code>. The window’s
         application property is set to <code>app</code> with the
         <code>gtk_window_set_application</code> function. The
-        GtkNotebook, which has the id “nb” in the ui file, is also taken
+        GtkNotebook, which has the id “nb” in the UI file, is also taken
         and assigned to the variable <code>nb</code>. After the window
         and application are connected, we no longer need the GtkBuilder
         instance. It is released with the <code>g_object_unref</code>
         function.</p>
-        <p>The ui file reduces lines in the C source file.</p>
+        <p>The UI file reduces lines in the C source file.</p>
         <pre><code>$ cd tfe; diff tfe2.c tfe3.c
 59a60
 &gt;   GtkBuilder *build;
@@ -420,7 +419,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 $</code></pre>
         <p><code>61,104c62,66</code> means that 44 (=104-61+1) lines are
         changed to 5 (=66-62+1) lines. Therefore, 39 lines are reduced.
-        Using a ui file not only shortens C source files, but also makes
+        Using a UI file not only shortens C source files, but also makes
         the widgets’ structure clear.</p>
         <p>Now I’ll show you the <code>app_open</code> function in the C
         file <code>tfe3.c</code>.</p>
@@ -475,9 +474,9 @@ $</code></pre>
 <span id="cb5-48"><a href="#cb5-48"></a><span class="op">}</span></span></code></pre></div>
         <p>The whole source code of <code>tfe3.c</code> is stored in the
         <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/tfe">src/tfe</a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe/">/src/tfe</a>
         directory.</p>
-        <h3 id="using-ui-string">Using ui string</h3>
+        <h3 id="using-ui-string">Using UI String</h3>
         <p>GtkBuilder can build widgets with a string. Use
         <code>gtk_builder_new_from_string</code> instead of
         <code>gtk_builder_new_from_file</code>.</p>
@@ -499,12 +498,12 @@ $</code></pre>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>build <span class="op">=</span> gtk_builder_new_from_string <span class="op">(</span>uistring<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span></code></pre></div>
         <p>This method has an advantage and disadvantage. The advantage
-        is that the ui string is written in the source code. So, no ui
-        file is needed at runtime. The disadvantage is that writing the
-        C string is a bit bothersome, as the xml needs quoting and
+        is that the UI string is written in the source code. So, no UI
+        file is needed at runtime. The disadvantage is that defining the
+        UI as a C string can be tedious, as the xml needs quoting and
         special characters need escaping. If you want to use this
-        method, you should write a script that transforms ui files into
-        C-strings.</p>
+        method, you should write a script that converts UI files into C
+        string literals.</p>
         <ul>
         <li>Replace backslashes with two backslashes.</li>
         <li>Add a backslash before each double quote.</li>
@@ -514,13 +513,13 @@ $</code></pre>
         <p>Or, if you have <code>jq</code> installed, you can use
         <code>jq -R &lt; tfe3.ui</code> to do the quoting and escaping
         for you.</p>
-        <h3 id="gresource">Gresource</h3>
+        <h3 id="gresources">Gresources</h3>
         <p>A Gresource is similar to a string, except that a Gresource
-        is compressed binary data, not text data. The
-        <code>glib-compile-resources</code> program compiles ui files
-        into Gresources. It can compile not only text files but also
-        binary files such as images, sounds and so on. After
-        compilation, it bundles them up into one Gresource object.</p>
+        is a binary data. The <code>glib-compile-resources</code>
+        program compiles UI files into Gresources. It can compile not
+        only text files but also binary files such as images, sounds and
+        so on. After compilation, it bundles them up into one Gresource
+        object.</p>
         <p>An xml file is necessary for the resource compiler
         <code>glib-compile-resources</code>. It describes resource
         files.</p>
@@ -538,10 +537,10 @@ $</code></pre>
         <li>3: The gresource has a prefix
         <code>/com/github/ToshioCP/tfe3</code>.</li>
         <li>4: The name of the gresource is <code>tfe3.ui</code>. The
-        resource will be pointed with
-        <code>/com/github/ToshioCP/tfe3/tfe3.ui</code> by GtkBuilder.
-        The pattern is “prefix” + “name”. If you want to add more files,
-        insert them between line 4 and 5.</li>
+        resource will be referred to as
+        /com/github/ToshioCP/tfe3/tfe3.ui by GtkBuilder. The pattern is
+        “prefix” + “name”. If you want to add more files, insert them
+        between line 4 and 5.</li>
         </ul>
         <p>Save this xml text to <code>tfe3.gresource.xml</code>. The
         gresource compiler <code>glib-compile-resources</code> shows its
@@ -591,9 +590,9 @@ Application Options:
 $ ./a.out tfe2.c</code></pre>
         <p>A window appears and it is the same as the screenshot at the
         beginning of this page.</p>
-        <p>Generally, resources are best for C programs. If you use
-        other languages like Ruby, strings are better than
-        resources.</p>
+        <p>Generally, resources are the best for C programs. Strings are
+        easier to handle in some interpreted languages, but resources
+        are still a powerful option.</p>
       </div>
     </div>
   </main>

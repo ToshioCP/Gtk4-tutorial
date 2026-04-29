@@ -1,4 +1,4 @@
-# TfeTextView class
+# TfeTextView Class
 
 The TfeTextView class will be finally completed in this section.
 The remaining topic is functions.
@@ -16,7 +16,7 @@ The header file `tfetextview.h` provides:
 - Constants for the `open-response` signal.
 - Public functions of `tfetextview.c`. They are constructors and instance methods.
 
-Therefore, Any programs use TfeTextView needs to include `tfetextview.h`.
+Therefore, Any programs using TfeTextView needs to include `tfetextview.h`.
 
 @@@include
 tfetextview/tfetextview.h
@@ -81,18 +81,18 @@ The function creates TfeTextView instance and returns the pointer to the instanc
 - 14: Gets the pointer to the GtkTextBuffer instance corresponds to `tv`.
 The pointer is assigned to `tb`
 - 15: Assigns the contents read from the file to `tb`.
-- 16: Duplicates `file` and sets `tv->file` to point it.
+- 16: Duplicates `file` and sets `tv->file` to point to it.
 GFile is *not* thread safe.
 The duplication makes sure that the GFile instance of `tv` keeps the file information even if the original one is changed by other thread.
 - 17: The function `gtk_text_buffer_set_modified (tb, FALSE)` sets the modification flag of `tb` to FALSE.
-The modification flag indicates that the contents has been modified.
+The modification flag indicates that the contents have been modified.
 It is used when the contents are saved.
 If the modification flag is FALSE, it doesn't need to save the contents.
-- 18: Frees the memories pointed by `contents`.
+- 18: Frees the memories pointed to by `contents`.
 - 19: Returns `tv`, which is a pointer to the newly created TfeTextView instance.
 If an error happens, NULL is returned.
 
-## Save and saveas functions
+## Save and Saveas Functions
 
 Save and saveas functions write the contents in the GtkTextBuffer to a file.
 
@@ -102,18 +102,18 @@ void tfe_text_view_save (TfeTextView *tv)
 
 The function `tfe_text_view_save` writes the contents in the GtkTextBuffer to a file specified by `tv->file`.
 If `tv->file` is NULL, then it shows file chooser dialog and prompts the user to choose a file to save.
-Then it saves the contents to the file and sets `tv->file` to point the GFile instance for the file.
+Then it saves the contents to the file and sets `tv->file` to point to the GFile instance for the file.
 
 ~~~C
 void tfe_text_view_saveas (TfeTextView *tv)
 ~~~
 
-The function `saveas` shows a file chooser dialog and prompts the user to select a existed file or specify a new file to save.
+The function `saveas` shows a file chooser dialog and prompts the user to select an existing file or specify a new file to save.
 Then, the function changes `tv->file` and save the contents to the specified file.
 If an error occurs, it is shown to the user through the alert dialog.
 The error is managed only in the TfeTextView and no information is notified to the caller.
 
-### save\_file function
+### save\_file Function
 
 @@@include
 tfetextview/tfetextview.c save_file
@@ -150,11 +150,11 @@ This allows window managers to keep the dialog on top of the parent window, or c
 It is possible to give no parent window to the dialog by giving NULL as the argument.
 However, it is encouraged to give parents to dialogs.
 - 18: Releases the dialog.
-- 19: Frees the GError struct pointed by `err` with `g_error_free` function.
+- 19: Frees the GError struct pointed to by `err` with `g_error_free` function.
 - 21: Frees `contents`.
 - 22: Returns the status to the caller.
 
-### save\_dialog\_cb function
+### save\_dialog\_cb Function
 
 @@@include
 tfetextview/tfetextview.c save_dialog_cb
@@ -177,13 +177,13 @@ It will be given to the `gtk_dialog_save_finish` function.
   - gpointer data: A user data set in the `gtk_dialog_save` function.
 - 11: Calls `gtk_dialog_save_finish`.
 It is given the result `res` as an argument and returns a pointer to a GFile object the user has chosen.
-If the user has canceled or an error happens, it returns NULL, creates a GError object and sets `err` to point it.
+If the user has canceled or an error happens, it returns NULL, creates a GError object and sets `err` to point to it.
 If `gtk_dialog_save_finish` returns a GFile, the function `save_file` is called.
 - 12-21: If the file is successfully saved, these lines are executed.
 See the comments, line 12-15, for the details.
 - 23-28: If an error happens, show the error message through the alert dialog.
 
-### tfe\_text\_view\_save function
+### tfe\_text\_view\_save Function
 
 @@@include
 tfetextview/tfetextview.c tfe_text_view_save
@@ -205,10 +205,10 @@ For example, the type of GtkWindow is `GTK_TYPE_WINDOW` and the one of TfeTextVi
 The top level window may be a GtkApplicationWindow, but it is a descendant of GtkWindow.
 Therefore, `gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW)` possibly returns GtkWindow or GtkApplicationWindow.
 - 8-9: If the buffer hasn't modified, it doesn't need to be saved.
-- 10-11: If `tv->file` is NULL, which means no file has given yet, it calls `tfe_text_view_saveas` to prompt a user to select a file and save the contents.
+- 10-11: If `tv->file` is NULL, which means no file has been given yet, it calls `tfe_text_view_saveas` to prompt a user to select a file and save the contents.
 - 12-13: Otherwise, it calls `save_file` to save the contents to the file `tv->file`.
 
-### tfe\_text\_view\_saveas function
+### tfe\_text\_view\_saveas Function
 
 @@@include
 tfetextview/tfetextview.c tfe_text_view_saveas
@@ -217,7 +217,7 @@ tfetextview/tfetextview.c tfe_text_view_saveas
 The function `tfe_text_view_saveas` shows a file chooser dialog and prompts the user to choose a file and save the contents.
 
 - 1-3: Check the type of `tv` because the function is public.
-- 6: GtkWidget `win` is set to the window which is an ancestor ot `tv`.
+- 6: GtkWidget `win` is set to the window which is an ancestor of `tv`.
 - 8: Creates a GtkFileDialog instance.
 GtkFileDialog is available since version 4.10.
 If your Gtk version is older than 4.10, use GtkFileChooserDialog instead.
@@ -239,9 +239,13 @@ It is used in the callback function.
 This function just shows the file chooser dialog.
 The rest of the operation is done by the callback function.
 
+@@@if pdf
 ![Saveas process](/images/saveas.png){width=10.7cm height=5.16cm}
+@@@else
+![Saveas process](/images/saveas.png)
+@@@end
 
-## Open related functions
+## Open Related Functions
 
 Open function shows a file chooser dialog to a user and prompts them to choose a file.
 Then it reads the file and puts the text into GtkTextBuffer.
@@ -266,7 +270,7 @@ Open and read process is divided into two phases.
 One is creating and showing a file chooser dialog and the other is the callback function.
 The former is `tfe_text_view_open` and the latter is `open_dialog_cb`.
 
-### open\_dialog\_cb function
+### open\_dialog\_cb Function
 
 @@@include
 tfetextview/tfetextview.c open_dialog_cb
@@ -279,11 +283,11 @@ Both are callback functions on a GtkFileDialog object.
 They are:
   - GObject *source_object: The GObject instance that the operation was started with.
 It is actually the GtkFileDialog instance that is shown to the user.
-It will be casted to GtkFileDialog later.
+It will be cast to GtkFileDialog later.
   - GAsyncResult *res: The result of the asynchronous operation.
 It will be given to the `gtk_dialog_open_finish` function.
   - gpointer data: A user data set in the `gtk_dialog_open` function.
-It is actually a TfeTextView instance and it will be casted to TfeTextView later.
+It is actually a TfeTextView instance and it will be cast to TfeTextView later.
 - 14: The function `gtk_file_dialog_open_finish` returns a GFile object if the operation has succeeded.
 Otherwise it returns NULL.
 - 16-30: If the user selects a file and the file has successfully been read, the codes from 16 to 30 will be executed.
@@ -300,7 +304,7 @@ The Dialog error is described [here](https://docs.gtk.org/gtk4/error.DialogError
 - 35-38: If another error occurs, it shows an alert dialog to report the error and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
 - 40: Clears the error structure.
 
-### tfe\_text\_view\_open function
+### tfe\_text\_view\_open Function
 
 @@@include
 tfetextview/tfetextview.c tfe_text_view_open
@@ -321,7 +325,11 @@ The whole process between the caller and TfeTextView is shown in the following d
 It is really complicated.
 Because `gtk_file_dialog_open` can't return the status of the operation.
 
+@@@if pdf
 ![Caller and TfeTextView](/images/open.png){width=12.405cm height=9.225cm}
+@@@else
+![Caller and TfeTextView](/images/open.png)
+@@@end
 
 1. A caller gets a pointer `tv` to a TfeTextView instance by calling `tfe_text_view_new`.
 2. The caller connects the handler (left bottom in the diagram) and the signal "open-response".
@@ -340,12 +348,12 @@ tfetextview/tfetextview.c tfe_text_view_get_file
 @@@
 
 The important thing is to duplicate `tv->file`.
-Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point the GFile.
+Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point to the GFile.
 Another reason to use `g_file_dup` is that GFile isn't thread-safe.
 If you use GFile in the different thread, the duplication is necessary.
 See [Gio API Reference -- g\_file\_dup](https://docs.gtk.org/gio/method.File.dup.html).
 
-## The API document and source file of tfetextview.c
+## The API Document and Source File of tfetextview.c
 
 Refer [API document of TfeTextView](tfetextview/tfetextview_doc.src.md).
 

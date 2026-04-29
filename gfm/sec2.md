@@ -58,7 +58,7 @@ Press Enter.
 ## Examples in the Tutorial
 
 Examples are under the `src` directory.
-For example, the first example of the tutorial is `pr1.c` and its path is [`/src/misc/pr1.c`](../src/misc/pr1.c).
+For example, the first example of the tutorial is `pr1.c` and its path is [/src/misc/pr1.c](../src/misc/pr1.c).
 Therefore, you do not need to type the examples manually.
 
 Up: [README.md](../README.md),  Prev: [Section 1](sec1.md), Next: [Section 3](sec3.md)

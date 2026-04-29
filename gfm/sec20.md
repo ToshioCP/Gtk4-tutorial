@@ -1,11 +1,11 @@
 Up: [README.md](../README.md),  Prev: [Section 19](sec19.md), Next: [Section 21](sec21.md)
 
-# Composite widgets and alert dialog
+# Composite Widgets and Alert Dialog
 
 The source files are in the [Gtk4 tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
 Download it and see `src/tfe6` directory.
 
-## An outline of new Tfe text editor
+## An Outline of New Tfe Text Editor
 
 Tfe text editor will be restructured.
 The program is divided into six parts.
@@ -20,7 +20,7 @@ The program is divided into six parts.
 This section describes TfeAlert.
 Others will be explained in the following sections.
 
-## Composite widgets
+## Composite Widgets
 
 The alert dialog is like this:
 
@@ -33,7 +33,7 @@ Therefore, it consists of several widgets.
 Such dialog is called a composite widget.
 
 Composite widgets are defined with template XMLs.
-The class is built in the class initialization function and the instances are built and desposed by the following functions.
+The class is built in the class initialization function and the instances are built and disposed by the following functions.
 
 - gtk\_widget\_init\_template
 - gtk\_widget\_dispose\_template
@@ -45,7 +45,7 @@ It is defined with the three files.
 - tfealert.h: Header file
 - tfealert.c: C program file
 
-## The XML file
+## The XML File
 
 A template tag is used in a composite widget XML.
 
@@ -113,8 +113,9 @@ A template tag is used in a composite widget XML.
 The class attribute tells the class name of the composite widget.
 The parent attribute tells the parent class of the composite widget.
 So, TfeAlert is a child class of GtkWindow.
-A parent attribute is an option and you can leave it out.
-But it is recommended to write it in the template tag.
+The parent attribute specifies the parent class of the composite widget.
+While it is technically optional in the XML, it is highly recommended to include it.
+Providing the parent class allows GtkBuilder to verify the class hierarchy at runtime and improves the readability of the UI file.
 - 4-6: Its three properties are defined.
 These properties are inherited from GtkWindow.
 The titlebar property has a widget for a custom title bar.
@@ -124,7 +125,7 @@ Otherwise it is not shown.
 The TfeAlert object is not resizable.
 It is closed when either of the two buttons, cancel or accept, is clicked.
 Therefore the title buttons are not necessary and this property is set to FALSE.
-- 9-14: The bar has a title, which is a GtkLabel widget.
+- 9-14: The bar contains a title, implemented as a GtkLabel widget.
 The default title is "Are you sure?" but it can be replaced by an instance method.
 - 15-32: The bar has two buttons, cancel and accept.
 The cancel button is on the left so the child tag has `type="start"` attribute.
@@ -135,6 +136,8 @@ So, the cancel button has a "suggested-action" CSS class.
 Ubuntu colors the button green but the color can be blue or other appropriate one defined by the system.
 In the same way the accept button has a "destructive-action" CSS class and is colored red.
 Two buttons have signals which are defined by the signal tags.
+By setting `swapped="TRUE"`, the instance emitting the signal and the user data are swapped.
+Consequently, the `cancel_cb` handler receives the `TfeAlert` object as its first parameter."
 - 35-54: A horizontal box has an image icon and a label.
 - 44-47: The GtkImage widget displays an image.
 The "icon-name" property is an icon name in the icon theme.
@@ -149,14 +152,14 @@ The "dialog-warning" icon is something like this.
 
 ![dialog-warning icon is like ...](/src/images/dialog_warning.png)
 
-These are made by my hand.
+These were created manually.
 The real image on the alert dialog is nicer.
 
 It is possible to define the alert widget as a child of GtkDialog.
 But GtkDialog is deprecated since GTK version 4.10.
 And users should use GtkWindow instead of GtkDialog.
 
-## The header file
+## The Header File
 
 The header file is similar to the one of TfeTextView.
 
@@ -201,7 +204,7 @@ tfe_alert_new_with_data (const char *title, const char *message, const char* btn
 ```
 
 - 5-6: These two lines are always needed to define a new object.
-`TFE_TYPE_ALERT` is the type of TfeAlert object and it is a macro expanded into `tfe_alert_get_type ()`.
+`TFE_TYPE_ALERT` is the type of TfeAlert object and it is a macro expanded into the call to `tfe_alert_get_type ()`.
 G\_DECLARE\_FINAL\_TYPE macro is expanded into:
   - The declaration of the function `tfe_alert_get_type`
   - `TfeAlert` is defined as a typedef of `struct _TfeAlert`, which is defined in the C file.
@@ -210,12 +213,12 @@ G\_DECLARE\_FINAL\_TYPE macro is expanded into:
 - 8-13: The TfeAlert class has a "response" signal.
 It has a parameter and the parameter type is defined as a `TfeAlertResponseType` enumerative constant.
 - 15-31: Getter and setter methods.
-- 33-37: Functions to create a instance.
+- 33-37: Functions to create an instance.
 The function `tfe_alert_new_with_data` is a convenience function, which creates an instance and sets data at once.
 
-## The C file
+## The C File
 
-### Functions for composite widgets
+### Functions for Composite Widgets
 
 The following codes are extracted from `tfealert.c`.
 
@@ -298,12 +301,12 @@ These two are connected so when the signal is emitted the function `cancel_cb` i
 You can add `static` storage class to the callback function thanks to this connection.
 - The function `tfe_alert_init` initializes the newly created instance.
 You need to call `gtk_widget_init_template` to create and initialize the child widgets in the template.
-- The function `tfe_alert_despose` releases objects.
-The function `gtk_widget_despose_template` clears the template children.
+- The function `tfe_alert_dispose` releases objects.
+The function `gtk_widget_dispose_template` clears the template children.
 - The function `tfe_alert_new` creates the composite widget TfeAlert instance.
 It creates not only TfeAlert itself but also all the child widgets that the composite widget has.
 
-### Other functions
+### Other Functions
 
 The following is the full codes of `tfealert.c`.
 
@@ -441,7 +444,7 @@ But using an array is a common way.
 - 85-95: Creates the "response" signal.
 - 103-110: A convenience function `tfe_alert_new_with_data` creates an instance and sets labels.
 
-## An example
+## An Example
 
 There's an example in the `src/tfe6/example` directory.
 It shows how to use TfeAlert.

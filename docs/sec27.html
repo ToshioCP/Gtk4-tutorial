@@ -95,21 +95,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="col-xl-10 col-xxl-9">
         <h1 id="tiny-turtle-graphics-interpreter">Tiny Turtle Graphics
         Interpreter</h1>
-        <p>A program <code>turtle</code> is an example with the
-        combination of TfeTextView and GtkDrawingArea objects. It is a
-        very small interpreter but you can draw fractal curves with it.
-        The following diagram is a Koch curve, which is one of the
-        famous fractal curves.</p>
+        <p>The Turtle program is an example with the combination of
+        TfeTextView and GtkDrawingArea objects. It is a very small
+        interpreter but you can draw fractal curves with it. The
+        following diagram is a Koch curve, which is one of the famous
+        fractal curves.</p>
         <figure>
-        <img src="turtle/images/turtle_koch.png"
-        style="width:8cm;height:5.11cm" alt="Koch curve" />
+        <img src="turtle/images/turtle_koch.png" alt="Koch curve" />
         <figcaption aria-hidden="true">Koch curve</figcaption>
         </figure>
         <p>The following is a snow-crystal-shaped curve. It is composed
         of six Koch curves.</p>
         <figure>
-        <img src="/images/turtle_snow.png"
-        style="width:8cm;height:5.11cm" alt="Snow" />
+        <img src="/images/turtle_snow.png" alt="Snow" />
         <figcaption aria-hidden="true">Snow</figcaption>
         </figure>
         <p>This program uses flex and bison. Flex is a lexical analyzer.
@@ -118,10 +116,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         Laboratory. However, flex and bison are open source software.
         This section describes them and they are not the topics about
         GTK 4. So, readers can skip this section.</p>
-        <h2 id="how-to-use-turtle">How to use turtle</h2>
+        <ul>
+        <li><a href="https://github.com/westes/flex">Flex GitHub
+        repository</a></li>
+        <li><a href="https://westes.github.io/flex/manual/">Flex
+        Documentation</a></li>
+        <li><a href="https://www.gnu.org/software/bison/">Bison Project
+        Page</a></li>
+        </ul>
+        <h2 id="how-to-use-turtle">How to Use Turtle</h2>
         <p>The turtle document is <a
-        href="https://toshiocp.github.io/Gtk4-tutorial/turtle_doc.html">here</a>.
-        I’ll show you a simple example.</p>
+        href="turtle/turtle_doc.html">here</a>. I’ll show you a simple
+        example.</p>
         <pre><code>fc (1,0,0) # Foreground color is red, rgb = (1,0,0).
 pd         # Pen down.
 rp (4) {   # Repeat four times.
@@ -134,18 +140,18 @@ rp (4) {   # Repeat four times.
         <li>Type the program above in the editor (left part of the
         window).</li>
         <li>Click on the <code>Run</code> button, then a red square
-        appears on the right part of the window. The side of the square
+        appears on the right part of the window. Each side of the square
         is 100 pixels long.</li>
         </ol>
         <p>In the same way, you can draw other curves. The turtle
         document includes some fractal curves such as tree, snow and
         square-koch. The source codes are located at <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/turtle/example">src/turtle/example</a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/turtle/example/">/src/turtle/example</a>
         directory. You can read these files into <code>turtle</code>
         editor by clicking on the <code>Open</code> button.</p>
         <h2
         id="combination-of-tfetextview-and-gtkdrawingarea-objects">Combination
-        of TfeTextView and GtkDrawingArea objects</h2>
+        of TfeTextView and GtkDrawingArea Objects</h2>
         <p>Turtle uses TfeTextView and GtkDrawingArea.</p>
         <ol type="1">
         <li>A user inputs/reads a turtle program into the buffer in the
@@ -153,7 +159,7 @@ rp (4) {   # Repeat four times.
         <li>The user clicks on the “Run” button.</li>
         <li>The parser reads the program and generates tree-structured
         data.</li>
-        <li>The interpriter reads the data and executes it step by step.
+        <li>The interpreter reads the data and executes it step by step.
         And it draws shapes on a surface. The surface isn’t the one in
         the GtkDrawingArea widget.</li>
         <li>The widget is added to the queue. It will be redrawn with
@@ -228,8 +234,8 @@ rp (4) {   # Repeat four times.
         whenever it is resized. Therefore, <code>surface</code> isn’t
         NULL usually. But if it is NULL, the interpreter won’t be
         called.</li>
-        <li>18-24: If <code>surface</code> points a surface instance and
-        the string <code>contents</code> isn’t empty, it calls the
+        <li>18-24: If <code>surface</code> points to a surface instance
+        and the string <code>contents</code> isn’t empty, it calls the
         interpreter.
         <ul>
         <li>Initializes the lexical analyzer.</li>
@@ -239,9 +245,9 @@ rp (4) {   # Repeat four times.
         routine ‘run’.</li>
         <li>Finalizes the lexical analyzer.</li>
         </ul></li>
-        <li>25-29: If <code>surface</code> points a surface instance and
-        the string <code>contents</code> is empty, it clears the surface
-        <code>surface</code>.</li>
+        <li>25-29: If <code>surface</code> points to a surface instance
+        and the string <code>contents</code> is empty, it clears the
+        surface <code>surface</code>.</li>
         <li>31: Frees <code>contents</code>.</li>
         <li>32: Adds the drawing area widget to the queue to draw.</li>
         <li>33: Sets the variable <code>busy</code> to FALSE.</li>
@@ -283,10 +289,10 @@ rp (4) {   # Repeat four times.
         <p>Other part of <code>turtleapplication.c</code> is very simple
         and similar to the codes in the former applications. The codes
         of <code>turtleapplication.c</code> is in the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/turtle">turtle
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/turtle/">turtle
         directory</a>.</p>
-        <h2 id="what-does-the-interpreter-do">What does the interpreter
-        do?</h2>
+        <h2 id="what-does-the-interpreter-do">What Does the Interpreter
+        Do?</h2>
         <p>Suppose that the turtle application runs with the following
         program.</p>
         <pre><code>distance = 100
@@ -366,13 +372,14 @@ fd distance*2</code></pre>
         <code>yylval.NUM</code> every time. It is because keywords
         (<code>FD</code>) and symbols (<code>=</code> and
         <code>*</code>) don’t have any semantic values. The function
-        <code>yylex</code> is called lexical analyzer or scanner.</li>
+        <code>yylex</code> is called a lexical analyzer or a
+        scanner.</li>
         <li>The application <code>turtle</code> makes a tree structured
         data. This part of <code>turtle</code> is called parser.</li>
         </ul>
         <figure>
         <img src="/images/turtle_parser_tree.png"
-        style="width:12cm;height:5.34cm" alt="turtle parser tree" />
+        alt="turtle parser tree" />
         <figcaption aria-hidden="true">turtle parser tree</figcaption>
         </figure>
         <ul>
@@ -403,7 +410,7 @@ fd distance*2</code></pre>
         <li>Now <code>turtle</code> knows the distance is 200. It moves
         the cursor forward by 200 pixels. The segment is drawn on the
         <code>surface</code>.</li>
-        <li>There are no node follows. Runtime routine returns to the
+        <li>There is no following node. Runtime routine returns to the
         function <code>run_cb</code>.</li>
         </ol></li>
         <li>The function <code>run_cb</code> calls
@@ -421,7 +428,7 @@ fd distance*2</code></pre>
         <li>Syntax Parsing and tree generation</li>
         <li>Interpretation and execution of the tree.</li>
         </ul>
-        <h2 id="compilation-flow">Compilation flow</h2>
+        <h2 id="compilation-flow">Compilation Flow</h2>
         <p>The source files are:</p>
         <ul>
         <li>flex source file =&gt; <code>turtle.lex</code></li>
@@ -451,7 +458,7 @@ fd distance*2</code></pre>
         </ol>
         <figure>
         <img src="/images/turtle_compile_process.png"
-        style="width:12cm;height:9cm" alt="compile process" />
+        alt="compile process" />
         <figcaption aria-hidden="true">compile process</figcaption>
         </figure>
         <p>Meson controls the process. The instruction is described in
@@ -490,8 +497,8 @@ fd distance*2</code></pre>
         href="https://mesonbuild.com/Gnome-module.html#gnome-module">Meson
         build system website – GNOME module</a> for further
         information.</li>
-        <li>9: Compiles ui file to C source file according to the XML
-        file <code>turtle.gresource.xml</code>.</li>
+        <li>9: Compiles the UI file to C source file according to the
+        XML file <code>turtle.gresource.xml</code>.</li>
         <li>11: Gets flex.</li>
         <li>12: Gets bison.</li>
         <li>13: Compiles <code>turtle.y</code> to
@@ -508,11 +515,11 @@ fd distance*2</code></pre>
         <li>18: Compiles C source files including generated files by
         glib-compile-resources, bison and flex. The argument
         <code>turtleparser[1]</code> refers to
-        <code>tirtle_parser.h</code> which is the second output in the
+        <code>turtle_parser.h</code> which is the second output in the
         line 13.</li>
         </ul>
         <h2 id="turtle.lex">Turtle.lex</h2>
-        <h3 id="what-does-flex-do">What does flex do?</h3>
+        <h3 id="what-does-flex-do">What Does Flex Do?</h3>
         <p>Flex creates lexical analyzer from flex source file. Flex
         source file is a text file. Its syntactic rule will be explained
         later. Generated lexical analyzer is a C source file. It is also
@@ -635,7 +642,7 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         “turtle.y” by bison. It defines some constants and functions
         like <code>PU</code> and <code>yylloc</code>. The header file is
         included here.</li>
-        <li>7-9: The current input position is pointed by
+        <li>7-9: The current input position is pointed to by
         <code>nline</code> and <code>ncolumn</code>. The function
         <code>get_location</code> is declared here so that it can be
         called before the function is defined (l.61-65).</li>
@@ -646,8 +653,7 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         <li>15: This option <code>%option noyywrap</code> must be
         specified when you have only single source file to the scanner.
         Refer to “9 The Generated Scanner” in the flex documentation in
-        your distribution. (The documentation is not on the
-        internet.)</li>
+        your distribution.</li>
         <li>17-18: <code>REAL_NUMBER</code> and <code>IDENTIFIER</code>
         are names. A name begins with a letter or an underscore followed
         by zero or more letters, digits, underscores (<code>_</code>) or
@@ -738,8 +744,8 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         by the parser. It is a C structure and has four members,
         <code>first_line</code>, <code>first_column</code>,
         <code>last_line</code> and <code>last_column</code>. They point
-        the start and end of the current input text.</li>
-        <li>68: <code>YY_BUFFER_STATE</code> is a pointer points the
+        to the start and end of the current input text.</li>
+        <li>68: <code>YY_BUFFER_STATE</code> is a pointer points to the
         input buffer. Flex makes the definition of
         <code>YY_BUFFER_STATE</code> in the C file (scanner source file
         <code>turtle_lex.c</code>). See your flex document, Section 11
@@ -757,7 +763,7 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         <p>Turtle.y has more than 800 lines so it is difficult to
         explain all the source code. So I will explain the key points
         and leave out other less important parts.</p>
-        <h3 id="what-does-bison-do">What does bison do?</h3>
+        <h3 id="what-does-bison-do">What Does Bison Do?</h3>
         <p>Bison creates C source file of a parser from a bison source
         file. The bison source file is a text file. A parser analyzes a
         program source code according to its grammar. Suppose here is a
@@ -898,7 +904,7 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         </tr>
         </tbody>
         </table>
-        <p>Bison source code specifies the grammar rules of turtle
+        <p>Bison source code specifies the grammar rules of the turtle
         language. For example, <code>fc (1,0,0)</code> is called primary
         procedure. A procedure is like a void type C function. It
         doesn’t return any values. Programmers can define their own
@@ -1390,9 +1396,9 @@ expression:
         expression in the forth row. This substitution is “reduce”.</p>
         <p>Bison repeats shift and reduction until the end of the input.
         If the result is reduced to <code>program</code>, the input is
-        syntactically valid. Bison executes an action whenever reduction
-        occurs. Actions build a tree. The tree is analyzed and executed
-        by runtime routine later.</p>
+        syntactically valid. Bison executes an action whenever a
+        reduction occurs. Actions build a tree. The tree is analyzed and
+        executed by runtime routine later.</p>
         <p>Bison source files are called bison grammar files. A bison
         grammar file consists of four sections, prologue, declarations,
         rules and epilogue. The format is as follows.</p>
@@ -1565,7 +1571,7 @@ epilogue</code></pre>
         <p><code>%define api.value.type union</code> generates semantic
         value type with tokens and nterms and inserts it to the header
         file. The inserted part is shown in the previous subsection as
-        the extracts that shows the value type (YYSTYPE).</p>
+        the extracts that show the value type (YYSTYPE).</p>
         <p><code>%token</code> and <code>%nterm</code> directives define
         tokens and non terminal symbols respectively.</p>
         <pre><code>%token PU
@@ -1658,7 +1664,7 @@ expression:
         <li>Whenever <code>statement</code> is reduced to
         <code>program</code>, an action <code>node_top=$$=$1;</code> is
         executed.</li>
-        <li><code>node_top</code> is a static variable. It points the
+        <li><code>node_top</code> is a static variable. It points to the
         top node of the tree.</li>
         <li>The symbol <code>$$</code> is a semantic value of the
         result. For example, <code>$$</code> in line 2 is the semantic
@@ -1702,14 +1708,14 @@ expression:
         and sets <code>yylval.NUM</code> to 100.0 (the type is double).
         The parser reduces <code>NUM</code> to <code>expression</code>.
         At the same time, it sets the semantic value of the
-        <code>expression</code> to point a new node. The node has the
+        <code>expression</code> to point to a new node. The node has the
         type <code>N_NUM</code> and a semantic value 100.0.</li>
         <li>After the reduction, the buffer has <code>FD</code> and
         <code>expression</code>. The parser reduces it to
         <code>primary_procedure</code>. And it sets the semantic value
-        of the <code>primary_procedure</code> to point a new node. The
-        node has the type <code>N_FD</code> and its member child1 points
-        the node of <code>expression</code>, whose type is
+        of the <code>primary_procedure</code> to point to a new node.
+        The node has the type <code>N_FD</code> and its member child1
+        points to the node of <code>expression</code>, whose type is
         <code>N_NUM</code>.</li>
         <li>The parser reduces <code>primary_procedure</code> to
         <code>statement</code>. The semantic value of
@@ -1721,13 +1727,12 @@ expression:
         <code>statement</code> is assigned to the one of
         <code>program</code> and the static variable
         <code>node_top</code>.</li>
-        <li>Finally <code>node_top</code> points the node
-        <code>N_FD</code> and the node <code>N_FD</code> points the node
-        <code>N_NUM</code>.</li>
+        <li>Finally <code>node_top</code> points to the node
+        <code>N_FD</code> and the node <code>N_FD</code> points to the
+        node <code>N_NUM</code>.</li>
         </ol>
         <figure>
-        <img src="/images/tree.png" style="width:6.51cm;height:5.46cm"
-        alt="tree" />
+        <img src="/images/tree.png" alt="tree" />
         <figcaption aria-hidden="true">tree</figcaption>
         </figure>
         <p>The following is the grammar rule extracted from
@@ -1871,7 +1876,7 @@ expression:
 <span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>  name<span class="op">(</span>new_node<span class="op">)</span> <span class="op">=</span> name<span class="op">;</span></span>
 <span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> new_node<span class="op">;</span></span>
 <span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h4 id="symbol-table">Symbol table</h4>
+        <h4 id="symbol-table">Symbol Table</h4>
         <p>Variables and user defined procedures are registered in the
         symbol table. This table is a C array. It should be replaced by
         better algorithm and data structure, for example hash, in the
@@ -1919,7 +1924,7 @@ expression:
         it returns NULL.</li>
         <li><code>var_lookup</code> looks up a variable. If the variable
         is found, it returns TRUE and sets the pointer (argument) to
-        point the value. Otherwise it returns FALSE.</li>
+        point to the value. Otherwise it returns FALSE.</li>
         <li><code>var_replace</code> replaces the value of a variable.
         If the variable hasn’t registered yet, it installs the
         variable.</li>
@@ -1991,8 +1996,8 @@ expression:
 <span id="cb33-64"><a href="#cb33-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb33-65"><a href="#cb33-65" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb33-66"><a href="#cb33-66" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h4 id="stack-for-parameters-and-arguments">Stack for parameters
-        and arguments</h4>
+        <h4 id="stack-for-parameters-and-arguments">Stack for Parameters
+        and Arguments</h4>
         <p>Stack is a last-in first-out data structure. It is shortened
         to LIFO. Turtle uses a stack to keep parameters and arguments.
         They are like <code>auto</code> class variables in C language.
@@ -2012,8 +2017,8 @@ expression:
 <span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  sp <span class="op">=</span> sp_biggest <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <p><code>sp</code> is a stack pointer. It is an index of the
-        array <code>stack</code> and it always points an element of the
-        array to store the next data. <code>sp_biggest</code> is the
+        array <code>stack</code> and it always points to an element of
+        the array to store the next data. <code>sp_biggest</code> is the
         biggest number assigned to <code>sp</code>. We can know the
         amount of elements used in the array during the runtime. The
         purpose of the variable is to find appropriate
@@ -2055,8 +2060,7 @@ drawline (90, 100)</code></pre>
         bottom of the rectangle in the diagram and “the bottom of the
         stack” is the top of the rectangle.</p>
         <figure>
-        <img src="/images/stack.png" style="width:6.64cm;height:8.05cm"
-        alt="Stack" />
+        <img src="/images/stack.png" alt="Stack" />
         <figcaption aria-hidden="true">Stack</figcaption>
         </figure>
         <p>There are four functions to access the stack.</p>
@@ -2065,14 +2069,14 @@ drawline (90, 100)</code></pre>
         <li><code>stack_lookup</code> searches the stack for the
         variable given its name as an argument. It searches only the
         parameters of the latest procedure. It returns TRUE and sets the
-        argument <code>value</code> to point the value, if the variable
-        has been found. Otherwise it returns FALSE.</li>
+        argument <code>value</code> to point to the value, if the
+        variable has been found. Otherwise it returns FALSE.</li>
         <li><code>stack_replace</code> replaces the value of the
         variable in the stack. If it succeeds, it returns TRUE.
         Otherwise returns FALSE.</li>
         <li><code>stack_return</code> throws away the latest parameters.
         The stack pointer goes back to the point before the latest
-        procedure call so that it points to parameters of the previous
+        procedure call so that it points to parameters of the previously
         called procedure.</li>
         </ul>
         <div class="sourceCode" id="cb36"><pre
@@ -2138,7 +2142,7 @@ drawline (90, 100)</code></pre>
 <span id="cb36-60"><a href="#cb36-60" aria-hidden="true" tabindex="-1"></a>    runtime_error <span class="op">(</span><span class="st">&quot;Stack error.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb36-61"><a href="#cb36-61" aria-hidden="true" tabindex="-1"></a>  sp <span class="op">-=</span> depth <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
 <span id="cb36-62"><a href="#cb36-62" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h4 id="surface-and-cairo">Surface and cairo</h4>
+        <h4 id="surface-and-cairo">Surface and Cairo</h4>
         <p>A global variable <code>surface</code> is shared by
         <code>turtleapplication.c</code> and <code>turtle.y</code>. It
         is initialized in <code>turtleapplication.c</code>.</p>
@@ -2177,16 +2181,15 @@ drawline (90, 100)</code></pre>
         transformation. It transforms a user-space coordinate (x, y)
         into a device-space coordinate (z, w).</p>
         <figure>
-        <img src="/images/transformation.png"
-        style="width:6.3cm;height:2.04cm" alt="transformation" />
+        <img src="/images/transformation.png" alt="transformation" />
         <figcaption aria-hidden="true">transformation</figcaption>
         </figure>
         <p>The function <code>init_cairo</code> gets the width and
         height of the <code>surface</code> (See the program below).</p>
         <ul>
-        <li>The center of the surface is (0,0) with regard to the
-        user-space coordinate and (width/2, height/2) with regard to the
-        device-space coordinate.</li>
+        <li>The center of the surface is (0,0) in the user-space
+        coordinate, while it is (width/2, height/2) in the device-space
+        coordinate.</li>
         <li>The positive direction of x axis in the two spaces are the
         same. So, (1,0) is transformed into (1+width/2,height/2).</li>
         <li>The positive direction of y axis in the two spaces are
@@ -2255,7 +2258,7 @@ drawline (90, 100)</code></pre>
 <span id="cb38-50"><a href="#cb38-50" aria-hidden="true" tabindex="-1"></a>destroy_cairo <span class="op">()</span> <span class="op">{</span></span>
 <span id="cb38-51"><a href="#cb38-51" aria-hidden="true" tabindex="-1"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb38-52"><a href="#cb38-52" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h4 id="eval-function">Eval function</h4>
+        <h4 id="eval-function">Eval Function</h4>
         <p>A function <code>eval</code> evaluates an expression and
         returns the value of the expression. It calls itself
         recursively. For example, if the node is <code>N_ADD</code>,
@@ -2314,12 +2317,12 @@ drawline (90, 100)</code></pre>
 <span id="cb39-44"><a href="#cb39-44" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb39-45"><a href="#cb39-45" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> value<span class="op">;</span></span>
 <span id="cb39-46"><a href="#cb39-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h4 id="execute-function">Execute function</h4>
+        <h4 id="execute-function">Execute Function</h4>
         <p>Primary procedures and procedure definitions are analyzed and
         executed by the function <code>execute</code>. It doesn’t return
         any values. It calls itself recursively. The process of
         <code>N_RT</code> and <code>N_procedure_call</code> is
-        complicated. It will explained after the following program.
+        complicated. It will be explained after the following program.
         Other parts are not so difficult. Read the program below
         carefully so that you will understand the process.</p>
         <div class="sourceCode" id="cb40"><pre
@@ -2493,21 +2496,19 @@ drawline (90, 100)</code></pre>
         <p>When The parser reads the lines from one to four, it creates
         nodes like this:</p>
         <figure>
-        <img src="/images/tree2.png" style="width:10cm;height:6cm"
-        alt="Nodes of drawline" />
+        <img src="/images/tree2.png" alt="Nodes of drawline" />
         <figcaption aria-hidden="true">Nodes of drawline</figcaption>
         </figure>
         <p>Runtime routine just stores the procedure to the symbol table
         with its name and node.</p>
         <figure>
-        <img src="/images/table.png" style="width:10cm;height:5cm"
-        alt="Symbol table" />
+        <img src="/images/table.png" alt="Symbol table" />
         <figcaption aria-hidden="true">Symbol table</figcaption>
         </figure>
         <p>When the parser reads the fifth line in the example, it
         creates nodes like this:</p>
         <figure>
-        <img src="/images/proc_call.png" style="width:10cm;height:5cm"
+        <img src="/images/proc_call.png"
         alt="Nodes of procedure call" />
         <figcaption aria-hidden="true">Nodes of procedure
         call</figcaption>
@@ -2545,8 +2546,8 @@ drawline (90, 100)</code></pre>
         decreases <code>ret_level</code> by one so that the following
         commands in the procedure are ignored by the runtime
         routine.</p>
-        <h4 id="runtime-entry-and-error-functions">Runtime entry and
-        error functions</h4>
+        <h4 id="runtime-entry-and-error-functions">Runtime Entry and
+        Error Functions</h4>
         <p>A function <code>run</code> is the entry of the runtime
         routine. A function <code>runtime_error</code> reports an error
         occurred during the runtime routine runs. (Errors which occur
@@ -2670,7 +2671,7 @@ drawline (90, 100)</code></pre>
         and Rob Pike (1984)</li>
         <li>Source code of a language, for example, ruby.</li>
         </ul>
-        <p>Lately, lots of source codes are in the internet. Maybe
+        <p>Lately, lots of source codes are on the internet. Maybe
         reading source codes is the most useful for programmers.</p>
       </div>
     </div>

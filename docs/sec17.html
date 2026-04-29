@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Menus and actions</title>
+  <title>Menus and Actions</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,13 +93,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="menus-and-actions">Menus and actions</h1>
+        <h1 id="menus-and-actions">Menus and Actions</h1>
         <h2 id="menus">Menus</h2>
-        <p>Users often use menus to tell a command to the application.
+        <p>Users often use menus to give a command to the application.
         It is like this:</p>
         <figure>
-        <img src="/images/menu.png" style="width:5.985cm;height:5.055cm"
-        alt="Menu" />
+        <img src="/images/menu.png" alt="Menu" />
         <figcaption aria-hidden="true">Menu</figcaption>
         </figure>
         <p>There are two types of objects.</p>
@@ -112,8 +111,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         are similar to arrays.</li>
         </ul>
         <figure>
-        <img src="/images/menu_structure.png"
-        style="width:10.23cm;height:3.57cm" alt="Menu structure" />
+        <img src="/images/menu_structure.png" alt="Menu structure" />
         <figcaption aria-hidden="true">Menu structure</figcaption>
         </figure>
         <ul>
@@ -164,15 +162,15 @@ GObject -- GMenuItem</code></pre>
 GMenuItem *menu_item_quit = g_menu_item_new (&quot;Quit&quot;, &quot;app.quit&quot;);
 g_menu_append_item (menu, menu_item_quit);
 g_object_unref (menu_item_quit);</code></pre>
-        <h2 id="menu-and-action">Menu and action</h2>
+        <h2 id="menu-and-action">Menu and Action</h2>
         <p>One of the attributes of menu items is an action. This
-        attribute points an action object.</p>
+        attribute points to an action object.</p>
         <p>There are two action objects, GSimpleAction and
         GPropertyAction. GSimpleAction is often used. And it is used
         with a menu item. Only GSimpleAction is described in this
         section.</p>
-        <p>An action corresponds to a menu item will be activated when
-        the menu item is clicked. Then the action emits an activate
+        <p>An action that corresponds to a menu item will be activated
+        when the menu item is clicked. Then the action emits an activate
         signal.</p>
         <ol type="1">
         <li>menu item is clicked.</li>
@@ -190,8 +188,8 @@ g_object_unref (menu_item_quit);</code></pre>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>quit_activated<span class="op">),</span> app<span class="op">);</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span></code></pre></div>
         <ul>
-        <li>The variable <code>menu_item_quit</code> points a menu item.
-        It is actually a pointer, but we often say that
+        <li>The variable <code>menu_item_quit</code> points to a menu
+        item. It is actually a pointer, but we often say that
         <code>menu_item_quit</code> <em>is</em> a menu item. It has a
         label “Quit” and is connected to an action “app.quit”. “app” is
         a prefix and “quit” is the name of the action. The prefix “app”
@@ -199,11 +197,15 @@ g_object_unref (menu_item_quit);</code></pre>
         instance.</li>
         <li><code>act_quit</code> is an action. It has a name “quit”.
         The function <code>g_simple_action_new</code> creates a
-        stateless action. So, <code>act_quit</code> is stateless. The
-        meaning of stateless will be explained later. The argument
-        <code>NULL</code> means that the action doesn’t have an
-        parameter. Most of the actions are stateless and have no
-        parameter.</li>
+        stateless action. So, <code>act_quit</code> is stateless.
+        Stateless actions do not maintain any internal state. They are
+        like a simple push button; when clicked, they perform an
+        operation (like “quit” or “open”) and that’s all. Most menu
+        items, such as “Quit”, “Copy”, or “Paste”, are connected to
+        stateless actions. Most of the actions are stateless and have no
+        parameter. The argument <code>NULL</code> means that the action
+        doesn’t have any parameters. Another action is stateful and
+        stateful actions will be explained in the next section.</li>
         <li>The action <code>act_quit</code> is added to the
         GtkApplication instance with
         <code>g_action_map_add_action</code>. So, the action’s scope is
@@ -215,7 +217,7 @@ g_object_unref (menu_item_quit);</code></pre>
         <p>If the menu is clicked, the corresponding action “quit” will
         be activated and emits an “activate” signal. Then, the handler
         <code>quit_activated</code> is called.</p>
-        <h2 id="menu-bar">Menu bar</h2>
+        <h2 id="menu-bar">Menu Bar</h2>
         <p>A menu bar and menus are traditional. Menu buttons are often
         used instead of a menu bar lately, but the old style is still
         used widely.</p>
@@ -256,10 +258,10 @@ g_object_unref (menu_item_quit);</code></pre>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h2 id="simple-example">Simple example</h2>
+        <h2 id="simple-example">Simple Example</h2>
         <p>The following is a simple example of menus and actions. The
         source file <code>menu1.c</code> is located at <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu">src/menu</a>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/menu/">/src/menu</a>
         directory.</p>
         <div class="sourceCode" id="cb6"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
@@ -371,8 +373,8 @@ g_object_unref (menu_item_quit);</code></pre>
         <code>menu_item_quit</code> is no longer needed. It is freed by
         <code>g_object_unref</code>.</li>
         <li>33-34: Sets the submenu link in <code>menu_item_menu</code>
-        to point <code>menu</code>. Then, <code>menu</code> is no more
-        useful and it is freed.</li>
+        to refer to <code>menu</code>. Then, <code>menu</code> is no
+        more useful and it is freed.</li>
         <li>35-36: Appends <code>menu_item_menu</code> to
         <code>menubar</code>. Then frees <code>menu_item_menu</code>.
         GMenu and GMenuItem are built and finally connected to the
@@ -381,8 +383,7 @@ g_object_unref (menu_item_quit);</code></pre>
         <li>38: The menubar is inserted to the application.</li>
         </ul>
         <figure>
-        <img src="/images/menu1.png"
-        style="width:12.555cm;height:3.285cm" alt="menu and action" />
+        <img src="/images/menu1.png" alt="menu and action" />
         <figcaption aria-hidden="true">menu and action</figcaption>
         </figure>
         <h2 id="compiling">Compiling</h2>
@@ -395,11 +396,11 @@ $ ./a.out</code></pre>
         quits.</p>
         <figure>
         <img src="/images/menu1_screenshot.png"
-        style="width:6cm;height:5.115cm" alt="Screenshot of menu1" />
+        alt="Screenshot of menu1" />
         <figcaption aria-hidden="true">Screenshot of menu1</figcaption>
         </figure>
         <h2 id="primary-and-remote-application-instances">Primary and
-        remote application instances</h2>
+        Remote Application Instances</h2>
         <p>Let’s try running the application twice. Use
         <code>&amp;</code> in your shell command line, then the
         application runs concurrently.</p>
@@ -428,7 +429,7 @@ $ </code></pre>
         instance) quits.</p>
         <figure>
         <img src="/images/menu1_two_windows.png"
-        style="width:12cm;height:7cm" alt="menu1 – two windows" />
+        alt="menu1 – two windows" />
         <figcaption aria-hidden="true">menu1 – two windows</figcaption>
         </figure>
         <p>The second execution makes a new window. However, it depends

@@ -285,7 +285,7 @@ hello() {
         <li><code>.xml</code> =&gt; xml</li>
         </ul>
         <p>A list of supported languages is defined in <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/data/ext.yml"><code>/data/ext.yml</code></a>.
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/data/ext.yml">/data/ext.yml</a>.
         Note that this path starts with a slash to represent the
         repository root, not the operating system root.</p>
         <p>If the output target is <code>html</code> or
@@ -363,7 +363,7 @@ $
         ensure portability. When writing root-relative URLs in
         <code>.src.md</code> files, treat the <code>src</code> directory
         as the site root. The Ruby script automatically adjusts these
-        paths to point to the appropriate locations during the
+        paths to refer to the appropriate locations during the
         conversion.</p>
         <p>We recommend using root-relative links for image files,
         though relative links also work.</p>
@@ -391,7 +391,7 @@ $
         href="https://pandoc.org/MANUAL.html#extension-auto_identifiers">Pandoc
         User’s Manual - Extension: auto_identifiers</a>.</li>
         <li>Other files: Both root-relative and relative URLs are
-        supported. The links usually point to C source files or
+        supported. The links usually refer to C source files or
         directories. The Ruby script converts these links to point to
         the corresponding blob or tree pages in the GitHub Gtk4-tutorial
         repository.</li>
@@ -406,8 +406,8 @@ $
         <p><strong>Path Validation:</strong></p>
         <p>Ensure that all internal links remain within the
         <code>src</code> directory. The Ruby script will detect and warn
-        you if a path (e.g., ../../../etc/passwd) attempts to point
-        outside the directory.</p>
+        you if a path (e.g., ../../../etc/passwd) attempts to escape the
+        directory.</p>
         <p>Note: This check prevents broken links and helps avoid “path
         traversal” issues, ensuring all referenced resources are
         correctly included in the final output.</p>

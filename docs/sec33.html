@@ -94,18 +94,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="col-xl-10 col-xxl-9">
         <h1 id="gtksignallistitemfactory">GtkSignalListItemFactory</h1>
         <h2
-        id="gtksignallistitemfactory-and-gtkbulderlistitemfactory">GtkSignalListItemFactory
-        and GtkBulderListItemFactory</h2>
+        id="gtksignallistitemfactory-and-gtkbuilderlistitemfactory">GtkSignalListItemFactory
+        and GtkBuilderListItemFactory</h2>
         <p>GtkBuilderlistItemFactory is convenient when GtkListView just
         shows the contents of a list. Its binding direction is always
         from an item of a list to a child of GtkListItem.</p>
-        <p>When it comes to dynamic connection, it’s not enough. For
+        <p>However, it is insufficient for dynamic connections. For
         example, suppose you want to edit the contents of a list. You
         set a child of GtkListItem to a GtkText instance so a user can
-        edit a text with it. You need to bind an item in the list with
-        the buffer of the GtkText. The direction is opposite from the
-        one with GtkBuilderListItemFactory. It is from the GtkText
-        instance to the item in the list. You can implement this with
+        edit text with it. You need to bind an item in the list with the
+        buffer of the GtkText. The direction is opposite from the one
+        with GtkBuilderListItemFactory. It is from the GtkText instance
+        to the item in the list. You can implement this with
         GtkSignalListItemFactory, which is more flexible than
         GtkBuilderListItemFactory.</p>
         <p>This section shows just some parts of the source file
@@ -113,18 +113,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         see <code>src/listeditor</code> directory of the <a
         href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial
         repository</a>.</p>
-        <h2 id="a-list-editor">A list editor</h2>
-        <p>The sample program is a list editor and data of the list are
-        strings. It’s the same as a line editor. It reads a text file
-        line by line. Each line is an item of the list. The list is
-        displayed with GtkColumnView. There are two columns. The one is
-        a button, which shows if the line is a current line. If the line
-        is the current line, the button is colored with red. The other
-        is a string which is the contents of the corresponding item of
-        the list.</p>
+        <h2 id="list-editor">List Editor</h2>
+        <p>The sample program is a list editor and the data in the list
+        are strings. It’s the same as a line editor. It reads a text
+        file line by line. Each line is an item of the list. The list is
+        displayed with GtkColumnView. There are two columns. One column
+        contains a button, which shows whether the line is a current
+        line. If the line is the current line, the button is colored
+        red. The other contains a string which is the contents of the
+        corresponding item of the list.</p>
         <figure>
-        <img src="/images/listeditor.png" style="width:12cm;height:9cm"
-        alt="List editor" />
+        <img src="/images/listeditor.png" alt="List editor" />
         <figcaption aria-hidden="true">List editor</figcaption>
         </figure>
         <p>The source files are located at <code>src/listeditor</code>
@@ -147,9 +146,10 @@ $ _build/listeditor</code></pre>
         <li>Remove button: removes a current line.</li>
         <li>Read button: reads a file.</li>
         <li>Write button: writes the contents to a file.</li>
-        <li>close button: closes the contents.</li>
-        <li>quit button: quits the application.</li>
-        <li>Button on the select column: makes the line current.</li>
+        <li>Close button: closes the contents.</li>
+        <li>Quit button: quits the application.</li>
+        <li>Button in the <code>select</code> column: makes the row
+        current.</li>
         <li>String column: GtkText. You can edit a string in the
         field.</li>
         </ul>
@@ -158,7 +158,7 @@ $ _build/listeditor</code></pre>
         button.</p>
         <h2
         id="connect-a-gtktext-instance-and-an-item-in-the-list">Connect
-        a GtkText instance and an item in the list</h2>
+        a GtkText Instance and an Item in the List</h2>
         <p>The second column (GtkColumnViewColumn) sets its factory
         property to GtkSignalListItemFactory. It uses three signals
         setup, bind and unbind. The following shows the signal
@@ -213,7 +213,7 @@ $ _build/listeditor</code></pre>
         <code>buffer</code> is a GtkEntryBuffer instance of the
         <code>text</code>.</li>
         <li>12: The LeData instance <code>data</code> is an item pointed
-        by the <code>listitem</code>.</li>
+        to by the <code>listitem</code>.</li>
         <li>15-16: Sets the text of <code>text</code> to
         <code>le_data_look_string (data)</code>. le_data_look_string
         returns the string of the <code>data</code> and the ownership of
@@ -228,7 +228,7 @@ $ _build/listeditor</code></pre>
         <code>data</code>. The function returns a GBinding instance.
         This binding is different from bindings of GtkExpression. This
         binding needs the existence of the two properties.</li>
-        <li>19: GObjec has a table. The key is a string (or GQuark) and
+        <li>19: GObject has a table. The key is a string (or GQuark) and
         the value is a gpointer (pointer to any type). The function
         <code>g_object_set_data</code> sets the association from the key
         to the value. This line sets the association from “bind” to
@@ -254,7 +254,7 @@ $ _build/listeditor</code></pre>
         <code>bind2_cb</code> and disconnect it in
         <code>unbind2_cb</code>.</p>
         <h2 id="change-the-cell-of-gtkcolumnview-dynamically">Change the
-        cell of GtkColumnView dynamically</h2>
+        Cell of GtkColumnView Dynamically</h2>
         <p>Next topic is to change the GtkColumnView (or GtkListView)
         cells dynamically. The example changes the color of the buttons,
         which are children of GtkListItem instances, as the current line
@@ -272,10 +272,10 @@ $ _build/listeditor</code></pre>
         not) when a GtkListItem is bound to an item in the list. It is
         because GtkListItem is recycled. A GtkListItem was possibly
         current line before but not current after recycled. The opposite
-        can also be happen.</li>
+        can also happen.</li>
         </ul>
-        <p>The button of the current line is colored with red and
-        otherwise white.</p>
+        <p>The button of the current line is colored red and otherwise
+        white.</p>
         <p>The current line has no relationship to GtkSingleSelection
         object. GtkSingleSelection selects a line on the display. The
         current line doesn’t need to be on the display. It is possible
@@ -284,12 +284,12 @@ $ _build/listeditor</code></pre>
         <p>The LeWindow instance has two instance variables for
         recording the current line.</p>
         <ul>
-        <li><code>win-&gt;position</code>: An int type variable. It is
-        the position of the current line. It is zero-based. If no
-        current line exists, it is -1.</li>
-        <li><code>win-&gt;current_button</code>: A variable points the
-        button, located at the first column, on the current line. If no
-        current line exists, it is NULL.</li>
+        <li><code>win-&gt;position</code>: An <code>int</code> type
+        variable. It is the position of the current line. It is
+        zero-based. If no current line exists, it is -1.</li>
+        <li><code>win-&gt;current_button</code>: A variable points to
+        the button, located at the first column, on the current line. If
+        no current line exists, it is NULL.</li>
         </ul>
         <p>If the current line moves, the following two functions are
         called. They updates the two varables.</p>
@@ -323,7 +323,7 @@ $ _build/listeditor</code></pre>
 <span id="cb3-27"><a href="#cb3-27"></a>    gtk_widget_set_css_classes <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">-&gt;</span>current_button<span class="op">),</span> current<span class="op">);</span></span>
 <span id="cb3-28"><a href="#cb3-28"></a>  <span class="op">}</span></span>
 <span id="cb3-29"><a href="#cb3-29"></a><span class="op">}</span></span></code></pre></div>
-        <p>The varable <code>win-&gt;position_label</code> points a
+        <p>The varable <code>win-&gt;position_label</code> points to a
         GtkLabel instance. The label shows the current line
         position.</p>
         <p>The current button has CSS “current” class. The button is
@@ -417,8 +417,8 @@ $ _build/listeditor</code></pre>
 <span id="cb6-6"><a href="#cb6-6"></a>    update_current_button <span class="op">(</span>win<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>  <span class="op">}</span></span>
 <span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
-        <p>The color of buttons are determined by the “background” CSS
-        style. The following CSS node is a bit complicated. CSS node
+        <p>The color of the buttons is determined by the “background”
+        CSS style. The following CSS node is a bit complicated. CSS node
         <code>column view</code> has <code>listview</code> child node.
         It covers the rows in the GtkColumnView. The
         <code>listview</code> node is the same as the one for
@@ -428,7 +428,7 @@ $ _build/listeditor</code></pre>
         to the “current” class.</p>
         <div class="sourceCode" id="cb7"><pre
         class="sourceCode css"><code class="sourceCode css"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>columnview listview row button<span class="fu">.current</span> {<span class="kw">background</span>: <span class="cn">red</span><span class="op">;</span>}</span></code></pre></div>
-        <h2 id="a-waring-from-gtktext">A waring from GtkText</h2>
+        <h2 id="a-warning-from-gtktext">A Warning from GtkText</h2>
         <p>If your program has the following two, a warning message can
         be issued.</p>
         <ul>
@@ -442,7 +442,7 @@ $ _build/listeditor</code></pre>
         <p>You can avoid this by unsetting any focus widget under the
         main window. When scroll begins, the “value-changed” signal on
         the vertical adjustment of the scrolled window is emitted.</p>
-        <p>The following is extracted from the ui file and C source
+        <p>The following is extracted from the UI file and C source
         file.</p>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>... ... ...</span>

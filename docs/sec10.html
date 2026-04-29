@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Build system</title>
+  <title>Build System</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,9 +93,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="build-system">Build system</h1>
-        <h2 id="managing-big-source-files">Managing big source
-        files</h2>
+        <h1 id="build-system">Build System</h1>
+        <h2 id="managing-big-source-files">Managing Big Source
+        Files</h2>
         <p>We’ve compiled a small editor so far. The program is not
         complicated yet, but if it grows bigger, it will be difficult to
         maintain. So, we should do the following now.</p>
@@ -107,7 +107,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         one build tool.</li>
         </ul>
         <h2 id="divide-a-c-source-file-into-two-parts.">Divide a C
-        source file into two parts.</h2>
+        Source File into Two Parts.</h2>
         <p>When you divide C source file into several parts, each file
         should contain one thing. For example, our source has two
         things, the definition of TfeTextView and functions related to
@@ -126,21 +126,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>tfe.c</code> and <code>tfe3.ui</code>. The <code>3</code>
         of <code>tfe3.ui</code> is like a version number. Managing
         version with filenames is one possible idea but it also has a
-        problem. You need to rewrite filename in each version and it
-        affects to contents of source files that refer to filenames. So,
-        we should take <code>3</code> away from the filename.</p>
+        problem. You need to rename files in each version, and this
+        affects the contents of source files that refer to those
+        filenames. So, we should take <code>3</code> away from the
+        filename.</p>
         <p>In <code>tfe.c</code> the function
         <code>tfe_text_view_new</code> is invoked to create a
         TfeTextView instance. But it is defined in
-        <code>tfetextview.c</code>, not <code>tfe.c</code>. The lack of
-        the declaration (not definition) of
-        <code>tfe_text_view_new</code> makes an error when
-        <code>tfe.c</code> is compiled. The declaration is necessary in
-        <code>tfe.c</code>. That public information is usually written
-        in header files. These have a <code>.h</code> suffix like
-        <code>tfetextview.h</code>. The header files are included by C
-        source files. For example, <code>tfetextview.h</code> is
-        included by <code>tfe.c</code>.</p>
+        <code>tfetextview.c</code>, not <code>tfe.c</code>. The absence
+        of a declaration (not definition) of
+        <code>tfe_text_view_new</code> will cause a compilation error
+        when <code>tfe.c</code> is compiled. The declaration is
+        necessary in <code>tfe.c</code>. That public information is
+        usually written in header files. These have a <code>.h</code>
+        suffix like <code>tfetextview.h</code>. The header files are
+        included by C source files. For example,
+        <code>tfetextview.h</code> is included by
+        <code>tfe.c</code>.</p>
         <p>The source files are shown below.</p>
         <p><code>tfetextview.h</code></p>
         <div class="sourceCode" id="cb1"><pre
@@ -263,7 +265,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-67"><a href="#cb3-67"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb3-68"><a href="#cb3-68"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb3-69"><a href="#cb3-69"></a><span class="op">}</span></span></code></pre></div>
-        <p>The ui file <code>tfe.ui</code> is the same as
+        <p>The UI file <code>tfe.ui</code> is the same as
         <code>tfe3.ui</code> in the previous section.</p>
         <p><code>tfe.gresource.xml</code></p>
         <div class="sourceCode" id="cb4"><pre
@@ -273,11 +275,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-4"><a href="#cb4-4"></a>    &lt;<span class="kw">file</span>&gt;tfe.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb4-5"><a href="#cb4-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb4-6"><a href="#cb4-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-        <p>Dividing a file makes it easy to maintain. But now we face a
-        new problem. The number of build steps increased.</p>
+        <p>Splitting the source code into multiple files makes
+        maintenance easier. But now we face a new problem. The number of
+        build steps has increased.</p>
         <ul>
-        <li>Compiling the ui file <code>tfe.ui</code> into
-        <code>resources.c</code>.</li>
+        <li>Compiling the UI file <code>tfe.ui</code> into
+        <code>resources.c</code>, using
+        <code>tfe.gresource.xml</code>.</li>
         <li>Compiling <code>tfe.c</code> into <code>tfe.o</code> (object
         file).</li>
         <li>Compiling <code>tfetextview.c</code> into
@@ -289,10 +293,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </ul>
         <p>Build tools manage the steps.</p>
         <h2 id="meson-and-ninja">Meson and Ninja</h2>
-        <p>I’ll explain the Meson and Ninja build tools.</p>
+        <p>I will explain the Meson and Ninja build systems.</p>
         <p>Other possible tools are Make and Autotools. They are
-        traditional tools but slower than Ninja. So, many developers
-        have switched to Meson and Ninja lately. For example, GTK 4 uses
+        traditional tools but slower than Ninja. Many developers have
+        recently migrated to Meson and Ninja. For example, GTK 4 uses
         them.</p>
         <p>You need to create <code>meson.build</code> file first.</p>
         <div class="sourceCode" id="cb5"><pre
@@ -334,13 +338,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         type of parameter is called <em>keyword parameter</em> or
         <em>kwargs</em>. The value <code>gtkdep</code> is defined in
         line 3. The last argument tells Meson and Ninja that this
-        project shouldn’t install the executable file. So it is just
-        compiled in the build directory.</li>
+        project shouldn’t install the executable file. it is only built
+        within the build directory.</li>
         </ul>
         <p>Now run meson and ninja.</p>
         <pre><code>$ meson setup _build
 $ ninja -C _build</code></pre>
-        <p>meson has two arguments.</p>
+        <p>The meson command takes two arguments.</p>
         <ul>
         <li>setup: The first argument is a command of meson. Setup is
         the default, so you can leave it out. But it is recommended to

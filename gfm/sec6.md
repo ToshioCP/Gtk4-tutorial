@@ -1,16 +1,16 @@
 Up: [README.md](../README.md),  Prev: [Section 5](sec5.md), Next: [Section 7](sec7.md)
 
-# Strings and memory management
+# Strings and Memory Management
 
 GtkTextView and GtkTextBuffer have functions that have string parameters or return a string.
 The knowledge of strings and memory management is useful to understand how to use these functions.
 
-## String and memory
+## Strings and Memory
 
 A String is an array of characters that is terminated with '\0'.
-String is not a C type such as char, int, float or double, but a character array.
+C has no built-in string type. Strings are represented using character arrays (or pointers to characters).
 It behaves like a string in other languages.
-So, the pointer is often called 'a string'.
+So, in practice, a pointer to the first element of such a character array is often loosely called a "string".
 
 The following is a sample program.
 
@@ -39,22 +39,21 @@ The array represents the string "Hello".
 The size of the array is 10, so four bytes aren't used.
 But it's OK.
 They are just ignored.
-(If the variable `a` is defined out of functions or its class is static, the four bytes are assigned with zero.
-Otherwise, that is to say, the class is auto or register, they are undefined.)
+(If the variable `a` is defined out of functions or its storage class is static, the four bytes are assigned with zero.
+Otherwise, that is to say, the storage class is auto, they are undefined.)
 
 The variable `b` is a pointer to a character.
-It is assigned with `a`, so `b` points the first element of `a` (character 'H').
-The array `a` is immutable.
+It is assigned to `a`, so `b` points to the first element of `a` (character 'H').
+The array `a` itself cannot be assigned to.
 So `a=a+1` causes syntax error.
 
 On the other hand, `b` is a pointer type variable, which is mutable.
 So, `++b`, which increases `b` by one, is allowed.
 
-
-If a pointer is NULL, it points nothing.
+If a pointer is NULL, it points to nothing.
 So, the pointer is not a string.
-It is different from empty string.
-Empty string is a pointer points '\0'.
+It is different from empty strings.
+An empty string is a pointer to a memory location where the first character is '\0'
 
 There are four cases:
 
@@ -63,9 +62,9 @@ There are four cases:
 - The string is in stack
 - The string is in memory allocated from the heap area
 
-## Read only string
+## Read Only Strings
 
-A string literal is surrounded by double quotes like this:
+A string literal is enclosed in double quotes like this:
 
 ~~~C
 char *s;
@@ -80,10 +79,10 @@ So, the following program is illegal.
 ~~~
 
 The result is undefined.
-Probably a bad thing will happen, for example, a segmentation fault.
+Probably something bad will happen, such as a segmentation fault.
 
 NOTE: The memory of the literal string is allocated when the program is compiled.
-It is possible to see the literal strings with `strings` command.
+Literal strings can be seen using the `strings` command.
 
 ~~~
 $ strings src/tvf/a.out
@@ -98,18 +97,18 @@ His wife was surprized at his story. They were very happy because they had no ch
 ... ... ...
 ~~~
 
-It tells us that literal strings are embedded in program binary codes.
+This shows that literal strings are embedded in program binary codes.
 
-## Strings defined as arrays
+## Strings Defined as Arrays
 
 If a string is defined as an array, it's stored in static memory area or stack.
-It depends on the class of the array.
-If the array's class is `static`, then it's placed in static memory area.
+It depends on the storage class of the array.
+If the array's storage class is `static`, then it's placed in static memory area.
 The allocated memory lives for the life of the program.
 This area is writable.
 
-If the array's class is `auto`, it's placed in stack.
-If the array is defined inside a function, its default class is `auto`.
+If the array's storage class is `auto`, it's placed in stack.
+If the array is defined inside a function, its default storage class is `auto`.
 The stack area will disappear when the function returns to the caller.
 Arrays defined on the stack are writable.
 
@@ -120,8 +119,8 @@ void
 print_strings (void) {
   char b[] = "Hello";
 
-  a[1] = 'a'; /* Because the array is static, it's writable. */
-  b[1] = 'a'; /* Because the array is auto, it's writable. */
+  a[1] = 'a'; /* Writable because 'a' is a character array (in static storage). */
+  b[1] = 'a'; /* Writable because 'b' is a character array (on the stack). */
 
   printf ("%s\n", a); /* Hallo */
   printf ("%s\n", b); /* Hallo */
@@ -129,13 +128,13 @@ print_strings (void) {
 ~~~
 
 The array `a` is defined out of functions.
-It is placed in the static memory area even if the `static` class is left out.
+It is placed in the static memory area even if the `static` is left out.
 The compiler calculates the number of the elements (six) and allocates six bytes in the static memory area.
 Then, it copies "Hello" literal string data to the memory.
 
-The array `b` is defined inside the function, so its class is `auto`.
+The array `b` is defined inside the function, so its storage class is `auto`.
 The compiler calculates the number of the elements in the string literal.
-It is six because it has '\0' terminator.
+It is six, including the null terminator.
 The compiler allocates six bytes in the stack and copies "Hello" litaral string to the stack memory.
 
 Both `a` and `b` are writable.
@@ -144,10 +143,10 @@ The memory is allocated and freed by the program automatically so you don't need
 The array `a` is alive during the program's life time.
 The array `b` is alive when the function is called until the function returns to the caller.
 
-## Strings in the heap area
+## Strings in the Heap Area
 
 You can get, use and release memory from the heap area.
-The standard C library provides `malloc` to get memory and `free` to put back memory.
+The standard C library provides `malloc` to get memory and `free` to release memory.
 GLib provides the functions `g_new` and `g_free`.
 They are similar to `malloc` and `free`.
 
@@ -167,11 +166,11 @@ For example,
 ~~~C
 char *s;
 s = g_new (char, 10);
-/* s points an array of char. The size of the array is 10. */
+/* s points to an array of char. The size of the array is 10. */
 
 struct tuple {int x, y;} *t;
 t = g_new (struct tuple, 5);
-/* t points an array of struct tuple. */
+/* t points to an array of struct tuple. */
 /* The size of the array is 5. */
 ~~~
 
@@ -185,8 +184,8 @@ g_free (gpointer mem);
 If `mem` is NULL, `g_free` does nothing.
 `gpointer` is a type of general pointer.
 It is the same as `void *`.
-This pointer can be casted to any pointer type.
-Conversely, any pointer type can be casted to `gpointer`.
+This pointer can be cast to any pointer type.
+Conversely, any pointer type can be cast to `gpointer`.
 
 ~~~C
 g_free (s);
@@ -196,7 +195,7 @@ g_free (t);
 /* Frees the memory allocated to t. */
 ~~~
 
-If the argument doesn't point allocated memory it will cause an error, specifically, a segmentation fault.
+If the argument does not point to allocated memory, the behavior is undefined and may result in a segmentation fault.
 
 Some GLib functions allocate memory.
 For example, `g_strdup` allocates memory and copies a string given as an argument.
@@ -221,10 +220,10 @@ If you forget to free the allocated memory it will remain until the program ends
 Repeated allocation and no freeing cause memory leak.
 It is a bug and may bring a serious problem.
 
-## const qualifier
+## Const Qualifier
 
-A `const` qualified variable can be assigned to initialize it.
-Once it is initialized, it is never allowed to change or free.
+A const-qualified variable must be initialized at definition time, and its value cannot be modified through that variable.
+However, this does not prevent the memory it refers to from being freed.
 
 ~~~C
 const int x = 10; /* initialization is OK. */
@@ -242,7 +241,7 @@ gtk_label_get_text (
   GtkLabel* self
 )
 
-// Str keeps itself during the function runs
+// The string 'str' remains valid while the function is executing.
 void
 gtk_label_set_text (
   GtkLabel* self,

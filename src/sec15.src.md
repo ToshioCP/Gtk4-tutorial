@@ -1,15 +1,15 @@
-# Tfe main program
+# Tfe Main Program
 
 The file `tfeapplication.c` is a main program of Tfe.
 It includes all the code other than `tfetextview.c` and `tfenotebook.c`.
 It does:
 
 - Application support, mainly handling command line arguments.
-- Builds widgets using ui file.
+- Builds widgets using UI files.
 - Connects button signals and their handlers.
 - Manages CSS.
 
-## The function main
+## The Function main
 
 The function `main` is the first invoked function in C language.
 It connects the command line given by the user and Gtk application.
@@ -63,12 +63,12 @@ Thanks to the `#define` directive, it is easy to find the application id.
 - 14: Runs the application.
 - 15-16: Releases the reference to the application and returns the status.
 
-## Startup signal handler
+## Startup Signal Handler
 
-Startup signal is emitted just after the GtkApplication instance is initialized.
+A startup signal is emitted just after the GtkApplication instance is initialized.
 The handler initializes the whole application which includes not only GtkApplication instance but also widgets and some other objects.
 
-- Builds the widgets using ui file.
+- Builds the widgets using a UI file.
 - Connects button signals and their handlers.
 - Sets CSS.
 
@@ -78,7 +78,7 @@ The handler is as follows.
 tfe5/tfeapplication.c app_startup
 @@@
 
-- 12-15: Builds widgets using ui resource.
+- 12-15: Builds widgets using a UI resource.
 Connects the top-level window and the application with `gtk_window_set_application`.
 - 16-23: Gets buttons and connects their signals and handlers.
 The macro `g_signal_connect_swapped` connects a signal and handler like `g_signal_connect`.
@@ -93,8 +93,8 @@ In this program, CSS is on line 30.
 It sets padding, font-family and font size of GtkTextView.
 CSS will be explained in the next subsection.
 - 26-28: GdkDisplay is used to set CSS.
-The default GdkDisplay object can be obtain with the function `gfk_display_get_default`.
-This function needs to be called after the window creation.
+The default GdkDisplay object can be obtained with the function `gdk_display_get_default`.
+This function needs to be called after the application is registered.
 - 33: Connects "destroy" signal on the main window and before\_destroy handler.
 This handler is explained in the next subsection.
 - 34: The provider is useless for the startup handler, so it is released.
@@ -106,16 +106,16 @@ It is referred by the display so the reference count is not zero.
 CSS is an abbreviation of Cascading Style Sheet.
 It is originally used with HTML to describe the presentation semantics of a document.
 You might have found that widgets in Gtk is similar to elements in HTML.
-It tells that CSS can be applied to Gtk windowing system, too.
+It shows that CSS can be applied to Gtk windowing system, too.
 
-### CSS nodes, selectors
+### CSS Nodes and Selectors
 
 The syntax of CSS is as follows.
 
 @@@if gfm
 ~~~css
 @@@else
-~~~
+~~~{.css}
 @@@end
 selector { color: yellow; padding-top: 10px; ...}
 ~~~
@@ -127,7 +127,7 @@ If you want to set style to GtkTextView, substitute "textview" for `selector` ab
 @@@if gfm
 ~~~css
 @@@else
-~~~
+~~~{.css}
 @@@end
 textview {color: yellow; ...}
 ~~~
@@ -140,7 +140,7 @@ The codes of the startup handler has a CSS string on line 30.
 @@@if gfm
 ~~~css
 @@@else
-~~~
+~~~{.css}
 @@@end
 textview {padding: 10px; font-family: monospace; font-size: 12pt;}
 ~~~
@@ -164,7 +164,7 @@ You can get the default display object with the function `gdk_display_get_defaul
 The returned object is owned by the function and you don't have its ownership.
 So, you don't need to care about releasing it.
 
-Look at the source file of `startup` handler again.
+Look at the source file of the `startup` handler again.
 
 - 28: The display is obtained by `gdk_display_get_default`.
 - 29: Creates a GtkCssProvider instance.
@@ -201,10 +201,12 @@ tfe5/tfeapplication.c app_activate app_open
 @@@
 
 - 1-10: `app_activate`.
+- 6: In this program, we traverse the widget hierarchy for the sake of simplicity.
+However, the most robust design is to extend GtkApplicationWindow and include a pointer to the notebook in its instance structure (e.g., win->nb).
 - 8-10: Creates a new page and shows the window.
 - 12-25: `app_open`.
 - 20-21: Creates notebook pages with files.
-- 22-23: If no page has created, maybe because of read error, then it creates an empty page.
+- 22-23: If no page has been created, maybe because of read error, then it creates an empty page.
 - 24: Shows the window.
 
 These codes have become really simple thanks to tfenotebook.c and tfetextview.c.
@@ -220,13 +222,13 @@ However, Linux is multi process OS and you can run two or more instances of the 
 Isn't it a contradiction?
 
 When first instance is launched, then it registers itself with its application ID (for example, `com.github.ToshioCP.tfe`).
-Just after the registration, startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
-I wrote "startup signal is emitted just after the application instance is initialized" in the prior subsection.
+Just after the registration, the startup signal is emitted, then activate or open signal is emitted and the instance's main loop runs.
+I wrote "a startup signal is emitted just after the application instance is initialized" in the prior subsection.
 More precisely, it is emitted after the registration.
 
 If another instance which has the same application ID is launched, it also tries to register itself.
-Because this is the second instance, the registration of the ID has already done, so it fails.
-Because of the failure startup signal isn't emitted.
+Because this is the second instance, the registration of the ID has already been done, so it fails.
+Because of the failure, a startup signal isn't emitted.
 After that, activate or open signal is emitted in the primary instance, not on the second instance.
 The primary instance receives the signal and its handler is invoked.
 On the other hand, the second instance doesn't receive the signal and it immediately quits.
@@ -243,7 +245,7 @@ Then, after the second instance is run, a new notebook page with the contents of
 This is because the open signal is emitted in the primary instance.
 The second instance immediately quits so shell prompt soon appears.
 
-## A series of handlers correspond to the button signals
+## A series of handlers corresponds to the button signals
 
 @@@include
 tfe5/tfeapplication.c open_cb new_cb save_cb close_cb

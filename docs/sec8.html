@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Defining a final class</title>
+  <title>Defining a Final Class</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,12 +93,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="defining-a-final-class">Defining a final class</h1>
-        <h2 id="a-very-simple-editor">A very simple editor</h2>
+        <h1 id="defining-a-final-class">Defining a Final Class</h1>
+        <h2 id="a-very-simple-editor">A Very Simple Editor</h2>
         <p>We made a very simple file viewer in the previous section.
-        Now we go on to rewrite it and turn it into very simple editor.
-        Its source file is <code>tfe1.c</code> (text file editor 1)
-        under <code>tfe</code> directory.</p>
+        Now we go on to rewrite it and turn it into a very simple
+        editor. Its source file is <code>tfe1.c</code> (text file editor
+        1) under <code>tfe</code> directory.</p>
         <p>GtkTextView is a multi-line editor. So, we don’t need to
         write the editor from scratch. We just add two things to the
         file viewer:</p>
@@ -121,18 +121,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>However, There are two problems. The first is the size of the
         array. If a user gives too many arguments (more than 20 in the
         example above), it is impossible to store all the pointers to
-        the GFile instances. The second is difficulty to maintain the
-        program. We have a small program so far. But, the more you
-        develop the program, the bigger its size grows. Generally
-        speaking, it is very difficult to maintain global variables in a
-        big program. When you check the global variable, you need to
-        check all the codes that use the variable.</p>
+        the GFile instances. The second is difficulty of maintainance.
+        We have a small program so far. But, the more the program is
+        developed, the larger it becomes. Generally speaking, it is very
+        difficult to maintain global variables in a big program. When
+        you check the global variable, you need to check all the codes
+        that use the variable.</p>
         <p>Making a child class is a good idea in terms of maintenance.
-        And we prefer it rather than a global variable.</p>
-        <p>Be careful that we are thinking about “child class”, not
-        “child widget”. Child class and child widget are totally
-        different. Class is a term of GObject system. If you are not
-        familiar with GObject, see:</p>
+        We prefer this approach over using global variables.</p>
+        <p>Note that we are thinking about “child class”, not “child
+        widget”. Child class and child widget are totally different.
+        Class is a term of GObject system. If you are not familiar with
+        GObject, see:</p>
         <ul>
         <li><a href="https://docs.gtk.org/gobject/">GObject API
         reference</a></li>
@@ -145,13 +145,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         a child class of GtkTextView. It has everything that GtkTextView
         has and adds a pointer to a GFile.</p>
         <figure>
-        <img src="/images/child.png" style="width:9.675cm;height:4.89cm"
+        <img src="/images/child.png"
         alt="Child object of GtkTextView" />
         <figcaption aria-hidden="true">Child object of
         GtkTextView</figcaption>
         </figure>
         <h2 id="how-to-define-a-child-class-of-gtktextview">How to
-        define a child class of GtkTextView</h2>
+        Define a Child Class of GtkTextView</h2>
         <p>You need to know GObject system convention. First, look at
         the program below.</p>
         <div class="sourceCode" id="cb2"><pre
@@ -195,11 +195,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         (camel case), tfe_text_view (this is used for functions) and
         TFE_TEXT_VIEW (This is used to cast a object to
         TfeTextView).</li>
-        <li>First, define <code>TFE_TYPE_TEXT_VIEW</code> macro as
-        <code>tfe_text_view_get_type ()</code>. The name is always
-        (prefix)_TYPE_(object) and the letters are upper case. And the
-        replacement text is always (prefix)_(object)_get_type () and the
-        letters are lower case. This definition is put before
+        <li>First, define the TFE_TYPE_TEXT_VIEW macro as
+        tfe_text_view_get_type(). Macro names follow the pattern
+        (prefix)_TYPE_(object) and are written in uppercase. The
+        replacement text is always (prefix)_(object)_get_type () and are
+        written in lower case. This definition must be put before
         <code>G_DECLARE_FINAL_TYPE</code> macro.</li>
         <li>The arguments of <code>G_DECLARE_FINAL_TYPE</code> macro are
         the child class name in camel case, lower case with underscore,
@@ -210,7 +210,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li><code>typedef struct _TfeTextView TfeTextView</code></li>
         <li><code>typedef struct {GtkTextViewClass parent_class; } TfeTextViewClass;</code></li>
         </ul></li>
-        <li>These declaration tells us that TfeTextView and
+        <li>These declarations tell us that TfeTextView and
         TfeTextViewClass are C structures. “TfeTextView” has two
         meanings, class name and C structure name. The C structure
         TfeTextView is called object. Similarly, TfeTextViewClass is
@@ -231,7 +231,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>TFE_TYPE_TEXT_VIEW</code> respectively. For example,
         <code>TFE_TYPE_TEXT_VIEW</code> is a macro and it is expanded to
         a function <code>tfe_text_view_get_type()</code>. It returns a
-        integer which is unique among all GObject system classes.</li>
+        unique GType identifier representing the type within the
+        GObject.</li>
         <li>The instance init function <code>tfe_text_view_init</code>
         is called when the instance is created. It is the same as a
         constructor in other object oriented languages.</li>
@@ -244,19 +245,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         same as public method in other object oriented languages.
         <code>tv</code> is a pointer to the TfeTextView object (C
         structure). It has a member <code>file</code> and it is pointed
-        by <code>tv-&gt;file</code>.</li>
+        to by <code>tv-&gt;file</code>.</li>
         <li>TfeTextView instance creation function is
         <code>tfe_text_view_new</code>. Its name is
         (prefix)_(object)_new. It uses <code>g_object_new</code>
         function to create the instance. The arguments are
         (prefix)_TYPE_(object), a list to initialize properties and
         NULL. NULL is the end mark of the property list. No property is
-        initialized here. And the return value is casted to
+        initialized here. And the return value is cast to
         GtkWidget.</li>
         </ul>
-        <p>This program shows the outline how to define a child
+        <p>This program shows the overview of how to define a child
         class.</p>
-        <h2 id="close-request-signal">Close-request signal</h2>
+        <h2 id="close-request-signal">Close-request Signal</h2>
         <p>Imagine that you are using this editor. First, you run the
         editor with arguments. The arguments are filenames. The editor
         reads the files and shows the window with the text of files in
@@ -313,19 +314,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>n</code>.</li>
         <li>16-29: For loop with regard to the index to each page.</li>
         <li>17-19: <code>scr</code>, <code>tv</code> and
-        <code>file</code> is assigned pointers to the GtkScrolledWindow,
+        <code>file</code> hold pointers to the GtkScrolledWindow,
         TfeTextView and GFile. The GFile of TfeTextView was stored when
         <code>app_open</code> handler was called. It will be shown
         later.</li>
-        <li>20-22: <code>tb</code> is assigned the GtkTextBuffer of the
-        TfeTextView. The contents of the buffer are accessed with
-        iterators. Iterators points somewhere in the buffer. The
-        function <code>gtk_text_buffer_get_bounds</code> assigns the
-        start and end of the buffer to <code>start_iter</code> and
+        <li>20-22: <code>tb</code> holds a pointer to the GtkTextBuffer
+        of the TfeTextView. The contents of the buffer are accessed with
+        iterators. Iterators point somewhere in the buffer. The function
+        <code>gtk_text_buffer_get_bounds</code> assigns the start and
+        end of the buffer to <code>start_iter</code> and
         <code>end_iter</code> respectively. Then the function
-        <code>gtk_text_buffer_get_text</code> returns the text between
-        <code>start_iter</code> and <code>end_iter</code>, which is the
-        whole text in the buffer.</li>
+        <code>gtk_text_buffer_get_text</code> returns the text from
+        <code>start_iter</code> up to <code>end_iter</code>, which is
+        the whole text in the buffer.</li>
         <li>23-26: The text is saved to the file. If it fails, error
         messages are displayed. The GError instance must be freed and
         the pointer <code>err</code> needs to be NULL for the next run
@@ -333,8 +334,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>27: <code>contents</code> are freed.</li>
         <li>28: GFile is useless. <code>g_object_unref</code> decreases
         the reference count of the GFile. Reference count will be
-        explained in the later section. The reference count will be zero
-        and the GFile instance will destroy itself.</li>
+        explained in the later section (<a href="sec11.html">section
+        11</a>). The reference count will be zero and the GFile instance
+        will be destroyed.</li>
         </ul>
         <h2 id="source-code-of-tfe1.c">Source code of tfe1.c</h2>
         <p>The following is the whole source code of
@@ -484,11 +486,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>109: The GFile pointer of the TfeTextView is set to the copy
         of <code>files[i]</code>, which is a GFile created with the
-        command line argument. The GFile will be destroyed by the system
-        later. So it needs to be copied before the assignment.
-        <code>g_file_dup</code> duplicates the GFile. Note: GFile is
-        <em>not</em> thread safe. Duplicating GFile avoids a trouble
-        comes from the different thread.</li>
+        command line argument. The GFile object will be destroyed by the
+        system later. So it needs to be copied before the assignment. A
+        function<code>g_file_dup</code> duplicates the GFile.
+        <strong>Note:</strong> You can use <code>g_object_ref</code>
+        instead of <code>g_file_dup</code>. It just increases the
+        reference count by 1. For reference count, see <a
+        href="sec11.html">Section 11</a> for further information.</li>
         <li>124: The “close-request” signal is connected to
         <code>before_close</code> handler. The fourth argument is called
         “user data” and it will be the second argument of the signal

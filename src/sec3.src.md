@@ -62,8 +62,8 @@ To compile this, run the following command.
 The string `pr1.c` is the filename of the C source code above.
 
 If you've downloaded this repository, you don't need to create the file.
-There's the same file at [`/src/misc/pr1.c`](misc/pr1.c) in your local repository.
-All the example codes are under the [`src`](.) directory as well.
+There's the same file at [/src/misc/pr1.c](misc/pr1.c) in your local repository.
+All the example codes are under the [/src](./) directory as well.
 
 ~~~
 $ gcc `pkg-config --cflags gtk4` pr1.c `pkg-config --libs gtk4`
@@ -263,7 +263,7 @@ gtk_window_new (void);
 
 By this definition, it returns a pointer to GtkWidget, not GtkWindow.
 It actually creates a new GtkWindow instance (not GtkWidget) but returns a pointer to GtkWidget.
-However,the pointer points the GtkWidget and at the same time it also points GtkWindow that contains GtkWidget in it.
+However,the pointer points to the GtkWidget and at the same time it also points to the GtkWindow that contains the GtkWidget in it.
 
 If you want to use `win` as a pointer to a GtkWindow type instance, you need to cast it.
 

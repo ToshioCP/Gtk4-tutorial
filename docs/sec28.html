@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Drag and drop</title>
+  <title>Drag and Drop</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,27 +93,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="drag-and-drop">Drag and drop</h1>
-        <h2 id="whats-drag-and-drop">What’s drag and drop?</h2>
+        <h1 id="drag-and-drop">Drag and Drop</h1>
+        <h2 id="what-is-drag-and-drop">What is Drag and Drop?</h2>
         <p>Drag and drop is also written as “Drag-and-Drop”, or “DND” in
         short. DND is like “copy and paste” or “cut and paste”. If a
         user drags a UI element, which is a widget, selected part or
-        something, data is transferred from the source to the
+        other elements, data is transferred from the source to the
         destination.</p>
-        <p>You probably have experience that you moved a file with
-        DND.</p>
+        <p>You probably have experience moving a file with DND.</p>
         <figure>
-        <img src="/images/dnd.png" style="width:4.6cm;height:3cm"
-        alt="DND on the GUI file manager" />
+        <img src="/images/dnd.png" alt="DND on the GUI file manager" />
         <figcaption aria-hidden="true">DND on the GUI file
         manager</figcaption>
         </figure>
         <p>When the DND starts, the file <code>sample_file.txt</code> is
-        given to the system. When the DND ends, the system gives
-        <code>sample_file.txt</code> to the directory
-        <code>sample_folder</code> in the file manager. Therefore, it is
-        like “cut and paste”. The actual behavior may be different from
-        the explanation here, but the concept is similar.</p>
+        provided to the system. When it ends, the system provides it to
+        the <code>sample_folder</code> in the file manager. Therefore,
+        it is like “cut and paste”. The actual behavior may be different
+        from the explanation here, but the concept is similar.</p>
         <h2 id="example-for-dnd">Example for DND</h2>
         <p>This tutorial provides a simple example in the
         <code>src/dnd</code> directory. It has three labels for the
@@ -121,11 +118,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         “red”, “green” or “blue” labels. If a user drags the label to
         the destination label, the font color will be changed.</p>
         <figure>
-        <img src="/images/dnd_canvas.png"
-        style="width:13.5cm;height:5.2cm" alt="DND example" />
+        <img src="/images/dnd_canvas.png" alt="DND example" />
         <figcaption aria-hidden="true">DND example</figcaption>
         </figure>
-        <h2 id="ui-file">UI file</h2>
+        <h2 id="ui-file">UI File</h2>
         <p>The widgets are defined in the XML file
         <code>dnd.ui</code>.</p>
         <div class="sourceCode" id="cb1"><pre
@@ -192,7 +188,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">file</span>&gt;dnd.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb2-5"><a href="#cb2-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb2-6"><a href="#cb2-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-        <h2 id="c-file-dnd.c">C file dnd.c</h2>
+        <h2 id="c-file-dnd.c">C File dnd.c</h2>
         <p>The C file <code>dnd.c</code> isn’t a big file. The number of
         the lines is less than a hundred. A GtkApplication object is
         created in the function <code>main</code>.</p>
@@ -212,14 +208,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>The application ID is defined as:</p>
         <div class="sourceCode" id="cb4"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.dnd&quot;</span></span></code></pre></div>
-        <h3 id="startup-signal-handler">Startup signal handler</h3>
+        <h3 id="startup-signal-handler">Startup Signal Handler</h3>
         <p>Most of the work is done in the “startup” signal handler.</p>
-        <p>Two objects GtkDragSource and GtkDropTarget is used for DND
+        <p>Two objects GtkDragSource and GtkDropTarget are used for DND
         implementation.</p>
         <ul>
         <li>Drag source: A drag source (GtkDragSource instance) is an
         event controller. It initiates a DND operation when the user
-        clicks and drags the widget. If a data, in the form of
+        clicks and drags the widget. If data, in the form of
         GdkContentProvider, is set in advance, it gives the data to the
         system at the beginning of the drag.</li>
         <li>Drop target: A drop target (GtkDropTarget) is also an event
@@ -227,7 +223,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         signal handler.</li>
         </ul>
         <p>The example below uses these objects in a very simple way.
-        You can use number of features that the two objects have. See
+        You can use a number of features that the two objects have. See
         the following links for more information.</p>
         <ul>
         <li><a
@@ -285,15 +281,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-44"><a href="#cb5-44"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>15-22: Builds the widgets. The array
-        <code>source_labels[]</code> points the source labels red, green
-        and blue in the ui file. The variable <code>canvas</code> points
-        the destination label.</li>
-        <li>24-30: Sets the DND source widgets. The for-loop carries out
+        <code>src_labels[]</code> points to the source labels red, green
+        and blue in the UI file. The variable <code>canvas</code> points
+        to the destination label.</li>
+        <li>24-30: Sets the DND source widgets. The for-loop iterates
         through the array <code>src_labels[]</code> each of which points
-        the source widget, red, green or blue label.</li>
+        to the source widget, red, green or blue label.</li>
         <li>25: Creates a new GtkDragSource instance.</li>
         <li>26: Creates a new GdkContentProvider instance with the
-        string “red”, “green” or “blue. They are the name of the
+        string “red”, “green” or “blue”. They are the name of the
         widgets. These strings are the data to transfer through the DND
         operation.</li>
         <li>27: Sets the content of the drag source to the
@@ -306,14 +302,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>32-34: Sets the DND drop target.</li>
         <li>32: Creates a new GtkDropTarget instance. The first
         parameter is the GType of the data. The second parameter is a
-        GdkDragAction enumerate constant. The arguments here are string
-        type and the constant for copy.</li>
+        GdkDragAction enumeration constant. The arguments here are
+        string type and the constant for copy.</li>
         <li>33: Connects the “drop” signal and the handler
         <code>drop_cb</code>.</li>
         <li>34: Add the event controller, which is actually the drop
         target, to the widget.</li>
         <li>36-43: Sets CSS.</li>
-        <li>37: A varable <code>format</code> is static and defined at
+        <li>37: A variable <code>format</code> is static and defined at
         the top of the program. Static variables are shown below.</li>
         </ul>
         <div class="sourceCode" id="cb6"><pre
@@ -321,7 +317,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>format <span class="op">=</span> <span class="st">&quot;label {padding: 20px;} label#red {background: red;} &quot;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;label#green {background: green;} label#blue {background: blue;} &quot;</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;label#canvas {color: </span><span class="sc">%s</span><span class="st">; font-weight: bold; font-size: 72pt;}&quot;</span><span class="op">;</span></span></code></pre></div>
-        <h3 id="activate-signal-handler">Activate signal handler</h3>
+        <h3 id="activate-signal-handler">Activate Signal Handler</h3>
         <div class="sourceCode" id="cb7"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
@@ -332,7 +328,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-7"><a href="#cb7-7"></a>  gtk_window_present <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb7-8"><a href="#cb7-8"></a><span class="op">}</span></span></code></pre></div>
         <p>This handler just shows the window.</p>
-        <h3 id="drop-signal-handler">Drop signal handler</h3>
+        <h3 id="drop-signal-handler">Drop Signal Handler</h3>
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> gboolean</span>
 <span id="cb8-2"><a href="#cb8-2"></a>drop_cb <span class="op">(</span>GtkDropTarget<span class="op">*</span> self<span class="op">,</span> <span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span> gdouble x<span class="op">,</span> gdouble y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
@@ -350,13 +346,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>GValue that holds the data from the source.</li>
         <li>The arguments <code>x</code> and <code>y</code> are the
         coordinate of the mouse when released.</li>
-        <li>User data was set when the signal and handler was
+        <li>User data was set when the signal and the handler were
         connected.</li>
         </ul>
         <p>The string from the GValue is “red”, “green” or “blue”. It
         replaces “%s” in the variable <code>format</code>. That means
-        the font color of the label <code>canvas</code> will turn to the
-        color.</p>
+        the font color of the label <code>canvas</code> will be updated
+        to the color.</p>
         <h2 id="meson.build">Meson.build</h2>
         <p>The file <code>meson.build</code> controls the building
         process.</p>

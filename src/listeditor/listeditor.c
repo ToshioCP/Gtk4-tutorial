@@ -299,8 +299,11 @@ saveas_dialog_cb (GObject* source_object, GAsyncResult* res, gpointer user_data)
   char *s;
 
   if ((file = gtk_file_dialog_save_finish (dialog, res, &err)) == NULL) {
-    g_warning ("%s\n", err->message);
-    g_error_free (err);
+    if (err) {
+      if (err->code != GTK_DIALOG_ERROR_DISMISSED)
+        g_warning ("%s\n", err->message);
+      g_error_free (err);
+    }
     return;
   }
   if (win->file)

@@ -593,7 +593,7 @@ g_printerr ("eval: node type is %s.\n", node_type_table[node->type]);
       break;
     case N_DIV:
       if (eval (child2(node)) == 0.0)
-        runtime_error ("Division by zerp.\n");
+        runtime_error ("Division by zero.\n");
       else
         value = calc (/);
       break;

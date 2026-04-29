@@ -1,10 +1,10 @@
 Up: [README.md](../README.md),  Prev: [Section 16](sec16.md), Next: [Section 18](sec18.md)
 
-# Menus and actions
+# Menus and Actions
 
 ## Menus
 
-Users often use menus to tell a command to the application.
+Users often use menus to give a command to the application.
 It is like this:
 
 ![Menu](/src/images/menu.png)
@@ -70,17 +70,17 @@ The following code shows how to append GMenuItem to GMenu.
     g_menu_append_item (menu, menu_item_quit);
     g_object_unref (menu_item_quit);
 
-## Menu and action
+## Menu and Action
 
 One of the attributes of menu items is an action.
-This attribute points an action object.
+This attribute points to an action object.
 
 There are two action objects, GSimpleAction and GPropertyAction.
 GSimpleAction is often used.
 And it is used with a menu item.
 Only GSimpleAction is described in this section.
 
-An action corresponds to a menu item will be activated when the menu item is clicked.
+An action that corresponds to a menu item will be activated when the menu item is clicked.
 Then the action emits an activate signal.
 
 1. menu item is clicked.
@@ -101,7 +101,7 @@ g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), app);
 GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
 ~~~
 
-- The variable `menu_item_quit` points a menu item.
+- The variable `menu_item_quit` points to a menu item.
 It is actually a pointer, but we often say that `menu_item_quit` *is* a menu item.
 It has a label "Quit" and is connected to an action "app.quit".
 "app" is a prefix and "quit" is the name of the action.
@@ -110,9 +110,12 @@ The prefix "app" means that the action belongs to the GtkApplication instance.
 It has a name "quit".
 The function `g_simple_action_new` creates a stateless action.
 So, `act_quit` is stateless.
-The meaning of stateless will be explained later.
-The argument `NULL` means that the action doesn't have an parameter.
+Stateless actions do not maintain any internal state.
+They are like a simple push button; when clicked, they perform an operation (like "quit" or "open") and that's all.
+Most menu items, such as "Quit", "Copy", or "Paste", are connected to stateless actions.
 Most of the actions are stateless and have no parameter.
+The argument `NULL` means that the action doesn't have any parameters.
+Another action is stateful and stateful actions will be explained in the next section.
 - The action `act_quit` is added to the GtkApplication instance with `g_action_map_add_action`.
 So, the action's scope is application.
 The prefix of `app.quit` indicates the scope.
@@ -121,7 +124,7 @@ The prefix of `app.quit` indicates the scope.
 If the menu is clicked, the corresponding action "quit" will be activated and emits an "activate" signal.
 Then, the handler `quit_activated` is called.
 
-## Menu bar
+## Menu Bar
 
 A menu bar and menus are traditional.
 Menu buttons are often used instead of a menu bar lately, but the old style is still used widely.
@@ -157,10 +160,10 @@ app_startup (GApplication *app) {
 }
 ~~~
 
-## Simple example
+## Simple Example
 
 The following is a simple example of menus and actions.
-The source file `menu1.c` is located at [src/menu](../src/menu) directory.
+The source file `menu1.c` is located at [/src/menu](../src/menu/) directory.
 
 ```c
 #include <gtk/gtk.h>
@@ -255,7 +258,7 @@ Because this action belongs to GtkApplication, its scope is "app" and it is refe
 As I mentioned before, all the attributes and links are copied and used to form a new item in `menu`.
 Therefore after the addition, `menu_item_quit` is no longer needed.
 It is freed by `g_object_unref`.
-- 33-34: Sets the submenu link in `menu_item_menu` to point `menu`.
+- 33-34: Sets the submenu link in `menu_item_menu` to refer to `menu`.
 Then, `menu` is no more useful and it is freed.
 - 35-36: Appends `menu_item_menu` to `menubar`.
 Then frees `menu_item_menu`.
@@ -281,7 +284,7 @@ Click on "Quit" menu, then the application quits.
 
 ![Screenshot of menu1](/src/images/menu1_screenshot.png)
 
-## Primary and remote application instances
+## Primary and Remote Application Instances
 
 Let's try running the application twice.
 Use `&` in your shell command line, then the application runs concurrently.

@@ -2,7 +2,7 @@ Up: [README.md](../README.md),  Prev: [Section 21](sec21.md), Next: [Section 23]
 
 # TfeWindow
 
-## The Tfe window and XML files
+## The Tfe Window and XML Files
 
 The following is the window of Tfe.
 
@@ -15,7 +15,7 @@ Here, popup means widely, including pull-down menu.
 - New, save-as, preference and quit items are put into the menu.
 
 This makes the most frequently used operation bound to the tool bar buttons.
-And the others are stored in behind the menus.
+And the others are stored behind the menus.
 So, it is more practical.
 
 The window is a composite widget.
@@ -91,7 +91,7 @@ The definition is described in the XML file `tfewindow.ui`.
 
 - Three buttons "Open", "Save" and "Close" are defined.
 You can use two ways to catch the button click event.
-The one is "clicked" signal and the other is to register an action to the button.
+One is "clicked" signal and the other is to register an action to the button.
 The first way is simple.
 You can connects the signal and your handler directly.
 The second way is like menu items.
@@ -99,11 +99,11 @@ When the button is clicked, the corresponding action is activated.
 It is a bit complicated because you need to create an action and its "activate" handler in advance.
 But one advantage is you can connect two or more things to the action.
 For example, an accelerator can be connected to the action.
-Accelerators are keys that connects to actions.
+Accelerators are keys that connect to actions.
 For example, Ctrl+O is often connected to a file open action.
-So, both open button and Ctrl+O activates an open action.
+So, both open button and Ctrl+O activate an open action.
 The latter way is used in the XML file above.
-- You can specify a theme icon to GtkMenuButton with "icon-name" poperty.
+- You can specify a theme icon to GtkMenuButton with "icon-name" property.
 The "open-menu-symbolic" is an image that is called hamburger menu.
 
 The `menu.ui` XML file defines the menu for GtkMenuButton.
@@ -140,7 +140,7 @@ The `menu.ui` XML file defines the menu for GtkMenuButton.
 
 There are four menu items and they are connected to actions.
 
-## The header file
+## The Header File
 
 The following is the codes of `tfewindow.h`.
 
@@ -163,11 +163,11 @@ tfe_window_new (GtkApplication *app);
 ```
 
 - 5-6: `TFE_TYPE_WINDOW` definition and the `G_DECLARE_FINAL_TYPE` macro.
-- 8-15: Public functions. The first two functions creates a notebook page and the last function creates a window.
+- 8-15: Public functions. The first two functions create a notebook page and the last function creates a window.
 
-## C file
+## C File
 
-### A composite widget
+### Composite Widget
 
 The following codes are extracted from `tfewindow.c`.
 
@@ -234,7 +234,7 @@ Tfe only has one top window and all the actions are registered in the window.
 For example, "close-all" action destroys the top level window and that brings the application to quit.
 You can make "app.quit"  action instead of "win.close-all".
 It's your choice.
-If your application has two or more windows, both "app.quit" and "win:close-all", which closes all the notebook pages on the window, may be necessary.
+If your application has two or more windows, both "app.quit" and "win.close-all", which closes all the notebook pages on the window, may be necessary.
 Anyway, you need to consider that each action should belong to the application or a window.
 
 Actions are defined in the instance initialization function.
@@ -273,7 +273,7 @@ So, the third parameter and after are all NULL.
 The last argument `win` is the user_data, which is the last argument of handlers.
 - All the handlers are in `tfewindow.c` program and shown in the following subsections.
 
-### The handlers of the actions
+### The Handlers of the Actions
 
 #### open\_activated
 
@@ -316,7 +316,7 @@ open_response_cb (TfeTextView *tv, int response, gpointer user_data) {
 ```
 
 If the TfeTextView instance failed to read a file, it destroys the instance with `g_object_ref_sink` and `g_object_unref`.
-Since newly created widgets are floating, you need to convert the floating reference to the normal reference before you release it.
+Since newly created widgets have a floating reference, you need to convert the floating reference to the normal reference before you release it.
 The conversion is done with `g_object_ref_sink`.
 
 If the instance successfully read the file, it calls `notebook_page_build` to build a notebook page and add it to the GtkNotebook object.
@@ -324,7 +324,7 @@ If the instance successfully read the file, it calls `notebook_page_build` to bu
 ```c
 static void
 notebook_page_build (TfeWindow *win, GtkWidget *tv, char *filename) {
-  // The arguments win, tb and filename are owned by the caller.
+  // The arguments win, tv and filename are owned by the caller.
   // If tv has a floating reference, it is consumed by the function.
   GtkWidget *scr = gtk_scrolled_window_new ();
   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
@@ -497,7 +497,7 @@ alert_response_cb (TfeAlert *alert, int response_id, gpointer user_data) {
 }
 ```
 
-If the user clicked on the cacel button, it does nothing.
+If the user clicked on the cancel button, it does nothing.
 If the user clicked on the accept button, which is the same as close button, it calls `notebook_page_close`.
 Note that `win->is_quit` has been set to FALSE in the `close_activated` function.
 
@@ -529,7 +529,7 @@ tfe_window_notebook_page_new (TfeWindow *win) {
 }
 ```
 
-This function creates a new TfeTextView instance, "Untitled" family string and calls `notebook_page_build`.
+This function creates a new TfeTextView instance, generates a string like "Untitled", and calls `notebook_page_build`.
 
 #### saveas\_activated
 
@@ -589,9 +589,9 @@ Therefore, function `close_all_activated` destroys the top window if all the tex
 Otherwise it does nothing.
 But, the function `close_request_cb` shows an alert dialog and if the user clicks on the accept button, the window will be destroyed.
 
-### Window "close-request" signal
+### Window "close-request" Signal
 
-GtkWindow has a "close-request" signal and it is emitted when the close button, which is x-shaped button at the top right corner, is clicked on.
+GtkWindow has a "close-request" signal and it is emitted when the close button, which is the x-shaped button at the top right corner, is clicked on.
 And the user handler is called before the default handler.
 If the user handler returns TRUE, the rest of the close process is skipped.
 If it returns FALSE, the rest will go on and the window will be destroyed.
@@ -642,7 +642,7 @@ is_saved_all (GtkNotebook *nb) {
 }
 ```
 
-### Public functions
+### Public Functions
 
 There are three public functions.
 
@@ -678,7 +678,7 @@ And build a page with it.
 
 If an error happens and no page is created, it creates a new empty page.
 
-### Full codes of tfewindow.c
+### Full Codes of tfewindow.c
 
 The following is the full source codes of `tfewindow.c`.
 
@@ -801,7 +801,7 @@ notebook_page_close (TfeWindow *win){
 
 static void
 notebook_page_build (TfeWindow *win, GtkWidget *tv, char *filename) {
-  // The arguments win, tb and filename are owned by the caller.
+  // The arguments win, tv and filename are owned by the caller.
   // If tv has a floating reference, it is consumed by the function.
   GtkWidget *scr = gtk_scrolled_window_new ();
   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));

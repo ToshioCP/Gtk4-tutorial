@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Custom drawing</title>
+  <title>Custom Drawing</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,27 +93,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="custom-drawing">Custom drawing</h1>
+        <h1 id="custom-drawing">Custom Drawing</h1>
         <p>Custom drawing is to draw shapes dynamically. This section
         shows an example of custom drawing. You can draw rectangles by
         dragging the mouse.</p>
-        <p>Down the button.</p>
+        <p>Press down the button.</p>
         <figure>
-        <img src="/images/cd0.png" style="width:6cm;height:4.83cm"
-        alt="down the button" />
-        <figcaption aria-hidden="true">down the button</figcaption>
+        <img src="/images/cd0.png" alt="Press down the button" />
+        <figcaption aria-hidden="true">Press down the
+        button</figcaption>
         </figure>
-        <p>Move the mouse</p>
+        <p>Move the mouse.</p>
         <figure>
-        <img src="/images/cd1.png" style="width:6cm;height:4.83cm"
-        alt="Move the mouse" />
+        <img src="/images/cd1.png" alt="Move the mouse" />
         <figcaption aria-hidden="true">Move the mouse</figcaption>
         </figure>
-        <p>Up the button.</p>
+        <p>Release the button.</p>
         <figure>
-        <img src="/images/cd2.png" style="width:6cm;height:4.83cm"
-        alt="Up the button" />
-        <figcaption aria-hidden="true">Up the button</figcaption>
+        <img src="/images/cd2.png" alt="Release the button" />
+        <figcaption aria-hidden="true">Release the button</figcaption>
         </figure>
         <p>The programs are at <code>src/custom_drawing</code>
         directory. Download the <a
@@ -126,7 +124,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>rect.ui</li>
         </ul>
         <h2 id="rect.gresource.xml">rect.gresource.xml</h2>
-        <p>This file describes a ui file to compile. The compiler
+        <p>This file describes a UI file to compile. The compiler
         glib-compile-resources uses it.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
@@ -140,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         resource from
         <code>/com/github/ToshioCP/rect/rect.ui</code>.</p>
         <h2 id="rect.ui">rect.ui</h2>
-        <p>The following is the ui file that defines the widgets. There
+        <p>The following is the UI file that defines the widgets. There
         are two widgets which are GtkApplicationWindow and
         GtkDrawingArea. The ids are <code>win</code> and <code>da</code>
         respectively.</p>
@@ -219,7 +217,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-22"><a href="#cb5-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
 <span id="cb5-23"><a href="#cb5-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
 <span id="cb5-24"><a href="#cb5-24"></a><span class="op">}</span></span></code></pre></div>
-        <p>The startup handler does three things.</p>
+        <p>The startup handler performs the following three tasks:</p>
         <ul>
         <li>Builds the widgets.</li>
         <li>Initializes the GtkDrawingArea instance.
@@ -228,7 +226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Connects the “resize” signal and the handler.</li>
         </ul></li>
         <li>Creates the GtkGestureDrag instance and initializes it.
-        Gesture will be explained in this section later.</li>
+        Gestures will be explained in this section later.</li>
         </ul>
         <div class="sourceCode" id="cb6"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -241,7 +239,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
         <p>The activate handler just shows the window.</p>
         <h3 id="gtkdrawingarea">GtkDrawingArea</h3>
-        <p>The program has two cairo surfaces and they are pointed by
+        <p>The program has two cairo surfaces and they are pointed to by
         the global variables.</p>
         <div class="sourceCode" id="cb7"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
@@ -272,8 +270,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-14"><a href="#cb8-14"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb8-15"><a href="#cb8-15"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
 <span id="cb8-16"><a href="#cb8-16"></a><span class="op">}</span></span></code></pre></div>
-        <p>This callback is called when the GtkDrawingArea is shown. It
-        is the only call because the window is not resizable.</p>
+        <p>This callback is called when the GtkDrawingArea is shown.
+        This is called only once since the window is not resizable.</p>
         <p>It creates image surfaces for <code>surface</code> and
         <code>surface_save</code>. The <code>surface</code> surface is
         painted white, which is the background color.</p>
@@ -310,14 +308,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>GtkGestureDrag</li>
         <li>GtkGesturePan</li>
         <li>GtkGestureSwipe</li>
-        <li>other implementations</li>
+        <li>And others</li>
         </ul>
         <p>The program <code>rect.c</code> uses GtkGestureDrag. It is
-        the implementation for drags. The parent-child relationship is
-        as follows.</p>
+        the implementation for drag gestures. The parent-child
+        relationship is as follows.</p>
         <pre><code>GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag</code></pre>
         <p>GtkGestureSingle is a subclass of GtkGesture and optimized
-        for singe-touch and mouse gestures.</p>
+        for single-touch and mouse interactions.</p>
         <p>A GtkGestureDrag instance is created and initialized in the
         startup signal handler in <code>rect.c</code>. See line 18 to 23
         in the following.</p>
@@ -354,12 +352,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>GDK_BUTTON_PRIMARY</code> is the left button of a
         mouse.</li>
         <li>The function <code>gtk_widget_add_controller</code> adds an
-        event controller, gestures are descendants of the event
-        controller, to a widget.</li>
+        event controller, which is a base class for gestures.</li>
         <li>Three signals and handlers are connected.
         <ul>
         <li>drag-begin: Emitted when dragging starts.</li>
-        <li>drag-update: Emitted when the dragging point moves.</li>
+        <li>drag-update: Emitted when the dragging pointer moves.</li>
         <li>drag-end: Emitted when the dragging ends.</li>
         </ul></li>
         </ul>
@@ -442,7 +439,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Calls <code>gtk_widget_queue_draw</code> to add the
         GtkDrawingArea to the queue to redraw.</li>
         </ul>
-        <h2 id="build-and-run">Build and run</h2>
+        <h2 id="build-and-run">Build and Run</h2>
         <p>Download the <a
         href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.
         Change your current directory to
@@ -454,8 +451,7 @@ $ meson setup _build
 $ ninja -C _build
 $ _build/rect</code></pre>
         <figure>
-        <img src="/images/rect.png" style="width:12.4cm;height:10cm"
-        alt="The screen of rect program" />
+        <img src="/images/rect.png" alt="The screen of rect program" />
         <figcaption aria-hidden="true">The screen of rect
         program</figcaption>
         </figure>

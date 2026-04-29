@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Ui file for menu and action entries</title>
+  <title>Ui File for Menu and Action Entries</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,24 +93,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="ui-file-for-menu-and-action-entries">Ui file for menu
-        and action entries</h1>
-        <h2 id="ui-file-for-menu">Ui file for menu</h2>
+        <h1 id="ui-file-for-menu-and-action-entries">Ui File for Menu
+        and Action Entries</h1>
+        <h2 id="ui-file-for-menu">Ui File for Menu</h2>
         <p>You may have thought that building menus was really
         bothersome. Yes, the program was complicated and it needs lots
         of time to code them. The situation is similar to building
-        widgets. When we built widgets, using ui file was a good way to
+        widgets. When we built widgets, using UI files was a good way to
         avoid such complication. The same goes for menus.</p>
-        <p>The ui file for menus has interface and menu tags. The file
-        starts and ends with interface tags.</p>
+        <p>The UI file for menus has interface and
+        <code>&lt;menu&gt;</code> tags. The file starts and ends with
+        interface tags.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p><code>menu</code> tag corresponds to GMenu object.
-        <code>id</code> attribute defines the name of the object. It
-        will be referred by GtkBuilder.</p>
+        <p>The <code>&lt;menu&gt;</code> tag corresponds to a GMenu
+        object. The <code>id</code> attribute defines the name of the
+        object. It will be referred by GtkBuilder.</p>
         <div class="sourceCode" id="cb2"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">submenu</span>&gt;</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
@@ -119,13 +120,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.new&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">submenu</span>&gt;</span></code></pre></div>
-        <p><code>item</code> tag corresponds to an item in the GMenu
-        which has the same structure as GMenuItem. The item above has a
-        label attribute. Its value is “New”. The item also has an action
-        attribute and its value is “win.new”. “win” is a prefix and
-        “new” is an action name. <code>submenu</code> tag corresponds to
-        both GMenuItem and GMenu. The GMenuItem has a link to GMenu.</p>
-        <p>The ui file above can be described as follows.</p>
+        <p>The <code>&lt;item&gt;</code> tag corresponds to an item in
+        the GMenu which has the same structure as GMenuItem. The item
+        above has a label attribute. Its value is “New”. The item also
+        has an action attribute and its value is “win.new”. “win” is a
+        prefix and “new” is an action name. The
+        <code>&lt;submenu&gt;</code> tag corresponds to both GMenuItem
+        and GMenu. The GMenuItem has a link to GMenu.</p>
+        <p>The UI file above can be described as follows.</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">item</span>&gt;</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
@@ -136,24 +138,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">link</span>&gt;</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">item</span>&gt;</span></code></pre></div>
-        <p><code>link</code> tag expresses the link to submenu. And at
-        the same time it also expresses the submenu itself. This file
-        illustrates the relationship between the menus and items better
-        than the prior ui file. But <code>submenu</code> tag is simple
-        and easy to understand. So, we usually prefer the former ui
-        style.</p>
+        <p>The <code>&lt;link&gt;</code> tag expresses the link to
+        submenu. And at the same time it also expresses the submenu
+        itself. This file illustrates the relationship between the menus
+        and items better than the prior UI file. But
+        <code>&lt;submenu&gt;</code> tags are simple and easy to
+        understand. So, we usually prefer the former UI style.</p>
         <p>For further information, see <a
         href="https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models">GTK
         4 API reference – PopoverMenu</a>.</p>
         <p>The following is a screenshot of the sample program
         <code>menu3</code>. It is located in the directory <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu3">src/menu3</a>.</p>
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/menu3/">/src/menu3</a>.</p>
         <figure>
-        <img src="/images/menu3.png" style="width:6cm;height:5.055cm"
-        alt="menu3" />
+        <img src="/images/menu3.png" alt="menu3" />
         <figcaption aria-hidden="true">menu3</figcaption>
         </figure>
-        <p>The following is the ui file for <code>menu3</code>.</p>
+        <p>The following is the UI file for <code>menu3</code>.</p>
         <div class="sourceCode" id="cb4"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
@@ -227,7 +228,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-70"><a href="#cb4-70"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
 <span id="cb4-71"><a href="#cb4-71"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
 <span id="cb4-72"><a href="#cb4-72"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p>The ui file is converted to the resource by the resource
+        <p>The UI file is converted to the resource by the resource
         compiler <code>glib-compile-resouces</code> with xml file.</p>
         <div class="sourceCode" id="cb5"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
@@ -254,10 +255,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         before <code>gtk_application_set_menubar</code>,
         <code>builder</code> would be destroyed and <code>menubar</code>
         as well.</p>
-        <h2 id="action-entry">Action entry</h2>
+        <h2 id="action-entry">Action Entry</h2>
         <p>The coding for building actions and signal handlers is
-        bothersome work as well. Therefore, it should be automated. You
-        can implement them easily with GActionEntry structure and
+        complex work as well. Therefore, it should be automated. You can
+        implement them easily with GActionEntry structure and
         <code>g_action_map_add_action_entries</code> function.</p>
         <p>GActionEntry contains action name, signal handlers, parameter
         and state.</p>
@@ -287,7 +288,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>Fullscreen action is stateful, but doesn’t have parameters.
         So, the third element (parameter type) is NULL. <a
-        href="https://docs.gtk.org/glib/gvariant-text.html">GVariant
+        href="https://docs.gtk.org/glib/gvariant-text-format.html">GVariant
         text format</a> provides “true” and “false” as boolean GVariant
         values. The initial state of the action is false (the fourth
         element). It doesn’t have activate handler, so the second
@@ -337,7 +338,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                 G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
-        <p>The code above does:</p>
+        <p>The code above performs the following:</p>
         <ul>
         <li>Builds the “fullscreen” action.</li>
         <li>Connects the action and the signal handler
@@ -349,7 +350,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>Source files are <code>menu3.c</code>, <code>menu3.ui</code>,
         <code>menu3.gresource.xml</code> and <code>meson.build</code>.
         They are in the directory <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu3">src/menu3</a>.
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/menu3/">/src/menu3</a>.
         The following are <code>menu3.c</code> and
         <code>meson.build</code>.</p>
         <div class="sourceCode" id="cb11"><pre
@@ -488,7 +489,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         handlers follow the format above.</p>
         <p>There are <code>menu2_ui.c</code> and <code>menu2.ui</code>
         under the <code>menu</code> directory. They are other examples
-        to show menu ui file and
+        to show a menu UI file and
         <code>g_action_map_add_action_entries</code>. It includes a
         stateful action with parameters.</p>
         <div class="sourceCode" id="cb14"><pre

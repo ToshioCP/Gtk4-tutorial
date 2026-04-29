@@ -2,17 +2,19 @@
 #include "pfd2css.h"
 
 // Pango font description to CSS style string
-// Returned string is owned by caller. The caller should free it when it is useless.
+// The returned string is owned by caller. The caller should free it when it is no longer needed.
 
 char*
 pfd2css (PangoFontDescription *pango_font_desc) {
   char *fontsize;
+  char *result;
 
   fontsize = pfd2css_size (pango_font_desc);
-  return g_strdup_printf ("font-family: \"%s\"; font-style: %s; font-weight: %d; font-size: %s;",
+  result = g_strdup_printf ("font-family: \"%s\"; font-style: %s; font-weight: %d; font-size: %s;",
               pfd2css_family (pango_font_desc), pfd2css_style (pango_font_desc),
               pfd2css_weight (pango_font_desc), fontsize);
-  g_free (fontsize); 
+  g_free (fontsize);
+  return result; 
 }
 
 // Each element (family, style, weight and size)

@@ -37,7 +37,11 @@ $ comp tfv1
 $ ./a.out
 ```
 
+@@@if pdf
 ![GtkTextView](/images/screenshot_tfv1.png){width=6.3cm height=5.325cm}
+@@@else
+![GtkTextView](/images/screenshot_tfv1.png)
+@@@end
 
 There's an I-beam pointer in the window.
 You can add or delete any characters on the GtkTextView, and your changes are kept in the GtkTextBuffer.
