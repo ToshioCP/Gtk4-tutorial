@@ -4,7 +4,7 @@ static GtkCssProvider *provider;
 static char *c[3] = {"red", "green", "blue"}; 
 
 static void
-fullscreen_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
+maximize_state_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
   if (g_variant_get_boolean (value))
     gtk_window_maximize (win);
   else
@@ -16,7 +16,7 @@ static void
 color_activated(GSimpleAction *action, GVariant *parameter) {
   gint16 index = g_variant_get_int16 (parameter);
   char *color = g_strdup_printf ("label.lb {background-color: %s;}", c[index]);
-  gtk_css_provider_load_from_data (provider, color, -1);
+  gtk_css_provider_load_from_string (provider, color);
   g_free (color);
   g_action_change_state (G_ACTION (action), parameter);
 }
@@ -36,10 +36,10 @@ app_activate (GApplication *app) {
   gtk_widget_add_css_class (lb, "lb"); /* the class is used by CSS Selector */
   gtk_window_set_child (win, lb);
 
-  GSimpleAction *act_fullscreen
-    = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
-  g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
-  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_fullscreen));
+  GSimpleAction *act_maximize
+    = g_simple_action_new_stateful ("maximize", NULL, g_variant_new_boolean (FALSE));
+  g_signal_connect (act_maximize, "change-state", G_CALLBACK (maximize_state_changed), win);
+  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_maximize));
 
   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
 
@@ -64,13 +64,13 @@ app_startup (GApplication *app) {
   GMenu *section1 = g_menu_new ();
   GMenu *section2 = g_menu_new ();
   GMenu *section3 = g_menu_new ();
-  GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
+  GMenuItem *menu_item_maximize = g_menu_item_new ("Maximized", "win.maximize");
   GMenuItem *menu_item_red = g_menu_item_new ("Red", "app.color(int16 0)");
   GMenuItem *menu_item_green = g_menu_item_new ("Green", "app.color(int16 1)");
   GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "app.color(int16 2)");
   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
 
-  g_menu_append_item (section1, menu_item_fullscreen);
+  g_menu_append_item (section1, menu_item_maximize);
   g_menu_append_item (section2, menu_item_red);
   g_menu_append_item (section2, menu_item_green);
   g_menu_append_item (section2, menu_item_blue);
@@ -78,7 +78,7 @@ app_startup (GApplication *app) {
   g_object_unref (menu_item_red);
   g_object_unref (menu_item_green);
   g_object_unref (menu_item_blue);
-  g_object_unref (menu_item_fullscreen);
+  g_object_unref (menu_item_maximize);
   g_object_unref (menu_item_quit);
 
   g_menu_append_section (menu, NULL, G_MENU_MODEL (section1));
@@ -94,7 +94,7 @@ app_startup (GApplication *app) {
 
   provider = gtk_css_provider_new ();
   /* Initialize the css data */
-  gtk_css_provider_load_from_data (provider, "label.lb {background-color: red;}", -1);
+  gtk_css_provider_load_from_string (provider, "label.lb {background-color: red;}");
   /* Add CSS to the default GdkDisplay. */
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
         GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

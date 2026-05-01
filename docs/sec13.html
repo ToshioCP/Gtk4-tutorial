@@ -329,7 +329,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>12: The function <code>g_file_replace_contents</code> writes
         the contents to the file and returns the status (true = success/
         false = fail). It has many parameters, but some of them are
-        almost always given the same values.
+        almost always given the same values. See the <a
+        href="https://docs.gtk.org/gio/method.File.replace_contents.html">GIO
+        documentation</a> for details.
         <ul>
         <li>GFile* file: GFile to which the contents are saved.</li>
         <li>const char* contents: contents to be saved. The string is
@@ -544,7 +546,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>This function just shows the file chooser dialog. The rest of
         the operation is done by the callback function.</p>
         <figure>
-        <img src="/images/saveas.png" alt="Saveas process" />
+        <img src="/Gtk4-tutorial/images/saveas.png"
+        alt="Saveas process" />
         <figcaption aria-hidden="true">Saveas process</figcaption>
         </figure>
         <h2 id="open-related-functions">Open Related Functions</h2>
@@ -700,7 +703,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>gtk_file_dialog_open</code> can’t return the status of the
         operation.</p>
         <figure>
-        <img src="/images/open.png" alt="Caller and TfeTextView" />
+        <img src="/Gtk4-tutorial/images/open.png"
+        alt="Caller and TfeTextView" />
         <figcaption aria-hidden="true">Caller and
         TfeTextView</figcaption>
         </figure>

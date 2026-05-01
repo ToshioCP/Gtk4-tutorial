@@ -119,7 +119,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h2 id="composite-widgets">Composite Widgets</h2>
         <p>The alert dialog is like this:</p>
         <figure>
-        <img src="/images/alert.png" alt="Alert dialog" />
+        <img src="/Gtk4-tutorial/images/alert.png" alt="Alert dialog" />
         <figcaption aria-hidden="true">Alert dialog</figcaption>
         </figure>
         <p>Tfe uses it when a user quits the application or closes a
@@ -247,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <pre><code>$ gtk4-icon-browser</code></pre>
         <p>The “dialog-warning” icon is something like this.</p>
         <figure>
-        <img src="/images/dialog_warning.png"
+        <img src="/Gtk4-tutorial/images/dialog_warning.png"
         alt="dialog-warning icon is like …" />
         <figcaption aria-hidden="true">dialog-warning icon is like
         …</figcaption>
@@ -296,7 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-34"><a href="#cb3-34"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span>
 <span id="cb3-35"><a href="#cb3-35"></a></span>
 <span id="cb3-36"><a href="#cb3-36"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> btn_label<span class="op">);</span></span></code></pre></div>
+<span id="cb3-37"><a href="#cb3-37"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>btn_label<span class="op">);</span></span></code></pre></div>
         <ul>
         <li>5-6: These two lines are always needed to define a new
         object. <code>TFE_TYPE_ALERT</code> is the type of TfeAlert
@@ -544,7 +544,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-101"><a href="#cb5-101"></a><span class="op">}</span></span>
 <span id="cb5-102"><a href="#cb5-102"></a></span>
 <span id="cb5-103"><a href="#cb5-103"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb5-104"><a href="#cb5-104"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> btn_label<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-104"><a href="#cb5-104"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>btn_label<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb5-105"><a href="#cb5-105"></a>  GtkWidget <span class="op">*</span>alert <span class="op">=</span> tfe_alert_new <span class="op">();</span></span>
 <span id="cb5-106"><a href="#cb5-106"></a>  tfe_alert_set_title <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> title<span class="op">);</span></span>
 <span id="cb5-107"><a href="#cb5-107"></a>  tfe_alert_set_message <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> message<span class="op">);</span></span>

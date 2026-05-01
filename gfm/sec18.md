@@ -11,52 +11,52 @@ Actions which have states are called stateful.
 ## Stateful Action without a Parameter
 
 Some menus are called toggle menus.
-For example, the fullscreen menu has two state values -- fullscreen and non-fullscreen.
+For example, the "Maximized" menu has two state values -- maximized and unmaximized.
 The value of the state is changed every time the menu is clicked.
-An action that corresponds to the fullscreen menu also has a state.
-The  value of the state is TRUE or FALSE and it is called a boolean value.
-TRUE corresponds to fullscreen and FALSE to non-fullscreen.
+An action that corresponds to the "Maximized" menu also has a state.
+The value of the state is boolean, which is TRUE or FALSE.
+TRUE corresponds to maximized and FALSE to unmaximized.
 
-The following is an example code to implement a fullscreen menu without the signal handler.
-The signal handler will be shown later.
+The following is an example code to implement a "Maximized" menu.
+The code of `maximize_state_changed` will be shown later.
 
 ~~~C
-GSimpleAction *act_fullscreen = g_simple_action_new_stateful ("fullscreen",
+GSimpleAction *act_maximize = g_simple_action_new_stateful ("maximize",
                                 NULL, g_variant_new_boolean (FALSE));
-g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
-g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_fullscreen));
+g_signal_connect (act_maximize, "change-state", G_CALLBACK (maximize_state_changed), win);
+g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_maximize));
 ... ... ...
-GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
+GMenuItem *menu_item_maximize = g_menu_item_new ("Maximized", "win.maximize");
 ~~~
 
-- `act_fullscreen` is a GSimpleAction instance.
+- `act_maximize` is a GSimpleAction instance.
 It is created with `g_simple_action_new_stateful`.
 The function has three arguments.
-The first argument "fullscreen" is the name of the action.
+The first argument "maximize" is the name of the action.
 The second argument is a parameter type.
 `NULL` means the action doesn't have a parameter.
 The third argument is the initial state of the action.
 It is a GVariant value.
 GVariant will be explained in the next subsection.
 The function `g_variant_new_boolean (FALSE)` returns a GVariant value of `FALSE`.
-If there are two or more top-level windows, each window has its own `act_fullscreen` action.
+If there are two or more top-level windows, each window has its own `act_maximize` action.
 So, the number of the actions is the same as the number of the windows.
-- The action `act_fullscreen` has a "change-state" signal. The signal is connected to a  handler `fullscreen_changed`.
-If the fullscreen menu is clicked, then the corresponding action `act_fullscreen` is activated.
+- The `act_maximize` action has a "change-state" signal. The signal is connected to a  handler `maximize_state_changed`.
+If the "Maximized" menu is clicked, then the corresponding action `act_maximize` is activated.
 But no handler is connected to the "activate" signal.
-Then, the default behavior for boolean-stated actions with a NULL parameter type like `act_fullscreen` is to toggle them via the “change-state” signal.
+Then, the default behavior for boolean-stated actions with a NULL parameter type like `act_maximize` is to toggle them via the “change-state” signal.
 - The action is added to the GtkWindow, `win`.
 Therefore, the scope of the action is "win".
-- `menu_item_fullscreen` is a GMenuItem instance.
+- `menu_item_maximize` is a GMenuItem instance.
 There are two arguments.
-The first argument "Full Screen" is the label of `menu_item_fullscreen`.
+The first argument "Maximized" is the label of `menu_item_maximize`.
 The second argument is an action.
-The action "win.fullscreen" has a prefix "win" and an action name "fullscreen".
+The action "win.maximize" has a prefix "win" and an action name "maximize".
 The prefix indicates that the action belongs to the window.
 
 ```c
 static void
-fullscreen_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
+maximize_state_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
   if (g_variant_get_boolean (value))
     gtk_window_maximize (win);
   else
@@ -65,10 +65,12 @@ fullscreen_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
 }
 ```
 
-- The handler `fullscreen_changed` has three parameters.
+This is the signal handler that has been connected to the "change-state" signal of the "maximize" action.
+
+- The handler `maximize_state_changed` has three parameters.
 The first parameter is the action which emits the "change-state" signal.
 The second parameter is the value of the new state of the action.
-The third parameter is the user data that is passed to `g_signal_connect`.
+The third parameter is the user data that was passed to `g_signal_connect`.
 - If the value is of boolean type and `TRUE`, then it maximizes the window.
 Otherwise it unmaximizes it.
 - Sets the state of the action with `value`.
@@ -164,7 +166,7 @@ It is released with the function `g_variant_type_free`.
 The function `g_menu_item_new` has two arguments.
 The first argument "Red" is the label of `menu_item_red`.
 The second argument is a detailed action.
-Its prefix is "app", action name is "color" and target is "red".
+Its prefix is "app", the action name is "color" and the target is "red".
 Target is sent to the action as a parameter.
 The same goes for `menu_item_green` and `menu_item_blue`.
 - The function `g_signal_connect` connects the activate signal on the action `act_color` and the handler `color_activated`.
@@ -177,7 +179,7 @@ static void
 color_activated(GSimpleAction *action, GVariant *parameter) {
   char *color = g_strdup_printf ("label.lb {background-color: %s;}",
                                    g_variant_get_string (parameter, NULL));
-  gtk_css_provider_load_from_data (provider, color, -1);
+  gtk_css_provider_load_from_string (provider, color);
   g_free (color);
   g_action_change_state (G_ACTION (action), parameter);
 }
@@ -248,12 +250,12 @@ This program has menus like this:
 
 ![menu2](/src/images/menu2.png)
 
-- Fullscreen menu toggles the size of the window between maximum and non-maximum.
-If the window is maximum size, which is called full screen, then a check mark is put before "fullscreen" label.
+- The "Maximized" menu toggles the size of the window between maximized and unmaximized.
+If the window is maximized, a check mark is put before the "Maximized" label.
 - Red, green and blue menu determines the back ground color of the label in the window.
 The menus have radio buttons on the left of the menus.
 And the radio button of the selected menu turns on.
-- Quit menu quits the application.
+- The "quit" menu quits the application.
 
 The code is as follows.
 
@@ -264,7 +266,7 @@ The code is as follows.
 GtkCssProvider *provider;
 
 static void
-fullscreen_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
+maximize_state_changed(GSimpleAction *action, GVariant *value, GtkWindow *win) {
   if (g_variant_get_boolean (value))
     gtk_window_maximize (win);
   else
@@ -277,7 +279,7 @@ color_activated(GSimpleAction *action, GVariant *parameter) {
   char *color = g_strdup_printf ("label.lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
   /* Change the CSS data in the provider. */
   /* Previous data is thrown away. */
-  gtk_css_provider_load_from_data (provider, color, -1);
+  gtk_css_provider_load_from_string (provider, color);
   g_free (color);
   g_action_change_state (G_ACTION (action), parameter);
 }
@@ -297,10 +299,10 @@ app_activate (GApplication *app) {
   gtk_widget_add_css_class (lb, "lb"); /* the class is used by CSS Selector */
   gtk_window_set_child (win, lb);
 
-  GSimpleAction *act_fullscreen
-    = g_simple_action_new_stateful ("fullscreen", NULL, g_variant_new_boolean (FALSE));
-  g_signal_connect (act_fullscreen, "change-state", G_CALLBACK (fullscreen_changed), win);
-  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_fullscreen));
+  GSimpleAction *act_maximize
+    = g_simple_action_new_stateful ("maximize", NULL, g_variant_new_boolean (FALSE));
+  g_signal_connect (act_maximize, "change-state", G_CALLBACK (maximize_state_changed), win);
+  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_maximize));
 
   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
 
@@ -325,13 +327,13 @@ app_startup (GApplication *app) {
   GMenu *section1 = g_menu_new ();
   GMenu *section2 = g_menu_new ();
   GMenu *section3 = g_menu_new ();
-  GMenuItem *menu_item_fullscreen = g_menu_item_new ("Full Screen", "win.fullscreen");
+  GMenuItem *menu_item_maximize = g_menu_item_new ("Maximized", "win.maximize");
   GMenuItem *menu_item_red = g_menu_item_new ("Red", "app.color::red");
   GMenuItem *menu_item_green = g_menu_item_new ("Green", "app.color::green");
   GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "app.color::blue");
   GMenuItem *menu_item_quit = g_menu_item_new ("Quit", "app.quit");
 
-  g_menu_append_item (section1, menu_item_fullscreen);
+  g_menu_append_item (section1, menu_item_maximize);
   g_menu_append_item (section2, menu_item_red);
   g_menu_append_item (section2, menu_item_green);
   g_menu_append_item (section2, menu_item_blue);
@@ -339,7 +341,7 @@ app_startup (GApplication *app) {
   g_object_unref (menu_item_red);
   g_object_unref (menu_item_green);
   g_object_unref (menu_item_blue);
-  g_object_unref (menu_item_fullscreen);
+  g_object_unref (menu_item_maximize);
   g_object_unref (menu_item_quit);
 
   g_menu_append_section (menu, NULL, G_MENU_MODEL (section1));
@@ -355,7 +357,7 @@ app_startup (GApplication *app) {
 
   provider = gtk_css_provider_new ();
   /* Initialize the css data */
-  gtk_css_provider_load_from_data (provider, "label.lb {background-color: red;}", -1);
+  gtk_css_provider_load_from_string (provider, "label.lb {background-color: red;}");
   /* Add CSS to the default GdkDisplay. */
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
         GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -389,10 +391,9 @@ Its title and default size are set to "menu2" and 400x300 respectively.
 - 36-38: A new label is created and assigned to `lb`
 The label is given a CSS class "lb".
 It is added to `win` as a child.
-- 40-43: A toggle action is created and assigned to `act_fullscreen`.
-It's connected to the signal handler `fullscreen_changed`.
+- 40-43: A toggle action is created and assigned to `act_maximize`.
+It's connected to the signal handler `maximize_state_changed`.
 It's added to the window, so the action scope is "win".
-So, if there are two or more windows, the actions are created two or more.
 - 45: The function `gtk_application_window_set_show_menubar` adds a menubar to the window.
 - 47: Shows the window.
 - 50-104: A startup signal handler.
@@ -404,7 +405,7 @@ Their scopes are "app".
 - 94: The menubar is added to the application.
 - 96-103: A CSS provider is created with the CSS data and added to the default display.
 The "shutdown" signal on the application is connected to a handler "app_shutdown".
-So, the provider is removed from the display and freed when the application quits.
+The provider is removed from the display and freed when the application quits.
 
 ## Compile
 

@@ -56,7 +56,7 @@ Now let's look at the program of each function.
 ## notebook\_page\_new
 
 ```c
-static char*
+static char *
 get_untitled () {
   static int c = -1;
   if (++c == 0) 

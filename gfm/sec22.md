@@ -702,7 +702,7 @@ G_DEFINE_FINAL_TYPE (TfeWindow, tfe_window, GTK_TYPE_APPLICATION_WINDOW);
 
 /* Create a new untitled string */
 /* The returned string should be freed with g_free() when no longer needed. */
-static char*
+static char *
 get_untitled () {
   static int c = -1;
   if (++c == 0) 

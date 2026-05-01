@@ -160,7 +160,7 @@ For example, "activate" signal is in the [GApplication section](https://docs.gtk
 ~~~c
 void
 activate (
-  GApplication* self,
+  GApplication *self,
   gpointer user_data
 )
 ~~~

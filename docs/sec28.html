@@ -102,7 +102,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         destination.</p>
         <p>You probably have experience moving a file with DND.</p>
         <figure>
-        <img src="/images/dnd.png" alt="DND on the GUI file manager" />
+        <img src="/Gtk4-tutorial/images/dnd.png"
+        alt="DND on the GUI file manager" />
         <figcaption aria-hidden="true">DND on the GUI file
         manager</figcaption>
         </figure>
@@ -118,7 +119,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         “red”, “green” or “blue” labels. If a user drags the label to
         the destination label, the font color will be changed.</p>
         <figure>
-        <img src="/images/dnd_canvas.png" alt="DND example" />
+        <img src="/Gtk4-tutorial/images/dnd_canvas.png"
+        alt="DND example" />
         <figcaption aria-hidden="true">DND example</figcaption>
         </figure>
         <h2 id="ui-file">UI File</h2>
@@ -244,7 +246,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-7"><a href="#cb5-7"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb5-8"><a href="#cb5-8"></a>  GtkLabel <span class="op">*</span>canvas<span class="op">;</span></span>
 <span id="cb5-9"><a href="#cb5-9"></a>  GtkDragSource <span class="op">*</span>src<span class="op">;</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a>  GdkContentProvider<span class="op">*</span> content<span class="op">;</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>  GdkContentProvider <span class="op">*</span>content<span class="op">;</span></span>
 <span id="cb5-11"><a href="#cb5-11"></a>  GtkDropTarget <span class="op">*</span>tgt<span class="op">;</span></span>
 <span id="cb5-12"><a href="#cb5-12"></a>  GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
 <span id="cb5-13"><a href="#cb5-13"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
@@ -331,7 +333,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h3 id="drop-signal-handler">Drop Signal Handler</h3>
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> gboolean</span>
-<span id="cb8-2"><a href="#cb8-2"></a>drop_cb <span class="op">(</span>GtkDropTarget<span class="op">*</span> self<span class="op">,</span> <span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span> gdouble x<span class="op">,</span> gdouble y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>drop_cb <span class="op">(</span>GtkDropTarget <span class="op">*</span>self<span class="op">,</span> <span class="dt">const</span> GValue <span class="op">*</span>value<span class="op">,</span> gdouble x<span class="op">,</span> gdouble y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
 <span id="cb8-5"><a href="#cb8-5"></a>  s <span class="op">=</span> g_strdup_printf <span class="op">(</span>format<span class="op">,</span> g_value_get_string <span class="op">(</span>value<span class="op">));</span></span>

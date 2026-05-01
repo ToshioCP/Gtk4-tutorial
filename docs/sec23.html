@@ -160,7 +160,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-4"><a href="#cb2-4"></a><span class="co">// Pango font description to CSS style string</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a><span class="co">// The returned string is owned by caller. The caller should free it when it is no longer needed.</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a>pfd2css <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a>  <span class="dt">char</span> <span class="op">*</span>fontsize<span class="op">;</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a>  <span class="dt">char</span> <span class="op">*</span>result<span class="op">;</span></span>
@@ -175,12 +175,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-19"><a href="#cb2-19"></a></span>
 <span id="cb2-20"><a href="#cb2-20"></a><span class="co">// Each element (family, style, weight and size)</span></span>
 <span id="cb2-21"><a href="#cb2-21"></a></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb2-23"><a href="#cb2-23"></a>pfd2css_family <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-24"><a href="#cb2-24"></a>  <span class="cf">return</span> pango_font_description_get_family <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
 <span id="cb2-25"><a href="#cb2-25"></a><span class="op">}</span></span>
 <span id="cb2-26"><a href="#cb2-26"></a></span>
-<span id="cb2-27"><a href="#cb2-27"></a><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb2-28"><a href="#cb2-28"></a>pfd2css_style <span class="op">(</span>PangoFontDescription <span class="op">*</span>pango_font_desc<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-29"><a href="#cb2-29"></a>  PangoStyle pango_style <span class="op">=</span> pango_font_description_get_style <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
 <span id="cb2-30"><a href="#cb2-30"></a>  <span class="cf">switch</span> <span class="op">(</span>pango_style<span class="op">)</span> <span class="op">{</span></span>
@@ -286,7 +286,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> TFE<span class="op">,</span> APPLICATION<span class="op">,</span> GtkApplication<span class="op">)</span></span>
 <span id="cb3-7"><a href="#cb3-7"></a></span>
 <span id="cb3-8"><a href="#cb3-8"></a>TfeApplication <span class="op">*</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> application_id<span class="op">,</span> GApplicationFlags flag<span class="op">);</span></span></code></pre></div>
+<span id="cb3-9"><a href="#cb3-9"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>application_id<span class="op">,</span> GApplicationFlags flag<span class="op">);</span></span></code></pre></div>
         <p>The following code is extracted from
         <code>tfeapplication.c</code>. It builds TfeApplication class
         and instance.</p>
@@ -328,7 +328,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>TfeApplication <span class="op">*</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> application_id<span class="op">,</span> GApplicationFlags flag<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>application_id<span class="op">,</span> GApplicationFlags flag<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TFE_APPLICATION <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_APPLICATION<span class="op">,</span> <span class="st">&quot;application-id&quot;</span><span class="op">,</span> application_id<span class="op">,</span> <span class="st">&quot;flags&quot;</span><span class="op">,</span> flag<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>

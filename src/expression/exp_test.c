@@ -3,7 +3,7 @@
 // This program check the "this" object.
 // It is usually the outer object of the expressions.
 
-char*
+char *
 test (GObject *object) {
   if (object)
     return g_strdup (G_OBJECT_TYPE_NAME (object));

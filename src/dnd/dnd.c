@@ -6,7 +6,7 @@ static const char *format = "label {padding: 20px;} label#red {background: red;}
   "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
 
 static gboolean
-drop_cb (GtkDropTarget* self, const GValue* value, gdouble x, gdouble y, gpointer user_data) {
+drop_cb (GtkDropTarget *self, const GValue *value, gdouble x, gdouble y, gpointer user_data) {
   char *s;
 
   s = g_strdup_printf (format, g_value_get_string (value));
@@ -33,7 +33,7 @@ app_startup (GApplication *application) {
   int i;
   GtkLabel *canvas;
   GtkDragSource *src;
-  GdkContentProvider* content;
+  GdkContentProvider *content;
   GtkDropTarget *tgt;
   GdkDisplay *display;
   char *s;

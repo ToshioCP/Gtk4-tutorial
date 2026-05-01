@@ -458,6 +458,7 @@ GVariant doesn't support boxed type.
 
 In that case, another function `g_settings_bind_with_mapping` is used.
 It binds GSettings GVariant value and object property via GValue with mapping functions.
+See [GIO documentation](https://docs.gtk.org/gio/method.Settings.bind_with_mapping.html) for further details.
 
 @@@if gfm
 ```C

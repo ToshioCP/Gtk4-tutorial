@@ -40,7 +40,7 @@ selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer user_d
 }
 
 static void
-fullscreen_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
+maximize_state_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
   GtkWindow *win = GTK_WINDOW (user_data);
 
   if (g_variant_get_boolean (state))
@@ -65,7 +65,7 @@ app_activate (GApplication *app) {
     { "save", save_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
     { "close", close_activated, NULL, NULL, NULL },
-    { "fullscreen", NULL, NULL, "false", fullscreen_changed }
+    { "maximize", NULL, NULL, "false", maximize_state_changed }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 

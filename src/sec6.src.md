@@ -229,20 +229,20 @@ const int x = 10; /* initialization is OK. */
 x = 20; /* This is illegal because x is qualified with const */
 ~~~
 
-If a function returns `const char*` type, the string can't be changed or freed.
+If a function returns `const char *` type, the string can't be changed or freed.
 If a function has a `const char *` type parameter, it ensures that the parameter is not changed in the function.
 
 ~~~C
 // You never change or free the returned string.
-const char*
+const char *
 gtk_label_get_text (
-  GtkLabel* self
+  GtkLabel *self
 )
 
 // The string 'str' remains valid while the function is executing.
 void
 gtk_label_set_text (
-  GtkLabel* self,
-  const char* str
+  GtkLabel *self,
+  const char *str
 )
 ~~~

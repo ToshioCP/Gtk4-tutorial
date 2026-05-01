@@ -151,7 +151,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>menu3</code>. It is located in the directory <a
         href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/menu3/">/src/menu3</a>.</p>
         <figure>
-        <img src="/images/menu3.png" alt="menu3" />
+        <img src="/Gtk4-tutorial/images/menu3.png" alt="menu3" />
         <figcaption aria-hidden="true">menu3</figcaption>
         </figure>
         <p>The following is the UI file for <code>menu3</code>.</p>
@@ -221,8 +221,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-63"><a href="#cb4-63"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;View&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb4-64"><a href="#cb4-64"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb4-65"><a href="#cb4-65"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb4-66"><a href="#cb4-66"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Full Screen&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb4-67"><a href="#cb4-67"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-66"><a href="#cb4-66"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Maximized&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-67"><a href="#cb4-67"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.maximize&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb4-68"><a href="#cb4-68"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb4-69"><a href="#cb4-69"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb4-70"><a href="#cb4-70"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
@@ -282,20 +282,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
         <p>For example, the actions in the previous section are:</p>
         <div class="sourceCode" id="cb8"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;maximize&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> maximize_state_changed <span class="op">}</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;color&quot;</span><span class="op">,</span> color_activated<span class="op">,</span> <span class="st">&quot;s&quot;</span><span class="op">,</span> <span class="st">&quot;&#39;red&#39;&quot;</span><span class="op">,</span> NULL <span class="op">}</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span></code></pre></div>
         <ul>
-        <li>Fullscreen action is stateful, but doesn’t have parameters.
-        So, the third element (parameter type) is NULL. <a
+        <li>The “maximize” action is stateful, but doesn’t have
+        parameters. So, the third element (parameter type) is NULL. <a
         href="https://docs.gtk.org/glib/gvariant-text-format.html">GVariant
         text format</a> provides “true” and “false” as boolean GVariant
         values. The initial state of the action is false (the fourth
         element). It doesn’t have activate handler, so the second
         element is NULL. Instead, it has change-state handler. The fifth
-        element <code>fullscreen_changed</code> is the handler.</li>
-        <li>Color action is stateful and has a parameter. The parameter
-        type is string. <a
+        element <code>maximize_state_changed</code> is the handler.</li>
+        <li>THe “color” action is stateful and has a parameter. The
+        parameter type is string. <a
         href="https://docs.gtk.org/glib/gvariant-format-strings.html">GVariant
         format strings</a> provides string formats to represent GVariant
         types. The third element “s” means GVariant string type.
@@ -307,8 +307,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>color_activated</code> is the activate handler. The action
         doesn’t have change-state handler, so the fifth element is
         NULL.</li>
-        <li>Quit action is non-stateful and has no parameter. So, the
-        third and fourth elements are NULL. The second element
+        <li>The “quit” action is non-stateful and has no parameter. So,
+        the third and fourth elements are NULL. The second element
         <code>quit_activated</code> is the activate handler. The action
         doesn’t have change-state handler, so the fifth element is
         NULL.</li>
@@ -325,7 +325,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                 G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span></code></pre></div>
         <p>The code above does:</p>
         <ul>
-        <li>Builds the “color” and “quit” actions</li>
+        <li>Builds the “color” and the “quit” actions</li>
         <li>Connects the action and the “activate” signal handlers
         (<code>color_activated</code> and
         <code>quit_activated</code>).</li>
@@ -334,15 +334,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>The same goes for the other action.</p>
         <div class="sourceCode" id="cb10"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;maximize&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> maximize_state_changed <span class="op">}</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                 G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
         <p>The code above performs the following:</p>
         <ul>
-        <li>Builds the “fullscreen” action.</li>
+        <li>Builds the “maximize” action.</li>
         <li>Connects the action and the signal handler
-        <code>fullscreen_changed</code></li>
+        <code>maximize_state_changed</code></li>
         <li>Its initial state is set to false.</li>
         <li>Adds the action to the action map <code>win</code>.</li>
         </ul>
@@ -396,7 +396,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-40"><a href="#cb11-40"></a><span class="op">}</span></span>
 <span id="cb11-41"><a href="#cb11-41"></a></span>
 <span id="cb11-42"><a href="#cb11-42"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-43"><a href="#cb11-43"></a>fullscreen_changed <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>state<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-43"><a href="#cb11-43"></a>maximize_state_changed <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>state<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb11-44"><a href="#cb11-44"></a>  GtkWindow <span class="op">*</span>win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb11-45"><a href="#cb11-45"></a></span>
 <span id="cb11-46"><a href="#cb11-46"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>state<span class="op">))</span></span>
@@ -421,7 +421,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-65"><a href="#cb11-65"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
 <span id="cb11-66"><a href="#cb11-66"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
 <span id="cb11-67"><a href="#cb11-67"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb11-68"><a href="#cb11-68"></a>    <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_changed <span class="op">}</span></span>
+<span id="cb11-68"><a href="#cb11-68"></a>    <span class="op">{</span> <span class="st">&quot;maximize&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> maximize_state_changed <span class="op">}</span></span>
 <span id="cb11-69"><a href="#cb11-69"></a>  <span class="op">};</span></span>
 <span id="cb11-70"><a href="#cb11-70"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb11-71"><a href="#cb11-71"></a></span>

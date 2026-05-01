@@ -4,7 +4,7 @@
 static GtkCssProvider *provider;
 
 static void
-fullscreen_changed(GSimpleAction *action, GVariant *value, gpointer user_data) {
+maximize_state_changed(GSimpleAction *action, GVariant *value, gpointer user_data) {
   GtkWindow *win = GTK_WINDOW (user_data);
 
   if (g_variant_get_boolean (value))
@@ -19,7 +19,7 @@ color_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) 
   char *color = g_strdup_printf ("label.lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
   /* Change the CSS data in the provider. */
   /* Previous data is thrown away. */
-  gtk_css_provider_load_from_data (provider, color, -1);
+  gtk_css_provider_load_from_string (provider, color);
   g_free (color);
   g_action_change_state (G_ACTION (action), parameter);
 }
@@ -48,7 +48,7 @@ app_activate (GApplication *app) {
   gtk_window_set_child (win, lb);
 
   const GActionEntry win_entries[] = {
-    { "fullscreen", NULL, NULL, "false", fullscreen_changed }
+    { "maximize", NULL, NULL, "false", maximize_state_changed }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
@@ -75,7 +75,7 @@ app_startup (GApplication *app) {
 
   provider = gtk_css_provider_new ();
   /* Initialize the css data */
-  gtk_css_provider_load_from_data (provider, "label.lb {background-color: red;}", -1);
+  gtk_css_provider_load_from_string (provider, "label.lb {background-color: red;}");
   /* Add CSS to the default GdkDisplay. */
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
         GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

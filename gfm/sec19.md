@@ -137,8 +137,8 @@ The following is the UI file for `menu3`.
       <attribute name="label">View</attribute>
       <section>
         <item>
-          <attribute name="label">Full Screen</attribute>
-          <attribute name="action">win.fullscreen</attribute>
+          <attribute name="label">Maximized</attribute>
+          <attribute name="action">win.maximize</attribute>
         </item>
       </section>
     </submenu>
@@ -203,19 +203,19 @@ struct _GActionEntry
 For example, the actions in the previous section are:
 
 ~~~C
-{ "fullscreen", NULL, NULL, "false", fullscreen_changed }
+{ "maximize", NULL, NULL, "false", maximize_state_changed }
 { "color", color_activated, "s", "'red'", NULL }
 { "quit", quit_activated, NULL, NULL, NULL },
 ~~~
 
-- Fullscreen action is stateful, but doesn't have parameters.
+- The "maximize" action is stateful, but doesn't have parameters.
 So, the third element (parameter type) is NULL.
 [GVariant text format](https://docs.gtk.org/glib/gvariant-text-format.html) provides "true" and "false" as boolean GVariant values.
 The initial state of the action is false (the fourth element).
 It doesn't have activate handler, so the second element is NULL.
 Instead, it has change-state handler.
-The fifth element `fullscreen_changed` is the handler.
-- Color action is stateful and has a parameter.
+The fifth element `maximize_state_changed` is the handler.
+- THe "color" action is stateful and has a parameter.
 The parameter type is string.
 [GVariant format strings](https://docs.gtk.org/glib/gvariant-format-strings.html) provides string formats to represent GVariant types.
 The third element "s" means GVariant string type.
@@ -225,7 +225,7 @@ The fourth element is `"'red'"`, which is a C string format and the string is 'r
 You can write `"\"red\""` instead.
 The second element `color_activated` is the activate handler.
 The action doesn't have change-state handler, so the fifth element is NULL.
-- Quit action is non-stateful and has no parameter.
+- The "quit" action is non-stateful and has no parameter.
 So, the third and fourth elements are NULL.
 The second element `quit_activated` is the activate handler.
 The action doesn't have change-state handler, so the fifth element is NULL.
@@ -244,7 +244,7 @@ g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
 
 The code above does:
 
-- Builds the "color" and "quit" actions
+- Builds the "color" and the "quit" actions
 - Connects the action and the "activate" signal handlers (`color_activated` and `quit_activated`).
 - Adds the actions to the action map `app`.
 
@@ -252,15 +252,15 @@ The same goes for the other action.
 
 ~~~C
 const GActionEntry win_entries[] = {
-  { "fullscreen", NULL, NULL, "false", fullscreen_changed }
+  { "maximize", NULL, NULL, "false", maximize_state_changed }
 };
 g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries,
                                  G_N_ELEMENTS (win_entries), win);
 ~~~
 The code above performs the following:
 
-- Builds the "fullscreen" action.
-- Connects the action and the signal handler `fullscreen_changed`
+- Builds the "maximize" action.
+- Connects the action and the signal handler `maximize_state_changed`
 - Its initial state is set to false.
 - Adds the action to the action map `win`.
 
@@ -313,7 +313,7 @@ selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer user_d
 }
 
 static void
-fullscreen_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
+maximize_state_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
   GtkWindow *win = GTK_WINDOW (user_data);
 
   if (g_variant_get_boolean (state))
@@ -338,7 +338,7 @@ app_activate (GApplication *app) {
     { "save", save_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
     { "close", close_activated, NULL, NULL, NULL },
-    { "fullscreen", NULL, NULL, "false", fullscreen_changed }
+    { "maximize", NULL, NULL, "false", maximize_state_changed }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 

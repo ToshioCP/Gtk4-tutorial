@@ -3,7 +3,7 @@
 #include "../tfetextview/tfetextview.h"
 
 /* The caller should free the returned string when it is no longer needed. */
-static char*
+static char *
 get_untitled () {
   static int c = -1;
   if (++c == 0) 

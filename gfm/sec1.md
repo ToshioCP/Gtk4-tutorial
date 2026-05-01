@@ -21,6 +21,14 @@ The examples in this tutorial have been tested with GTK version 4.10.
 Version 4.10 added some new classes and functions and deprecated some old ones.
 Some example programs in this tutorial don't work on older versions.
 
+### Note for WSL2 (WSLg) Users
+
+When running GTK4 applications on WSL2, you may encounter several warnings in your terminal.
+These are typically due to interactions between GTK4's rendering system and the WSLg Wayland compositor, rather than bugs in your code.
+These warnings are often harmless, but in some cases they may affect rendering performance or popup behavior.
+
+For professional-grade performance testing or pixel-perfect UI behavior, a native Linux installation is recommended.
+
 ### Ruby and Rake for Making the Document
 
 This repository includes Ruby programs.

@@ -112,6 +112,6 @@ tfe_application_class_init (TfeApplicationClass *class) {
 }
 
 TfeApplication *
-tfe_application_new (const char* application_id, GApplicationFlags flag) {
+tfe_application_new (const char *application_id, GApplicationFlags flag) {
   return TFE_APPLICATION (g_object_new (TFE_TYPE_APPLICATION, "application-id", application_id, "flags", flag, NULL));
 }

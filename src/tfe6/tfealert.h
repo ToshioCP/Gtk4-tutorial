@@ -34,4 +34,4 @@ GtkWidget *
 tfe_alert_new (void);
 
 GtkWidget *
-tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label);
+tfe_alert_new_with_data (const char *title, const char *message, const char *btn_label);

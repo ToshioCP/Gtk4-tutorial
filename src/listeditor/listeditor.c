@@ -291,7 +291,7 @@ write_data (LeWindow *win) {
 }
 
 static void
-saveas_dialog_cb (GObject* source_object, GAsyncResult* res, gpointer user_data) {
+saveas_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer user_data) {
   GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
   LeWindow *win = LE_WINDOW (user_data);
   GFile *file;

@@ -156,7 +156,7 @@ app_startup (GApplication *application) {
   int i;
   GtkLabel *canvas;
   GtkDragSource *src;
-  GdkContentProvider* content;
+  GdkContentProvider *content;
   GtkDropTarget *tgt;
   GdkDisplay *display;
   char *s;
@@ -243,7 +243,7 @@ This handler just shows the window.
 
 ```c
 static gboolean
-drop_cb (GtkDropTarget* self, const GValue* value, gdouble x, gdouble y, gpointer user_data) {
+drop_cb (GtkDropTarget *self, const GValue *value, gdouble x, gdouble y, gpointer user_data) {
   char *s;
 
   s = g_strdup_printf (format, g_value_get_string (value));

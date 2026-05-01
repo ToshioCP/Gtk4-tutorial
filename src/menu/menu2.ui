@@ -5,8 +5,8 @@
       <attribute name="label">Menu</attribute>
       <section>
         <item>
-          <attribute name="label">Full screen</attribute>
-          <attribute name="action">win.fullscreen</attribute>
+          <attribute name="label">Maximized</attribute>
+          <attribute name="action">win.maximize</attribute>
         </item>
       </section>
       <section>

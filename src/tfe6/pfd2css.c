@@ -4,7 +4,7 @@
 // Pango font description to CSS style string
 // The returned string is owned by caller. The caller should free it when it is no longer needed.
 
-char*
+char *
 pfd2css (PangoFontDescription *pango_font_desc) {
   char *fontsize;
   char *result;
@@ -19,12 +19,12 @@ pfd2css (PangoFontDescription *pango_font_desc) {
 
 // Each element (family, style, weight and size)
 
-const char*
+const char *
 pfd2css_family (PangoFontDescription *pango_font_desc) {
   return pango_font_description_get_family (pango_font_desc);
 }
 
-const char*
+const char *
 pfd2css_style (PangoFontDescription *pango_font_desc) {
   PangoStyle pango_style = pango_font_description_get_style (pango_font_desc);
   switch (pango_style) {

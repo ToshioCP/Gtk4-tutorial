@@ -200,7 +200,7 @@ GtkWidget *
 tfe_alert_new (void);
 
 GtkWidget *
-tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label);
+tfe_alert_new_with_data (const char *title, const char *message, const char *btn_label);
 ```
 
 - 5-6: These two lines are always needed to define a new object.
@@ -414,7 +414,7 @@ tfe_alert_new (void) {
 }
 
 GtkWidget *
-tfe_alert_new_with_data (const char *title, const char *message, const char* btn_label) {
+tfe_alert_new_with_data (const char *title, const char *message, const char *btn_label) {
   GtkWidget *alert = tfe_alert_new ();
   tfe_alert_set_title (TFE_ALERT (alert), title);
   tfe_alert_set_message (TFE_ALERT (alert), message);

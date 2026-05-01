@@ -67,7 +67,7 @@ The first function is a convenient function to set other four CSS properties at 
 // Pango font description to CSS style string
 // The returned string is owned by caller. The caller should free it when it is no longer needed.
 
-char*
+char *
 pfd2css (PangoFontDescription *pango_font_desc) {
   char *fontsize;
   char *result;
@@ -82,12 +82,12 @@ pfd2css (PangoFontDescription *pango_font_desc) {
 
 // Each element (family, style, weight and size)
 
-const char*
+const char *
 pfd2css_family (PangoFontDescription *pango_font_desc) {
   return pango_font_description_get_family (pango_font_desc);
 }
 
-const char*
+const char *
 pfd2css_style (PangoFontDescription *pango_font_desc) {
   PangoStyle pango_style = pango_font_description_get_style (pango_font_desc);
   switch (pango_style) {
@@ -186,7 +186,7 @@ The header file defines the type macro and a public function.
 G_DECLARE_FINAL_TYPE (TfeApplication, tfe_application, TFE, APPLICATION, GtkApplication)
 
 TfeApplication *
-tfe_application_new (const char* application_id, GApplicationFlags flag);
+tfe_application_new (const char *application_id, GApplicationFlags flag);
 ```
 
 The following code is extracted from `tfeapplication.c`.
@@ -230,7 +230,7 @@ tfe_application_class_init (TfeApplicationClass *class) {
 }
 
 TfeApplication *
-tfe_application_new (const char* application_id, GApplicationFlags flag) {
+tfe_application_new (const char *application_id, GApplicationFlags flag) {
   return TFE_APPLICATION (g_object_new (TFE_TYPE_APPLICATION, "application-id", application_id, "flags", flag, NULL));
 }
 ```

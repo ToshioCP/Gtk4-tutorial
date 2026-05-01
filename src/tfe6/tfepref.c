@@ -22,16 +22,16 @@ tfe_pref_dispose (GObject *gobject) {
 
 /* ---------- get_mapping/set_mapping ---------- */
 static gboolean // GSettings => property
-get_mapping (GValue* value, GVariant* variant, gpointer user_data) {
+get_mapping (GValue *value, GVariant *variant, gpointer user_data) {
   const char *s = g_variant_get_string (variant, NULL);
   PangoFontDescription *font_desc = pango_font_description_from_string (s);
   g_value_take_boxed (value, font_desc);
   return TRUE;
 }
 
-static GVariant* // Property => GSettings
-set_mapping (const GValue* value, const GVariantType* expected_type, gpointer user_data) {
-  char*font_desc_string = pango_font_description_to_string (g_value_get_boxed (value));
+static GVariant * // Property => GSettings
+set_mapping (const GValue *value, const GVariantType *expected_type, gpointer user_data) {
+  char *font_desc_string = pango_font_description_to_string (g_value_get_boxed (value));
   return g_variant_new_take_string (font_desc_string);
 }
 

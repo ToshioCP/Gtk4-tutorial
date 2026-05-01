@@ -99,7 +99,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>If the user clicks on the preference menu, a preference
         dialog appears.</p>
         <figure>
-        <img src="/images/pref_dialog.png" alt="Preference dialog" />
+        <img src="/Gtk4-tutorial/images/pref_dialog.png"
+        alt="Preference dialog" />
         <figcaption aria-hidden="true">Preference dialog</figcaption>
         </figure>
         <p>It has only one button, which is a GtkFontDialogButton
@@ -108,7 +109,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>If the button is clicked, a GtkFontDialog appears like
         this.</p>
         <figure>
-        <img src="/images/fontdialog.png" alt="Font dialog" />
+        <img src="/Gtk4-tutorial/images/fontdialog.png"
+        alt="Font dialog" />
         <figcaption aria-hidden="true">Font dialog</figcaption>
         </figure>
         <p>If the user chooses a font and clicks on the select button,
@@ -445,14 +447,14 @@ org.gnome.calculator word-size 64</code></pre>
         and change the mode, then check the schema again.</p>
         <pre><code>$ gnome-calculator</code></pre>
         <figure>
-        <img src="/images/gnome_calculator_basic.png"
+        <img src="/Gtk4-tutorial/images/gnome_calculator_basic.png"
         alt="gnome-calculator basic mode" />
         <figcaption aria-hidden="true">gnome-calculator basic
         mode</figcaption>
         </figure>
         <p>Change the mode to advanced and quit.</p>
         <figure>
-        <img src="/images/gnome_calculator_advanced.png"
+        <img src="/Gtk4-tutorial/images/gnome_calculator_advanced.png"
         alt="gnome-calculator advanced mode" />
         <figcaption aria-hidden="true">gnome-calculator advanced
         mode</figcaption>
@@ -585,7 +587,9 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         <p>In that case, another function
         <code>g_settings_bind_with_mapping</code> is used. It binds
         GSettings GVariant value and object property via GValue with
-        mapping functions.</p>
+        mapping functions. See <a
+        href="https://docs.gtk.org/gio/method.Settings.bind_with_mapping.html">GIO
+        documentation</a> for further details.</p>
         <div class="sourceCode" id="cb14"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>g_settings_bind_with_mapping <span class="op">(</span></span>
@@ -618,16 +622,16 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         <code>tfepref.c</code>.</p>
         <div class="sourceCode" id="cb16"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">static</span> gboolean <span class="co">// GSettings =&gt; property</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a>get_mapping <span class="op">(</span>GValue<span class="op">*</span> value<span class="op">,</span> GVariant<span class="op">*</span> variant<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>get_mapping <span class="op">(</span>GValue <span class="op">*</span>value<span class="op">,</span> GVariant <span class="op">*</span>variant<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb16-3"><a href="#cb16-3"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s <span class="op">=</span> g_variant_get_string <span class="op">(</span>variant<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb16-4"><a href="#cb16-4"></a>  PangoFontDescription <span class="op">*</span>font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb16-5"><a href="#cb16-5"></a>  g_value_take_boxed <span class="op">(</span>value<span class="op">,</span> font_desc<span class="op">);</span></span>
 <span id="cb16-6"><a href="#cb16-6"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb16-7"><a href="#cb16-7"></a><span class="op">}</span></span>
 <span id="cb16-8"><a href="#cb16-8"></a></span>
-<span id="cb16-9"><a href="#cb16-9"></a><span class="dt">static</span> GVariant<span class="op">*</span> <span class="co">// Property =&gt; GSettings</span></span>
-<span id="cb16-10"><a href="#cb16-10"></a>set_mapping <span class="op">(</span><span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span> <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb16-11"><a href="#cb16-11"></a>  <span class="dt">char</span><span class="op">*</span>font_desc_string <span class="op">=</span> pango_font_description_to_string <span class="op">(</span>g_value_get_boxed <span class="op">(</span>value<span class="op">));</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="dt">static</span> GVariant <span class="op">*</span> <span class="co">// Property =&gt; GSettings</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>set_mapping <span class="op">(</span><span class="dt">const</span> GValue <span class="op">*</span>value<span class="op">,</span> <span class="dt">const</span> GVariantType <span class="op">*</span>expected_type<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a>  <span class="dt">char</span> <span class="op">*</span>font_desc_string <span class="op">=</span> pango_font_description_to_string <span class="op">(</span>g_value_get_boxed <span class="op">(</span>value<span class="op">));</span></span>
 <span id="cb16-12"><a href="#cb16-12"></a>  <span class="cf">return</span> g_variant_new_take_string <span class="op">(</span>font_desc_string<span class="op">);</span></span>
 <span id="cb16-13"><a href="#cb16-13"></a><span class="op">}</span></span>
 <span id="cb16-14"><a href="#cb16-14"></a></span>
@@ -695,16 +699,16 @@ org.gnome.calculator button-mode &#39;advanced&#39;
 <span id="cb17-22"><a href="#cb17-22"></a></span>
 <span id="cb17-23"><a href="#cb17-23"></a><span class="co">/* ---------- get_mapping/set_mapping ---------- */</span></span>
 <span id="cb17-24"><a href="#cb17-24"></a><span class="dt">static</span> gboolean <span class="co">// GSettings =&gt; property</span></span>
-<span id="cb17-25"><a href="#cb17-25"></a>get_mapping <span class="op">(</span>GValue<span class="op">*</span> value<span class="op">,</span> GVariant<span class="op">*</span> variant<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-25"><a href="#cb17-25"></a>get_mapping <span class="op">(</span>GValue <span class="op">*</span>value<span class="op">,</span> GVariant <span class="op">*</span>variant<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb17-26"><a href="#cb17-26"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s <span class="op">=</span> g_variant_get_string <span class="op">(</span>variant<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb17-27"><a href="#cb17-27"></a>  PangoFontDescription <span class="op">*</span>font_desc <span class="op">=</span> pango_font_description_from_string <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb17-28"><a href="#cb17-28"></a>  g_value_take_boxed <span class="op">(</span>value<span class="op">,</span> font_desc<span class="op">);</span></span>
 <span id="cb17-29"><a href="#cb17-29"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb17-30"><a href="#cb17-30"></a><span class="op">}</span></span>
 <span id="cb17-31"><a href="#cb17-31"></a></span>
-<span id="cb17-32"><a href="#cb17-32"></a><span class="dt">static</span> GVariant<span class="op">*</span> <span class="co">// Property =&gt; GSettings</span></span>
-<span id="cb17-33"><a href="#cb17-33"></a>set_mapping <span class="op">(</span><span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span> <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb17-34"><a href="#cb17-34"></a>  <span class="dt">char</span><span class="op">*</span>font_desc_string <span class="op">=</span> pango_font_description_to_string <span class="op">(</span>g_value_get_boxed <span class="op">(</span>value<span class="op">));</span></span>
+<span id="cb17-32"><a href="#cb17-32"></a><span class="dt">static</span> GVariant <span class="op">*</span> <span class="co">// Property =&gt; GSettings</span></span>
+<span id="cb17-33"><a href="#cb17-33"></a>set_mapping <span class="op">(</span><span class="dt">const</span> GValue <span class="op">*</span>value<span class="op">,</span> <span class="dt">const</span> GVariantType <span class="op">*</span>expected_type<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-34"><a href="#cb17-34"></a>  <span class="dt">char</span> <span class="op">*</span>font_desc_string <span class="op">=</span> pango_font_description_to_string <span class="op">(</span>g_value_get_boxed <span class="op">(</span>value<span class="op">));</span></span>
 <span id="cb17-35"><a href="#cb17-35"></a>  <span class="cf">return</span> g_variant_new_take_string <span class="op">(</span>font_desc_string<span class="op">);</span></span>
 <span id="cb17-36"><a href="#cb17-36"></a><span class="op">}</span></span>
 <span id="cb17-37"><a href="#cb17-37"></a></span>

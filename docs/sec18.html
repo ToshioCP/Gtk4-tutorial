@@ -101,26 +101,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h2 id="stateful-action-without-a-parameter">Stateful Action
         without a Parameter</h2>
         <p>Some menus are called toggle menus. For example, the
-        fullscreen menu has two state values – fullscreen and
-        non-fullscreen. The value of the state is changed every time the
-        menu is clicked. An action that corresponds to the fullscreen
-        menu also has a state. The value of the state is TRUE or FALSE
-        and it is called a boolean value. TRUE corresponds to fullscreen
-        and FALSE to non-fullscreen.</p>
-        <p>The following is an example code to implement a fullscreen
-        menu without the signal handler. The signal handler will be
+        “Maximized” menu has two state values – maximized and
+        unmaximized. The value of the state is changed every time the
+        menu is clicked. An action that corresponds to the “Maximized”
+        menu also has a state. The value of the state is boolean, which
+        is TRUE or FALSE. TRUE corresponds to maximized and FALSE to
+        unmaximized.</p>
+        <p>The following is an example code to implement a “Maximized”
+        menu. The code of <code>maximize_state_changed</code> will be
         shown later.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_fullscreen <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;fullscreen&quot;</span><span class="op">,</span></span>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_maximize <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;maximize&quot;</span><span class="op">,</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                                NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_fullscreen<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>fullscreen_changed<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_fullscreen<span class="op">));</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_maximize<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>maximize_state_changed<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_maximize<span class="op">));</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_fullscreen <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Full Screen&quot;</span><span class="op">,</span> <span class="st">&quot;win.fullscreen&quot;</span><span class="op">);</span></span></code></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_maximize <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Maximized&quot;</span><span class="op">,</span> <span class="st">&quot;win.maximize&quot;</span><span class="op">);</span></span></code></pre></div>
         <ul>
-        <li><code>act_fullscreen</code> is a GSimpleAction instance. It
-        is created with <code>g_simple_action_new_stateful</code>. The
-        function has three arguments. The first argument “fullscreen” is
+        <li><code>act_maximize</code> is a GSimpleAction instance. It is
+        created with <code>g_simple_action_new_stateful</code>. The
+        function has three arguments. The first argument “maximize” is
         the name of the action. The second argument is a parameter type.
         <code>NULL</code> means the action doesn’t have a parameter. The
         third argument is the initial state of the action. It is a
@@ -128,42 +128,43 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         subsection. The function
         <code>g_variant_new_boolean (FALSE)</code> returns a GVariant
         value of <code>FALSE</code>. If there are two or more top-level
-        windows, each window has its own <code>act_fullscreen</code>
+        windows, each window has its own <code>act_maximize</code>
         action. So, the number of the actions is the same as the number
         of the windows.</li>
-        <li>The action <code>act_fullscreen</code> has a “change-state”
+        <li>The <code>act_maximize</code> action has a “change-state”
         signal. The signal is connected to a handler
-        <code>fullscreen_changed</code>. If the fullscreen menu is
-        clicked, then the corresponding action
-        <code>act_fullscreen</code> is activated. But no handler is
-        connected to the “activate” signal. Then, the default behavior
-        for boolean-stated actions with a NULL parameter type like
-        <code>act_fullscreen</code> is to toggle them via the
-        “change-state” signal.</li>
+        <code>maximize_state_changed</code>. If the “Maximized” menu is
+        clicked, then the corresponding action <code>act_maximize</code>
+        is activated. But no handler is connected to the “activate”
+        signal. Then, the default behavior for boolean-stated actions
+        with a NULL parameter type like <code>act_maximize</code> is to
+        toggle them via the “change-state” signal.</li>
         <li>The action is added to the GtkWindow, <code>win</code>.
         Therefore, the scope of the action is “win”.</li>
-        <li><code>menu_item_fullscreen</code> is a GMenuItem instance.
-        There are two arguments. The first argument “Full Screen” is the
-        label of <code>menu_item_fullscreen</code>. The second argument
-        is an action. The action “win.fullscreen” has a prefix “win” and
-        an action name “fullscreen”. The prefix indicates that the
-        action belongs to the window.</li>
+        <li><code>menu_item_maximize</code> is a GMenuItem instance.
+        There are two arguments. The first argument “Maximized” is the
+        label of <code>menu_item_maximize</code>. The second argument is
+        an action. The action “win.maximize” has a prefix “win” and an
+        action name “maximize”. The prefix indicates that the action
+        belongs to the window.</li>
         </ul>
         <div class="sourceCode" id="cb2"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>fullscreen_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>maximize_state_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>value<span class="op">))</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>    gtk_window_maximize <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  <span class="cf">else</span></span>
 <span id="cb2-6"><a href="#cb2-6"></a>    gtk_window_unmaximize <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb2-7"><a href="#cb2-7"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a><span class="op">}</span></span></code></pre></div>
+        <p>This is the signal handler that has been connected to the
+        “change-state” signal of the “maximize” action.</p>
         <ul>
-        <li>The handler <code>fullscreen_changed</code> has three
+        <li>The handler <code>maximize_state_changed</code> has three
         parameters. The first parameter is the action which emits the
         “change-state” signal. The second parameter is the value of the
         new state of the action. The third parameter is the user data
-        that is passed to <code>g_signal_connect</code>.</li>
+        that was passed to <code>g_signal_connect</code>.</li>
         <li>If the value is of boolean type and <code>TRUE</code>, then
         it maximizes the window. Otherwise it unmaximizes it.</li>
         <li>Sets the state of the action with <code>value</code>. Note:
@@ -256,9 +257,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         GMenuItem instance. The function <code>g_menu_item_new</code>
         has two arguments. The first argument “Red” is the label of
         <code>menu_item_red</code>. The second argument is a detailed
-        action. Its prefix is “app”, action name is “color” and target
-        is “red”. Target is sent to the action as a parameter. The same
-        goes for <code>menu_item_green</code> and
+        action. Its prefix is “app”, the action name is “color” and the
+        target is “red”. Target is sent to the action as a parameter.
+        The same goes for <code>menu_item_green</code> and
         <code>menu_item_blue</code>.</li>
         <li>The function <code>g_signal_connect</code> connects the
         activate signal on the action <code>act_color</code> and the
@@ -272,7 +273,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>color_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">;}&quot;</span><span class="op">,</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                   g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> color<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> color<span class="op">);</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
@@ -347,19 +348,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>The following code includes stateful actions above. This
         program has menus like this:</p>
         <figure>
-        <img src="/images/menu2.png" alt="menu2" />
+        <img src="/Gtk4-tutorial/images/menu2.png" alt="menu2" />
         <figcaption aria-hidden="true">menu2</figcaption>
         </figure>
         <ul>
-        <li>Fullscreen menu toggles the size of the window between
-        maximum and non-maximum. If the window is maximum size, which is
-        called full screen, then a check mark is put before “fullscreen”
-        label.</li>
+        <li>The “Maximized” menu toggles the size of the window between
+        maximized and unmaximized. If the window is maximized, a check
+        mark is put before the “Maximized” label.</li>
         <li>Red, green and blue menu determines the back ground color of
         the label in the window. The menus have radio buttons on the
         left of the menus. And the radio button of the selected menu
         turns on.</li>
-        <li>Quit menu quits the application.</li>
+        <li>The “quit” menu quits the application.</li>
         </ul>
         <p>The code is as follows.</p>
         <div class="sourceCode" id="cb10"><pre
@@ -369,7 +369,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-4"><a href="#cb10-4"></a>GtkCssProvider <span class="op">*</span>provider<span class="op">;</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a></span>
 <span id="cb10-6"><a href="#cb10-6"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a>fullscreen_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a>maximize_state_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-8"><a href="#cb10-8"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>value<span class="op">))</span></span>
 <span id="cb10-9"><a href="#cb10-9"></a>    gtk_window_maximize <span class="op">(</span>win<span class="op">);</span></span>
 <span id="cb10-10"><a href="#cb10-10"></a>  <span class="cf">else</span></span>
@@ -382,7 +382,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-17"><a href="#cb10-17"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">;}&quot;</span><span class="op">,</span> g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb10-18"><a href="#cb10-18"></a>  <span class="co">/* Change the CSS data in the provider. */</span></span>
 <span id="cb10-19"><a href="#cb10-19"></a>  <span class="co">/* Previous data is thrown away. */</span></span>
-<span id="cb10-20"><a href="#cb10-20"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> color<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> color<span class="op">);</span></span>
 <span id="cb10-21"><a href="#cb10-21"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
 <span id="cb10-22"><a href="#cb10-22"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
 <span id="cb10-23"><a href="#cb10-23"></a><span class="op">}</span></span>
@@ -402,10 +402,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-37"><a href="#cb10-37"></a>  gtk_widget_add_css_class <span class="op">(</span>lb<span class="op">,</span> <span class="st">&quot;lb&quot;</span><span class="op">);</span> <span class="co">/* the class is used by CSS Selector */</span></span>
 <span id="cb10-38"><a href="#cb10-38"></a>  gtk_window_set_child <span class="op">(</span>win<span class="op">,</span> lb<span class="op">);</span></span>
 <span id="cb10-39"><a href="#cb10-39"></a></span>
-<span id="cb10-40"><a href="#cb10-40"></a>  GSimpleAction <span class="op">*</span>act_fullscreen</span>
-<span id="cb10-41"><a href="#cb10-41"></a>    <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
-<span id="cb10-42"><a href="#cb10-42"></a>  g_signal_connect <span class="op">(</span>act_fullscreen<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>fullscreen_changed<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb10-43"><a href="#cb10-43"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_fullscreen<span class="op">));</span></span>
+<span id="cb10-40"><a href="#cb10-40"></a>  GSimpleAction <span class="op">*</span>act_maximize</span>
+<span id="cb10-41"><a href="#cb10-41"></a>    <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;maximize&quot;</span><span class="op">,</span> NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
+<span id="cb10-42"><a href="#cb10-42"></a>  g_signal_connect <span class="op">(</span>act_maximize<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>maximize_state_changed<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_maximize<span class="op">));</span></span>
 <span id="cb10-44"><a href="#cb10-44"></a></span>
 <span id="cb10-45"><a href="#cb10-45"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
 <span id="cb10-46"><a href="#cb10-46"></a></span>
@@ -430,13 +430,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-65"><a href="#cb10-65"></a>  GMenu <span class="op">*</span>section1 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
 <span id="cb10-66"><a href="#cb10-66"></a>  GMenu <span class="op">*</span>section2 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
 <span id="cb10-67"><a href="#cb10-67"></a>  GMenu <span class="op">*</span>section3 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb10-68"><a href="#cb10-68"></a>  GMenuItem <span class="op">*</span>menu_item_fullscreen <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Full Screen&quot;</span><span class="op">,</span> <span class="st">&quot;win.fullscreen&quot;</span><span class="op">);</span></span>
+<span id="cb10-68"><a href="#cb10-68"></a>  GMenuItem <span class="op">*</span>menu_item_maximize <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Maximized&quot;</span><span class="op">,</span> <span class="st">&quot;win.maximize&quot;</span><span class="op">);</span></span>
 <span id="cb10-69"><a href="#cb10-69"></a>  GMenuItem <span class="op">*</span>menu_item_red <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Red&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::red&quot;</span><span class="op">);</span></span>
 <span id="cb10-70"><a href="#cb10-70"></a>  GMenuItem <span class="op">*</span>menu_item_green <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Green&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::green&quot;</span><span class="op">);</span></span>
 <span id="cb10-71"><a href="#cb10-71"></a>  GMenuItem <span class="op">*</span>menu_item_blue <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Blue&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::blue&quot;</span><span class="op">);</span></span>
 <span id="cb10-72"><a href="#cb10-72"></a>  GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span>
 <span id="cb10-73"><a href="#cb10-73"></a></span>
-<span id="cb10-74"><a href="#cb10-74"></a>  g_menu_append_item <span class="op">(</span>section1<span class="op">,</span> menu_item_fullscreen<span class="op">);</span></span>
+<span id="cb10-74"><a href="#cb10-74"></a>  g_menu_append_item <span class="op">(</span>section1<span class="op">,</span> menu_item_maximize<span class="op">);</span></span>
 <span id="cb10-75"><a href="#cb10-75"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_red<span class="op">);</span></span>
 <span id="cb10-76"><a href="#cb10-76"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_green<span class="op">);</span></span>
 <span id="cb10-77"><a href="#cb10-77"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_blue<span class="op">);</span></span>
@@ -444,7 +444,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-79"><a href="#cb10-79"></a>  g_object_unref <span class="op">(</span>menu_item_red<span class="op">);</span></span>
 <span id="cb10-80"><a href="#cb10-80"></a>  g_object_unref <span class="op">(</span>menu_item_green<span class="op">);</span></span>
 <span id="cb10-81"><a href="#cb10-81"></a>  g_object_unref <span class="op">(</span>menu_item_blue<span class="op">);</span></span>
-<span id="cb10-82"><a href="#cb10-82"></a>  g_object_unref <span class="op">(</span>menu_item_fullscreen<span class="op">);</span></span>
+<span id="cb10-82"><a href="#cb10-82"></a>  g_object_unref <span class="op">(</span>menu_item_maximize<span class="op">);</span></span>
 <span id="cb10-83"><a href="#cb10-83"></a>  g_object_unref <span class="op">(</span>menu_item_quit<span class="op">);</span></span>
 <span id="cb10-84"><a href="#cb10-84"></a></span>
 <span id="cb10-85"><a href="#cb10-85"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> NULL<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section1<span class="op">));</span></span>
@@ -460,7 +460,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-95"><a href="#cb10-95"></a></span>
 <span id="cb10-96"><a href="#cb10-96"></a>  provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
 <span id="cb10-97"><a href="#cb10-97"></a>  <span class="co">/* Initialize the css data */</span></span>
-<span id="cb10-98"><a href="#cb10-98"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;label.lb {background-color: red;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb10-98"><a href="#cb10-98"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;label.lb {background-color: red;}&quot;</span><span class="op">);</span></span>
 <span id="cb10-99"><a href="#cb10-99"></a>  <span class="co">/* Add CSS to the default GdkDisplay. */</span></span>
 <span id="cb10-100"><a href="#cb10-100"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>gdk_display_get_default <span class="op">(),</span></span>
 <span id="cb10-101"><a href="#cb10-101"></a>        GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
@@ -496,10 +496,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>lb</code> The label is given a CSS class “lb”. It is added
         to <code>win</code> as a child.</li>
         <li>40-43: A toggle action is created and assigned to
-        <code>act_fullscreen</code>. It’s connected to the signal
-        handler <code>fullscreen_changed</code>. It’s added to the
-        window, so the action scope is “win”. So, if there are two or
-        more windows, the actions are created two or more.</li>
+        <code>act_maximize</code>. It’s connected to the signal handler
+        <code>maximize_state_changed</code>. It’s added to the window,
+        so the action scope is “win”.</li>
         <li>45: The function
         <code>gtk_application_window_set_show_menubar</code> adds a
         menubar to the window.</li>
@@ -514,7 +513,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>94: The menubar is added to the application.</li>
         <li>96-103: A CSS provider is created with the CSS data and
         added to the default display. The “shutdown” signal on the
-        application is connected to a handler “app_shutdown”. So, the
+        application is connected to a handler “app_shutdown”. The
         provider is removed from the display and freed when the
         application quits.</li>
         </ul>

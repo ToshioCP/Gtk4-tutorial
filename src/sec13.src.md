@@ -129,6 +129,7 @@ Such static functions usually don't have `g_return_val_if_fail` functions.
 - 10-11: Gets the text contents from the buffer.
 - 12: The function `g_file_replace_contents` writes the contents to the file and returns the status (true = success/ false = fail).
 It has many parameters, but some of them are almost always given the same values.
+See the [GIO documentation](https://docs.gtk.org/gio/method.File.replace_contents.html) for details.
   - GFile* file: GFile to which the contents are saved.
   - const char* contents: contents to be saved. The string is owned by the caller.
   - gsize length: the length of the contents

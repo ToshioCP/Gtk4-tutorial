@@ -63,8 +63,8 @@
       <attribute name="label">View</attribute>
       <section>
         <item>
-          <attribute name="label">Full Screen</attribute>
-          <attribute name="action">win.fullscreen</attribute>
+          <attribute name="label">Maximized</attribute>
+          <attribute name="action">win.maximize</attribute>
         </item>
       </section>
     </submenu>
