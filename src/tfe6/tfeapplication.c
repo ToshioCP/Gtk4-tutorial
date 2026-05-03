@@ -27,7 +27,7 @@ changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
   s = pfd2css (pango_font_desc); // converts Pango Font Description into CSS style string
   pango_font_description_free (pango_font_desc);
   css = g_strdup_printf ("textview {%s}", s);
-  gtk_css_provider_load_from_data (app->provider, css, -1);
+  gtk_css_provider_load_from_string (app->provider, css);
   g_free (s);
   g_free (css);
 }
@@ -60,7 +60,7 @@ app_startup (GApplication *application) {
 
   app->win = TFE_WINDOW (tfe_window_new (GTK_APPLICATION (app)));
 
-  gtk_css_provider_load_from_data (provider, "textview {padding: 10px;}", -1);
+  gtk_css_provider_load_from_string (provider, "textview {padding: 10px;}");
   display = gdk_display_get_default ();
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
                                               GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

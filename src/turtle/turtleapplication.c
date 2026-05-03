@@ -125,8 +125,8 @@ app_startup (GApplication *application) {
 
   display = gdk_display_get_default ();
   GtkCssProvider *provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (provider, 
-      "textview {border-right: 1px solid gray; padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
+  gtk_css_provider_load_from_string (provider, 
+      "textview {border-right: 1px solid gray; padding: 10px; font-family: monospace; font-size: 12pt;}");
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
   g_object_unref (provider);
 }

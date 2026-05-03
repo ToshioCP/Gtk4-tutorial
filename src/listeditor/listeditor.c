@@ -488,7 +488,7 @@ app_startup (GApplication *application) {
 
   le_window_new (app);
   provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (provider, "text:focus {border: 1px solid gray;} columnview listview row button.current {background: red;}", -1);
+  gtk_css_provider_load_from_string (provider, "text:focus {border: 1px solid gray;} columnview listview row button.current {background: red;}");
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
           GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   g_object_unref (provider);

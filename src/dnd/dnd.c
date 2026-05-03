@@ -10,7 +10,7 @@ drop_cb (GtkDropTarget *self, const GValue *value, gdouble x, gdouble y, gpointe
   char *s;
 
   s = g_strdup_printf (format, g_value_get_string (value));
-  gtk_css_provider_load_from_data (provider, s, -1);
+  gtk_css_provider_load_from_string (provider, s);
   g_free (s);
   return TRUE;
 }
@@ -61,7 +61,7 @@ app_startup (GApplication *application) {
 
   provider = gtk_css_provider_new ();
   s = g_strdup_printf (format, "black");
-  gtk_css_provider_load_from_data (provider, s, -1);
+  gtk_css_provider_load_from_string (provider, s);
   g_free (s);
   display = gdk_display_get_default ();
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
