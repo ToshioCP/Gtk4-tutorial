@@ -119,7 +119,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h2 id="composite-widgets">Composite Widgets</h2>
         <p>The alert dialog is like this:</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/alert.png" alt="Alert dialog" />
+        <img src="/images/alert.png" alt="Alert dialog" />
         <figcaption aria-hidden="true">Alert dialog</figcaption>
         </figure>
         <p>Tfe uses it when a user quits the application or closes a
@@ -247,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <pre><code>$ gtk4-icon-browser</code></pre>
         <p>The “dialog-warning” icon is something like this.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/dialog_warning.png"
+        <img src="/images/dialog_warning.png"
         alt="dialog-warning icon is like …" />
         <figcaption aria-hidden="true">dialog-warning icon is like
         …</figcaption>
@@ -380,10 +380,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
 <span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>
-        <li>The macro <code>G_DEFINE_FINAL_TYPE</code> is available
-        since GLib version 2.70. It is used only for a final type class.
-        You can use <code>G_DEFINE_TYPE</code> macro instead. They are
-        expanded into:
+        <li><code>G_DEFINE_FINAL_TYPE</code> was introduced in GLib 2.70
+        for final type classes. While <code>G_DEFINE_TYPE</code> still
+        works, the new macro is preferred. It is expanded into:
         <ul>
         <li>The declaration of the functions <code>tfe_alert_init</code>
         and <code>tfe_alert_class_init</code>. They are defined in the

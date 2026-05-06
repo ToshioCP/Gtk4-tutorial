@@ -114,41 +114,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-8"><a href="#cb1-8"></a>  gchar <span class="op">*</span>text<span class="op">;</span></span>
 <span id="cb1-9"><a href="#cb1-9"></a></span>
 <span id="cb1-10"><a href="#cb1-10"></a>  text <span class="op">=</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a>      <span class="st">&quot;Once upon a time, there was an old man who was called Taketori-no-Okina. &quot;</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>      <span class="st">&quot;It is a Japanese word that means a man whose work is making bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>      <span class="st">&quot;One day, he went into a hill and found a shining bamboo. &quot;</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">What a mysterious bamboo it is!,</span><span class="sc">\&quot;</span><span class="st"> he said. &quot;</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>      <span class="st">&quot;He cut it, then there was a small cute baby girl in it. &quot;</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>      <span class="st">&quot;The girl was shining faintly. &quot;</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>      <span class="st">&quot;He thought this baby girl was a gift from Heaven and took her home.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb1-18"><a href="#cb1-18"></a>      <span class="st">&quot;His wife was surprized at his story. &quot;</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>      <span class="st">&quot;They were very happy because they had no children. &quot;</span></span>
-<span id="cb1-20"><a href="#cb1-20"></a>      <span class="op">;</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb1-22"><a href="#cb1-22"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;Taketori&quot;</span><span class="op">);</span></span>
-<span id="cb1-23"><a href="#cb1-23"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb1-24"><a href="#cb1-24"></a></span>
-<span id="cb1-25"><a href="#cb1-25"></a>  tv <span class="op">=</span> gtk_text_view_new <span class="op">();</span></span>
-<span id="cb1-26"><a href="#cb1-26"></a>  tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>  gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> text<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a>  gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>      <span class="st">&quot;Once upon a time, there lived an old man known as Taketori-no-Okina. &quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>      <span class="st">&quot;His name, meaning </span><span class="sc">\&quot;</span><span class="st">The Bamboo Cutter,</span><span class="sc">\&quot;</span><span class="st"> reflected his life&#39;s work of crafting bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>      <span class="st">&quot;One day, while deep in the hills, he came across a bamboo stalk that shimmered with a mysterious light. &quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">How strange and wondrous!</span><span class="sc">\&quot;</span><span class="st"> he exclaimed. &quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>      <span class="st">&quot;When he carefully cut it open, he found a tiny, beautiful baby girl nestled inside, glowing with a soft radiance. &quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>      <span class="st">&quot;Believing she was a gift from the heavens, he brought her home.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>      <span class="st">&quot;Though his wife was astonished by his tale, they were both filled with joy, for they had never been blessed with children of their own.&quot;</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>      <span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;Taketori&quot;</span><span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">800</span><span class="op">,</span> <span class="dv">600</span><span class="op">);</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a>  tv <span class="op">=</span> gtk_text_view_new <span class="op">();</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>  tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>  gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> text<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>  gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a></span>
+<span id="cb1-28"><a href="#cb1-28"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> tv<span class="op">);</span></span>
 <span id="cb1-29"><a href="#cb1-29"></a></span>
-<span id="cb1-30"><a href="#cb1-30"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> tv<span class="op">);</span></span>
-<span id="cb1-31"><a href="#cb1-31"></a></span>
-<span id="cb1-32"><a href="#cb1-32"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb1-33"><a href="#cb1-33"></a><span class="op">}</span></span>
-<span id="cb1-34"><a href="#cb1-34"></a></span>
-<span id="cb1-35"><a href="#cb1-35"></a><span class="dt">int</span></span>
-<span id="cb1-36"><a href="#cb1-36"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-37"><a href="#cb1-37"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb1-38"><a href="#cb1-38"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb1-39"><a href="#cb1-39"></a></span>
-<span id="cb1-40"><a href="#cb1-40"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv1&quot;</span><span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb1-41"><a href="#cb1-41"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb1-42"><a href="#cb1-42"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb1-43"><a href="#cb1-43"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb1-44"><a href="#cb1-44"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb1-45"><a href="#cb1-45"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb1-30"><a href="#cb1-30"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb1-31"><a href="#cb1-31"></a><span class="op">}</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a></span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="dt">int</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-35"><a href="#cb1-35"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb1-36"><a href="#cb1-36"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a></span>
+<span id="cb1-38"><a href="#cb1-38"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv1&quot;</span><span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb1-39"><a href="#cb1-39"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb1-40"><a href="#cb1-40"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb1-42"><a href="#cb1-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb1-43"><a href="#cb1-43"></a><span class="op">}</span></span></code></pre></div>
         <p>Look at line 25. A GtkTextView instance is created and its
         pointer is assigned to <code>tv</code>. When the GtkTextView
         instance is created, a GtkTextBuffer instance is also created
@@ -174,8 +172,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 $ comp tfv1
 $ ./a.out</code></pre>
         <figure>
-        <img src="/Gtk4-tutorial/images/screenshot_tfv1.png"
-        alt="GtkTextView" />
+        <img src="/images/screenshot_tfv1.png" alt="GtkTextView" />
         <figcaption aria-hidden="true">GtkTextView</figcaption>
         </figure>
         <p>There’s an I-beam pointer in the window. You can add or
@@ -201,23 +198,15 @@ $ ./a.out</code></pre>
         <pre><code>$ cd tfv; diff tfv1.c tfv2.c
 5a6
 &gt;   GtkWidget *scr;
-12c13
-&lt;       &quot;It is a Japanese word that means a man whose work is making bamboo baskets.\n&quot;
----
-&gt;       &quot;It is a japanese word that means a man whose work is making bamboo baskets.\n&quot;
-17c18
-&lt;       &quot;He thought this baby girl was a gift from Heaven and took her home.\n&quot;
----
-&gt;       &quot;He thought this baby girl is a gift from Heaven and took her home.\n&quot;
-24a26,28
+22a24,26
 &gt;   scr = gtk_scrolled_window_new ();
 &gt;   gtk_window_set_child (GTK_WINDOW (win), scr);
 &gt; 
-30c34
+28c32
 &lt;   gtk_window_set_child (GTK_WINDOW (win), tv);
 ---
 &gt;   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-40c44
+38c42
 &lt;   app = gtk_application_new (&quot;com.github.ToshioCP.tfv1&quot;, G_APPLICATION_DEFAULT_FLAGS);
 ---
 &gt;   app = gtk_application_new (&quot;com.github.ToshioCP.tfv2&quot;, G_APPLICATION_DEFAULT_FLAGS);
@@ -235,44 +224,42 @@ $</code></pre>
 <span id="cb4-9"><a href="#cb4-9"></a>  gchar <span class="op">*</span>text<span class="op">;</span></span>
 <span id="cb4-10"><a href="#cb4-10"></a></span>
 <span id="cb4-11"><a href="#cb4-11"></a>  text <span class="op">=</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>      <span class="st">&quot;Once upon a time, there was an old man who was called Taketori-no-Okina. &quot;</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a>      <span class="st">&quot;It is a japanese word that means a man whose work is making bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a>      <span class="st">&quot;One day, he went into a hill and found a shining bamboo. &quot;</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">What a mysterious bamboo it is!,</span><span class="sc">\&quot;</span><span class="st"> he said. &quot;</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>      <span class="st">&quot;He cut it, then there was a small cute baby girl in it. &quot;</span></span>
-<span id="cb4-17"><a href="#cb4-17"></a>      <span class="st">&quot;The girl was shining faintly. &quot;</span></span>
-<span id="cb4-18"><a href="#cb4-18"></a>      <span class="st">&quot;He thought this baby girl is a gift from Heaven and took her home.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a>      <span class="st">&quot;His wife was surprized at his story. &quot;</span></span>
-<span id="cb4-20"><a href="#cb4-20"></a>      <span class="st">&quot;They were very happy because they had no children. &quot;</span></span>
-<span id="cb4-21"><a href="#cb4-21"></a>      <span class="op">;</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;Taketori&quot;</span><span class="op">);</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb4-25"><a href="#cb4-25"></a></span>
-<span id="cb4-26"><a href="#cb4-26"></a>  scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> scr<span class="op">);</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a></span>
-<span id="cb4-29"><a href="#cb4-29"></a>  tv <span class="op">=</span> gtk_text_view_new <span class="op">();</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a>  tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a>  gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> text<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>  gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>      <span class="st">&quot;Once upon a time, there lived an old man known as Taketori-no-Okina. &quot;</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>      <span class="st">&quot;His name, meaning </span><span class="sc">\&quot;</span><span class="st">The Bamboo Cutter,</span><span class="sc">\&quot;</span><span class="st"> reflected his life&#39;s work of crafting bamboo baskets.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>      <span class="st">&quot;One day, while deep in the hills, he came across a bamboo stalk that shimmered with a mysterious light. &quot;</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>      <span class="st">&quot;</span><span class="sc">\&quot;</span><span class="st">How strange and wondrous!</span><span class="sc">\&quot;</span><span class="st"> he exclaimed. &quot;</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>      <span class="st">&quot;When he carefully cut it open, he found a tiny, beautiful baby girl nestled inside, glowing with a soft radiance. &quot;</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>      <span class="st">&quot;Believing she was a gift from the heavens, he brought her home.</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>      <span class="st">&quot;Though his wife was astonished by his tale, they were both filled with joy, for they had never been blessed with children of their own.&quot;</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>      <span class="op">;</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;Taketori&quot;</span><span class="op">);</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">800</span><span class="op">,</span> <span class="dv">600</span><span class="op">);</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a></span>
+<span id="cb4-24"><a href="#cb4-24"></a>  scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> scr<span class="op">);</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a></span>
+<span id="cb4-27"><a href="#cb4-27"></a>  tv <span class="op">=</span> gtk_text_view_new <span class="op">();</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a>  tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>  gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> text<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>  gtk_text_view_set_wrap_mode <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WRAP_WORD_CHAR<span class="op">);</span></span>
+<span id="cb4-31"><a href="#cb4-31"></a></span>
+<span id="cb4-32"><a href="#cb4-32"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
 <span id="cb4-33"><a href="#cb4-33"></a></span>
-<span id="cb4-34"><a href="#cb4-34"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> tv<span class="op">);</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a></span>
-<span id="cb4-36"><a href="#cb4-36"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb4-37"><a href="#cb4-37"></a><span class="op">}</span></span>
-<span id="cb4-38"><a href="#cb4-38"></a></span>
-<span id="cb4-39"><a href="#cb4-39"></a><span class="dt">int</span></span>
-<span id="cb4-40"><a href="#cb4-40"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb4-42"><a href="#cb4-42"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb4-43"><a href="#cb4-43"></a></span>
-<span id="cb4-44"><a href="#cb4-44"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv2&quot;</span><span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb4-45"><a href="#cb4-45"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-46"><a href="#cb4-46"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb4-47"><a href="#cb4-47"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb4-48"><a href="#cb4-48"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb4-49"><a href="#cb4-49"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb4-34"><a href="#cb4-34"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a><span class="op">}</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a></span>
+<span id="cb4-37"><a href="#cb4-37"></a><span class="dt">int</span></span>
+<span id="cb4-38"><a href="#cb4-38"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-39"><a href="#cb4-39"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb4-40"><a href="#cb4-40"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb4-41"><a href="#cb4-41"></a></span>
+<span id="cb4-42"><a href="#cb4-42"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv2&quot;</span><span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb4-43"><a href="#cb4-43"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb4-45"><a href="#cb4-45"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb4-46"><a href="#cb4-46"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb4-47"><a href="#cb4-47"></a><span class="op">}</span></span></code></pre></div>
         <p>Compile and run it.</p>
         <p>Now, the window doesn’t extend even if you type a lot of
         characters, it just scrolls.</p>

@@ -246,10 +246,9 @@ tfe_alert_new (void) {
 ```
 @@@end
 
-- The macro `G_DEFINE_FINAL_TYPE` is available since GLib version 2.70.
-It is used only for a final type class.
-You can use `G_DEFINE_TYPE` macro instead.
-They are expanded into:
+- `G_DEFINE_FINAL_TYPE` was introduced in GLib 2.70 for final type classes.
+While `G_DEFINE_TYPE` still works, the new macro is preferred.
+It is expanded into:
   - The declaration of the functions `tfe_alert_init` and `tfe_alert_class_init`.
 They are defined in the following part of the C program.
   - The definition of the variable `tfe_alert_parent_class`.

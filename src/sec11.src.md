@@ -296,7 +296,7 @@ In dispose handlers, we usually use `g_clear_object` rather than `g_object_unref
 
 In the disposing process, the object uses the pointer in its class to call the handler.
 Therefore, `tfe_text_view_dispose` needs to be registered in the class when the TfeTextView class is initialized.
-The function `tfe_text_view_class_init` is the class initialization function and it is declared in the `G_DEFINE_TYPE` macro expansion.
+The function `tfe_text_view_class_init` is the class initialization function and it is declared in the `G_DEFINE_FINAL_TYPE` macro expansion.
 
 ~~~C
 static void

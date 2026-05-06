@@ -102,8 +102,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         destination.</p>
         <p>You probably have experience moving a file with DND.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/dnd.png"
-        alt="DND on the GUI file manager" />
+        <img src="/images/dnd.png" alt="DND on the GUI file manager" />
         <figcaption aria-hidden="true">DND on the GUI file
         manager</figcaption>
         </figure>
@@ -119,8 +118,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         “red”, “green” or “blue” labels. If a user drags the label to
         the destination label, the font color will be changed.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/dnd_canvas.png"
-        alt="DND example" />
+        <img src="/images/dnd_canvas.png" alt="DND example" />
         <figcaption aria-hidden="true">DND example</figcaption>
         </figure>
         <h2 id="ui-file">UI File</h2>
@@ -274,7 +272,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-35"><a href="#cb5-35"></a></span>
 <span id="cb5-36"><a href="#cb5-36"></a>  provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
 <span id="cb5-37"><a href="#cb5-37"></a>  s <span class="op">=</span> g_strdup_printf <span class="op">(</span>format<span class="op">,</span> <span class="st">&quot;black&quot;</span><span class="op">);</span></span>
-<span id="cb5-38"><a href="#cb5-38"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> s<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-38"><a href="#cb5-38"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> s<span class="op">);</span></span>
 <span id="cb5-39"><a href="#cb5-39"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb5-40"><a href="#cb5-40"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
 <span id="cb5-41"><a href="#cb5-41"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span></span>
@@ -337,7 +335,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
 <span id="cb8-5"><a href="#cb8-5"></a>  s <span class="op">=</span> g_strdup_printf <span class="op">(</span>format<span class="op">,</span> g_value_get_string <span class="op">(</span>value<span class="op">));</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> s<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> s<span class="op">);</span></span>
 <span id="cb8-7"><a href="#cb8-7"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb8-9"><a href="#cb8-9"></a><span class="op">}</span></span></code></pre></div>

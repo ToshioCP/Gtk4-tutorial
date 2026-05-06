@@ -84,7 +84,7 @@ notebook_page_build (GtkNotebook *nb, GtkWidget *tv, const char *filename) {
   nbp = gtk_notebook_get_page (nb, scr);
   g_object_set (nbp, "tab-expand", TRUE, NULL);
   gtk_notebook_set_current_page (nb, i);
-  g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
+  g_signal_connect (tv, "change-file", G_CALLBACK (file_changed_cb), nb);
 }
 
 static void
@@ -111,7 +111,7 @@ notebook_page_open (GtkNotebook *nb) {
   GtkWidget *tv;
 
   tv = tfe_text_view_new ();
-  g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), nb);
+  g_signal_connect (tv, "open-response", G_CALLBACK (open_response_cb), nb);
   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
 }
 

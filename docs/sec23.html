@@ -385,7 +385,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-9"><a href="#cb5-9"></a></span>
 <span id="cb5-10"><a href="#cb5-10"></a>  app<span class="op">-&gt;</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>tfe_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">)));</span></span>
 <span id="cb5-11"><a href="#cb5-11"></a></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px;}&quot;</span><span class="op">);</span></span>
 <span id="cb5-13"><a href="#cb5-13"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
 <span id="cb5-14"><a href="#cb5-14"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span></span>
 <span id="cb5-15"><a href="#cb5-15"></a>                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
@@ -500,7 +500,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-12"><a href="#cb7-12"></a>  s <span class="op">=</span> pfd2css <span class="op">(</span>pango_font_desc<span class="op">);</span> <span class="co">// converts Pango Font Description into CSS style string</span></span>
 <span id="cb7-13"><a href="#cb7-13"></a>  pango_font_description_free <span class="op">(</span>pango_font_desc<span class="op">);</span></span>
 <span id="cb7-14"><a href="#cb7-14"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {</span><span class="sc">%s</span><span class="st">}&quot;</span><span class="op">,</span> s<span class="op">);</span></span>
-<span id="cb7-15"><a href="#cb7-15"></a>  gtk_css_provider_load_from_data <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">,</span> css<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>  gtk_css_provider_load_from_string <span class="op">(</span>app<span class="op">-&gt;</span>provider<span class="op">,</span> css<span class="op">);</span></span>
 <span id="cb7-16"><a href="#cb7-16"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
 <span id="cb7-17"><a href="#cb7-17"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
 <span id="cb7-18"><a href="#cb7-18"></a><span class="op">}</span></span></code></pre></div>

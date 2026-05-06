@@ -131,7 +131,7 @@ notebook_page_build (TfeWindow *win, GtkWidget *tv, char *filename) {
   nbp = gtk_notebook_get_page (win->nb, scr);
   g_object_set (nbp, "tab-expand", TRUE, NULL);
   gtk_notebook_set_current_page (win->nb, i);
-  g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), win->nb);
+  g_signal_connect (tv, "change-file", G_CALLBACK (file_changed_cb), win->nb);
   g_signal_connect (tb, "modified-changed", G_CALLBACK (modified_changed_cb), tv);
 }
 
@@ -180,7 +180,7 @@ close_request_cb (TfeWindow *win) {
     win->is_quit = TRUE;
     alert = TFE_ALERT (tfe_alert_new_with_data ("Are you sure?", "Contents aren't saved yet.\nAre you sure to quit?", "Quit"));
     gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
-    g_signal_connect (TFE_ALERT (alert), "response", G_CALLBACK (alert_response_cb), win);
+    g_signal_connect (alert, "response", G_CALLBACK (alert_response_cb), win);
     gtk_window_present (GTK_WINDOW (alert));
     return TRUE;
   }
@@ -192,7 +192,7 @@ open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) 
   TfeWindow *win = TFE_WINDOW (user_data);
   GtkWidget *tv = tfe_text_view_new ();
 
-  g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), win);
+  g_signal_connect (tv, "open-response", G_CALLBACK (open_response_cb), win);
   tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
 }
 
@@ -219,7 +219,7 @@ close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
     win->is_quit = FALSE;
     alert = tfe_alert_new_with_data ("Are you sure?", "Contents aren't saved yet.\nAre you sure to close?", "Close");
     gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
-    g_signal_connect (TFE_ALERT (alert), "response", G_CALLBACK (alert_response_cb), win);
+    g_signal_connect (alert, "response", G_CALLBACK (alert_response_cb), win);
     gtk_window_present (GTK_WINDOW (alert));
   }
 }
@@ -316,7 +316,7 @@ tfe_window_init (TfeWindow *win) {
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
-  g_signal_connect (GTK_WINDOW (win), "close-request", G_CALLBACK (close_request_cb), NULL);
+  g_signal_connect (win, "close-request", G_CALLBACK (close_request_cb), NULL);
 }
 
 static void

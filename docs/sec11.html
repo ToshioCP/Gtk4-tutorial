@@ -185,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         The structure of <code>TfeTextView</code> is like the following
         diagram.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/TfeTextView.png"
+        <img src="/images/TfeTextView.png"
         alt="The structure of the instance TfeTextView" />
         <figcaption aria-hidden="true">The structure of the instance
         TfeTextView</figcaption>
@@ -535,7 +535,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>TfeTextViewClass includes its ancestors’ class in it. It is
         illustrated in the following diagram.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/TfeTextViewClass.png"
+        <img src="/images/TfeTextViewClass.png"
         alt="The structure of TfeTextView Class" />
         <figcaption aria-hidden="true">The structure of TfeTextView
         Class</figcaption>
@@ -560,8 +560,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         destructs itself and finally the memories allocated to C is
         freed.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/refcount.png"
-        alt="Reference count of B" />
+        <img src="/images/refcount.png" alt="Reference count of B" />
         <figcaption aria-hidden="true">Reference count of B</figcaption>
         </figure>
         <p>The idea above is based on an assumption that an object
@@ -602,7 +601,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         class when the TfeTextView class is initialized. The function
         <code>tfe_text_view_class_init</code> is the class
         initialization function and it is declared in the
-        <code>G_DEFINE_TYPE</code> macro expansion.</p>
+        <code>G_DEFINE_FINAL_TYPE</code> macro expansion.</p>
         <div class="sourceCode" id="cb12"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>tfe_text_view_class_init <span class="op">(</span>TfeTextViewClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
@@ -619,8 +618,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>dh1</code>, <code>dh2</code>, <code>dh3</code> and
         <code>tfe_text_view_dispose</code>.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/dispose_handler.png"
-        alt="dispose handlers" />
+        <img src="/images/dispose_handler.png" alt="dispose handlers" />
         <figcaption aria-hidden="true">dispose handlers</figcaption>
         </figure>
         <p>Now, look at the <code>tfe_text_view_dispose</code> program

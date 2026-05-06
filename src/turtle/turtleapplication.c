@@ -119,7 +119,7 @@ app_startup (GApplication *application) {
   tv = GTK_WIDGET (gtk_builder_get_object (build, "tv"));
   da = GTK_WIDGET (gtk_builder_get_object (build, "da"));
   g_object_unref(build);
-  g_signal_connect (GTK_DRAWING_AREA (da), "resize", G_CALLBACK (resize_cb), NULL);
+  g_signal_connect (da, "resize", G_CALLBACK (resize_cb), NULL);
   g_signal_connect (tv, "change-file", G_CALLBACK (show_filename), NULL);
   gtk_drawing_area_set_draw_func (GTK_DRAWING_AREA (da), draw_func, NULL, NULL);
 

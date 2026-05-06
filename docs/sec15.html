@@ -179,7 +179,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-27"><a href="#cb2-27"></a></span>
 <span id="cb2-28"><a href="#cb2-28"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
 <span id="cb2-29"><a href="#cb2-29"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb2-30"><a href="#cb2-30"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span><span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;textview {padding: 10px; font-family: monospace; font-size: 12pt;}&quot;</span><span class="op">);</span></span>
 <span id="cb2-31"><a href="#cb2-31"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
 <span id="cb2-32"><a href="#cb2-32"></a></span>
 <span id="cb2-33"><a href="#cb2-33"></a>  g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;destroy&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>before_destroy<span class="op">),</span> provider<span class="op">);</span></span>
@@ -269,11 +269,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>28: The display is obtained by
         <code>gdk_display_get_default</code>.</li>
         <li>29: Creates a GtkCssProvider instance.</li>
-        <li>30: Puts the CSS into the provider. The function
-        <code>gtk_css_provider_load_from_data</code> will be deprecated
-        since 4.12 (Not 4.10). The new function
-        <code>gtk_css_provider_load_from_string</code> will be used in
-        the future version of Tfe.</li>
+        <li>30: Puts the CSS into the provider.</li>
         <li>31: Adds the provider to the display. The last argument of
         <code>gtk_style_context_add_provider_for_display</code> is the
         priority of the style provider.

@@ -98,7 +98,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>GtkGridView is similar to GtkListView. It displays a
         GListModel as a grid, which is like a square tessellation.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/list4.png" alt="Grid" />
+        <img src="/images/list4.png" alt="Grid" />
         <figcaption aria-hidden="true">Grid</figcaption>
         </figure>
         <p>This is often seen when you use a file browser like GNOME
@@ -124,8 +124,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <pre><code>GtkListView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList
 GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList</code></pre>
         <figure>
-        <img src="/Gtk4-tutorial/images/directorylist.png"
-        alt="DirectoryList" />
+        <img src="/images/directorylist.png" alt="DirectoryList" />
         <figcaption aria-hidden="true">DirectoryList</figcaption>
         </figure>
         <p>The following is a part of the UI file
@@ -429,7 +428,7 @@ $</code></pre>
 <span id="cb9-12"><a href="#cb9-12"></a>    gtk_scrolled_window_set_child <span class="op">(</span>scr<span class="op">,</span> GTK_WIDGET <span class="op">(</span>grid<span class="op">));</span></span>
 <span id="cb9-13"><a href="#cb9-13"></a>  <span class="op">}</span></span>
 <span id="cb9-14"><a href="#cb9-14"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;button#btn</span><span class="sc">%s</span><span class="st"> {background: silver;} button#btn</span><span class="sc">%s</span><span class="st"> {background: white;}&quot;</span><span class="op">,</span> view<span class="op">,</span> other<span class="op">);</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a>  gtk_css_provider_load_from_data <span class="op">(</span>provider<span class="op">,</span> css<span class="op">,</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> css<span class="op">);</span></span>
 <span id="cb9-16"><a href="#cb9-16"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
 <span id="cb9-17"><a href="#cb9-17"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
 <span id="cb9-18"><a href="#cb9-18"></a><span class="op">}</span></span></code></pre></div>
@@ -576,8 +575,7 @@ $ _build/list4</code></pre>
         editor runs with the argument “list4.c”. The following is the
         screenshot.</p>
         <figure>
-        <img src="/Gtk4-tutorial/images/screenshot_list4.png"
-        alt="Screenshot" />
+        <img src="/images/screenshot_list4.png" alt="Screenshot" />
         <figcaption aria-hidden="true">Screenshot</figcaption>
         </figure>
         <h2 id="gbytes-property-of-gtkbuilderlistitemfactory">“gbytes”

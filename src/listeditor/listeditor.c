@@ -16,7 +16,7 @@ typedef struct _LeData {
   char *string;
 } LeData;
 
-G_DEFINE_TYPE(LeData, le_data, G_TYPE_OBJECT)
+G_DEFINE_FINAL_TYPE(LeData, le_data, G_TYPE_OBJECT)
 
 static void
 le_data_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec) {

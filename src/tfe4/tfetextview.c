@@ -7,7 +7,7 @@ struct _TfeTextView
   GFile *file;
 };
 
-G_DEFINE_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
+G_DEFINE_FINAL_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {

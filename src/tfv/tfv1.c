@@ -8,19 +8,17 @@ app_activate (GApplication *app) {
   gchar *text;
 
   text =
-      "Once upon a time, there was an old man who was called Taketori-no-Okina. "
-      "It is a Japanese word that means a man whose work is making bamboo baskets.\n"
-      "One day, he went into a hill and found a shining bamboo. "
-      "\"What a mysterious bamboo it is!,\" he said. "
-      "He cut it, then there was a small cute baby girl in it. "
-      "The girl was shining faintly. "
-      "He thought this baby girl was a gift from Heaven and took her home.\n"
-      "His wife was surprized at his story. "
-      "They were very happy because they had no children. "
+      "Once upon a time, there lived an old man known as Taketori-no-Okina. "
+      "His name, meaning \"The Bamboo Cutter,\" reflected his life's work of crafting bamboo baskets.\n"
+      "One day, while deep in the hills, he came across a bamboo stalk that shimmered with a mysterious light. "
+      "\"How strange and wondrous!\" he exclaimed. "
+      "When he carefully cut it open, he found a tiny, beautiful baby girl nestled inside, glowing with a soft radiance. "
+      "Believing she was a gift from the heavens, he brought her home.\n"
+      "Though his wife was astonished by his tale, they were both filled with joy, for they had never been blessed with children of their own."
       ;
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "Taketori");
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
 
   tv = gtk_text_view_new ();
   tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
