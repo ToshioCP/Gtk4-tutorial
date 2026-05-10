@@ -345,7 +345,7 @@ view_activated(GSimpleAction *action, GVariant *parameter) {
     gtk_scrolled_window_set_child (scr, GTK_WIDGET (grid));
   }
   css = g_strdup_printf ("button#btn%s {background: silver;} button#btn%s {background: white;}", view, other);
-  gtk_css_provider_load_from_data (provider, css, -1);
+  gtk_css_provider_load_from_string (provider, css);
   g_free (css);
   g_action_change_state (G_ACTION (action), parameter);
 }

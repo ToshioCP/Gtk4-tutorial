@@ -84,7 +84,7 @@ GdkDisplay *display;
 
   display = gdk_display_get_default ();
   GtkCssProvider *provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}", -1);
+  gtk_css_provider_load_from_string (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}");
   gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
   g_signal_connect (win, "destroy", G_CALLBACK (before_destroy), provider);
@@ -171,8 +171,6 @@ Look at the source file of the `startup` handler again.
 - 28: The display is obtained by `gdk_display_get_default`.
 - 29: Creates a GtkCssProvider instance.
 - 30: Puts the CSS into the provider.
-The function `gtk_css_provider_load_from_data` will be deprecated since 4.12 (Not 4.10).
-The new function `gtk_css_provider_load_from_string` will be used in the future version of Tfe.
 - 31: Adds the provider to the display.
 The last argument of `gtk_style_context_add_provider_for_display` is the priority of the style provider.
 `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` is a priority for application-specific style information.

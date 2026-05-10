@@ -81,7 +81,7 @@ A file viewer is a program that displays text files.
 Our file viewer is as follows.
 
 - When arguments are given, it recognizes the first argument as a filename and opens it.
-- The second argument and after are ignored.
+- The second argument and later are ignored.
 - If there is no argument, it shows an error message and quits.
 - If it successfully opens the file, it reads the contents of the file, inserts them to GtkTextBuffer and shows the window.
 - If it fails to open the file, it shows an error message and quit.
@@ -240,9 +240,8 @@ The left image is the window at the startup.
 The file `pr1.c` is shown and its filename is in the left tab.
 After clicking on the right tab, the contents of the file `tfv1.c` is shown (the right image).
 
-The following is `tfv4.c`.
-It has a GtkNoteBook widget.
-It is inserted as a child of a GtkApplicationWindow and contains multiple GtkScrolledWindow widgets.
+The next source code is `tfv4.c`, including a GtkNoteBook widget.
+The widget is inserted as a child of a GtkApplicationWindow and contains multiple GtkScrolledWindow widgets.
 
 ```c
 #include <gtk/gtk.h>
@@ -263,7 +262,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   GtkTextBuffer *tb;
   char *contents;
   gsize length;
-  char *filename;
+  char *filename_bin, *filename_utf8;
   int i;
   GError *err = NULL;
 
@@ -284,11 +283,11 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
 
       gtk_text_buffer_set_text (tb, contents, length);
       g_free (contents);
-      if ((filename = g_file_get_basename (files[i])) != NULL) {
-        lab = gtk_label_new (filename);
-        g_free (filename);
-      } else
-        lab = gtk_label_new ("");
+      filename_bin = g_file_get_basename (files[i]);
+      filename_utf8 = g_filename_display_name (filename_bin);
+      lab = gtk_label_new (filename_utf8);
+      g_free (filename_bin);
+      g_free (filename_utf8);
       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);
@@ -317,19 +316,21 @@ main (int argc, char **argv) {
 }
 ```
 
-Most of the changes are in the function `app_open`.
-The numbers at the left of the following items are line numbers in the source code.
+The changes are primarily located in the `app_open` function.
+The numbers on the left below correspond to the line numbers in the source code.
 
 - 11-13: Variables `nb`, `lab` and `nbp` are defined. They point to a GtkNotebook, GtkLabel and GtkNotebookPage respectively.
 - 24: The window's title is set to "file viewer".
 - 25: The default size of the window is 600x400.
-- 26-27: GtkNotebook is created and inserted to the GtkApplicationWindow as a child.
-- 29-57: For-loop. The variable `files[i]` points to i-th GFile, which is created by the GtkApplication from the i-th command line argument.
+- 26-27: GtkNotebook is created and set as a child of the GtkApplicationWindow.
+- 29-52: For-loop. The variable `files[i]` points to i-th GFile, which is created by the GtkApplication from the i-th command line argument.
 - 31-36: A GtkScrollledWindow and a GtkTextView are created. A GtkTextBuffer is obtained from the GtkTextView.
 The GtkTextView is connected to the GtkScrolledWindow as a child.
 - 38-39: inserts the contents of the file into the GtkTextBuffer and frees the memory referenced by `contents`.
-- 40-42: If the filename is taken from the GFile, GtkLabel is created with the filename. The string `filename` is freed..
-- 43-44: If it fails to take the filename, a GtkLabel with an empty string is created.
+- 40-44: Retrieves the filename from the GFile using `g_file_get_basename`.
+The filename is a byte-sequence without a specific encoding.
+It needs to be converted into a UTF-8 string with `g_filename_display_name` before setting the label text.
+The strings `filename_bin` and `filename_utf8` are freed.
 - 45-46: Appends a GtkScrolledWindow to the GtkNotebook as a child.
 And the GtkLabel is set as the child's tab.
 At the same time, a GtkNoteBookPage is created automatically.

@@ -16,7 +16,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   GtkTextBuffer *tb;
   char *contents;
   gsize length;
-  char *filename;
+  char *filename_bin, *filename_utf8;
   int i;
   GError *err = NULL;
 
@@ -37,11 +37,11 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
 
       gtk_text_buffer_set_text (tb, contents, length);
       g_free (contents);
-      if ((filename = g_file_get_basename (files[i])) != NULL) {
-        lab = gtk_label_new (filename);
-        g_free (filename);
-      } else
-        lab = gtk_label_new ("");
+      filename_bin = g_file_get_basename (files[i]);
+      filename_utf8 = g_filename_display_name (filename_bin);
+      lab = gtk_label_new (filename_utf8);
+      g_free (filename_bin);
+      g_free (filename_utf8);
       gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
       nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
       g_object_set (nbp, "tab-expand", TRUE, NULL);

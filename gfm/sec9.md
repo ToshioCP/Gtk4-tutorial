@@ -2,44 +2,34 @@ Up: [README.md](../README.md),  Prev: [Section 8](sec8.md), Next: [Section 10](s
 
 # GtkBuilder and UI Files
 
-## New, Open, Save and Close Buttons
+We developed a very simple editor in the previous section.
+While it functions by reading and writing files at the start and end of the program, there is room for improvement.
+It would be more user-friendly to have "New", "Open", "Save", and "Close" buttons.
+This section describes how to incorporate these buttons into the window.
+We will focus on building the widgets and omit the file I/O functions for now.
 
-We made a very simple editor in the previous section.
-It reads files at the start and writes them out at the end of the program.
-It works, but is not so good.
-It would be better if we had "New", "Open", "Save" and "Close" buttons.
-This section describes how to put those buttons into the window.
+## New, Open, Save and Close Buttons
 
 ![Screenshot of the file editor](/src/images/screenshot_tfe2.png)
 
 The screenshot above shows the layout.
-The function `app_open` in the source code `tfe2.c` is as follows.
+The source code `tfe2.c` is as follows.
 
 ```c
-static void
-app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
-  GtkWidget *win;
-  GtkWidget *nb;
-  GtkWidget *lab;
-  GtkNotebookPage *nbp;
-  GtkWidget *scr;
-  GtkWidget *tv;
-  GtkTextBuffer *tb;
-  char *contents;
-  gsize length;
-  char *filename;
-  int i;
-  GError *err = NULL;
+#include <gtk/gtk.h>
 
-  GtkWidget *boxv;
-  GtkWidget *boxh;
-  GtkWidget *dmy1;
-  GtkWidget *dmy2;
-  GtkWidget *dmy3;
+static void
+app_activate (GApplication *app) {
+  GtkWidget *win, *nb, *scr, *tv, *label;
+  GtkWidget *boxv, *boxh;
+  GtkWidget *dmy1, *dmy2, *dmy3;
   GtkWidget *btnn; /* button for new */
   GtkWidget *btno; /* button for open */
   GtkWidget *btns; /* button for save */
   GtkWidget *btnc; /* button for close */
+  int i;
+  GtkNotebookPage *nbp;
+  char *files[] = {"file-1", "file-2"};
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file editor");
@@ -75,55 +65,54 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
   gtk_widget_set_vexpand (nb, TRUE);
   gtk_box_append (GTK_BOX (boxv), nb);
 
-  for (i = 0; i < n_files; i++) {
-    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
-      scr = gtk_scrolled_window_new ();
-      tv = tfe_text_view_new ();
-      tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-      gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-      gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-
-      tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
-      gtk_text_buffer_set_text (tb, contents, length);
-      g_free (contents);
-      filename = g_file_get_basename (files[i]);
-      lab = gtk_label_new (filename);
-      gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
-      nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
-      g_object_set (nbp, "tab-expand", TRUE, NULL);
-      g_free (filename);
-    } else {
-      g_printerr ("%s.\n", err->message);
-      g_clear_error (&err);
-    }
+  for (i = 0; i < 2; i++) {
+    scr = gtk_scrolled_window_new ();
+    tv = gtk_text_view_new ();
+    label = gtk_label_new (files[i]);
+    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
+    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
+    gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, label);
+    nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
+    g_object_set (nbp, "tab-expand", TRUE, NULL);
   }
-  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-    gtk_window_present (GTK_WINDOW (win));
-  } else
-    gtk_window_destroy (GTK_WINDOW (win));
+  gtk_window_present (GTK_WINDOW (win));
+}
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new ("com.github.ToshioCP.tfe2", G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
 }
 ```
 
-The function `app_open` builds the widgets in the main application window.
+This program just builds the widgets.
+Other features will be implemented in the later sactions.
 
-- 26-28: Creates a GtkApplicationWindow instance and sets the title and default size.
-- 30-31: Creates a GtkBox instance `boxv`.
-It is a vertical box and a child of GtkApplicationWindow.
-It has two children.
-The first child is a horizontal box.
-The second child is a GtkNotebook.
-- 33-34: Creates a GtkBox instance `boxh` and appends it to `boxv` as the first child.
-- 36-41: Creates three dummy labels.
-The labels `dmy1` and `dmy3` have ten characters wide.
-The other label `dmy2` has the hexpand property set to TRUE.
-This makes the label expand horizontally to be as long as possible.
-- 42-45: Creates four buttons.
-- 47-53: Appends these GtkLabel and GtkButton to `boxh`.
-- 55-58: Creates a GtkNotebook instance and sets hexpand and vexpand properties to be TRUE.
-This makes it expand horizontally and vertically to be as big as possible.
-It is appended to `boxv` as the second child.
+The function `app_activate` builds the widgets in the main application window.
 
-The number of lines for building widgets is 33 (= 58-26+1).
+- 16-18: Creates a GtkApplicationWindow instance and sets the title and default size.
+- 20-21: Creates a vertical GtkBox instance `boxv`as a child of GtkApplicationWindow.
+- 23-24: Creates a horizontal GtkBox instance `boxh` and appends it to `boxv` as the first child.
+- 26-31: Creates three dummy labels.
+The `dmy1` and `dmy3` labels are ten characters wide, while the `dmy2` label has its `hexpand` property set to `TRUE` to fill the available space.
+- 32-35: Creates four buttons `New`, `Open`, `Save`, and `Close`.
+- 37-43: Appends these label and button instances to `boxh`.
+- 45-48: Creates a GtkNotebook instance with `hexpand` and `vexpand` properties set to `TRUE`, allowing it to expand in both directions.
+It is then appended to `boxv` as the second child.
+- 50-59: Creates, GtkScrolledWindow, GtkTextView, and GtkLabel instances in the for-loop.
+The scrolled window `scr` takes `tv` as a child.
+The function `gtk_notebook_append_page` appends `scr` as a page and `label` as a page tab to the note book.
+The function `gtk_notebook_get_page` retrieves the GtkNotebookPage instance that corresponds to `scr`, a child widget of `nb`.
+GtkNotebookPage class does not have a function to set the property "tab-expand", so the general property setting function `g_object_set` is used here.
+The property is set to TRUE to expand the tab horizontally.
+
+Building widgets takes 44 lines (= 59-16+1).
 We also needed many variables (`boxv`, `boxh`, `dmy1`, ...), and most of them are used only for building the widgets.
 Is there a better way to reduce this overhead?
 
@@ -189,6 +178,36 @@ Look at the UI file `tfe3.ui` that defines the widget structure.
           <object class="GtkNotebook" id="nb">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">automatic</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <child>
+                  <object class="GtkTextView">
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">file-1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">automatic</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <child>
+                  <object class="GtkTextView">
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">file-2</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -197,194 +216,145 @@ Look at the UI file `tfe3.ui` that defines the widget structure.
 </interface>
 ```
 
-The is an XML file.
-Tags begin with `<` and end with `>`.
-There are two types of tags, the start tag and the end tag.
-For example, `<interface>` is a start tag and `</interface>` is an end tag.
-The UI file begins and ends with interface tags.
-Some tags, for example object tags, can have class and id attributes in their start tag.
+This is an XML file.
+The extension "ui" means User Interface.
+
+Tags are enclosed in angle brackets, beginning with `<` and ending with `>`.
+They generally come in pairs: a start tag and an end tag.
+For instance, `<interface>` opens the element, while `</interface>` closes it.
+
+The end tag is identified by a forward slash immediately following the opening bracket, and its name must match the corresponding start tag.
+Additionally, certain tags (such as object tags) can include class and id attributes within their start tag to provide extra metadata.
 
 - 1: XML declaration.
+This is a special tag and doesn't follow the "start and end tag" rule.
 It specifies that the XML version is 1.0 and the encoding is UTF-8.
-- 3-6: An object tag with `GtkApplicationWindow` class and `win` id.
-This is the top level window.
-It defines three properties:
-the `title` property is "file editor", the `default-width` property is 600, and the `default-height` property is 400.
-- 7: Child tag means a child widget.
-For example, line 7 tells us that GtkBox object is a child widget of `win`.
+- 2, 89: The UI file begins and ends with interface tags.
+- 3: The object tag defines an instance with the class of `GtkApplicationWindow` and the id of `win`.
+The class attribute specifies the type of the object to create, while the id attribute provides a unique name used to retrieve the object within your C code.
+- 4-6: Property tags define the values of the properties on the object that is defined with an object tag just before the property definitions.
+These three lines define the properties of the top-level window `win`.
+  - title: "file editor"
+  - default-width: 600
+  - default-height: 400
+- 7: Child tag means that the following object is a child widget.
+For example, line 7 defines the GtkBox as a child widget of the GtkApplicationWindow `win`.
+- 8-49: Defines a horizontal box comprising labels and buttons.
+- 50-85: Defines the GtkNotebook as a child of the vertical box.
+It contains two pairs of children, where each pair consists of a content area (a scrolled window) and a tab (a label).
+While a standard `<child>` tag defines the content, a `<child>` tag with `type="tab"` defines the tab itself.
+Note that GtkNotebookPage cannot be defined directly in UI files because it is not a widget; it is an auxiliary object derived directly from GObject.
 
-Compare this UI file with lines 26-58 in the `app_open` function of `tfe2.c`.
-Both build the same window with its descendant widgets.
+Compare this UI file with the `app_activate` function of `tfe2.c`.
+While both methods produce the same window and widget hierarchy, the UI file approach offers superior readability and easier maintenance.
 
-You can check the UI file with `gtk4-builder-tool`.
+### Gtk4-Builder-Tool
 
-- `gtk4-builder-tool validate <ui file name>` validates the UI file.
-If the UI file contains any syntax errors, `gtk4-builder-tool` prints the error.
-- `gtk4-builder-tool simplify <ui file name>` simplifies the UI file and prints the result.
-If the `--replace` option is given, it replaces the UI file with the simplified one.
-If the UI file specifies the default value of a property, that property will be removed.
-For example, the default orientation is horizontal so the simplification removes line 12.
-Some values are simplified too.
-For example, "TRUE" and "FALSE" become "1" and "0", respectively.
-However, "TRUE" and "FALSE" are better for maintenance.
+You can verify and optimize your UI files using the `gtk4-builder-tool` utility.
 
-It is a good idea to check your UI file before compiling.
+- **Validation:** `gtk4-builder-tool validate <ui_file_name>` checks the file for errors.
+If the UI file contains syntax errors or invalid object definitions, the tool will point them out.
+- **Simplification:** `gtk4-builder-tool simplify <ui_file_name>` cleans up the UI file and prints the result to the terminal.
+  - The `--replace` option: Using this option replaces the original file with the simplified version.
+  - Removing Defaults: If a property is set to its default value, the tool removes it to save space.
+  For example, since the default orientation for GtkBox widgets is horizontal, that line would be deleted (ex. line 12 in `tfe3.ui`).
+  - Value Conversion: Some values are shortened; for instance, "TRUE" and "FALSE" are converted to "1" and "0".
 
-## GtkBuilder
-
-GtkBuilder builds widgets based on a UI file.
-
-~~~C
-GtkBuilder *build;
-
-build = gtk_builder_new_from_file ("tfe3.ui");
-win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
-g_object_unref(build);
-~~~
-
-The function `gtk_builder_new_from_file` reads the file `tfe3.ui`.
-Then, it builds the widgets and creates a GtkBuilder object.
-All the widgets are connected based on the parent-children relationship described in the UI file.
-We can retrieve objects from the builder object using the `gtk_builder_get_object` function.
-The top level window, which has an id of "win" in the UI file, is taken and assigned to the variable `win`.
-The window's application property is set to `app` with the `gtk_window_set_application` function.
-The GtkNotebook, which has the id "nb" in the UI file, is also taken and assigned to the variable `nb`.
-After the window and application are connected, we no longer need the GtkBuilder instance.
-It is released with the `g_object_unref` function.
-
-The UI file reduces lines in the C source file.
+Example:
 
 ```
-$ cd tfe; diff tfe2.c tfe3.c
-59a60
->   GtkBuilder *build;
-61,104c62,66
-<   GtkWidget *boxv;
-<   GtkWidget *boxh;
-<   GtkWidget *dmy1;
-<   GtkWidget *dmy2;
-<   GtkWidget *dmy3;
-<   GtkWidget *btnn; /* button for new */
-<   GtkWidget *btno; /* button for open */
-<   GtkWidget *btns; /* button for save */
-<   GtkWidget *btnc; /* button for close */
-< 
-<   win = gtk_application_window_new (GTK_APPLICATION (app));
-<   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-<   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-< 
-<   boxv = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-<   gtk_window_set_child (GTK_WINDOW (win), boxv);
-< 
-<   boxh = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-<   gtk_box_append (GTK_BOX (boxv), boxh);
-< 
-<   dmy1 = gtk_label_new(NULL); /* dummy label for left space */
-<   gtk_label_set_width_chars (GTK_LABEL (dmy1), 10);
-<   dmy2 = gtk_label_new(NULL); /* dummy label for center space */
-<   gtk_widget_set_hexpand (dmy2, TRUE);
-<   dmy3 = gtk_label_new(NULL); /* dummy label for right space */
-<   gtk_label_set_width_chars (GTK_LABEL (dmy3), 10);
-<   btnn = gtk_button_new_with_label ("New");
-<   btno = gtk_button_new_with_label ("Open");
-<   btns = gtk_button_new_with_label ("Save");
-<   btnc = gtk_button_new_with_label ("Close");
-< 
-<   gtk_box_append (GTK_BOX (boxh), dmy1);
-<   gtk_box_append (GTK_BOX (boxh), btnn);
-<   gtk_box_append (GTK_BOX (boxh), btno);
-<   gtk_box_append (GTK_BOX (boxh), dmy2);
-<   gtk_box_append (GTK_BOX (boxh), btns);
-<   gtk_box_append (GTK_BOX (boxh), btnc);
-<   gtk_box_append (GTK_BOX (boxh), dmy3);
-< 
-<   nb = gtk_notebook_new ();
-<   gtk_widget_set_hexpand (nb, TRUE);
-<   gtk_widget_set_vexpand (nb, TRUE);
-<   gtk_box_append (GTK_BOX (boxv), nb);
-< 
----
->   build = gtk_builder_new_from_file ("tfe3.ui");
->   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
->   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
->   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
->   g_object_unref(build);
-138c100
-<   app = gtk_application_new ("com.github.ToshioCP.tfe2", G_APPLICATION_HANDLES_OPEN);
----
->   app = gtk_application_new ("com.github.ToshioCP.tfe3", G_APPLICATION_HANDLES_OPEN);
-144a107
-> 
+$ gtk-builder-tool validate tfe/tfe3.ui
 $
 ```
 
-`61,104c62,66` means that 44 (=104-61+1) lines are changed to 5 (=66-62+1) lines.
-Therefore, 39 lines are reduced.
-Using a UI file not only shortens C source files, but also makes the widgets' structure clear.
+Since `tfe3.ui` contains no errors, `gtk-builder-tool` produced no output.
 
-Now I'll show you the `app_open` function in the C file `tfe3.c`.
+**A Note on Maintenance**
+
+While the simplify tool makes the file smaller, it can sometimes make it harder to read.
+For example, it converts "TRUE" and "FALSe" into "1" and "0" respectively.
+Keeping "TRUE" or "FALSE" is better for maintenance because it is more readable for humans than "1" or "0".
+
+It is always a good practice to validate your UI file before deploying your application.
+
+## GtkBuilder
+
+The file [tfe3.c](../src/tfe/tfe3.c) builds the same widget as `tfe2.c` using `tfe3.ui`.
+It is far shorter than `tfe2.c` (39 lines against 73 lines).
+
+```
+$ wc tfe/tfe2.c tfe/tfe3.c
+  73  274 2557 tfe/tfe2.c
+  38  113 1093 tfe/tfe3.c
+ 111  387 3650 total
+$
+```
+
+The following is the file `tfe3.c`
 
 ```c
+#include <gtk/gtk.h>
+
 static void
-app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
+app_activate (GApplication *app) {
   GtkWidget *win;
   GtkWidget *nb;
-  GtkWidget *lab;
-  GtkNotebookPage *nbp;
   GtkWidget *scr;
-  GtkWidget *tv;
-  GtkTextBuffer *tb;
-  char *contents;
-  gsize length;
-  char *filename;
-  int i;
-  GError *err = NULL;
+  GtkNotebookPage *nbp;
+  int n_pages;
   GtkBuilder *build;
 
   build = gtk_builder_new_from_file ("tfe3.ui");
   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-  gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
   nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+  gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
   g_object_unref(build);
-  for (i = 0; i < n_files; i++) {
-    if (g_file_load_contents (files[i], NULL, &contents, &length, NULL, &err)) {
-      scr = gtk_scrolled_window_new ();
-      tv = tfe_text_view_new ();
-      tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-      gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-      gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
 
-      tfe_text_view_set_file (TFE_TEXT_VIEW (tv),  g_file_dup (files[i]));
-      gtk_text_buffer_set_text (tb, contents, length);
-      g_free (contents);
-      filename = g_file_get_basename (files[i]);
-      lab = gtk_label_new (filename);
-      gtk_notebook_append_page (GTK_NOTEBOOK (nb), scr, lab);
-      nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
-      g_object_set (nbp, "tab-expand", TRUE, NULL);
-      g_free (filename);
-    } else {
-      g_printerr ("%s.\n", err->message);
-      g_clear_error (&err);
-    }
+  n_pages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb));
+  for (int i = 0; i < n_pages; i++) {
+    scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);
+    nbp = gtk_notebook_get_page (GTK_NOTEBOOK (nb), scr);
+    g_object_set (nbp, "tab-expand", TRUE, NULL);
   }
-  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) > 0) {
-    gtk_window_present (GTK_WINDOW (win));
-  } else
-    gtk_window_destroy (GTK_WINDOW (win));
+
+  gtk_window_present (GTK_WINDOW (win));
+}
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new ("com.github.ToshioCP.tfe3", G_APPLICATION_DEFAULT_FLAGS);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
 }
 ```
 
-The whole source code of `tfe3.c` is stored in the [/src/tfe](../src/tfe/) directory.
+GtkBuilder builds widgets based on a UI file.
+
+- 12: The function `gtk_builder_new_from_file` reads the file `tfe3.ui`.
+Then, it builds the widgets and creates a GtkBuilder object.
+All the widgets are connected based on the parent-children relationship described in the UI file.
+- 13, 14: We can retrieve objects from the builder object using the `gtk_builder_get_object` function.
+The top level window, which has an id of "win" in the UI file, is taken and assigned to the variable `win`.
+Similarly, The GtkNotbook instance with the id "nb" is assignd to the variable `nb`.
+- 15: The function `gtk_window_set_application` adds `win` to the application's list of managed windows.
+You can use `gtk_application_add_window` instead of this function.
+The result is identical.
+- 16: After the window and the application are connected, we no longer need the GtkBuilder instance.
+It is released with the `g_object_unref` function.
+18-23: Sets the "tab-expand" properties of the GtkNotebookPage instances to TRUE.
+Since GtkNotebookPage is not a widget, its properties cannot be set in the UI file; you must set them in your C source code.
 
 ### Using UI String
 
 GtkBuilder can build widgets with a string.
 Use `gtk_builder_new_from_string` instead of `gtk_builder_new_from_file`.
 
-~~~C
+```C
 char *uistring;
 
 uistring =
@@ -401,7 +371,7 @@ uistring =
 "</interface>";
 
 build = gtk_builder_new_from_string (uistring, -1);
-~~~
+```
 
 This method has an advantage and disadvantage.
 The advantage is that the UI string is written in the source code.
@@ -416,12 +386,12 @@ If you want to use this method, you should write a script that converts UI files
 
 Or, if you have `jq` installed, you can use `jq -R < tfe3.ui` to do the quoting and escaping for you.
 
-### Gresources
+### GResources
 
-A Gresource is similar to a string, except that a Gresource is a binary data.
-The `glib-compile-resources` program compiles UI files into Gresources.
+A GResource is similar to a UI string, except that a GResource is a binary data.
+The `glib-compile-resources` program compiles UI files into GResources.
 It can compile not only text files but also binary files such as images, sounds and so on.
-After compilation, it bundles them up into one Gresource object.
+After compilation, it bundles them up into one GResource object.
 
 An xml file is necessary for the resource compiler `glib-compile-resources`.
 It describes resource files.
@@ -435,21 +405,24 @@ It describes resource files.
 </gresources>
 ```
 
-- 2: `gresources` tag can include multiple gresources (gresource tags).
-However, this xml has only one gresource.
-- 3: The gresource has a prefix `/com/github/ToshioCP/tfe3`.
-- 4: The name of the gresource is `tfe3.ui`.
-The resource will be referred to as /com/github/ToshioCP/tfe3/tfe3.ui by GtkBuilder.
+- 2: "gresources" tag can include multiple "gresource" tags.
+However, this xml has only one "gresource" tag.
+- 3: A "gresource" tag can haves a prefix attribute.
+This tag defines that the prefix for `tfe3.ui` is `/com/github/ToshioCP/tfe3`.
+A prefix works like a namespace.
+Even if you have two same name resources, GTK can distinguish them with their different prefixes.
+- 4: The name of the GRresource is `tfe3.ui`.
+The resource will be referred to as "/com/github/ToshioCP/tfe3/tfe3.ui" by GtkBuilder.
 The pattern is "prefix" + "name".
 If you want to add more files, insert them between line 4 and 5.
 
 Save this xml text to `tfe3.gresource.xml`.
-The gresource compiler `glib-compile-resources` shows its usage with the argument `--help`.
+The GResource compiler `glib-compile-resources` shows its usage with the argument `--help`.
 
 ```
 $ glib-compile-resources --help
 Usage:
-  glib-compile-resources [OPTION..] FILE
+  glib-compile-resources [OPTION…] FILE
 
 Compile a resource specification into a resource file.
 Resource specification files have the extension .gresource.xml,
@@ -468,20 +441,23 @@ Application Options:
   --generate-dependencies      Generate dependency list
   --dependency-file=FILE       Name of the dependency file to generate
   --generate-phony-targets     Include phony targets in the generated dependency file
-  --manual-register            Don't automatically create and register resource
-  --internal                   Don't export functions; declare them G_GNUC_INTERNAL
-  --external-data              Don't embed resource data in the C file; assume it's linked externally instead
-  --c-name                     C identifier name used for the generated source code
-  -C, --compiler               The target C compiler (default: the CC environment variable)
-  ```
+  --manual-register            Don’t automatically create and register resource
+  --internal                   Don’t export functions; declare them G_GNUC_INTERNAL
+  --external-data              Don’t embed resource data in the C file; assume it's linked externally instead
+  --c-name=IDENTIFIER          C identifier name used for the generated source code
+  -C, --compiler=COMMAND       The target C compiler (default: the CC environment variable)
 
-Now run the compiler.
+$
+```
 
-~~~
+Usually, the resources are converted to a C source file.
+Two options `--target` and `--generate-source` are added to the command line.
+Move your current directory to /src/tfe and run the command below, then a C source file `resources.c` will be generated.
+
+```
 $ glib-compile-resources tfe3.gresource.xml --target=resources.c --generate-source
-~~~
+```
 
-Then a C source file `resources.c` is generated.
 Modify `tfe3.c` and save it as `tfe3_r.c`.
 
 ~~~C
@@ -499,12 +475,18 @@ Then, compile and run it.
 
 ~~~
 $ comp tfe3_r
-$ ./a.out tfe2.c
+$ ./a.out
 ~~~
 
-A window appears and it is the same as the screenshot at the beginning of this page.
+A window appears and it is the same as the screen shown by `tfe3.c`.
 
-Generally, resources are the best for C programs.
-Strings are easier to handle in some interpreted languages, but resources are still a powerful option.
+Generally, using GResources is the best approach for C programs.
+They allow you to use embedded assets in various widgets.
+For example, a GtkImage can be created from a resource path, provided that the original image file has been compiled into the bundle using `glib-compile-resources`.
+
+```C
+GtkWidget *image;
+image = gtk_image_new_from_resource (const char* resource_path)
+```
 
 Up: [README.md](../README.md),  Prev: [Section 8](sec8.md), Next: [Section 10](sec10.md)

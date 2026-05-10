@@ -51,6 +51,36 @@
           <object class="GtkNotebook" id="nb">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">automatic</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <child>
+                  <object class="GtkTextView">
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">file-1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hscrollbar-policy">automatic</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <child>
+                  <object class="GtkTextView">
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="label">file-2</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

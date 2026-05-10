@@ -98,7 +98,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         Files</h2>
         <p>The following is the window of Tfe.</p>
         <figure>
-        <img src="/images/tfe6.png" alt="tfe6" />
+        <img src="/Gtk4-tutorial/images/tfe6.png" alt="tfe6" />
         <figcaption aria-hidden="true">tfe6</figcaption>
         </figure>
         <ul>
@@ -372,7 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-3"><a href="#cb6-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a>  GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
 <span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  g_signal_connect <span class="op">(</span>tv<span class="op">,</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
         <p>It connects the “open-response” signal on the newly created
@@ -426,7 +426,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-15"><a href="#cb8-15"></a>  nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">);</span></span>
 <span id="cb8-16"><a href="#cb8-16"></a>  g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb8-17"><a href="#cb8-17"></a>  gtk_notebook_set_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
-<span id="cb8-18"><a href="#cb8-18"></a>  g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>  g_signal_connect <span class="op">(</span>tv<span class="op">,</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
 <span id="cb8-19"><a href="#cb8-19"></a>  g_signal_connect <span class="op">(</span>tb<span class="op">,</span> <span class="st">&quot;modified-changed&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>modified_changed_cb<span class="op">),</span> tv<span class="op">);</span></span>
 <span id="cb8-20"><a href="#cb8-20"></a><span class="op">}</span></span></code></pre></div>
         <p>This function is a kind of library function and it is called
@@ -537,7 +537,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-13"><a href="#cb12-13"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> FALSE<span class="op">;</span></span>
 <span id="cb12-14"><a href="#cb12-14"></a>    alert <span class="op">=</span> tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span>
 <span id="cb12-15"><a href="#cb12-15"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb12-16"><a href="#cb12-16"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>    g_signal_connect <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb12-17"><a href="#cb12-17"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
 <span id="cb12-18"><a href="#cb12-18"></a>  <span class="op">}</span></span>
 <span id="cb12-19"><a href="#cb12-19"></a><span class="op">}</span></span></code></pre></div>
@@ -672,7 +672,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb20-8"><a href="#cb20-8"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> TRUE<span class="op">;</span></span>
 <span id="cb20-9"><a href="#cb20-9"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span><span class="op">,</span> <span class="st">&quot;Quit&quot;</span><span class="op">));</span></span>
 <span id="cb20-10"><a href="#cb20-10"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb20-11"><a href="#cb20-11"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb20-11"><a href="#cb20-11"></a>    g_signal_connect <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb20-12"><a href="#cb20-12"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
 <span id="cb20-13"><a href="#cb20-13"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb20-14"><a href="#cb20-14"></a>  <span class="op">}</span></span>
@@ -874,7 +874,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-131"><a href="#cb23-131"></a>  nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">);</span></span>
 <span id="cb23-132"><a href="#cb23-132"></a>  g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb23-133"><a href="#cb23-133"></a>  gtk_notebook_set_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
-<span id="cb23-134"><a href="#cb23-134"></a>  g_signal_connect <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb23-134"><a href="#cb23-134"></a>  g_signal_connect <span class="op">(</span>tv<span class="op">,</span> <span class="st">&quot;change-file&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>file_changed_cb<span class="op">),</span> win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
 <span id="cb23-135"><a href="#cb23-135"></a>  g_signal_connect <span class="op">(</span>tb<span class="op">,</span> <span class="st">&quot;modified-changed&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>modified_changed_cb<span class="op">),</span> tv<span class="op">);</span></span>
 <span id="cb23-136"><a href="#cb23-136"></a><span class="op">}</span></span>
 <span id="cb23-137"><a href="#cb23-137"></a></span>
@@ -923,7 +923,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-180"><a href="#cb23-180"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> TRUE<span class="op">;</span></span>
 <span id="cb23-181"><a href="#cb23-181"></a>    alert <span class="op">=</span> TFE_ALERT <span class="op">(</span>tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to quit?&quot;</span><span class="op">,</span> <span class="st">&quot;Quit&quot;</span><span class="op">));</span></span>
 <span id="cb23-182"><a href="#cb23-182"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb23-183"><a href="#cb23-183"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-183"><a href="#cb23-183"></a>    g_signal_connect <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb23-184"><a href="#cb23-184"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
 <span id="cb23-185"><a href="#cb23-185"></a>    <span class="cf">return</span> TRUE<span class="op">;</span></span>
 <span id="cb23-186"><a href="#cb23-186"></a>  <span class="op">}</span></span>
@@ -935,7 +935,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-192"><a href="#cb23-192"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
 <span id="cb23-193"><a href="#cb23-193"></a>  GtkWidget <span class="op">*</span>tv <span class="op">=</span> tfe_text_view_new <span class="op">();</span></span>
 <span id="cb23-194"><a href="#cb23-194"></a></span>
-<span id="cb23-195"><a href="#cb23-195"></a>  g_signal_connect <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-195"><a href="#cb23-195"></a>  g_signal_connect <span class="op">(</span>tv<span class="op">,</span> <span class="st">&quot;open-response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>open_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb23-196"><a href="#cb23-196"></a>  tfe_text_view_open <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
 <span id="cb23-197"><a href="#cb23-197"></a><span class="op">}</span></span>
 <span id="cb23-198"><a href="#cb23-198"></a></span>
@@ -962,7 +962,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-219"><a href="#cb23-219"></a>    win<span class="op">-&gt;</span>is_quit <span class="op">=</span> FALSE<span class="op">;</span></span>
 <span id="cb23-220"><a href="#cb23-220"></a>    alert <span class="op">=</span> tfe_alert_new_with_data <span class="op">(</span><span class="st">&quot;Are you sure?&quot;</span><span class="op">,</span> <span class="st">&quot;Contents aren&#39;t saved yet.</span><span class="sc">\n</span><span class="st">Are you sure to close?&quot;</span><span class="op">,</span> <span class="st">&quot;Close&quot;</span><span class="op">);</span></span>
 <span id="cb23-221"><a href="#cb23-221"></a>    gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb23-222"><a href="#cb23-222"></a>    g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb23-222"><a href="#cb23-222"></a>    g_signal_connect <span class="op">(</span>alert<span class="op">,</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb23-223"><a href="#cb23-223"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
 <span id="cb23-224"><a href="#cb23-224"></a>  <span class="op">}</span></span>
 <span id="cb23-225"><a href="#cb23-225"></a><span class="op">}</span></span>
@@ -1059,7 +1059,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb23-316"><a href="#cb23-316"></a>  <span class="op">};</span></span>
 <span id="cb23-317"><a href="#cb23-317"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
 <span id="cb23-318"><a href="#cb23-318"></a></span>
-<span id="cb23-319"><a href="#cb23-319"></a>  g_signal_connect <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_request_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb23-319"><a href="#cb23-319"></a>  g_signal_connect <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;close-request&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>close_request_cb<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb23-320"><a href="#cb23-320"></a><span class="op">}</span></span>
 <span id="cb23-321"><a href="#cb23-321"></a></span>
 <span id="cb23-322"><a href="#cb23-322"></a><span class="dt">static</span> <span class="dt">void</span></span>

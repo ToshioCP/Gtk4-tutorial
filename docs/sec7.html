@@ -174,7 +174,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <ul>
         <li>When arguments are given, it recognizes the first argument
         as a filename and opens it.</li>
-        <li>The second argument and after are ignored.</li>
+        <li>The second argument and later are ignored.</li>
         <li>If there is no argument, it shows an error message and
         quits.</li>
         <li>If it successfully opens the file, it reads the contents of
@@ -249,7 +249,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <pre><code>$ comp tfv3
 $ ./a.out tfv3.c</code></pre>
         <figure>
-        <img src="/images/screenshot_tfv3.png" alt="File viewer" />
+        <img src="/Gtk4-tutorial/images/screenshot_tfv3.png"
+        alt="File viewer" />
         <figcaption aria-hidden="true">File viewer</figcaption>
         </figure>
         <p>The function <code>main</code> has only two changes from the
@@ -340,7 +341,7 @@ $ ./a.out tfv3.c</code></pre>
         widgets with tabs. It shows only one child at a time. Another
         child will be shown when its tab is clicked.</p>
         <figure>
-        <img src="/images/screenshot_gtk_notebook.png"
+        <img src="/Gtk4-tutorial/images/screenshot_gtk_notebook.png"
         alt="GtkNotebook" />
         <figcaption aria-hidden="true">GtkNotebook</figcaption>
         </figure>
@@ -348,9 +349,10 @@ $ ./a.out tfv3.c</code></pre>
         <code>pr1.c</code> is shown and its filename is in the left tab.
         After clicking on the right tab, the contents of the file
         <code>tfv1.c</code> is shown (the right image).</p>
-        <p>The following is <code>tfv4.c</code>. It has a GtkNoteBook
-        widget. It is inserted as a child of a GtkApplicationWindow and
-        contains multiple GtkScrolledWindow widgets.</p>
+        <p>The next source code is <code>tfv4.c</code>, including a
+        GtkNoteBook widget. The widget is inserted as a child of a
+        GtkApplicationWindow and contains multiple GtkScrolledWindow
+        widgets.</p>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
@@ -370,7 +372,7 @@ $ ./a.out tfv3.c</code></pre>
 <span id="cb9-16"><a href="#cb9-16"></a>  GtkTextBuffer <span class="op">*</span>tb<span class="op">;</span></span>
 <span id="cb9-17"><a href="#cb9-17"></a>  <span class="dt">char</span> <span class="op">*</span>contents<span class="op">;</span></span>
 <span id="cb9-18"><a href="#cb9-18"></a>  gsize length<span class="op">;</span></span>
-<span id="cb9-19"><a href="#cb9-19"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  <span class="dt">char</span> <span class="op">*</span>filename_bin<span class="op">,</span> <span class="op">*</span>filename_utf8<span class="op">;</span></span>
 <span id="cb9-20"><a href="#cb9-20"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
 <span id="cb9-21"><a href="#cb9-21"></a>  GError <span class="op">*</span>err <span class="op">=</span> NULL<span class="op">;</span></span>
 <span id="cb9-22"><a href="#cb9-22"></a></span>
@@ -391,11 +393,11 @@ $ ./a.out tfv3.c</code></pre>
 <span id="cb9-37"><a href="#cb9-37"></a></span>
 <span id="cb9-38"><a href="#cb9-38"></a>      gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
 <span id="cb9-39"><a href="#cb9-39"></a>      g_free <span class="op">(</span>contents<span class="op">);</span></span>
-<span id="cb9-40"><a href="#cb9-40"></a>      <span class="cf">if</span> <span class="op">((</span>filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span>i<span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-41"><a href="#cb9-41"></a>        lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb9-42"><a href="#cb9-42"></a>        g_free <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb9-43"><a href="#cb9-43"></a>      <span class="op">}</span> <span class="cf">else</span></span>
-<span id="cb9-44"><a href="#cb9-44"></a>        lab <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;&quot;</span><span class="op">);</span></span>
+<span id="cb9-40"><a href="#cb9-40"></a>      filename_bin <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb9-41"><a href="#cb9-41"></a>      filename_utf8 <span class="op">=</span> g_filename_display_name <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb9-42"><a href="#cb9-42"></a>      lab <span class="op">=</span> gtk_label_new <span class="op">(</span>filename_utf8<span class="op">);</span></span>
+<span id="cb9-43"><a href="#cb9-43"></a>      g_free <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb9-44"><a href="#cb9-44"></a>      g_free <span class="op">(</span>filename_utf8<span class="op">);</span></span>
 <span id="cb9-45"><a href="#cb9-45"></a>      gtk_notebook_append_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
 <span id="cb9-46"><a href="#cb9-46"></a>      nbp <span class="op">=</span> gtk_notebook_get_page <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">);</span></span>
 <span id="cb9-47"><a href="#cb9-47"></a>      g_object_set <span class="op">(</span>nbp<span class="op">,</span> <span class="st">&quot;tab-expand&quot;</span><span class="op">,</span> TRUE<span class="op">,</span> NULL<span class="op">);</span></span>
@@ -422,18 +424,18 @@ $ ./a.out tfv3.c</code></pre>
 <span id="cb9-68"><a href="#cb9-68"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
 <span id="cb9-69"><a href="#cb9-69"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
 <span id="cb9-70"><a href="#cb9-70"></a><span class="op">}</span></span></code></pre></div>
-        <p>Most of the changes are in the function
-        <code>app_open</code>. The numbers at the left of the following
-        items are line numbers in the source code.</p>
+        <p>The changes are primarily located in the
+        <code>app_open</code> function. The numbers on the left below
+        correspond to the line numbers in the source code.</p>
         <ul>
         <li>11-13: Variables <code>nb</code>, <code>lab</code> and
         <code>nbp</code> are defined. They point to a GtkNotebook,
         GtkLabel and GtkNotebookPage respectively.</li>
         <li>24: The window’s title is set to “file viewer”.</li>
         <li>25: The default size of the window is 600x400.</li>
-        <li>26-27: GtkNotebook is created and inserted to the
-        GtkApplicationWindow as a child.</li>
-        <li>29-57: For-loop. The variable <code>files[i]</code> points
+        <li>26-27: GtkNotebook is created and set as a child of the
+        GtkApplicationWindow.</li>
+        <li>29-52: For-loop. The variable <code>files[i]</code> points
         to i-th GFile, which is created by the GtkApplication from the
         i-th command line argument.</li>
         <li>31-36: A GtkScrollledWindow and a GtkTextView are created. A
@@ -442,11 +444,13 @@ $ ./a.out tfv3.c</code></pre>
         <li>38-39: inserts the contents of the file into the
         GtkTextBuffer and frees the memory referenced by
         <code>contents</code>.</li>
-        <li>40-42: If the filename is taken from the GFile, GtkLabel is
-        created with the filename. The string <code>filename</code> is
-        freed..</li>
-        <li>43-44: If it fails to take the filename, a GtkLabel with an
-        empty string is created.</li>
+        <li>40-44: Retrieves the filename from the GFile using
+        <code>g_file_get_basename</code>. The filename is a
+        byte-sequence without a specific encoding. It needs to be
+        converted into a UTF-8 string with
+        <code>g_filename_display_name</code> before setting the label
+        text. The strings <code>filename_bin</code> and
+        <code>filename_utf8</code> are freed.</li>
         <li>45-46: Appends a GtkScrolledWindow to the GtkNotebook as a
         child. And the GtkLabel is set as the child’s tab. At the same
         time, a GtkNoteBookPage is created automatically. The function

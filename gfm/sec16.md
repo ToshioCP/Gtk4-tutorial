@@ -37,14 +37,14 @@ The command below is the output of `wc` executed in the `src` directory.
 ```
 $ LANG=C wc tfe5/meson.build tfe5/tfeapplication.c tfe5/tfe.gresource.xml tfe5/tfenotebook.c tfe5/tfenotebook.h tfetextview/tfetextview.c tfetextview/tfetextview.h tfe5/tfe.ui
    10    17   294 tfe5/meson.build
-  110   335  3602 tfe5/tfeapplication.c
+  110   334  3600 tfe5/tfeapplication.c
     6     9   153 tfe5/tfe.gresource.xml
-  144   391  3669 tfe5/tfenotebook.c
+  144   389  3637 tfe5/tfenotebook.c
    15    21   241 tfe5/tfenotebook.h
   235   825  8516 tfetextview/tfetextview.c
    32    54   624 tfetextview/tfetextview.h
    61   100  2073 tfe5/tfe.ui
-  613  1752 19172 total
+  613  1749 19138 total
 $
 ```
 
