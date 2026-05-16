@@ -130,7 +130,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         API Reference – g_application_run</a>.</p>
         <p>We’ve already used <code>G_APPLICATION_DEFAULT_FLAGS</code>,
         as it is the simplest option, and no command line arguments are
-        allowed. If you give arguments, an error will occur.</p>
+        allowed. If you give arguments in the command line, an error
+        will occur.</p>
         <p>The flag <code>G_APPLICATION_HANDLES_OPEN</code> is the
         second simplest option. It allows command line arguments,
         specifically filenames.</p>
@@ -177,9 +178,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>The second argument and later are ignored.</li>
         <li>If there is no argument, it shows an error message and
         quits.</li>
-        <li>If it successfully opens the file, it reads the contents of
-        the file, inserts them to GtkTextBuffer and shows the
-        window.</li>
+        <li>If it successfully opens the file, it reads the content of
+        the file, inserts it to GtkTextBuffer and shows the window.</li>
         <li>If it fails to open the file, it shows an error message and
         quit.</li>
         </ul>
@@ -200,11 +200,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-13"><a href="#cb5-13"></a>  GtkTextBuffer <span class="op">*</span>tb<span class="op">;</span></span>
 <span id="cb5-14"><a href="#cb5-14"></a>  <span class="dt">char</span> <span class="op">*</span>contents<span class="op">;</span></span>
 <span id="cb5-15"><a href="#cb5-15"></a>  gsize length<span class="op">;</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  <span class="dt">char</span> <span class="op">*</span>filename<span class="op">;</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>  <span class="dt">char</span> <span class="op">*</span>filename_bin<span class="op">,</span> <span class="op">*</span>filename_utf8<span class="op">;</span></span>
 <span id="cb5-17"><a href="#cb5-17"></a>  GError <span class="op">*</span>err <span class="op">=</span> NULL<span class="op">;</span></span>
 <span id="cb5-18"><a href="#cb5-18"></a></span>
 <span id="cb5-19"><a href="#cb5-19"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb5-20"><a href="#cb5-20"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">800</span><span class="op">,</span> <span class="dv">600</span><span class="op">);</span></span>
 <span id="cb5-21"><a href="#cb5-21"></a></span>
 <span id="cb5-22"><a href="#cb5-22"></a>  scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
 <span id="cb5-23"><a href="#cb5-23"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> scr<span class="op">);</span></span>
@@ -218,34 +218,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-31"><a href="#cb5-31"></a>  <span class="cf">if</span> <span class="op">(</span>g_file_load_contents <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">],</span> NULL<span class="op">,</span> <span class="op">&amp;</span>contents<span class="op">,</span> <span class="op">&amp;</span>length<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
 <span id="cb5-32"><a href="#cb5-32"></a>    gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
 <span id="cb5-33"><a href="#cb5-33"></a>    g_free <span class="op">(</span>contents<span class="op">);</span></span>
-<span id="cb5-34"><a href="#cb5-34"></a>    <span class="cf">if</span> <span class="op">((</span>filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-35"><a href="#cb5-35"></a>      gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> filename<span class="op">);</span></span>
-<span id="cb5-36"><a href="#cb5-36"></a>      g_free <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb5-37"><a href="#cb5-37"></a>    <span class="op">}</span></span>
-<span id="cb5-38"><a href="#cb5-38"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb5-39"><a href="#cb5-39"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb5-40"><a href="#cb5-40"></a>    g_printerr <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
-<span id="cb5-41"><a href="#cb5-41"></a>    g_error_free <span class="op">(</span>err<span class="op">);</span></span>
-<span id="cb5-42"><a href="#cb5-42"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb5-43"><a href="#cb5-43"></a>  <span class="op">}</span></span>
-<span id="cb5-44"><a href="#cb5-44"></a><span class="op">}</span></span>
-<span id="cb5-45"><a href="#cb5-45"></a></span>
-<span id="cb5-46"><a href="#cb5-46"></a><span class="dt">int</span></span>
-<span id="cb5-47"><a href="#cb5-47"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-48"><a href="#cb5-48"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb5-49"><a href="#cb5-49"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb5-50"><a href="#cb5-50"></a></span>
-<span id="cb5-51"><a href="#cb5-51"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv3&quot;</span><span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
-<span id="cb5-52"><a href="#cb5-52"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-53"><a href="#cb5-53"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-54"><a href="#cb5-54"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb5-55"><a href="#cb5-55"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb5-56"><a href="#cb5-56"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb5-57"><a href="#cb5-57"></a><span class="op">}</span></span></code></pre></div>
-        <p>Save it as <code>tfv3.c</code>. The source code can be found
-        at <a
+<span id="cb5-34"><a href="#cb5-34"></a>    <span class="cf">if</span> <span class="op">((</span>filename_bin <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-35"><a href="#cb5-35"></a>      filename_utf8 <span class="op">=</span> g_filename_display_name <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb5-36"><a href="#cb5-36"></a>      gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> filename_utf8<span class="op">);</span></span>
+<span id="cb5-37"><a href="#cb5-37"></a>      g_free <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb5-38"><a href="#cb5-38"></a>      g_free <span class="op">(</span>filename_utf8<span class="op">);</span></span>
+<span id="cb5-39"><a href="#cb5-39"></a>    <span class="op">}</span></span>
+<span id="cb5-40"><a href="#cb5-40"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb5-41"><a href="#cb5-41"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb5-42"><a href="#cb5-42"></a>    g_printerr <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb5-43"><a href="#cb5-43"></a>    g_error_free <span class="op">(</span>err<span class="op">);</span></span>
+<span id="cb5-44"><a href="#cb5-44"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb5-45"><a href="#cb5-45"></a>  <span class="op">}</span></span>
+<span id="cb5-46"><a href="#cb5-46"></a><span class="op">}</span></span>
+<span id="cb5-47"><a href="#cb5-47"></a></span>
+<span id="cb5-48"><a href="#cb5-48"></a><span class="dt">int</span></span>
+<span id="cb5-49"><a href="#cb5-49"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-50"><a href="#cb5-50"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb5-51"><a href="#cb5-51"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb5-52"><a href="#cb5-52"></a></span>
+<span id="cb5-53"><a href="#cb5-53"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfv3&quot;</span><span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
+<span id="cb5-54"><a href="#cb5-54"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb5-55"><a href="#cb5-55"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_open<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb5-56"><a href="#cb5-56"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb5-57"><a href="#cb5-57"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb5-58"><a href="#cb5-58"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb5-59"><a href="#cb5-59"></a><span class="op">}</span></span></code></pre></div>
+        <p>The source code is located at <a
         href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/tfv/tfv3.c">/src/tfv/tfv3.c</a>
-        in this repository. Compile and run it.</p>
+        in the repository. Compile and run it.</p>
         <pre><code>$ comp tfv3
 $ ./a.out tfv3.c</code></pre>
         <figure>
@@ -271,9 +272,8 @@ $ ./a.out tfv3.c</code></pre>
         emits “open” signal when it is activated.</li>
         </ul>
         <p>The handler <code>app_activate</code> becomes very simple. It
-        just outputs an error message and returns to the caller. Then
-        the application quits immediately because no window is
-        created.</p>
+        just outputs a message and returns to the caller. Then the
+        application quits immediately because no window is created.</p>
         <p>The main work is done in the handler
         <code>app_open</code>.</p>
         <ul>
@@ -284,42 +284,55 @@ $ ./a.out tfv3.c</code></pre>
         <li>Sets GtkTextView to non-editable because the program isn’t
         an editor but only a viewer</li>
         <li>Reads the file and inserts the text into GtkTextBuffer (this
-        will be explained later)</li>
+        will be explained later). The window title is set with the
+        filename. In general, filenames are sequences of bytes. To
+        display them on a screen, they must be converted into encoded
+        strings. The function <code>g_filename_display_name</code>
+        converts a filename into a valid UTF-8 string.</li>
         <li>If the file is not opened, outputs an error message and
         destroys the window. This causes the application to exit.</li>
         </ul>
         <p>The following is the file reading part of the program.</p>
         <div class="sourceCode" id="cb7"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>g_file_load_contents <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">],</span> NULL<span class="op">,</span> <span class="op">&amp;</span>contents<span class="op">,</span> <span class="op">&amp;</span>length<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  g_free <span class="op">(</span>contents<span class="op">);</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">((</span>filename <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> filename<span class="op">);</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    g_free <span class="op">(</span>filename<span class="op">);</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  g_printerr <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  g_error_free <span class="op">(</span>err<span class="op">);</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>g_file_load_contents <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">],</span> NULL<span class="op">,</span> <span class="op">&amp;</span>contents<span class="op">,</span> <span class="op">&amp;</span>length<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    g_free <span class="op">(</span>contents<span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">((</span>filename_bin <span class="op">=</span> g_file_get_basename <span class="op">(</span>files<span class="op">[</span><span class="dv">0</span><span class="op">]))</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      filename_utf8 <span class="op">=</span> g_filename_display_name <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> filename_utf8<span class="op">);</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      g_free <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>      g_free <span class="op">(</span>filename_utf8<span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    g_printerr <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s</span><span class="st">.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    g_error_free <span class="op">(</span>err<span class="op">);</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span></code></pre></div>
         <p>The function <code>g_file_load_contents</code> loads the file
-        contents into a temporary buffer, which is automatically
-        allocated and sets <code>contents</code> to point to the buffer.
-        The length of the buffer is assigned to <code>length</code>. It
-        returns <code>TRUE</code> if the file’s contents are
-        successfully loaded. If an error occurs, it returns
+        contents into a temporary buffer, allocated automatically, and
+        sets <code>contents</code> to point to the buffer. The length of
+        the buffer is assigned to <code>length</code>. It returns
+        <code>TRUE</code> if the file’s contents are successfully
+        loaded. The caller takes the ownership of the buffer and is
+        responsible for freeing it. If an error occurs, it returns
         <code>FALSE</code> and sets the variable <code>err</code> to
-        point to a newly created GError structure. The caller takes
+        point to a newly created GError structure. The caller takes the
         ownership of the GError structure and is responsible for freeing
         it. If you want to know the details about g_file_load_contents,
         see <a
         href="https://docs.gtk.org/gio/method.File.load_contents.html">g
         file load contents</a>.</p>
         <p>If the file is read successfully, the contents are inserted
-        into GtkTextBuffer. The temporary buffer in contents is then
-        freed, the window title is set, the memory for filename is
-        freed, and the window is shown.</p>
+        into GtkTextBuffer. The temporary buffer <code>contents</code>
+        is then freed. The function <code>g_file_get_basename</code>
+        returns the basename of the pathname. Generally, a pathname of a
+        filename is a sequence of byte data. To display the filename, it
+        must be converted to a valid encoded string. The function
+        <code>g_filename_display_name</code> converts a filename into a
+        valid UTF-8 string. After the conversion, the window title is
+        set with the filename, the memories for filenames are freed, and
+        the window is shown.</p>
         <p>If it fails, <code>g_file_load_contents</code> sets
         <code>err</code> to point to a newly created GError structure.
         The structure is:</p>
@@ -378,7 +391,7 @@ $ ./a.out tfv3.c</code></pre>
 <span id="cb9-22"><a href="#cb9-22"></a></span>
 <span id="cb9-23"><a href="#cb9-23"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
 <span id="cb9-24"><a href="#cb9-24"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;file viewer&quot;</span><span class="op">);</span></span>
-<span id="cb9-25"><a href="#cb9-25"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">600</span><span class="op">,</span> <span class="dv">400</span><span class="op">);</span></span>
+<span id="cb9-25"><a href="#cb9-25"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">800</span><span class="op">,</span> <span class="dv">600</span><span class="op">);</span></span>
 <span id="cb9-26"><a href="#cb9-26"></a>  nb <span class="op">=</span> gtk_notebook_new <span class="op">();</span></span>
 <span id="cb9-27"><a href="#cb9-27"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> nb<span class="op">);</span></span>
 <span id="cb9-28"><a href="#cb9-28"></a></span>
@@ -432,7 +445,7 @@ $ ./a.out tfv3.c</code></pre>
         <code>nbp</code> are defined. They point to a GtkNotebook,
         GtkLabel and GtkNotebookPage respectively.</li>
         <li>24: The window’s title is set to “file viewer”.</li>
-        <li>25: The default size of the window is 600x400.</li>
+        <li>25: The default size of the window is 800x600.</li>
         <li>26-27: GtkNotebook is created and set as a child of the
         GtkApplicationWindow.</li>
         <li>29-52: For-loop. The variable <code>files[i]</code> points
@@ -452,7 +465,7 @@ $ ./a.out tfv3.c</code></pre>
         text. The strings <code>filename_bin</code> and
         <code>filename_utf8</code> are freed.</li>
         <li>45-46: Appends a GtkScrolledWindow to the GtkNotebook as a
-        child. And the GtkLabel is set as the child’s tab. At the same
+        child and the GtkLabel is set as the child’s tab. At the same
         time, a GtkNoteBookPage is created automatically. The function
         <code>gtk_notebook_get_page</code> returns the GtkNotebookPage
         of the child (GtkScrolledWindow).</li>
@@ -465,7 +478,7 @@ $ ./a.out tfv3.c</code></pre>
         API Reference – g_object_set</a>.</li>
         <li>48-50: If it fails to read the file, the error message is
         shown. The function <code>g_clear_error (&amp;err)</code> works
-        like <code>g_error_free (err); err = NULL</code>.</li>
+        like <code>g_error_free (err); err = NULL;</code>.</li>
         <li>53-56: If at least one page exists, the window is shown.
         Otherwise, the window is destroyed and the application
         quits.</li>

@@ -22,7 +22,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file viewer");
-  gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
   nb = gtk_notebook_new ();
   gtk_window_set_child (GTK_WINDOW (win), nb);
 

@@ -34,7 +34,7 @@ For further information, see [GIO API Reference -- ApplicationFlags](https://doc
 [GIO API Reference -- g\_application\_run](https://docs.gtk.org/gio/method.Application.run.html).
 
 We've already used `G_APPLICATION_DEFAULT_FLAGS`, as it is the simplest option, and no command line arguments are allowed.
-If you give arguments, an error will occur.
+If you give arguments in the command line, an error will occur.
 
 The flag `G_APPLICATION_HANDLES_OPEN` is the second simplest option.
 It allows command line arguments, specifically filenames.
@@ -66,8 +66,8 @@ open (
 The parameters are:
 
 - self: the application instance (usually GtkApplication)
-- files: an array of GFiles. [array length=n\_files] [element-type GFile]
-- n_files: the number of the elements of `files`
+- files: an array of GFiles. \[array length=n\_files] \[element-type GFile]
+- n\_files: the number of the elements of `files`
 - hint: an optional context string provided by the caller (often unused)
 - user_data: user data that is set when the signal handler was connected.
 
@@ -81,7 +81,7 @@ Our file viewer is as follows.
 - When arguments are given, it recognizes the first argument as a filename and opens it.
 - The second argument and later are ignored.
 - If there is no argument, it shows an error message and quits.
-- If it successfully opens the file, it reads the contents of the file, inserts them to GtkTextBuffer and shows the window.
+- If it successfully opens the file, it reads the content of the file, inserts it to GtkTextBuffer and shows the window.
 - If it fails to open the file, it shows an error message and quit.
 
 The program is shown below.
@@ -90,8 +90,7 @@ The program is shown below.
 tfv/tfv3.c
 @@@
 
-Save it as `tfv3.c`.
-The source code can be found at [/src/tfv/tfv3.c](tfv/tfv3.c) in this repository.
+The source code is located at [/src/tfv/tfv3.c](tfv/tfv3.c) in the repository.
 Compile and run it.
 
 ~~~
@@ -116,7 +115,7 @@ When the flag `G_APPLICATION_HANDLES_OPEN` is given to `gtk_application_new` fun
 - If the application is run with command line arguments, it emits "open" signal when it is activated.
 
 The handler `app_activate` becomes very simple.
-It just outputs an error message and returns to the caller.
+It just outputs a message and returns to the caller.
 Then the application quits immediately because no window is created.
 
 The main work is done in the handler `app_open`.
@@ -124,48 +123,67 @@ The main work is done in the handler `app_open`.
 - Creates GtkApplicationWindow, GtkScrolledWindow, GtkTextView and GtkTextBuffer and connects them together
 - Sets wrap mode to `GTK_WRAP_WORD_CHAR` in GtktextView
 - Sets GtkTextView to non-editable because the program isn't an editor but only a viewer
-- Reads the file and inserts the text into GtkTextBuffer (this will be explained later)
+- Reads the file and inserts the text into GtkTextBuffer (this will be explained later).
+The window title is set with the filename.
+In general, filenames are sequences of bytes.
+To display them on a screen, they must be converted into encoded strings.
+The function `g_filename_display_name` converts a filename into a valid UTF-8 string. 
 - If the file is not opened, outputs an error message and destroys the window. This causes the application to exit.
 
 The following is the file reading part of the program.
 
-~~~C
-if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
-  gtk_text_buffer_set_text (tb, contents, length);
-  g_free (contents);
-  if ((filename = g_file_get_basename (files[0])) != NULL) {
-    gtk_window_set_title (GTK_WINDOW (win), filename);
-    g_free (filename);
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+  if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
+    gtk_text_buffer_set_text (tb, contents, length);
+    g_free (contents);
+    if ((filename_bin = g_file_get_basename (files[0])) != NULL) {
+      filename_utf8 = g_filename_display_name (filename_bin);
+      gtk_window_set_title (GTK_WINDOW (win), filename_utf8);
+      g_free (filename_bin);
+      g_free (filename_utf8);
+    }
+    gtk_window_present (GTK_WINDOW (win));
+  } else {
+    g_printerr ("%s.\n", err->message);
+    g_error_free (err);
+    gtk_window_destroy (GTK_WINDOW (win));
   }
-  gtk_window_present (GTK_WINDOW (win));
-} else {
-  g_printerr ("%s.\n", err->message);
-  g_error_free (err);
-  gtk_window_destroy (GTK_WINDOW (win));
-}
-~~~
+```
 
-The function `g_file_load_contents` loads the file contents into a temporary buffer,
-which is automatically allocated and sets `contents` to point to the buffer.
+The function `g_file_load_contents` loads the file contents into a temporary buffer, allocated automatically, and sets `contents` to point to the buffer.
 The length of the buffer is assigned to `length`.
 It returns `TRUE` if the file's contents are successfully loaded.
+The caller takes the ownership of the buffer and is responsible for freeing it.
 If an error occurs, it returns `FALSE` and sets the variable `err` to point to a newly created GError structure.
-The caller takes ownership of the GError structure and is responsible for freeing it.
+The caller takes the ownership of the GError structure and is responsible for freeing it.
 If you want to know the details about g\_file\_load\_contents, see [g file load contents](https://docs.gtk.org/gio/method.File.load_contents.html).
 
 If the file is read successfully, the contents are inserted into GtkTextBuffer.
-The temporary buffer in contents is then freed, the window title is set, the memory for filename is freed, and the window is shown.
+The temporary buffer `contents` is then freed.
+The function `g_file_get_basename` returns the basename of the pathname.
+Generally, a pathname of a filename is a sequence of byte data.
+To display the filename, it must be converted to a valid encoded string.
+The function `g_filename_display_name` converts a filename into a valid UTF-8 string.
+After the conversion, the window title is set with the filename, the memories for filenames are freed, and the window is shown.
 
 If it fails, `g_file_load_contents` sets `err` to point to a newly created GError structure.
 The structure is:
 
-~~~C
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
 struct GError {
   GQuark domain;
   int code;
   char* message;
 }
-~~~
+```
 
 The `message` member is the most commonly used.
 It points to an error message.
@@ -202,7 +220,7 @@ The numbers on the left below correspond to the line numbers in the source code.
 
 - 11-13: Variables `nb`, `lab` and `nbp` are defined. They point to a GtkNotebook, GtkLabel and GtkNotebookPage respectively.
 - 24: The window's title is set to "file viewer".
-- 25: The default size of the window is 600x400.
+- 25: The default size of the window is 800x600.
 - 26-27: GtkNotebook is created and set as a child of the GtkApplicationWindow.
 - 29-52: For-loop. The variable `files[i]` points to i-th GFile, which is created by the GtkApplication from the i-th command line argument.
 - 31-36: A GtkScrollledWindow and a GtkTextView are created. A GtkTextBuffer is obtained from the GtkTextView.
@@ -212,8 +230,7 @@ The GtkTextView is connected to the GtkScrolledWindow as a child.
 The filename is a byte-sequence without a specific encoding.
 It needs to be converted into a UTF-8 string with `g_filename_display_name` before setting the label text.
 The strings `filename_bin` and `filename_utf8` are freed.
-- 45-46: Appends a GtkScrolledWindow to the GtkNotebook as a child.
-And the GtkLabel is set as the child's tab.
+- 45-46: Appends a GtkScrolledWindow to the GtkNotebook as a child and the GtkLabel is set as the child's tab.
 At the same time, a GtkNoteBookPage is created automatically.
 The function `gtk_notebook_get_page` returns the GtkNotebookPage of the child (GtkScrolledWindow).
 - 47: GtkNotebookPage has "tab-expand" property.
@@ -222,6 +239,6 @@ If it is FALSE, then the width of the tab is determined by the size of the label
 `g_object_set` is a general function to set properties of objects.
 See [GObject API Reference -- g\_object\_set](https://docs.gtk.org/gobject/method.Object.set.html).
 - 48-50: If it fails to read the file, the error message is shown.
-The function `g_clear_error (&err)` works like `g_error_free (err); err = NULL`.
+The function `g_clear_error (&err)` works like `g_error_free (err); err = NULL;`.
 - 53-56: If at least one page exists, the window is shown.
 Otherwise, the window is destroyed and the application quits.

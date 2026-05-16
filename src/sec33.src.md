@@ -1,41 +1,36 @@
 # GtkSignalListItemFactory
 
-## GtkSignalListItemFactory and GtkBuilderListItemFactory
+## GtkSignalListItemFactory vs GtkBuilderListItemFactory
 
-GtkBuilderlistItemFactory is convenient when GtkListView just shows the contents of a list.
-Its binding direction is always from an item of a list to a child of GtkListItem.
+GtkBuilderlistItemFactory is convenient when GtkListView just shows the contents of a list model.
+Its binding direction is always from an item of the list to a child of GtkListItem.
 
 However, it is insufficient for dynamic connections.
 For example, suppose you want to edit the contents of a list.
-You set a child of GtkListItem to a GtkText instance so a user can edit text with it.
-You need to bind an item in the list with the buffer of the GtkText.
-The direction is opposite from the one with GtkBuilderListItemFactory.
-It is from the GtkText instance to the item in the list.
-You can implement this with GtkSignalListItemFactory, which is more flexible than GtkBuilderListItemFactory.
+You can set a GtkText widget as the child of a GtkListItem to allow users to edit text.
+You need to update the list item when the text in the GtkText is edited.
+The data flow is in the opposite direction compared to GtkBuilderListItemFactory—it goes from the GtkText widget back to the list item.
+You can achieve this using GtkSignalListItemFactory, which provides more flexibility.
 
-This section shows just some parts of the source file `listeditor.c`.
-If you want to see the whole codes, see `src/listeditor` directory of the [Gtk4 tutorial repository](https://github.com/ToshioCP/Gtk4-tutorial).
+This section shows just some parts of the source file [listeditor.c](listeditor/listeditor.c).
+If you want to see the whole codes, see [src/listeditor](listeditor/) directory of the Gtk4 tutorial repository.
 
 ## List Editor
 
 The sample program is a list editor and the data in the list are strings.
-It's the same as a line editor.
+It's similar to a line editor.
 It reads a text file line by line.
 Each line is an item of the list.
-The list is displayed with GtkColumnView.
-There are two columns.
-One column contains a button, which shows whether the line is a current line.
-If the line is the current line, the button is colored red.
-The other contains a string which is the contents of the corresponding item of the list.
+The list is displayed with a GtkListView.
+The list view contains strings which are the contents of the corresponding items in the list model.
 
 @@@if pdf
-![List editor](/images/listeditor.png){width=12cm height=9cm}
+![List editor](/images/listeditor.png){width=12cm height=7.2cm}
 @@@else
 ![List editor](/images/listeditor.png)
 @@@end
 
-The source files are located at `src/listeditor` directory.
-You can compile end execute it as follows.
+You can compile the source file and execute it as follows.
 
 - Download the program from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 - Change your current directory to `src/listeditor`.
@@ -47,201 +42,78 @@ $ ninja -C _build
 $ _build/listeditor
 ~~~
 
-- Append button: appends a line after the current line, or at the last line if no current line exists.
-- Insert button: inserts a line before the current line, or at the top line if no current line exists.
-- Remove button: removes a current line.
-- Read button: reads a file.
-- Write button: writes the contents to a file.
-- Close button: closes the contents.
-- Quit button: quits the application.
-- Button in the `select` column: makes the row current.
-- String column: GtkText. You can edit a string in the field.
+The window has buttons:
 
-The current line number (zero-based) is shown at the left of the tool bar.
-The file name is shown at the right of the write button.
+- **Append button:** appends a data after the current item, or at the end of the model if no current item exists.
+- **Insert button:** inserts a row before the current item, or at the top of the model if no current item exists.
+- **Remove button:** removes the current item.
+- **Read button:** reads a file.
+- **Write button:** Writes the contents to the file shown on the toolbar. If no filename is set, a file dialog opens to let you choose one.
+- **Close button:** remove all the items from the model.
+- **Quit button:** quits the application.
 
-## Connect a GtkText Instance and an Item in the List
+You can click on the content area and select a row.
+The corresponding item to the row will be the current item.
+The current position (zero-based) is shown at the left of the tool bar.
 
-The second column (GtkColumnViewColumn) sets its factory property to GtkSignalListItemFactory.
-It uses three signals setup, bind and unbind.
+## Connect a GtkText Instance and an Item in the Model
+
+The ListView sets its factory property to GtkSignalListItemFactory.
+Its two signals "setup" and "bind" are connected to the handlers `setup_cb` and `bind_cb` respectively.
+The remaining two signals "unbind" and "teardown" aren't used in this program.
 The following shows the signal handlers.
 
 @@@include
-listeditor/listeditor.c setup2_cb bind2_cb unbind2_cb
+listeditor/listeditor.c setup_cb bind_cb
 @@@
 
-- 1-6: `setup2_cb` is a setup signal handler on the GtkSignalListItemFactory.
-This factory is inserted to the factory property of the second GtkColumnViewColumn.
-The handler just creates a GtkText instance and sets the child of `listitem` to it.
-The instance will be destroyed automatically when the `listitem` is destroyed.
-So, teardown signal handler isn't necessary.
-- 8-20: `bind2_cb` is a bind signal handler.
-It is called when the `listitem` is bound to an item in the list.
-The list items are LeData instances.
-LeData is defined in the file `listeditor.c` (the C source file of the list editor).
-It is a child class of GObject and has string data which is the content of the line. 
-  - 10-11: `text` is a child of the `listitem` and it is a GtkText instance.
-And `buffer` is a GtkEntryBuffer instance of the `text`.
-  - 12: The LeData instance `data` is an item pointed to by the `listitem`.
-  - 15-16: Sets the text of `text` to `le_data_look_string (data)`.
-le\_data\_look\_string returns the string of the `data` and the ownership of the string is still taken by the `data`.
-So, the caller doesn't need to free the string.
-  - 18: `g_object_bind_property` binds a property and another object property.
-This line binds the "text" property of the `buffer` (source) and the "string" property of the `data` (destination).
-It is a uni-directional binding (`G_BINDING_DEFAULT`).
-When a user changes the GtkText text, the same string is immediately put into the `data`. 
-The function returns a GBinding instance.
-This binding is different from bindings of GtkExpression.
-This binding needs the existence of the two properties.
-  - 19: GObject has a table.
-The key is a string (or GQuark) and the value is a gpointer (pointer to any type).
-The function `g_object_set_data` sets the association from the key to the value.
-This line sets the association from "bind" to `bind` instance.
-It makes possible for the "unbind" handler to get the `bind` instance.
-- 22-29: `unbind2_cb` is a unbind signal handler.
-  - 24: Retrieves the `bind` instance from the table in the `listitem` instance.
-  - 26-27: Unbind the binding.
-  - 28: Removes the value corresponds to the "bind" key.
+- 5-7: `setup_cb` creates the child widget of the list item.
+This widget will be a row of the GtkListView instance.
+- 9-10: `setup_cb` connects the "changed" signal on the GtkText instance to the handler `text_changed_cb`.
+This handler copies the text in the GtkText to the item when the GtkText is changed.
+`setup_cb` also connects the "notify::selected" signal on the GtkListItem to the handler `item_selected_cb`.
+The handler make the GtkText grab the keyboard focus to prepare keyboard input.
+- These instance and signals created by `setup_cb` will be automatically destroyed when the list item disposes itself.
+So, teardown signal handler is not necessary.
+- 83-86: `bind_cb` just copy the string in the item in the model to the GtkText.
+The macro function `g_signal_block_by_func` avoids unnecessary copy from GtkText to item at the update of the GtkText.
+No instances are created in this process, so "unbind" signal handler is not necessary.
 
-This technique is not so complicated.
-You can use it when you make a cell editable application.
+- 5-7: `setup_cb` creates the child widget for the list item, which serves as a row in the GtkListView.
+- 9-10: `setup_cb` connects the GtkText's "changed" signal to the `text_changed_cb` handler.
+This handler updates the item in the model with the new text whenever the GtkText is modified.
+Additionally, it connects the "notify::selected" signal of the GtkListItem to `item_selected_cb`, which makes the GtkText grab keyboard focus to prepare for immediate input.
+The "notify" signal is inherited from GObject class.
+- The instances and signal connections created in `setup_cb` are automatically cleaned up when the list item is disposed.
+Therefore, a "teardown" signal handler is unnecessary.
+- 19-22: `bind_cb` simply copies the string from the model's item to the GtkText.
+The `g_signal_handlers_block_by_func` macro prevents an unnecessary write-back from the GtkText to the item during this update.
+Since no new resources are allocated in this step, an "unbind" signal handler is not needed.
 
-If it is impossible to use `g_object_bind_property`, use a notify signal on the GtkEntryBuffer instance.
-You can use "deleted-text" and "inserted-text" signal instead.
-The handler of the signals above copies the text in the GtkEntryBuffer instance to the LeData string.
-Connect the notify signal handler in `bind2_cb` and disconnect it in `unbind2_cb`.
-
-## Change the Cell of GtkColumnView Dynamically
-
-Next topic is to change the GtkColumnView (or GtkListView) cells dynamically.
-The example changes the color of the buttons, which are children of GtkListItem instances, as the current line position moves.
-
-The line editor has the current position of the list.
-
-- At first, no line is current.
-- When a line is appended or inserted, the line is current.
-- When the current line is deleted, no line will be current.
-- When a button in the first column of GtkColumnView is clicked, the line will be current.
-- It is necessary to set the line status (whether current or not) when a GtkListItem is bound to an item in the list.
-It is because GtkListItem is recycled.
-A GtkListItem was possibly current line before but not current after recycled.
-The opposite can also happen.
-
-The button of the current line is colored red and otherwise white.
-
-The current line has no relationship to GtkSingleSelection object.
-GtkSingleSelection selects a line on the display.
-The current line doesn't need to be on the display.
-It is possible to be on the line out of the Window (GtkScrolledWindow).
-Actually, the program doesn't use GtkSingleSelection.
-
-The LeWindow instance has two instance variables for recording the current line.
-
-- `win->position`: An `int` type variable. It is the position of the current line. It is zero-based. If no current line exists, it is -1.
-- `win->current_button`: A variable points to the button, located at the first column, on the current line. If no current line exists, it is NULL.
-
-If the current line moves, the following two functions are called.
-They updates the two varables.
+The two signal handlers `text_changed_cb` and `item_selected_cb` are shown below.
 
 @@@include
-listeditor/listeditor.c update_current_position update_current_button
+listeditor/listeditor.c text_changed_cb item_selected_cb
 @@@
 
-The varable `win->position_label` points to a GtkLabel instance.
-The label shows the current line position.
+## GtkSingleSelection
 
-The current button has CSS "current" class.
-The button is colored red through the CSS "button.current {background: red;}".
+In the `liststore.ui` file, the GtkListView's model property is set to a GtkSingleSelection, which in turn wraps the underlying GListModel.
 
-The order of the call for these two functions is important.
-The first function, which updates the position, is usually called first.
-After that, a new line is appended or inserted.
-Then, the second function is called.
+Clicking a row in the list view selects and highlights it, automatically focusing the GtkText widget for immediate editing.
+Since GtkSingleSelection handles all the selection logic internally, no additional code is required for this behavior.
 
-The following functions call the two functions above.
-Be careful about the order of the call.
+## Another Possible Implementation
 
-@@@include
-listeditor/listeditor.c select_cb setup1_cb bind1_cb
-@@@
+Alternatively, you can use a GBinding object to bind the GtkText's "text" property to the LeData's "string" property.
+To do this, you first need to implement the "string" property in the LeData class.
 
-- 1-7: `select_cb` is a "clicked" signal handler.
-The handler just calls the two functions and update the position and button.
-- 9-15: `setup1_cb` is a setup signal handler on the GtkSignalListItemFactory.
-It sets the child of `listitem` to a GtkButton instance.
-The "clicked" signal on the button is connected to the handler `select_cb`.
-When the listitem is destroyed, the child (GtkButton) is also destroyed.
-At the same time, the connection of the signal and the handler is also destroyed.
-So, you don't need teardown signal handler.
-- 17-24: `bind1_cb` is a bind signal handler.
-Usually, the position moves before this handler is called.
-If the item is on the current line, the button is updated.
-No unbind handler is necessary.
+The code for this version is available in the [src/listeditor_binding/](listeditor_binding/) directory.
+The GBinding instance is created in the "bind" handler and unbound in the "unbind" handler.
+We use the `g_object_set_data` function to store the binding object within the list item.
 
-When a line is added, the current position is updated in advance.
+This is just one example, and other implementations are possible.
+For instance, you could subclass GtkText and store the binding instance directly inside the subclass.
 
-@@@include
-listeditor/listeditor.c app_cb ins_cb
-@@@
-
-When a line is removed, the current position becomes -1 and no button is current.
-
-@@@include
-listeditor/listeditor.c rm_cb
-@@@
-
-The color of the buttons is determined by the "background" CSS style.
-The following CSS node is a bit complicated.
-CSS node `column view` has `listview` child node.
-It covers the rows in the GtkColumnView.
-The `listview` node is the same as the one for GtkListView.
-It has `row` child node, which is for each child widget.
-Therefore, the following node corresponds buttons on the GtkColumnView widget.
-In addition, it is applied to the "current" class.
-
-@@@if gfm
-~~~css
-columnview listview row button.current {background: red;}
-~~~
-@@@else
-~~~{.css}
-columnview listview row button.current {background: red;}
-~~~
-@@@end
-
-## A Warning from GtkText
-
-If your program has the following two, a warning message can be issued.
-
-- The list has many items and it needs to be scrolled.
-- A GtkText instance is the focus widget.
-
-~~~
-GtkText - unexpected blinking selection. Removing
-~~~
-
-I don't have an exact idea why this happens.
-But if GtkText "focusable" property is FALSE, the warning doesn't happen.
-So it probably comes from focus and scroll.
-
-You can avoid this by unsetting any focus widget under the main window.
-When scroll begins, the "value-changed" signal on the vertical adjustment of the scrolled window is emitted.
-
-The following is extracted from the UI file and C source file.
-
-~~~xml
-... ... ...
-<object class="GtkScrolledWindow">
-  <property name="hexpand">TRUE</property>
-  <property name="vexpand">TRUE</property>
-  <property name="vadjustment">
-    <object class="GtkAdjustment">
-      <signal name="value-changed" handler="adjustment_value_changed_cb" swapped="no" object="LeWindow"/>
-    </object>
-  </property>
-... ... ...  
-~~~
-
-@@@include
-listeditor/listeditor.c adjustment_value_changed_cb
-@@@
+However, these alternatives require more code.
+Ultimately, using the "changed" signal remains the simplest and most straightforward approach.

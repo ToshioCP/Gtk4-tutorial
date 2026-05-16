@@ -13,11 +13,11 @@ app_open (GApplication *app, GFile ** files, int n_files, char *hint) {
   GtkTextBuffer *tb;
   char *contents;
   gsize length;
-  char *filename;
+  char *filename_bin, *filename_utf8;
   GError *err = NULL;
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
 
   scr = gtk_scrolled_window_new ();
   gtk_window_set_child (GTK_WINDOW (win), scr);
@@ -31,9 +31,11 @@ app_open (GApplication *app, GFile ** files, int n_files, char *hint) {
   if (g_file_load_contents (files[0], NULL, &contents, &length, NULL, &err)) {
     gtk_text_buffer_set_text (tb, contents, length);
     g_free (contents);
-    if ((filename = g_file_get_basename (files[0])) != NULL) {
-      gtk_window_set_title (GTK_WINDOW (win), filename);
-      g_free (filename);
+    if ((filename_bin = g_file_get_basename (files[0])) != NULL) {
+      filename_utf8 = g_filename_display_name (filename_bin);
+      gtk_window_set_title (GTK_WINDOW (win), filename_utf8);
+      g_free (filename_bin);
+      g_free (filename_utf8);
     }
     gtk_window_present (GTK_WINDOW (win));
   } else {

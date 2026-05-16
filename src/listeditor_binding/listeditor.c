@@ -3,12 +3,44 @@
 #define LE_TYPE_DATA (le_data_get_type ())
 G_DECLARE_FINAL_TYPE (LeData, le_data, LE, DATA, GObject)
 
+enum {
+  PROP_0,
+  PROP_STRING,
+  N_PROPERTIES
+};
+
+static GParamSpec *le_data_properties[N_PROPERTIES] = {NULL, };
+
 typedef struct _LeData {
   GObject parent;
   char *string;
 } LeData;
 
 G_DEFINE_FINAL_TYPE(LeData, le_data, G_TYPE_OBJECT)
+
+static void
+le_data_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec) {
+  LeData *self = LE_DATA (object);
+  char *s;
+
+  if (property_id == PROP_STRING) {
+    s = g_value_dup_string (value);
+    if (self->string)
+      g_free (self->string); 
+    self->string = s; /* The ownership is taken by the LeData instance*/
+  } else
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+}
+
+static void
+le_data_get_property (GObject *object, guint property_id, GValue *value, GParamSpec *pspec) {
+  LeData *self = LE_DATA (object);
+
+  if (property_id == PROP_STRING)
+    g_value_set_string (value, self->string);
+  else
+    G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+}
 
 static void
 le_data_init (LeData *self) {
@@ -29,6 +61,10 @@ le_data_class_init (LeDataClass *class) {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
   gobject_class->finalize = le_data_finalize;
+  gobject_class->set_property = le_data_set_property;
+  gobject_class->get_property = le_data_get_property;
+  le_data_properties[PROP_STRING] = g_param_spec_string ("string", "string", "string", "", G_PARAM_READWRITE);
+  g_object_class_install_properties (gobject_class, N_PROPERTIES, le_data_properties);
 }
 
 /* getter and setter */
@@ -58,16 +94,13 @@ le_data_take_string (LeData *self, char *string) {
 }
 
 LeData *
-le_data_new (void) {
-  return LE_DATA (g_object_new (LE_TYPE_DATA, NULL));
+le_data_new_with_data (const char *string) {
+  return LE_DATA (g_object_new (LE_TYPE_DATA, "string", string, NULL));
 }
 
 LeData *
-le_data_new_with_data (const char *string) {
-  LeData *data = le_data_new();
-  
-  le_data_set_string (data, string);
-  return data;
+le_data_new (void) {
+  return LE_DATA (g_object_new (LE_TYPE_DATA, NULL));
 }
 
 /* ----- definition of LeWindow ----- */
@@ -339,49 +372,41 @@ quit_cb (GtkButton *btn, LeWindow *win) {
 /* ----- Handlers on GtkSignalListItemFacory ----- */
 
 static void
-text_changed_cb (GtkEditable *self, gpointer user_data) {
-  GtkListItem *listitem = GTK_LIST_ITEM (user_data);
-  LeData *data = LE_DATA (gtk_list_item_get_item(listitem));
-  const char *s;
-
-  if (data) {
-    s = gtk_editable_get_text (self);
-    le_data_set_string (data, s);
-  }
-}
-
-static void
-item_selected_cb (GtkListItem *listitem, GParamSpec *pspec, gpointer user_data) {
-  GtkWidget *text = GTK_WIDGET (user_data);
-
-  if (gtk_list_item_get_selected (listitem)) {
-    gtk_widget_grab_focus (text);
-  } 
-}
-
-static void
 setup_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   GtkWidget *text = gtk_text_new ();
-
   gtk_list_item_set_child (listitem, GTK_WIDGET (text));
   gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
   gtk_widget_set_can_target (GTK_WIDGET (text), FALSE);
-
-  g_signal_connect (GTK_EDITABLE (text), "changed", G_CALLBACK (text_changed_cb), listitem);
-  g_signal_connect (listitem, "notify::selected", G_CALLBACK (item_selected_cb), text);
 }
 
 static void
 bind_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   GtkWidget *text = gtk_list_item_get_child (listitem);
+  GtkEntryBuffer *buffer = gtk_text_get_buffer (GTK_TEXT (text));
   LeData *data = LE_DATA (gtk_list_item_get_item(listitem));
+  GBinding *bind;
 
   if (data) {
-    g_signal_handlers_block_by_func (text, (gpointer) text_changed_cb, listitem);
     gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
     gtk_editable_set_position (GTK_EDITABLE (text), -1);
-    g_signal_handlers_unblock_by_func (text, (gpointer) text_changed_cb, listitem);
   }
+  
+  bind = g_object_bind_property (buffer, "text", data, "string", G_BINDING_DEFAULT);
+  g_object_set_data (G_OBJECT (listitem), "bind", bind);
+}
+
+static void
+unbind_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GBinding *bind = G_BINDING (g_object_get_data (G_OBJECT (listitem), "bind"));
+
+  if (bind)
+    g_binding_unbind(bind);
+  g_object_set_data (G_OBJECT (listitem), "bind", NULL);
+}
+
+static void
+teardown_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  gtk_list_item_set_child (listitem, NULL);
 }
 
 /* ----------------------------------------------------*/
@@ -434,6 +459,8 @@ le_window_class_init (LeWindowClass *class) {
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), quit_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), setup_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), bind_cb);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), unbind_cb);
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), teardown_cb);
   gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), adjustment_value_changed_cb);
 }
 
