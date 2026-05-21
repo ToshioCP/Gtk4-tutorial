@@ -11,6 +11,7 @@ G_DEFINE_FINAL_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
+  tv->file = NULL;
 }
 
 static void
@@ -19,6 +20,11 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
 
 void
 tfe_text_view_set_file (TfeTextView *tv, GFile *f) {
+  if (tv->file) {
+    g_object_unref (tv->file);
+  }
+  if (f)
+    g_object_ref (f); /* get the ownership of the GFile */
   tv->file = f;
 }
 
@@ -31,4 +37,3 @@ GtkWidget *
 tfe_text_view_new (void) {
   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, NULL));
 }
-

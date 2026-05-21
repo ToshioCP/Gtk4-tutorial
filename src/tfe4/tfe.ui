@@ -2,8 +2,8 @@
 <interface>
   <object class="GtkApplicationWindow" id="win">
     <property name="title">file editor</property>
-    <property name="default-width">600</property>
-    <property name="default-height">400</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
     <child>
       <object class="GtkBox">
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>

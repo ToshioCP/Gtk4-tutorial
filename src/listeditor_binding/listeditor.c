@@ -187,11 +187,9 @@ open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer user_data) {
   GError *err2 = NULL;
 
   if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) == NULL) {
-    if (err) {
-      if (err->code != GTK_DIALOG_ERROR_DISMISSED)
-        g_warning ("%s\n", err->message);
-      g_error_free (err);
-    }
+    if (err->code != GTK_DIALOG_ERROR_DISMISSED)
+      g_warning ("%s\n", err->message);
+    g_error_free (err);
     return;
   }
   stream = g_file_read (file, NULL, &err);
@@ -269,10 +267,8 @@ write_data (LeWindow *win) {
     return;
   }
   if ((ostream = g_file_replace (win->file, NULL, TRUE, G_FILE_CREATE_NONE, NULL, &err)) == NULL) {
-    if (err) {
-      g_warning ("%s\n", err->message);
-      g_error_free (err);
-    }
+    g_warning ("%s\n", err->message);
+    g_error_free (err);
     return;
   }
   n_items = g_list_model_get_n_items (G_LIST_MODEL (win->liststore));
@@ -282,28 +278,23 @@ write_data (LeWindow *win) {
     length = (gsize) strlen (s);
     size = g_output_stream_write (G_OUTPUT_STREAM (ostream), s, length, NULL, &err);
     g_object_unref (data);
-    if (size < 0) { /* size == -1 when error occurs */
-      if (err) {
-        g_warning ("%s\n", err->message);
-        g_clear_error (&err);
-      }
+    if (size ==-1) { /* size == -1 when error occurs */
+      g_warning ("%s\n", err->message);
+      g_clear_error (&err);
       break;
     }
     size = g_output_stream_write (G_OUTPUT_STREAM (ostream), "\n", 1, NULL, &err);
-    if (size < 0) {
-      if (err) {
-        g_warning ("%s\n", err->message);
-        g_clear_error (&err);
-      }
+    if (size == -1) {
+      g_warning ("%s\n", err->message);
+      g_clear_error (&err);
       break;
     }
   }
-  g_output_stream_close (G_OUTPUT_STREAM (ostream), NULL, &err);
-  g_object_unref (ostream);
-  if (err) {
+  if (! g_output_stream_close (G_OUTPUT_STREAM (ostream), NULL, &err)) {
     g_warning ("%s\n", err->message);
     g_error_free (err);
   }
+  g_object_unref (ostream);
 }
 
 static void
@@ -315,11 +306,9 @@ saveas_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
   char *filename_bin, *filename_utf8;
 
   if ((file = gtk_file_dialog_save_finish (dialog, res, &err)) == NULL) {
-    if (err) {
-      if (err->code != GTK_DIALOG_ERROR_DISMISSED)
-        g_warning ("%s\n", err->message);
-      g_error_free (err);
-    }
+    if (err->code != GTK_DIALOG_ERROR_DISMISSED)
+      g_warning ("%s\n", err->message);
+    g_error_free (err);
     return;
   }
   if (win->file)

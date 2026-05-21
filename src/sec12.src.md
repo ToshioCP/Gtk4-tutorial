@@ -1,159 +1,178 @@
-# Signals
+# Error Handling in GLib
 
-## Signals
+## Programmer Errors and Runtime Errors
 
-Each object is encapsulated in Gtk programming.
-And it is not recommended to use global variables because they are prone to make the program complicated.
-So, we need something to communicate between objects.
-There are two ways to do so.
+In GLib, errors are generally categorized into two types: Programmer Errors and Runtime Errors.
 
-- Instance methods:
-Instance methods are functions on instances.
-For example, `tb = gtk_text_view_get_buffer (tv)` is an instance method on the instance `tv`.
-The caller requests `tv` for `tb`, which is a GtkTextBuffer instance connected to `tv`.
-- Signals:
-For example, `activate` signal on GApplication object.
-When the application is activated, the signal is emitted.
-Then the handler, which has been connected to the signal, is invoked.
+Programmer Errors are bugs within your source code.
+You should check for these errors during development; if one is detected, it is a sign that you must find the bug and fix your code immediately.
 
-The caller of methods or signals are usually out of the object.
-One of the differences between these two is that the object is active or passive.
-In methods, objects passively respond to the caller.
-In signals, objects actively send signals to handlers.
+Runtime Errors, on the other hand, occur due to external factors during program execution, such as user operations or environmental issues (e.g., trying to read a file that does not exist).
+These are not bugs in your code.
+When a runtime error occurs, you should notify the user or prompt them to take action; you should never simply terminate the program.
 
-GObject signals are registered, connected and emitted.
+When designing objects, you must consider both types of error handling.
 
-1. Signals are registered in the class.
-The registration is done usually when the class is initialized.
-Signals can have a default handler, which is sometimes called "object method handler".
-It is not a user handler connected by `g_signal_connect` family functions.
-A default handler is always called on any instance of the class.
-1. Signals are connected to handlers by the macro `g_signal_connect` or its family functions.
-The connection is usually done out of the object.
-One important thing is that signals are connected on a specific instance.
-Suppose there exist two GtkButton instances A, B and a function C.
-Even if you connected the "clicked" signal on A to C, B and C are *not* connected.
-1. When Signals are emitted, the connected handlers are invoked.
-Signals are emitted on the instance of the class.
+## Programmer Error Handling
 
-## Signal Registration
+A well-known programmer error is passing an argument of the wrong type.
+While the C compiler can detect some of these issues, it cannot verify GType because they are determined at runtime, not at compile time.
 
-In TfeTextView, two signals are registered.
+To perform runtime type checking, we use the following macros:
 
-- "change-file" signal.
-This signal is emitted when `tv->file` is changed.
-- "open-response" signal.
-The function `tfe_text_view_open` doesn't return the status because it can't get the status from the file chooser dialog.
-(Instead, the call back function gets the status.)
-This signal is emitted instead of the return value of the function.
+- `g_return_if_fail (cond)`: If the condition `cond` is false, it prints an error message and returns from the function.
+- `g_return_val_if_fail (cond, val)`: If the condition `cond` is false, it prints an error message, returns from the function, and returns the value val.
 
-A static variable or array is used to store signal ID.
+While internal helper functions are less prone to type mismatches, public functions are highly susceptible.
+You should treat these checks as mandatory for all public-facing functions.
+If these errors are triggered, it almost always indicates a bug in the code calling your library.
 
-~~~C
-enum {
-  CHANGE_FILE,
-  OPEN_RESPONSE,
-  NUMBER_OF_SIGNALS
-};
-
-static guint tfe_text_view_signals[NUMBER_OF_SIGNALS];
-~~~
-
-Signals are registered in the class initialization function.
-
-@@@include
-tfetextview/tfetextview.c tfe_text_view_class_init
-@@@
-
-- 6-15: Registers "change-file" signal.
-`g_signal_new` function is used.
-The signal "change-file" has no default handler (object method handler) so the offset (the line 9) is set to zero.
-You usually don't need a default handler.
-If you need it, use `g_signal_new_class_handler` function instead of `g_signal_new`.
-See [GObject API Reference](https://docs.gtk.org/gobject/func.signal_new_class_handler.html) for further information.
-- The return value of `g_signal_new` is the signal id.
-The type of signal id is guint, which is an alias for unsigned int.
-It is used in the function `g_signal_emit`.
-- 16-26: Registers "open-response" signal.
-This signal has a parameter.
-- 24: Number of the parameters.
-"open-response" signal has one parameter.
-- 25: The type of the parameter.
-`G_TYPE_INT` is a type of integer.
-Such fundamental types are described in [gtype.h](https://gitlab.gnome.org/GNOME/glib/-/blob/main/gobject/gtype.h?ref_type=heads).
-
-The handlers are declared as follows.
-
-~~~C
-/* "change-file" signal handler */
-void
-user_function (TfeTextView *tv,
-               gpointer user_data)
-
-/* "open-response" signal handler */
-void
-user_function (TfeTextView *tv,
-               TfeTextViewOpenResponseType response_id,
-               gpointer user_data)
-~~~
-
-- The signal "change-file" doesn't have any parameters, so the handler's arguments are a TfeTextView instance and a user data.
-- The signal "open-response" has one parameter and its arguments are a TfeTextView instance, the signal's parameter and user data.
-- The variable `tv` points to the instance on which the signal is emitted.
-- The last argument `user_data` comes from the fourth argument of `g_signal_connect`.
-- The `parameter` (`response_id`) comes from the fourth argument of `g_signal_emit`.
-
-The values of the type `TfeTextViewOpenResponseType` are defined in `tfetextview.h`.
-
+@@@if gfm
 ```C
-/* "open-response" signal response */
-enum TfeTextViewOpenResponseType
-{
-  TFE_OPEN_RESPONSE_SUCCESS,
-  TFE_OPEN_RESPONSE_CANCEL,
-  TFE_OPEN_RESPONSE_ERROR
-};
+@@@else
+```{.c}
+@@@end
+GFile *
+tfe_text_view_get_file (TfeTextView *tv) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
 ```
 
-- The parameter is set to `TFE_OPEN_RESPONSE_SUCCESS` when `tfe_text_view_open` has successfully opened a file and read it.
-- The parameter is set to `TFE_OPEN_RESPONSE_CANCEL` when the user has canceled.
-- The parameter is set to `TFE_OPEN_RESPONSE_ERROR` when an error has occurred.
- 
-## Signal Connection
+In addition to type checking, GLib provides functions to report other anomalies that suggest programmer error:
 
-A signal and a handler are connected by the function macro `g_signal_connect`.
-There are some similar function macros like `g_signal_connect_after`, `g_signal_connect_swapped` and so on.
-However, `g_signal_connect` is used most often.
-The signals "change-file" and "open-response" are connected to their callback functions out of the TfeTextView object.
-Those callback functions are defined by users.
+- `g_warning (...)`: Used for non-fatal but important issues, such as system configuration errors or anomalies detected in trusted files.
+The `...` follows the printf format.
+Example: `g_warning ("%s is not a GType name.", string);`
+- `g_error (...)`: Used for fatal errors caused by programming mistakes.
+This function reports the error and terminates the program immediately.
 
-For example, callback functions are defined in `src/tfe6/tfewindow.c` and their names are `file_changed_cb` and `open_response_cb`.
-They will be explained later.
+**Note:** These functions are intended for developers, not for application end-users.
 
-~~~C
-g_signal_connect (TFE_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed_cb), nb);
+## Runtime Error Handling
 
-g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response_cb), nb);
-~~~
+Runtime errors are recoverable issues that occur during execution, such as failing to find a file you are trying to open.
+In many other languages, these are called "exceptions".
+GLib provides a structured way to handle these using the GError structure.
+You can also define custom error domains for your own objects.
 
-## Signal Emission
+### GError
 
-A signal is emitted on the instance.
-A function `g_signal_emit` is used to emit the signal.
-The following lines are extracted from `src/tfetextview/tfetextview.c`.
-Each line comes from a different line.
+GError is a C structure that carries three key pieces of information:
 
-~~~C
-g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
-g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
-g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
-~~~
+- Domain: The category or library to which the error belongs.
+- Code: An integer identifying the specific type of error.
+- Message: A human-readable string explaining the error.
 
-- The first argument is the instance on which the signal is emitted.
-- The second argument is the signal id.
-- The third argument is the detail of the signal.
-The signals "change-file" and "open-response" don't have details and the arguments are zero.
-- The signal "change-file" doesn't have parameters, so there's no fourth argument.
-- The signal "open-response" has one parameter.
-The fourth argument is the parameter.
+In most cases, error handling involves displaying this error message in a dialog box to inform the user.
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+void
+tfe_error_alert (GtkWindow *win, GError *err) {
+  GtkAlertDialog *alert_dialog;
+
+  alert_dialog = gtk_alert_dialog_new ("%s", err->message);
+  gtk_alert_dialog_show (alert_dialog, win);
+  g_object_unref (alert_dialog);
+}
+
+void
+example_function () {
+  GError *err = NULL;
+
+  if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+    tfe_error_alert (GTK_WINDOW (win), err);
+    g_clear_error (&err);
+  }
+}
+```
+
+The function `tfe_text_view_write` saves the content of a buffer to a GFile held by the TfeTextView.
+It may fail if:
+
+- No GFile is set (i.e., the target file is undefined).
+- A write error occurs (e.g., lack of write permissions).
+
+When an error occurs, `tfe_text_view_write` creates a GError, populates it with details, assigns it to the pointer provided by the caller, and returns FALSE.
+
+Steps for handling runtime errors:
+
+- Define a GError pointer and initialize it to NULL.
+- Pass the address of that pointer (`&err`) to the function.
+- Check the return value. If it is FALSE, handle the error (e.g., show an alert dialog).
+- Free the GError using `g_error_free` or, preferably, `g_clear_error (&err)`, which also sets the pointer back to NULL.
+
+If you don't need detailed error reports, you can pass NULL to the error argument:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+tfe_text_view_write (TFE_TEXT_VIEW (tv), NULL);
+```
+
+All functions that support error reporting must be designed to accept NULL for this argument.
+
+## Customizing Error Domains
+
+To define errors specific to your own objects, you need to create a custom error domain.
+
+In your header file (tfetextview.h):
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+/* User Error Definition */
+#define TFE_TEXT_VIEW_ERROR (tfe_text_view_error_quark ())
+GQuark tfe_text_view_error_quark (void);
+
+typedef enum {
+  TFE_TEXT_VIEW_ERROR_NO_FILE,   /* No file is set */
+  TFE_TEXT_VIEW_ERROR_FAILED,    /* Generic or unrecoverable error */
+} TfeTextViewError;
+In your source file (tfetextview.c):
+```
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+G_DEFINE_QUARK (tfe-text-view-error-quark, tfe_text_view_error)
+```
+
+Key Rules for Custom Errors:
+
+- Error Domain Macro: Defined as `<NAMESPACE>_<MODULE>_ERROR`.
+For TfeTextView, it is `TFE_TEXT_VIEW_ERROR`.
+It maps to a quark function named `namespace_module_error_quark()`.
+- Error Codes: Use an enum following the `<Namespace><Module>Error` convention.
+Individual error codes should be named `<NAMESPACE>_<MODULE>_ERROR_<CODE>`.
+Always include a `_FAILED` member for generic or unrecognized errors.
+- `G_DEFINE_QUARK`: This macro automatically defines the `..._quark()` function.
+The first argument is the domain name string (kebab-case: `tfe-text-view-error-quark`).
+The second argument is the C function prefix (snake_case: `tfe_text_view_error`).
+
+To set a custom error within a function, use `g_set_error_literal`:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+if (tv->file == NULL) {
+  g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_NO_FILE, 
+                       "No file is set in TfeTextView.");
+  return FALSE;
+}
+```
+
+The function `g_error_set_literal` creates a GError structure and sets the domain, code, and message with the second to fourth arguments.
+Furthermore, it updates err to point to the GError.
+
+Refer to the files `tfetextview.h` and `tfetextview.c` in [src/tfe5](tfe5/) for further information.

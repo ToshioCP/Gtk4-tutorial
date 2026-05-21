@@ -11,4 +11,3 @@ tfe_text_view_get_file (TfeTextView *tv);
 
 GtkWidget *
 tfe_text_view_new (void);
-

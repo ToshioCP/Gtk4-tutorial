@@ -78,13 +78,16 @@ G_DEFINE_FINAL_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
+  /* Do something for instance initialization. */
 }
 
 static void
 tfe_text_view_class_init (TfeTextViewClass *class) {
+  /* Do something for class initialization. */
 }
 
-/* --- Here are some functions --- */
+/* --- Some functions --- */
+/* Functions here are public, used mainly for other objects. */
 
 GtkWidget *
 tfe_text_view_new (void) {
