@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc">
+  <title>TfeTextView API reference</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<style>
+
+</style>
+</head>
+<body style="padding-top: 70px;">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">Gtk4 tutorial</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                                      </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-xxl-9">
+        <h1 id="tfetextview-api-reference">TfeTextView API
+        reference</h1>
+        <h2 id="description">Description</h2>
+        <p>TfeTextView is a child object of GtkTextView. If its contents
+        comes from a file, it holds the pointer to the GFile. Otherwise,
+        the pointer is NULL.</p>
+        <h2 id="hierarchy">Hierarchy</h2>
+        <pre><code>GObject -- GInitiallyUnowned -- GtkWidget -- GtkTextView -- TfeTextView</code></pre>
+        <h2 id="ancestors">Ancestors</h2>
+        <ul>
+        <li>GtkTextView</li>
+        <li>GtkWidget</li>
+        <li>GInitiallyUnowned</li>
+        <li>GObject</li>
+        </ul>
+        <h2 id="constructors">Constructors</h2>
+        <ul>
+        <li><a href="#tfe_text_view_new">tfe_text_view_new ()</a></li>
+        <li><a
+        href="#tfe_text_view_new_with_file">tfe_text_view_new_with_file
+        ()</a></li>
+        </ul>
+        <h2 id="instance-methods">Instance methods</h2>
+        <ul>
+        <li><a href="#tfe_text_view_get_file">tfe_text_view_get_file
+        ()</a></li>
+        <li><a href="#tfe_text_view_set_file">tfe_text_view_set_file
+        ()</a></li>
+        <li><a href="#tfe_text_view_read">tfe_text_view_read ()</a></li>
+        <li><a href="#tfe_text_view_write">tfe_text_view_write
+        ()</a></li>
+        </ul>
+        <h2 id="signals">Signals</h2>
+        <h2 id="api-for-constructors-instance-methods-and-signals">API
+        for constructors, instance methods and signals</h2>
+        <p><strong>constructors</strong></p>
+        <h3 id="tfe_text_view_new">tfe_text_view_new()</h3>
+        <pre><code>GtkWidget *
+tfe_text_view_new (void);</code></pre>
+        <p>Creates a new TfeTextView instance and returns the pointer to
+        it as GtkWidget.</p>
+        <p><strong>Return value</strong></p>
+        <ul>
+        <li>a new TfeTextView. The caller of the function takes
+        ownership of the data, and is responsible for freeing it.</li>
+        </ul>
+        <h3
+        id="tfe_text_view_new_with_file">tfe_text_view_new_with_file()</h3>
+        <pre><code>GtkWidget *
+tfe_text_view_new_with_file (GFile *file, GError **err);</code></pre>
+        <p>Creates a new TfeTextView, reads the contents of the
+        <code>file</code> and set it into the GtkTextBuffer associated
+        with the newly created TfeTextView. Then returns the pointer to
+        the TfeTextView as GtkWidget. If an error happens, it returns
+        <code>NULL</code> and set <code>err</code>.</p>
+        <p><strong>Parameters</strong></p>
+        <ul>
+        <li>file: type: <code>*GFile</code></li>
+        <li>err: type: <code>**GError</code>. It can be NULL and if it
+        is NULL the function ignores this argument. If it is not NULL,
+        <code>*err</code> must be NULL. If there are no errors, the
+        pointer remains unchanged (it remains NULL). In case of error,
+        the function will set <code>*err</code> to a newly allocated
+        GError that contains an error domain, a code, and a message. The
+        caller will take ownership of the GError, and be responsible for
+        freeing it.</li>
+        </ul>
+        <p><strong>Return value</strong></p>
+        <ul>
+        <li>a new TfeTextView. The caller of the function takes
+        ownership of the data, and is responsible for freeing it. If an
+        error, for example a read file error, happens, NULL will be
+        returned.</li>
+        </ul>
+        <p><strong>Instance methods</strong></p>
+        <h3 id="tfe_text_view_get_file">tfe_text_view_get_file()</h3>
+        <pre><code>GFile *
+tfe_text_view_get_file (TfeTextView *tv);</code></pre>
+        <p>Returns the copy of the GFile associated with the
+        TfeTextView. If no file is set, i.e. GFile is NULL, NULL will be
+        returned.</p>
+        <p><strong>Parameters</strong></p>
+        <ul>
+        <li>tv: type: <code>*TfeTextView</code></li>
+        </ul>
+        <p><strong>Return value</strong></p>
+        <ul>
+        <li>the pointer to the GFile or NULL. The returned data is owned
+        by The instance.</li>
+        </ul>
+        <h3 id="tfe_text_view_set_file">tfe_text_view_set_file()</h3>
+        <pre><code>void
+tfe_text_view_set_file (TfeTextView *tv, GFile *file);</code></pre>
+        <p>Set the file associated with the TfeTextView instance.</p>
+        <p><strong>Parameters</strong></p>
+        <ul>
+        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>file: type: <code>*GFile</code> The argument can be NULL.
+        The function releases the GFile instance in the object if it
+        exists. Then, it sets file in the object to the argument. If the
+        argument is NULL, the function just releases the old file
+        instance.</li>
+        </ul>
+        <h3 id="tfe_text_view_read">tfe_text_view_read()</h3>
+        <pre><code>gboolean
+tfe_text_view_read (TfeTextView *tv, GError **err);</code></pre>
+        <p>Read the content of the file referenced by the GFile in the
+        object. If the GFile is NULL or an error happens during the read
+        process, it returns FALSE and <code>*err</code> is set to a
+        GError.</p>
+        <p><strong>parameters</strong></p>
+        <ul>
+        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>err: type: <code>**GError</code> It can be NULL and if it is
+        NULL the function ignores this argument. If it is not NULL,
+        <code>*err</code> must be NULL. If there are no errors, the
+        pointer remains unchanged (it remains NULL). In case of error,
+        the function will set <code>*err</code> to a newly allocated
+        GError that contains an error domain, a code, and a message. The
+        caller will take ownership of the GError, and be responsible for
+        freeing it.</li>
+        </ul>
+        <p><strong>return value</strong></p>
+        <ul>
+        <li>Gboolean. If it successfully reads the file, it returns
+        TRUE, otherwise FALSE</li>
+        </ul>
+        <h3 id="tfe_text_view_write">tfe_text_view_write()</h3>
+        <pre><code>gboolean
+tfe_text_view_write (TfeTextView *tv, GError **err);</code></pre>
+        <p>Write the content of the object buffer to a file referenced
+        by the GFile in the object. If the GFile is NULL or an error
+        happens during the write process, it returns FALSE and
+        <code>*err</code> is set to a GError.</p>
+        <p><strong>Parameters</strong></p>
+        <ul>
+        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>err: type: <code>**GError</code> It can be NULL and if it is
+        NULL the function ignores this argument. If it is not NULL,
+        <code>*err</code> must be NULL. If there are no errors, the
+        pointer remains unchanged (it remains NULL). In case of error,
+        the function will set <code>*err</code> to a newly allocated
+        GError that contains an error domain, a code, and a message. The
+        caller will take ownership of the GError, and be responsible for
+        freeing it.</li>
+        </ul>
+        <p><strong>return value</strong></p>
+        <ul>
+        <li>Gboolean. If it successfully writes the file, it returns
+        TRUE, otherwise FALSE</li>
+        </ul>
+        <h3 id="signals-1">Signals</h3>
+        <p>No signal except the ones from the ancestors</p>
+      </div>
+    </div>
+  </main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

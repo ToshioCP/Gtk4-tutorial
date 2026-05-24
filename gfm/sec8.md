@@ -72,13 +72,16 @@ G_DEFINE_FINAL_TYPE (TfeTextView, tfe_text_view, GTK_TYPE_TEXT_VIEW);
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
+  /* Do something for instance initialization. */
 }
 
 static void
 tfe_text_view_class_init (TfeTextViewClass *class) {
+  /* Do something for class initialization. */
 }
 
-/* --- Here are some functions --- */
+/* --- Some functions --- */
+/* Functions here are public, used mainly for other objects. */
 
 GtkWidget *
 tfe_text_view_new (void) {
@@ -166,7 +169,6 @@ before_close (GtkWindow *win, GtkWidget *nb) {
   GtkWidget *scr;
   GtkWidget *tv;
   GFile *file;
-  char *pathname;
   GtkTextBuffer *tb;
   GtkTextIter start_iter;
   GtkTextIter end_iter;
@@ -270,7 +272,6 @@ before_close (GtkWindow *win, GtkWidget *nb) {
   GtkWidget *scr;
   GtkWidget *tv;
   GFile *file;
-  char *pathname;
   GtkTextBuffer *tb;
   GtkTextIter start_iter;
   GtkTextIter end_iter;
@@ -319,7 +320,7 @@ app_open (GApplication *app, GFile ** files, gint n_files, gchar *hint) {
 
   win = gtk_application_window_new (GTK_APPLICATION (app));
   gtk_window_set_title (GTK_WINDOW (win), "file editor");
-  gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
 
   nb = gtk_notebook_new ();
   gtk_window_set_child (GTK_WINDOW (win), nb);

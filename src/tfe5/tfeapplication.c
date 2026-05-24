@@ -2,13 +2,13 @@
 #include "tfetextview.h"
 
 /* ----- Private utility functions ----- */
-GtkWidget *
+static GtkWidget *
 tfe_get_notebook (GtkWidget *win) {
   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
   return gtk_widget_get_last_child (boxv);
 }
 
-void
+static void
 tfe_error_alert (GtkWindow *win, GError *err) {
   GtkAlertDialog *alert_dialog;
 
@@ -16,8 +16,6 @@ tfe_error_alert (GtkWindow *win, GError *err) {
   gtk_alert_dialog_show (alert_dialog, win);
   g_object_unref (alert_dialog);
 }
-
-/* ----- End of private utility functions ----- */
 
 static void
 notebook_page_build (GtkNotebook *nb, TfeTextView *tv, GFile *file) {
@@ -47,7 +45,7 @@ notebook_page_build (GtkNotebook *nb, TfeTextView *tv, GFile *file) {
   gtk_notebook_set_current_page (nb, i);
 }
 
-void
+static void
 notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
   g_return_if_fail(G_IS_FILE (file) || file == NULL);
@@ -68,6 +66,8 @@ notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
 
   notebook_page_build (nb, TFE_TEXT_VIEW (tv), file);
 }
+
+/* ----- End of private utility functions ----- */
 
 static void
 open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
@@ -160,7 +160,6 @@ save_cb (GtkNotebook *nb) {
   GtkWidget *win;
   GtkWidget *scr;
   GtkWidget *tv;
-  GFile *file;
   GError *err = NULL;
   GtkFileDialog *dialog;
   GtkAlertDialog *alert_dialog;
@@ -177,32 +176,25 @@ save_cb (GtkNotebook *nb) {
 
   scr = gtk_notebook_get_nth_page (nb, i);
   tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-  file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
 
-  if (file == NULL) {
-    dialog = gtk_file_dialog_new ();
-    gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
-    g_object_unref (dialog);
-  } else {
+  if (tfe_text_view_get_file (TFE_TEXT_VIEW (tv))) { /* File is already set */
     if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
       tfe_error_alert (GTK_WINDOW (win), err);
       g_clear_error (&err);
     }
-    g_object_unref (file);
+  } else {
+    dialog = gtk_file_dialog_new ();
+    gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
+    g_object_unref (dialog);
   }
 }
 
 static void
 close_cb (GtkNotebook *nb) {
-  int i;
-
-  i = gtk_notebook_get_current_page (nb);
-  /* If no page exists, i will be -1*/
-  if (i >= 0)
-    gtk_notebook_remove_page (nb, i);
-  /* If no pages remain, create a new one */
-  if (gtk_notebook_get_n_pages (nb) == 0)
-    notebook_page_new_with_file (nb, NULL);
+  if (gtk_notebook_get_n_pages (nb) >= 2)
+    gtk_notebook_remove_page (nb, gtk_notebook_get_current_page (nb));
+  else  /* If the page is the last one or no page exists */
+    gtk_window_destroy (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
 }
 
 static void

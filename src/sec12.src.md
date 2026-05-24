@@ -21,7 +21,7 @@ While the C compiler can detect some of these issues, it cannot verify GType bec
 To perform runtime type checking, we use the following macros:
 
 - `g_return_if_fail (cond)`: If the condition `cond` is false, it prints an error message and returns from the function.
-- `g_return_val_if_fail (cond, val)`: If the condition `cond` is false, it prints an error message, returns from the function, and returns the value val.
+- `g_return_val_if_fail (cond, val)`: If the condition `cond` is false, it prints an error message, returns from the function with the value val.
 
 While internal helper functions are less prone to type mismatches, public functions are highly susceptible.
 You should treat these checks as mandatory for all public-facing functions.
@@ -89,7 +89,7 @@ example_function () {
 }
 ```
 
-The function `tfe_text_view_write` saves the content of a buffer to a GFile held by the TfeTextView.
+The function `tfe_text_view_write` saves the content of the buffer to the GFile held by the TfeTextView.
 It may fail if:
 
 - No GFile is set (i.e., the target file is undefined).
@@ -101,7 +101,7 @@ Steps for handling runtime errors:
 
 - Define a GError pointer and initialize it to NULL.
 - Pass the address of that pointer (`&err`) to the function.
-- Check the return value. If it is FALSE, handle the error (e.g., show an alert dialog).
+- Check the return value. If it is FALSE, handle the error (e.g., showing an alert dialog).
 - Free the GError using `g_error_free` or, preferably, `g_clear_error (&err)`, which also sets the pointer back to NULL.
 
 If you don't need detailed error reports, you can pass NULL to the error argument:
@@ -120,7 +120,7 @@ All functions that support error reporting must be designed to accept NULL for t
 
 To define errors specific to your own objects, you need to create a custom error domain.
 
-In your header file (tfetextview.h):
+In your header file (`tfetextview.h`):
 
 @@@if gfm
 ```C
@@ -135,8 +135,9 @@ typedef enum {
   TFE_TEXT_VIEW_ERROR_NO_FILE,   /* No file is set */
   TFE_TEXT_VIEW_ERROR_FAILED,    /* Generic or unrecoverable error */
 } TfeTextViewError;
-In your source file (tfetextview.c):
 ```
+
+In your source file (tfetextview.c):
 
 @@@if gfm
 ```C
@@ -174,5 +175,6 @@ if (tv->file == NULL) {
 
 The function `g_error_set_literal` creates a GError structure and sets the domain, code, and message with the second to fourth arguments.
 Furthermore, it updates err to point to the GError.
+If you want to create a message using printf type arguments, use `g_eror_set` instead.
 
 Refer to the files `tfetextview.h` and `tfetextview.c` in [src/tfe5](tfe5/) for further information.

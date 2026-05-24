@@ -1,24 +1,20 @@
 Up: [README.md](../README.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
 
-# TfeTextView Class
+# Finalizing the custom object
 
 The TfeTextView class will be finally completed in this section.
-The remaining topic is functions.
-TfeTextView functions, which are constructors and instance methods, are described in this section.
 
-The source files are in the directory `src/tfetextview`.
+The source files are in the directory [src/tfe5](../src/tfe5/).
 You can get them by downloading the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 
-## tfetextview.h
+## Header File
 
-The header file `tfetextview.h` provides:
+The header file `tfetextview.h` includes:
 
 - The type of TfeTextView, which is `TFE_TYPE_TEXT_VIEW`.
-- The macro `G_DECLARE_FINAL_TYPE`, the expansion of which includes some useful functions and definitions.
-- Constants for the `open-response` signal.
-- Public functions of `tfetextview.c`. They are constructors and instance methods.
-
-Therefore, Any programs using TfeTextView needs to include `tfetextview.h`.
+- The macro `G_DECLARE_FINAL_TYPE`.
+- GError domain and code definition and declaration.
+- Public function declarations. They are constructors and instance methods.
 
 ```c
 #pragma once
@@ -28,31 +24,31 @@ Therefore, Any programs using TfeTextView needs to include `tfetextview.h`.
 #define TFE_TYPE_TEXT_VIEW tfe_text_view_get_type ()
 G_DECLARE_FINAL_TYPE (TfeTextView, tfe_text_view, TFE, TEXT_VIEW, GtkTextView)
 
-/* "open-response" signal response */
-enum TfeTextViewOpenResponseType
-{
-  TFE_OPEN_RESPONSE_SUCCESS,
-  TFE_OPEN_RESPONSE_CANCEL,
-  TFE_OPEN_RESPONSE_ERROR
-};
+/* User Error Definition */
+#define TFE_TEXT_VIEW_ERROR (tfe_text_view_error_quark ())
+GQuark tfe_text_view_error_quark (void);
+typedef enum {
+  TFE_TEXT_VIEW_ERROR_NO_FILE,   /* No file is set */
+  TFE_TEXT_VIEW_ERROR_FAILED,   /* Other invalid state */
+} TfeTextViewError;
 
 GFile *
 tfe_text_view_get_file (TfeTextView *tv);
 
 void
-tfe_text_view_open (TfeTextView *tv, GtkWindow *win);
+tfe_text_view_set_file (TfeTextView *tv, GFile *file);
 
-void
-tfe_text_view_save (TfeTextView *tv);
+gboolean
+tfe_text_view_read (TfeTextView *tv, GError **err);
 
-void
-tfe_text_view_saveas (TfeTextView *tv);
-
-GtkWidget *
-tfe_text_view_new_with_file (GFile *file);
+gboolean
+tfe_text_view_write (TfeTextView *tv, GError **err);
 
 GtkWidget *
 tfe_text_view_new (void);
+
+GtkWidget *
+tfe_text_view_new_with_file (GFile *file, GError **err);
 ```
 
 - 1: The preprocessor directive `#pragma once` makes the header file be included only once.
@@ -64,55 +60,40 @@ The header file `gtk4` also has the same mechanism to avoid being included multi
   - You need to define a structure `_TfeTextView` later.
   - The class structure `_TfeTextViewClass` is defined here. You don't need to define it by yourself.
   - Convenience functions `TFE_TEXT_VIEW ()` for casting and `TFE_IS_TEXT_VIEW` for type check are defined.
-- 8-14: A definition of the values of the "open-response" signal parameters.
+- 8-14: Custom GError domain and code definition as you learned in the previous section.
 - 16-32: Declarations of public functions on TfeTextView.
+
+The content of header files are open to C source files.
+So, the functions here are public functions.
+Don't write any private functions (functions for only the corresponding C file) here.
 
 ## Constructors
 
 A TfeTextView instance is created with `tfe_text_view_new` or `tfe_text_view_new_with_file`.
 These functions are called constructors.
 
-~~~C
-GtkWidget *tfe_text_view_new (void);
-~~~
-
-It just creates a new TfeTextView instance and returns the pointer to the new instance.
-
-~~~C
-GtkWidget *tfe_text_view_new_with_file (GFile *file);
-~~~
-
-It is given a Gfile object as an argument and it loads the file into the GtkTextBuffer instance, then returns the pointer to the new instance.
-The argument `file` is owned by the caller and the function doesn't change it.
-If an error occurs during the creation process, NULL will be returned.
-
-Each function is defined as follows.
-
 ```c
-GtkWidget *
-tfe_text_view_new_with_file (GFile *file) {
-  g_return_val_if_fail (G_IS_FILE (file), NULL);
-
-  GtkWidget *tv;
-  GtkTextBuffer *tb;
-  char *contents;
-  gsize length;
-
-  if (! g_file_load_contents (file, NULL, &contents, &length, NULL, NULL)) /* read error */
-    return NULL;
-
-  tv = tfe_text_view_new();
-  tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  gtk_text_buffer_set_text (tb, contents, length);
-  TFE_TEXT_VIEW (tv)->file = g_file_dup (file);
-  gtk_text_buffer_set_modified (tb, FALSE);
-  g_free (contents);
-  return tv;
-}
-
 GtkWidget *
 tfe_text_view_new (void) {
   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, "wrap-mode", GTK_WRAP_WORD_CHAR, NULL));
+}
+
+GtkWidget *
+tfe_text_view_new_with_file (GFile *file, GError **err) {
+  g_return_val_if_fail (G_IS_FILE (file), NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  GtkWidget *tv;
+
+  tv = tfe_text_view_new();
+  tfe_text_view_set_file (TFE_TEXT_VIEW (tv), file);
+  if (tfe_text_view_read (TFE_TEXT_VIEW (tv), err))
+    return tv;
+  else {
+    g_object_ref_sink (tv);
+    g_object_unref (tv);
+    return NULL;
+  }
 }
 ```
 

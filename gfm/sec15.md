@@ -59,17 +59,17 @@ static void
 app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkBuilder *build;
-  GtkApplicationWindow *win;
-  GtkNotebook *nb;
+  GtkWidget *win;
+  GtkWidget *nb;
   GtkButton *btno;
   GtkButton *btnn;
   GtkButton *btns;
   GtkButton *btnc;
 
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/tfe.ui");
-  win = GTK_APPLICATION_WINDOW (gtk_builder_get_object (build, "win"));
-  nb = GTK_NOTEBOOK (gtk_builder_get_object (build, "nb"));
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe5/tfe.ui");
+  win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   gtk_window_set_application (GTK_WINDOW (win), app);
+  nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
   btno = GTK_BUTTON (gtk_builder_get_object (build, "btno"));
   btnn = GTK_BUTTON (gtk_builder_get_object (build, "btnn"));
   btns = GTK_BUTTON (gtk_builder_get_object (build, "btns"));
@@ -79,16 +79,6 @@ app_startup (GApplication *application) {
   g_signal_connect_swapped (btns, "clicked", G_CALLBACK (save_cb), nb);
   g_signal_connect_swapped (btnc, "clicked", G_CALLBACK (close_cb), nb);
   g_object_unref(build);
-
-GdkDisplay *display;
-
-  display = gdk_display_get_default ();
-  GtkCssProvider *provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_string (provider, "textview {padding: 10px; font-family: monospace; font-size: 12pt;}");
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-  g_signal_connect (win, "destroy", G_CALLBACK (before_destroy), provider);
-  g_object_unref (provider);
 }
 ```
 
@@ -178,11 +168,7 @@ Refer to [GTK 4 Reference --- Constants](https://docs.gtk.org/gtk4/index.html#co
 You can find other constants, which have "STYLE\_PROVIDER\_PRIORITY\_XXXX" pattern names.
 
 ```c
-static void
-before_destroy (GtkWidget *win, GtkCssProvider *provider) {
-  GdkDisplay *display = gdk_display_get_default ();
-  gtk_style_context_remove_provider_for_display (display, GTK_STYLE_PROVIDER (provider));
-}
+
 ```
 
 When a widget is destroyed, or more precisely during its disposing process, a "destroy" signal is emitted.
@@ -205,10 +191,9 @@ static void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
-  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
-  GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+  GtkWidget *nb = tfe_get_notebook (win);
 
-  notebook_page_new (nb);
+  notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
   gtk_window_present (GTK_WINDOW (win));
 }
 
@@ -216,14 +201,13 @@ static void
 app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
-  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
-  GtkNotebook *nb = GTK_NOTEBOOK (gtk_widget_get_last_child (boxv));
+  GtkWidget *nb = tfe_get_notebook (win);
   int i;
 
   for (i = 0; i < n_files; i++)
-    notebook_page_new_with_file (nb, files[i]);
-  if (gtk_notebook_get_n_pages (nb) == 0)
-    notebook_page_new (nb);
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), files[i]);
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) == 0) /* No files have been opened */
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
   gtk_window_present (GTK_WINDOW (win));
 }
 ```
@@ -278,22 +262,68 @@ The second instance immediately quits so shell prompt soon appears.
 ```c
 static void
 open_cb (GtkNotebook *nb) {
-  notebook_page_open (nb);
+  GtkFileDialog *dialog;
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+
+  dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_open (dialog, GTK_WINDOW (win), NULL, open_dialog_cb, nb);
+  g_object_unref (dialog);
 }
 
 static void
 new_cb (GtkNotebook *nb) {
-  notebook_page_new (nb);
+  notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
 }
 
 static void
 save_cb (GtkNotebook *nb) {
-  notebook_page_save (nb);
+  int i;
+  GtkWidget *win;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GFile *file;
+  GError *err = NULL;
+  GtkFileDialog *dialog;
+  GtkAlertDialog *alert_dialog;
+
+  i = gtk_notebook_get_current_page (nb);
+  win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+
+  if (i == -1) {
+    alert_dialog = gtk_alert_dialog_new ("No page to save.");
+    gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
+    g_object_unref (alert_dialog);
+    return;
+  }
+
+  scr = gtk_notebook_get_nth_page (nb, i);
+  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+  file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
+
+  if (file == NULL) {
+    dialog = gtk_file_dialog_new ();
+    gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
+    g_object_unref (dialog);
+  } else {
+    if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+      tfe_error_alert (GTK_WINDOW (win), err);
+      g_clear_error (&err);
+    }
+    g_object_unref (file);
+  }
 }
 
 static void
 close_cb (GtkNotebook *nb) {
-  notebook_page_close (GTK_NOTEBOOK (nb));
+  int i;
+
+  i = gtk_notebook_get_current_page (nb);
+  /* If no page exists, i will be -1*/
+  if (i >= 0)
+    gtk_notebook_remove_page (nb, i);
+  /* If no pages remain, create a new one */
+  if (gtk_notebook_get_n_pages (nb) == 0)
+    notebook_page_new_with_file (nb, NULL);
 }
 ```
 
@@ -309,9 +339,16 @@ gtkdep = dependency('gtk4')
 gnome=import('gnome')
 resources = gnome.compile_resources('resources','tfe.gresource.xml')
 
-sourcefiles=files('tfeapplication.c', 'tfenotebook.c', '../tfetextview/tfetextview.c')
-
+# Main application
+sourcefiles=files('tfeapplication.c', 'tfetextview.c')
 executable('tfe', sourcefiles, resources, dependencies: gtkdep)
+
+# Test executable for tfetextview
+test_sourcefiles = files('test/test_tfetextview.c', 'tfetextview.c')
+test_exe = executable('test_tfetextview', test_sourcefiles, dependencies: gtkdep)
+
+# Test registration
+test('tfetextview_test', test_exe)
 ```
 
 In this file, just the source file names are modified from the prior version.

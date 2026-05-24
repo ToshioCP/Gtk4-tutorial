@@ -97,7 +97,7 @@ If no file is set, i.e. GFile is NULL, NULL will be returned.
 **Return value**
 
 - the pointer to the GFile or NULL.
-The caller takes the ownership and is responsible for freeing it.
+The returned data is owned by The instance.
 
 ### tfe_text_view_set_file()
 

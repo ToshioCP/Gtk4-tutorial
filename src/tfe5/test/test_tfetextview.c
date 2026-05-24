@@ -25,8 +25,6 @@ test_basic (void)
   GFile *ret_file = tfe_text_view_get_file (TFE_TEXT_VIEW (tv));
   g_assert_true (file == ret_file);
 
-  /* get_file transfers a reference, so unref is required */
-  g_object_unref (ret_file);
   g_object_unref (file);
 
   /* Destroy the widget (sink the floating reference before unref) */

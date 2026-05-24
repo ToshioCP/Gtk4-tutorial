@@ -39,8 +39,7 @@ GFile *
 tfe_text_view_get_file (TfeTextView *tv) {
   g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
 
-  if (tv->file)
-    g_object_ref (tv->file); /* The caller takes the ownership of the GFile */
+  /* The instance holds the ownership of the returned GFile. */
   return tv->file;
 }
 
@@ -51,6 +50,7 @@ tfe_text_view_set_file (TfeTextView *tv, GFile *file) {
 
   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
 
+  /* The instance gets the ownership of the new GFile by increment the reference count. */
   g_set_object (&tv->file, file);
   gtk_text_buffer_set_modified (tb, TRUE);
 }

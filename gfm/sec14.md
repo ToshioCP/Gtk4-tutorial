@@ -11,23 +11,7 @@ There's no "TfeNotebook" object.
 The source files are in the directory `src/tfe5`.
 You can get them by downloading the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
 
-```c
-void
-notebook_page_save(GtkNotebook *nb);
 
-void
-notebook_page_close (GtkNotebook *nb);
-
-void
-notebook_page_open (GtkNotebook *nb);
-
-void
-notebook_page_new_with_file (GtkNotebook *nb, GFile *file);
-
-void
-notebook_page_new (GtkNotebook *nb);
-
-```
 
 This header file describes the public functions in `tfenotebook.c`.
 
@@ -55,45 +39,7 @@ Now let's look at the program of each function.
 
 ## notebook\_page\_new
 
-```c
-static char *
-get_untitled () {
-  static int c = -1;
-  if (++c == 0) 
-    return g_strdup_printf("Untitled");
-  else
-    return g_strdup_printf ("Untitled%u", c);
-}
 
-static void
-notebook_page_build (GtkNotebook *nb, GtkWidget *tv, const char *filename) {
-  GtkWidget *scr = gtk_scrolled_window_new ();
-  GtkNotebookPage *nbp;
-  GtkWidget *lab;
-  int i;
-
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-  lab = gtk_label_new (filename);
-  i = gtk_notebook_append_page (nb, scr, lab);
-  nbp = gtk_notebook_get_page (nb, scr);
-  g_object_set (nbp, "tab-expand", TRUE, NULL);
-  gtk_notebook_set_current_page (nb, i);
-  g_signal_connect (tv, "change-file", G_CALLBACK (file_changed_cb), nb);
-}
-
-void
-notebook_page_new (GtkNotebook *nb) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-
-  GtkWidget *tv;
-  char *filename;
-
-  tv = tfe_text_view_new ();
-  filename = get_untitled ();
-  notebook_page_build (nb, tv, filename);
-  g_free (filename);
-}
-```
 
 - 26-37: The function `notebook_page_new`.
 - 28: The function `g_return_if_fail` checks the argument. It's necessary because the function is public.
@@ -123,22 +69,7 @@ In that case, use `g_object_set` to set the property.
 
 ## notebook\_page\_new\_with\_file
 
-```c
-void
-notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-  g_return_if_fail(G_IS_FILE (file));
 
-  GtkWidget *tv;
-  char *filename;
-
-  if ((tv = tfe_text_view_new_with_file (file)) == NULL)
-    return; /* read error */
-  filename = g_file_get_basename (file);
-  notebook_page_build (nb, tv, filename);
-  g_free (filename);
-}
-```
 
 - 9-10: Calls `tfe_text_view_new_with_file`.
 If the function returns NULL, an error has happened.
@@ -147,35 +78,7 @@ Then, it does nothing and returns.
 
 ## notebook\_page\_open
 
-```c
-static void
-open_response_cb (TfeTextView *tv, int response, GtkNotebook *nb) {
-  GFile *file;
-  char *filename;
 
-  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  }else {
-    file = tfe_text_view_get_file (tv);
-    filename = g_file_get_basename (file);
-    g_object_unref (file);
-    notebook_page_build (nb, GTK_WIDGET (tv), filename);
-    g_free (filename);
-  }
-}
-
-void
-notebook_page_open (GtkNotebook *nb) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-
-  GtkWidget *tv;
-
-  tv = tfe_text_view_new ();
-  g_signal_connect (tv, "open-response", G_CALLBACK (open_response_cb), nb);
-  tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
-}
-```
 
 - 18-27: The function `notebook_page_open`.
 - 24: Creates TfeTextView object.
@@ -237,23 +140,7 @@ See [GObject API reference](https://docs.gtk.org/gobject/floating-refs.html) for
 
 ## notebook\_page\_close
 
-```c
-void
-notebook_page_close (GtkNotebook *nb) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
 
-  GtkWidget *win;
-  int i;
-
-  if (gtk_notebook_get_n_pages (nb) == 1) {
-    win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
-    gtk_window_destroy(GTK_WINDOW (win));
-  } else {
-    i = gtk_notebook_get_current_page (nb);
-    gtk_notebook_remove_page (GTK_NOTEBOOK (nb), i);
-  }
-}
-```
 
 This function closes the current page.
 If the page is the only page the notebook has, then the function destroys the top-level window and quits the application.
@@ -264,29 +151,7 @@ The child widget (TfeTextView) is also destroyed.
 
 ## notebook\_page\_save
 
-```c
-static TfeTextView *
-get_current_textview (GtkNotebook *nb) {
-  int i;
-  GtkWidget *scr;
-  GtkWidget *tv;
 
-  i = gtk_notebook_get_current_page (nb);
-  scr = gtk_notebook_get_nth_page (nb, i);
-  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-  return TFE_TEXT_VIEW (tv);
-}
-
-void
-notebook_page_save (GtkNotebook *nb) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-
-  TfeTextView *tv;
-
-  tv = get_current_textview (nb);
-  tfe_text_view_save (tv);
-}
-```
 
 - 13-21: `notebook_page_save`.
 - 19: Gets the TfeTextView instance belongs to the current page.
@@ -305,26 +170,7 @@ The function `file_changed_cb` is a handler connected to "change-file" signal.
 If a file in a TfeTextView instance is changed, the instance emits this signal.
 This handler changes the label of the GtkNotebookPage.
 
-```c
-static void
-file_changed_cb (TfeTextView *tv, GtkNotebook *nb) {
-  GtkWidget *scr;
-  GtkWidget *label;
-  GFile *file;
-  char *filename;
 
-  file = tfe_text_view_get_file (tv);
-  scr = gtk_widget_get_parent (GTK_WIDGET (tv));
-  if (G_IS_FILE (file)) {
-    filename = g_file_get_basename (file);
-    g_object_unref (file);
-  } else
-    filename = get_untitled ();
-  label = gtk_label_new (filename);
-  g_free (filename);
-  gtk_notebook_set_tab_label (nb, scr, label);
-}
-```
 
 - 8: Gets the GFile instance from `tv`.
 - 9: Gets the GkScrolledWindow instance which is the parent widget of `tv`.
