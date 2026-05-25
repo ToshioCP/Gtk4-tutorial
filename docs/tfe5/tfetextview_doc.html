@@ -79,14 +79,17 @@ tfe_text_view_new (void);</code></pre>
         id="tfe_text_view_new_with_file">tfe_text_view_new_with_file()</h3>
         <pre><code>GtkWidget *
 tfe_text_view_new_with_file (GFile *file, GError **err);</code></pre>
-        <p>Creates a new TfeTextView, reads the contents of the
-        <code>file</code> and set it into the GtkTextBuffer associated
-        with the newly created TfeTextView. Then returns the pointer to
-        the TfeTextView as GtkWidget. If an error happens, it returns
-        <code>NULL</code> and set <code>err</code>.</p>
+        <p>If <code>file</code> is NULL, just returns a new TfeTextView
+        instance as GtkWidget. If <code>file</code> is not NULL, creates
+        a new TfeTextView, reads the contents of the <code>file</code>
+        and set it into the GtkTextBuffer associated with the newly
+        created TfeTextView. Then returns the pointer to the TfeTextView
+        as GtkWidget. If an error happens during the read process, it
+        returns <code>NULL</code> and set <code>err</code>.</p>
         <p><strong>Parameters</strong></p>
         <ul>
-        <li>file: type: <code>*GFile</code></li>
+        <li>file: type: <code>*GFile</code>. The caller owns the
+        argument.</li>
         <li>err: type: <code>**GError</code>. It can be NULL and if it
         is NULL the function ignores this argument. If it is not NULL,
         <code>*err</code> must be NULL. If there are no errors, the
@@ -112,7 +115,8 @@ tfe_text_view_get_file (TfeTextView *tv);</code></pre>
         returned.</p>
         <p><strong>Parameters</strong></p>
         <ul>
-        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>tv: type: <code>*TfeTextView</code> The caller owns the
+        argument.</li>
         </ul>
         <p><strong>Return value</strong></p>
         <ul>
@@ -125,7 +129,8 @@ tfe_text_view_set_file (TfeTextView *tv, GFile *file);</code></pre>
         <p>Set the file associated with the TfeTextView instance.</p>
         <p><strong>Parameters</strong></p>
         <ul>
-        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>tv: type: <code>*TfeTextView</code> The caller owns the
+        argument.</li>
         <li>file: type: <code>*GFile</code> The argument can be NULL.
         The function releases the GFile instance in the object if it
         exists. Then, it sets file in the object to the argument. If the
@@ -141,7 +146,8 @@ tfe_text_view_read (TfeTextView *tv, GError **err);</code></pre>
         GError.</p>
         <p><strong>parameters</strong></p>
         <ul>
-        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>tv: type: <code>*TfeTextView</code> The caller owns the
+        argument.</li>
         <li>err: type: <code>**GError</code> It can be NULL and if it is
         NULL the function ignores this argument. If it is not NULL,
         <code>*err</code> must be NULL. If there are no errors, the
@@ -165,7 +171,8 @@ tfe_text_view_write (TfeTextView *tv, GError **err);</code></pre>
         <code>*err</code> is set to a GError.</p>
         <p><strong>Parameters</strong></p>
         <ul>
-        <li>tv: type: <code>*TfeTextView</code></li>
+        <li>tv: type: <code>*TfeTextView</code> The caller owns the
+        argument.</li>
         <li>err: type: <code>**GError</code> It can be NULL and if it is
         NULL the function ignores this argument. If it is not NULL,
         <code>*err</code> must be NULL. If there are no errors, the

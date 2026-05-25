@@ -58,13 +58,15 @@ GtkWidget *
 tfe_text_view_new_with_file (GFile *file, GError **err);
 ```
 
-Creates a new TfeTextView, reads the contents of the `file` and set it into the GtkTextBuffer associated with the newly created TfeTextView.
+If `file` is NULL, just returns a new TfeTextView instance as GtkWidget. 
+If `file` is not NULL, creates a new TfeTextView, reads the contents of the `file` and set it into the GtkTextBuffer associated with the newly created TfeTextView.
 Then returns the pointer to the TfeTextView as GtkWidget.
-If an error happens, it returns `NULL` and set `err`.
+If an error happens during the read process, it returns `NULL` and set `err`.
 
 **Parameters**
 
-- file: type: `*GFile`
+- file: type: `*GFile`.
+The caller owns the argument. 
 - err: type: `**GError`.
 It can be NULL and if it is NULL the function ignores this argument.
 If it is not NULL, `*err` must be NULL.
@@ -93,6 +95,7 @@ If no file is set, i.e. GFile is NULL, NULL will be returned.
 **Parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 
 **Return value**
 
@@ -111,6 +114,7 @@ Set the file associated with the TfeTextView instance.
 **Parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 - file: type: `*GFile`
 The argument can be NULL.
 The function releases the GFile instance in the object if it exists.
@@ -130,6 +134,7 @@ If the GFile is NULL or an error happens during the read process, it returns FAL
 **parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 - err: type: `**GError`
 It can be NULL and if it is NULL the function ignores this argument.
 If it is not NULL, `*err` must be NULL.
@@ -154,6 +159,7 @@ If the GFile is NULL or an error happens during the write process, it returns FA
 **Parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 - err: type: `**GError`
 It can be NULL and if it is NULL the function ignores this argument.
 If it is not NULL, `*err` must be NULL.

@@ -50,7 +50,7 @@ The function `g_object_new` creates any instances of its descendant class.
 The arguments are the type of the class, property list and NULL, which is the end mark of the property list.
 Here, the property "wrap-mode" is set to `GTK_WRAP_WORD_CHAR` for breaking lines in between words, or if that is not enough, also between characters (graphemes).
 The default value of the property "wrap-mode" in GtkTextView (not TfeTextView) is `GTK_WRAP_NONE` (no wrapping).
-- 6-22: `tfe_text_view_new_with_file` function.
+- 6-23: `tfe_text_view_new_with_file` function.
 - 8: `g_return_val_if_fail` tests whether the argument `file` is a pointer to GFile.
 If it's true, the program goes on to the next line.
 If it's false, it returns NULL (the second argument) immediately.
@@ -58,11 +58,11 @@ And at the same time it logs out the error message (usually the log is outputted
 - 9: Another `g_return_val_if_fail` tests `err`.
 This can be NULL when the caller does not need detailed error information.
 Otherwise it must point to NULL (Note: Being NULL and pointing to NULL is totally different).
-- 13-14: Creates a TfeTextView instance and sets its file to `file`.
-- 15: Calls the function `tfe_text_view_read` to read the content of the file into the TfeTextView buffer.
-The function returns TRUE if it succeeds and FALSE if it fails.
-- 16: Returns the TfeTextView instance if it successfully read the file content.
-- 18-20: Releases `tv` and returns NULL.
+- 13: Creates a TfeTextView instance.
+- 14-15: If `file` is NULL, just returns `tv`.
+- 16: sets the file of the TfeTextView instance to `file`.
+- 17-18: If the function `tfe_text_view_read` successfully reads the content of the file, returns the TfeTextView instance.
+- 20-22: If an error happens during the read process, Releases `tv` and returns NULL.
 The function `g_object_ref_sink` will be explained in the next subsection.
 
 ## Floating References
@@ -220,9 +220,13 @@ Then it sets `*err` to point to the `GError`.
 - 16: `g_file_load_contents` reads the file content into memory.
 If an error occurs, it returns `FALSE` and sets `err` to a newly created `GError`.
 See the [GIO documentation](https://docs.gtk.org/gio/method.File.load_contents.html) for details.
-- 17-21: If it successfully loads the content, the function updates the buffer with the loaded text.
-Then, it sets the modified flag to `FALSE` because the content in the buffer is exactly the same as the one in the file.
-Finally, it frees the `contents` variable.
+- 17-31: After successfully loading the content, the function performs two checks before updating the GtkTextBuffer.
+First, it checks the file size.
+Since the maximum capacity of the buffer is `G_MAXINT` (the upper limit of the int type), if length exceeds this value, `err` is set and `stat` becomes FALSE.
+Second, it validates the UTF-8 encoding. The `g_utf8_validate` function ensures the content is a valid UTF-8 string.
+If it is not, `err` is set and `stat` becomes FALSE.
+If both checks pass, the function updates the buffer with the loaded text and sets the modified flag to FALSE, as the buffer now exactly matches the file.
+Finally, the memory for `contents` is freed.
 
 ### Writing the buffer content
 

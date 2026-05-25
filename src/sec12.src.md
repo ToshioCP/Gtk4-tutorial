@@ -79,7 +79,7 @@ tfe_error_alert (GtkWindow *win, GError *err) {
 }
 
 void
-example_function () {
+example_function (GtkWidget *win, GtkWidget *tv) {
   GError *err = NULL;
 
   if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {

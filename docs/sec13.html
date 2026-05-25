@@ -185,21 +185,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-5"><a href="#cb2-5"></a></span>
 <span id="cb2-6"><a href="#cb2-6"></a>GtkWidget <span class="op">*</span></span>
 <span id="cb2-7"><a href="#cb2-7"></a>tfe_text_view_new_with_file <span class="op">(</span>GFile <span class="op">*</span>file<span class="op">,</span> GError <span class="op">**</span>err<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>  g_return_val_if_fail <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  g_return_val_if_fail <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">)</span> <span class="op">||</span> file <span class="op">==</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a>  g_return_val_if_fail <span class="op">(</span>err <span class="op">==</span> NULL <span class="op">||</span> <span class="op">*</span>err <span class="op">==</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a></span>
 <span id="cb2-11"><a href="#cb2-11"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
 <span id="cb2-12"><a href="#cb2-12"></a></span>
 <span id="cb2-13"><a href="#cb2-13"></a>  tv <span class="op">=</span> tfe_text_view_new<span class="op">();</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a>  tfe_text_view_set_file <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> file<span class="op">);</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a>  <span class="cf">if</span> <span class="op">(</span>tfe_text_view_read <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> err<span class="op">))</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>    <span class="cf">return</span> tv<span class="op">;</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>  <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>    g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
-<span id="cb2-19"><a href="#cb2-19"></a>    g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
-<span id="cb2-20"><a href="#cb2-20"></a>    <span class="cf">return</span> NULL<span class="op">;</span></span>
-<span id="cb2-21"><a href="#cb2-21"></a>  <span class="op">}</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="cf">if</span> <span class="op">(</span>file <span class="op">==</span> NULL<span class="op">)</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>    <span class="cf">return</span> tv<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>  tfe_text_view_set_file <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> file<span class="op">);</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a>  <span class="cf">if</span> <span class="op">(</span>tfe_text_view_read <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> err<span class="op">))</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a>    <span class="cf">return</span> tv<span class="op">;</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>  <span class="co">/* An error occurs during the read operation */</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>  g_object_ref_sink <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>  g_object_unref <span class="op">(</span>tv<span class="op">);</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  <span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>1-4: <code>tfe_text_view_new</code> function. It just
         returns the value from the function <code>g_object_new</code>
@@ -214,7 +215,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         (graphemes). The default value of the property “wrap-mode” in
         GtkTextView (not TfeTextView) is <code>GTK_WRAP_NONE</code> (no
         wrapping).</li>
-        <li>6-22: <code>tfe_text_view_new_with_file</code>
+        <li>6-23: <code>tfe_text_view_new_with_file</code>
         function.</li>
         <li>8: <code>g_return_val_if_fail</code> tests whether the
         argument <code>file</code> is a pointer to GFile. If it’s true,
@@ -227,16 +228,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         detailed error information. Otherwise it must point to NULL
         (Note: Being NULL and pointing to NULL is totally
         different).</li>
-        <li>13-14: Creates a TfeTextView instance and sets its file to
+        <li>13: Creates a TfeTextView instance.</li>
+        <li>14-15: If <code>file</code> is NULL, just returns
+        <code>tv</code>.</li>
+        <li>16: sets the file of the TfeTextView instance to
         <code>file</code>.</li>
-        <li>15: Calls the function <code>tfe_text_view_read</code> to
-        read the content of the file into the TfeTextView buffer. The
-        function returns TRUE if it succeeds and FALSE if it fails.</li>
-        <li>16: Returns the TfeTextView instance if it successfully read
-        the file content.</li>
-        <li>18-20: Releases <code>tv</code> and returns NULL. The
-        function <code>g_object_ref_sink</code> will be explained in the
-        next subsection.</li>
+        <li>17-18: If the function <code>tfe_text_view_read</code>
+        successfully reads the content of the file, returns the
+        TfeTextView instance.</li>
+        <li>20-22: If an error happens during the read process, Releases
+        <code>tv</code> and returns NULL. The function
+        <code>g_object_ref_sink</code> will be explained in the next
+        subsection.</li>
         </ul>
         <h2 id="floating-references">Floating References</h2>
         <p>All widgets are derived from GInitiallyUnowned. While GObject
@@ -450,12 +453,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-15"><a href="#cb7-15"></a>  </span>
 <span id="cb7-16"><a href="#cb7-16"></a>  stat <span class="op">=</span> g_file_load_contents <span class="op">(</span>tv<span class="op">-&gt;</span>file<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>contents<span class="op">,</span> <span class="op">&amp;</span>length<span class="op">,</span> NULL<span class="op">,</span> err<span class="op">);</span></span>
 <span id="cb7-17"><a href="#cb7-17"></a>  <span class="cf">if</span> <span class="op">(</span>stat<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb7-18"><a href="#cb7-18"></a>    gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> length<span class="op">);</span></span>
-<span id="cb7-19"><a href="#cb7-19"></a>    gtk_text_buffer_set_modified <span class="op">(</span>tb<span class="op">,</span> FALSE<span class="op">);</span></span>
-<span id="cb7-20"><a href="#cb7-20"></a>    g_free <span class="op">(</span>contents<span class="op">);</span></span>
-<span id="cb7-21"><a href="#cb7-21"></a>  <span class="op">}</span></span>
-<span id="cb7-22"><a href="#cb7-22"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb7-23"><a href="#cb7-23"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb7-18"><a href="#cb7-18"></a>    <span class="cf">if</span> <span class="op">(</span>length <span class="op">&gt;</span> G_MAXINT<span class="op">)</span> <span class="op">{</span> <span class="co">/* File is too large to put it in the buffer*/</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a>      g_set_error_literal <span class="op">(</span>err<span class="op">,</span> TFE_TEXT_VIEW_ERROR<span class="op">,</span> TFE_TEXT_VIEW_ERROR_FAILED<span class="op">,</span> <span class="st">&quot;The file is too large.&quot;</span><span class="op">);</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>      stat <span class="op">=</span> FALSE<span class="op">;</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a>    <span class="op">}</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>    <span class="cf">else</span> <span class="cf">if</span> <span class="op">(!</span>g_utf8_validate <span class="op">(</span>contents<span class="op">,</span> length<span class="op">,</span> NULL<span class="op">))</span> <span class="op">{</span> <span class="co">/* Only valid UTF-8 strings are accepted */</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a>      g_set_error_literal <span class="op">(</span>err<span class="op">,</span> TFE_TEXT_VIEW_ERROR<span class="op">,</span> TFE_TEXT_VIEW_ERROR_FAILED<span class="op">,</span> <span class="st">&quot;The file is not valid UTF-8.&quot;</span><span class="op">);</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a>      stat <span class="op">=</span> FALSE<span class="op">;</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a>    <span class="op">}</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a>    <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-27"><a href="#cb7-27"></a>      gtk_text_buffer_set_text <span class="op">(</span>tb<span class="op">,</span> contents<span class="op">,</span> <span class="op">(</span><span class="dt">int</span><span class="op">)</span> length<span class="op">);</span></span>
+<span id="cb7-28"><a href="#cb7-28"></a>      gtk_text_buffer_set_modified <span class="op">(</span>tb<span class="op">,</span> FALSE<span class="op">);</span></span>
+<span id="cb7-29"><a href="#cb7-29"></a>    <span class="op">}</span></span>
+<span id="cb7-30"><a href="#cb7-30"></a>    g_free <span class="op">(</span>contents<span class="op">);</span></span>
+<span id="cb7-31"><a href="#cb7-31"></a>  <span class="op">}</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb7-33"><a href="#cb7-33"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>11-14: If <code>tv-&gt;file</code> is <code>NULL</code>, the
         function sets <code>err</code> and returns <code>FALSE</code>.
@@ -468,11 +481,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>GError</code>. See the <a
         href="https://docs.gtk.org/gio/method.File.load_contents.html">GIO
         documentation</a> for details.</li>
-        <li>17-21: If it successfully loads the content, the function
-        updates the buffer with the loaded text. Then, it sets the
-        modified flag to <code>FALSE</code> because the content in the
-        buffer is exactly the same as the one in the file. Finally, it
-        frees the <code>contents</code> variable.</li>
+        <li>17-31: After successfully loading the content, the function
+        performs two checks before updating the GtkTextBuffer. First, it
+        checks the file size. Since the maximum capacity of the buffer
+        is <code>G_MAXINT</code> (the upper limit of the int type), if
+        length exceeds this value, <code>err</code> is set and
+        <code>stat</code> becomes FALSE. Second, it validates the UTF-8
+        encoding. The <code>g_utf8_validate</code> function ensures the
+        content is a valid UTF-8 string. If it is not, <code>err</code>
+        is set and <code>stat</code> becomes FALSE. If both checks pass,
+        the function updates the buffer with the loaded text and sets
+        the modified flag to FALSE, as the buffer now exactly matches
+        the file. Finally, the memory for <code>contents</code> is
+        freed.</li>
         </ul>
         <h3 id="writing-the-buffer-content">Writing the buffer
         content</h3>

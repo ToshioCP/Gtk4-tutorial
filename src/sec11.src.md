@@ -235,7 +235,7 @@ For TfeTextView, this function is `tfe_text_view_init`.
 tfe5/tfetextview.c tfe_text_view_init
 @@@
 
-In this function, the pointer to a GFile is set to be NULL.
+The pointer to a GFile must be initialized to be NULL.
 
 **Note:** When the system allocates memory for an instance, it automatically clears all variables to 0 or NULL.
 Therefore, explicitly writing `tv->file = NULL;` is actually unnecessary.

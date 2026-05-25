@@ -2,6 +2,12 @@
 #include "tfetextview.h"
 
 /* ----- Private utility functions ----- */
+
+/*
+ * This function relies on the assumption that the notebook is the last child of the box.
+ * Therefore, it will no longer work if another widget is added to the box.
+ * There are several ways to solve this issue, which will be explained in a later section.
+ */
 static GtkWidget *
 tfe_get_notebook (GtkWidget *win) {
   GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
@@ -11,38 +17,31 @@ tfe_get_notebook (GtkWidget *win) {
 static void
 tfe_error_alert (GtkWindow *win, GError *err) {
   GtkAlertDialog *alert_dialog;
+  GtkWindow *parent;
 
+  if (win != NULL && gtk_widget_get_mapped (GTK_WIDGET (win)))
+    parent = win;
+  else
+    parent = NULL;
   alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-  gtk_alert_dialog_show (alert_dialog, win);
+  gtk_alert_dialog_show (alert_dialog, parent);
   g_object_unref (alert_dialog);
 }
 
-static void
-notebook_page_build (GtkNotebook *nb, TfeTextView *tv, GFile *file) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-  g_return_if_fail(TFE_IS_TEXT_VIEW (tv));
-  g_return_if_fail(G_IS_FILE (file) || file == NULL);
-
-  GtkWidget *scr = gtk_scrolled_window_new ();
-  GtkNotebookPage *nbp;
-  GtkWidget *lab;
+/* The return value is floating */
+GtkWidget *
+tfe_label_from_file (GFile *file) {
   char *filename_bin, *filename_utf;
-  int i;
+  GtkWidget *lab;
 
-  if (file) {
-    filename_bin = g_file_get_basename (file);
-    filename_utf = g_filename_display_name (filename_bin);
-    lab = gtk_label_new (filename_utf);
-    g_free (filename_bin);
-    g_free (filename_utf);
-  } else
-    lab = NULL;
-
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), GTK_WIDGET (tv));
-  i = gtk_notebook_append_page (nb, scr, lab);
-  nbp = gtk_notebook_get_page (nb, scr);
-  g_object_set (nbp, "tab-expand", TRUE, NULL);
-  gtk_notebook_set_current_page (nb, i);
+  if (file == NULL)
+    return NULL;
+  filename_bin = g_file_get_basename (file);
+  filename_utf = g_filename_display_name (filename_bin);
+  lab = gtk_label_new (filename_utf);
+  g_free (filename_bin);
+  g_free (filename_utf);
+  return lab;
 }
 
 static void
@@ -50,21 +49,27 @@ notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
   g_return_if_fail(G_IS_FILE (file) || file == NULL);
 
-  GtkWidget *tv;
   GtkWidget *win;
+  GtkNotebookPage *nbp;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkWidget *lab;
+  int i;
   GError *err = NULL;
 
-  if (file) {
-    if ((tv = tfe_text_view_new_with_file (file, &err)) == NULL) {
-      win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
-      tfe_error_alert (GTK_WINDOW (win), err);
-      g_clear_error (&err);
-      return;
-    }
-  } else
-    tv = tfe_text_view_new ();
-
-  notebook_page_build (nb, TFE_TEXT_VIEW (tv), file);
+  if ((tv = tfe_text_view_new_with_file (file, &err)) == NULL) {
+    win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+    tfe_error_alert (GTK_WINDOW (win), err);
+    g_clear_error (&err);
+    return;
+  }
+  lab = tfe_label_from_file (file); /* lab is floating. lab can be NULL */
+  scr = gtk_scrolled_window_new ();
+  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), GTK_WIDGET (tv));
+  i = gtk_notebook_append_page (nb, scr, lab);
+  nbp = gtk_notebook_get_page (nb, scr);
+  g_object_set (nbp, "tab-expand", TRUE, NULL);
+  gtk_notebook_set_current_page (nb, i);
 }
 
 /* ----- End of private utility functions ----- */
@@ -73,27 +78,20 @@ static void
 open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
   GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
   GtkNotebook *nb = GTK_NOTEBOOK (data);
-  TfeTextView *tv;
-  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+  GtkWidget *win;
   GFile *file;
   GError *err = NULL;
 
   if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) == NULL) {
-    tfe_error_alert (GTK_WINDOW (win), err);
+    if (!g_error_matches (err, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED)) {
+      win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+      tfe_error_alert (GTK_WINDOW (win), err);
+    }
     g_clear_error (&err);
     return;
   }
-  tv = TFE_TEXT_VIEW (tfe_text_view_new ());
-  tfe_text_view_set_file (tv, file);
-  if (! tfe_text_view_read (tv, &err)) {
-    tfe_error_alert (GTK_WINDOW (win), err);
-    g_clear_error (&err);
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-    return;
-  }
-  notebook_page_build (nb, tv, file);
-  g_object_unref(file);
+  notebook_page_new_with_file (nb, file);
+  g_object_unref (file);
 }
 
 static void
@@ -113,20 +111,16 @@ new_cb (GtkNotebook *nb) {
 
 static void
 save_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
-  GtkFileDialog *dialog;
-  GtkWidget *tv;
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  GtkWidget *tv = GTK_WIDGET (data);
   GtkWidget *win;
   GtkWidget *scr;
   GtkWidget *nb;
+  GtkWidget *lab;
   GFile *file;
   GError *err = NULL;
-  char *filename_bin;
-  char *filename_utf;
 
-  dialog = GTK_FILE_DIALOG (source_object);
-  tv = GTK_WIDGET (data);
   win = gtk_widget_get_ancestor (tv, GTK_TYPE_WINDOW);
-
   if ((file = gtk_file_dialog_save_finish (dialog, res, &err)) == NULL) {
     if (!g_error_matches (err, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED)) {
       tfe_error_alert (GTK_WINDOW (win), err);
@@ -134,19 +128,11 @@ save_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
     g_clear_error (&err);
     return;
   }
-
   tfe_text_view_set_file (TFE_TEXT_VIEW (tv), file);
-  
-  filename_bin = g_file_get_basename (file);
-  filename_utf = g_filename_display_name (filename_bin);
-  
-  scr = gtk_widget_get_parent (tv);
+  lab = tfe_label_from_file (file); /* lab is floating. lab can be NULL */
   nb = gtk_widget_get_ancestor (tv, GTK_TYPE_NOTEBOOK);
-  gtk_notebook_set_tab_label_text (GTK_NOTEBOOK (nb), scr, filename_utf);
-  
-  g_free (filename_bin);
-  g_free (filename_utf);
-  g_object_unref (file);
+  scr = gtk_widget_get_parent (tv);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, lab);
 
   if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
     tfe_error_alert (GTK_WINDOW (win), err);
@@ -197,7 +183,7 @@ close_cb (GtkNotebook *nb) {
     gtk_window_destroy (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
 }
 
-static void
+void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
@@ -207,7 +193,7 @@ app_activate (GApplication *application) {
   gtk_window_present (GTK_WINDOW (win));
 }
 
-static void
+void
 app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
@@ -221,7 +207,7 @@ app_open (GApplication *application, GFile ** files, gint n_files, const gchar *
   gtk_window_present (GTK_WINDOW (win));
 }
 
-static void
+void
 app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkBuilder *build;

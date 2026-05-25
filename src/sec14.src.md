@@ -129,48 +129,62 @@ The handler shows the file dialog then reads the file to the newly created TfeTe
 tfe5/tfeapplication.c open_cb
 @@@
 
-This callback function is called when the "Open" button is clicked.
-This program just create a file dialog and call `gtk_file_dialog_open` with the callback function `open_dialog_cb`.
+The `open_cb` function is called when the "Open" button is clicked.
+It creates a file dialog and calls `gtk_file_dialog_open`, passing `open_dialog_cb` as the callback function.
+This starts a background operation that displays the dialog and waits for user input, while the function itself returns immediately to the caller.
+Once the user interaction is complete, the background operation invokes the callback.
 
 @@@include
 tfe5/tfeapplication.c open_dialog_cb
 @@@
 
-- 10-14: Calls `gtk_file_dialog_open_finish` to get a GFile.
-If the return value is NULL, it calls `tfe_error_alert` to show the error dialog.
-- 15-16: Creates a TfeTextView instance and set its file using `tfe_text_view_set_file`.
-- 17-23: Calls `tfe_text_view_read` to read the file content into the buffer.
-If an error occurs, it calls `tfe_error_alert` to show the error dialog.
-Then, it frees GError and `tv`.
-- 24: Calls `notebook_page_build` to build a new page in the GtkNoteBook.
-The function will be shown later.
-- 25: Frees `file`
+- 9-15: Calls `gtk_file_dialog_open_finish` to retrieve the selected GFile.
+A NULL return value indicates that the operation failed or the dialog was dismissed by the user.
+If the error was not caused by cancellation, it displays an alert using `tfe_error_alert`.
+The function then clears the error and returns.
+- 17: Calls `notebook_page_new_with_file` to create a new TfeTextView instance and build a new notebook page with it.
+- 18: Frees `file`
 
 The function `tfe_error_alert` is as follows.
-This is a private function.
+This is a private helper function.
 
 @@@include
 tfe5/tfeapplication.c tfe_error_alert
 @@@
 
+- 6-9: The argument `win` can be NULL.
+Otherwise it must be the main window instance and also mapped (drawn on the screen).
+If it is not mapped, an error possibly occurs even if the window instance actually exists.
+- 10: Creates an alert dialog.
+- 11: Shows the dialog.
+The second argument specifies the "transient parent window."
+While passing NULL is generally discouraged, it is mandatory here.
+Since `tfe_error_alert` can be called from the "open" handler before the main window is mapped, passing NULL is the only safe way to display the dialog.
+See [GTK documentation](https://docs.gtk.org/gtk4/method.Window.set_transient_for.html) for further information about transient parent.
+- 12: releases the alert dialog.
+
 ### Page build Utility
 
-A private function `notebook_page_build` builds a new page in the GtkNotebook.
+A private function `notebook_page_new_with_file` creates a new TfeTextView instance and builds a new page in the GtkNotebook.
 
 @@@include
-tfe5/tfeapplication.c notebook_page_build
+tfe5/tfeapplication.c notebook_page_new_with_file
 @@@
 
-- 13-20: Creates a GtkLabel instance with the UTF-8 based filename and assigns it to the variable `lab` if `file` points to a GFile instance (non-NULL).
-Otherwise NULL is assigned to `lab`.
-- 22-23: Sets the child of the scrolled window to `tv`.
-Then the function `gtk_notebook_append_page` appends `scr` and `lab` as the child and tab of the GtkNotebook `nb`.
+- 14-19: Calls `tfe_text_view_new_with_file` to create a new TfeTextView with the GFile `file`.
+The argument `file` can be NULL and the function returns an empty TfeTextView instance.
+If an error occurs, it calls `tfe_error_alert` to show the error message and returns.
+- 20: Calls `tfe_label_from_file`.
+This function creates a GtkLabel instance with the filename obtained from the GFile.
+If the argument (GFile) is NULL, the function returns NULL.
+-21-22: Creates a scrolled window instance and sets the child to `tv`.
+- 23: Appends the scroll window and label to the notebook as the child and tab respectively.
 - 24-25: Sets the "tab-expand" property of the notebook page to TRUE using `g_object_set`
 - 26: Sets the current page to the new page.
 
 ## Clicked Signal Handler on Save Button
 
-Next, we will go on to the "clicked" signal handler on "Save" button.
+Next, we will go on to the "clicked" signal handler on the "Save" button.
 
 @@@include
 tfe5/tfeapplication.c save_cb
@@ -179,7 +193,7 @@ tfe5/tfeapplication.c save_cb
 
 - 11-19: If the GtkNotebook has no page, it shows the alert dialog with "No page to save." and returns.
 - 24-28: If the TfeTextView holds a GFile, it just writes the content of the buffer to the file.
-- 30-32: If the TfeTextView does not hold a GFile, it shows a Filedialog. The callback functio is `save_dialog_cb`.
+- 30-32: If the TfeTextView does not hold a GFile, it shows a Filedialog. The callback function is `save_dialog_cb`.
 
 The `save_dialog_cb` function is shown below.
 
@@ -187,10 +201,10 @@ The `save_dialog_cb` function is shown below.
 tfe5/tfeapplication.c save_dialog_cb
 @@@
 
-- 17-23: Calls `gtk_file_dialog_save_finish` to get a GFile.
+- 13-19: Calls `gtk_file_dialog_save_finish` to get a GFile.
 If the return value is NULL and the user did not cancel the operation (`GTK_DIALOG_ERROR_DISMISSED`), it calls `tfe_error_alert` to show the error dialog.
-- 25: Sets the file of `tv` to the GFile that is returned by `gtk_file_dialog_save_finish`.
-- 27-36: Sets the tab of the notebook page to the new filename.
-- 38-41: Calls `tfe_text_view_write` to write the content of the buffer to the file.
+- 20: Sets the file of `tv` to the GFile that is returned by `gtk_file_dialog_save_finish`.
+- 21-24: Sets the tab of the notebook page to the new filename.
+- 26-29: Calls `tfe_text_view_write` to write the content of the buffer to the file.
 If an error occurs, it calls `tfe_error_alert` to show the error dialog.
 Then, it frees GError.

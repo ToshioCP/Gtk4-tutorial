@@ -504,10 +504,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>tfe_text_view_init <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  tv<span class="op">-&gt;</span>file <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="op">}</span></span></code></pre></div>
-        <p>In this function, the pointer to a GFile is set to be
-        NULL.</p>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="co">/* The allocated memory is set to zero by the system.*/</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>  <span class="co">/* Therefore, &quot;tv-&gt;file&quot; is automatically initialized to NULL; setting it explicitly is unnecessary here. */</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="op">}</span></span></code></pre></div>
+        <p>The pointer to a GFile must be initialized to be NULL.</p>
         <p><strong>Note:</strong> When the system allocates memory for
         an instance, it automatically clears all variables to 0 or NULL.
         Therefore, explicitly writing <code>tv-&gt;file = NULL;</code>

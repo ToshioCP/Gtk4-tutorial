@@ -25,7 +25,8 @@ tfe_text_view_dispose (GObject *gobject) {
 
 static void
 tfe_text_view_init (TfeTextView *tv) {
-  tv->file = NULL;
+  /* The allocated memory is set to zero by the system.*/
+  /* Therefore, "tv->file" is automatically initialized to NULL; setting it explicitly is unnecessary here. */
 }
 
 static void
@@ -72,8 +73,18 @@ tfe_text_view_read (TfeTextView *tv, GError **err) {
   
   stat = g_file_load_contents (tv->file, NULL, &contents, &length, NULL, err);
   if (stat) {
-    gtk_text_buffer_set_text (tb, contents, length);
-    gtk_text_buffer_set_modified (tb, FALSE);
+    if (length > G_MAXINT) { /* File is too large to put it in the buffer*/
+      g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_FAILED, "The file is too large.");
+      stat = FALSE;
+    }
+    else if (!g_utf8_validate (contents, length, NULL)) { /* Only valid UTF-8 strings are accepted */
+      g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_FAILED, "The file is not valid UTF-8.");
+      stat = FALSE;
+    }
+    else {
+      gtk_text_buffer_set_text (tb, contents, (int) length);
+      gtk_text_buffer_set_modified (tb, FALSE);
+    }
     g_free (contents);
   }
   return stat;
@@ -109,21 +120,24 @@ tfe_text_view_new (void) {
   return GTK_WIDGET (g_object_new (TFE_TYPE_TEXT_VIEW, "wrap-mode", GTK_WRAP_WORD_CHAR, NULL));
 }
 
-/* If error happens, the function returns NULL. */
+/* If file == NULL, the function just returns a new TfeTextView instance. Its file member is NULL and the buffer is empty. */
+/* If file is not NULL and the file can be read, the function returns a new TfeTextView instance with the file loaded. */
+/* If an error happens during the read operation, the function returns NULL and sets the error. */
 GtkWidget *
 tfe_text_view_new_with_file (GFile *file, GError **err) {
-  g_return_val_if_fail (G_IS_FILE (file), NULL);
+  g_return_val_if_fail (G_IS_FILE (file) || file == NULL, NULL);
   g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
   GtkWidget *tv;
 
   tv = tfe_text_view_new();
+  if (file == NULL)
+    return tv;
   tfe_text_view_set_file (TFE_TEXT_VIEW (tv), file);
   if (tfe_text_view_read (TFE_TEXT_VIEW (tv), err))
     return tv;
-  else {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-    return NULL;
-  }
+  /* An error occurs during the read operation */
+  g_object_ref_sink (tv);
+  g_object_unref (tv);
+  return NULL;
 }
