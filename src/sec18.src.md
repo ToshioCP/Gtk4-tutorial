@@ -1,300 +1,329 @@
-# Stateful Action
+# Ui File for Menu and Action Entries
 
-Some actions have states.
-The typical values of states are boolean or string values.
-However, other types of states are possible if necessary.
+## Simplifying Menu Creation with UI Files
 
-Actions which have states are called stateful.
+Constructing menus purely in C can be a tedious process that results in lengthy, hard-to-read code.
+Fortunately, there is a better way.
+Just as we used UI files to simplify the creation of widgets, we can use XML-based UI files to define our menus.
+This approach improves code readability and saves development time.
 
-## Stateful Action without a Parameter
+## Rewriting menu2 with a UI File
 
-Some menus are called toggle menus.
-For example, the "Maximized" menu has two state values -- maximized and unmaximized.
-The value of the state is changed every time the menu is clicked.
-An action that corresponds to the "Maximized" menu also has a state.
-The value of the state is boolean, which is TRUE or FALSE.
-TRUE corresponds to maximized and FALSE to unmaximized.
+Let's take the `menu2` program from the previous section and rewrite its menu construction using a UI file.
+To do this, we need to understand a few basic XML tags used for GTK menus.
 
-The following is an example code to implement a "Maximized" menu.
-The code of `maximize_state_changed` will be shown later.
+### Basic Tags for Menu
 
-~~~C
-GSimpleAction *act_maximize = g_simple_action_new_stateful ("maximize",
-                                NULL, g_variant_new_boolean (FALSE));
-g_signal_connect (act_maximize, "change-state", G_CALLBACK (maximize_state_changed), win);
-g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_maximize));
-... ... ...
-GMenuItem *menu_item_maximize = g_menu_item_new ("Maximized", "win.maximize");
-~~~
+- `<menu>`: The root element of a menu.
+It corresponds to a GMenu object.
+The `id` attribute defines an identifier for this object.
+GtkBuilder uses this identifier to retrieve the menu in your C code.
+- `<item>`: Corresponds to an item in a GMenu.
+In the C code in the previous section, this item was created using a GMenuItem.
+- `<attribute>`: Defines the properties of an item or a menu.
+We use the name attribute to specify what property we are setting.
+The most common ones are:
+  - `label`: The text displayed to the user.
+  - `action`: The action triggered when the item is clicked (e.g., `app.quit`).
+  - `target`: The parameter passed to a stateful action (e.g., "red", "green", "blue").
+- `<submenu>`: A convenient shortcut tag to create a hierarchical menu (a menu within a menu).
+- `<section>`: A shortcut tag to logically group menu items.
+GTK usually inserts a visual separator between sections to make the menu easier to read.
 
-- `act_maximize` is a GSimpleAction instance.
-It is created with `g_simple_action_new_stateful`.
-The function has three arguments.
-The first argument "maximize" is the name of the action.
-The second argument is a parameter type.
-`NULL` means the action doesn't have a parameter.
-The third argument is the initial state of the action.
-It is a GVariant value.
-GVariant will be explained in the next subsection.
-The function `g_variant_new_boolean (FALSE)` returns a GVariant value of `FALSE`.
-If there are two or more top-level windows, each window has its own `act_maximize` action.
-So, the number of the actions is the same as the number of the windows.
-- The `act_maximize` action has a "change-state" signal. The signal is connected to a  handler `maximize_state_changed`.
-If the "Maximized" menu is clicked, then the corresponding action `act_maximize` is activated.
-But no handler is connected to the "activate" signal.
-Then, the default behavior for boolean-stated actions with a NULL parameter type like `act_maximize` is to toggle them via the “change-state” signal.
-- The action is added to the GtkWindow, `win`.
-Therefore, the scope of the action is "win".
-- `menu_item_maximize` is a GMenuItem instance.
-There are two arguments.
-The first argument "Maximized" is the label of `menu_item_maximize`.
-The second argument is an action.
-The action "win.maximize" has a prefix "win" and an action name "maximize".
-The prefix indicates that the action belongs to the window.
+### Rewriting menu2 with a UI File
+
+Here is the UI file `menu2.ui` that mirrors the menu structure we built purely in C in the previous section.
 
 @@@include
-menu/menu2.c maximize_state_changed
+menu/menu2.ui
 @@@
 
-This is the signal handler that has been connected to the "change-state" signal of the "maximize" action.
+As you can see, the hierarchical structure is much easier to grasp at a glance compared to reading C code.  
 
-- The handler `maximize_state_changed` has three parameters.
-The first parameter is the action which emits the "change-state" signal.
-The second parameter is the value of the new state of the action.
-The third parameter is the user data that was passed to `g_signal_connect`.
-- If the value is of boolean type and `TRUE`, then it maximizes the window.
-Otherwise it unmaximizes it.
-- Sets the state of the action with `value`.
-Note: Before `g_simple_action_set_state` is called, the action still holds its original state.
-You must call this function to update the action to the new state.
+- 1: This line declares the XML version and encoding.
+- 2: The `<interface>` tag is the root element of all GTK UI files.
+- 3: The top-level `<menu>` tag must have an id attribute.
+Here, the ID is "menubar", which allows GtkBuilder to retrieve it in the C code.
+- 4-5: The `<submenu>` tag creates a hierarchical menu.
+The `<attribute>` tag inside it sets the label of this submenu to "Menu".
+This submenu contains the sections defined in lines 6 to 35.
+- 6-11: The first `<section>` contains a single menu `<item>`.
+Its label is "Toggle Switch" and its action name is "win.toggle-switch".
+- 12-29: The next section has a label attribute set to "Color" (which acts as a section heading) and contains three menu items for changing the color.
+- 14-18: The first item's label is "Red", its action is "app.color", and its target is "red".
+This corresponds to "app.color::red" in the previous `menu2.c` code.
+- The remaining code follows the same pattern.
 
-You can use "activate" signal instead of "change-state" signal, or both signals.
-But the way above is the simplest and the best.
+For further information, see [GTK 4 API reference -- PopoverMenu](https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models).
 
-### GVariant
+Now, let's look at how to load this UI file in the C program.
+The following snippet shows the relevant part of `menu2_ui.c` inside the `app_startup` function:
 
-GVariant is a fundamental type.
-It isn't a child of GObject.
-GVariant can contain boolean, string or other type values.
-For example, the following program assigns TRUE to `value` whose type is GVariant.
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+GtkBuilder *builder;
+GMenuModel *menubar;
 
-~~~C
-GVariant *value = g_variant_new_boolean (TRUE);
-~~~
+builder = gtk_builder_new_from_file ("menu2.ui");
+menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
+gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
+g_object_unref (builder);
+```
 
-Another example is:
+First, `gtk_builder_new_from_file` reads the `menu2.ui` file and constructs the menu objects in memory.
+Then, `gtk_builder_get_object` retrieves the root menu using the ID "menubar".
+After setting the menu to the application with `gtk_application_set_menubar`, we no longer need the builder, so we safely release it with `g_object_unref`.
 
-~~~C
-GVariant *value2 = g_variant_new_string ("Hello");
-~~~
+Note: `gtk_builder_get_object` simply returns a pointer to the object without incrementing its reference count.
+The builder retains full ownership, so you must not unref `menubar`.
+In addition, `gtk_application_set_menubar` adds its own reference to the `menubar`, making it safe to unref the builder immediately afterward.
 
-`value2` is a GVariant and it has a string type value "Hello".
-GVariant can contain other types like int16, int32, int64, double and so on.
+### A Quick Note on Menu Shortcuts
 
-If you want to get the original value, use g\_variant\_get series functions.
-For example, you can get the boolean value with `g_variant_get_boolean`.
+As mentioned earlier, `<submenu>` and `<section>` are actually convenient shortcut tags provided by GtkBuilder.
+Under the hood, a menu is strictly a tree of `<item>` nodes connected by `<link>` tags.
 
-~~~C
-gboolean bool = g_variant_get_boolean (value);
-~~~
+When you use a `<section>` or `<submenu>`, GTK internally translates it into an `<item>` that contains a `<link>` with the name "section" or "submenu".
+To illustrate this, look at the two examples below. Both snippets produce the exact same menu UI:
 
-Since `value` has been created as a boolean type GVariant with `TRUE` value, `bool` equals `TRUE`.
-In the same way, you can get a string from `value2`
+**Example 1:** Using the `<section>` shortcut (Recommended)
 
-~~~C
-const char *str = g_variant_get_string (value2, NULL);
-~~~
+@@@if gfm
+```XML
+@@@else
+```{.xml}
+@@@end
+<section>
+  <item>
+    <attribute name="label">Copy</attribute>
+  </item>
+  <item>
+    <attribute name="label">Paste</attribute>
+  </item>
+</section>
+```
 
-The second parameter is a pointer to gsize type variable (gsize is defined as unsigned long).
-If it isn't NULL, then the variable is used by the function for the string length.
-If it is NULL, nothing happens.
-The returned string `str` is owned by the instance and can't be changed or freed by the caller.
+**Example 2:** The actual internal structure using `<link>`
 
-## Stateful Action with a Parameter
+@@@if gfm
+```XML
+@@@else
+```{.xml}
+@@@end
+<item>
+  <link name="section">
+    <item>
+      <attribute name="label">Copy</attribute>
+    </item>
+    <item>
+      <attribute name="label">Paste</attribute>
+    </item>
+  </link>
+</item>
+```
 
-Another example of stateful actions is an action that corresponds to color select menus.
-For example, there are three menus and each menu has red, green or blue color respectively.
-They determine the background color of a GtkLabel widget.
-One action is connected to the three menus.
-The action has a state whose value is "red", "green" or "blue".
-The values are string.
-Those colors are given to the signal handler as a parameter.
+Both approaches are perfectly valid, but developers almost always use the shortcuts (`<section>` and `<submenu>`) because they are much easier to read and write.
 
-~~~C
-... ... ...
-GVariantType *vtype = g_variant_type_new("s");
-GSimpleAction *act_color
-  = g_simple_action_new_stateful ("color", vtype, g_variant_new_string ("red"));
-g_variant_type_free (vtype);
-GMenuItem *menu_item_red = g_menu_item_new ("Red", "app.color::red");
-GMenuItem *menu_item_green = g_menu_item_new ("Green", "app.color::green");
-GMenuItem *menu_item_blue = g_menu_item_new ("Blue", "app.color::blue");
-g_signal_connect (act_color, "activate", G_CALLBACK (color_activated), NULL);
-... ... ...
-~~~
+## Building a Practical Menu
 
-- GVariantType is a C structure and it keeps a type of GVariant.
-It is created with the function `g_variant_type_new`.
-The argument of the function is a GVariant type string.
-So, `g_variant_type_new("s")` returns a GVariantType structure containing a string type.
-The returned value, GVariantType structure, is owned by the caller.
-So, you need to free it when it is no longer needed.
-- The variable `act_color` points to a GSimpleAction instance.
-It is created with `g_simple_action_new_stateful`.
-The function has three arguments.
-The first argument "color" is the name of the action.
-The second argument is a parameter type which is GVariantType.
-`g_variant_type_new("s")` creates GVariantType which is a string type (`G_VARIANT_TYPE_STRING`).
-The third argument is the initial state of the action.
-It is a GVariant.
-The function `g_variant_new_string ("red")` returns a GVariant value which has the string value "red".
-GVariant has a reference count and `g_variant_new_...` series functions return a GVariant value with a floating reference.
-That means the caller doesn't own the value at this point.
-And `g_simple_action_new_stateful` function consumes the floating reference so you don't need to care about releasing the GVariant instance.
-- The GVariantType structure `vtype` is useless after `g_simple_action_new_stateful`.
-It is released with the function `g_variant_type_free`.
-- The variable `menu_item_red` points to a GMenuItem instance.
-The function `g_menu_item_new` has two arguments.
-The first argument "Red" is the label of `menu_item_red`.
-The second argument is a detailed action.
-Its prefix is "app", the action name is "color" and the target is "red".
-Target is sent to the action as a parameter.
-The same goes for `menu_item_green` and `menu_item_blue`.
-- The function `g_signal_connect` connects the activate signal on the action `act_color` and the handler `color_activated`.
-If one of the three menus is clicked, then the action `act_color` is activated with the target (parameter) which is given by the menu.
-
-The following is the "activate" signal handler.
-
-~~~C
-static void
-color_activated(GSimpleAction *action, GVariant *parameter) {
-  char *color = g_strdup_printf ("label.lb {background-color: %s;}",
-                                   g_variant_get_string (parameter, NULL));
-  gtk_css_provider_load_from_string (provider, color);
-  g_free (color);
-  g_action_change_state (G_ACTION (action), parameter);
-}
-~~~
-
-- The handler originally has three parameters.
-The third parameter is the user data set in the `g_signal_connect` function.
-But it is left out because the fourth argument of the `g_signal_connect` has been NULL.
-The first parameter is the action which emits the "activate" signal.
-The second parameter is the parameter, or target, given to the action.
-It is a color specified by the menu.
-- The variable `color` is a CSS string created by `g_strdup_printf`.
-The arguments of `g_strdup_printf` are the same as printf C standard function.
-The function `g_variant_get_string` gets the string contained in `parameter`.
-The string is owned by the instance and you mustn't change or free it.
-The string `label.lb` is a selector.
-It consists of `label`, a node name of GtkLabel, and `lb` which is a class name.
-It selects GtkLabel which has `lb` class.
-For example, menus have GtkLabel to display their labels, but they don't have `lb` class.
-So, the CSS doesn't change their background color.
-The string `{background-color: %s;}` makes the background color `%s` to which the color from `parameter` is assigned.
-- Frees the string `color`.
-- Changes the state with `g_action_change_state`.
-
-Note: If you haven't set an "activate" signal handler, the signal is forwarded to "change-state" signal.
-So, you can use "change-state" signal instead of "activate" signal.
-See [src/menu/menu2_change_state.c](menu/menu2_change_state.c).
-
-### GVariantType
-
-GVariantType gives a type of GVariant.
-GVariantType is created with a type string.
-
-- "b" means boolean type.
-- "s" means string type.
-
-The following program is a simple example.
-It finally outputs the string "s".
-
-@@@include
-menu/gvarianttype_test.c
-@@@
-
-- The function `g_variant_type_new` creates a GVariantType structure.
-The argument "s" is a type string.
-It means string.
-The returned structure is owned by the caller.
-When it becomes useless, you need to free it with the function `g_variant_type_free`.
-- The function `g_variant_type_peek_string` takes a peek at `vtype`.
-It is the string "s" given to `vtype` when it was created.
-The string is owned by the instance and the caller can't change or free it.
-- Prints the string to the terminal.
-You can't free `vtype` before `g_print` because the string `type_string` is owned by `vtype`.
-- Frees `vtype`.
-
-## Example
-
-The following code includes stateful actions above.
-This program has menus like this:
+Now let's look at a more practical example.
+Most desktop applications feature a standard menu bar with categories like "File", "Edit", and "View".
 
 @@@if pdf
-![menu2](/images/menu2.png){width=6.03cm height=5.115cm}
+![menu3](/images/menu3.png){width=6.0cm height=5.055cm}
 @@@else
-![menu2](/images/menu2.png)
+![menu3](/images/menu3.png)
 @@@end
 
-- The "Maximized" menu toggles the size of the window between maximized and unmaximized.
-If the window is maximized, a check mark is put before the "Maximized" label.
-- Red, green and blue menu determines the back ground color of the label in the window.
-The menus have radio buttons on the left of the menus.
-And the radio button of the selected menu turns on.
-- The "quit" menu quits the application.
-
-The code is as follows.
+The `menu3.ui` file implements this familiar structure.
 
 @@@include
-menu/menu2.c
+menu/menu3.ui
 @@@
 
-- 6-23: Action signal handlers.
-- 25-28: The handler `app_shutdown` is called when the application quits.
-It removes the provider from the display.
-- 30-48: An activate signal handler.
-- 32-34: A new window is created and assigned to `win`.
-Its title and default size are set to "menu2" and 400x300 respectively.
-- 36-38: A new label is created and assigned to `lb`
-The label is given a CSS class "lb".
-It is added to `win` as a child.
-- 40-43: A toggle action is created and assigned to `act_maximize`.
-It's connected to the signal handler `maximize_state_changed`.
-It's added to the window, so the action scope is "win".
-- 45: The function `gtk_application_window_set_show_menubar` adds a menubar to the window.
-- 47: Shows the window.
-- 50-104: A startup signal handler.
-- 52-61: Two actions `act_color` and `act_quit` are created.
-There is only one instance of each of these actions, because the startup handler is called once.
-They are connected to their handlers and added to the application.
-Their scopes are "app".
-- 63-92: Menus are built.
-- 94: The menubar is added to the application.
-- 96-103: A CSS provider is created with the CSS data and added to the default display.
-The "shutdown" signal on the application is connected to a handler "app_shutdown".
-The provider is removed from the display and freed when the application quits.
+Although this UI file creates a much larger and deeper tree structure compared to our previous example, notice that it uses the exact same basic XML tags: `<menu>`, `<submenu>`, `<section>`, `<item>`, and `<attribute>`.
+By simply nesting these familiar elements, you can build highly complex and practical menu systems without learning any new syntax.
 
-## Compile
+For more detailed information and advanced usage of menu UI files, please refer to the [GtkPopoverMenu section](https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models) in the GTK documentation.
 
-Change your current directory to `src/menu`.
+Note: To load this UI file in your C code, you use `gtk_builder_new_from_file ("menu3.ui")` exactly as we did in the previous example.
+Since the C code for extracting the menu from the builder is identical to `menu2`, we will skip repeating it here.
 
-~~~
-$ comp menu2
-$./a.out
-~~~
+## Automating Action Creation with GActionEntry
 
-Then, you will see a window and the background color of the content is red.
-You can change the size to maximum and change back to the original size.
-You can change the background color to green or blue.
+In the previous examples, we created actions, connected their signals, and added them to an action map one by one.
+While this works, it requires a lot of repetitive boilerplate code.
+To automate and simplify this process, GTK provides the GActionEntry structure and the `g_action_map_add_action_entries` function.
+GActionEntry allows you to define all the properties of an action --- its name, signal handlers, parameter type, and initial state—in a single array element.
 
-If you run the second application while the first application is running, another window will appear in the same screen.
-Both of the windows have the same background color.
-Because the `act_color` action has "app" scope and the CSS is applied to the default display shared by the windows.
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+typedef struct _GActionEntry GActionEntry;
 
+struct _GActionEntry
+{
+  /* action name */
+  const char *name;
+  /* activate handler */
+  void (* activate) (GSimpleAction *action, GVariant *parameter, gpointer user_data);
+  /* the type of the parameter given as a single GVariant type string */
+  const char *parameter_type;
+  /* initial state given in GVariant text format */
+  const char *state;
+  /* change-state handler */
+  void (* change_state) (GSimpleAction *action, GVariant *value, gpointer user_data);
+  /*< private >*/
+  gsize padding[3];
+};
 ```
-$ ./a.out & # Run the first application
-[1] 82113
-$ ./a.out # Run the second application
-$ 
+
+Let's look at how the actions in `menu3.c` are defined using this structure.
+
+### Non-stateful Actions
+
+Most standard commands like "new", "open", or "quit" are non-stateful and do not require parameters.
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+{ "quit", quit_activated, NULL, NULL, NULL }
 ```
+
+1. "quit": The name of the action.
+2. `quit_activated`: The "activate" signal handler.
+3. `NULL`: The parameter type. Since this action takes no parameters, it is NULL.
+4. `NULL`: The initial state. Since this is a non-stateful action, it is NULL.
+5. `NULL`: The "change-state" handler. Only stateful actions need this.
+
+### Stateful Actions without parameters
+
+Actions that toggle a state (like switching fullscreen mode on and off) are defined slightly differently.
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+{ "fullscreen", NULL, NULL, "false", fullscreen_state_changed }
+```
+
+1. "fullscreen": The name of the action.
+2. `NULL`: The "activate" handler. For stateful actions, we usually handle state changes instead of basic activations, so this is NULL.
+3. `NULL`: The parameter type. This action doesn't have parameters.
+4. "false": The initial state. It is provided in GVariant text format. As a boolean, the initial state is set to "false".
+5. `fullscreen_state_changed`: The "change-state" handler. This handler is called in response to a request to toggle the action's state.
+
+### Stateful Actions with Parameters
+
+Although `menu3.c` does not use them, some actions require parameters (for example, an action that changes a color based on the user's selection).
+If you were to recreate the "color" action from our earlier examples, the entry would look like this:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+{ "color", NULL, "s", "'red'", color_state_changed }
+```
+
+1. "color": The name of the action.
+2. `NULL`: The "activate" handler. For stateful actions, we usually handle state changes instead of basic activations, so this is NULL.
+3. "s": The parameter type. This uses a GVariant format string, where "s" stands for a standard string.
+See [GVariant format strings](https://docs.gtk.org/glib/gvariant-format-strings.html) for details.
+4. "'red'": The initial state.
+This must be written in GVariant text format.
+Because GVariant expects string values to be explicitly quoted, you must include quotes inside your C string.
+You can write this using single quotes like `"'red'"` or by escaping double quotes like `"\"red\""`.
+See [GVariant text format](https://docs.gtk.org/glib/gvariant-text-format.html) for details.
+5. `color_state_changed`: The "change-state" handler. This handler is called in response to a request to toggle the action's state.
+
+### Registering the Entries
+
+Once you define an array of GActionEntry, you can register all of them at once using `g_action_map_add_action_entries()`.
+
+For the window-scoped actions, we do this inside `app_activate`:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+const GActionEntry win_entries[] = {
+  { "save", save_activated, NULL, NULL, NULL },
+  { "saveas", saveas_activated, NULL, NULL, NULL },
+  { "close", close_activated, NULL, NULL, NULL },
+  { "cut", cut_activated, NULL, NULL, NULL },
+  { "copy", copy_activated, NULL, NULL, NULL },
+  { "paste", paste_activated, NULL, NULL, NULL },
+  { "selectall", selectall_activated, NULL, NULL, NULL },
+  { "fullscreen", NULL, NULL, "false", fullscreen_state_changed }
+};
+g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
+```
+
+This single function call performs all the heavy lifting:
+
+- It iterates through the win_entries array.
+- It creates the GSimpleAction instances.
+- It sets up their initial states.
+- It connects the "activate" and "change-state" signal handlers.
+- It adds all the newly created actions to the `win` action map.
+
+We do the exact same thing for the application-scoped actions inside `app_startup`:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+const GActionEntry app_entries[] = {
+  { "new", new_activated, NULL, NULL, NULL },
+  { "open", open_activated, NULL, NULL, NULL },
+  { "quit", quit_activated, NULL, NULL, NULL }
+};
+g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
+```
+
+**Important Note on Signal Handler Signatures**
+
+Strictly speaking, your handler functions must exactly match the standard GObject callback signature, accepting a gpointer for the user data:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+static void
+handler (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  // ...
+}
+```
+
+Even if you know that `user_data` will be a GApplication, you cannot change the function signature to `(..., GApplication *app)`.
+The `g_action_map_add_action_entries` function expects standard GObject callback signatures.
+Instead, you should accept gpointer `user_data` and cast it inside the function body, like this:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+static void
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GApplication *app = G_APPLICATION (user_data);
+  g_application_quit (app);
+}
+```
+
+## Full Source Code
+
+The complete source files, including `menu3.c` and `menu3.ui`, are located in the [src/menu](menu/) directory.
+It is helpful to review the full code to see how the UI definitions and the GActionEntry implementations come together.

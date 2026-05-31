@@ -162,8 +162,7 @@ gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
 Change the current directory to the directory includes `list1.c` and type as follows.
 
 ~~~
-$ chmod 755 $HOME/bin/comp # or chmod 755 (your bin directory)/comp
-$ comp list1
+$ bash comp list1
 $ ./a.out
 ~~~
 

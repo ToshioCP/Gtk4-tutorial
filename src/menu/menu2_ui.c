@@ -1,89 +1,84 @@
 #include <gtk/gtk.h>
 
-/* The provider below provides application wide CSS data. */
-static GtkCssProvider *provider;
-
 static void
-maximize_state_changed(GSimpleAction *action, GVariant *value, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
+toggle_switch_changed(GSimpleAction *action, GVariant *value, gpointer user_data) {
+  GtkWidget *label = GTK_WIDGET (user_data);
 
   if (g_variant_get_boolean (value))
-    gtk_window_maximize (win);
+    gtk_label_set_text (GTK_LABEL (label), "ON");
   else
-    gtk_window_unmaximize (win);
+    gtk_label_set_text (GTK_LABEL (label), "OFF");
   g_simple_action_set_state (action, value);
 }
 
 static void
-color_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  char *color = g_strdup_printf ("label.lb {background-color: %s;}", g_variant_get_string (parameter, NULL));
+color_state_changed(GSimpleAction *action, GVariant *value, gpointer user_data) {
+  GtkCssProvider *provider = GTK_CSS_PROVIDER (user_data);
+  char *color = g_strdup_printf ("label.lb {background-color: %s; font-size: 72pt; color: white;}", g_variant_get_string (value, NULL));
   /* Change the CSS data in the provider. */
   /* Previous data is thrown away. */
   gtk_css_provider_load_from_string (provider, color);
   g_free (color);
-  g_action_change_state (G_ACTION (action), parameter);
-}
-
-static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data)
-{
-  GApplication *app = G_APPLICATION (user_data);
-
-  g_application_quit (app);
+  g_simple_action_set_state (action, value);
 }
 
 static void
 app_shutdown (GApplication *app, GtkCssProvider *provider) {
   gtk_style_context_remove_provider_for_display (gdk_display_get_default(), GTK_STYLE_PROVIDER (provider));
+  g_object_unref (provider);
 }
 
 static void
 app_activate (GApplication *app) {
-  GtkWindow *win = GTK_WINDOW (gtk_application_window_new (GTK_APPLICATION (app)));
-  gtk_window_set_title (win, "menu2_ui");
-  gtk_window_set_default_size (win, 400, 300);
+  GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
+  gtk_window_set_title (GTK_WINDOW (win), "menu2");
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
 
-  GtkWidget *lb = gtk_label_new (NULL);
-  gtk_widget_add_css_class (lb, "lb"); /* the class is used by CSS Selector */
-  gtk_window_set_child (win, lb);
+  GtkWidget *label = gtk_label_new ("OFF");
+  gtk_widget_add_css_class (label, "lb"); /* the class is used by CSS Selector */
+  gtk_window_set_child (GTK_WINDOW (win), label);
 
-  const GActionEntry win_entries[] = {
-    { "maximize", NULL, NULL, "false", maximize_state_changed }
-  };
-  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
-
+  GSimpleAction *act_toggle_switch
+    = g_simple_action_new_stateful ("toggle-switch", NULL, g_variant_new_boolean (FALSE));
+  g_signal_connect (act_toggle_switch, "change-state", G_CALLBACK (toggle_switch_changed), label);
+  g_action_map_add_action (G_ACTION_MAP (win), G_ACTION (act_toggle_switch));
+  g_object_unref (act_toggle_switch);
   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
 
-  gtk_window_present (win);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
 app_startup (GApplication *app) {
   GtkBuilder *builder;
   GMenuModel *menubar;
-
-  const GActionEntry app_entries[] = {
-    { "color", color_activated, "s", "'red'", NULL },
-    { "quit", quit_activated, NULL, NULL, NULL }
-  };
-  g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
+  /* The provider below provides application wide CSS data. */
+  GtkCssProvider *provider = gtk_css_provider_new ();
+  GSimpleAction *act_color
+    = g_simple_action_new_stateful ("color", G_VARIANT_TYPE_STRING, g_variant_new_string ("red"));
+  GSimpleAction *act_quit
+    = g_simple_action_new ("quit", NULL);
+  g_signal_connect (act_color, "change-state", G_CALLBACK (color_state_changed), provider);
+  g_signal_connect_swapped (act_quit, "activate", G_CALLBACK (g_application_quit), app);
+  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_color));
+  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
+  g_object_unref (act_color);
+  g_object_unref (act_quit);
 
   builder = gtk_builder_new_from_file ("menu2.ui");
   menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
-  gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
+  gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
   g_object_unref (builder);
 
-  provider = gtk_css_provider_new ();
   /* Initialize the css data */
-  gtk_css_provider_load_from_string (provider, "label.lb {background-color: red;}");
+  gtk_css_provider_load_from_string (provider, "label.lb {background-color: red; font-size: 72pt; color: white;}");
   /* Add CSS to the default GdkDisplay. */
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
         GTK_STYLE_PROVIDER (provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), provider);
-  g_object_unref (provider); /* release provider, but it's still alive because the display owns it */
 }
 
-#define APPLICATION_ID "com.github.ToshioCP.menu2_ui"
+#define APPLICATION_ID "com.github.ToshioCP.menu2"
 
 int
 main (int argc, char **argv) {

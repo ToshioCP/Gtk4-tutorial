@@ -63,7 +63,7 @@ length of the hands) or even add text, or create a digital clock.
 
 ## The Complete code
 
-You can find the source files in the `tfc` directory. it can be compiled with `./comp tfc`.
+You can find the source files in the `tfc` directory. it can be compiled with `comp` shell script.
 
 `tfc.c`
 

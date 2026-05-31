@@ -5,8 +5,8 @@
       <attribute name="label">Menu</attribute>
       <section>
         <item>
-          <attribute name="label">Maximized</attribute>
-          <attribute name="action">win.maximize</attribute>
+          <attribute name="label">Toggle Switch</attribute>
+          <attribute name="action">win.toggle-switch</attribute>
         </item>
       </section>
       <section>

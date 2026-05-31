@@ -246,7 +246,7 @@ The function `gtk_builder_new_from_resource` builds widgets from a resource.
 Then, compile and run it.
 
 ~~~
-$ comp tfe3_r
+$ bash comp tfe3_r
 $ ./a.out
 ~~~
 

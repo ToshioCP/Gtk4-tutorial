@@ -18,9 +18,13 @@ saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data
 
 static void
 close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
+}
 
-  gtk_window_destroy (win);
+static void
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GApplication *app = G_APPLICATION (user_data);
+
+  g_application_quit (app);
 }
 
 static void
@@ -40,21 +44,7 @@ selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer user_d
 }
 
 static void
-maximize_state_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
-
-  if (g_variant_get_boolean (state))
-    gtk_window_maximize (win);
-  else
-    gtk_window_unmaximize (win);
-  g_simple_action_set_state (action, state);
-}
-
-static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  GApplication *app = G_APPLICATION (user_data);
-
-  g_application_quit (app);
+fullscreen_state_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
 }
 
 static void
@@ -65,20 +55,24 @@ app_activate (GApplication *app) {
     { "save", save_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
     { "close", close_activated, NULL, NULL, NULL },
-    { "maximize", NULL, NULL, "false", maximize_state_changed }
+    { "cut", cut_activated, NULL, NULL, NULL },
+    { "copy", copy_activated, NULL, NULL, NULL },
+    { "paste", paste_activated, NULL, NULL, NULL },
+    { "selectall", selectall_activated, NULL, NULL, NULL },
+    { "fullscreen", NULL, NULL, "false", fullscreen_state_changed }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
 
   gtk_window_set_title (GTK_WINDOW (win), "menu3");
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
   gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
 app_startup (GApplication *app) {
-  GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
+  GtkBuilder *builder = gtk_builder_new_from_file ("menu3.ui");
   GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
 
   gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
@@ -87,10 +81,6 @@ app_startup (GApplication *app) {
   const GActionEntry app_entries[] = {
     { "new", new_activated, NULL, NULL, NULL },
     { "open", open_activated, NULL, NULL, NULL },
-    { "cut", cut_activated, NULL, NULL, NULL },
-    { "copy", copy_activated, NULL, NULL, NULL },
-    { "paste", paste_activated, NULL, NULL, NULL },
-    { "selectall", selectall_activated, NULL, NULL, NULL },
     { "quit", quit_activated, NULL, NULL, NULL }
   };
   g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);

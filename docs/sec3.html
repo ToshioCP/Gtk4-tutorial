@@ -309,20 +309,9 @@ $</code></pre>
         to use shell script to solve this problem. Make a text file
         which contains the following line.</p>
         <pre><code>gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`</code></pre>
-        <p>Then, save it under the directory $HOME/bin, which is usually
-        /home/(username)/bin. (If your user name is James, then the
-        directory is /home/james/bin). And turn on the execute bit of
-        the file. If the filename is <code>comp</code>, do like
-        this:</p>
-        <pre><code>$ chmod 755 $HOME/bin/comp
-$ ls -log $HOME/bin
-    ...  ...  ...
--rwxr-xr-x 1   62 May 23 08:21 comp
-    ...  ...  ...</code></pre>
-        <p>If this is the first time that you make a $HOME/bin directory
-        and save a file in it, then you need to logout and login
-        again.</p>
-        <pre><code>$ comp pr2
+        <p>Then, save it in your current directory and name it
+        “comp”.</p>
+        <pre><code>$ bash comp pr2
 $ ./a.out
 GtkApplication is activated.
 $</code></pre>
@@ -342,15 +331,15 @@ $</code></pre>
         </ol>
         <p>Now rewrite the function <code>app_activate</code>.</p>
         <h4 id="create-a-gtkwindow">Create a GtkWindow</h4>
-        <div class="sourceCode" id="cb12"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a>  win <span class="op">=</span> gtk_window_new <span class="op">();</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="op">}</span></span></code></pre></div>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a></span>
+<span id="cb11-5"><a href="#cb11-5"></a>  win <span class="op">=</span> gtk_window_new <span class="op">();</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="op">}</span></span></code></pre></div>
         <p>Widget is an abstract concept that includes all the GUI
         interfaces such as windows, labels, buttons, multi-line text,
         boxes and so on. And GtkWidget is a base object from which all
@@ -366,9 +355,9 @@ GtkWidget -- GtkWindow</code></pre>
         </figure>
         <p>The function <code>gtk_window_new</code> is defined as
         follows.</p>
-        <div class="sourceCode" id="cb14"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>gtk_window_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>gtk_window_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span></code></pre></div>
         <p>By this definition, it returns a pointer to GtkWidget, not
         GtkWindow. It actually creates a new GtkWindow instance (not
         GtkWidget) but returns a pointer to GtkWidget. However,the
@@ -376,20 +365,20 @@ GtkWidget -- GtkWindow</code></pre>
         points to the GtkWindow that contains the GtkWidget in it.</p>
         <p>If you want to use <code>win</code> as a pointer to a
         GtkWindow type instance, you need to cast it.</p>
-        <div class="sourceCode" id="cb15"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">(</span>GtkWindow <span class="op">*)</span> win</span></code></pre></div>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">(</span>GtkWindow <span class="op">*)</span> win</span></code></pre></div>
         <p>It works, but isn’t usually used. Instead,
         <code>GTK_WINDOW</code> macro is used.</p>
-        <div class="sourceCode" id="cb16"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>GTK_WINDOW <span class="op">(</span>win<span class="op">)</span></span></code></pre></div>
+        <div class="sourceCode" id="cb15"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>GTK_WINDOW <span class="op">(</span>win<span class="op">)</span></span></code></pre></div>
         <p>The macro is recommended because it not only casts the
         pointer but also checks the type.</p>
         <h4 id="connect-it-to-the-gtkapplication.">Connect it to the
         GtkApplication.</h4>
         <p>The function <code>gtk_window_set_application</code> is used
         to connect GtkWindow to GtkApplication.</p>
-        <div class="sourceCode" id="cb17"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span></code></pre></div>
+        <div class="sourceCode" id="cb16"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span></code></pre></div>
         <p>You need to cast <code>win</code> to GtkWindow and
         <code>app</code> to GtkApplication with <code>GTK_WINDOW</code>
         and <code>GTK_APPLICATION</code> macro.</p>
@@ -423,7 +412,7 @@ GtkWidget -- GtkWindow</code></pre>
         should use <code>gtk_widget_set_visible</code> instead.</p>
         <p>Save the program as <code>pr3.c</code>, then compile and run
         it.</p>
-        <pre><code>$ comp pr3
+        <pre><code>$ bash comp pr3
 $ ./a.out</code></pre>
         <p>A small window appears.</p>
         <figure>
@@ -440,16 +429,16 @@ $ ./a.out</code></pre>
         It is recommended to use it as the top-level window of the
         application instead of GtkWindow.</p>
         <p>Now rewrite the program and use GtkApplicationWindow.</p>
-        <div class="sourceCode" id="cb19"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb19-4"><a href="#cb19-4"></a></span>
-<span id="cb19-5"><a href="#cb19-5"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
-<span id="cb19-6"><a href="#cb19-6"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;pr4&quot;</span><span class="op">);</span></span>
-<span id="cb19-7"><a href="#cb19-7"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb19-8"><a href="#cb19-8"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb19-9"><a href="#cb19-9"></a><span class="op">}</span></span></code></pre></div>
+        <div class="sourceCode" id="cb18"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a></span>
+<span id="cb18-5"><a href="#cb18-5"></a>  win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;pr4&quot;</span><span class="op">);</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="op">}</span></span></code></pre></div>
         <p>When you create GtkApplicationWindow, you need to give
         GtkApplication instance as an argument. Then it automatically
         connect these two instances. So you don’t need to call

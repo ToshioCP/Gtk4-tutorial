@@ -41,21 +41,21 @@
       <section>
         <item>
           <attribute name="label">Cut</attribute>
-          <attribute name="action">app.cut</attribute>
+          <attribute name="action">win.cut</attribute>
         </item>
         <item>
           <attribute name="label">Copy</attribute>
-          <attribute name="action">app.copy</attribute>
+          <attribute name="action">win.copy</attribute>
         </item>
         <item>
           <attribute name="label">Paste</attribute>
-          <attribute name="action">app.paste</attribute>
+          <attribute name="action">win.paste</attribute>
         </item>
       </section>
       <section>
         <item>
           <attribute name="label">Select All</attribute>
-          <attribute name="action">app.selectall</attribute>
+          <attribute name="action">win.selectall</attribute>
         </item>
       </section>
     </submenu>
@@ -63,8 +63,8 @@
       <attribute name="label">View</attribute>
       <section>
         <item>
-          <attribute name="label">Maximized</attribute>
-          <attribute name="action">win.maximize</attribute>
+          <attribute name="label">Fullscreen</attribute>
+          <attribute name="action">win.fullscreen</attribute>
         </item>
       </section>
     </submenu>

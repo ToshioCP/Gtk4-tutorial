@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Menus and Actions</title>
+  <title>Stateful Actions</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,357 +93,679 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="menus-and-actions">Menus and Actions</h1>
-        <h2 id="menus">Menus</h2>
-        <p>Users often use menus to give a command to the application.
-        It is like this:</p>
-        <figure>
-        <img src="/images/menu.png" alt="Menu" />
-        <figcaption aria-hidden="true">Menu</figcaption>
-        </figure>
-        <p>There are two types of objects.</p>
+        <h1 id="stateful-actions">Stateful Actions</h1>
+        <p>Actions that maintain a state are called stateful actions.
+        While these states are typically boolean or string values, other
+        data types can also be used when necessary.</p>
+        <p>Stateful actions fall into two main categories:</p>
         <ul>
-        <li>“File”, “Edit”, “View”, “Cut”, “Copy”, “Paste” and “Select
-        All”. They are called “menu item” or simply “item”. When the
-        user clicks one of these items, then something will happen.</li>
-        <li>Menubar, submenu referenced by “Edit” item and two sections.
-        They are called “menu”. Menu is an ordered list of items. They
-        are similar to arrays.</li>
+        <li><strong>Stateful actions without parameters:</strong> Often
+        used for toggle menus. The state is usually a boolean (TRUE or
+        FALSE), and activating the action simply flips the state to its
+        opposite value.</li>
+        <li><strong>Stateful actions with parameters:</strong> Used when
+        an action can take on one of several distinct states. For
+        example, a background color action might accept “red”, “green”,
+        or “blue”. To change the state, the caller must pass the target
+        value as a parameter.</li>
         </ul>
-        <figure>
-        <img src="/images/menu_structure.png" alt="Menu structure" />
-        <figcaption aria-hidden="true">Menu structure</figcaption>
-        </figure>
+        <h2 id="action-activation-and-state-changes">Action Activation
+        and State Changes</h2>
+        <p>GIO provides two primary functions for working with
+        actions:</p>
         <ul>
-        <li>Menubar is a menu which has three items, which are “File”,
-        “Edit” and “View”.</li>
-        <li>The menu item labeled “Edit” has a link to the submenu which
-        has two items. These two items don’t have labels. Each item
-        refers to a section.</li>
-        <li>The first section is a menu which has three items – “Cut”,
-        “Copy” and “Paste”.</li>
-        <li>The second section is a menu which has one item – “Select
-        All”.</li>
+        <li><code>g_action_activate()</code>: activates the action. This
+        function emits the “activate” signal.</li>
+        <li><code>g_action_change_state()</code>: requests a state
+        change on the action. Note that this function itself doesn’t
+        change the state. This function just emits the “change-state”
+        signal.</li>
         </ul>
-        <p>Menus can build a complicated structure thanks to the links
-        of menu items.</p>
-        <h2 id="gmenumodel-gmenu-and-gmenuitem">GMenuModel, GMenu and
-        GMenuItem</h2>
-        <p>GMenuModel is an abstract object which represents a menu.
-        GMenu is a simple implementation of GMenuModel and a child
-        object of GMenuModel.</p>
-        <pre><code>GObject -- GMenuModel -- GMenu</code></pre>
-        <p>Because GMenuModel is an abstract object, it isn’t
-        instantiatable. Therefore, it doesn’t have any functions to
-        create its instance. If you want to create a menu, use
-        <code>g_menu_new</code> to create a GMenu instance. GMenu
-        inherits all the functions of GMenuModel.</p>
-        <p>GMenuItem is an object directly derived from GObject.
-        GMenuItem and Gmenu (or GMenuModel) don’t have a parent-child
-        relationship.</p>
-        <pre><code>GObject -- GMenuModel -- GMenu
-GObject -- GMenuItem</code></pre>
-        <p>GMenuItem has attributes. One of the attributes is label. For
-        example, there is a menu item which has “Edit” label in the
-        first diagram. “Cut”, “Copy”, “Paste” and “Select All” are also
-        the labels of the menu items. Other attributes will be explained
-        later.</p>
-        <p>Some menu items have a link to another GMenu. There are two
-        types of links, submenu and section.</p>
-        <p>GMenuItem can be inserted, appended or prepended to GMenu.
-        When it is inserted, all of the attributes and link values are
-        copied and stored in the menu. The GMenuItem itself is not
-        really inserted. Therefore, after the insertion, GMenuItem is
-        useless and it should be freed. The same goes for appending or
-        prepending.</p>
-        <p>The following code shows how to append GMenuItem to
-        GMenu.</p>
-        <pre><code>GMenu *menu = g_menu_new ();
-GMenuItem *menu_item_quit = g_menu_item_new (&quot;Quit&quot;, &quot;app.quit&quot;);
-g_menu_append_item (menu, menu_item_quit);
-g_object_unref (menu_item_quit);</code></pre>
-        <h2 id="menu-and-action">Menu and Action</h2>
-        <p>One of the attributes of menu items is an action. This
-        attribute points to an action object.</p>
-        <p>There are two action objects, GSimpleAction and
-        GPropertyAction. GSimpleAction is often used. And it is used
-        with a menu item. Only GSimpleAction is described in this
-        section.</p>
-        <p>An action that corresponds to a menu item will be activated
-        when the menu item is clicked. Then the action emits an activate
-        signal.</p>
-        <ol type="1">
-        <li>menu item is clicked.</li>
-        <li>The corresponding action is activated.</li>
-        <li>The action emits a signal.</li>
-        <li>The connected handler is invoked.</li>
-        </ol>
-        <p>The following code is an example.</p>
+        <h3 id="menus-and-shortcuts-always-go-through-activate">Menus
+        and Shortcuts Always Go Through Activate</h3>
+        <p>Menu items and keyboard shortcuts work by calling
+        <code>g_action_activate()</code> internally. This means the
+        starting point is always the <code>"activate"</code> signal —
+        even for stateful actions. Menu items do <strong>not</strong>
+        call <code>g_action_change_state()</code> directly.</p>
+        <h3 id="aciivate-and-change-state-default-behavior">Aciivate and
+        Change-state Default Behavior</h3>
+        <h4 id="forwarding-activate-to-change-state">Forwarding Activate
+        to Change-state</h4>
+        <p>So how do stateful actions work naturally with menus?
+        <code>GSimpleAction</code> has a helpful default behavior built
+        in.</p>
+        <p>If <strong>no handler is connected</strong> to the “activate”
+        signal, <code>GSimpleAction</code> will automatically forward
+        the activation to “change-state” (since GLib 2.40), under the
+        following conditions:</p>
+        <table>
+        <colgroup>
+        <col style="width: 50%" />
+        <col style="width: 50%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th>Action type</th>
+        <th>Default behavior</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td>Boolean state, no parameter type</td>
+        <td>Toggles the state via “change-state”</td>
+        </tr>
+        <tr class="even">
+        <td>State type matches the parameter type (*)</td>
+        <td>Forwards directly to “change-state”</td>
+        </tr>
+        </tbody>
+        </table>
+        <p><strong>Note:</strong></p>
+        <ul>
+        <li>This forwarding is specific to <code>GSimpleAction</code>.
+        It is not a general feature of the <code>GAction</code>
+        interface.</li>
+        <li>(*) If the caller’s parameter type doesn’t match the state
+        type of the action, no signal will be emitted.</li>
+        </ul>
+        <h4 id="change-states-default-behavior">change-state’s Default
+        Behavior</h4>
+        <p>When “change-state” signal is emitted and no handler is
+        connected, GSimpleAction will automatically call
+        <code>g_simple_action_set_state()</code> to apply the requested
+        value. This means that for simple use cases where no validation
+        is needed, you don’t have to write any handler at all — the
+        state just updates itself.</p>
+        <h3 id="a-recommended-pattern-put-your-logic-in-change-state">A
+        Recommended Pattern: Put Your Logic in change-state</h3>
+        <p>Taking advantage of this default behavior leads to a clean
+        and robust design pattern:</p>
+        <p><strong>Leave <code>"activate"</code> unhandled, and connect
+        your logic to <code>"change-state"</code> instead.</strong></p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>on_change_state <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                 GVariant      <span class="op">*</span>value<span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                 gpointer       user_data<span class="op">)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* Optionally validate the requested value here */</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span>  <span class="co">/* Apply the new state */</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* Perform tasks related to the state change */</span> </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>action<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>on_change_state<span class="op">),</span> NULL<span class="op">);</span></span></code></pre></div>
+        <p>With this pattern, activations from menus, keyboard
+        shortcuts, and direct calls to
+        <code>g_action_change_state()</code> all flow through the same
+        handler consistently.</p>
+        <ul>
+        <li><strong>If you connect your own <code>"activate"</code>
+        handler:</strong> The automatic forwarding to
+        <code>"change-state"</code> is disabled. You become responsible
+        for handling the state update yourself.</li>
+        <li><strong>If you connect your own <code>"change-state"</code>
+        handler:</strong> The default behavior of automatically calling
+        <code>g_simple_action_set_state()</code> is also disabled. If
+        you want the state to actually change, you must call
+        <code>g_simple_action_set_state()</code> explicitly from within
+        your handler. If you don’t, the state will remain unchanged —
+        which is intentional, as it allows you to validate or reject
+        requests before applying them.</li>
+        </ul>
+        <h2 id="stateful-action-without-parameters">Stateful Action
+        without Parameters</h2>
+        <p>A common example of a stateful action without a parameter is
+        a toggle menu. Its state, represented by a boolean value (TRUE
+        or FALSE), changes each time the menu is clicked.</p>
+        <p>The following example demonstrates how to implement a toggle
+        menu that updates a GtkLabel. The label is initialized to “OFF”,
+        and its text alternates between “ON” and “OFF” with each
+        click.</p>
+        <p>This is a part of the <code>menu2.c</code> program, defining
+        the toggle action and the menu item.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_toggle_switch</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;toggle-switch&quot;</span><span class="op">,</span> NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_toggle_switch<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>toggle_switch_changed<span class="op">),</span> label<span class="op">);</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_toggle_switch<span class="op">));</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_toggle_switch <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Toggle Switch&quot;</span><span class="op">,</span> <span class="st">&quot;win.toggle-switch&quot;</span><span class="op">);</span></span></code></pre></div>
+        <p><code>act_toggle_switch</code> is a GSimpleAction instance
+        created with <code>g_simple_action_new_stateful</code>. This
+        function takes three arguments:</p>
+        <ul>
+        <li>The first argument, “toggle-switch”, is the name of the
+        action.</li>
+        <li>The second argument is the parameter type. NULL means this
+        action does not take any parameters.</li>
+        <li>The third argument is the initial state of the action. It is
+        provided as a GVariant value (which will be explained in the
+        next subsection). Here,
+        <code>g_variant_new_boolean (FALSE)</code> sets the initial
+        state to FALSE.</li>
+        </ul>
+        <p>The action’s “change-state” signal is connected to the
+        handler <code>toggle_switch_changed</code>. Notice that we pass
+        <code>label</code> (the GtkLabel) as the user_data so we can
+        update its text later. As explained in the previous section, we
+        intentionally leave the “activate” signal unconnected to take
+        advantage of forwarding it to the “change-state” signal .</p>
+        <p>The action is added to the GtkWindow (<code>win</code>) using
+        <code>g_action_map_add_action</code>. Therefore, the scope of
+        this action is <code>win</code>.</p>
+        <p><code>menu_item_toggle_switch</code> is a GMenuItem instance
+        created with two arguments.</p>
+        <ul>
+        <li>The first argument, “Toggle Switch”, is the label displayed
+        on the menu.</li>
+        <li>The second argument, “win.toggle-switch”, is the action
+        name. The prefix “win.” indicates that the action belongs to the
+        window.</li>
+        </ul>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>toggle_switch_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  GtkWidget <span class="op">*</span>label <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>value<span class="op">))</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>    gtk_label_set_text <span class="op">(</span>GTK_LABEL <span class="op">(</span>label<span class="op">),</span> <span class="st">&quot;ON&quot;</span><span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="cf">else</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>    gtk_label_set_text <span class="op">(</span>GTK_LABEL <span class="op">(</span>label<span class="op">),</span> <span class="st">&quot;OFF&quot;</span><span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="op">}</span></span></code></pre></div>
+        <p>This is the signal handler connected to the “change-state”
+        signal of the “toggle-switch” action.</p>
+        <p>The handler <code>toggle_switch_changed</code> has three
+        parameters:</p>
+        <ul>
+        <li>The first parameter is the action that emits the
+        “change-state” signal.</li>
+        <li>The second parameter, value, is the requested new state of
+        the action.</li>
+        <li>The third parameter is the <code>user_data</code> that was
+        passed to <code>g_signal_connect</code>. In this case, it is the
+        pointer to the GtkLabel.</li>
+        </ul>
+        <p>The handler checks the boolean value of the requested state.
+        If it is TRUE, it sets the label’s text to “ON”. Otherwise, it
+        sets the text to “OFF”.</p>
+        <p>Finally, it sets the actual state of the action using
+        <code>g_simple_action_set_state</code>.</p>
+        <p>Note: Before this function is called, the action still holds
+        its original state. You must explicitly call
+        <code>g_simple_action_set_state</code> to update the action to
+        the new state.</p>
+        <p>As discussed in the previous section, by exclusively handling
+        the “change-state” signal and omitting the handler for the
+        “activate” signal, this single handler gracefully manages both
+        menu clicks and any direct state-change requests.</p>
+        <h2 id="gvariant-and-gvarianttype">GVariant and
+        GVariantType</h2>
+        <h3 id="gvariant">GVariant</h3>
+        <p>Before moving on to the “Stateful Actions with Parameters”
+        subsection, we will discuss GVariant, as these parameters are
+        passed as GVariant instances. This subsection and the next
+        subsection describes GVariant and GVariantType.</p>
+        <p>GVariant is a fundamental data type in GLib. Unlike many
+        other classes in GTK, it is not a child of GObject. It acts as a
+        strongly-typed container that can hold various types of data,
+        such as booleans, strings, and numeric values (e.g., int16,
+        int32, int64, double).</p>
+        <p>You might wonder why we need a specialized container like
+        GVariant instead of using standard C types. There are three
+        primary reasons:</p>
+        <ul>
+        <li><strong>Serialization and Portability:</strong> GVariant is
+        designed to be easily “serialized” (converted into a stream of
+        bytes). This makes it perfect for storing data in files, sending
+        data over a network (like D-Bus for inter-process
+        communication), or passing parameters between different
+        programming languages (language bindings).</li>
+        <li><strong>Self-Describing Types:</strong> In C, data types are
+        defined at compile time, not at runtime. Consequently, a
+        receiver cannot natively determine the data type of a generic
+        pointer at runtime. In contrast, GVariant packages the data
+        along with its type information, ensuring that the receiver
+        always knows exactly what kind of data they are handling.</li>
+        <li><strong>Flexibility in UI Actions:</strong> In GTK, actions
+        (like “Quit”, “Copy”, or “Change Color”) are often shared across
+        different UI elements (menus, shortcuts, buttons). Since these
+        UI elements might pass different types of data (e.g., a color
+        name as a string, or a zoom level as a double), GVariant serves
+        as a universal, type-safe wrapper that allows any action to
+        receive any data format safely.</li>
+        </ul>
+        <p>The following code creates a GVariant holding a boolean value
+        of TRUE:</p>
         <div class="sourceCode" id="cb4"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>quit_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer app<span class="op">)</span> <span class="op">{</span> <span class="op">...</span> <span class="op">...</span> <span class="op">...}</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_quit <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_quit<span class="op">));</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>quit_activated<span class="op">),</span> app<span class="op">);</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span></code></pre></div>
-        <ul>
-        <li>The variable <code>menu_item_quit</code> points to a menu
-        item. It is actually a pointer, but we often say that
-        <code>menu_item_quit</code> <em>is</em> a menu item. It has a
-        label “Quit” and is connected to an action “app.quit”. “app” is
-        a prefix and “quit” is the name of the action. The prefix “app”
-        means that the action belongs to the GtkApplication
-        instance.</li>
-        <li><code>act_quit</code> is an action. It has a name “quit”.
-        The function <code>g_simple_action_new</code> creates a
-        stateless action. So, <code>act_quit</code> is stateless.
-        Stateless actions do not maintain any internal state. They are
-        like a simple push button; when clicked, they perform an
-        operation (like “quit” or “open”) and that’s all. Most menu
-        items, such as “Quit”, “Copy”, or “Paste”, are connected to
-        stateless actions. Most of the actions are stateless and have no
-        parameter. The argument <code>NULL</code> means that the action
-        doesn’t have any parameters. Another action is stateful and
-        stateful actions will be explained in the next section.</li>
-        <li>The action <code>act_quit</code> is added to the
-        GtkApplication instance with
-        <code>g_action_map_add_action</code>. So, the action’s scope is
-        application. The prefix of <code>app.quit</code> indicates the
-        scope.</li>
-        <li>“activate” signal of the action is connected to the handler
-        <code>quit_activated</code>.</li>
-        </ul>
-        <p>If the menu is clicked, the corresponding action “quit” will
-        be activated and emits an “activate” signal. Then, the handler
-        <code>quit_activated</code> is called.</p>
-        <h2 id="menu-bar">Menu Bar</h2>
-        <p>A menu bar and menus are traditional. Menu buttons are often
-        used instead of a menu bar lately, but the old style is still
-        used widely.</p>
-        <p>Applications have only one menu bar. If an application has
-        two or more windows which have menu bars, the menu bars are
-        exactly the same. Because every window refers to the same
-        menubar instance in the application.</p>
-        <p>An application’s menu bar is usually unchanged once it is
-        set. So, it is appropriate to set it in the “startup” handler.
-        Because the handler is called only once in the primary
-        application instance.</p>
-        <p>I think it is good for readers to clarify how applications
-        behave.</p>
-        <ul>
-        <li>When an application runs for the first time, the instance is
-        called primary.</li>
-        <li>The primary instance registers itself to the system. If it
-        succeeds, it emits “startup” signal.</li>
-        <li>When the instance is activated, an “activate” or “open”
-        signal is emitted.</li>
-        <li>If the application is run for the second time or later and
-        there exists a primary instance, the instance is called a remote
-        instance.</li>
-        <li>A remote instance doesn’t emit “startup” signal.</li>
-        <li>If it tries to emit an “activate” or “open” signal, the
-        signals are not emitted on the remote instance but primary
-        instance.</li>
-        <li>The remote instance quits.</li>
-        </ul>
-        <p>Therefore, an “activate” or “open” handler can be called
-        twice or more. On the other hand, a “startup” handler is called
-        once. So, the menubar should be set in the “startup”
-        handler.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>GVariant <span class="op">*</span>value <span class="op">=</span> g_variant_new_boolean <span class="op">(</span>TRUE<span class="op">);</span></span></code></pre></div>
+        <p>Similarly, you can create a GVariant containing a string:</p>
         <div class="sourceCode" id="cb5"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <h2 id="simple-example">Simple Example</h2>
-        <p>The following is a simple example of menus and actions. The
-        source file <code>menu1.c</code> is located at <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/menu/">/src/menu</a>
-        directory.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>GVariant <span class="op">*</span>value2 <span class="op">=</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span></code></pre></div>
+        <p>To extract the original data from a GVariant, you use the
+        <code>g_variant_get_*</code> family of functions. For instance,
+        you can retrieve the boolean value from our first example like
+        this:</p>
         <div class="sourceCode" id="cb6"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>quit_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>  g_application_quit <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="op">}</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;menu1&quot;</span><span class="op">);</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a></span>
-<span id="cb6-15"><a href="#cb6-15"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a><span class="op">}</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a></span>
-<span id="cb6-19"><a href="#cb6-19"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-20"><a href="#cb6-20"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-21"><a href="#cb6-21"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb6-22"><a href="#cb6-22"></a></span>
-<span id="cb6-23"><a href="#cb6-23"></a>  GSimpleAction <span class="op">*</span>act_quit <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb6-24"><a href="#cb6-24"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_quit<span class="op">));</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a>  g_signal_connect <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>quit_activated<span class="op">),</span> application<span class="op">);</span></span>
-<span id="cb6-26"><a href="#cb6-26"></a></span>
-<span id="cb6-27"><a href="#cb6-27"></a>  GMenu <span class="op">*</span>menubar <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb6-28"><a href="#cb6-28"></a>  GMenuItem <span class="op">*</span>menu_item_menu <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Menu&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb6-29"><a href="#cb6-29"></a>  GMenu <span class="op">*</span>menu <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb6-30"><a href="#cb6-30"></a>  GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span>
-<span id="cb6-31"><a href="#cb6-31"></a>  g_menu_append_item <span class="op">(</span>menu<span class="op">,</span> menu_item_quit<span class="op">);</span></span>
-<span id="cb6-32"><a href="#cb6-32"></a>  g_object_unref <span class="op">(</span>menu_item_quit<span class="op">);</span></span>
-<span id="cb6-33"><a href="#cb6-33"></a>  g_menu_item_set_submenu <span class="op">(</span>menu_item_menu<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>menu<span class="op">));</span></span>
-<span id="cb6-34"><a href="#cb6-34"></a>  g_object_unref <span class="op">(</span>menu<span class="op">);</span></span>
-<span id="cb6-35"><a href="#cb6-35"></a>  g_menu_append_item <span class="op">(</span>menubar<span class="op">,</span> menu_item_menu<span class="op">);</span></span>
-<span id="cb6-36"><a href="#cb6-36"></a>  g_object_unref <span class="op">(</span>menu_item_menu<span class="op">);</span></span>
-<span id="cb6-37"><a href="#cb6-37"></a></span>
-<span id="cb6-38"><a href="#cb6-38"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
-<span id="cb6-39"><a href="#cb6-39"></a><span class="op">}</span></span>
-<span id="cb6-40"><a href="#cb6-40"></a></span>
-<span id="cb6-41"><a href="#cb6-41"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.menu1&quot;</span></span>
-<span id="cb6-42"><a href="#cb6-42"></a></span>
-<span id="cb6-43"><a href="#cb6-43"></a><span class="dt">int</span></span>
-<span id="cb6-44"><a href="#cb6-44"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-45"><a href="#cb6-45"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb6-46"><a href="#cb6-46"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb6-47"><a href="#cb6-47"></a></span>
-<span id="cb6-48"><a href="#cb6-48"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb6-49"><a href="#cb6-49"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb6-50"><a href="#cb6-50"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb6-51"><a href="#cb6-51"></a></span>
-<span id="cb6-52"><a href="#cb6-52"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb6-53"><a href="#cb6-53"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb6-54"><a href="#cb6-54"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb6-55"><a href="#cb6-55"></a><span class="op">}</span></span></code></pre></div>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gboolean bool_val <span class="op">=</span> g_variant_get_boolean <span class="op">(</span>value<span class="op">);</span> <span class="co">/* bool_val is now TRUE */</span></span></code></pre></div>
+        <p>In the same way, you can extract the string from value2:</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>str <span class="op">=</span> g_variant_get_string <span class="op">(</span>value2<span class="op">,</span> NULL<span class="op">);</span></span></code></pre></div>
+        <p>The second parameter of <code>g_variant_get_string</code> is
+        a pointer to a <code>gsize</code> variable (<code>gsize</code>
+        is defined as an <code>unsigned integer</code>). If you pass a
+        valid pointer, the function stores the length of the string in
+        that variable. If you pass NULL, the length is simply
+        ignored.</p>
+        <p>Note: The returned string (<code>str</code>) is owned by the
+        GVariant instance. It must not be modified or freed by the
+        caller.</p>
+        <h3 id="gvarianttype">GVariantType</h3>
+        <p>GVariantType represents the type of a GVariant. It is
+        initialized using a type string. Type string examples are:</p>
         <ul>
-        <li>3-6: <code>quit_activated</code> is a handler of the
-        “activate” signal on the action <code>act_quit</code>. Handlers
-        of the “activate” signal have three parameters.
-        <ol type="1">
-        <li>The action instance on which the signal is emitted.</li>
-        <li>Parameter. In this example it is <code>NULL</code> because
-        the second argument of <code>g_simple_action_new</code> (line
-        23) is <code>NULL</code>. You don’ t need to care about it.</li>
-        <li>User data. It is the fourth parameter in the
-        <code>g_signal_connect</code> (line 25) that connects the action
-        and the handler.</li>
-        </ol></li>
-        <li>5: The function <code>g_application_quit</code> immediately
-        quits the application.</li>
-        <li>8-17: <code>app_activate</code> is an “activate” signal
-        handler on the application.</li>
-        <li>11-13: Creates a GtkApplicationWindow <code>win</code>. And
-        sets the title and the default size.</li>
-        <li>15: Sets GtkApplicationWindow to show the menubar.</li>
-        <li>16: Shows the window.</li>
-        <li>19-38: <code>app_startup</code> is a “startup” signal
-        handler on the application.</li>
-        <li>23: Creates GSimpleAction <code>act_quit</code>. It is
-        stateless. The first argument of
-        <code>g_simple_action_new</code> is a name of the action and the
-        second argument is a parameter. If you don’t need the parameter,
-        pass <code>NULL</code>. Therefore, <code>act_quit</code> has a
-        name “quit” and no parameter.</li>
-        <li>24: Adds the action to GtkApplication <code>app</code>.
-        GtkApplication implements an interface GActionMap and
-        GActionGroup. GtkApplication (GActionMap) can have a group of
-        actions and the actions are added with the function
-        <code>g_action_map_add_action</code>. This function is described
-        in <a
-        href="https://docs.gtk.org/gio/method.ActionMap.add_action.html">Gio
-        API Reference – g_action_map_add_action</a>. Because this action
-        belongs to GtkApplication, its scope is “app” and it is referred
-        with “app.quit” if the prefix (scope) is necessary.</li>
-        <li>25: Connects “activate” signal of the action and the handler
-        <code>quit_activated</code>.</li>
-        <li>27-30: Creates GMenu and GMenuItem instances.
-        <code>menubar</code> and <code>menu</code> are GMenu.
-        <code>menu_item_menu</code> and <code>menu_item_quit</code> are
-        GMenuItem. <code>menu_item_menu</code> has a label “Menu” and no
-        action. <code>menu_item_quit</code> has a label “Quit” and an
-        action “app.quit”.</li>
-        <li>31-32: Appends <code>menu_item_quit</code> to
-        <code>menu</code>. As I mentioned before, all the attributes and
-        links are copied and used to form a new item in
-        <code>menu</code>. Therefore after the addition,
-        <code>menu_item_quit</code> is no longer needed. It is freed by
-        <code>g_object_unref</code>.</li>
-        <li>33-34: Sets the submenu link in <code>menu_item_menu</code>
-        to refer to <code>menu</code>. Then, <code>menu</code> is no
-        more useful and it is freed.</li>
-        <li>35-36: Appends <code>menu_item_menu</code> to
-        <code>menubar</code>. Then frees <code>menu_item_menu</code>.
-        GMenu and GMenuItem are built and finally connected to the
-        variable <code>menubar</code>. The structure of the menu is
-        shown in the diagram below.</li>
-        <li>38: The menubar is inserted to the application.</li>
+        <li>“b”: Boolean type.</li>
+        <li>“s”: String type.</li>
         </ul>
-        <figure>
-        <img src="/images/menu1.png" alt="menu and action" />
-        <figcaption aria-hidden="true">menu and action</figcaption>
-        </figure>
-        <h2 id="compiling">Compiling</h2>
-        <p>Change your current directory to <code>src/menu</code>. Use
-        comp to compile <code>menu1.c</code>.</p>
-        <pre><code>$ comp menu1
-$ ./a.out</code></pre>
-        <p>Then, a window appears. Click on “Menu” on the menubar, then
-        a menu appears. Click on “Quit” menu, then the application
-        quits.</p>
-        <figure>
-        <img src="/images/menu1_screenshot.png"
-        alt="Screenshot of menu1" />
-        <figcaption aria-hidden="true">Screenshot of menu1</figcaption>
-        </figure>
-        <h2 id="primary-and-remote-application-instances">Primary and
-        Remote Application Instances</h2>
-        <p>Let’s try running the application twice. Use
-        <code>&amp;</code> in your shell command line, then the
-        application runs concurrently.</p>
-        <pre><code>$ ./a.out &amp;
-[1] 70969
-$ ./a.out
+        <p>See <a
+        href="https://docs.gtk.org/glib/struct.VariantType.html">GLib
+        documentation</a> for details about type string.</p>
+        <p>The following program demonstrates how to create, use, and
+        free a GVariantType instance. This example outputs the string
+        “s”.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="pp">#include </span><span class="im">&lt;glib.h&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="dt">int</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  GVariantType <span class="op">*</span>vtype <span class="op">=</span> g_variant_type_new <span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">);</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>type_string <span class="op">=</span> g_variant_type_peek_string <span class="op">(</span>vtype<span class="op">);</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span>type_string<span class="op">);</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  g_variant_type_free <span class="op">(</span>vtype<span class="op">);</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li><code>g_variant_type_new</code> creates a GVariantType
+        structure based on the provided type string (e.g., “s” for a
+        string). The caller assumes ownership of the returned structure
+        and must release it using <code>g_variant_type_free</code> when
+        it is no longer needed.</li>
+        <li><code>g_variant_type_peek_string</code> retrieves the type
+        string (in this case, “s”) from the GVariantType instance. The
+        returned string is owned by the GVariantType instance itself, so
+        the caller <strong>must not</strong> modify or free it.</li>
+        <li><code>g_print</code> outputs the type string to the
+        terminal. Note that <code>vtype</code> must not be freed before
+        this function is called, as the string pointer depends on the
+        lifetime of the <code>vtype</code> instance.</li>
+        <li><code>g_variant_type_free</code> frees the GVariantType
+        structure.</li>
+        </ul>
+        <p>Alternatively, for standard types, GLib provides predefined
+        macros. This is generally preferred as it avoids dynamic
+        allocation.</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;glib.h&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="dt">int</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  <span class="dt">const</span> GVariantType <span class="op">*</span>vtype <span class="op">=</span> G_VARIANT_TYPE_STRING<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> g_variant_type_peek_string <span class="op">(</span>vtype<span class="op">));</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="op">}</span></span></code></pre></div>
+        <p><code>G_VARIANT_TYPE_STRING</code> is a macro that provides a
+        pointer to a pre-allocated GVariantType structure representing a
+        string. Because this is a constant, it is managed by the system;
+        you do not need to (and should not) call
+        <code>g_variant_type_free</code> on it. Using these macros is
+        more efficient and safer as it eliminates the risk of memory
+        leaks or double-free errors.</p>
+        <h2 id="stateful-actions-with-parameters">Stateful Actions with
+        Parameters</h2>
+        <p>Next example of stateful actions is an action used with
+        color-selection menus. Imagine three separate menus, each
+        offering the options “red,” “green,” and “blue”. These menus are
+        used to set the background color of a GtkLabel widget.</p>
+        <p>In this scenario, a single action can be connected to all
+        three menus. The action maintains the selected color as its
+        state, using a string value such as ‘red’, ‘green’, or ‘blue’
+        When a user makes a selection, the chosen color is passed as a
+        parameter to the signal handler, which then updates the label
+        accordingly.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_color</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;color&quot;</span><span class="op">,</span> G_VARIANT_TYPE_STRING<span class="op">,</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">));</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_red <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Red&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::red&quot;</span><span class="op">);</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_green <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Green&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::green&quot;</span><span class="op">);</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_blue <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Blue&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::blue&quot;</span><span class="op">);</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_color<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>color_state_changed<span class="op">),</span> provider<span class="op">);</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span></code></pre></div>
+        <ul>
+        <li>The variable <code>act_color</code> points to a
+        GSimpleAction instance. It is created with
+        <code>g_simple_action_new_stateful</code>.
+        <ul>
+        <li>The first argument, “color”, is the name of the action.</li>
+        <li>The second argument is the parameter type.
+        <code>G_VARIANT_TYPE_STRING</code> represents a string type for
+        GVariant.</li>
+        <li>The third argument is the initial state of the action.
+        <code>g_variant_new_string ("red")</code> returns a GVariant
+        holding the string “red”. GVariant uses a floating reference
+        system; <code>g_simple_action_new_stateful</code> consumes this
+        floating reference, so you do not need to manually release the
+        GVariant instance.</li>
+        </ul></li>
+        <li>The variable <code>menu_item_red</code> points to a
+        GMenuItem instance. The function <code>g_menu_item_new</code>
+        takes two arguments: the label (“Red”) and a detailed action
+        name (“app.color::red”). The suffix after the <code>::</code> is
+        the target, which is passed to the action as a parameter when
+        the menu item is activated. The same logic applies to
+        <code>menu_item_green</code> and
+        <code>menu_item_blue</code>.</li>
+        <li>The signal handler <code>color_state_changed</code> is
+        connected to the “change-state” signal. This signal is emitted
+        when the action’s state is requested to be changed. Typically,
+        clicking one of the menu items activates the action, and this
+        activation is subsequently forwarded to the “change-state”
+        signal. We pass <code>provider</code> to the handler so that the
+        CSS can be updated accordingly. We will discuss the details of
+        GtkCssProvider and how it handles CSS later.</li>
+        <li>Signal connection: <code>g_signal_connect</code> links the
+        “change-state” signal of <code>act_color</code> to the
+        <code>color_state_changed</code> callback. When a menu item is
+        selected, the handler is called with the new target value (the
+        color).</li>
+        </ul>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>color_state_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> GTK_CSS_PROVIDER <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">; font-size: 72pt; color: white;}&quot;</span><span class="op">,</span> g_variant_get_string <span class="op">(</span>value<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>  <span class="co">/* Change the CSS data in the provider. */</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="co">/* Previous data is thrown away. */</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> color<span class="op">);</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>The handler takes three parameters.
+        <ul>
+        <li>action: The GSimpleAction that emitted the “change-state”
+        signal.</li>
+        <li>value: The new state (a GVariant string) passed to the
+        action, representing the selected color.</li>
+        <li>user_data: The data passed from
+        <code>g_signal_connect</code>. In this case, it is the
+        GtkCssProvider instance.</li>
+        </ul></li>
+        <li>We use <code>g_strdup_printf</code> to construct a CSS rule.
+        <code>g_variant_get_string</code> extracts the raw string (e.g.,
+        “red”) from the GVariant parameter. This color is then injected
+        into the CSS rule “label.lb { background-color: %s; … }”.</li>
+        <li><code>gtk_css_provider_load_from_string</code> updates the
+        provider with the new CSS rule. This automatically overrides any
+        previous styles loaded into this provider. See the following
+        “GTK CSS styling” subsection below.</li>
+        <li>Finally, <code>g_simple_action_set_state</code> updates the
+        action’s internal state to the new value.</li>
+        </ul>
+        <h3 id="gtk-css-styling">GTK CSS Styling</h3>
+        <p>GTK uses a CSS-based styling system that works very similarly
+        to web CSS (CSS is an abbreviation of Cascading Style Sheet). To
+        style a widget, you typically follow these three steps:</p>
+        <ul>
+        <li>GtkCssProvider: This acts as a container for your CSS rules.
+        You load your CSS strings or files into this provider.</li>
+        <li>Display-wide Application: Register your GtkCssProvider with
+        the GdkDisplay using
+        <code>gtk_style_context_add_provider_for_display</code>. This
+        applies the CSS rules globally to all widgets on that display.
+        <strong>GdkDisplay</strong> represents your application’s
+        connection to the underlying windowing system. Because of this,
+        it manages not only the output screens (monitors) but also the
+        input devices (keyboards and mice) you use to interact with the
+        app. The <strong>“default” display</strong> is simply the
+        primary connection your computer assigned when the app launched.
+        Standard applications only use this default connection. We call
+        <code>gdk_display_get_default()</code> to access this main
+        connection. In a web browser, CSS styles a single webpage. In
+        GTK, adding a CSS provider to the GdkDisplay acts as a “global
+        stylesheet”. It ensures that <strong>your CSS rules are
+        automatically applied to every widget associated with that
+        GdkDisplay</strong>.</li>
+        <li>Selectors: Like in HTML, you use selectors to target widgets
+        (e.x. <code>label.lb</code>):
+        <ul>
+        <li><code>label</code>: Targets the node name of all GtkLabel
+        widgets.</li>
+        <li><code>.lb</code>: Targets any widget that has the “lb” class
+        added (using <code>gtk_widget_add_css_class</code>).</li>
+        <li><code>label.lb</code>: Combines both, targeting only
+        GtkLabel widgets that also have the <code>lb</code> class.</li>
+        </ul></li>
+        </ul>
+        <p>By updating the GtkCssProvider dynamically via
+        <code>gtk_css_provider_load_from_string</code>, you can change
+        the look of your UI in real-time. Since the provider is
+        registered at the display level, all widgets matching the
+        selectors will automatically reflect the updated styles.</p>
+        <h2 id="example-program-for-stateful-actions">Example Program
+        for Stateful Actions</h2>
+        <p>This is an example program to demonstrate for the stateful
+        actions.</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>toggle_switch_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>  GtkWidget <span class="op">*</span>label <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a></span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>value<span class="op">))</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a>    gtk_label_set_text <span class="op">(</span>GTK_LABEL <span class="op">(</span>label<span class="op">),</span> <span class="st">&quot;ON&quot;</span><span class="op">);</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  <span class="cf">else</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>    gtk_label_set_text <span class="op">(</span>GTK_LABEL <span class="op">(</span>label<span class="op">),</span> <span class="st">&quot;OFF&quot;</span><span class="op">);</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="op">}</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a>color_state_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> GTK_CSS_PROVIDER <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">; font-size: 72pt; color: white;}&quot;</span><span class="op">,</span> g_variant_get_string <span class="op">(</span>value<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a>  <span class="co">/* Change the CSS data in the provider. */</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a>  <span class="co">/* Previous data is thrown away. */</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> color<span class="op">);</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
+<span id="cb12-22"><a href="#cb12-22"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="op">}</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a></span>
+<span id="cb12-25"><a href="#cb12-25"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-26"><a href="#cb12-26"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> GtkCssProvider <span class="op">*</span>provider<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-27"><a href="#cb12-27"></a>  gtk_style_context_remove_provider_for_display <span class="op">(</span>gdk_display_get_default<span class="op">(),</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">));</span></span>
+<span id="cb12-28"><a href="#cb12-28"></a>  g_object_unref <span class="op">(</span>provider<span class="op">);</span></span>
+<span id="cb12-29"><a href="#cb12-29"></a><span class="op">}</span></span>
+<span id="cb12-30"><a href="#cb12-30"></a></span>
+<span id="cb12-31"><a href="#cb12-31"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-32"><a href="#cb12-32"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-33"><a href="#cb12-33"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb12-34"><a href="#cb12-34"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;menu2&quot;</span><span class="op">);</span></span>
+<span id="cb12-35"><a href="#cb12-35"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">800</span><span class="op">,</span> <span class="dv">600</span><span class="op">);</span></span>
+<span id="cb12-36"><a href="#cb12-36"></a></span>
+<span id="cb12-37"><a href="#cb12-37"></a>  GtkWidget <span class="op">*</span>label <span class="op">=</span> gtk_label_new <span class="op">(</span><span class="st">&quot;OFF&quot;</span><span class="op">);</span></span>
+<span id="cb12-38"><a href="#cb12-38"></a>  gtk_widget_add_css_class <span class="op">(</span>label<span class="op">,</span> <span class="st">&quot;lb&quot;</span><span class="op">);</span> <span class="co">/* the class is used by CSS Selector */</span></span>
+<span id="cb12-39"><a href="#cb12-39"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> label<span class="op">);</span></span>
+<span id="cb12-40"><a href="#cb12-40"></a></span>
+<span id="cb12-41"><a href="#cb12-41"></a>  GSimpleAction <span class="op">*</span>act_toggle_switch</span>
+<span id="cb12-42"><a href="#cb12-42"></a>    <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;toggle-switch&quot;</span><span class="op">,</span> NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
+<span id="cb12-43"><a href="#cb12-43"></a>  g_signal_connect <span class="op">(</span>act_toggle_switch<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>toggle_switch_changed<span class="op">),</span> label<span class="op">);</span></span>
+<span id="cb12-44"><a href="#cb12-44"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_toggle_switch<span class="op">));</span></span>
+<span id="cb12-45"><a href="#cb12-45"></a>  g_object_unref <span class="op">(</span>act_toggle_switch<span class="op">);</span></span>
+<span id="cb12-46"><a href="#cb12-46"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
+<span id="cb12-47"><a href="#cb12-47"></a></span>
+<span id="cb12-48"><a href="#cb12-48"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb12-49"><a href="#cb12-49"></a><span class="op">}</span></span>
+<span id="cb12-50"><a href="#cb12-50"></a></span>
+<span id="cb12-51"><a href="#cb12-51"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-52"><a href="#cb12-52"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-53"><a href="#cb12-53"></a>  <span class="co">/* The provider below provides application wide CSS data. */</span></span>
+<span id="cb12-54"><a href="#cb12-54"></a>  GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
+<span id="cb12-55"><a href="#cb12-55"></a>  GSimpleAction <span class="op">*</span>act_color</span>
+<span id="cb12-56"><a href="#cb12-56"></a>    <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;color&quot;</span><span class="op">,</span> G_VARIANT_TYPE_STRING<span class="op">,</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">));</span></span>
+<span id="cb12-57"><a href="#cb12-57"></a>  GSimpleAction <span class="op">*</span>act_quit</span>
+<span id="cb12-58"><a href="#cb12-58"></a>    <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb12-59"><a href="#cb12-59"></a>  g_signal_connect <span class="op">(</span>act_color<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>color_state_changed<span class="op">),</span> provider<span class="op">);</span></span>
+<span id="cb12-60"><a href="#cb12-60"></a>  g_signal_connect_swapped <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>g_application_quit<span class="op">),</span> app<span class="op">);</span></span>
+<span id="cb12-61"><a href="#cb12-61"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_color<span class="op">));</span></span>
+<span id="cb12-62"><a href="#cb12-62"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_quit<span class="op">));</span></span>
+<span id="cb12-63"><a href="#cb12-63"></a>  g_object_unref <span class="op">(</span>act_color<span class="op">);</span></span>
+<span id="cb12-64"><a href="#cb12-64"></a>  g_object_unref <span class="op">(</span>act_quit<span class="op">);</span></span>
+<span id="cb12-65"><a href="#cb12-65"></a></span>
+<span id="cb12-66"><a href="#cb12-66"></a>  GMenu <span class="op">*</span>menubar <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb12-67"><a href="#cb12-67"></a>  GMenu <span class="op">*</span>menu <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb12-68"><a href="#cb12-68"></a>  GMenu <span class="op">*</span>section1 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb12-69"><a href="#cb12-69"></a>  GMenu <span class="op">*</span>section2 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb12-70"><a href="#cb12-70"></a>  GMenu <span class="op">*</span>section3 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
+<span id="cb12-71"><a href="#cb12-71"></a>  GMenuItem <span class="op">*</span>menu_item_toggle_switch <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Toggle Switch&quot;</span><span class="op">,</span> <span class="st">&quot;win.toggle-switch&quot;</span><span class="op">);</span></span>
+<span id="cb12-72"><a href="#cb12-72"></a>  GMenuItem <span class="op">*</span>menu_item_red <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Red&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::red&quot;</span><span class="op">);</span></span>
+<span id="cb12-73"><a href="#cb12-73"></a>  GMenuItem <span class="op">*</span>menu_item_green <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Green&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::green&quot;</span><span class="op">);</span></span>
+<span id="cb12-74"><a href="#cb12-74"></a>  GMenuItem <span class="op">*</span>menu_item_blue <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Blue&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::blue&quot;</span><span class="op">);</span></span>
+<span id="cb12-75"><a href="#cb12-75"></a>  GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span>
+<span id="cb12-76"><a href="#cb12-76"></a></span>
+<span id="cb12-77"><a href="#cb12-77"></a>  g_menu_append_item <span class="op">(</span>section1<span class="op">,</span> menu_item_toggle_switch<span class="op">);</span></span>
+<span id="cb12-78"><a href="#cb12-78"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_red<span class="op">);</span></span>
+<span id="cb12-79"><a href="#cb12-79"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_green<span class="op">);</span></span>
+<span id="cb12-80"><a href="#cb12-80"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_blue<span class="op">);</span></span>
+<span id="cb12-81"><a href="#cb12-81"></a>  g_menu_append_item <span class="op">(</span>section3<span class="op">,</span> menu_item_quit<span class="op">);</span></span>
+<span id="cb12-82"><a href="#cb12-82"></a>  g_object_unref <span class="op">(</span>menu_item_red<span class="op">);</span></span>
+<span id="cb12-83"><a href="#cb12-83"></a>  g_object_unref <span class="op">(</span>menu_item_green<span class="op">);</span></span>
+<span id="cb12-84"><a href="#cb12-84"></a>  g_object_unref <span class="op">(</span>menu_item_blue<span class="op">);</span></span>
+<span id="cb12-85"><a href="#cb12-85"></a>  g_object_unref <span class="op">(</span>menu_item_toggle_switch<span class="op">);</span></span>
+<span id="cb12-86"><a href="#cb12-86"></a>  g_object_unref <span class="op">(</span>menu_item_quit<span class="op">);</span></span>
+<span id="cb12-87"><a href="#cb12-87"></a></span>
+<span id="cb12-88"><a href="#cb12-88"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> NULL<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section1<span class="op">));</span></span>
+<span id="cb12-89"><a href="#cb12-89"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> <span class="st">&quot;Color&quot;</span><span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section2<span class="op">));</span></span>
+<span id="cb12-90"><a href="#cb12-90"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> NULL<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section3<span class="op">));</span></span>
+<span id="cb12-91"><a href="#cb12-91"></a>  g_menu_append_submenu <span class="op">(</span>menubar<span class="op">,</span> <span class="st">&quot;Menu&quot;</span><span class="op">,</span> G_MENU_MODEL <span class="op">(</span>menu<span class="op">));</span></span>
+<span id="cb12-92"><a href="#cb12-92"></a>  g_object_unref <span class="op">(</span>section1<span class="op">);</span></span>
+<span id="cb12-93"><a href="#cb12-93"></a>  g_object_unref <span class="op">(</span>section2<span class="op">);</span></span>
+<span id="cb12-94"><a href="#cb12-94"></a>  g_object_unref <span class="op">(</span>section3<span class="op">);</span></span>
+<span id="cb12-95"><a href="#cb12-95"></a>  g_object_unref <span class="op">(</span>menu<span class="op">);</span></span>
+<span id="cb12-96"><a href="#cb12-96"></a></span>
+<span id="cb12-97"><a href="#cb12-97"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
+<span id="cb12-98"><a href="#cb12-98"></a>  g_object_unref <span class="op">(</span>menubar<span class="op">);</span></span>
+<span id="cb12-99"><a href="#cb12-99"></a></span>
+<span id="cb12-100"><a href="#cb12-100"></a>  <span class="co">/* Initialize the css data */</span></span>
+<span id="cb12-101"><a href="#cb12-101"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;label.lb {background-color: red; font-size: 72pt; color: white;}&quot;</span><span class="op">);</span></span>
+<span id="cb12-102"><a href="#cb12-102"></a>  <span class="co">/* Add CSS to the default GdkDisplay. */</span></span>
+<span id="cb12-103"><a href="#cb12-103"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>gdk_display_get_default <span class="op">(),</span></span>
+<span id="cb12-104"><a href="#cb12-104"></a>        GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
+<span id="cb12-105"><a href="#cb12-105"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> provider<span class="op">);</span></span>
+<span id="cb12-106"><a href="#cb12-106"></a><span class="op">}</span></span>
+<span id="cb12-107"><a href="#cb12-107"></a></span>
+<span id="cb12-108"><a href="#cb12-108"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.menu2&quot;</span></span>
+<span id="cb12-109"><a href="#cb12-109"></a></span>
+<span id="cb12-110"><a href="#cb12-110"></a><span class="dt">int</span></span>
+<span id="cb12-111"><a href="#cb12-111"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-112"><a href="#cb12-112"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb12-113"><a href="#cb12-113"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb12-114"><a href="#cb12-114"></a></span>
+<span id="cb12-115"><a href="#cb12-115"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb12-116"><a href="#cb12-116"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-117"><a href="#cb12-117"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-118"><a href="#cb12-118"></a></span>
+<span id="cb12-119"><a href="#cb12-119"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb12-120"><a href="#cb12-120"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb12-121"><a href="#cb12-121"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb12-122"><a href="#cb12-122"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>3-22: Action signal handlers. The
+        <code>toggle_switch_changed</code> handler toggles the label
+        text between “ON” and “OFF” depending on the boolean state. The
+        <code>color_state_changed</code> handler dynamically generates a
+        CSS string to change the background color of the label and loads
+        it into the GtkCssProvider. In both handlers,
+        <code>g_simple_action_set_state()</code> is called at the end to
+        explicitly update the action’s state.</li>
+        <li>25-29: The handler <code>app_shutdown</code> is called right
+        before the application quits. It safely cleans up by removing
+        the CSS provider from the default display and unreferencing
+        it.</li>
+        <li>31-49: The activate signal handler.</li>
+        <li>33-35: A new application window is created and assigned to
+        <code>win</code>. Its title and default size are set to “menu2”
+        and 800x600, respectively.</li>
+        <li>37-39: A new label is created with the initial text “OFF”
+        and assigned to <code>label</code>. It is given a CSS class “lb”
+        and added to <code>win</code> as its child widget.</li>
+        <li>41-44: A stateful toggle action is created and assigned to
+        <code>act_toggle_switch</code> with an initial boolean value of
+        FALSE. It is connected to the signal handler
+        <code>toggle_switch_changed</code> and added to the window.
+        Because it is added to the window’s action map, its scope is
+        “win” (i.e., “win.toggle-switch”). The action object is then
+        unreferenced.</li>
+        <li>46: The function
+        <code>gtk_application_window_set_show_menubar</code> is called
+        to ensure the menubar is displayed in the window.</li>
+        <li>48: Shows the window using
+        <code>gtk_window_present()</code>.</li>
+        <li>51-106: The startup signal handler.</li>
+        <li>53-64: A new GtkCssProvider is created to handle
+        application-wide CSS. Two actions, <code>act_color</code>
+        (stateful) and <code>act_quit</code> (stateless), are created.
+        Since the startup handler is called only once, there is only one
+        instance of each action. They are connected to their respective
+        handlers, added to the application, and then unreferenced.
+        Because they are added to the application’s action map, their
+        scope is “app”.</li>
+        <li>66-95: The menus are built. GMenuItem objects are created
+        and appended to distinct sections (section1, section2, section3)
+        to logically group them (e.g., Toggle Switch, Colors, Quit).
+        Unnecessary references to the menu items and sections are
+        freed.</li>
+        <li>97-98: The fully constructed menubar is applied to the
+        application.</li>
+        <li>100-104: The CSS provider is initialized with default CSS
+        data (setting the label’s background to red and font size to
+        72pt) and added to the default display so it affects all
+        widgets.</li>
+        <li>105: Finally, the “shutdown” signal on the application is
+        connected to the <code>app_shutdown</code> handler.</li>
+        </ul>
+        <h2 id="compiling-and-running">Compiling and Running</h2>
+        <p>Change your current directory to <code>src/menu</code>.</p>
+        <pre><code>$ bash comp menu2
+$./a.out</code></pre>
+        <p>You will see a window with the text “OFF” in the center and a
+        red background. You can change the text to “ON” and back to
+        “OFF” by clicking the “Toggle Switch” menu item. You can change
+        the background color by clicking the “Red”, “Green”, or “Blue”
+        menu items.</p>
+        <p>If you run the application a second time while the first
+        instance is still running, another window will appear on the
+        screen. Note that both windows belong to the primary application
+        instance. The second instance simply emits the “activate” signal
+        to the primary instance and then immediately quits.</p>
+        <pre><code>$ ./a.out &amp; ./a.out
 $ </code></pre>
-        <p>Then, two windows appear.</p>
-        <ul>
-        <li>The first <code>./a.out</code> calls the application and a
-        primary instance is created. It calls “startup” and “activate”
-        handlers and shows a window.</li>
-        <li>The second<code>./a.out</code> calls the the application
-        again and the created instance is a remote one. It doesn’t emit
-        “startup” signal. And it activates the application but the
-        “activate” signal is emitted on the primary instance. The remote
-        instance quits.</li>
-        <li>The primary instance called “activate” handler. The handler
-        creates a new window. It adds a menu bar to the window with
-        <code>gtk_application_window_set_show_menubar</code>
-        function.</li>
-        </ul>
-        <p>Both the windows have menu bars. And they are exactly the
-        same. The two windows belong to the primary instance.</p>
-        <p>If you click on the “Quit” menu, the application (the primary
-        instance) quits.</p>
+        <p>The “ON” and “OFF” states in the two windows are independent
+        of each other because each window has its own GtkLabel
+        instance.</p>
+        <p>However, both windows share the same GdkDisplay (the overall
+        screen environment). Since the background color is determined by
+        the CSS applied to the GdkDisplay, both windows will always
+        share the same background color.</p>
+        <p><strong>Note for WSL users:</strong></p>
+        <p>You may notice that the menu remains on the screen after
+        being clicked, and only disappears on your next click. This is a
+        known issue specific to WSL. On a native Linux environment, the
+        menu closes immediately after a selection is made.</p>
         <figure>
-        <img src="/images/menu1_two_windows.png"
-        alt="menu1 – two windows" />
-        <figcaption aria-hidden="true">menu1 – two windows</figcaption>
+        <img src="/images/menu2.png" alt="menu2" />
+        <figcaption aria-hidden="true">menu2</figcaption>
         </figure>
-        <p>The second execution makes a new window. However, it depends
-        on the “activate” handler. If you create your window in the
-        startup handler and the activate handler just presents the
-        window, no new window is created at the second execution. For
-        example, tfe (text file editor) doesn’t create a second window.
-        It just creates a new notebook page. Because its activate
-        handler doesn’t create any window but just creates a new
-        notebook page.</p>
-        <p>Second or more executions often happen on the desktop
-        applications. If you double-click the icon twice or more, the
-        application is run multiple times. Therefore, you need to think
-        about your startup and activate (open) handler carefully.</p>
       </div>
     </div>
   </main>

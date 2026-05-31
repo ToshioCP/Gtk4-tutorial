@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Stateful Action</title>
+  <title>Ui File for Menu and Action Entries</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,447 +93,447 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="stateful-action">Stateful Action</h1>
-        <p>Some actions have states. The typical values of states are
-        boolean or string values. However, other types of states are
-        possible if necessary.</p>
-        <p>Actions which have states are called stateful.</p>
-        <h2 id="stateful-action-without-a-parameter">Stateful Action
-        without a Parameter</h2>
-        <p>Some menus are called toggle menus. For example, the
-        “Maximized” menu has two state values – maximized and
-        unmaximized. The value of the state is changed every time the
-        menu is clicked. An action that corresponds to the “Maximized”
-        menu also has a state. The value of the state is boolean, which
-        is TRUE or FALSE. TRUE corresponds to maximized and FALSE to
-        unmaximized.</p>
-        <p>The following is an example code to implement a “Maximized”
-        menu. The code of <code>maximize_state_changed</code> will be
-        shown later.</p>
+        <h1 id="ui-file-for-menu-and-action-entries">Ui File for Menu
+        and Action Entries</h1>
+        <h2 id="simplifying-menu-creation-with-ui-files">Simplifying
+        Menu Creation with UI Files</h2>
+        <p>Constructing menus purely in C can be a tedious process that
+        results in lengthy, hard-to-read code. Fortunately, there is a
+        better way. Just as we used UI files to simplify the creation of
+        widgets, we can use XML-based UI files to define our menus. This
+        approach improves code readability and saves development
+        time.</p>
+        <h2 id="rewriting-menu2-with-a-ui-file">Rewriting menu2 with a
+        UI File</h2>
+        <p>Let’s take the <code>menu2</code> program from the previous
+        section and rewrite its menu construction using a UI file. To do
+        this, we need to understand a few basic XML tags used for GTK
+        menus.</p>
+        <h3 id="basic-tags-for-menu">Basic Tags for Menu</h3>
+        <ul>
+        <li><code>&lt;menu&gt;</code>: The root element of a menu. It
+        corresponds to a GMenu object. The <code>id</code> attribute
+        defines an identifier for this object. GtkBuilder uses this
+        identifier to retrieve the menu in your C code.</li>
+        <li><code>&lt;item&gt;</code>: Corresponds to an item in a
+        GMenu. In the C code in the previous section, this item was
+        created using a GMenuItem.</li>
+        <li><code>&lt;attribute&gt;</code>: Defines the properties of an
+        item or a menu. We use the name attribute to specify what
+        property we are setting. The most common ones are:
+        <ul>
+        <li><code>label</code>: The text displayed to the user.</li>
+        <li><code>action</code>: The action triggered when the item is
+        clicked (e.g., <code>app.quit</code>).</li>
+        <li><code>target</code>: The parameter passed to a stateful
+        action (e.g., “red”, “green”, “blue”).</li>
+        </ul></li>
+        <li><code>&lt;submenu&gt;</code>: A convenient shortcut tag to
+        create a hierarchical menu (a menu within a menu).</li>
+        <li><code>&lt;section&gt;</code>: A shortcut tag to logically
+        group menu items. GTK usually inserts a visual separator between
+        sections to make the menu easier to read.</li>
+        </ul>
+        <h3 id="rewriting-menu2-with-a-ui-file-1">Rewriting menu2 with a
+        UI File</h3>
+        <p>Here is the UI file <code>menu2.ui</code> that mirrors the
+        menu structure we built purely in C in the previous section.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_maximize <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;maximize&quot;</span><span class="op">,</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                                NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_maximize<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>maximize_state_changed<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_maximize<span class="op">));</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_maximize <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Maximized&quot;</span><span class="op">,</span> <span class="st">&quot;win.maximize&quot;</span><span class="op">);</span></span></code></pre></div>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Menu&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Toggle Switch&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.toggle-switch&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Red&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;red&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb1-20"><a href="#cb1-20"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Green&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-22"><a href="#cb1-22"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;green&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-23"><a href="#cb1-23"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb1-24"><a href="#cb1-24"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Blue&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;blue&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-28"><a href="#cb1-28"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb1-29"><a href="#cb1-29"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb1-30"><a href="#cb1-30"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb1-31"><a href="#cb1-31"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb1-32"><a href="#cb1-32"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-33"><a href="#cb1-33"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-34"><a href="#cb1-34"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb1-35"><a href="#cb1-35"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb1-36"><a href="#cb1-36"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb1-37"><a href="#cb1-37"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
+<span id="cb1-38"><a href="#cb1-38"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+        <p>As you can see, the hierarchical structure is much easier to
+        grasp at a glance compared to reading C code.</p>
         <ul>
-        <li><code>act_maximize</code> is a GSimpleAction instance. It is
-        created with <code>g_simple_action_new_stateful</code>. The
-        function has three arguments. The first argument “maximize” is
-        the name of the action. The second argument is a parameter type.
-        <code>NULL</code> means the action doesn’t have a parameter. The
-        third argument is the initial state of the action. It is a
-        GVariant value. GVariant will be explained in the next
-        subsection. The function
-        <code>g_variant_new_boolean (FALSE)</code> returns a GVariant
-        value of <code>FALSE</code>. If there are two or more top-level
-        windows, each window has its own <code>act_maximize</code>
-        action. So, the number of the actions is the same as the number
-        of the windows.</li>
-        <li>The <code>act_maximize</code> action has a “change-state”
-        signal. The signal is connected to a handler
-        <code>maximize_state_changed</code>. If the “Maximized” menu is
-        clicked, then the corresponding action <code>act_maximize</code>
-        is activated. But no handler is connected to the “activate”
-        signal. Then, the default behavior for boolean-stated actions
-        with a NULL parameter type like <code>act_maximize</code> is to
-        toggle them via the “change-state” signal.</li>
-        <li>The action is added to the GtkWindow, <code>win</code>.
-        Therefore, the scope of the action is “win”.</li>
-        <li><code>menu_item_maximize</code> is a GMenuItem instance.
-        There are two arguments. The first argument “Maximized” is the
-        label of <code>menu_item_maximize</code>. The second argument is
-        an action. The action “win.maximize” has a prefix “win” and an
-        action name “maximize”. The prefix indicates that the action
-        belongs to the window.</li>
+        <li>1: This line declares the XML version and encoding.</li>
+        <li>2: The <code>&lt;interface&gt;</code> tag is the root
+        element of all GTK UI files.</li>
+        <li>3: The top-level <code>&lt;menu&gt;</code> tag must have an
+        id attribute. Here, the ID is “menubar”, which allows GtkBuilder
+        to retrieve it in the C code.</li>
+        <li>4-5: The <code>&lt;submenu&gt;</code> tag creates a
+        hierarchical menu. The <code>&lt;attribute&gt;</code> tag inside
+        it sets the label of this submenu to “Menu”. This submenu
+        contains the sections defined in lines 6 to 35.</li>
+        <li>6-11: The first <code>&lt;section&gt;</code> contains a
+        single menu <code>&lt;item&gt;</code>. Its label is “Toggle
+        Switch” and its action name is “win.toggle-switch”.</li>
+        <li>12-29: The next section has a label attribute set to “Color”
+        (which acts as a section heading) and contains three menu items
+        for changing the color.</li>
+        <li>14-18: The first item’s label is “Red”, its action is
+        “app.color”, and its target is “red”. This corresponds to
+        “app.color::red” in the previous <code>menu2.c</code> code.</li>
+        <li>The remaining code follows the same pattern.</li>
         </ul>
+        <p>For further information, see <a
+        href="https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models">GTK
+        4 API reference – PopoverMenu</a>.</p>
+        <p>Now, let’s look at how to load this UI file in the C program.
+        The following snippet shows the relevant part of
+        <code>menu2_ui.c</code> inside the <code>app_startup</code>
+        function:</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>maximize_state_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>value<span class="op">))</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>    gtk_window_maximize <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  <span class="cf">else</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>    gtk_window_unmaximize <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="op">}</span></span></code></pre></div>
-        <p>This is the signal handler that has been connected to the
-        “change-state” signal of the “maximize” action.</p>
-        <ul>
-        <li>The handler <code>maximize_state_changed</code> has three
-        parameters. The first parameter is the action which emits the
-        “change-state” signal. The second parameter is the value of the
-        new state of the action. The third parameter is the user data
-        that was passed to <code>g_signal_connect</code>.</li>
-        <li>If the value is of boolean type and <code>TRUE</code>, then
-        it maximizes the window. Otherwise it unmaximizes it.</li>
-        <li>Sets the state of the action with <code>value</code>. Note:
-        Before <code>g_simple_action_set_state</code> is called, the
-        action still holds its original state. You must call this
-        function to update the action to the new state.</li>
-        </ul>
-        <p>You can use “activate” signal instead of “change-state”
-        signal, or both signals. But the way above is the simplest and
-        the best.</p>
-        <h3 id="gvariant">GVariant</h3>
-        <p>GVariant is a fundamental type. It isn’t a child of GObject.
-        GVariant can contain boolean, string or other type values. For
-        example, the following program assigns TRUE to
-        <code>value</code> whose type is GVariant.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>GtkBuilder <span class="op">*</span>builder<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>GMenuModel <span class="op">*</span>menubar<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>builder <span class="op">=</span> gtk_builder_new_from_file <span class="op">(</span><span class="st">&quot;menu2.ui&quot;</span><span class="op">);</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>menubar <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>builder<span class="op">,</span> <span class="st">&quot;menubar&quot;</span><span class="op">));</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> menubar<span class="op">);</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>builder<span class="op">);</span></span></code></pre></div>
+        <p>First, <code>gtk_builder_new_from_file</code> reads the
+        <code>menu2.ui</code> file and constructs the menu objects in
+        memory. Then, <code>gtk_builder_get_object</code> retrieves the
+        root menu using the ID “menubar”. After setting the menu to the
+        application with <code>gtk_application_set_menubar</code>, we no
+        longer need the builder, so we safely release it with
+        <code>g_object_unref</code>.</p>
+        <p>Note: <code>gtk_builder_get_object</code> simply returns a
+        pointer to the object without incrementing its reference count.
+        The builder retains full ownership, so you must not unref
+        <code>menubar</code>. In addition,
+        <code>gtk_application_set_menubar</code> adds its own reference
+        to the <code>menubar</code>, making it safe to unref the builder
+        immediately afterward.</p>
+        <h3 id="a-quick-note-on-menu-shortcuts">A Quick Note on Menu
+        Shortcuts</h3>
+        <p>As mentioned earlier, <code>&lt;submenu&gt;</code> and
+        <code>&lt;section&gt;</code> are actually convenient shortcut
+        tags provided by GtkBuilder. Under the hood, a menu is strictly
+        a tree of <code>&lt;item&gt;</code> nodes connected by
+        <code>&lt;link&gt;</code> tags.</p>
+        <p>When you use a <code>&lt;section&gt;</code> or
+        <code>&lt;submenu&gt;</code>, GTK internally translates it into
+        an <code>&lt;item&gt;</code> that contains a
+        <code>&lt;link&gt;</code> with the name “section” or “submenu”.
+        To illustrate this, look at the two examples below. Both
+        snippets produce the exact same menu UI:</p>
+        <p><strong>Example 1:</strong> Using the
+        <code>&lt;section&gt;</code> shortcut (Recommended)</p>
         <div class="sourceCode" id="cb3"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>GVariant <span class="op">*</span>value <span class="op">=</span> g_variant_new_boolean <span class="op">(</span>TRUE<span class="op">);</span></span></code></pre></div>
-        <p>Another example is:</p>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">section</span>&gt;</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">section</span>&gt;</span></code></pre></div>
+        <p><strong>Example 2:</strong> The actual internal structure
+        using <code>&lt;link&gt;</code></p>
         <div class="sourceCode" id="cb4"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>GVariant <span class="op">*</span>value2 <span class="op">=</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;Hello&quot;</span><span class="op">);</span></span></code></pre></div>
-        <p><code>value2</code> is a GVariant and it has a string type
-        value “Hello”. GVariant can contain other types like int16,
-        int32, int64, double and so on.</p>
-        <p>If you want to get the original value, use g_variant_get
-        series functions. For example, you can get the boolean value
-        with <code>g_variant_get_boolean</code>.</p>
-        <div class="sourceCode" id="cb5"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gboolean <span class="dt">bool</span> <span class="op">=</span> g_variant_get_boolean <span class="op">(</span>value<span class="op">);</span></span></code></pre></div>
-        <p>Since <code>value</code> has been created as a boolean type
-        GVariant with <code>TRUE</code> value, <code>bool</code> equals
-        <code>TRUE</code>. In the same way, you can get a string from
-        <code>value2</code></p>
-        <div class="sourceCode" id="cb6"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>str <span class="op">=</span> g_variant_get_string <span class="op">(</span>value2<span class="op">,</span> NULL<span class="op">);</span></span></code></pre></div>
-        <p>The second parameter is a pointer to gsize type variable
-        (gsize is defined as unsigned long). If it isn’t NULL, then the
-        variable is used by the function for the string length. If it is
-        NULL, nothing happens. The returned string <code>str</code> is
-        owned by the instance and can’t be changed or freed by the
-        caller.</p>
-        <h2 id="stateful-action-with-a-parameter">Stateful Action with a
-        Parameter</h2>
-        <p>Another example of stateful actions is an action that
-        corresponds to color select menus. For example, there are three
-        menus and each menu has red, green or blue color respectively.
-        They determine the background color of a GtkLabel widget. One
-        action is connected to the three menus. The action has a state
-        whose value is “red”, “green” or “blue”. The values are string.
-        Those colors are given to the signal handler as a parameter.</p>
-        <div class="sourceCode" id="cb7"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>GVariantType <span class="op">*</span>vtype <span class="op">=</span> g_variant_type_new<span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">);</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>GSimpleAction <span class="op">*</span>act_color</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;color&quot;</span><span class="op">,</span> vtype<span class="op">,</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">));</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>g_variant_type_free <span class="op">(</span>vtype<span class="op">);</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_red <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Red&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::red&quot;</span><span class="op">);</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_green <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Green&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::green&quot;</span><span class="op">);</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>GMenuItem <span class="op">*</span>menu_item_blue <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Blue&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::blue&quot;</span><span class="op">);</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_color<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>color_activated<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span></code></pre></div>
-        <ul>
-        <li>GVariantType is a C structure and it keeps a type of
-        GVariant. It is created with the function
-        <code>g_variant_type_new</code>. The argument of the function is
-        a GVariant type string. So, <code>g_variant_type_new("s")</code>
-        returns a GVariantType structure containing a string type. The
-        returned value, GVariantType structure, is owned by the caller.
-        So, you need to free it when it is no longer needed.</li>
-        <li>The variable <code>act_color</code> points to a
-        GSimpleAction instance. It is created with
-        <code>g_simple_action_new_stateful</code>. The function has
-        three arguments. The first argument “color” is the name of the
-        action. The second argument is a parameter type which is
-        GVariantType. <code>g_variant_type_new("s")</code> creates
-        GVariantType which is a string type
-        (<code>G_VARIANT_TYPE_STRING</code>). The third argument is the
-        initial state of the action. It is a GVariant. The function
-        <code>g_variant_new_string ("red")</code> returns a GVariant
-        value which has the string value “red”. GVariant has a reference
-        count and <code>g_variant_new_...</code> series functions return
-        a GVariant value with a floating reference. That means the
-        caller doesn’t own the value at this point. And
-        <code>g_simple_action_new_stateful</code> function consumes the
-        floating reference so you don’t need to care about releasing the
-        GVariant instance.</li>
-        <li>The GVariantType structure <code>vtype</code> is useless
-        after <code>g_simple_action_new_stateful</code>. It is released
-        with the function <code>g_variant_type_free</code>.</li>
-        <li>The variable <code>menu_item_red</code> points to a
-        GMenuItem instance. The function <code>g_menu_item_new</code>
-        has two arguments. The first argument “Red” is the label of
-        <code>menu_item_red</code>. The second argument is a detailed
-        action. Its prefix is “app”, the action name is “color” and the
-        target is “red”. Target is sent to the action as a parameter.
-        The same goes for <code>menu_item_green</code> and
-        <code>menu_item_blue</code>.</li>
-        <li>The function <code>g_signal_connect</code> connects the
-        activate signal on the action <code>act_color</code> and the
-        handler <code>color_activated</code>. If one of the three menus
-        is clicked, then the action <code>act_color</code> is activated
-        with the target (parameter) which is given by the menu.</li>
-        </ul>
-        <p>The following is the “activate” signal handler.</p>
-        <div class="sourceCode" id="cb8"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>color_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">;}&quot;</span><span class="op">,</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                   g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> color<span class="op">);</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <ul>
-        <li>The handler originally has three parameters. The third
-        parameter is the user data set in the
-        <code>g_signal_connect</code> function. But it is left out
-        because the fourth argument of the <code>g_signal_connect</code>
-        has been NULL. The first parameter is the action which emits the
-        “activate” signal. The second parameter is the parameter, or
-        target, given to the action. It is a color specified by the
-        menu.</li>
-        <li>The variable <code>color</code> is a CSS string created by
-        <code>g_strdup_printf</code>. The arguments of
-        <code>g_strdup_printf</code> are the same as printf C standard
-        function. The function <code>g_variant_get_string</code> gets
-        the string contained in <code>parameter</code>. The string is
-        owned by the instance and you mustn’t change or free it. The
-        string <code>label.lb</code> is a selector. It consists of
-        <code>label</code>, a node name of GtkLabel, and <code>lb</code>
-        which is a class name. It selects GtkLabel which has
-        <code>lb</code> class. For example, menus have GtkLabel to
-        display their labels, but they don’t have <code>lb</code> class.
-        So, the CSS doesn’t change their background color. The string
-        <code>{background-color: %s;}</code> makes the background color
-        <code>%s</code> to which the color from <code>parameter</code>
-        is assigned.</li>
-        <li>Frees the string <code>color</code>.</li>
-        <li>Changes the state with
-        <code>g_action_change_state</code>.</li>
-        </ul>
-        <p>Note: If you haven’t set an “activate” signal handler, the
-        signal is forwarded to “change-state” signal. So, you can use
-        “change-state” signal instead of “activate” signal. See <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu/menu2_change_state.c">src/menu/menu2_change_state.c</a>.</p>
-        <h3 id="gvarianttype">GVariantType</h3>
-        <p>GVariantType gives a type of GVariant. GVariantType is
-        created with a type string.</p>
-        <ul>
-        <li>“b” means boolean type.</li>
-        <li>“s” means string type.</li>
-        </ul>
-        <p>The following program is a simple example. It finally outputs
-        the string “s”.</p>
-        <div class="sourceCode" id="cb9"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="pp">#include </span><span class="im">&lt;glib.h&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="dt">int</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a>  GVariantType <span class="op">*</span>vtype <span class="op">=</span> g_variant_type_new <span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">);</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>type_string <span class="op">=</span> g_variant_type_peek_string <span class="op">(</span>vtype<span class="op">);</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span>type_string<span class="op">);</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a>  g_variant_type_free <span class="op">(</span>vtype<span class="op">);</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="op">}</span></span></code></pre></div>
-        <ul>
-        <li>The function <code>g_variant_type_new</code> creates a
-        GVariantType structure. The argument “s” is a type string. It
-        means string. The returned structure is owned by the caller.
-        When it becomes useless, you need to free it with the function
-        <code>g_variant_type_free</code>.</li>
-        <li>The function <code>g_variant_type_peek_string</code> takes a
-        peek at <code>vtype</code>. It is the string “s” given to
-        <code>vtype</code> when it was created. The string is owned by
-        the instance and the caller can’t change or free it.</li>
-        <li>Prints the string to the terminal. You can’t free
-        <code>vtype</code> before <code>g_print</code> because the
-        string <code>type_string</code> is owned by
-        <code>vtype</code>.</li>
-        <li>Frees <code>vtype</code>.</li>
-        </ul>
-        <h2 id="example">Example</h2>
-        <p>The following code includes stateful actions above. This
-        program has menus like this:</p>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">link</span><span class="ot"> name=</span><span class="st">&quot;section&quot;</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">link</span>&gt;</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">item</span>&gt;</span></code></pre></div>
+        <p>Both approaches are perfectly valid, but developers almost
+        always use the shortcuts (<code>&lt;section&gt;</code> and
+        <code>&lt;submenu&gt;</code>) because they are much easier to
+        read and write.</p>
+        <h2 id="building-a-practical-menu">Building a Practical
+        Menu</h2>
+        <p>Now let’s look at a more practical example. Most desktop
+        applications feature a standard menu bar with categories like
+        “File”, “Edit”, and “View”.</p>
         <figure>
-        <img src="/images/menu2.png" alt="menu2" />
-        <figcaption aria-hidden="true">menu2</figcaption>
+        <img src="/images/menu3.png" alt="menu3" />
+        <figcaption aria-hidden="true">menu3</figcaption>
         </figure>
-        <ul>
-        <li>The “Maximized” menu toggles the size of the window between
-        maximized and unmaximized. If the window is maximized, a check
-        mark is put before the “Maximized” label.</li>
-        <li>Red, green and blue menu determines the back ground color of
-        the label in the window. The menus have radio buttons on the
-        left of the menus. And the radio button of the selected menu
-        turns on.</li>
-        <li>The “quit” menu quits the application.</li>
-        </ul>
-        <p>The code is as follows.</p>
+        <p>The <code>menu3.ui</code> file implements this familiar
+        structure.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-7"><a href="#cb5-7"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-8"><a href="#cb5-8"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-9"><a href="#cb5-9"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.new&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-10"><a href="#cb5-10"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-11"><a href="#cb5-11"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-12"><a href="#cb5-12"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-13"><a href="#cb5-13"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.open&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-14"><a href="#cb5-14"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-15"><a href="#cb5-15"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-16"><a href="#cb5-16"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-17"><a href="#cb5-17"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-18"><a href="#cb5-18"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-19"><a href="#cb5-19"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.save&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-20"><a href="#cb5-20"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-21"><a href="#cb5-21"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-22"><a href="#cb5-22"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save As…&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-23"><a href="#cb5-23"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.saveas&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-24"><a href="#cb5-24"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-25"><a href="#cb5-25"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-26"><a href="#cb5-26"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-27"><a href="#cb5-27"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-28"><a href="#cb5-28"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-29"><a href="#cb5-29"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.close&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-30"><a href="#cb5-30"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-31"><a href="#cb5-31"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-32"><a href="#cb5-32"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-33"><a href="#cb5-33"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-34"><a href="#cb5-34"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-35"><a href="#cb5-35"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-36"><a href="#cb5-36"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-37"><a href="#cb5-37"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-38"><a href="#cb5-38"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb5-39"><a href="#cb5-39"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb5-40"><a href="#cb5-40"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Edit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-41"><a href="#cb5-41"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-42"><a href="#cb5-42"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-43"><a href="#cb5-43"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Cut&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-44"><a href="#cb5-44"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.cut&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-45"><a href="#cb5-45"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-46"><a href="#cb5-46"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-47"><a href="#cb5-47"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-48"><a href="#cb5-48"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-49"><a href="#cb5-49"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-50"><a href="#cb5-50"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-51"><a href="#cb5-51"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-52"><a href="#cb5-52"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-53"><a href="#cb5-53"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-54"><a href="#cb5-54"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-55"><a href="#cb5-55"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-56"><a href="#cb5-56"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-57"><a href="#cb5-57"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Select All&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-58"><a href="#cb5-58"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.selectall&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-59"><a href="#cb5-59"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-60"><a href="#cb5-60"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-61"><a href="#cb5-61"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb5-62"><a href="#cb5-62"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
+<span id="cb5-63"><a href="#cb5-63"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;View&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-64"><a href="#cb5-64"></a>      &lt;<span class="kw">section</span>&gt;</span>
+<span id="cb5-65"><a href="#cb5-65"></a>        &lt;<span class="kw">item</span>&gt;</span>
+<span id="cb5-66"><a href="#cb5-66"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-67"><a href="#cb5-67"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-68"><a href="#cb5-68"></a>        &lt;/<span class="kw">item</span>&gt;</span>
+<span id="cb5-69"><a href="#cb5-69"></a>      &lt;/<span class="kw">section</span>&gt;</span>
+<span id="cb5-70"><a href="#cb5-70"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
+<span id="cb5-71"><a href="#cb5-71"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
+<span id="cb5-72"><a href="#cb5-72"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+        <p>Although this UI file creates a much larger and deeper tree
+        structure compared to our previous example, notice that it uses
+        the exact same basic XML tags: <code>&lt;menu&gt;</code>,
+        <code>&lt;submenu&gt;</code>, <code>&lt;section&gt;</code>,
+        <code>&lt;item&gt;</code>, and <code>&lt;attribute&gt;</code>.
+        By simply nesting these familiar elements, you can build highly
+        complex and practical menu systems without learning any new
+        syntax.</p>
+        <p>For more detailed information and advanced usage of menu UI
+        files, please refer to the <a
+        href="https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models">GtkPopoverMenu
+        section</a> in the GTK documentation.</p>
+        <p>Note: To load this UI file in your C code, you use
+        <code>gtk_builder_new_from_file ("menu3.ui")</code> exactly as
+        we did in the previous example. Since the C code for extracting
+        the menu from the builder is identical to <code>menu2</code>, we
+        will skip repeating it here.</p>
+        <h2 id="automating-action-creation-with-gactionentry">Automating
+        Action Creation with GActionEntry</h2>
+        <p>In the previous examples, we created actions, connected their
+        signals, and added them to an action map one by one. While this
+        works, it requires a lot of repetitive boilerplate code. To
+        automate and simplify this process, GTK provides the
+        GActionEntry structure and the
+        <code>g_action_map_add_action_entries</code> function.
+        GActionEntry allows you to define all the properties of an
+        action — its name, signal handlers, parameter type, and initial
+        state—in a single array element.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> _GActionEntry GActionEntry<span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _GActionEntry</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* action name */</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>name<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* activate handler */</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="op">(*</span> activate<span class="op">)</span> <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">);</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* the type of the parameter given as a single GVariant type string */</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>parameter_type<span class="op">;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* initial state given in GVariant text format */</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>state<span class="op">;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* change-state handler */</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> <span class="op">(*</span> change_state<span class="op">)</span> <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> gpointer user_data<span class="op">);</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">/*&lt; private &gt;*/</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  gsize padding<span class="op">[</span><span class="dv">3</span><span class="op">];</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+        <p>Let’s look at how the actions in <code>menu3.c</code> are
+        defined using this structure.</p>
+        <h3 id="non-stateful-actions">Non-stateful Actions</h3>
+        <p>Most standard commands like “new”, “open”, or “quit” are
+        non-stateful and do not require parameters.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span></code></pre></div>
+        <ol type="1">
+        <li>“quit”: The name of the action.</li>
+        <li><code>quit_activated</code>: The “activate” signal
+        handler.</li>
+        <li><code>NULL</code>: The parameter type. Since this action
+        takes no parameters, it is NULL.</li>
+        <li><code>NULL</code>: The initial state. Since this is a
+        non-stateful action, it is NULL.</li>
+        <li><code>NULL</code>: The “change-state” handler. Only stateful
+        actions need this.</li>
+        </ol>
+        <h3 id="stateful-actions-without-parameters">Stateful Actions
+        without parameters</h3>
+        <p>Actions that toggle a state (like switching fullscreen mode
+        on and off) are defined slightly differently.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_state_changed <span class="op">}</span></span></code></pre></div>
+        <ol type="1">
+        <li>“fullscreen”: The name of the action.</li>
+        <li><code>NULL</code>: The “activate” handler. For stateful
+        actions, we usually handle state changes instead of basic
+        activations, so this is NULL.</li>
+        <li><code>NULL</code>: The parameter type. This action doesn’t
+        have parameters.</li>
+        <li>“false”: The initial state. It is provided in GVariant text
+        format. As a boolean, the initial state is set to “false”.</li>
+        <li><code>fullscreen_state_changed</code>: The “change-state”
+        handler. This handler is called in response to a request to
+        toggle the action’s state.</li>
+        </ol>
+        <h3 id="stateful-actions-with-parameters">Stateful Actions with
+        Parameters</h3>
+        <p>Although <code>menu3.c</code> does not use them, some actions
+        require parameters (for example, an action that changes a color
+        based on the user’s selection). If you were to recreate the
+        “color” action from our earlier examples, the entry would look
+        like this:</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span> <span class="st">&quot;color&quot;</span><span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;s&quot;</span><span class="op">,</span> <span class="st">&quot;&#39;red&#39;&quot;</span><span class="op">,</span> color_state_changed <span class="op">}</span></span></code></pre></div>
+        <ol type="1">
+        <li>“color”: The name of the action.</li>
+        <li><code>NULL</code>: The “activate” handler. For stateful
+        actions, we usually handle state changes instead of basic
+        activations, so this is NULL.</li>
+        <li>“s”: The parameter type. This uses a GVariant format string,
+        where “s” stands for a standard string. See <a
+        href="https://docs.gtk.org/glib/gvariant-format-strings.html">GVariant
+        format strings</a> for details.</li>
+        <li>“‘red’”: The initial state. This must be written in GVariant
+        text format. Because GVariant expects string values to be
+        explicitly quoted, you must include quotes inside your C string.
+        You can write this using single quotes like <code>"'red'"</code>
+        or by escaping double quotes like <code>"\"red\""</code>. See <a
+        href="https://docs.gtk.org/glib/gvariant-text-format.html">GVariant
+        text format</a> for details.</li>
+        <li><code>color_state_changed</code>: The “change-state”
+        handler. This handler is called in response to a request to
+        toggle the action’s state.</li>
+        </ol>
+        <h3 id="registering-the-entries">Registering the Entries</h3>
+        <p>Once you define an array of GActionEntry, you can register
+        all of them at once using
+        <code>g_action_map_add_action_entries()</code>.</p>
+        <p>For the window-scoped actions, we do this inside
+        <code>app_activate</code>:</p>
         <div class="sourceCode" id="cb10"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="co">/* The provider below provides application wide CSS data. */</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>GtkCssProvider <span class="op">*</span>provider<span class="op">;</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a>maximize_state_changed<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>value<span class="op">,</span> GtkWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a>  <span class="cf">if</span> <span class="op">(</span>g_variant_get_boolean <span class="op">(</span>value<span class="op">))</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a>    gtk_window_maximize <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a>  <span class="cf">else</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a>    gtk_window_unmaximize <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a>  g_simple_action_set_state <span class="op">(</span>action<span class="op">,</span> value<span class="op">);</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a><span class="op">}</span></span>
-<span id="cb10-14"><a href="#cb10-14"></a></span>
-<span id="cb10-15"><a href="#cb10-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-16"><a href="#cb10-16"></a>color_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a>  <span class="dt">char</span> <span class="op">*</span>color <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;label.lb {background-color: </span><span class="sc">%s</span><span class="st">;}&quot;</span><span class="op">,</span> g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb10-18"><a href="#cb10-18"></a>  <span class="co">/* Change the CSS data in the provider. */</span></span>
-<span id="cb10-19"><a href="#cb10-19"></a>  <span class="co">/* Previous data is thrown away. */</span></span>
-<span id="cb10-20"><a href="#cb10-20"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> color<span class="op">);</span></span>
-<span id="cb10-21"><a href="#cb10-21"></a>  g_free <span class="op">(</span>color<span class="op">);</span></span>
-<span id="cb10-22"><a href="#cb10-22"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
-<span id="cb10-23"><a href="#cb10-23"></a><span class="op">}</span></span>
-<span id="cb10-24"><a href="#cb10-24"></a></span>
-<span id="cb10-25"><a href="#cb10-25"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-26"><a href="#cb10-26"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> GtkCssProvider <span class="op">*</span>provider<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-27"><a href="#cb10-27"></a>  gtk_style_context_remove_provider_for_display <span class="op">(</span>gdk_display_get_default<span class="op">(),</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">));</span></span>
-<span id="cb10-28"><a href="#cb10-28"></a><span class="op">}</span></span>
-<span id="cb10-29"><a href="#cb10-29"></a></span>
-<span id="cb10-30"><a href="#cb10-30"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-31"><a href="#cb10-31"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-32"><a href="#cb10-32"></a>  GtkWindow <span class="op">*</span>win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">)));</span></span>
-<span id="cb10-33"><a href="#cb10-33"></a>  gtk_window_set_title <span class="op">(</span>win<span class="op">,</span> <span class="st">&quot;menu2&quot;</span><span class="op">);</span></span>
-<span id="cb10-34"><a href="#cb10-34"></a>  gtk_window_set_default_size <span class="op">(</span>win<span class="op">,</span> <span class="dv">400</span><span class="op">,</span> <span class="dv">300</span><span class="op">);</span></span>
-<span id="cb10-35"><a href="#cb10-35"></a></span>
-<span id="cb10-36"><a href="#cb10-36"></a>  GtkWidget <span class="op">*</span>lb <span class="op">=</span> gtk_label_new <span class="op">(</span>NULL<span class="op">);</span></span>
-<span id="cb10-37"><a href="#cb10-37"></a>  gtk_widget_add_css_class <span class="op">(</span>lb<span class="op">,</span> <span class="st">&quot;lb&quot;</span><span class="op">);</span> <span class="co">/* the class is used by CSS Selector */</span></span>
-<span id="cb10-38"><a href="#cb10-38"></a>  gtk_window_set_child <span class="op">(</span>win<span class="op">,</span> lb<span class="op">);</span></span>
-<span id="cb10-39"><a href="#cb10-39"></a></span>
-<span id="cb10-40"><a href="#cb10-40"></a>  GSimpleAction <span class="op">*</span>act_maximize</span>
-<span id="cb10-41"><a href="#cb10-41"></a>    <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;maximize&quot;</span><span class="op">,</span> NULL<span class="op">,</span> g_variant_new_boolean <span class="op">(</span>FALSE<span class="op">));</span></span>
-<span id="cb10-42"><a href="#cb10-42"></a>  g_signal_connect <span class="op">(</span>act_maximize<span class="op">,</span> <span class="st">&quot;change-state&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>maximize_state_changed<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb10-43"><a href="#cb10-43"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_maximize<span class="op">));</span></span>
-<span id="cb10-44"><a href="#cb10-44"></a></span>
-<span id="cb10-45"><a href="#cb10-45"></a>  gtk_application_window_set_show_menubar <span class="op">(</span>GTK_APPLICATION_WINDOW <span class="op">(</span>win<span class="op">),</span> TRUE<span class="op">);</span></span>
-<span id="cb10-46"><a href="#cb10-46"></a></span>
-<span id="cb10-47"><a href="#cb10-47"></a>  gtk_window_present <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb10-48"><a href="#cb10-48"></a><span class="op">}</span></span>
-<span id="cb10-49"><a href="#cb10-49"></a></span>
-<span id="cb10-50"><a href="#cb10-50"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-51"><a href="#cb10-51"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-52"><a href="#cb10-52"></a>  GVariantType <span class="op">*</span>vtype <span class="op">=</span> g_variant_type_new<span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">);</span></span>
-<span id="cb10-53"><a href="#cb10-53"></a>  GSimpleAction <span class="op">*</span>act_color</span>
-<span id="cb10-54"><a href="#cb10-54"></a>    <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;color&quot;</span><span class="op">,</span> vtype<span class="op">,</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;red&quot;</span><span class="op">));</span></span>
-<span id="cb10-55"><a href="#cb10-55"></a>  g_variant_type_free <span class="op">(</span>vtype<span class="op">);</span></span>
-<span id="cb10-56"><a href="#cb10-56"></a>  GSimpleAction <span class="op">*</span>act_quit</span>
-<span id="cb10-57"><a href="#cb10-57"></a>    <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb10-58"><a href="#cb10-58"></a>  g_signal_connect <span class="op">(</span>act_color<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>color_activated<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb10-59"><a href="#cb10-59"></a>  g_signal_connect_swapped <span class="op">(</span>act_quit<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>g_application_quit<span class="op">),</span> app<span class="op">);</span></span>
-<span id="cb10-60"><a href="#cb10-60"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_color<span class="op">));</span></span>
-<span id="cb10-61"><a href="#cb10-61"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> G_ACTION <span class="op">(</span>act_quit<span class="op">));</span></span>
-<span id="cb10-62"><a href="#cb10-62"></a></span>
-<span id="cb10-63"><a href="#cb10-63"></a>  GMenu <span class="op">*</span>menubar <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb10-64"><a href="#cb10-64"></a>  GMenu <span class="op">*</span>menu <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb10-65"><a href="#cb10-65"></a>  GMenu <span class="op">*</span>section1 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb10-66"><a href="#cb10-66"></a>  GMenu <span class="op">*</span>section2 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb10-67"><a href="#cb10-67"></a>  GMenu <span class="op">*</span>section3 <span class="op">=</span> g_menu_new <span class="op">();</span></span>
-<span id="cb10-68"><a href="#cb10-68"></a>  GMenuItem <span class="op">*</span>menu_item_maximize <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Maximized&quot;</span><span class="op">,</span> <span class="st">&quot;win.maximize&quot;</span><span class="op">);</span></span>
-<span id="cb10-69"><a href="#cb10-69"></a>  GMenuItem <span class="op">*</span>menu_item_red <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Red&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::red&quot;</span><span class="op">);</span></span>
-<span id="cb10-70"><a href="#cb10-70"></a>  GMenuItem <span class="op">*</span>menu_item_green <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Green&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::green&quot;</span><span class="op">);</span></span>
-<span id="cb10-71"><a href="#cb10-71"></a>  GMenuItem <span class="op">*</span>menu_item_blue <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Blue&quot;</span><span class="op">,</span> <span class="st">&quot;app.color::blue&quot;</span><span class="op">);</span></span>
-<span id="cb10-72"><a href="#cb10-72"></a>  GMenuItem <span class="op">*</span>menu_item_quit <span class="op">=</span> g_menu_item_new <span class="op">(</span><span class="st">&quot;Quit&quot;</span><span class="op">,</span> <span class="st">&quot;app.quit&quot;</span><span class="op">);</span></span>
-<span id="cb10-73"><a href="#cb10-73"></a></span>
-<span id="cb10-74"><a href="#cb10-74"></a>  g_menu_append_item <span class="op">(</span>section1<span class="op">,</span> menu_item_maximize<span class="op">);</span></span>
-<span id="cb10-75"><a href="#cb10-75"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_red<span class="op">);</span></span>
-<span id="cb10-76"><a href="#cb10-76"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_green<span class="op">);</span></span>
-<span id="cb10-77"><a href="#cb10-77"></a>  g_menu_append_item <span class="op">(</span>section2<span class="op">,</span> menu_item_blue<span class="op">);</span></span>
-<span id="cb10-78"><a href="#cb10-78"></a>  g_menu_append_item <span class="op">(</span>section3<span class="op">,</span> menu_item_quit<span class="op">);</span></span>
-<span id="cb10-79"><a href="#cb10-79"></a>  g_object_unref <span class="op">(</span>menu_item_red<span class="op">);</span></span>
-<span id="cb10-80"><a href="#cb10-80"></a>  g_object_unref <span class="op">(</span>menu_item_green<span class="op">);</span></span>
-<span id="cb10-81"><a href="#cb10-81"></a>  g_object_unref <span class="op">(</span>menu_item_blue<span class="op">);</span></span>
-<span id="cb10-82"><a href="#cb10-82"></a>  g_object_unref <span class="op">(</span>menu_item_maximize<span class="op">);</span></span>
-<span id="cb10-83"><a href="#cb10-83"></a>  g_object_unref <span class="op">(</span>menu_item_quit<span class="op">);</span></span>
-<span id="cb10-84"><a href="#cb10-84"></a></span>
-<span id="cb10-85"><a href="#cb10-85"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> NULL<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section1<span class="op">));</span></span>
-<span id="cb10-86"><a href="#cb10-86"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> <span class="st">&quot;Color&quot;</span><span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section2<span class="op">));</span></span>
-<span id="cb10-87"><a href="#cb10-87"></a>  g_menu_append_section <span class="op">(</span>menu<span class="op">,</span> NULL<span class="op">,</span> G_MENU_MODEL <span class="op">(</span>section3<span class="op">));</span></span>
-<span id="cb10-88"><a href="#cb10-88"></a>  g_menu_append_submenu <span class="op">(</span>menubar<span class="op">,</span> <span class="st">&quot;Menu&quot;</span><span class="op">,</span> G_MENU_MODEL <span class="op">(</span>menu<span class="op">));</span></span>
-<span id="cb10-89"><a href="#cb10-89"></a>  g_object_unref <span class="op">(</span>section1<span class="op">);</span></span>
-<span id="cb10-90"><a href="#cb10-90"></a>  g_object_unref <span class="op">(</span>section2<span class="op">);</span></span>
-<span id="cb10-91"><a href="#cb10-91"></a>  g_object_unref <span class="op">(</span>section3<span class="op">);</span></span>
-<span id="cb10-92"><a href="#cb10-92"></a>  g_object_unref <span class="op">(</span>menu<span class="op">);</span></span>
-<span id="cb10-93"><a href="#cb10-93"></a></span>
-<span id="cb10-94"><a href="#cb10-94"></a>  gtk_application_set_menubar <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>menubar<span class="op">));</span></span>
-<span id="cb10-95"><a href="#cb10-95"></a></span>
-<span id="cb10-96"><a href="#cb10-96"></a>  provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb10-97"><a href="#cb10-97"></a>  <span class="co">/* Initialize the css data */</span></span>
-<span id="cb10-98"><a href="#cb10-98"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> <span class="st">&quot;label.lb {background-color: red;}&quot;</span><span class="op">);</span></span>
-<span id="cb10-99"><a href="#cb10-99"></a>  <span class="co">/* Add CSS to the default GdkDisplay. */</span></span>
-<span id="cb10-100"><a href="#cb10-100"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>gdk_display_get_default <span class="op">(),</span></span>
-<span id="cb10-101"><a href="#cb10-101"></a>        GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span> GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
-<span id="cb10-102"><a href="#cb10-102"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> provider<span class="op">);</span></span>
-<span id="cb10-103"><a href="#cb10-103"></a>  g_object_unref <span class="op">(</span>provider<span class="op">);</span> <span class="co">/* release provider, but it&#39;s still alive because the display owns it */</span></span>
-<span id="cb10-104"><a href="#cb10-104"></a><span class="op">}</span></span>
-<span id="cb10-105"><a href="#cb10-105"></a></span>
-<span id="cb10-106"><a href="#cb10-106"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.menu2&quot;</span></span>
-<span id="cb10-107"><a href="#cb10-107"></a></span>
-<span id="cb10-108"><a href="#cb10-108"></a><span class="dt">int</span></span>
-<span id="cb10-109"><a href="#cb10-109"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-110"><a href="#cb10-110"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb10-111"><a href="#cb10-111"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb10-112"><a href="#cb10-112"></a></span>
-<span id="cb10-113"><a href="#cb10-113"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb10-114"><a href="#cb10-114"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb10-115"><a href="#cb10-115"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb10-116"><a href="#cb10-116"></a></span>
-<span id="cb10-117"><a href="#cb10-117"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb10-118"><a href="#cb10-118"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb10-119"><a href="#cb10-119"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb10-120"><a href="#cb10-120"></a><span class="op">}</span></span></code></pre></div>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;cut&quot;</span><span class="op">,</span> cut_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;copy&quot;</span><span class="op">,</span> copy_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;paste&quot;</span><span class="op">,</span> paste_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;selectall&quot;</span><span class="op">,</span> selectall_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;fullscreen&quot;</span><span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> <span class="st">&quot;false&quot;</span><span class="op">,</span> fullscreen_state_changed <span class="op">}</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
+        <p>This single function call performs all the heavy lifting:</p>
         <ul>
-        <li>6-23: Action signal handlers.</li>
-        <li>25-28: The handler <code>app_shutdown</code> is called when
-        the application quits. It removes the provider from the
-        display.</li>
-        <li>30-48: An activate signal handler.</li>
-        <li>32-34: A new window is created and assigned to
-        <code>win</code>. Its title and default size are set to “menu2”
-        and 400x300 respectively.</li>
-        <li>36-38: A new label is created and assigned to
-        <code>lb</code> The label is given a CSS class “lb”. It is added
-        to <code>win</code> as a child.</li>
-        <li>40-43: A toggle action is created and assigned to
-        <code>act_maximize</code>. It’s connected to the signal handler
-        <code>maximize_state_changed</code>. It’s added to the window,
-        so the action scope is “win”.</li>
-        <li>45: The function
-        <code>gtk_application_window_set_show_menubar</code> adds a
-        menubar to the window.</li>
-        <li>47: Shows the window.</li>
-        <li>50-104: A startup signal handler.</li>
-        <li>52-61: Two actions <code>act_color</code> and
-        <code>act_quit</code> are created. There is only one instance of
-        each of these actions, because the startup handler is called
-        once. They are connected to their handlers and added to the
-        application. Their scopes are “app”.</li>
-        <li>63-92: Menus are built.</li>
-        <li>94: The menubar is added to the application.</li>
-        <li>96-103: A CSS provider is created with the CSS data and
-        added to the default display. The “shutdown” signal on the
-        application is connected to a handler “app_shutdown”. The
-        provider is removed from the display and freed when the
-        application quits.</li>
+        <li>It iterates through the win_entries array.</li>
+        <li>It creates the GSimpleAction instances.</li>
+        <li>It sets up their initial states.</li>
+        <li>It connects the “activate” and “change-state” signal
+        handlers.</li>
+        <li>It adds all the newly created actions to the
+        <code>win</code> action map.</li>
         </ul>
-        <h2 id="compile">Compile</h2>
-        <p>Change your current directory to <code>src/menu</code>.</p>
-        <pre><code>$ comp menu2
-$./a.out</code></pre>
-        <p>Then, you will see a window and the background color of the
-        content is red. You can change the size to maximum and change
-        back to the original size. You can change the background color
-        to green or blue.</p>
-        <p>If you run the second application while the first application
-        is running, another window will appear in the same screen. Both
-        of the windows have the same background color. Because the
-        <code>act_color</code> action has “app” scope and the CSS is
-        applied to the default display shared by the windows.</p>
-        <pre><code>$ ./a.out &amp; # Run the first application
-[1] 82113
-$ ./a.out # Run the second application
-$ </code></pre>
+        <p>We do the exact same thing for the application-scoped actions
+        inside <code>app_startup</code>:</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> GActionEntry app_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;quit&quot;</span><span class="op">,</span> quit_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>app<span class="op">),</span> app_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>app_entries<span class="op">),</span> app<span class="op">);</span></span></code></pre></div>
+        <p><strong>Important Note on Signal Handler
+        Signatures</strong></p>
+        <p>Strictly speaking, your handler functions must exactly match
+        the standard GObject callback signature, accepting a gpointer
+        for the user data:</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>handler <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>Even if you know that <code>user_data</code> will be a
+        GApplication, you cannot change the function signature to
+        <code>(..., GApplication *app)</code>. The
+        <code>g_action_map_add_action_entries</code> function expects
+        standard GObject callback signatures. Instead, you should accept
+        gpointer <code>user_data</code> and cast it inside the function
+        body, like this:</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  GApplication <span class="op">*</span>app <span class="op">=</span> G_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  g_application_quit <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <h2 id="full-source-code">Full Source Code</h2>
+        <p>The complete source files, including <code>menu3.c</code> and
+        <code>menu3.ui</code>, are located in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/menu/">src/menu</a>
+        directory. It is helpful to review the full code to see how the
+        UI definitions and the GActionEntry implementations come
+        together.</p>
       </div>
     </div>
   </main>

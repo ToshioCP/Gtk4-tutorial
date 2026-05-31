@@ -10,8 +10,7 @@ app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = gtk_application_window_new (app);
   gtk_window_set_title (GTK_WINDOW (win), "menu1");
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-
+  gtk_window_set_default_size (GTK_WINDOW (win), 800, 600);
   gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
   gtk_window_present (GTK_WINDOW (win));
 }
@@ -21,8 +20,9 @@ app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
 
   GSimpleAction *act_quit = g_simple_action_new ("quit", NULL);
-  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
   g_signal_connect (act_quit, "activate", G_CALLBACK (quit_activated), application);
+  g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (act_quit));
+  g_object_unref (act_quit);
 
   GMenu *menubar = g_menu_new ();
   GMenuItem *menu_item_menu = g_menu_item_new ("Menu", NULL);
@@ -36,6 +36,7 @@ app_startup (GApplication *application) {
   g_object_unref (menu_item_menu);
 
   gtk_application_set_menubar (GTK_APPLICATION (app), G_MENU_MODEL (menubar));
+  g_object_unref (menubar);
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.menu1"
@@ -53,4 +54,3 @@ main (int argc, char **argv) {
   g_object_unref (app);
   return stat;
 }
-
