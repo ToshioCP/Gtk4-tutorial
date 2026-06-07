@@ -320,8 +320,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <div class="sourceCode" id="cb6"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>notebook_page_new_with_file <span class="op">(</span>GtkNotebook <span class="op">*</span>nb<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a>  g_return_if_fail<span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>  g_return_if_fail<span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">)</span> <span class="op">||</span> file <span class="op">==</span> NULL<span class="op">);</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  g_return_if_fail <span class="op">(</span>GTK_IS_NOTEBOOK <span class="op">(</span>nb<span class="op">));</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  g_return_if_fail <span class="op">(</span>G_IS_FILE <span class="op">(</span>file<span class="op">)</span> <span class="op">||</span> file <span class="op">==</span> NULL<span class="op">);</span></span>
 <span id="cb6-5"><a href="#cb6-5"></a></span>
 <span id="cb6-6"><a href="#cb6-6"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
 <span id="cb6-7"><a href="#cb6-7"></a>  GtkNotebookPage <span class="op">*</span>nbp<span class="op">;</span></span>
@@ -392,7 +392,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-22"><a href="#cb7-22"></a>  tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
 <span id="cb7-23"><a href="#cb7-23"></a></span>
 <span id="cb7-24"><a href="#cb7-24"></a>  <span class="cf">if</span> <span class="op">(</span>tfe_text_view_get_file <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">)))</span> <span class="op">{</span> <span class="co">/* File is already set */</span></span>
-<span id="cb7-25"><a href="#cb7-25"></a>    <span class="cf">if</span> <span class="op">(!</span> tfe_text_view_write <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a>    <span class="cf">if</span> <span class="op">(!</span>tfe_text_view_write <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
 <span id="cb7-26"><a href="#cb7-26"></a>      tfe_error_alert <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> err<span class="op">);</span></span>
 <span id="cb7-27"><a href="#cb7-27"></a>      g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
 <span id="cb7-28"><a href="#cb7-28"></a>    <span class="op">}</span></span>
@@ -437,12 +437,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-22"><a href="#cb8-22"></a>  nb <span class="op">=</span> gtk_widget_get_ancestor <span class="op">(</span>tv<span class="op">,</span> GTK_TYPE_NOTEBOOK<span class="op">);</span></span>
 <span id="cb8-23"><a href="#cb8-23"></a>  scr <span class="op">=</span> gtk_widget_get_parent <span class="op">(</span>tv<span class="op">);</span></span>
 <span id="cb8-24"><a href="#cb8-24"></a>  gtk_notebook_set_tab_label <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> scr<span class="op">,</span> lab<span class="op">);</span></span>
-<span id="cb8-25"><a href="#cb8-25"></a></span>
-<span id="cb8-26"><a href="#cb8-26"></a>  <span class="cf">if</span> <span class="op">(!</span> tfe_text_view_write <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb8-27"><a href="#cb8-27"></a>    tfe_error_alert <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> err<span class="op">);</span></span>
-<span id="cb8-28"><a href="#cb8-28"></a>    g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
-<span id="cb8-29"><a href="#cb8-29"></a>  <span class="op">}</span></span>
-<span id="cb8-30"><a href="#cb8-30"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb8-25"><a href="#cb8-25"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a></span>
+<span id="cb8-27"><a href="#cb8-27"></a>  <span class="cf">if</span> <span class="op">(!</span>tfe_text_view_write <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> <span class="op">&amp;</span>err<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a>    tfe_error_alert <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> err<span class="op">);</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a>    g_clear_error <span class="op">(&amp;</span>err<span class="op">);</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a>  <span class="op">}</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>13-19: Calls <code>gtk_file_dialog_save_finish</code> to get
         a GFile. If the return value is NULL and the user did not cancel
@@ -451,9 +452,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         dialog.</li>
         <li>20: Sets the file of <code>tv</code> to the GFile that is
         returned by <code>gtk_file_dialog_save_finish</code>.</li>
-        <li>21-24: Sets the tab of the notebook page to the new
-        filename.</li>
-        <li>26-29: Calls <code>tfe_text_view_write</code> to write the
+        <li>21-25: Sets the tab of the notebook page to the new
+        filename. The Gfile instance is released.</li>
+        <li>27-30: Calls <code>tfe_text_view_write</code> to write the
         content of the buffer to the file. If an error occurs, it calls
         <code>tfe_error_alert</code> to show the error dialog. Then, it
         frees GError.</li>

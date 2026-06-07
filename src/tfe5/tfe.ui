@@ -5,13 +5,13 @@
     <property name="default-width">600</property>
     <property name="default-height">400</property>
     <child>
-      <object class="GtkBox" id="boxv">
-        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox" id="boxh">
-            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
             <child>
-              <object class="GtkLabel" id="dmy1">
+              <object class="GtkLabel">
                 <property name="width-chars">10</property>
               </object>
             </child>
@@ -26,7 +26,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="dmy2">
+              <object class="GtkLabel">
                 <property name="hexpand">TRUE</property>
               </object>
             </child>
@@ -41,7 +41,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="dmy3">
+              <object class="GtkLabel">
                 <property name="width-chars">10</property>
               </object>
             </child>

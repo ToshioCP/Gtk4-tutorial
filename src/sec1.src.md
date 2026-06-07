@@ -10,20 +10,21 @@ However, this tutorial describes only **C programs on Linux**.
 
 If you want to try the examples in the tutorial, you need:
 
-- PC with a Linux distribution like Ubuntu or Debian (including WSL - Windows Subsystem for Linux). 
+- PC with a Linux distribution like Ubuntu or Debian. 
 - GCC.
 - GTK 4 (version 4.10.1 or later).
 
 The stable version of GTK is 4.20.3 at present (December 28, 2025).
-The examples in this tutorial have been tested with GTK version 4.10.
+The examples in this tutorial have been tested with GTK version 4.14.5.
 Version 4.10 added some new classes and functions and deprecated some old ones.
 Some example programs in this tutorial don't work on older versions.
 
 ### Note for WSL2 (WSLg) Users
 
-When running GTK4 applications on WSL2, you may encounter several warnings in your terminal.
+When running GTK4 applications on WSL2 (Windows Subsystem for Linux), you may encounter several warnings in your terminal.
 These are typically due to interactions between GTK4's rendering system and the WSLg Wayland compositor, rather than bugs in your code.
 These warnings are often harmless, but in some cases they may affect rendering performance or popup behavior.
+In particular, menu programs do not work as expected in WSL.
 
 For professional-grade performance testing or pixel-perfect UI behavior, a native Linux installation is recommended.
 

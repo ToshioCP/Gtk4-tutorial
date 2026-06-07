@@ -143,63 +143,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </ul>
         <h2 id="the-xml-file">The XML File</h2>
         <p>A template tag is used in a composite widget XML.</p>
-        <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeAlert&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;titlebar&quot;</span>&gt;</span>
-<span id="cb1-7"><a href="#cb1-7"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkHeaderBar&quot;</span>&gt;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;show-title-buttons&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title-widget&quot;</span>&gt;</span>
-<span id="cb1-10"><a href="#cb1-10"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;lb_title&quot;</span>&gt;</span>
-<span id="cb1-11"><a href="#cb1-11"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Are you sure?&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-12"><a href="#cb1-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;single-line-mode&quot;</span>&gt;True&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-14"><a href="#cb1-14"></a>        &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>        &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;start&quot;</span>&gt;</span>
-<span id="cb1-16"><a href="#cb1-16"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_cancel&quot;</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Cancel&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">style</span>&gt;</span>
-<span id="cb1-19"><a href="#cb1-19"></a>              &lt;<span class="kw">class</span><span class="ot"> name=</span><span class="st">&quot;suggested-action&quot;</span>/&gt;</span>
-<span id="cb1-20"><a href="#cb1-20"></a>            &lt;/<span class="kw">style</span>&gt;</span>
-<span id="cb1-21"><a href="#cb1-21"></a>            &lt;<span class="kw">signal</span><span class="ot"> name=</span><span class="st">&quot;clicked&quot;</span><span class="ot"> handler=</span><span class="st">&quot;cancel_cb&quot;</span><span class="ot"> swapped=</span><span class="st">&quot;TRUE&quot;</span><span class="ot"> object=</span><span class="st">&quot;TfeAlert&quot;</span>&gt;&lt;/<span class="kw">signal</span>&gt;</span>
-<span id="cb1-22"><a href="#cb1-22"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-23"><a href="#cb1-23"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-24"><a href="#cb1-24"></a>        &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;end&quot;</span>&gt;</span>
-<span id="cb1-25"><a href="#cb1-25"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btn_accept&quot;</span>&gt;</span>
-<span id="cb1-26"><a href="#cb1-26"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-27"><a href="#cb1-27"></a>            &lt;<span class="kw">style</span>&gt;</span>
-<span id="cb1-28"><a href="#cb1-28"></a>              &lt;<span class="kw">class</span><span class="ot"> name=</span><span class="st">&quot;destructive-action&quot;</span>/&gt;</span>
-<span id="cb1-29"><a href="#cb1-29"></a>            &lt;/<span class="kw">style</span>&gt;</span>
-<span id="cb1-30"><a href="#cb1-30"></a>            &lt;<span class="kw">signal</span><span class="ot"> name=</span><span class="st">&quot;clicked&quot;</span><span class="ot"> handler=</span><span class="st">&quot;accept_cb&quot;</span><span class="ot"> swapped=</span><span class="st">&quot;TRUE&quot;</span><span class="ot"> object=</span><span class="st">&quot;TfeAlert&quot;</span>&gt;&lt;/<span class="kw">signal</span>&gt;</span>
-<span id="cb1-31"><a href="#cb1-31"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-32"><a href="#cb1-32"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-33"><a href="#cb1-33"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-34"><a href="#cb1-34"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-35"><a href="#cb1-35"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-36"><a href="#cb1-36"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb1-37"><a href="#cb1-37"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-38"><a href="#cb1-38"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-39"><a href="#cb1-39"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-40"><a href="#cb1-40"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-41"><a href="#cb1-41"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-42"><a href="#cb1-42"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-43"><a href="#cb1-43"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-44"><a href="#cb1-44"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb1-45"><a href="#cb1-45"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;dialog-warning&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-46"><a href="#cb1-46"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-size&quot;</span>&gt;GTK_ICON_SIZE_LARGE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-47"><a href="#cb1-47"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-48"><a href="#cb1-48"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-49"><a href="#cb1-49"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-50"><a href="#cb1-50"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;lb_message&quot;</span>&gt;</span>
-<span id="cb1-51"><a href="#cb1-51"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-52"><a href="#cb1-52"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-53"><a href="#cb1-53"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-54"><a href="#cb1-54"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-55"><a href="#cb1-55"></a>  &lt;/<span class="kw">template</span>&gt;</span>
-<span id="cb1-56"><a href="#cb1-56"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
         <ul>
         <li>3: A template tag defines a composite widget. The class
         attribute tells the class name of the composite widget. The
@@ -259,44 +202,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         And users should use GtkWindow instead of GtkDialog.</p>
         <h2 id="the-header-file">The Header File</h2>
         <p>The header file is similar to the one of TfeTextView.</p>
-        <div class="sourceCode" id="cb3"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#pragma once</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="pp">#define TFE_TYPE_ALERT tfe_alert_get_type </span><span class="op">()</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> TFE<span class="op">,</span> ALERT<span class="op">,</span> GtkWindow<span class="op">)</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a></span>
-<span id="cb3-8"><a href="#cb3-8"></a><span class="co">/* &quot;response&quot; signal id */</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="kw">enum</span> TfeAlertResponseType</span>
-<span id="cb3-10"><a href="#cb3-10"></a><span class="op">{</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  TFE_ALERT_RESPONSE_ACCEPT<span class="op">,</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  TFE_ALERT_RESPONSE_CANCEL</span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="op">};</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a></span>
-<span id="cb3-15"><a href="#cb3-15"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a>tfe_alert_get_title <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">);</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a></span>
-<span id="cb3-18"><a href="#cb3-18"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb3-19"><a href="#cb3-19"></a>tfe_alert_get_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">);</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a></span>
-<span id="cb3-21"><a href="#cb3-21"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>tfe_alert_get_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">);</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a></span>
-<span id="cb3-24"><a href="#cb3-24"></a><span class="dt">void</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>tfe_alert_set_title <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">);</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a></span>
-<span id="cb3-27"><a href="#cb3-27"></a><span class="dt">void</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a>tfe_alert_set_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">);</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a></span>
-<span id="cb3-30"><a href="#cb3-30"></a><span class="dt">void</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a>tfe_alert_set_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>btn_label<span class="op">);</span></span>
-<span id="cb3-32"><a href="#cb3-32"></a></span>
-<span id="cb3-33"><a href="#cb3-33"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb3-34"><a href="#cb3-34"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">);</span></span>
-<span id="cb3-35"><a href="#cb3-35"></a></span>
-<span id="cb3-36"><a href="#cb3-36"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb3-37"><a href="#cb3-37"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>btn_label<span class="op">);</span></span></code></pre></div>
         <ul>
         <li>5-6: These two lines are always needed to define a new
         object. <code>TFE_TYPE_ALERT</code> is the type of TfeAlert
@@ -327,58 +232,58 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         Widgets</h3>
         <p>The following codes are extracted from
         <code>tfealert.c</code>.</p>
-        <div class="sourceCode" id="cb4"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeAlert <span class="op">{</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  GtkWindow parent<span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  GtkLabel <span class="op">*</span>lb_title<span class="op">;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  GtkLabel <span class="op">*</span>lb_message<span class="op">;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  GtkButton <span class="op">*</span>btn_cancel<span class="op">;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>cancel_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>accept_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>tfe_alert_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span> <span class="co">// gobject is actually a TfeAlert instance.</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_ALERT<span class="op">);</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_alert_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>tfe_alert_init <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>tfe_alert_class_init <span class="op">(</span>TfeAlertClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_alert_dispose<span class="op">;</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span><span class="op">);</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_title<span class="op">);</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_message<span class="op">);</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_accept<span class="op">);</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_cancel<span class="op">);</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> cancel_cb<span class="op">);</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> accept_cb<span class="op">);</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeAlert <span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  GtkWindow parent<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  GtkLabel <span class="op">*</span>lb_title<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  GtkLabel <span class="op">*</span>lb_message<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  GtkButton <span class="op">*</span>btn_cancel<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>cancel_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>accept_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>tfe_alert_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span> <span class="co">// gobject is actually a TfeAlert instance.</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_ALERT<span class="op">);</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_alert_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>tfe_alert_init <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>tfe_alert_class_init <span class="op">(</span>TfeAlertClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_alert_dispose<span class="op">;</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span><span class="op">);</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_title<span class="op">);</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_message<span class="op">);</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_accept<span class="op">);</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_cancel<span class="op">);</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> cancel_cb<span class="op">);</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> accept_cb<span class="op">);</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li><code>G_DEFINE_FINAL_TYPE</code> was introduced in GLib 2.70
         for final type classes. While <code>G_DEFINE_TYPE</code> still
@@ -439,117 +344,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h3 id="other-functions">Other Functions</h3>
         <p>The following is the full codes of
         <code>tfealert.c</code>.</p>
-        <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">struct</span> _TfeAlert <span class="op">{</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  GtkWindow parent<span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>  GtkLabel <span class="op">*</span>lb_title<span class="op">;</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  GtkLabel <span class="op">*</span>lb_message<span class="op">;</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a>  GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a>  GtkButton <span class="op">*</span>btn_cancel<span class="op">;</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="op">};</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a></span>
-<span id="cb5-12"><a href="#cb5-12"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a></span>
-<span id="cb5-14"><a href="#cb5-14"></a><span class="kw">enum</span> <span class="op">{</span></span>
-<span id="cb5-15"><a href="#cb5-15"></a>  RESPONSE<span class="op">,</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  NUMBER_OF_SIGNALS</span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="op">};</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a></span>
-<span id="cb5-19"><a href="#cb5-19"></a><span class="dt">static</span> guint tfe_alert_signals<span class="op">[</span>NUMBER_OF_SIGNALS<span class="op">];</span></span>
-<span id="cb5-20"><a href="#cb5-20"></a></span>
-<span id="cb5-21"><a href="#cb5-21"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-22"><a href="#cb5-22"></a>cancel_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-23"><a href="#cb5-23"></a>  g_signal_emit <span class="op">(</span>alert<span class="op">,</span> tfe_alert_signals<span class="op">[</span>RESPONSE<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> TFE_ALERT_RESPONSE_CANCEL<span class="op">);</span></span>
-<span id="cb5-24"><a href="#cb5-24"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb5-25"><a href="#cb5-25"></a><span class="op">}</span></span>
-<span id="cb5-26"><a href="#cb5-26"></a></span>
-<span id="cb5-27"><a href="#cb5-27"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-28"><a href="#cb5-28"></a>accept_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-29"><a href="#cb5-29"></a>  g_signal_emit <span class="op">(</span>alert<span class="op">,</span> tfe_alert_signals<span class="op">[</span>RESPONSE<span class="op">],</span> <span class="dv">0</span><span class="op">,</span> TFE_ALERT_RESPONSE_ACCEPT<span class="op">);</span></span>
-<span id="cb5-30"><a href="#cb5-30"></a>  gtk_window_destroy <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb5-31"><a href="#cb5-31"></a><span class="op">}</span></span>
-<span id="cb5-32"><a href="#cb5-32"></a></span>
-<span id="cb5-33"><a href="#cb5-33"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb5-34"><a href="#cb5-34"></a>tfe_alert_get_title <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-35"><a href="#cb5-35"></a>  <span class="cf">return</span> gtk_label_get_text <span class="op">(</span>alert<span class="op">-&gt;</span>lb_title<span class="op">);</span></span>
-<span id="cb5-36"><a href="#cb5-36"></a><span class="op">}</span></span>
-<span id="cb5-37"><a href="#cb5-37"></a></span>
-<span id="cb5-38"><a href="#cb5-38"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb5-39"><a href="#cb5-39"></a>tfe_alert_get_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-40"><a href="#cb5-40"></a>    <span class="cf">return</span> gtk_label_get_text <span class="op">(</span>alert<span class="op">-&gt;</span>lb_message<span class="op">);</span></span>
-<span id="cb5-41"><a href="#cb5-41"></a><span class="op">}</span></span>
-<span id="cb5-42"><a href="#cb5-42"></a></span>
-<span id="cb5-43"><a href="#cb5-43"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb5-44"><a href="#cb5-44"></a>tfe_alert_get_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-45"><a href="#cb5-45"></a>  <span class="cf">return</span> gtk_button_get_label <span class="op">(</span>alert<span class="op">-&gt;</span>btn_accept<span class="op">);</span></span>
-<span id="cb5-46"><a href="#cb5-46"></a><span class="op">}</span></span>
-<span id="cb5-47"><a href="#cb5-47"></a></span>
-<span id="cb5-48"><a href="#cb5-48"></a><span class="dt">void</span></span>
-<span id="cb5-49"><a href="#cb5-49"></a>tfe_alert_set_title <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-50"><a href="#cb5-50"></a>  gtk_label_set_text <span class="op">(</span>alert<span class="op">-&gt;</span>lb_title<span class="op">,</span> title<span class="op">);</span></span>
-<span id="cb5-51"><a href="#cb5-51"></a><span class="op">}</span></span>
-<span id="cb5-52"><a href="#cb5-52"></a></span>
-<span id="cb5-53"><a href="#cb5-53"></a><span class="dt">void</span></span>
-<span id="cb5-54"><a href="#cb5-54"></a>tfe_alert_set_message <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-55"><a href="#cb5-55"></a>  gtk_label_set_text <span class="op">(</span>alert<span class="op">-&gt;</span>lb_message<span class="op">,</span> message<span class="op">);</span></span>
-<span id="cb5-56"><a href="#cb5-56"></a><span class="op">}</span></span>
-<span id="cb5-57"><a href="#cb5-57"></a></span>
-<span id="cb5-58"><a href="#cb5-58"></a><span class="dt">void</span></span>
-<span id="cb5-59"><a href="#cb5-59"></a>tfe_alert_set_button_label <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>btn_label<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-60"><a href="#cb5-60"></a>  gtk_button_set_label <span class="op">(</span>alert<span class="op">-&gt;</span>btn_accept<span class="op">,</span> btn_label<span class="op">);</span></span>
-<span id="cb5-61"><a href="#cb5-61"></a><span class="op">}</span></span>
-<span id="cb5-62"><a href="#cb5-62"></a></span>
-<span id="cb5-63"><a href="#cb5-63"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-64"><a href="#cb5-64"></a>tfe_alert_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span> <span class="co">// gobject is actually a TfeAlert instance.</span></span>
-<span id="cb5-65"><a href="#cb5-65"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_ALERT<span class="op">);</span></span>
-<span id="cb5-66"><a href="#cb5-66"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_alert_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb5-67"><a href="#cb5-67"></a><span class="op">}</span></span>
-<span id="cb5-68"><a href="#cb5-68"></a></span>
-<span id="cb5-69"><a href="#cb5-69"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-70"><a href="#cb5-70"></a>tfe_alert_init <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-71"><a href="#cb5-71"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb5-72"><a href="#cb5-72"></a><span class="op">}</span></span>
-<span id="cb5-73"><a href="#cb5-73"></a></span>
-<span id="cb5-74"><a href="#cb5-74"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-75"><a href="#cb5-75"></a>tfe_alert_class_init <span class="op">(</span>TfeAlertClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-76"><a href="#cb5-76"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_alert_dispose<span class="op">;</span></span>
-<span id="cb5-77"><a href="#cb5-77"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span><span class="op">);</span></span>
-<span id="cb5-78"><a href="#cb5-78"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_title<span class="op">);</span></span>
-<span id="cb5-79"><a href="#cb5-79"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_message<span class="op">);</span></span>
-<span id="cb5-80"><a href="#cb5-80"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_accept<span class="op">);</span></span>
-<span id="cb5-81"><a href="#cb5-81"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_cancel<span class="op">);</span></span>
-<span id="cb5-82"><a href="#cb5-82"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> cancel_cb<span class="op">);</span></span>
-<span id="cb5-83"><a href="#cb5-83"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> accept_cb<span class="op">);</span></span>
-<span id="cb5-84"><a href="#cb5-84"></a></span>
-<span id="cb5-85"><a href="#cb5-85"></a>  tfe_alert_signals<span class="op">[</span>RESPONSE<span class="op">]</span> <span class="op">=</span> g_signal_new <span class="op">(</span><span class="st">&quot;response&quot;</span><span class="op">,</span></span>
-<span id="cb5-86"><a href="#cb5-86"></a>                                G_TYPE_FROM_CLASS <span class="op">(</span>class<span class="op">),</span></span>
-<span id="cb5-87"><a href="#cb5-87"></a>                                G_SIGNAL_RUN_LAST <span class="op">|</span> G_SIGNAL_NO_RECURSE <span class="op">|</span> G_SIGNAL_NO_HOOKS<span class="op">,</span></span>
-<span id="cb5-88"><a href="#cb5-88"></a>                                <span class="dv">0</span> <span class="co">/* class offset */</span><span class="op">,</span></span>
-<span id="cb5-89"><a href="#cb5-89"></a>                                NULL <span class="co">/* accumulator */</span><span class="op">,</span></span>
-<span id="cb5-90"><a href="#cb5-90"></a>                                NULL <span class="co">/* accumulator data */</span><span class="op">,</span></span>
-<span id="cb5-91"><a href="#cb5-91"></a>                                NULL <span class="co">/* C marshaller */</span><span class="op">,</span></span>
-<span id="cb5-92"><a href="#cb5-92"></a>                                G_TYPE_NONE <span class="co">/* return_type */</span><span class="op">,</span></span>
-<span id="cb5-93"><a href="#cb5-93"></a>                                <span class="dv">1</span>     <span class="co">/* n_params */</span><span class="op">,</span></span>
-<span id="cb5-94"><a href="#cb5-94"></a>                                G_TYPE_INT</span>
-<span id="cb5-95"><a href="#cb5-95"></a>                                <span class="op">);</span></span>
-<span id="cb5-96"><a href="#cb5-96"></a><span class="op">}</span></span>
-<span id="cb5-97"><a href="#cb5-97"></a></span>
-<span id="cb5-98"><a href="#cb5-98"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb5-99"><a href="#cb5-99"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-100"><a href="#cb5-100"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb5-101"><a href="#cb5-101"></a><span class="op">}</span></span>
-<span id="cb5-102"><a href="#cb5-102"></a></span>
-<span id="cb5-103"><a href="#cb5-103"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb5-104"><a href="#cb5-104"></a>tfe_alert_new_with_data <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>message<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>btn_label<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-105"><a href="#cb5-105"></a>  GtkWidget <span class="op">*</span>alert <span class="op">=</span> tfe_alert_new <span class="op">();</span></span>
-<span id="cb5-106"><a href="#cb5-106"></a>  tfe_alert_set_title <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> title<span class="op">);</span></span>
-<span id="cb5-107"><a href="#cb5-107"></a>  tfe_alert_set_message <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> message<span class="op">);</span></span>
-<span id="cb5-108"><a href="#cb5-108"></a>  tfe_alert_set_button_label <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> btn_label<span class="op">);</span></span>
-<span id="cb5-109"><a href="#cb5-109"></a>  <span class="cf">return</span> alert<span class="op">;</span></span>
-<span id="cb5-110"><a href="#cb5-110"></a><span class="op">}</span></span></code></pre></div>
         <p>The function <code>tfe_alert_new_with_data</code> is used
         more often than <code>tfe_alert_new</code> to create a new
         instance. It creates the instance and sets three data at the
@@ -584,50 +378,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>There’s an example in the <code>src/tfe6/example</code>
         directory. It shows how to use TfeAlert. The program is
         <code>src/example/ex_alert.c</code>.</p>
-        <div class="sourceCode" id="cb6"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="pp">#include </span><span class="im">&quot;../tfealert.h&quot;</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a>alert_response_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">,</span> <span class="dt">int</span> response<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">==</span> TFE_ALERT_RESPONSE_ACCEPT<span class="op">)</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>    g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> tfe_alert_get_button_label <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>  <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>response <span class="op">==</span> TFE_ALERT_RESPONSE_CANCEL<span class="op">)</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a>    g_print <span class="op">(</span><span class="st">&quot;Cancel</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>  <span class="cf">else</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a>    g_print <span class="op">(</span><span class="st">&quot;Unexpected error</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb6-12"><a href="#cb6-12"></a><span class="op">}</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a></span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-15"><a href="#cb6-15"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a>  GtkWidget <span class="op">*</span>alert<span class="op">;</span></span>
-<span id="cb6-17"><a href="#cb6-17"></a>  <span class="dt">char</span> <span class="op">*</span>title<span class="op">,</span> <span class="op">*</span>message<span class="op">,</span> <span class="op">*</span>btn_label<span class="op">;</span></span>
-<span id="cb6-18"><a href="#cb6-18"></a></span>
-<span id="cb6-19"><a href="#cb6-19"></a>  title <span class="op">=</span> <span class="st">&quot;Example for TfeAlert&quot;</span><span class="op">;</span> message <span class="op">=</span> <span class="st">&quot;Click on Cancel or Accept button&quot;</span><span class="op">;</span> btn_label <span class="op">=</span> <span class="st">&quot;Accept&quot;</span><span class="op">;</span></span>
-<span id="cb6-20"><a href="#cb6-20"></a>  alert <span class="op">=</span> tfe_alert_new_with_data <span class="op">(</span>title<span class="op">,</span> message<span class="op">,</span> btn_label<span class="op">);</span></span>
-<span id="cb6-21"><a href="#cb6-21"></a>  g_signal_connect <span class="op">(</span>TFE_ALERT <span class="op">(</span>alert<span class="op">),</span> <span class="st">&quot;response&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>alert_response_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb6-22"><a href="#cb6-22"></a>  gtk_window_set_application <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">),</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">));</span></span>
-<span id="cb6-23"><a href="#cb6-23"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb6-24"><a href="#cb6-24"></a><span class="op">}</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a></span>
-<span id="cb6-26"><a href="#cb6-26"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-27"><a href="#cb6-27"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-28"><a href="#cb6-28"></a><span class="op">}</span></span>
-<span id="cb6-29"><a href="#cb6-29"></a></span>
-<span id="cb6-30"><a href="#cb6-30"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.example_tfe_alert&quot;</span></span>
-<span id="cb6-31"><a href="#cb6-31"></a></span>
-<span id="cb6-32"><a href="#cb6-32"></a><span class="dt">int</span></span>
-<span id="cb6-33"><a href="#cb6-33"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-34"><a href="#cb6-34"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb6-35"><a href="#cb6-35"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb6-36"><a href="#cb6-36"></a></span>
-<span id="cb6-37"><a href="#cb6-37"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb6-38"><a href="#cb6-38"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb6-39"><a href="#cb6-39"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb6-40"><a href="#cb6-40"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb6-41"><a href="#cb6-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb6-42"><a href="#cb6-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb6-43"><a href="#cb6-43"></a><span class="op">}</span></span></code></pre></div>
         <p>The “activate” signal handler <code>app_activate</code>
         initializes the alert dialog.</p>
         <ul>

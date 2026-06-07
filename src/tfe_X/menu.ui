@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menu">
+    <section>
+      <item>
+        <attribute name="label">New</attribute>
+        <attribute name="action">win.new</attribute>
+      </item>
+      <item>
+        <attribute name="label">Save As…</attribute>
+        <attribute name="action">win.saveas</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">Preference</attribute>
+        <attribute name="action">win.pref</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label">Quit</attribute>
+        <attribute name="action">win.close-all</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

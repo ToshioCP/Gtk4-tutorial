@@ -25,37 +25,23 @@ tfe5/tfeapplication.c main
 - 6: Creates a GtkApplication object.
 `APPLICATION_ID` is defined as "com.github.ToshioCP.tfe5" before the `main` function.
 The second argument `G_APPLICATION_HANDLES_OPEN` is a flag and that means that the application accepts commandline arguments but only pathnames.
-- 8-10: Connects the "startup", "activate" and "open" signals to their handlers.
-- 12: Runs the application.
-- 13-14: Releases the application and returns the status.
+- 7-8: Connects the "activate" and "open" signals to their handlers.
+- 9: Runs the application.
+- 10-11: Releases the application and returns the status.
 
 ## Startup Signal Handler
 
 A startup signal is emitted just after the GtkApplication instance is registered.
-The handler initializes the whole application which includes not only GtkApplication instance but also widgets and some other objects.
+The purpose of this handler is to initialize the application.
+This does not include window initialization, which is handled by the "activate" or "open" signal handlers.
 
-- Builds the widgets using a UI file.
-- Connects button signals and their handlers.
-
-The handler is as follows.
-
-@@@include
-tfe5/tfeapplication.c app_startup
-@@@
-
-- 12-14: Builds widgets using a UI resource.
-Connects the top-level window and the application with `gtk_window_set_application`.
-- 15-23: Gets notebook and button instances from the UI resource.
-Then, connects the button signals and handlers.
-The `g_signal_connect_swapped` macro connects a signal to a handler just like `g_signal_connect`, with one key difference: it swaps the object and the user data.
-For example, on line 20, the macro swaps `nb` and `btno`.
-As a result, the handler receives `nb` as its first argument instead of `btno`.
-- 24: Releases the reference to GtkBuilder.
+This application does not need a "startup" handler for now, but it will be implemented in a later version.
 
 ## Activate and open signal handler
 
-The name of the "activate" and "open" signal handlers are `app_activate` and `app_open` respectively.
-If there ais no argument, the "activate" signal is emitted. Conversely, if there are arguments, the "open" signal is emitted.
+The "activate" and "open" signal handlers are named `app_activate` and `app_open`, respectively.
+When the application is launched without any command-line arguments, the "activate" signal is emitted.
+Conversely, if arguments are provided, the "open" signal is emitted.
 
 @@@include
 tfe5/tfeapplication.c tfe_get_notebook app_activate app_open
@@ -66,15 +52,16 @@ This function is a private utility used by `app_activate` and `app_open`.
 This function relies on the assumption that the notebook is the last child of the box.
 Therefore, it will no longer work if another widget is added to the box in the future version.
 There are several ways to solve this issue, which will be explained in a later section.
-- 7-15: `app_activate`.
-In line 11, the notebook instance `nb` is obtained by calling the function `tfe_get_notebook`.
-Next, `notebook_page_new_with_file` is called to create a new empty page and shows the window.
-The function `notebook_page_new_with_file` will be shown later.
-- 17-29: The `app_open` function.
-- 24-25: In this for-loop, notebook pages are created with files using the `notebook_page_new_with_file` function.
+- 7-14: `app_activate`.
+- 9: The main window instance is obtained via the `get_main_window` function, which will be discussed later.
+- 10: The notebook instance `nb` is obtained by calling the function `tfe_get_notebook`.
+- 12: A new empty page is created, and finally, the main window is displayed.
+The `notebook_page_new_with_file` function will be explained later.
+- 16-27: The `app_open` function.
+- 22-23: In this for-loop, notebook pages are created with files using the `notebook_page_new_with_file` function.
 `files[i]` is the i-th commandline argument.
-- 26-27: If no page has been created, maybe because of read error, then it creates an empty page.
-- 28: Shows the window.
+- 24-25: If no page has been created, maybe because of read error, then it creates an empty page.
+- 26: Shows the window.
 
 
 ## The Notebook page building function
@@ -91,9 +78,9 @@ tfe5/tfeapplication.c notebook_page_new_with_file
 If it returns NULL, shows the error message through the alert dialog using `tfe_error_alert`.
 -20: Gets the GtkLabel instance with the filename.
 If no file is assigned to TfeTextView, `tfe_label_from_file` returns NULL.
-- 21-23: assigns `tv` to the newly created scrolled window `scr`.
+- 21-22: assigns `tv` to the newly created scrolled window `scr`.
 Then, appends the scrolled window and the label to the notebook as a child and tab respectively.
-- 24-25: Sets the page property "tab-expand" to TRUE.
+- 23-25: Sets the page property "tab-expand" to TRUE.
 - 26: Sets the current page to the new page.
 
 ## Primary and Secondary Instances
@@ -107,7 +94,7 @@ However, Linux is a multi-process OS and you can run two or more instances of th
 Isn't it a contradiction?
 
 When the first instance is launched, it registers itself with its application ID (for example, "com.github.ToshioCP.tfe5").
-Just after the registration, the "startup" signal is emitted, the "activate" or "open" signal is emitted, and the instance's main loop starts.
+Just after registration, the "startup" signal is emitted, followed by the "activate" or "open" signal, and finally, the instance's main loop starts.
 
 If another instance with the same application ID is launched, it also tries to register itself.
 Because this is the second instance, the registration of the ID has already been done, so it fails.
@@ -116,12 +103,41 @@ After that, the "activate" or "open" signal is emitted in the primary instance, 
 The primary instance receives the signal and its handler is invoked.
 On the other hand, the second instance doesn't receive the signal and immediately quits.
 
+### Building a Single Window
+
+The `activate` and `open` signal handlers are responsible for creating and displaying the window.
+However, because these handlers can be called multiple times, creating a window unconditionally would result in multiple main windows.
+Our TFE application is designed to have only one main window, using notebook pages to manage multiple files.
+Therefore, the handlers must follow this logic:
+
+- If the application already has a window, use it.
+- If it does not, create a new one.
+
+Since the window is built from a UI file, creating it also involves instantiating child widgets and connecting button signals to their handlers.
+The `get_main_window` helper function takes care of all these steps.
+
+@@@include
+tfe5/tfeapplication.c get_main_window
+@@@
+
+- 4: An application can generally have multiple main windows.
+These are stored in a list, which can be retrieved using the `gtk_application_get_windows` function.
+The return type is a `GList *` pointer.
+A `GList` structure contains `data` (pointing to the window in this case), `next`, and `prev` pointers, forming a doubly linked list.
+If the list is empty, the function returns `NULL`.
+For more details, refer to the [GLib Documentation - Doubly Linked Lists](https://docs.gtk.org/glib/data-structures.html#doubly-linked-lists) and [GList](https://docs.gtk.org/glib/struct.List.html).
+- 14-15: If `windows` is not `NULL`, the application already has a window.
+The function simply returns this existing window (`windows->data`).
+- 17-32: Otherwise, it uses `GtkBuilder` to generate all the widgets, registers the new window with the application, connects the "clicked" signals to their handlers, and finally returns the window.
+
+### Running and Observing Primary and Secondary Instances
+
+For compiling, see "Build and Execute the Program" subsection below.
+
 Try running two instances in a row:
 
 ```
-$ ./_build/tfe &
-[1] 84453
-$ ./_build/tfe tfeapplication.c
+$ ./_build/tfe & ./_build/tfe tfeapplication.c
 $
 ```
 

@@ -204,7 +204,7 @@ tfe5/tfeapplication.c save_dialog_cb
 - 13-19: Calls `gtk_file_dialog_save_finish` to get a GFile.
 If the return value is NULL and the user did not cancel the operation (`GTK_DIALOG_ERROR_DISMISSED`), it calls `tfe_error_alert` to show the error dialog.
 - 20: Sets the file of `tv` to the GFile that is returned by `gtk_file_dialog_save_finish`.
-- 21-24: Sets the tab of the notebook page to the new filename.
-- 26-29: Calls `tfe_text_view_write` to write the content of the buffer to the file.
+- 21-25: Sets the tab of the notebook page to the new filename. The Gfile instance is released.
+- 27-30: Calls `tfe_text_view_write` to write the content of the buffer to the file.
 If an error occurs, it calls `tfe_error_alert` to show the error dialog.
 Then, it frees GError.

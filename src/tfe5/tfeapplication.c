@@ -29,7 +29,7 @@ tfe_error_alert (GtkWindow *win, GError *err) {
 }
 
 /* The return value is floating */
-GtkWidget *
+static GtkWidget *
 tfe_label_from_file (GFile *file) {
   char *filename_bin, *filename_utf;
   GtkWidget *lab;
@@ -46,8 +46,8 @@ tfe_label_from_file (GFile *file) {
 
 static void
 notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
-  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
-  g_return_if_fail(G_IS_FILE (file) || file == NULL);
+  g_return_if_fail (GTK_IS_NOTEBOOK (nb));
+  g_return_if_fail (G_IS_FILE (file) || file == NULL);
 
   GtkWidget *win;
   GtkNotebookPage *nbp;
@@ -106,7 +106,7 @@ open_cb (GtkNotebook *nb) {
 
 static void
 new_cb (GtkNotebook *nb) {
-  notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
+  notebook_page_new_with_file (nb, NULL);
 }
 
 static void
@@ -133,8 +133,9 @@ save_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
   nb = gtk_widget_get_ancestor (tv, GTK_TYPE_NOTEBOOK);
   scr = gtk_widget_get_parent (tv);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, lab);
+  g_object_unref (file);
 
-  if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+  if (!tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
     tfe_error_alert (GTK_WINDOW (win), err);
     g_clear_error (&err);
   }
@@ -164,7 +165,7 @@ save_cb (GtkNotebook *nb) {
   tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
 
   if (tfe_text_view_get_file (TFE_TEXT_VIEW (tv))) { /* File is already set */
-    if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+    if (!tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
       tfe_error_alert (GTK_WINDOW (win), err);
       g_clear_error (&err);
     }
@@ -179,58 +180,73 @@ static void
 close_cb (GtkNotebook *nb) {
   if (gtk_notebook_get_n_pages (nb) >= 2)
     gtk_notebook_remove_page (nb, gtk_notebook_get_current_page (nb));
-  else  /* If the page is the last one or no page exists */
+  else  /* If the page is the last page or no page exists */
     gtk_window_destroy (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW)));
 }
 
-void
-app_activate (GApplication *application) {
+/*
+ * get_main_window:
+ * Returns the application's single main window.
+ * If the window already exists, it is returned as-is.
+ * If not, a new window is created, widgets are set up, and signals are connected.
+ *
+ * This helper function is used by "app_activate" and "app_open"
+ * to ensure that both functions can safely create or retrieve the main window.
+ */
+static GtkWidget *
+get_main_window (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
-  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
-  GtkWidget *nb = tfe_get_notebook (win);
-
-  notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
-  gtk_window_present (GTK_WINDOW (win));
-}
-
-void
-app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
-  GtkApplication *app = GTK_APPLICATION (application);
-  GtkWidget *win = GTK_WIDGET (gtk_application_get_active_window (app));
-  GtkWidget *nb = tfe_get_notebook (win);
-  int i;
-
-  for (i = 0; i < n_files; i++)
-    notebook_page_new_with_file (GTK_NOTEBOOK (nb), files[i]);
-  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) == 0) /* No files have been opened */
-    notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
-  gtk_window_present (GTK_WINDOW (win));
-}
-
-void
-app_startup (GApplication *application) {
-  GtkApplication *app = GTK_APPLICATION (application);
-  GtkBuilder *build;
+  GList *windows = gtk_application_get_windows (app);
   GtkWidget *win;
   GtkWidget *nb;
   GtkButton *btno;
   GtkButton *btnn;
   GtkButton *btns;
   GtkButton *btnc;
+  GtkBuilder *build;
+
+  /* Return the existing window if one already exists */
+  if (windows)
+    return GTK_WIDGET (windows->data);
 
   build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe5/tfe.ui");
-  win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+  win  = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   gtk_window_set_application (GTK_WINDOW (win), app);
-  nb = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
+  nb   = GTK_WIDGET (gtk_builder_get_object (build, "nb"));
   btno = GTK_BUTTON (gtk_builder_get_object (build, "btno"));
   btnn = GTK_BUTTON (gtk_builder_get_object (build, "btnn"));
   btns = GTK_BUTTON (gtk_builder_get_object (build, "btns"));
   btnc = GTK_BUTTON (gtk_builder_get_object (build, "btnc"));
+
   g_signal_connect_swapped (btno, "clicked", G_CALLBACK (open_cb), nb);
   g_signal_connect_swapped (btnn, "clicked", G_CALLBACK (new_cb), nb);
   g_signal_connect_swapped (btns, "clicked", G_CALLBACK (save_cb), nb);
   g_signal_connect_swapped (btnc, "clicked", G_CALLBACK (close_cb), nb);
-  g_object_unref(build);
+
+  g_object_unref (build);
+  return win;
+}
+
+void
+app_activate (GApplication *application) {
+  GtkWidget *win = get_main_window (application);
+  GtkWidget *nb  = tfe_get_notebook (win);
+
+  notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
+  gtk_window_present (GTK_WINDOW (win));
+}
+
+void
+app_open (GApplication *application, GFile **files, gint n_files, const gchar *hint) {
+  GtkWidget *win = get_main_window (application);
+  GtkWidget *nb  = tfe_get_notebook (win);
+  int i;
+
+  for (i = 0; i < n_files; i++)
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), files[i]);
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) == 0) /* No files were opened */
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.tfe5"
@@ -241,11 +257,8 @@ main (int argc, char **argv) {
   int stat;
 
   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
-
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-
+  g_signal_connect (app, "open",     G_CALLBACK (app_open),     NULL);
   stat = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;

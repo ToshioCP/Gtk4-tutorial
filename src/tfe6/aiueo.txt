@@ -1,0 +1,3 @@
+aiueo
+kakikukeko
+sasisuseso

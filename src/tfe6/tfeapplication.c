@@ -1,117 +1,301 @@
 #include <gtk/gtk.h>
-#include "tfeapplication.h"
-#include "tfewindow.h"
-#include "pfd2css.h"
+#include "tfetextview.h"
 
-struct _TfeApplication {
-  GtkApplication parent;
-  TfeWindow *win;
-  GSettings *settings;
-  GtkCssProvider *provider;
-};
+/* ----- Private utility functions ----- */
 
-G_DEFINE_FINAL_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
-
-/* gsettings changed::font signal handler */
-static void
-changed_font_cb (GSettings *settings, char *key, gpointer user_data) {
-  TfeApplication *app = TFE_APPLICATION (user_data);
-  char *font, *s, *css;
-  PangoFontDescription *pango_font_desc;
-
-  if (g_strcmp0(key, "font-desc") != 0)
-    return;
-  font = g_settings_get_string (app->settings, "font-desc");
-  pango_font_desc = pango_font_description_from_string (font);
-  g_free (font);
-  s = pfd2css (pango_font_desc); // converts Pango Font Description into CSS style string
-  pango_font_description_free (pango_font_desc);
-  css = g_strdup_printf ("textview {%s}", s);
-  gtk_css_provider_load_from_string (app->provider, css);
-  g_free (s);
-  g_free (css);
-}
-
-/* ----- activate, open, startup handlers ----- */
-static void
-app_activate (GApplication *application) {
-  TfeApplication *app = TFE_APPLICATION (application);
-
-  tfe_window_notebook_page_new (app->win);
-  gtk_window_present (GTK_WINDOW (app->win));
+/*
+ * This function relies on the assumption that the notebook is the last child of the box.
+ * Therefore, it will no longer work if another widget is added to the box.
+ * There are several ways to solve this issue, which will be explained in a later section.
+ */
+static GtkWidget *
+tfe_get_notebook (GtkWidget *win) {
+  GtkWidget *boxv = gtk_window_get_child (GTK_WINDOW (win));
+  return gtk_widget_get_last_child (boxv);
 }
 
 static void
-app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
-  TfeApplication *app = TFE_APPLICATION (application);
+tfe_error_alert (GtkWindow *win, GError *err) {
+  GtkAlertDialog *alert_dialog;
+  GtkWindow *parent;
 
-  tfe_window_notebook_page_new_with_files (app->win, files, n_files);
-  gtk_window_present (GTK_WINDOW (app->win));
+  if (win != NULL && gtk_widget_get_mapped (GTK_WIDGET (win)))
+    parent = win;
+  else
+    parent = NULL;
+  alert_dialog = gtk_alert_dialog_new ("%s", err->message);
+  gtk_alert_dialog_show (alert_dialog, parent);
+  g_object_unref (alert_dialog);
+}
+
+/* The return value is floating */
+GtkWidget *
+tfe_label_from_file (GFile *file) {
+  char *filename_bin, *filename_utf;
+  GtkWidget *lab;
+
+  if (file == NULL)
+    return NULL;
+  filename_bin = g_file_get_basename (file);
+  filename_utf = g_filename_display_name (filename_bin);
+  lab = gtk_label_new (filename_utf);
+  g_free (filename_bin);
+  g_free (filename_utf);
+  return lab;
 }
 
 static void
-app_startup (GApplication *application) {
-  TfeApplication *app = TFE_APPLICATION (application);
+notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
+  g_return_if_fail(GTK_IS_NOTEBOOK (nb));
+  g_return_if_fail(G_IS_FILE (file) || file == NULL);
+
+  GtkWidget *win;
+  GtkNotebookPage *nbp;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkWidget *lab;
   int i;
-  GtkCssProvider *provider = gtk_css_provider_new ();
-  GdkDisplay *display;
+  GError *err = NULL;
 
-  G_APPLICATION_CLASS (tfe_application_parent_class)->startup (application);
+  if ((tv = tfe_text_view_new_with_file (file, &err)) == NULL) {
+    win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+    tfe_error_alert (GTK_WINDOW (win), err);
+    g_clear_error (&err);
+    return;
+  }
+  lab = tfe_label_from_file (file); /* lab is floating. lab can be NULL */
+  scr = gtk_scrolled_window_new ();
+  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), GTK_WIDGET (tv));
+  i = gtk_notebook_append_page (nb, scr, lab);
+  nbp = gtk_notebook_get_page (nb, scr);
+  g_object_set (nbp, "tab-expand", TRUE, NULL);
+  gtk_notebook_set_current_page (nb, i);
+}
 
-  app->win = TFE_WINDOW (tfe_window_new (GTK_APPLICATION (app)));
+/* ----- End of private utility functions ----- */
 
-  gtk_css_provider_load_from_string (provider, "textview {padding: 10px;}");
-  display = gdk_display_get_default ();
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  g_object_unref (provider);
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (app->provider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+static void
+open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  GtkNotebook *nb = GTK_NOTEBOOK (data);
+  GtkWidget *win;
+  GFile *file;
+  GError *err = NULL;
 
-  changed_font_cb (app->settings, "font-desc", app); // Sets the text view font to the font from the gsettings data base.
+  if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) == NULL) {
+    if (!g_error_matches (err, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED)) {
+      win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+      tfe_error_alert (GTK_WINDOW (win), err);
+    }
+    g_clear_error (&err);
+    return;
+  }
+  notebook_page_new_with_file (nb, file);
+  g_object_unref (file);
+}
 
-/* ----- accelerator ----- */ 
-  struct {
-    const char *action;
-    const char *accels[2];
-  } action_accels[] = {
-    { "win.open", { "<Control>o", NULL } },
-    { "win.save", { "<Control>s", NULL } },
-    { "win.close", { "<Control>w", NULL } },
-    { "win.new", { "<Control>n", NULL } },
-    { "win.saveas", { "<Shift><Control>s", NULL } },
-    { "win.close-all", { "<Control>q", NULL } },
+static void
+open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkWidget *win = GTK_WIDGET (user_data);
+  GtkWidget *nb = tfe_get_notebook (win);
+  GtkFileDialog *dialog;
+
+  dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_open (dialog, GTK_WINDOW (win), NULL, open_dialog_cb, nb);
+  g_object_unref (dialog);
+}
+
+static void
+save_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  GtkWidget *tv = GTK_WIDGET (data);
+  GtkWidget *win;
+  GtkWidget *scr;
+  GtkWidget *nb;
+  GtkWidget *lab;
+  GFile *file;
+  GError *err = NULL;
+
+  win = gtk_widget_get_ancestor (tv, GTK_TYPE_WINDOW);
+  if ((file = gtk_file_dialog_save_finish (dialog, res, &err)) == NULL) {
+    if (!g_error_matches (err, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED)) {
+      tfe_error_alert (GTK_WINDOW (win), err);
+    }
+    g_clear_error (&err);
+    return;
+  }
+  tfe_text_view_set_file (TFE_TEXT_VIEW (tv), file);
+  g_object_unref (file);
+  lab = tfe_label_from_file (file); /* lab is floating. lab can be NULL */
+  nb = gtk_widget_get_ancestor (tv, GTK_TYPE_NOTEBOOK);
+  scr = gtk_widget_get_parent (tv);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, lab);
+
+  if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+    tfe_error_alert (GTK_WINDOW (win), err);
+    g_clear_error (&err);
+  }
+}
+
+static void
+save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkWidget *win = GTK_WIDGET (user_data);
+  GtkWidget *nb = tfe_get_notebook (win);
+  int i;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GError *err = NULL;
+  GtkFileDialog *dialog;
+  GtkAlertDialog *alert_dialog;
+
+  i = gtk_notebook_get_current_page (GTK_NOTEBOOK (nb));
+
+  if (i == -1) {
+    alert_dialog = gtk_alert_dialog_new ("No page to save.");
+    gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
+    g_object_unref (alert_dialog);
+    return;
+  }
+
+  scr = gtk_notebook_get_nth_page (GTK_NOTEBOOK (nb), i);
+  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+
+  if (tfe_text_view_get_file (TFE_TEXT_VIEW (tv))) { /* File is already set */
+    if (! tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+      tfe_error_alert (GTK_WINDOW (win), err);
+      g_clear_error (&err);
+    }
+  } else {
+    dialog = gtk_file_dialog_new ();
+    gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
+    g_object_unref (dialog);
+  }
+}
+
+static void
+close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkWidget *win = GTK_WIDGET (user_data);
+  GtkWidget *nb = tfe_get_notebook (win);
+
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) >= 2)
+    gtk_notebook_remove_page (GTK_NOTEBOOK (nb), gtk_notebook_get_current_page (GTK_NOTEBOOK (nb)));
+  else  /* If the page is the last one or no page exists */
+    gtk_window_destroy (GTK_WINDOW (gtk_widget_get_ancestor (nb, GTK_TYPE_WINDOW)));
+}
+
+static void
+new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkWidget *win = GTK_WIDGET (user_data);
+  GtkWidget *nb = tfe_get_notebook (win);
+
+  notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
+}
+
+static void
+saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  /* not implemented yet */
+}
+
+static void
+pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  /* not implemented yet */
+}
+
+static void
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GApplication *application = G_APPLICATION (user_data);
+
+  g_application_quit (application);
+}
+
+/* Helper function for activate and open handlers*/
+static GtkWidget *
+get_main_window (GApplication *application) {
+  GtkApplication *app = GTK_APPLICATION (application);
+  GList *windows = gtk_application_get_windows (app);
+  GtkWidget *win;
+  GtkWidget *btnm;
+  GtkBuilder *build;
+
+  if (windows)
+    return GTK_WIDGET (windows->data);
+
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe5/tfe.ui");
+  win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+  gtk_window_set_application (GTK_WINDOW (win), app);
+  btnm = GTK_WIDGET (gtk_builder_get_object (build, "btnm"));
+  g_object_unref(build);
+
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe5/menu.ui");
+  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (btnm), G_MENU_MODEL (gtk_builder_get_object (build, "menu")));
+  g_object_unref(build);
+
+  /* ----- action ----- */
+  const GActionEntry win_entries[] = {
+    { "open", open_activated, NULL, NULL, NULL },
+    { "save", save_activated, NULL, NULL, NULL },
+    { "close", close_activated, NULL, NULL, NULL },
+    { "new", new_activated, NULL, NULL, NULL },
+    { "saveas", saveas_activated, NULL, NULL, NULL },
+    { "pref", pref_activated, NULL, NULL, NULL },
   };
+  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
-  for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
-    gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
+  return win;
 }
 
-static void
-tfe_application_dispose (GObject *gobject) {
-  TfeApplication *app = TFE_APPLICATION (gobject);
+void
+app_activate (GApplication *application) {
+  GtkWidget *win;
+  GtkWidget *nb;
 
-  g_clear_object (&app->settings);
-  g_clear_object (&app->provider);
-  G_OBJECT_CLASS (tfe_application_parent_class)->dispose (gobject);
+  win = get_main_window (application);
+  nb = tfe_get_notebook (win);
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) == 0) /* No page exists */
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
-static void
-tfe_application_init (TfeApplication *app) {
-  app->settings = g_settings_new ("com.github.ToshioCP.tfe");
-  g_signal_connect (app->settings, "changed::font-desc", G_CALLBACK (changed_font_cb), app);
-  app->provider = gtk_css_provider_new ();
+void
+app_open (GApplication *application, GFile ** files, gint n_files, const gchar *hint) {
+  GtkWidget *win;
+  GtkWidget *nb;
+  int i;
+
+  win = get_main_window (application);
+
+  nb = tfe_get_notebook (win);
+  for (i = 0; i < n_files; i++) {
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), files[i]);
+  }
+  if (gtk_notebook_get_n_pages (GTK_NOTEBOOK (nb)) == 0) /* No files have been opened */
+    notebook_page_new_with_file (GTK_NOTEBOOK (nb), NULL);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
-static void
-tfe_application_class_init (TfeApplicationClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_application_dispose;
-  G_APPLICATION_CLASS (class)->startup = app_startup;
-  G_APPLICATION_CLASS (class)->activate = app_activate;
-  G_APPLICATION_CLASS (class)->open = app_open;
+void
+app_startup (GApplication *application) {
+  GSimpleAction *quit_action = g_simple_action_new ("quit", NULL);
+
+  g_signal_connect (quit_action, "activate", G_CALLBACK (quit_activated), application);
+  g_action_map_add_action (G_ACTION_MAP (application), G_ACTION (quit_action));
+  g_object_unref (quit_action);
 }
 
-TfeApplication *
-tfe_application_new (const char *application_id, GApplicationFlags flag) {
-  return TFE_APPLICATION (g_object_new (TFE_TYPE_APPLICATION, "application-id", application_id, "flags", flag, NULL));
+#define APPLICATION_ID "com.github.ToshioCP.tfe5"
+
+int
+main (int argc, char **argv) {
+  GtkApplication *app;
+  int stat;
+
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+
+  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+  g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+
+  stat = g_application_run (G_APPLICATION (app), argc, argv);
+  g_object_unref (app);
+  return stat;
 }

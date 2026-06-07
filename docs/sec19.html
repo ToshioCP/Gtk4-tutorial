@@ -4,11 +4,73 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Temporary Section</title>
+  <title>GtkPopoverMenuBar and GtkMenuButton</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
-
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 </head>
 <body style="padding-top: 70px;">
@@ -31,7 +93,171 @@
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="temporary-section">Temporary Section</h1>
+        <h1 id="gtkpopovermenubar-and-gtkmenubutton">GtkPopoverMenuBar
+        and GtkMenuButton</h1>
+        <h2 id="gtkpopovermenubar">GtkPopoverMenuBar</h2>
+        <p>As explained in the previous sections,
+        <code>GMenuModel</code> is strictly a model, not a widget. This
+        means it cannot be displayed on the screen by itself. In earlier
+        examples, the widget assembly was handled automatically in the
+        background by
+        <code>gtk_application_window_set_show_menubar</code>.</p>
+        <p>However, you can explicitly build and place this menu within
+        your program using <code>GtkPopoverMenuBar</code>. The
+        <code>menu4.c</code> source file demonstrates how to display a
+        menu bar equivalent to <code>menu3.c</code> using this manual
+        approach.</p>
+        <p>Because this method is more complex than simply using
+        <code>gtk_application_window_set_show_menubar</code>, it is
+        generally not recommended unless you specifically need to
+        customize the placement of the menu bar (e.g., placing it
+        somewhere other than the top of the window). For this reason, we
+        will skip a detailed explanation of
+        <code>GtkPopoverMenuBar</code> here, but interested readers are
+        encouraged to examine the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/menu/menu4.c">menu4.c</a>
+        code.</p>
+        <h2 id="gtkmenubutton">GtkMenuButton</h2>
+        <p>This section introduces the modern approach to displaying
+        menus: using a menu button that reveals a popup menu when
+        clicked. This is the recommended design pattern in modern GTK
+        applications.</p>
+        <p>We will demonstrate this by adding a menu button to our Text
+        File Editor (TFE) program.</p>
+        <figure>
+        <img src="/images/tfe6.png" alt="tfe6" />
+        <figcaption aria-hidden="true">tfe6</figcaption>
+        </figure>
+        <p>As shown in the image, the toolbar contains four buttons:</p>
+        <ul>
+        <li>Open</li>
+        <li>Save</li>
+        <li>Close</li>
+        <li>Menu (with a downward-pointing triangle icon)</li>
+        </ul>
+        <p>The rightmost button is the menu button. Clicking it reveals
+        a dropdown menu with the following items:</p>
+        <ul>
+        <li>New</li>
+        <li>Save as</li>
+        <li>Preference</li>
+        <li>Quit</li>
+        </ul>
+        <p>In modern UI design, frequently used functions are placed as
+        standard buttons, while less common features are tucked away in
+        menus. This is because accessing a menu requires a two-step
+        operation: (1) clicking the menu button, and (2) clicking the
+        menu item. Traditional menu bars also require two steps (e.g.,
+        clicking “Edit”, then “Copy”).</p>
+        <p>In contrast, standard buttons require only a single click.
+        Eliminating just one step might seem trivial, but it makes quite
+        a big difference in user experience. Modern applications favor
+        this approach to keep the interface clean and efficient.</p>
+        <h2 id="implementing-the-menu-in-tfe">Implementing the Menu in
+        TFE</h2>
+        <h3 id="ui-files">UI Files</h3>
+        <p>It is good practice to separate the UI file for the menu from
+        the UI file for the main widgets. Because our popup menu is
+        quite simple and introduces no new concepts, we will skip the
+        explanation of its XML structure. Please refer to <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/tfe6/menu.ui">src/tfe6/menu.ui</a>
+        for the code.</p>
+        <h3 id="the-menu-button">The Menu Button</h3>
+        <p>Connecting a menu to a menu button is easy and
+        straightforward. Once you have built your menu model, you simply
+        attach it using the <code>gtk_menu_button_set_menu_model</code>
+        function:</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>gtk_menu_button_set_menu_model <span class="op">(</span>GtkMenuButton <span class="op">*</span>menu_button<span class="op">,</span> G_MENU_MODEL <span class="op">*</span>menu_model<span class="op">);</span></span></code></pre></div>
+        <p>In the widget UI file, we configure the property of the menu
+        button:</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;none&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+        <p>The direction property dictates which way the menu pops up
+        relative to the button. Its default value is
+        <code>GTK_ARROW_DOWN</code> (“down” in UI file), which
+        automatically displays a downward-pointing triangle icon, as
+        seen in the image at the beginning of this section. This
+        triangle adapts depending on the chosen direction (up, down,
+        left, or right).</p>
+        <p>By setting the direction property to “none”
+        (<code>GTK_ARROW_NONE</code>), the menu still pops up downward,
+        but the button’s icon changes to “open-menu-symbolic”, the
+        standard “hamburger” menu icon. You can also explicitly change
+        the icon by setting the icon-name property. Some common
+        alternatives include:</p>
+        <ul>
+        <li><strong>view-more-symbolic:</strong> The “three dots”
+        (kebab) menu icon.</li>
+        <li><strong>emblem-system-symbolic:</strong> The gear icon,
+        typically used for settings.</li>
+        </ul>
+        <p>For example, to create a “three-dot” menu button, your XML
+        would look like this:</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;none&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;view-more-symbolic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+        <p>To explore the available icons, you can use the
+        <code>gtk4-icon-browser</code> tool. Run the following command
+        in your terminal:</p>
+        <pre><code>$ gtk4-icon-browser</code></pre>
+        <p>Once the window opens, click the “Symbolic” tab at the top to
+        find icons suited for UI elements.</p>
+        <h3 id="gtkactionable">GtkActionable</h3>
+        <p>Unlike in previous examples, the buttons in this widget UI
+        file are directly bound to actions. These buttons implement the
+        GtkActionable interface, which provides the functionality to
+        link a widget to a specific action.</p>
+        <p>We have three standard buttons: “Open”, “Save”, and “Close”.
+        There are two ways to handle a button click event.</p>
+        <ul>
+        <li>Connect the “clicked” signal directly to your handler. This
+        is a simpler way.</li>
+        <li>Register an action to the button, making it behave similarly
+        to a menu item. When the button is clicked, its corresponding
+        action is activated. This approach is slightly more complex
+        because it requires creating the action and its activate handler
+        in advance. However, it offers a big advantage: <strong>you can
+        connect multiple triggers to a single action</strong>.</li>
+        </ul>
+        <p>For instance, you can link a keyboard accelerator to the
+        action. Accelerators are keystrokes (like Ctrl+O) mapped to
+        specific actions. By using this method, clicking the “Open”
+        button or pressing Ctrl+O will activate the same file-opening
+        action. This is the primary reason why actions are designed to
+        be independent of specific buttons or menus.</p>
+        <p>For example, the UI definition for the “Open” button looks
+        like this:</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
+        <p>By setting the “action-name” property to “win.open”, the
+        “open” action is activated whenever the button is clicked. You
+        simply need to write the file-opening logic inside the action’s
+        activate signal handler. The workflow is identical to using
+        actions within a menu.</p>
+        <h2 id="a-note-for-wsl-users">A Note for WSL Users</h2>
+        <p>When running GTK applications on WSL (Windows Subsystem for
+        Linux), you may notice that the menu button fails to display the
+        menu on the second and subsequent clicks. Because this bug does
+        not occur in native Linux environments, it is likely an issue
+        specific to WSL’s rendering system. Currently, developing and
+        testing GTK applications that rely heavily on popup menus can be
+        problematic under WSL.</p>
+        <h2 id="source-files">Source files</h2>
+        <p>The source files are under the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe6/">src/tfe6</a>
+        directory. You can build and run the program by changing your
+        current directory to <code>src/tfe6</code> and typing:</p>
+        <pre><code>$ meson setup _build
+$ ninja -C _build
+$ _build/tfe</code></pre>
       </div>
     </div>
   </main>

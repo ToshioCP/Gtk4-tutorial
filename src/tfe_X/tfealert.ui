@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TfeAlert" parent="GtkWindow">
+    <property name="resizable">FALSE</property>
+    <property name="modal">TRUE</property>
+    <property name="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="show-title-buttons">FALSE</property>
+        <property name="title-widget">
+          <object class="GtkLabel" id="lb_title">
+            <property name="label">Are you sure?</property>
+            <property name="single-line-mode">True</property>
+          </object>
+        </property>
+        <child type="start">
+          <object class="GtkButton" id="btn_cancel">
+            <property name="label">Cancel</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+            <signal name="clicked" handler="cancel_cb" swapped="TRUE" object="TfeAlert"></signal>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkButton" id="btn_accept">
+            <property name="label">Close</property>
+            <style>
+              <class name="destructive-action"/>
+            </style>
+            <signal name="clicked" handler="accept_cb" swapped="TRUE" object="TfeAlert"></signal>
+          </object>
+        </child>
+      </object>
+    </property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="spacing">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon-name">dialog-warning</property>
+            <property name="icon-size">GTK_ICON_SIZE_LARGE</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lb_message">
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
+

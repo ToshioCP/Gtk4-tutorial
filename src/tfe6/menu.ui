@@ -20,7 +20,7 @@
     <section>
       <item>
         <attribute name="label">Quit</attribute>
-        <attribute name="action">win.close-all</attribute>
+        <attribute name="action">app.quit</attribute>
       </item>
     </section>
   </menu>
