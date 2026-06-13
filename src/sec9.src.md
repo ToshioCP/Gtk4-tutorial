@@ -204,12 +204,15 @@ It describes resource files.
 tfe/tfe3.gresource.xml
 @@@
 
-- 2: "gresources" tag can include multiple "gresource" tags.
-However, this xml has only one "gresource" tag.
-- 3: A "gresource" tag can haves a prefix attribute.
+- 2: `<gresources>` tag can include multiple `<gresource>` tags.
+However, this xml has only one `<gresource>` tag.
+- 3: A `<gresource>` tag can have a prefix attribute.
 This tag defines that the prefix for `tfe3.ui` is `/com/github/ToshioCP/tfe3`.
 A prefix works like a namespace.
-Even if you have two same name resources, GTK can distinguish them with their different prefixes.
+As a best practice, you should always use your Application ID (with dots replaced by slashes) as the prefix.
+In this program, the Application ID is "com.github.ToshioCP.tfe3" and the prefix is "/com/github/ToshioCP/tfe3".
+While it is technically possible to define multiple different prefixes within a single application to distinguish resources with the same name, this is not recommended.
+If you need to organize multiple resources, you should keep a single Application ID prefix and distinguish your files by giving them different filenames or placing them in different subdirectories.
 - 4: The name of the GRresource is `tfe3.ui`.
 The resource will be referred to as "/com/github/ToshioCP/tfe3/tfe3.ui" by GtkBuilder.
 The pattern is "prefix" + "name".

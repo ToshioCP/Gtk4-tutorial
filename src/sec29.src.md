@@ -1,437 +1,256 @@
-# GtkListView
+# Custom Drawing
 
-GTK 4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
-The new feature is described in [Gtk API Reference -- List Widget Overview](https://docs.gtk.org/gtk4/section-list-widget.html).
+Custom drawing is to draw shapes dynamically.
+This section shows an example of custom drawing.
+You can draw rectangles by dragging the mouse.
 
-GTK 4 has other means to implement lists.
-They are GtkListBox and GtkTreeView which are took over from GTK 3.
-There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
-He described why GtkListView are developed to replace GtkTreeView.
-GtkTreeView is deprecated since version 4.10.
-
-GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 29 to 33.
-
-## Outline
-
-A list is a sequential data structure.
-For example, an ordered string sequence "one", "two", "three", and "four" is a list.
-Each element is called an item.
-A list is like an array, but in many cases it is implemented with pointers which point to the next items of the list.
-And it has a start point.
-So, each item can be referred to by the index of the item (first item, second item, ..., nth item, ...).
-
-Gio provides GListModel interface.
-It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
-An object that implements GListModel is not a widget.
-So, the list is not displayed on the screen directly.
-There's another object GtkListView which is a widget to display the list.
-The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GtkListView.
+Press down the button.
 
 @@@if pdf
-![List](/images/list.png){width=10cm height=7.5cm}
+![Press down the button](/images/cd0.png){width=6cm height=4.83cm}
 @@@else
-![List](/images/list.png)
+![Press down the button](/images/cd0.png)
 @@@end
 
-## GListModel and GtkStringList
-
-If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
-Because GListModel is a list of GObject objects and strings aren't GObject objects.
-The word "GObject" here means GObject class or its derived class.
-So, you need a wrapper which is a GObject and contains a string.
-GtkStringObject is the wrapper object and GtkStringList, which implements GListModel, is a list of GtkStringObject.
-
-@@@if gfm
-~~~C
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@elif html
-~~~{.C}
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@elif latex
-~~~{.C}
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@else
-~~~
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@end
-
-The function `gtk_string_list_new` creates a GtkStringList object.
-Its items are GtkStringObject objects which contain the strings "one", "two", "three" and "four".
-There are functions to add items to the list or remove items from the list.
-
-- `gtk_string_list_append` appends an item to the list
-- `gtk_string_list_remove` removes an item from the list
-- `gtk_string_list_get_string` gets a string in the list
-
-See [GTK 4 API Reference -- GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html) for further information.
-
-Other list objects will be explained later.
-
-## GtkSelectionModel
-
-GtkSelectionModel is an interface to support for selection.
-Thanks to this model, a user can select items by clicking on them.
-It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
-These three objects are usually enough to build an application.
-They are created with another GListModel.
-You can also create them alone and add a GListModel later.
-
-- GtkMultiSelection supports multiple selection.
-- GtkNoSelection supports no selection. This is a wrapper to GListModel when GtkSelectionModel is needed.
-- GtkSingleSelection supports single selection.
-
-## GtkListView
-
-GtkListView is a widget to show GListModel items.
-GtkListItem is used by GtkListView to represent items of a list model.
-But, GtkListItem is not a widget (not a descendant of GtkWidget), so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
-"item" property of GtkListItem points to an object that belongs to the list model.
+Move the mouse.
 
 @@@if pdf
-![GtkListItem](/images/gtklistitem.png){width=10cm height=7.5cm}
+![Move the mouse](/images/cd1.png){width=6cm height=4.83cm}
 @@@else
-![GtkListItem](/images/gtklistitem.png)
+![Move the mouse](/images/cd1.png)
 @@@end
 
-In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
-This recycle makes the number of GtkListItem objects fairly small, less than 200.
-This is very effective to restrain the growth of memory consumption so that GListModel can contain lots of items, for example, more than a million items.
+Release the button.
 
-## GtkListItemFactory
+@@@if pdf
+![Release the button](/images/cd2.png){width=6cm height=4.83cm}
+@@@else
+![Release the button](/images/cd2.png)
+@@@end
 
-GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
-There are two child classes of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
+The programs are at `src/custom_drawing` directory.
+Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial) and see the directory.
+There are four files.
 
-### GtkSignalListItemFactory
+- meson.build
+- rect.c
+- rect.gresource.xml
+- rect.ui
 
-GtkSignalListItemFactory provides signals for users to configure a GtkListItem object.
-There are four signals.
+## rect.gresource.xml
 
-1. "setup" is emitted to set up GtkListItem object.
-A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of the GtkListItem to it.
-This setting is kept even when the GtkListItem instance is recycled (to bind to another item of GListModel).
-2. "bind" is emitted to bind an item in the list model to the widget.
-For example, a user gets the item from "item" property of the GtkListItem instance.
-Then gets the string of the item and sets the label property of the GtkLabel instance with the string.
-This signal is emitted when the GtkListItem is newly created, recycled or some changes have happened to the item of the list.
-3. "unbind" is emitted to unbind an item.
-A user undoes everything done in step 2 in the signal handler.
-If some object are created in step 2, they must be destroyed.
-4. "teardown" is emitted to undo everything done in step 1.
-So, the widget created in step 1 must be destroyed.
-After this signal, the list item will be destroyed.
-
-The following program `list1.c` shows a list of strings "one", "two", "three" and "four".
-GtkNoSelection is used, so user can't select any item.
+This file describes a UI file to compile.
+The compiler glib-compile-resources uses it.
 
 @@@include
-misc/list1.c
+custom_drawing/rect.gresource.xml
 @@@
 
-The file `list1.c` is located under the directory [/src/misc](misc/).
-Make a shell script below and save it to your bin directory, for example `$HOME/bin`.
+The prefix is `/com/github/ToshioCP/rect` and the file is `rect.ui`.
+Therefore, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui`.
 
-@@@if gfm
-~~~Shell
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@elif html
-~~~{.bash}
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@elif latex
-~~~{.bash}
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@else
-~~~
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@end
+## rect.ui
 
-Change the current directory to the directory includes `list1.c` and type as follows.
-
-~~~
-$ bash comp list1
-$ ./a.out
-~~~
-
-Then, the following window appears.
-
-@@@if pdf
-![list1](/images/list1.png){width=6.04cm height=4.40cm}
-@@@else
-![list1](/images/list1.png)
-@@@end
-
-The program is not so difficult.
-If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.
-
-### GtkBuilderListItemFactory
-
-GtkBuilderListItemFactory is another GtkListItemFactory.
-Its behavior is defined in a UI file.
-
-@@@if gfm
-~~~xml
-<interface>
-  <template class="GtkListItem">
-    <property name="child">
-      <object class="GtkLabel">
-        <binding name="label">
-          <lookup name="string" type="GtkStringObject">
-            <lookup name="item">GtkListItem</lookup>
-          </lookup>
-        </binding>
-      </object>
-    </property>
-  </template>
-</interface>
-~~~
-@@@else
-~~~{.xml}
-<interface>
-  <template class="GtkListItem">
-    <property name="child">
-      <object class="GtkLabel">
-        <binding name="label">
-          <lookup name="string" type="GtkStringObject">
-            <lookup name="item">GtkListItem</lookup>
-          </lookup>
-        </binding>
-      </object>
-    </property>
-  </template>
-</interface>
-~~~
-@@@end
-
-Template tag is used to define GtkListItem.
-And its child property is GtkLabel object.
-The factory sees this template and creates GtkLabel and sets the child property of GtkListItem.
-This is the same as what setup handler of GtkSignalListItemFactory did.
-
-Then, bind the label property of the GtkLabel to the string property of a GtkStringObject.
-The string object refers to the item property of the GtkListItem.
-So, the lookup tag is like this:
-
-~~~
-label <- string <- GtkStringObject <- item <- GtkListItem
-~~~
-
-The last lookup tag has a content `GtkListItem`.
-Usually, C type like `GtkListItem` doesn't appear in the content of tags.
-This is a special case.
-There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
-
-> Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
-
-Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in [Section 31](sec31.src.md).
-
-The C source code is as follows.
-Its name is `list2.c` and located under [/src/misc](misc/) directory.
+The following is the UI file that defines the widgets.
+There are two widgets which are GtkApplicationWindow and GtkDrawingArea.
+The ids are `win` and `da` respectively.
 
 @@@include
-misc/list2.c
+custom_drawing/rect.ui
 @@@
 
-No signal handler is needed for GtkBuilderListItemFactory.
-GtkSingleSelection is used, so user can select one item at a time.
+## rect.c
 
-Because this is a small program, the UI data is given as a string.
+### GtkApplication
 
-## GtkDirectoryList
+This program uses GtkApplication.
+The application ID is `com.github.ToshioCP.rect`.
 
-GtkDirectoryList is a list model containing GFileInfo objects which are information of files under a certain directory.
-It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
-The list model is created by `gtk_directory_list_new` function.
+```c
+#define APPLICATION_ID "com.github.ToshioCP.rect"
+```
 
-@@@if gfm
-~~~C
-GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
-~~~
-@@@else
-~~~{.C}
-GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
-~~~
-@@@end
+See [GNOME Developer Documentation](https://developer.gnome.org/documentation/tutorials/application-id.html) for further information.
 
-`attributes` is a comma separated list of file attributes.
-File attributes are key-value pairs.
-A key consists of a namespace and a name.
-For example, "standard::name" key is the name of a file.
-"standard" means general file information.
-"name" means filename.
-The following table shows some example.
-
-|key             |meaning                                                             |
-|:---------------|:-------------------------------------------------------------------|
-|standard::type  |file type. for example, regular file, directory, symbolic link, etc.|
-|standard::name  |filename                                                            |
-|standard::size  |file size in bytes                                                  |
-|access::can-read|read privilege if the user is able to read the file                 |
-|time::modified  |the time the file was last modified in seconds since the UNIX epoch |
-
-The current directory is ".".
-The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
-
-@@@if gfm
-~~~C
-GFile *file = g_file_new_for_path (".");
-GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
-g_object_unref (file);
-~~~
-@@@else
-~~~{.C}
-GFile *file = g_file_new_for_path (".");
-GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
-g_object_unref (file);
-~~~
-@@@end
-
-It is not so difficult to make a file listing program by changing `list2.c` in the previous subsection.
-One problem is that GFileInfo doesn't have properties.
-Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
-Instead, a closure tag is appropriate in this case.
-A closure tag specifies a function and the type of the return value of the function.
-
-@@@if gfm
-~~~C
-char *
-get_file_name (GtkListItem *item, GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
-}
-... ...
-... ...
-
-"<interface>"
-  "<template class=\"GtkListItem\">"
-    "<property name=\"child\">"
-      "<object class=\"GtkLabel\">"
-        "<binding name=\"label\">"
-          "<closure type=\"gchararray\" function=\"get_file_name\">"
-            "<lookup name=\"item\">GtkListItem</lookup>"
-          "</closure>"
-        "</binding>"
-      "</object>"
-    "</property>"
-  "</template>"
-"</interface>"
-~~~
-@@@else
-~~~{.C}
-char *
-get_file_name (GtkListItem *item, GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
-}
-... ...
-... ...
-
-"<interface>"
-  "<template class=\"GtkListItem\">"
-    "<property name=\"child\">"
-      "<object class=\"GtkLabel\">"
-        "<binding name=\"label\">"
-          "<closure type=\"gchararray\" function=\"get_file_name\">"
-            "<lookup name=\"item\">GtkListItem</lookup>"
-          "</closure>"
-        "</binding>"
-      "</object>"
-    "</property>"
-  "</template>"
-"</interface>"
-~~~
-@@@end
-
-- The string "gchararray" is a type name registered in the GObject type system.
-While the type "gchar" is the same as the C "char" type, "gchararray" specifically represents a NULL-terminated string (char *).
-In GtkBuilder XML files, you must use these registered type names instead of native C types to let the GValue system handle the data correctly.
-For example, common type names include gboolean, gchar, gint, gfloat, gdouble, and gchararray.
-See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue) for further information.
-- Closure tag has type attribute and function attribute.
-Function attribute specifies the function name and type attribute specifies the type of the return value of the function.
-The content of closure tag (it is between \<closure...\> and\</closure\>) consists of the parameters for the function.
-`<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
-This will be the second argument of the function.
-The first parameter is always the GListItem instance, which is a 'this' object.
-The 'this' object is explained in Section 31.
-- `get_file_name` function is the callback function for the closure tag.
-It first checks the `info` parameter.
-Because it can be NULL when GListItem `item` is unbounded.
-If it's GFileInfo, it returns the copied filename.
-Because the return value (filename) of `g_file_info_get_name` is owned by GFileInfo object.
-So, the the string needs to be duplicated to give the ownership to the caller.
-Binding tag binds the "label" property of the GtkLabel to the closure tag.
-
-The whole program (`list3.c`) is as follows.
-The program is located in [/src/misc](misc/) directory.
+The function `main` is called at the beginning of the application.
 
 @@@include
-misc/list3.c
+custom_drawing/rect.c main
 @@@
 
-The ui data (xml data above) is used to build the GListItem template at runtime.
-GtkBuilder refers to the symbol table to find the function `get_file_name`.
+It connects three signals and handlers.
 
-Generally, a symbol table is used by a linker to link objects to an executable file.
-It includes function names and their location.
-A linker usually doesn't put a symbol table into the created executable file.
-But if `--export-dynamic` option is given, the linker adds the symbol table to the executable file.
+- startup: It is emitted after the application is registered to the system. 
+- activate: It is emitted when the application is activated.
+- shutdown: It is emitted just before the application quits.
 
-To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
+@@@include
+custom_drawing/rect.c app_startup
+@@@
 
-- `-Wl` is a C compiler option that passes the following option to the linker.
-- `--export-dynamic` is a linker option.
-The following is cited from the linker document.
-"When creating a dynamically linked executable, add all symbols to the dynamic symbol table.
-The dynamic symbol table is the set of symbols which are visible from dynamic objects at run time."
+The startup handler performs the following three tasks:
 
-Compile and execute it.
+- Builds the widgets.
+- Initializes the GtkDrawingArea instance.
+  - Sets the drawing function
+  - Connects the "resize" signal and the handler.
+- Creates the GtkGestureDrag instance and initializes it.
+Gestures will be explained in this section later.
 
-~~~
-$ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`
-~~~
+@@@include
+custom_drawing/rect.c app_activate
+@@@
 
-You can also make a shell script to compile `list3.c`
+The activate handler just shows the window.
+
+### GtkDrawingArea
+
+The program has two cairo surfaces and they are pointed to by the global variables.
 
 @@@if gfm
-~~~bash
-gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+```C
+static cairo_surface_t *surface = NULL;
+static cairo_surface_t *surface_save = NULL;
+```
 @@@else
-~~~{.bash}
-gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+```{.C}
+static cairo_surface_t *surface = NULL;
+static cairo_surface_t *surface_save = NULL;
+```
 @@@end
 
-Save this one liner to a file `comp`.
-Then, copy it to `$HOME/bin` and give it executable permission.
+The drawing process is as follows.
 
-~~~
-$ cp comp $HOME/bin/comp
-$ chmod +x $HOME/bin/comp
-~~~
+- Creates an image on `surface`.
+- Copies `surface` to the cairo surface of the GtkDrawingArea.
+- Calls ` gtk_widget_queue_draw (da)` to draw it if necessary.
 
-You can compile `list3.c` and execute it, like this:
+They are created in the "resize" signal handler.
 
-~~~
-$ comp list3
-$ ./a.out
-~~~
+@@@include
+custom_drawing/rect.c resize_cb
+@@@
+
+This callback is called when the GtkDrawingArea is shown.
+This is called only once since the window is not resizable.
+
+It creates image surfaces for `surface` and `surface_save`.
+The `surface` surface is painted white, which is the background color.
+
+The drawing function copies `surface` to the GtkDrawingArea surface.
+
+@@@include
+custom_drawing/rect.c draw_cb
+@@@
+
+This function is called by the system when it needs to redraw the drawing area.
+
+Two surfaces `surface` and `surface_save` are destroyed before the application quits.
+
+@@@include
+custom_drawing/rect.c app_shutdown
+@@@
+
+### GtkGestureDrag
+
+Gesture class is used to recognize human gestures such as click, drag, pan, swipe and so on.
+It is a subclass of GtkEventController.
+GtkGesture class is abstract and there are several implementations.
+
+- GtkGestureClick
+- GtkGestureDrag
+- GtkGesturePan
+- GtkGestureSwipe
+- And others
+
+The program `rect.c` uses GtkGestureDrag.
+It is the implementation for drag gestures.
+The parent-child relationship is as follows.
+
+```
+GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag
+```
+
+GtkGestureSingle is a subclass of GtkGesture and optimized for single-touch and mouse interactions.
+
+A GtkGestureDrag instance is created and initialized in the startup signal handler in `rect.c`.
+See line 18 to 23 in the following.
+
+@@@include
+custom_drawing/rect.c app_startup
+@@@
+
+- The function `gtk_gesture_drag_new` creates a new GtkGestureDrag instance.
+- The function `gtk_gesture_single_set_button` sets the button number to listen to.
+The constant `GDK_BUTTON_PRIMARY` is the left button of a mouse.
+- The function `gtk_widget_add_controller` adds an event controller, which is a base class for gestures.
+- Three signals and handlers are connected.
+  - drag-begin: Emitted when dragging starts.
+  - drag-update: Emitted when the dragging pointer moves.
+  - drag-end: Emitted when the dragging ends.
+
+The process during the drag is as follows.
+
+- start: save the surface and start points
+- update: restore the surface and draw a thin rectangle between the start point and the current point of the mouse
+- end: restore the surface and draw a thick rectangle between the start and end points.
+
+We need two global variables for the start point.
+
+@@@if gfm
+```C
+static double start_x;
+static double start_y;
+```
+@@@else
+```{.C}
+static double start_x;
+static double start_y;
+```
+@@@end
+
+The following is the handler for the "drag-begin" signal.
+
+@@@include
+custom_drawing/rect.c copy_surface drag_begin
+@@@
+
+- Copies `surface` to `surface_save`, which is an image just before the dragging.
+- Stores the points to `start_x` and `start_y`.
+
+@@@include
+custom_drawing/rect.c drag_update
+@@@
+
+- Restores `surface` from `surface_save`.
+- Draws a rectangle with thin lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+@@@include
+custom_drawing/rect.c drag_end
+@@@
+
+- Restores `surface` from `surface_save`.
+- Draws a rectangle with thick lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+## Build and Run
+
+Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+Change your current directory to `src/custom_drawing`.
+Run meson and ninja to build the program.
+Type `_build/rect` to run the program.
+Try to draw rectangles.
+
+```
+$ cd src/custom_drawing
+$ meson setup _build
+$ ninja -C _build
+$ _build/rect
+```
 
 @@@if pdf
-![screenshot list3](/images/list3.png){width=10cm height=7.3cm}
+![The screen of rect program](/images/rect.png){width=12.4cm height=10cm}
 @@@else
-![screenshot list3](/images/list3.png)
+![The screen of rect program](/images/rect.png)
 @@@end

@@ -145,7 +145,7 @@ menu/menu3.ui
 @@@
 
 Although this UI file creates a much larger and deeper tree structure compared to our previous example, notice that it uses the exact same basic XML tags: `<menu>`, `<submenu>`, `<section>`, `<item>`, and `<attribute>`.
-By simply nesting these familiar elements, you can build highly complex and practical menu systems without learning any new syntax.
+By simply nesting these familiar elements, you can build complex and practical menu systems without learning any new syntax.
 
 For more detailed information and advanced usage of menu UI files, please refer to the [GtkPopoverMenu section](https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models) in the GTK documentation.
 

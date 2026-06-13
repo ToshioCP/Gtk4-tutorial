@@ -1,338 +1,233 @@
-# Composite Widgets and Alert Dialog
+# Managing the Application
 
-The source files are in the [Gtk4 tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
-Download it and see `src/tfe6` directory.
+A good rule of thumb in programming is to split your code into separate files based on what they do.
+Following this idea, we should reorganize TFE's `application.c`.
+We're going to divide it into three main parts:
 
-## An Outline of New Tfe Text Editor
+- `main`: This function handles the command-line interface.
+- `application`: This is the core application object.
+It creates and manages things like windows.
+- `window`: This object handles the window itself and the widgets inside it.
 
-Tfe text editor will be restructured.
-The program is divided into six parts.
+In this section, we'll focus on the first two parts and save the window management for later.
 
-- Main program: the C main function.
-- TfeApplication object: It is like GtkApplication but keeps GSettings and CSS Provider.
-- TfeWindow object: It is a window with buttons and a notebook.
-- TfePref object: A preference dialog.
-- TfeAlert object: An alert dialog.
-- pdf2css.h and pdf2css.c: Font and CSS utility functions.
+## Creating an Application Class
 
-This section describes TfeAlert.
-Others will be explained in the following sections.
+When you write a GTK application, you have two main options:
 
-## Composite Widgets
+- Use GtkApplication exactly as it is.
+- Create your own subclass of GtkApplication.
 
-The alert dialog is like this:
+Creating a subclass is generally the better choice because it lets you use "instance variables".
+An instance variable is simply a piece of data attached to a specific object.
+For example, remember how we made TfeTextView (a subclass of GtkTextView)?
+We gave it an instance variable called `file` to store a GFile object.
+If we had a TfeTextView object named `tv`, we could easily access that file using `tv->file`.
 
-@@@if pdf
-![Alert dialog](/images/alert.png){width=4.2cm height=1.7cm}
-@@@else
-![Alert dialog](/images/alert.png)
-@@@end
+Applications usually need to keep track of objects other than just windows.
+For example, TFE will eventually need to manage settings using a GSettings object.
+The standard way to keep track of these objects is by saving pointers to them as instance variables.
+So, let's define our own TfeApplication class as a subclass of GtkApplication.
 
-Tfe uses it when a user quits the application or closes a notebook without saving data to files.
+If you remember how we made TfeTextView, you'll find this process very familiar.
 
-The dialog has a title, buttons, an icon and a message.
-Therefore, it consists of several widgets.
-Such dialog is called a composite widget.
+## Writing the Header and C Files.
 
-Composite widgets are defined with template XMLs.
-The class is built in the class initialization function and the instances are built and disposed by the following functions.
-
-- gtk\_widget\_init\_template
-- gtk\_widget\_dispose\_template
-
-TfeAlert is a good example to know composite widgets.
-It is defined with the three files.
-
-- tfealert.ui: XML file
-- tfealert.h: Header file
-- tfealert.c: C program file
-
-## The XML File
-
-A template tag is used in a composite widget XML.
+Let's quickly review how to write the header and C files for our new class.
+We'll start with the header file.
 
 @@@include
-tfe6/tfealert.ui
+tfe7/tfeapplication.h
 @@@
 
-- 3: A template tag defines a composite widget.
-The class attribute tells the class name of the composite widget.
-The parent attribute tells the parent class of the composite widget.
-So, TfeAlert is a child class of GtkWindow.
-The parent attribute specifies the parent class of the composite widget.
-While it is technically optional in the XML, it is highly recommended to include it.
-Providing the parent class allows GtkBuilder to verify the class hierarchy at runtime and improves the readability of the UI file.
-- 4-6: Its three properties are defined.
-These properties are inherited from GtkWindow.
-The titlebar property has a widget for a custom title bar.
-The typical widget is GtkHeaderBar.
-- 8: If the property "show-title-buttons" is TRUE, the title buttons like close, minimize and maximize are shown.
-Otherwise it is not shown.
-The TfeAlert object is not resizable.
-It is closed when either of the two buttons, cancel or accept, is clicked.
-Therefore the title buttons are not necessary and this property is set to FALSE.
-- 9-14: The bar contains a title, implemented as a GtkLabel widget.
-The default title is "Are you sure?" but it can be replaced by an instance method.
-- 15-32: The bar has two buttons, cancel and accept.
-The cancel button is on the left so the child tag has `type="start"` attribute.
-The accept button is on the right so the child tag has `type="end"` attribute.
-The dialog is shown when the user clicked the close button or the quit menu without saving the data.
-Therefore, it is safer for the user to click on the cancel button of the alert dialog.
-So, the cancel button has a "suggested-action" CSS class.
-Ubuntu colors the button green but the color can be blue or other appropriate one defined by the system.
-In the same way the accept button has a "destructive-action" CSS class and is colored red.
-Two buttons have signals which are defined by the signal tags.
-By setting `swapped="TRUE"`, the instance emitting the signal and the user data are swapped.
-Consequently, the `cancel_cb` handler receives the `TfeAlert` object as its first parameter."
-- 35-54: A horizontal box has an image icon and a label.
-- 44-47: The GtkImage widget displays an image.
-The "icon-name" property is an icon name in the icon theme.
-The theme depends on your system.
-You can check it with an icon browser.
+- 5: We define the GType for TfeApplication using a macro.
+There are strict naming rules here:
+  - The macro name must be ALL CAPS like this: `PREFIX_TYPE_OBJECT_NAME`.
+  - The function name must be all lowercase like this: `prefix_object_name_get_type ()`.
+- 6: We use the `G_DECLARE_FINAL_TYP`E macro to set up our class.
+  - 1st argument: CamelCase (`PrefixObjectname`) like: `TfeApplication`
+  - 2nd argument: lowercase (`prefix_objectname`) like: `tfe_application`
+  - 3rd argument: ALL CAPS (`PREFIX`) like: `TFE`
+  - 4th argument: ALL CAPS (`OBJECTNAME`) like:  `APPLICATION`
+  - 5th argument: CamelCase (`ParentObjectname`) like: `GtkApplication`
+- 8-9: The only function we need to make public is the one that creates our application, `tfe_application_new`.
 
-~~~
-$ gtk4-icon-browser
-~~~
-
-The "dialog-warning" icon is something like this.
-
-@@@if pdf
-![dialog-warning icon is like ...](/images/dialog_warning.png){width=4.19cm height=1.62cm}
-@@@else
-![dialog-warning icon is like ...](/images/dialog_warning.png)
-@@@end
-
-These were created manually.
-The real image on the alert dialog is nicer.
-
-It is possible to define the alert widget as a child of GtkDialog.
-But GtkDialog is deprecated since GTK version 4.10.
-And users should use GtkWindow instead of GtkDialog.
-
-## The Header File
-
-The header file is similar to the one of TfeTextView.
-
-@@@include
-tfe6/tfealert.h
-@@@
-
-- 5-6: These two lines are always needed to define a new object.
-`TFE_TYPE_ALERT` is the type of TfeAlert object and it is a macro expanded into the call to `tfe_alert_get_type ()`.
-G\_DECLARE\_FINAL\_TYPE macro is expanded into:
-  - The declaration of the function `tfe_alert_get_type`
-  - `TfeAlert` is defined as a typedef of `struct _TfeAlert`, which is defined in the C file.
-  - `TFE_ALERT` and `TFE_IS_ALERT` macro is defined as a cast and type check function.
-  - `TfeAlertClass` structure is defined as a final class.
-- 8-13: The TfeAlert class has a "response" signal.
-It has a parameter and the parameter type is defined as a `TfeAlertResponseType` enumerative constant.
-- 15-31: Getter and setter methods.
-- 33-37: Functions to create an instance.
-The function `tfe_alert_new_with_data` is a convenience function, which creates an instance and sets data at once.
-
-## The C File
-
-### Functions for Composite Widgets
-
-The following codes are extracted from `tfealert.c`.
+Now, let's look at the C file.
+The beginning looks just like what we did for TfeTextView.
 
 @@@if gfm
 ```C
-#include <gtk/gtk.h>
-#include "tfealert.h"
-
-struct _TfeAlert {
-  GtkWindow parent;
-  GtkLabel *lb_title;
-  GtkLabel *lb_message;
-  GtkButton *btn_accept;
-  GtkButton *btn_cancel;
-};
-
-G_DEFINE_FINAL_TYPE (TfeAlert, tfe_alert, GTK_TYPE_WINDOW);
-
-static void
-cancel_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-accept_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-tfe_alert_dispose (GObject *gobject) { // gobject is actually a TfeAlert instance.
-  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_ALERT);
-  G_OBJECT_CLASS (tfe_alert_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_alert_init (TfeAlert *alert) {
-  gtk_widget_init_template (GTK_WIDGET (alert));
-}
-
-static void
-tfe_alert_class_init (TfeAlertClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_alert_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfealert.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_title);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_message);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_cancel);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), cancel_cb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), accept_cb);
-  ... ... ...
-}
-
-GtkWidget *
-tfe_alert_new (void) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
-}
-```
 @@@else
-```{.C}
+```{.c}
+@@@end
 #include <gtk/gtk.h>
-#include "tfealert.h"
+#include "tfeapplication.h"
 
-struct _TfeAlert {
-  GtkWindow parent;
-  GtkLabel *lb_title;
-  GtkLabel *lb_message;
-  GtkButton *btn_accept;
-  GtkButton *btn_cancel;
+struct _TfeApplication {
+  GtkApplication parent;
+  GSettings *settings;
 };
 
-G_DEFINE_FINAL_TYPE (TfeAlert, tfe_alert, GTK_TYPE_WINDOW);
-
-static void
-cancel_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-accept_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-tfe_alert_dispose (GObject *gobject) { // gobject is actually a TfeAlert instance.
-  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_ALERT);
-  G_OBJECT_CLASS (tfe_alert_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_alert_init (TfeAlert *alert) {
-  gtk_widget_init_template (GTK_WIDGET (alert));
-}
-
-static void
-tfe_alert_class_init (TfeAlertClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_alert_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfealert.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_title);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_message);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_cancel);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), cancel_cb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), accept_cb);
-  ... ... ...
-}
-
-GtkWidget *
-tfe_alert_new (void) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
-}
+G_DEFINE_FINAL_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
 ```
+
+- 1: Include the main GTK header.
+- 2: You must include your object's own header file.
+- 4-7: Here is where we declare the data for our object.
+The struct name must be CamelCase, starting with an underscore: `_TfeApplication`.
+The very first member must be the parent object's structure.
+You can name it whatever you want, but calling it "parent" is the standard practice.
+After "parent", you can add your instance variables.
+We're adding a pointer for GSettings here because we plan to use it later.
+- 9: The `G_DEFINE_FINAL_TYPE` macro.
+  - 1st argument: CamelCase. `TfeApplication`
+  - 2nd argument: lowercase. `tfe_application`
+  - 3rd argument: ALL CAPS (The parent's type macro). `GTK_TYPE_APPLICATION`
+
+These steps are the standard recipe for creating a subclass in GObject.
+It's a great pattern to memorize.
+If you want to know exactly what these macros do behind the scenes, check out the [GObject tutorial](https://toshiocp.github.io/Gobject-tutorial).
+
+## Initializing the Instance and ClassInstance
+
+### Instance Initialization
+
+Right now, we don't actually need to do any special setup when a new instance is created.
+However, GTK expects an initialization function to exist, so we still have to write one, even if it's completely empty inside.
+
+### Instance Disposal
+
+@@@include
+tfe7/tfeapplication.c tfe_application_dispose
+@@@
+
+We already covered how disposal works in detail back in Section 11, so we'll keep it brief here.
+For now, our application doesn't need to clean anything up.
+But later, when we start using GSettings (which we'll set up during the application's startup), we will need to free that memory here.
+So, we've just left a comment as a reminder.
+The most important thing to remember about your dispose function is to always call the parent class's dispose function at the end to chain up the cleanup process.
+
+### Class Initialization
+
+#### Overriding the Dispose Method
+
+@@@include
+tfe7/tfeapplication.c tfe_application_class_init
+@@@
+
+When the class is initialized, we can override class methods.
+
+First, we need to override the dispose method so GTK knows to call our custom cleanup code.
+We did the exact same thing for TfeTextView in Section 11, so feel free to look back at that if you need a refresher.
+
+#### Overriding the Sstartup, Activate, and Open Methods
+
+Take a look at the family tree for our TfeApplication class:
+
+```
+GObject - GApplication - GtkApplication - TfeApplication
+```
+
+It's actually the GApplication class that defines the "startup", "activate", and "open" signals.
+In GTK, there are generally two ways to handle signals:
+
+- Default signal handlers: These are built right into the class that created the signal.
+- User-defined signal handlers: These are attached from the outside using functions like `g_signal_connect`.
+
+Let's look at the "startup" signal.
+The GApplication class owns the default handler for it.
+Inside the class structure, there is a member named `startup` that points to the GApplication startup function.
+GTK uses this startup pointer to run the code; it doesn't call the function directly by its name.
+
+When you make a subclass, the beginning of its class structure is an exact copy of the parent's class structure.
+For example, the start of the GtkApplication class structure looks just like the GApplication class structure:
+
+@@@if gfm
+```C
+@@@else
+```{.c}
 @@@end
+struct _GtkApplicationClass
+{
+  GApplicationClass parent_class; /* This member has the same structure as GApplicationClass */
+  ... ... ...
+}
+```
 
-- `G_DEFINE_FINAL_TYPE` was introduced in GLib 2.70 for final type classes.
-While `G_DEFINE_TYPE` still works, the new macro is preferred.
-It is expanded into:
-  - The declaration of the functions `tfe_alert_init` and `tfe_alert_class_init`.
-They are defined in the following part of the C program.
-  - The definition of the variable `tfe_alert_parent_class`.
-  - The definition of the function `tfe_alert_get_type`.
-- The names of the members of `_TfeAlert`, which are `lb_title`, `lb_message`, `btn_accept` and `btn_cancel`,
-must be the same as the id attribute in the XML file `tfealert.ui`.
-- The function `tfe_alert_class_init` initializes the composite widget class.
-  - The function `gtk_widget_class_set_template_from_resource` sets the template of the class.
-The template is built from the XML resource "tfealert.ui".
-At this moment no instance is created.
-It just makes the class recognize the structure of the object.
-That’s why the top level tag is not object but template in the XML file.
-  - The function macro `gtk_widget_class_bind_template_child` connects the member of TfeAlert and the object class in the template.
-So, for example, you can access to `lb_title` GtkLabel instance via `alert->lb_title` where `alert` is an instance of TfeAlert class.
-  - The function `gtk_widget_class_bind_template_callback` connects the callback function and the `handler` attribute of the signal tag in the XML.
-For example, the "clicked" signal on the cancel button has a handler named "cancel\_cb" in the signal tag.
-And the function `cancel_cb` exists in the C file above.
-These two are connected so when the signal is emitted the function `cancel_cb` is called.
-You can add `static` storage class to the callback function thanks to this connection.
-- The function `tfe_alert_init` initializes the newly created instance.
-You need to call `gtk_widget_init_template` to create and initialize the child widgets in the template.
-- The function `tfe_alert_dispose` releases objects.
-The function `gtk_widget_dispose_template` clears the template children.
-- The function `tfe_alert_new` creates the composite widget TfeAlert instance.
-It creates not only TfeAlert itself but also all the child widgets that the composite widget has.
+Because of this, the `startup` member is included in this GApplicationClass area.
+As a subclass, we can write our own custom startup function and change this `startup` member so it points to our new function instead.
+This is called overriding.
 
-### Other Functions
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+static void
+gtk_application_class_init (GtkApplicationClass *class)
+{
+  ... ... ...
+  application_class->startup = gtk_application_startup;
+  ... ... ...
+}
+```
 
-The following is the full codes of `tfealert.c`.
+When we override the startup process, it's crucial that we still run the parent class's startup code.
+We do this by calling the parent's startup function right at the beginning of our custom function.
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+static void
+gtk_application_startup (GApplication *g_application)
+{
+  ... ... ...
+  G_APPLICATION_CLASS (gtk_application_parent_class)->startup (g_application);
+  ... ... ...
+}
+```
+
+So, to set up our own startup process in TfeApplication, we need to do two things:
+
+- Inside `tfe_application_class_init`, override the startup member so it points to our custom function.
+- Inside our custom startup function, call the parent class's (GtkApplication) startup function first.
+
+We follow the exact same steps to override the "activate" and "open" handlers.
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+static void
+tfe_application_class_init (TfeApplicationClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_application_dispose;
+  G_APPLICATION_CLASS (class)->startup = app_startup;
+  G_APPLICATION_CLASS (class)->activate = app_activate;
+  G_APPLICATION_CLASS (class)->open = app_open;
+}
+
+static void
+app_startup (GApplication *application) {
+  ... ... ...
+  G_APPLICATION_CLASS (tfe_application_parent_class)->startup (application);
+  ... ... ...
+}
+```
+
+#### Looking Ahead: TfeWindow
+
+In the next section, we'll build TfeWindow, a class completely dedicated to managing our application's window.
+Since the "activate" and "open" handlers are the ones that actually create the window, building TfeWindow will change how those handlers are written.
+Once we have our window class ready, we'll come back to `tfeapplication.c` and show how they connect.
+
+## The Main Function
+
+Finally, let's put our main function in its own file, `main.c`.
+The only real difference from before is that we are now creating and running our brand new TfeApplication instead of a plain GtkApplication.
 
 @@@include
-tfe6/tfealert.c
+tfe7/main.c
 @@@
-
-The function `tfe_alert_new_with_data` is used more often than `tfe_alert_new` to create a new instance.
-It creates the instance and sets three data at the same time.
-The following is the common process when you use the TfeAlert class.
-
-- Call `tfe_alert_new_with_data` and create an instance.
-- Call `gtk_window_set_transient_for` to set the transient parent window.
-- Call `gtk_window_present` to show the TfeAlert dialog.
-- Connect "response" signal and a handler.
-- The user clicks on the cancel or accept button.
-Then the dialog emits the "response" signal and destroy itself.
-- The user catches the signal and do something.
-
-The rest of the program is:
-
-- 14-19: An array for a signal id. You can use a variable instead of an array because the class has only one signal.
-But using an array is a common way.
-- 21-31: Signal handlers. They emits the "response" signal and destroy the instance itself.
-- 33-61: Getters and setters.
-- 85-95: Creates the "response" signal.
-- 103-110: A convenience function `tfe_alert_new_with_data` creates an instance and sets labels.
-
-## An Example
-
-There's an example in the `src/tfe6/example` directory.
-It shows how to use TfeAlert.
-The program is `src/example/ex_alert.c`.
-
-@@@include
-tfe6/example/ex_alert.c
-@@@
-
-The "activate" signal handler `app_activate` initializes the alert dialog.
-
-- A TfeAlert instance is created.
-- Its "response" signal is connected to the handler `alert_response_cb`.
-- TfeAlert class is a sub class of GtkWindow so it can be a top level window that is connected to an application instance.
-The function `gtk_window_set_application` does that.
-- The dialog is shown.
-
-A user clicks on either the cancel button or the accept button.
-Then, the "response" signal is emitted and the dialog is destroyed.
-The signal handler `alert_response_cb` checks the response and prints "Accept" or "Cancel".
-If an error happens, it prints "Unexpected error".
-
-You can compile it with meson and ninja.
-
-```
-$ cd src/tfe6/example
-$ meson setup _build
-$ ninja -C _build
-$ _build/ex_alert
-Accept #<= if you clicked on the accept button
-```

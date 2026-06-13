@@ -220,15 +220,13 @@ get_main_window (GApplication *application) {
   if (windows)
     return GTK_WIDGET (windows->data);
 
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe5/tfe.ui");
+  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe6/tfe.ui");
   win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
   gtk_window_set_application (GTK_WINDOW (win), app);
   btnm = GTK_WIDGET (gtk_builder_get_object (build, "btnm"));
   g_object_unref(build);
 
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe5/menu.ui");
-  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (btnm), G_MENU_MODEL (gtk_builder_get_object (build, "menu")));
-  g_object_unref(build);
+  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (btnm), G_MENU_MODEL (gtk_application_get_menu_by_id (app, "menu")));
 
   /* ----- action ----- */
   const GActionEntry win_entries[] = {
@@ -282,7 +280,7 @@ app_startup (GApplication *application) {
   g_object_unref (quit_action);
 }
 
-#define APPLICATION_ID "com.github.ToshioCP.tfe5"
+#define APPLICATION_ID "com.github.ToshioCP.tfe6"
 
 int
 main (int argc, char **argv) {

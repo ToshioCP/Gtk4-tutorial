@@ -39,8 +39,9 @@ module G4T
 
       # --- 2. Extraction and Sorting ---
       # Sort files numerically based on the embedded number (sec1, sec2, sec2.5, sec10...)
-      secfiles = Dir.children(src_dir).sort_by { |f| f[/\d+(\.\d+)?/].to_f }
-
+      secfiles = Dir.children(src_dir)
+                    .select { |f| f =~ /\Asec\d+(\.\d+)?\.src\.md\z/ }
+                    .sort_by { |f| f[/\d+(\.\d+)?/].to_f }
       # --- 3. Build Mapping and Replacement Rules ---
       rename_map = {}
       replace_map = {}
@@ -83,6 +84,8 @@ module G4T
 
       Dir.children(src_dir).each do |file|
         path = File.join(src_dir, file)
+        next unless File.file?(path)
+        next unless file.end_with?('.src.md')
         content = File.read(path)
         
         # gsub にブロックを渡すと、マッチした箇所ごとに「一度だけ」置換を行う

@@ -1,256 +1,346 @@
-# Custom Drawing
+# Pango, CSS and Application
 
-Custom drawing is to draw shapes dynamically.
-This section shows an example of custom drawing.
-You can draw rectangles by dragging the mouse.
+## PangoFontDescription
 
-Press down the button.
+PangoFontDescription is a C structure for a font.
+You can get font family, style, weight and size.
+You can also get a string that includes font attributes.
+For example, suppose that the PangoFontDescription has a font of "Noto Sans Mono", "Bold", "Italic" and 12 points of size.
+Then the string converted from the PangoFontDescription is "Noto Sans Mono Bold Italic 12".
 
-@@@if pdf
-![Press down the button](/images/cd0.png){width=6cm height=4.83cm}
-@@@else
-![Press down the button](/images/cd0.png)
-@@@end
+- Font family is  "Noto Sans Mono".
+- Font style is "Italic".
+- Font weight is "Bold", or 700.
+- Font size is 12 pt.
 
-Move the mouse.
+The font in CSS is different from the string from PangoFontDescription.
 
-@@@if pdf
-![Move the mouse](/images/cd1.png){width=6cm height=4.83cm}
-@@@else
-![Move the mouse](/images/cd1.png)
-@@@end
+- `font: bold italic 12pt "Noto Sans Mono"`
+- `Noto Sans Mono Bold Italic 12`
 
-Release the button.
+So, it may be easier to use each property, i.e. font-family, font-style, font-weight and font-size, to convert a PangoFontDescription data to CSS.
 
-@@@if pdf
-![Release the button](/images/cd2.png){width=6cm height=4.83cm}
-@@@else
-![Release the button](/images/cd2.png)
-@@@end
+Refer to
+[Pango document](https://docs.gtk.org/Pango/index.html)
+and [W3C CSS Fonts Module Level 3](https://www.w3.org/TR/css-fonts-3/) for further information.
 
-The programs are at `src/custom_drawing` directory.
-Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial) and see the directory.
-There are four files.
+## Converter from PangoFontDescription to CSS
 
-- meson.build
-- rect.c
-- rect.gresource.xml
-- rect.ui
-
-## rect.gresource.xml
-
-This file describes a UI file to compile.
-The compiler glib-compile-resources uses it.
+Two files `pfd2css.h` and `pfd2css.c` include the converter from PangoFontDescription to CSS.
 
 @@@include
-custom_drawing/rect.gresource.xml
+tfe6/pfd2css.h
 @@@
 
-The prefix is `/com/github/ToshioCP/rect` and the file is `rect.ui`.
-Therefore, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui`.
-
-## rect.ui
-
-The following is the UI file that defines the widgets.
-There are two widgets which are GtkApplicationWindow and GtkDrawingArea.
-The ids are `win` and `da` respectively.
+The five functions are public.
+The first function is a convenient function to set other four CSS properties at once.
 
 @@@include
-custom_drawing/rect.ui
+tfe6/pfd2css.c
 @@@
 
-## rect.c
+- The function `pfd2css_family` returns font family.
+- The function `pfd2css_style` returns font style which is one of "normal", "italic" or "oblique".
+- The function `pfd2css_weight` returns font weight in integer. See the list below.
+- The function `pfd2css_size` returns font size.
+  - If the font description size is absolute, it returns the size in device units, which is pixel. Otherwise the unit is point.
+  - The function `pango_font_description_get_size` returns the integer of the size but it is multiplied by `PANGO_SCALE`.
+So, you need to divide it by `PANGO_SCALE`.
+The `PANGO_SCALE` is currently 1024, but this might be changed in the future.
+If the font size is 12pt, the size in pango is `12*PANGO_SCALE=12*1024=12288`.
+- The function `pfd2css` returns a string of the font.
+For example, if a font "Noto Sans Mono Bold Italic 12" is given,
+it returns "font-family: Noto Sans Mono; font-style: italic; font-weight: 700; font-size: 12pt;".
 
-### GtkApplication
+The font weight number is one of:
 
-This program uses GtkApplication.
-The application ID is `com.github.ToshioCP.rect`.
+- 100 - Thin
+- 200 - Extra Light (Ultra Light)
+- 300 - Light
+- 400 - Normal
+- 500 - Medium
+- 600 - Semi Bold (Demi Bold)
+- 700 - Bold
+- 800 - Extra Bold (Ultra Bold)
+- 900 - Black (Heavy)
 
-```c
-#define APPLICATION_ID "com.github.ToshioCP.rect"
-```
+## Application Object
 
-See [GNOME Developer Documentation](https://developer.gnome.org/documentation/tutorials/application-id.html) for further information.
+### TfeApplication Class
 
-The function `main` is called at the beginning of the application.
+TfeApplication class is a child of GtkApplication.
+It has some instance variables.
+The header file defines the type macro and a public function.
 
 @@@include
-custom_drawing/rect.c main
+tfe6/tfeapplication.h
 @@@
 
-It connects three signals and handlers.
-
-- startup: It is emitted after the application is registered to the system. 
-- activate: It is emitted when the application is activated.
-- shutdown: It is emitted just before the application quits.
-
-@@@include
-custom_drawing/rect.c app_startup
-@@@
-
-The startup handler performs the following three tasks:
-
-- Builds the widgets.
-- Initializes the GtkDrawingArea instance.
-  - Sets the drawing function
-  - Connects the "resize" signal and the handler.
-- Creates the GtkGestureDrag instance and initializes it.
-Gestures will be explained in this section later.
-
-@@@include
-custom_drawing/rect.c app_activate
-@@@
-
-The activate handler just shows the window.
-
-### GtkDrawingArea
-
-The program has two cairo surfaces and they are pointed to by the global variables.
+The following code is extracted from `tfeapplication.c`.
+It builds TfeApplication class and instance.
 
 @@@if gfm
 ```C
-static cairo_surface_t *surface = NULL;
-static cairo_surface_t *surface_save = NULL;
+#include <gtk/gtk.h>
+#include "tfeapplication.h"
+
+struct _TfeApplication {
+  GtkApplication parent;
+  TfeWindow *win;
+  GSettings *settings;
+  GtkCssProvider *provider;
+};
+
+G_DEFINE_FINAL_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
+
+static void
+tfe_application_dispose (GObject *gobject) {
+  TfeApplication *app = TFE_APPLICATION (gobject);
+
+  g_clear_object (&app->settings);
+  g_clear_object (&app->provider);
+  G_OBJECT_CLASS (tfe_application_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_application_init (TfeApplication *app) {
+  app->settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_signal_connect (app->settings, "changed::font-desc", G_CALLBACK (changed_font_cb), app);
+  app->provider = gtk_css_provider_new ();
+}
+
+static void
+tfe_application_class_init (TfeApplicationClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_application_dispose;
+  G_APPLICATION_CLASS (class)->startup = app_startup;
+  G_APPLICATION_CLASS (class)->activate = app_activate;
+  G_APPLICATION_CLASS (class)->open = app_open;
+}
+
+TfeApplication *
+tfe_application_new (const char *application_id, GApplicationFlags flag) {
+  return TFE_APPLICATION (g_object_new (TFE_TYPE_APPLICATION, "application-id", application_id, "flags", flag, NULL));
+}
 ```
 @@@else
 ```{.C}
-static cairo_surface_t *surface = NULL;
-static cairo_surface_t *surface_save = NULL;
+#include <gtk/gtk.h>
+#include "tfeapplication.h"
+
+struct _TfeApplication {
+  GtkApplication parent;
+  TfeWindow *win;
+  GSettings *settings;
+  GtkCssProvider *provider;
+};
+
+G_DEFINE_FINAL_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
+
+static void
+tfe_application_dispose (GObject *gobject) {
+  TfeApplication *app = TFE_APPLICATION (gobject);
+
+  g_clear_object (&app->settings);
+  g_clear_object (&app->provider);
+  G_OBJECT_CLASS (tfe_application_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_application_init (TfeApplication *app) {
+  app->settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_signal_connect (app->settings, "changed::font-desc", G_CALLBACK (changed_font_cb), app);
+  app->provider = gtk_css_provider_new ();
+}
+
+static void
+tfe_application_class_init (TfeApplicationClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_application_dispose;
+  G_APPLICATION_CLASS (class)->startup = app_startup;
+  G_APPLICATION_CLASS (class)->activate = app_activate;
+  G_APPLICATION_CLASS (class)->open = app_open;
+}
+
+TfeApplication *
+tfe_application_new (const char *application_id, GApplicationFlags flag) {
+  return TFE_APPLICATION (g_object_new (TFE_TYPE_APPLICATION, "application-id", application_id, "flags", flag, NULL));
+}
 ```
 @@@end
 
-The drawing process is as follows.
+- The structure `_TfeApplication` is defined.
+It has four members.
+One is its parents and the others are kinds of instance variables.
+The members are usually initialized in the instance initialization function.
+And they are released in the disposal function or freed in the finalization function.
+The members are:
+  - win: main window instance
+  - settings: GSettings instance.it is bound to "font-desc" item in the GSettings
+  - provider: a provider for the font of the textview.
+- The macro `G_DEFINE_FINAL_TYPE` defines `tfe_application_get_type` function and some other useful things.
+- The function `tfe_application_class_init` initializes the TfeApplication class.
+It overrides four class methods.
+Three class methods `startup`, `activate` and `open` point to the default signal handlers.
+The overriding replaces the default handlers.
+You can connect the handlers with `g_signal_connect` macro but the result is different.
+The macro connects a user handler to the signal.
+The default handler still exists and no change is made to them.
+- The function `tfe_application_init` initializes an instance.
+  - Creates a new GSettings instance and make `app->settings` point to it. Then connects the handler `changed_font_cb` to the "changed::font-desc" signal.
+  - Creates a new GtkCssProvider instance and make `app->provider` point to it.
+- The function `tfe_application_dispose` releases the GSettings and GtkCssProvider instances.
+Then, it calls the parent's dispose handler. It is called "chaining up".
+See [GObject document](https://docs.gtk.org/gobject/tutorial.html#chaining-up).
 
-- Creates an image on `surface`.
-- Copies `surface` to the cairo surface of the GtkDrawingArea.
-- Calls ` gtk_widget_queue_draw (da)` to draw it if necessary.
-
-They are created in the "resize" signal handler.
-
-@@@include
-custom_drawing/rect.c resize_cb
-@@@
-
-This callback is called when the GtkDrawingArea is shown.
-This is called only once since the window is not resizable.
-
-It creates image surfaces for `surface` and `surface_save`.
-The `surface` surface is painted white, which is the background color.
-
-The drawing function copies `surface` to the GtkDrawingArea surface.
-
-@@@include
-custom_drawing/rect.c draw_cb
-@@@
-
-This function is called by the system when it needs to redraw the drawing area.
-
-Two surfaces `surface` and `surface_save` are destroyed before the application quits.
+### Startup Signal Handlers
 
 @@@include
-custom_drawing/rect.c app_shutdown
+tfe6/tfeapplication.c app_startup
 @@@
 
-### GtkGestureDrag
+The function `app_startup` replace the default signal handlers.
+It does five things.
 
-Gesture class is used to recognize human gestures such as click, drag, pan, swipe and so on.
-It is a subclass of GtkEventController.
-GtkGesture class is abstract and there are several implementations.
+- Calls the parent's startup handler. It is called "chaining up".
+The "startup" default handler runs before user handlers.
+So the call for the parent's handler must be done at the beginning.
+- Creates the main window.
+This application has only one top level window.
+In that case, it is a good way to create the window in the startup handler, which is called only once.
+Activate or open handlers can be called twice or more.
+Therefore, if you create a window in the activate or open handler, two or more windows can be created.
+- Sets the default display CSS to "textview {padding: 10px;}".
+It sets the GtkTextView, or TfeTextView, padding to 10px and makes the text easier to read.
+This CSS is fixed and never changed through the application life.
+- Adds another CSS provider, which is pointed to by `app->provider`, to the default display.
+This CSS depends on the GSettings "font-desc" value and it can be changed during the application life time.
+And calls `changed_font_cb` to update the font CSS setting.
+- Sets application accelerator with the function `gtk_application_set_accels_for_action`.
+Accelerators are kinds of short cut key functions.
+For example, `Ctrl+O` is an accelerator to activate "open" action.
+Accelerators are written in the array `action-accels[]`.
+Its element is a structure `struct {const char *action; const char *accels[2];}`.
+The member `action` is an action name.
+The member `accels` is an array of two pointers.
+For example, `{"win.open", { "<Control>o", NULL }}` tells that the accelerator `Ctrl+O` is connected to the "win.open" action.
+The second element of `accels` is NULL which is the end mark.
+You can define more than one accelerator keys and the list must end with NULL (zero).
+If you want to do so, the array length needs to be three or more.
+For example, `{"win.open", { "<Control>o", "<Alt>o", NULL }}` means two accelerators `Ctrl+O` and `Alt+O` is connected to the "win.open" action.
+The parser recognizes "\<control\>o", "\<Shift\>\<Alt\>F2", "\<Ctrl\>minus" and so on.
+If you want to use symbol key like "\<Ctrl\>-", use "\<Ctrl\>minus" instead.
+Such relation between lower case and symbol (character code) is specified in [gdkkeysyms.h](https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gdk/gdkkeysyms.h) in the GTK 4 source code.
 
-- GtkGestureClick
-- GtkGestureDrag
-- GtkGesturePan
-- GtkGestureSwipe
-- And others
+### Activate and Open Signal Handlers
 
-The program `rect.c` uses GtkGestureDrag.
-It is the implementation for drag gestures.
-The parent-child relationship is as follows.
-
-```
-GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag
-```
-
-GtkGestureSingle is a subclass of GtkGesture and optimized for single-touch and mouse interactions.
-
-A GtkGestureDrag instance is created and initialized in the startup signal handler in `rect.c`.
-See line 18 to 23 in the following.
+Two functions `app_activate` and `app_open` replace the default signal handlers.
 
 @@@include
-custom_drawing/rect.c app_startup
+tfe6/tfeapplication.c app_activate app_open
 @@@
+ 
+The original default handlers don't do useful works and you don't need to chain up to the parent's default handlers.
+They just create notebook pages and show the top level window.
 
-- The function `gtk_gesture_drag_new` creates a new GtkGestureDrag instance.
-- The function `gtk_gesture_single_set_button` sets the button number to listen to.
-The constant `GDK_BUTTON_PRIMARY` is the left button of a mouse.
-- The function `gtk_widget_add_controller` adds an event controller, which is a base class for gestures.
-- Three signals and handlers are connected.
-  - drag-begin: Emitted when dragging starts.
-  - drag-update: Emitted when the dragging pointer moves.
-  - drag-end: Emitted when the dragging ends.
-
-The process during the drag is as follows.
-
-- start: save the surface and start points
-- update: restore the surface and draw a thin rectangle between the start point and the current point of the mouse
-- end: restore the surface and draw a thick rectangle between the start and end points.
-
-We need two global variables for the start point.
-
-@@@if gfm
-```C
-static double start_x;
-static double start_y;
-```
-@@@else
-```{.C}
-static double start_x;
-static double start_y;
-```
-@@@end
-
-The following is the handler for the "drag-begin" signal.
+### CSS Font Setting
 
 @@@include
-custom_drawing/rect.c copy_surface drag_begin
+tfe6/tfeapplication.c changed_font_cb
 @@@
 
-- Copies `surface` to `surface_save`, which is an image just before the dragging.
-- Stores the points to `start_x` and `start_y`.
+The function `changed_font_cb` is a handler for "changed::font-desc" signal on the GSettings instance.
+The signal name is "changed" and "font-desc" is a key name.
+This signal is emitted when the value of the "font-desc" key is changed.
+The value is bound to the "font-desc" property of the GtkFontDialogButton instance.
+Therefore, the handler `changed_font_cb` is called when the user selects and updates a font through the font dialog.
+
+A string is retrieved from the GSetting database and converts it into a pango font description.
+And a CSS string is made by the function `pfd2css` and `g_strdup_printf`.
+Then the css provider is set to the string.
+The provider has been inserted to the current display in advance.
+So, the font is applied to the display.
+
+## Other Files
+
+main.c
 
 @@@include
-custom_drawing/rect.c drag_update
+tfe6/main.c
 @@@
 
-- Restores `surface` from `surface_save`.
-- Draws a rectangle with thin lines.
-- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+Resource XML file.
 
 @@@include
-custom_drawing/rect.c drag_end
+tfe6/tfe.gresource.xml
 @@@
 
-- Restores `surface` from `surface_save`.
-- Draws a rectangle with thick lines.
-- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+GSchema XML file
 
-## Build and Run
+@@@include
+tfe6/com.github.ToshioCP.tfe.gschema.xml
+@@@
 
-Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-Change your current directory to `src/custom_drawing`.
-Run meson and ninja to build the program.
-Type `_build/rect` to run the program.
-Try to draw rectangles.
+Meson.build
 
-```
-$ cd src/custom_drawing
+@@@include
+tfe6/meson.build
+@@@
+
+- The function `project` defines project and initialize meson.
+The first argument is the project name and the second is the language name.
+The other arguments are keyword arguments.
+- The function `dependency` defines the dependent library.
+Tfe depends on GTK4.
+This is used to create `pkg-config` option in the command line of C compiler to include header files and link libraries.
+The returned object `gtkdep` is used as an argument to the `executable` function later.
+- The function `import` imports an extension module.
+The GNOME module has some convenient methods like `gnome.compile_resources` and `gnome.compile_schemas`.
+- The method `gnome.compile_resources` compiles and creates resource files.
+The first argument is the resource name without extension and the second is the name of XML file.
+The returned value is an array `['resources,c', 'resources.h']`.
+- The function `gnome.compile_schemas` compiles the schema files in the current directory.
+This just creates `gschemas.compiled` in the build directory.
+It is used to test the executable binary in the build directory.
+The function doesn't install the schema file.
+- The function `files` creates a File Object.
+- The function `executable` defines the compilation elements such as target name, source files, dependencies and installation.
+The target name is "tfe".
+The source files are elements of 'sourcefiles' and `resources'.
+It uses GTK4 libraries.
+It can be installed.
+- The last three lines are post install work.
+The variable `schema_dir` is the directory stored the schema file.
+If meson runs with `--prefix=$HOME/.local` argument, it is `$HOME/.local/share/glib-2.9/schemas`.
+The function `install_data` copies the file specified in the first argument into the directory specified in the second argument.
+The method `gnome.post_install` runs `glib-compile-schemas` and updates `gschemas_compiled` file.
+
+## Compilation and Installation.
+
+If you want to install it to your local area, use `--prefix=$HOME/.local` or `--prefix=$HOME` option.
+If you want to install it to the system area, no option is needed.
+It will be installed under `/user/local` directory.
+
+~~~
+$ meson setup --prefix=$HOME/.local _build
+$ ninja -C _build
+$ ninja -C _build install
+~~~
+
+You need root privilege to install it to the system area..
+
+~~~
 $ meson setup _build
 $ ninja -C _build
-$ _build/rect
-```
+$ sudo ninja -C _build install
+~~~
 
-@@@if pdf
-![The screen of rect program](/images/rect.png){width=12.4cm height=10cm}
-@@@else
-![The screen of rect program](/images/rect.png)
-@@@end
+Source files are in [/src/tfe6](tfe6/) directory.
+
+We made a very small text editor.
+You can add features to this editor.
+When you add a new feature, be careful about the structure of the program.
+Maybe you need to divide a file into several files.
+It isn't good to put many things into one file.
+And it is important to think about the relationship between source files and widget structures.
+
+The source files are in the [Gtk4 tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
+Download it and see `/src/tfe6` directory.

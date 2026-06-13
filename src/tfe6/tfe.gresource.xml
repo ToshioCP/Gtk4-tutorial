@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/ToshioCP/tfe5">
+  <gresource prefix="/com/github/ToshioCP/tfe6">
     <file>tfe.ui</file>
-    <file>menu.ui</file>
+    <file alias="gtk/menus.ui">menus.ui</file>
   </gresource>
 </gresources>

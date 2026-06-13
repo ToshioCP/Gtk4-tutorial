@@ -54,7 +54,59 @@ Modern applications favor this approach to keep the interface clean and efficien
 
 It is good practice to separate the UI file for the menu from the UI file for the main widgets.
 Because our popup menu is quite simple and introduces no new concepts, we will skip the explanation of its XML structure.
-Please refer to [src/tfe6/menu.ui](tfe6/menu.ui) for the code.
+Please refer to [src/tfe6/gtk/menus.ui](tfe6/gtk/menus.ui) for the code.
+
+### Automatic Resources
+
+In previous examples, you might have used GtkBuilder to manually load UI files and extract the objects.
+However, GtkApplication provides a very convenient feature called "Automatic Resources" for your menu UI resources.
+
+If you place your menu definition file at exactly `gtk/menus.ui` relative to your application's resource base path, GtkApplication will automatically load it for you in the background and you don't need to write any GtkBuilder code.
+The application's resource base path is normally created from the application ID.
+For example, if the application ID is "com.github.ToshioCP.tfe6", the application's resource base path is "/com/github/ToshioCP/tfe6".
+Therefore, the menu definition UI resource path is "/com/github/ToshioCP/tfe6/gtk/menus.ui".
+
+@@@include
+tfe6/tfe.gresource.xml
+@@@
+
+The file path in the project source is `menus.ui` but the resource path is `gtk/menus.ui`.
+We use an alias to resolve this in the `tfe.gresource.xml` file.
+
+@@@if gfm
+```xml
+@@@else
+```{.xml}
+@@@end
+<file alias="gtk/menus.ui">menus.ui</file>
+```
+
+Inside this `menus.ui`, you can define multiple menus and assign them unique IDs.
+When you need a specific menu in your C code, you simply call `gtk_application_get_menu_by_id()` with the desired ID.
+
+In the following code, the menu model is retrieved using `gtk_application_get_menu_by_id()`.
+The argument "menu" is the ID of the menu tag in the UI resource.
+
+@@@if gfm
+```xml
+@@@else
+```{.xml}
+@@@end
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menu">
+  ... ... ...
+```
+
+You don't need to write any GtkBuilder boilerplate code.
+
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+GMenuModel *menu = G_MENU_MODEL (gtk_application_get_menu_by_id (app, "menu"));
+```
 
 ### The Menu Button
 

@@ -356,7 +356,7 @@ setup_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
   gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
   gtk_widget_set_can_target (GTK_WIDGET (text), FALSE);
 
-  g_signal_connect (GTK_EDITABLE (text), "changed", G_CALLBACK (text_changed_cb), listitem);
+  g_signal_connect (text, "changed", G_CALLBACK (text_changed_cb), listitem);
   g_signal_connect (listitem, "notify::selected", G_CALLBACK (item_selected_cb), text);
 }
 

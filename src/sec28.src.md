@@ -1,179 +1,90 @@
-# Drag and Drop
+# Periodic Events
 
-## What is Drag and Drop?
+This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
 
-Drag and drop is also written as "Drag-and-Drop", or "DND" in short.
-DND is like "copy and paste" or "cut and paste".
-If a user drags a UI element, which is a widget, selected part or other elements, data is transferred from the source to the destination.
+## How do we create an animation?
 
-You probably have experience moving a file with DND.
+In this section we will continue to build on our previous work. We will create
+an analog clock application. By adding a function which periodically redraws
+GtkDrawingArea, the clock will be able to continuously display the time.
 
-@@@if pdf
-![DND on the GUI file manager](/images/dnd.png){width=4.6cm height=3cm}
-@@@else
-![DND on the GUI file manager](/images/dnd.png)
-@@@end
+The application uses a compiled in 'resource' file, so if the GTK4 libraries and
+their dependencies are installed and available, the application will run from
+anywhere.
 
-When the DND starts, the file `sample_file.txt` is provided to the system.
-When it ends,  the system provides it to the `sample_folder` in the file manager.
-Therefore, it is like "cut and paste".
-The actual behavior may be different from the explanation here, but the concept is similar.
+The program also makes use of some standard mathematical and time handling
+functions.
 
-## Example for DND
+The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
+[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
 
-This tutorial provides a simple example in the `src/dnd` directory.
-It has three labels for the source and one label for the destination.
-The source labels have "red", "green" or "blue" labels.
-If a user drags the label to the destination label, the font color will be changed.
+The complete code is at the end.
 
-@@@if pdf
-![DND example](/images/dnd_canvas.png){width=13.5cm height=5.2cm}
-@@@else
-![DND example](/images/dnd_canvas.png)
-@@@end
+## Drawing the clock face, hour, minute and second hands
 
-## UI File
+The `draw_clock()` function does all the work. See the in-file comments for an
+explanation of how the Cairo drawing works.
 
-The widgets are defined in the XML file `dnd.ui`.
+For a detailed reference of what each of the Cairo functions does see the
+[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
 
 @@@include
-dnd/dnd.ui
+tfc/tfc.c draw_clock
 @@@
 
-It is converted to a resource file by `glib-compile-resources`.
-The compiler uses an XML file `dnd.gresource.xml`.
+In order for the clock to be drawn, the drawing function `draw_clock()` needs
+to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
+
+Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
+
+There is still a problem though. In order to animate the clock we need to also
+tell the application that the clock needs to be redrawn every second. This
+process starts by registering (on the next line, line 15) a timeout function
+with `g_timeout_add()` that will wakeup and run another function `time_handler`,
+every second (or 1000ms).
 
 @@@include
-dnd/dnd.gresource.xml
+tfc/tfc.c app_activate
 @@@
 
-## C File dnd.c
-
-The C file `dnd.c` isn't a big file.
-The number of the lines is less than a hundred.
-A GtkApplication object is created in the function `main`.
+Our `time_handler()` function is very simple, as it just calls
+`gtk_widget_queue_draw()` which schedules a redraw of the widget.
 
 @@@include
-dnd/dnd.c main
+tfc/tfc.c time_handler
 @@@
 
-The application ID is defined as:
+.. and that is all there is to it. If you compile and run the example you will
+get a ticking analog clock.
 
-@@@if gfm
-```C
-#define APPLICATION_ID "com.github.ToshioCP.dnd"
-```
-@@@else
-```{.C}
-#define APPLICATION_ID "com.github.ToshioCP.dnd"
-```
-@@@end
+If you get this working, you can try modifying some of the code in
+`draw_clock()` to tweak the application (such as change the color or size and
+length of the hands) or even add text, or create a digital clock.
 
-### Startup Signal Handler
+## The Complete code
 
-Most of the work is done in the "startup" signal handler.
+You can find the source files in the `tfc` directory. it can be compiled with `comp` shell script.
 
-Two objects GtkDragSource and GtkDropTarget are used for DND implementation.
-
-- Drag source: A drag source (GtkDragSource instance) is an event controller.
-It initiates a DND operation when the user clicks and drags the widget.
-If data, in the form of GdkContentProvider, is set in advance, it gives the data to the system at the beginning of the drag.
-- Drop target: A drop target (GtkDropTarget) is also an event controller.
-You can get the data in the GtkDropTarget::drop signal handler.
-
-The example below uses these objects in a very simple way.
-You can use a number of features that the two objects have.
-See the following links for more information.
-
-- [Drag-and-Drop in GTK](https://docs.gtk.org/gtk4/drag-and-drop.html)
-- [GtkDragSource](https://docs.gtk.org/gtk4/class.DragSource.html)
-- [GtkDropTarget](https://docs.gtk.org/gtk4/class.DropTarget.html)
+`tfc.c`
 
 @@@include
-dnd/dnd.c app_startup
+tfc/tfc.c
 @@@
 
-- 15-22: Builds the widgets.
-The array `src_labels[]` points to the source labels red, green and blue in the UI file.
-The variable `canvas` points to the destination label.
-- 24-30: Sets the DND source widgets.
-The for-loop iterates through the array `src_labels[]` each of which points to the source widget,  red, green or blue label.
-- 25: Creates a new GtkDragSource instance.
-- 26: Creates a new GdkContentProvider instance with the string "red", "green" or "blue".
-They are the name of the widgets.
-These strings are the data to transfer through the DND operation.
-- 27: Sets the content of the drag source to the GdkContentProvider instance above.
-- 28: Content is useless so it is destroyed.
-- 29: Add the event controller, which is actually the drag source, to the widget.
-If a DND operation starts on the widget, the corresponding drag source works and the data is given to the system.
-- 32-34: Sets the DND drop target.
-- 32: Creates a new GtkDropTarget instance.
-The first parameter is the GType of the data.
-The second parameter is a GdkDragAction enumeration constant.
-The arguments here are string type and the constant for copy.
-- 33: Connects the "drop" signal and the handler `drop_cb`.
-- 34: Add the event controller, which is actually the drop target, to the widget.
-- 36-43: Sets CSS.
-- 37: A variable `format` is static and defined at the top of the program.
-Static variables are shown below.
-
-@@@if gfm
-```C
-static GtkCssProvider *provider = NULL;
-static const char *format = "label {padding: 20px;} label#red {background: red;} "
-  "label#green {background: green;} label#blue {background: blue;} "
-  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
-```
-@@@else
-```{.C}
-static GtkCssProvider *provider = NULL;
-static const char *format = "label {padding: 20px;} label#red {background: red;} "
-  "label#green {background: green;} label#blue {background: blue;} "
-  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
-```
-@@@end
-
-### Activate Signal Handler
+`tfc.ui`
 
 @@@include
-dnd/dnd.c app_activate
+tfc/tfc.ui
 @@@
 
-This handler just shows the window.
-
-### Drop Signal Handler
+`tfc.gresource.xml`
 
 @@@include
-dnd/dnd.c drop_cb
+tfc/tfc.gresource.xml
 @@@
 
-The "drop" signal handler has five parameters.
-
-- GtkDropTarget instance on which the signal has been emitted.
-- GValue that holds the data from the source.
-- The arguments `x` and `y` are the coordinate of the mouse when released.
-- User data was set when the signal and the handler were connected.
-
-The string from the GValue is "red", "green" or "blue".
-It replaces "%s" in the variable `format`.
-That means the font color of the label `canvas` will be updated to the color.
-
-## Meson.build
-
-The file `meson.build` controls the building process.
+`comp`
 
 @@@include
-dnd/meson.build
+tfc/comp
 @@@
-
-You can build it from the command line.
-
-```
-$ cd src/dnd
-$ meson setup _build
-$ ninja -C _build
-$ _build/dnd
-```
-
-The source files are under the directory `src/dnd` of the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-Download it and see the directory.
