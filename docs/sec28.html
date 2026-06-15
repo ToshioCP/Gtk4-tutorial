@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Drag and Drop</title>
+  <title>GtkDrawingArea and Cairo</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,287 +93,249 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="drag-and-drop">Drag and Drop</h1>
-        <h2 id="what-is-drag-and-drop">What is Drag and Drop?</h2>
-        <p>Drag and drop is also written as “Drag-and-Drop”, or “DND” in
-        short. DND is like “copy and paste” or “cut and paste”. If a
-        user drags a UI element, which is a widget, selected part or
-        other elements, data is transferred from the source to the
-        destination.</p>
-        <p>You probably have experience moving a file with DND.</p>
+        <h1 id="gtkdrawingarea-and-cairo">GtkDrawingArea and Cairo</h1>
+        <p>If you want to draw shapes or paint images dynamically on the
+        screen, use the GtkDrawingArea widget.</p>
+        <p>GtkDrawingArea provides a Cairo drawing context. You can draw
+        images with Cairo library functions. This section describes:</p>
+        <ol type="1">
+        <li>A brief introduction to Cairo</li>
+        <li>GtkDrawingArea, with a very simple example.</li>
+        </ol>
+        <h2 id="cairo">Cairo</h2>
+        <p>Cairo is a drawing library for two dimensional graphics.
+        There are a lot of documents on <a
+        href="https://www.cairographics.org/">Cairo’s website</a>. If
+        you aren’t familiar with Cairo, it is worth reading the <a
+        href="https://www.cairographics.org/tutorial/">tutorial</a>.</p>
+        <p>The following is an introduction to the Cairo library. First,
+        you need to know surfaces, sources, masks, destinations, cairo
+        context and transformations.</p>
+        <ul>
+        <li>A surface represents an image. It is like a canvas. We can
+        draw shapes and images with different colors on surfaces.</li>
+        <li>The source pattern, or simply source, is like paint, which
+        will be transferred to destination surface by cairo
+        functions.</li>
+        <li>The mask describes the area to be used in the copy;</li>
+        <li>The destination is a target surface;</li>
+        <li>The cairo context manages the transfer from source to
+        destination, through mask with its functions; For example,
+        <code>cairo_stroke</code> is a function to draw a path to the
+        destination by the transfer.</li>
+        <li>A transformation can be applied before the transfer
+        completes. The type of the transformation is called affine,
+        which is a mathematical term meaning transformations that
+        preserve straight lines. Scaling, rotating, reflecting, shearing
+        and translating are examples of affine transformations. They are
+        mathematically represented by matrix multiplication and vector
+        addition. In this section we don’t use it, instead we will only
+        use the identity transformation. This means that the coordinates
+        in the source and mask map directly to the same coordinates in
+        the destination.</li>
+        </ul>
         <figure>
-        <img src="/images/dnd.png" alt="DND on the GUI file manager" />
-        <figcaption aria-hidden="true">DND on the GUI file
-        manager</figcaption>
+        <img src="/images/cairo.png" alt="Stroke a rectangle" />
+        <figcaption aria-hidden="true">Stroke a rectangle</figcaption>
         </figure>
-        <p>When the DND starts, the file <code>sample_file.txt</code> is
-        provided to the system. When it ends, the system provides it to
-        the <code>sample_folder</code> in the file manager. Therefore,
-        it is like “cut and paste”. The actual behavior may be different
-        from the explanation here, but the concept is similar.</p>
-        <h2 id="example-for-dnd">Example for DND</h2>
-        <p>This tutorial provides a simple example in the
-        <code>src/dnd</code> directory. It has three labels for the
-        source and one label for the destination. The source labels have
-        “red”, “green” or “blue” labels. If a user drags the label to
-        the destination label, the font color will be changed.</p>
-        <figure>
-        <img src="/images/dnd_canvas.png" alt="DND example" />
-        <figcaption aria-hidden="true">DND example</figcaption>
-        </figure>
-        <h2 id="ui-file">UI File</h2>
-        <p>The widgets are defined in the XML file
-        <code>dnd.ui</code>.</p>
+        <p>The instruction is as follows:</p>
+        <ol type="1">
+        <li>Create a surface. This will be the destination.</li>
+        <li>Create a cairo context with the surface. This surface will
+        be the destination of the context.</li>
+        <li>Create a source pattern within the context.</li>
+        <li>Create paths, which are lines, rectangles, arcs, texts or
+        more complicated shapes in the mask.</li>
+        <li>Use a drawing operator such as <code>cairo_stroke</code> to
+        transfer the paint in the source to the destination.</li>
+        <li>Save the destination surface to a file if necessary.</li>
+        </ol>
+        <p>Here’s a simple example program that draws a small square and
+        saves it as a png file. The path of the file is
+        <code>/src/misc/cairo.c</code>.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;800&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Drag and Drop&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-12"><a href="#cb1-12"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;5&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb1-16"><a href="#cb1-16"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;homogeneous&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-19"><a href="#cb1-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;red&quot;</span>&gt;</span>
-<span id="cb1-20"><a href="#cb1-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;RED&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-21"><a href="#cb1-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;justify&quot;</span>&gt;GTK_JUSTIFY_CENTER&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-22"><a href="#cb1-22"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;red&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-23"><a href="#cb1-23"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-24"><a href="#cb1-24"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-25"><a href="#cb1-25"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-26"><a href="#cb1-26"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;green&quot;</span>&gt;</span>
-<span id="cb1-27"><a href="#cb1-27"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;GREEN&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-28"><a href="#cb1-28"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;justify&quot;</span>&gt;GTK_JUSTIFY_CENTER&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-29"><a href="#cb1-29"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;green&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-30"><a href="#cb1-30"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-31"><a href="#cb1-31"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-32"><a href="#cb1-32"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-33"><a href="#cb1-33"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;blue&quot;</span>&gt;</span>
-<span id="cb1-34"><a href="#cb1-34"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;BLUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-35"><a href="#cb1-35"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;justify&quot;</span>&gt;GTK_JUSTIFY_CENTER&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-36"><a href="#cb1-36"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;blue&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-37"><a href="#cb1-37"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-38"><a href="#cb1-38"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-39"><a href="#cb1-39"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-40"><a href="#cb1-40"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-41"><a href="#cb1-41"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-42"><a href="#cb1-42"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;canvas&quot;</span>&gt;</span>
-<span id="cb1-43"><a href="#cb1-43"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;CANVAS&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-44"><a href="#cb1-44"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;justify&quot;</span>&gt;GTK_JUSTIFY_CENTER&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-45"><a href="#cb1-45"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;canvas&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-46"><a href="#cb1-46"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-47"><a href="#cb1-47"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-48"><a href="#cb1-48"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-49"><a href="#cb1-49"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-50"><a href="#cb1-50"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-51"><a href="#cb1-51"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb1-52"><a href="#cb1-52"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb1-53"><a href="#cb1-53"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p>It is converted to a resource file by
-        <code>glib-compile-resources</code>. The compiler uses an XML
-        file <code>dnd.gresource.xml</code>.</p>
-        <div class="sourceCode" id="cb2"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/dnd&quot;</span>&gt;</span>
-<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">file</span>&gt;dnd.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb2-5"><a href="#cb2-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
-<span id="cb2-6"><a href="#cb2-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-        <h2 id="c-file-dnd.c">C File dnd.c</h2>
-        <p>The C file <code>dnd.c</code> isn’t a big file. The number of
-        the lines is less than a hundred. A GtkApplication object is
-        created in the function <code>main</code>.</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#include </span><span class="im">&lt;cairo.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>  cairo_surface_t <span class="op">*</span>surface<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="dt">int</span> width <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="dt">int</span> height <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>  <span class="dt">int</span> square_size <span class="op">=</span> <span class="fl">40.0</span><span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  <span class="co">/* Create surface and cairo */</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a>  <span class="co">/* Drawing starts here. */</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>  <span class="co">/* Paint the background white */</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a>  <span class="co">/* Draw a black rectangle */</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">2.0</span><span class="op">);</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>                   width<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>                   height<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>                   square_size<span class="op">,</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a>                   square_size<span class="op">);</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a></span>
+<span id="cb1-30"><a href="#cb1-30"></a>  <span class="co">/* Write the surface to a png file and clean up cairo and surface. */</span></span>
+<span id="cb1-31"><a href="#cb1-31"></a>  cairo_surface_write_to_png <span class="op">(</span>surface<span class="op">,</span> <span class="st">&quot;rectangle.png&quot;</span><span class="op">);</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb1-33"><a href="#cb1-33"></a>  cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb1-34"><a href="#cb1-34"></a></span>
+<span id="cb1-35"><a href="#cb1-35"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-36"><a href="#cb1-36"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>1: Includes the header file of Cairo.</li>
+        <li>6: <code>cairo_surface_t</code> is the type of a
+        surface.</li>
+        <li>7: <code>cairo_t</code> is the type of a cairo context.</li>
+        <li>8-10: <code>width</code> and <code>height</code> are the
+        size of <code>surface</code>. <code>square_size</code> is the
+        size of a square to be drawn on the surface.</li>
+        <li>13: <code>cairo_image_surface_create</code> creates an image
+        surface. <code>CAIRO_FORMAT_RGB24</code> is a constant that
+        means each pixel has red, green, and blue components, and each
+        component is an 8-bit number (24 bits in total). Modern displays
+        have this type of color depth. Width and height are in pixels
+        and given as integers.</li>
+        <li>14: Creates cairo context. The surface given as an argument
+        will be the destination of the context.</li>
+        <li>18: <code>cairo_set_source_rgb</code> creates a source
+        pattern, which is a solid white paint. The second to fourth
+        arguments are red, green and blue color values respectively, and
+        they are of type float. The values are between zero (0.0) and
+        one (1.0). Black is (0.0,0.0,0.0) and white is
+        (1.0,1.0,1.0).</li>
+        <li>19: <code>cairo_paint</code> copies everywhere in the source
+        to destination. The destination is filled with white pixels with
+        this command.</li>
+        <li>21: Sets the source color to black.</li>
+        <li>22: <code>cairo_set_line_width</code> sets the width of
+        lines. In this case, the line width is set to be two pixels and
+        will result in that size. (It is because the transformation is
+        identity. If the transformation isn’t identity, for example
+        scaling with the factor three, the actual width in destination
+        will be six (2x3=6) pixels.)</li>
+        <li>23: Draws a rectangle (square) on the mask. The square is
+        located at the center.</li>
+        <li>24: <code>cairo_stroke</code> transfers the source to
+        destination through the rectangle in the mask.</li>
+        <li>31: Outputs the image to a png file
+        <code>rectangle.png</code>.</li>
+        <li>32: Destroys the context. At the same time the source is
+        destroyed.</li>
+        <li>33: Destroys the surface.</li>
+        </ul>
+        <p>To compile this, change your current directory to
+        <code>/src/misc</code> and type the following.</p>
+        <pre><code>$ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`</code></pre>
+        <figure>
+        <img src="/images/rectangle.png" alt="rectangle.png" />
+        <figcaption aria-hidden="true">rectangle.png</figcaption>
+        </figure>
+        <p>See the <a href="https://www.cairographics.org/">Cairo’s
+        website</a> for further information.</p>
+        <h2 id="gtkdrawingarea">GtkDrawingArea</h2>
+        <p>The following is a very simple example.</p>
         <div class="sourceCode" id="cb3"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">int</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a><span class="op">}</span></span></code></pre></div>
-        <p>The application ID is defined as:</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>draw_function <span class="op">(</span>GtkDrawingArea <span class="op">*</span>area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="dt">int</span> square_size <span class="op">=</span> <span class="fl">40.0</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span> <span class="co">/* white */</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">2.0</span><span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span> <span class="co">/* black */</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>                   width<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>                   height<span class="op">/</span><span class="fl">2.0</span> <span class="op">-</span> square_size<span class="op">/</span><span class="dv">2</span><span class="op">,</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>                   square_size<span class="op">,</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>                   square_size<span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="op">}</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>app<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>app<span class="op">));</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  GtkWidget <span class="op">*</span>area <span class="op">=</span> gtk_drawing_area_new <span class="op">();</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a></span>
+<span id="cb3-24"><a href="#cb3-24"></a>  gtk_window_set_title <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="st">&quot;da1&quot;</span><span class="op">);</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>GTK_DRAWING_AREA <span class="op">(</span>area<span class="op">),</span> draw_function<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> area<span class="op">);</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a></span>
+<span id="cb3-28"><a href="#cb3-28"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a><span class="op">}</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a></span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.da1&quot;</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a></span>
+<span id="cb3-33"><a href="#cb3-33"></a><span class="dt">int</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a></span>
+<span id="cb3-38"><a href="#cb3-38"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb3-41"><a href="#cb3-41"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb3-42"><a href="#cb3-42"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb3-43"><a href="#cb3-43"></a><span class="op">}</span></span></code></pre></div>
+        <p>The <code>main</code> function is almost the same as those in
+        the previous sections. The two functions
+        <code>app_activate</code> and <code>draw_function</code> are
+        important in this example.</p>
+        <ul>
+        <li>22: Creates a GtkDrawingArea instance.</li>
+        <li>25: Sets a drawing function of the widget. GtkDrawingArea
+        widget uses the function <code>draw_function</code> to draw the
+        contents of itself whenever it is necessary. For example, when a
+        user drag a mouse pointer and resize a top-level window,
+        GtkDrawingArea also changes the size. Then, the whole window
+        needs to be redrawn. For the information of
+        <code>gtk_drawing_area_set_draw_func</code>, see <a
+        href="https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html">Gtk
+        API Reference – gtk_drawing_area_set_draw_func</a>.</li>
+        </ul>
+        <p>The drawing function has five parameters.</p>
         <div class="sourceCode" id="cb4"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.dnd&quot;</span></span></code></pre></div>
-        <h3 id="startup-signal-handler">Startup Signal Handler</h3>
-        <p>Most of the work is done in the “startup” signal handler.</p>
-        <p>Two objects GtkDragSource and GtkDropTarget are used for DND
-        implementation.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> drawing_function <span class="op">(</span>GtkDrawingArea <span class="op">*</span>drawing_area<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                       gpointer user_data<span class="op">);</span></span></code></pre></div>
+        <p>The first parameter is the GtkDrawingArea widget. You can’t
+        change any properties, for example <code>content-width</code> or
+        <code>content-height</code>, in this function. The second
+        parameter is a cairo context given by the widget. The
+        destination surface of the context is connected to the contents
+        of the widget. What you draw to this surface will appear in the
+        widget on the screen. The third and fourth parameters are the
+        size of the destination surface. Now, look at the program
+        again.</p>
         <ul>
-        <li>Drag source: A drag source (GtkDragSource instance) is an
-        event controller. It initiates a DND operation when the user
-        clicks and drags the widget. If data, in the form of
-        GdkContentProvider, is set in advance, it gives the data to the
-        system at the beginning of the drag.</li>
-        <li>Drop target: A drop target (GtkDropTarget) is also an event
-        controller. You can get the data in the GtkDropTarget::drop
-        signal handler.</li>
+        <li>3-17: The drawing function.</li>
+        <li>7-8: Sets the source to be white and paint the destination
+        white.</li>
+        <li>9: Sets the line width to be 2.</li>
+        <li>10: Sets the source to be black.</li>
+        <li>11-15: Adds a rectangle to the mask.</li>
+        <li>16: Draws the rectangle with black color to the
+        destination.</li>
         </ul>
-        <p>The example below uses these objects in a very simple way.
-        You can use a number of features that the two objects have. See
-        the following links for more information.</p>
-        <ul>
-        <li><a
-        href="https://docs.gtk.org/gtk4/drag-and-drop.html">Drag-and-Drop
-        in GTK</a></li>
-        <li><a
-        href="https://docs.gtk.org/gtk4/class.DragSource.html">GtkDragSource</a></li>
-        <li><a
-        href="https://docs.gtk.org/gtk4/class.DropTarget.html">GtkDropTarget</a></li>
-        </ul>
-        <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>  GtkLabel <span class="op">*</span>src_labels<span class="op">[</span><span class="dv">3</span><span class="op">];</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a>  GtkLabel <span class="op">*</span>canvas<span class="op">;</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a>  GtkDragSource <span class="op">*</span>src<span class="op">;</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a>  GdkContentProvider <span class="op">*</span>content<span class="op">;</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  GtkDropTarget <span class="op">*</span>tgt<span class="op">;</span></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  GdkDisplay <span class="op">*</span>display<span class="op">;</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
-<span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/dnd/dnd.ui&quot;</span><span class="op">);</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a>  src_labels<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> GTK_LABEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;red&quot;</span><span class="op">));</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a>  src_labels<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> GTK_LABEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;green&quot;</span><span class="op">));</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a>  src_labels<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> GTK_LABEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;blue&quot;</span><span class="op">));</span></span>
-<span id="cb5-20"><a href="#cb5-20"></a>  canvas <span class="op">=</span> GTK_LABEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;canvas&quot;</span><span class="op">));</span></span>
-<span id="cb5-21"><a href="#cb5-21"></a>  gtk_window_set_application <span class="op">(</span>win<span class="op">,</span> app<span class="op">);</span></span>
-<span id="cb5-22"><a href="#cb5-22"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb5-23"><a href="#cb5-23"></a></span>
-<span id="cb5-24"><a href="#cb5-24"></a>  <span class="cf">for</span> <span class="op">(</span>i<span class="op">=</span><span class="dv">0</span><span class="op">;</span> i<span class="op">&lt;</span><span class="dv">3</span><span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-25"><a href="#cb5-25"></a>    src <span class="op">=</span> gtk_drag_source_new <span class="op">();</span></span>
-<span id="cb5-26"><a href="#cb5-26"></a>    content <span class="op">=</span> gdk_content_provider_new_typed <span class="op">(</span>G_TYPE_STRING<span class="op">,</span> gtk_widget_get_name <span class="op">(</span>GTK_WIDGET <span class="op">(</span>src_labels<span class="op">[</span>i<span class="op">])));</span></span>
-<span id="cb5-27"><a href="#cb5-27"></a>    gtk_drag_source_set_content <span class="op">(</span>src<span class="op">,</span> content<span class="op">);</span></span>
-<span id="cb5-28"><a href="#cb5-28"></a>    g_object_unref <span class="op">(</span>content<span class="op">);</span></span>
-<span id="cb5-29"><a href="#cb5-29"></a>    gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>src_labels<span class="op">[</span>i<span class="op">]),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>src<span class="op">));</span> <span class="co">// The ownership of src is taken by the instance.</span></span>
-<span id="cb5-30"><a href="#cb5-30"></a>  <span class="op">}</span></span>
-<span id="cb5-31"><a href="#cb5-31"></a></span>
-<span id="cb5-32"><a href="#cb5-32"></a>  tgt <span class="op">=</span> gtk_drop_target_new <span class="op">(</span>G_TYPE_STRING<span class="op">,</span> GDK_ACTION_COPY<span class="op">);</span></span>
-<span id="cb5-33"><a href="#cb5-33"></a>  g_signal_connect <span class="op">(</span>tgt<span class="op">,</span> <span class="st">&quot;drop&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drop_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-34"><a href="#cb5-34"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>canvas<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>tgt<span class="op">));</span> <span class="co">// The ownership of tgt is taken by the instance.</span></span>
-<span id="cb5-35"><a href="#cb5-35"></a></span>
-<span id="cb5-36"><a href="#cb5-36"></a>  provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb5-37"><a href="#cb5-37"></a>  s <span class="op">=</span> g_strdup_printf <span class="op">(</span>format<span class="op">,</span> <span class="st">&quot;black&quot;</span><span class="op">);</span></span>
-<span id="cb5-38"><a href="#cb5-38"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> s<span class="op">);</span></span>
-<span id="cb5-39"><a href="#cb5-39"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
-<span id="cb5-40"><a href="#cb5-40"></a>  display <span class="op">=</span> gdk_display_get_default <span class="op">();</span></span>
-<span id="cb5-41"><a href="#cb5-41"></a>  gtk_style_context_add_provider_for_display <span class="op">(</span>display<span class="op">,</span> GTK_STYLE_PROVIDER <span class="op">(</span>provider<span class="op">),</span></span>
-<span id="cb5-42"><a href="#cb5-42"></a>                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION<span class="op">);</span></span>
-<span id="cb5-43"><a href="#cb5-43"></a>  g_object_unref <span class="op">(</span>provider<span class="op">);</span> <span class="co">// The provider is still alive because the display owns it.</span></span>
-<span id="cb5-44"><a href="#cb5-44"></a><span class="op">}</span></span></code></pre></div>
-        <ul>
-        <li>15-22: Builds the widgets. The array
-        <code>src_labels[]</code> points to the source labels red, green
-        and blue in the UI file. The variable <code>canvas</code> points
-        to the destination label.</li>
-        <li>24-30: Sets the DND source widgets. The for-loop iterates
-        through the array <code>src_labels[]</code> each of which points
-        to the source widget, red, green or blue label.</li>
-        <li>25: Creates a new GtkDragSource instance.</li>
-        <li>26: Creates a new GdkContentProvider instance with the
-        string “red”, “green” or “blue”. They are the name of the
-        widgets. These strings are the data to transfer through the DND
-        operation.</li>
-        <li>27: Sets the content of the drag source to the
-        GdkContentProvider instance above.</li>
-        <li>28: Content is useless so it is destroyed.</li>
-        <li>29: Add the event controller, which is actually the drag
-        source, to the widget. If a DND operation starts on the widget,
-        the corresponding drag source works and the data is given to the
-        system.</li>
-        <li>32-34: Sets the DND drop target.</li>
-        <li>32: Creates a new GtkDropTarget instance. The first
-        parameter is the GType of the data. The second parameter is a
-        GdkDragAction enumeration constant. The arguments here are
-        string type and the constant for copy.</li>
-        <li>33: Connects the “drop” signal and the handler
-        <code>drop_cb</code>.</li>
-        <li>34: Add the event controller, which is actually the drop
-        target, to the widget.</li>
-        <li>36-43: Sets CSS.</li>
-        <li>37: A variable <code>format</code> is static and defined at
-        the top of the program. Static variables are shown below.</li>
-        </ul>
-        <div class="sourceCode" id="cb6"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> GtkCssProvider <span class="op">*</span>provider <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>format <span class="op">=</span> <span class="st">&quot;label {padding: 20px;} label#red {background: red;} &quot;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;label#green {background: green;} label#blue {background: blue;} &quot;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;label#canvas {color: </span><span class="sc">%s</span><span class="st">; font-weight: bold; font-size: 72pt;}&quot;</span><span class="op">;</span></span></code></pre></div>
-        <h3 id="activate-signal-handler">Activate Signal Handler</h3>
-        <div class="sourceCode" id="cb7"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a></span>
-<span id="cb7-6"><a href="#cb7-6"></a>  win <span class="op">=</span> gtk_application_get_active_window <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a>  gtk_window_present <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="op">}</span></span></code></pre></div>
-        <p>This handler just shows the window.</p>
-        <h3 id="drop-signal-handler">Drop Signal Handler</h3>
-        <div class="sourceCode" id="cb8"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> gboolean</span>
-<span id="cb8-2"><a href="#cb8-2"></a>drop_cb <span class="op">(</span>GtkDropTarget <span class="op">*</span>self<span class="op">,</span> <span class="dt">const</span> GValue <span class="op">*</span>value<span class="op">,</span> gdouble x<span class="op">,</span> gdouble y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">char</span> <span class="op">*</span>s<span class="op">;</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  s <span class="op">=</span> g_strdup_printf <span class="op">(</span>format<span class="op">,</span> g_value_get_string <span class="op">(</span>value<span class="op">));</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> s<span class="op">);</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  g_free <span class="op">(</span>s<span class="op">);</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="op">}</span></span></code></pre></div>
-        <p>The “drop” signal handler has five parameters.</p>
-        <ul>
-        <li>GtkDropTarget instance on which the signal has been
-        emitted.</li>
-        <li>GValue that holds the data from the source.</li>
-        <li>The arguments <code>x</code> and <code>y</code> are the
-        coordinate of the mouse when released.</li>
-        <li>User data was set when the signal and the handler were
-        connected.</li>
-        </ul>
-        <p>The string from the GValue is “red”, “green” or “blue”. It
-        replaces “%s” in the variable <code>format</code>. That means
-        the font color of the label <code>canvas</code> will be updated
-        to the color.</p>
-        <h2 id="meson.build">Meson.build</h2>
-        <p>The file <code>meson.build</code> controls the building
-        process.</p>
-        <div class="sourceCode" id="cb9"><pre
-        class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb9-1"><a href="#cb9-1"></a>project(&#39;dnd&#39;, &#39;c&#39;)</span>
-<span id="cb9-2"><a href="#cb9-2"></a></span>
-<span id="cb9-3"><a href="#cb9-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
-<span id="cb9-4"><a href="#cb9-4"></a></span>
-<span id="cb9-5"><a href="#cb9-5"></a>gnome = import(&#39;gnome&#39;)</span>
-<span id="cb9-6"><a href="#cb9-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;dnd.gresource.xml&#39;)</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a>executable(meson.project_name(), &#39;dnd.c&#39;, resources, dependencies: gtkdep, export_dynamic: true, install: false)</span></code></pre></div>
-        <p>You can build it from the command line.</p>
-        <pre><code>$ cd src/dnd
-$ meson setup _build
-$ ninja -C _build
-$ _build/dnd</code></pre>
-        <p>The source files are under the directory <code>src/dnd</code>
-        of the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.
-        Download it and see the directory.</p>
+        <p>The program is <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/blob/main/src/misc/da1.c">/src/misc/da1.c</a>.
+        Compile and run it, then a window with a black rectangle
+        (square) appears. When you resize the window, the square always
+        appears at the center of the window because the drawing function
+        is invoked each time the window is resized.</p>
+        <figure>
+        <img src="/images/da1.png" alt="Square in the window" />
+        <figcaption aria-hidden="true">Square in the window</figcaption>
+        </figure>
       </div>
     </div>
   </main>

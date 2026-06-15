@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Composite Widgets and Alert Dialog</title>
+  <title>Managing the Application</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,314 +93,274 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="composite-widgets-and-alert-dialog">Composite Widgets
-        and Alert Dialog</h1>
-        <p>The source files are in the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial
-        GitHub repository</a>. Download it and see <code>src/tfe6</code>
-        directory.</p>
-        <h2 id="an-outline-of-new-tfe-text-editor">An Outline of New Tfe
-        Text Editor</h2>
-        <p>Tfe text editor will be restructured. The program is divided
-        into six parts.</p>
+        <h1 id="managing-the-application">Managing the Application</h1>
+        <p>A good rule of thumb in programming is to split your code
+        into separate files based on what they do. Following this idea,
+        we should reorganize TFE’s <code>application.c</code>. We’re
+        going to divide it into three main parts:</p>
         <ul>
-        <li>Main program: the C main function.</li>
-        <li>TfeApplication object: It is like GtkApplication but keeps
-        GSettings and CSS Provider.</li>
-        <li>TfeWindow object: It is a window with buttons and a
-        notebook.</li>
-        <li>TfePref object: A preference dialog.</li>
-        <li>TfeAlert object: An alert dialog.</li>
-        <li>pdf2css.h and pdf2css.c: Font and CSS utility
-        functions.</li>
+        <li><code>main</code>: This function handles the command-line
+        interface.</li>
+        <li><code>application</code>: This is the core application
+        object. It creates and manages things like windows.</li>
+        <li><code>window</code>: This object handles the window itself
+        and the widgets inside it.</li>
         </ul>
-        <p>This section describes TfeAlert. Others will be explained in
-        the following sections.</p>
-        <h2 id="composite-widgets">Composite Widgets</h2>
-        <p>The alert dialog is like this:</p>
-        <figure>
-        <img src="/images/alert.png" alt="Alert dialog" />
-        <figcaption aria-hidden="true">Alert dialog</figcaption>
-        </figure>
-        <p>Tfe uses it when a user quits the application or closes a
-        notebook without saving data to files.</p>
-        <p>The dialog has a title, buttons, an icon and a message.
-        Therefore, it consists of several widgets. Such dialog is called
-        a composite widget.</p>
-        <p>Composite widgets are defined with template XMLs. The class
-        is built in the class initialization function and the instances
-        are built and disposed by the following functions.</p>
+        <p>In this section, we’ll focus on the first two parts and save
+        the window management for later.</p>
+        <h2 id="creating-an-application-class">Creating an Application
+        Class</h2>
+        <p>When you write a GTK application, you have two main
+        options:</p>
         <ul>
-        <li>gtk_widget_init_template</li>
-        <li>gtk_widget_dispose_template</li>
+        <li>Use GtkApplication exactly as it is.</li>
+        <li>Create your own subclass of GtkApplication.</li>
         </ul>
-        <p>TfeAlert is a good example to know composite widgets. It is
-        defined with the three files.</p>
+        <p>Creating a subclass is generally the better choice because it
+        lets you use “instance variables”. An instance variable is
+        simply a piece of data attached to a specific object. For
+        example, remember how we made TfeTextView (a subclass of
+        GtkTextView)? We gave it an instance variable called
+        <code>file</code> to store a GFile object. If we had a
+        TfeTextView object named <code>tv</code>, we could easily access
+        that file using <code>tv-&gt;file</code>.</p>
+        <p>Applications usually need to keep track of objects other than
+        just windows. For example, TFE will eventually need to manage
+        settings using a GSettings object. The standard way to keep
+        track of these objects is by saving pointers to them as instance
+        variables. So, let’s define our own TfeApplication class as a
+        subclass of GtkApplication.</p>
+        <p>If you remember how we made TfeTextView, you’ll find this
+        process very familiar.</p>
+        <h2 id="writing-the-header-and-c-files.">Writing the Header and
+        C Files.</h2>
+        <p>Let’s quickly review how to write the header and C files for
+        our new class. We’ll start with the header file.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#pragma once</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="pp">#define TFE_TYPE_APPLICATION tfe_application_get_type </span><span class="op">()</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> TFE<span class="op">,</span> APPLICATION<span class="op">,</span> GtkApplication<span class="op">)</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>TfeApplication <span class="op">*</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>application_id<span class="op">,</span> GApplicationFlags flag<span class="op">);</span></span></code></pre></div>
         <ul>
-        <li>tfealert.ui: XML file</li>
-        <li>tfealert.h: Header file</li>
-        <li>tfealert.c: C program file</li>
-        </ul>
-        <h2 id="the-xml-file">The XML File</h2>
-        <p>A template tag is used in a composite widget XML.</p>
+        <li>5: We define the GType for TfeApplication using a macro.
+        There are strict naming rules here:
         <ul>
-        <li>3: A template tag defines a composite widget. The class
-        attribute tells the class name of the composite widget. The
-        parent attribute tells the parent class of the composite widget.
-        So, TfeAlert is a child class of GtkWindow. The parent attribute
-        specifies the parent class of the composite widget. While it is
-        technically optional in the XML, it is highly recommended to
-        include it. Providing the parent class allows GtkBuilder to
-        verify the class hierarchy at runtime and improves the
-        readability of the UI file.</li>
-        <li>4-6: Its three properties are defined. These properties are
-        inherited from GtkWindow. The titlebar property has a widget for
-        a custom title bar. The typical widget is GtkHeaderBar.</li>
-        <li>8: If the property “show-title-buttons” is TRUE, the title
-        buttons like close, minimize and maximize are shown. Otherwise
-        it is not shown. The TfeAlert object is not resizable. It is
-        closed when either of the two buttons, cancel or accept, is
-        clicked. Therefore the title buttons are not necessary and this
-        property is set to FALSE.</li>
-        <li>9-14: The bar contains a title, implemented as a GtkLabel
-        widget. The default title is “Are you sure?” but it can be
-        replaced by an instance method.</li>
-        <li>15-32: The bar has two buttons, cancel and accept. The
-        cancel button is on the left so the child tag has
-        <code>type="start"</code> attribute. The accept button is on the
-        right so the child tag has <code>type="end"</code> attribute.
-        The dialog is shown when the user clicked the close button or
-        the quit menu without saving the data. Therefore, it is safer
-        for the user to click on the cancel button of the alert dialog.
-        So, the cancel button has a “suggested-action” CSS class. Ubuntu
-        colors the button green but the color can be blue or other
-        appropriate one defined by the system. In the same way the
-        accept button has a “destructive-action” CSS class and is
-        colored red. Two buttons have signals which are defined by the
-        signal tags. By setting <code>swapped="TRUE"</code>, the
-        instance emitting the signal and the user data are swapped.
-        Consequently, the <code>cancel_cb</code> handler receives the
-        <code>TfeAlert</code> object as its first parameter.”</li>
-        <li>35-54: A horizontal box has an image icon and a label.</li>
-        <li>44-47: The GtkImage widget displays an image. The
-        “icon-name” property is an icon name in the icon theme. The
-        theme depends on your system. You can check it with an icon
-        browser.</li>
-        </ul>
-        <pre><code>$ gtk4-icon-browser</code></pre>
-        <p>The “dialog-warning” icon is something like this.</p>
-        <figure>
-        <img src="/images/dialog_warning.png"
-        alt="dialog-warning icon is like …" />
-        <figcaption aria-hidden="true">dialog-warning icon is like
-        …</figcaption>
-        </figure>
-        <p>These were created manually. The real image on the alert
-        dialog is nicer.</p>
-        <p>It is possible to define the alert widget as a child of
-        GtkDialog. But GtkDialog is deprecated since GTK version 4.10.
-        And users should use GtkWindow instead of GtkDialog.</p>
-        <h2 id="the-header-file">The Header File</h2>
-        <p>The header file is similar to the one of TfeTextView.</p>
-        <ul>
-        <li>5-6: These two lines are always needed to define a new
-        object. <code>TFE_TYPE_ALERT</code> is the type of TfeAlert
-        object and it is a macro expanded into the call to
-        <code>tfe_alert_get_type ()</code>. G_DECLARE_FINAL_TYPE macro
-        is expanded into:
-        <ul>
-        <li>The declaration of the function
-        <code>tfe_alert_get_type</code></li>
-        <li><code>TfeAlert</code> is defined as a typedef of
-        <code>struct _TfeAlert</code>, which is defined in the C
-        file.</li>
-        <li><code>TFE_ALERT</code> and <code>TFE_IS_ALERT</code> macro
-        is defined as a cast and type check function.</li>
-        <li><code>TfeAlertClass</code> structure is defined as a final
-        class.</li>
+        <li>The macro name must be ALL CAPS like this:
+        <code>PREFIX_TYPE_OBJECT_NAME</code>.</li>
+        <li>The function name must be all lowercase like this:
+        <code>prefix_object_name_get_type ()</code>.</li>
         </ul></li>
-        <li>8-13: The TfeAlert class has a “response” signal. It has a
-        parameter and the parameter type is defined as a
-        <code>TfeAlertResponseType</code> enumerative constant.</li>
-        <li>15-31: Getter and setter methods.</li>
-        <li>33-37: Functions to create an instance. The function
-        <code>tfe_alert_new_with_data</code> is a convenience function,
-        which creates an instance and sets data at once.</li>
+        <li>6: We use the <code>G_DECLARE_FINAL_TYP</code>E macro to set
+        up our class.
+        <ul>
+        <li>1st argument: CamelCase (<code>PrefixObjectname</code>)
+        like: <code>TfeApplication</code></li>
+        <li>2nd argument: lowercase (<code>prefix_objectname</code>)
+        like: <code>tfe_application</code></li>
+        <li>3rd argument: ALL CAPS (<code>PREFIX</code>) like:
+        <code>TFE</code></li>
+        <li>4th argument: ALL CAPS (<code>OBJECTNAME</code>) like:
+        <code>APPLICATION</code></li>
+        <li>5th argument: CamelCase (<code>ParentObjectname</code>)
+        like: <code>GtkApplication</code></li>
+        </ul></li>
+        <li>8-9: The only function we need to make public is the one
+        that creates our application,
+        <code>tfe_application_new</code>.</li>
         </ul>
-        <h2 id="the-c-file">The C File</h2>
-        <h3 id="functions-for-composite-widgets">Functions for Composite
-        Widgets</h3>
-        <p>The following codes are extracted from
-        <code>tfealert.c</code>.</p>
+        <p>Now, let’s look at the C file. The beginning looks just like
+        what we did for TfeTextView.</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfealert.h&quot;</span></span>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeAlert <span class="op">{</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  GtkWindow parent<span class="op">;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  GtkLabel <span class="op">*</span>lb_title<span class="op">;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  GtkLabel <span class="op">*</span>lb_message<span class="op">;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  GtkButton <span class="op">*</span>btn_accept<span class="op">;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  GtkButton <span class="op">*</span>btn_cancel<span class="op">;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeAlert<span class="op">,</span> tfe_alert<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>cancel_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>accept_cb <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>tfe_alert_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span> <span class="co">// gobject is actually a TfeAlert instance.</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_ALERT<span class="op">);</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_alert_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>tfe_alert_init <span class="op">(</span>TfeAlert <span class="op">*</span>alert<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>alert<span class="op">));</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>tfe_alert_class_init <span class="op">(</span>TfeAlertClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_alert_dispose<span class="op">;</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfealert.ui&quot;</span><span class="op">);</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_title<span class="op">);</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> lb_message<span class="op">);</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_accept<span class="op">);</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeAlert<span class="op">,</span> btn_cancel<span class="op">);</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> cancel_cb<span class="op">);</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_callback <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> accept_cb<span class="op">);</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>tfe_alert_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_ALERT<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeApplication <span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  GtkApplication parent<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> GTK_TYPE_APPLICATION<span class="op">)</span></span></code></pre></div>
         <ul>
-        <li><code>G_DEFINE_FINAL_TYPE</code> was introduced in GLib 2.70
-        for final type classes. While <code>G_DEFINE_TYPE</code> still
-        works, the new macro is preferred. It is expanded into:
+        <li>1: Include the main GTK header.</li>
+        <li>2: You must include your object’s own header file.</li>
+        <li>4-7: Here is where we declare the data for our object. The
+        struct name must be CamelCase, starting with an underscore:
+        <code>_TfeApplication</code>. The very first member must be the
+        parent object’s structure. You can name it whatever you want,
+        but calling it “parent” is the standard practice. After
+        “parent”, you can add your instance variables. We’re adding a
+        pointer for GSettings here because we plan to use it later.</li>
+        <li>9: The <code>G_DEFINE_FINAL_TYPE</code> macro.
         <ul>
-        <li>The declaration of the functions <code>tfe_alert_init</code>
-        and <code>tfe_alert_class_init</code>. They are defined in the
-        following part of the C program.</li>
-        <li>The definition of the variable
-        <code>tfe_alert_parent_class</code>.</li>
-        <li>The definition of the function
-        <code>tfe_alert_get_type</code>.</li>
+        <li>1st argument: CamelCase. <code>TfeApplication</code></li>
+        <li>2nd argument: lowercase. <code>tfe_application</code></li>
+        <li>3rd argument: ALL CAPS (The parent’s type macro).
+        <code>GTK_TYPE_APPLICATION</code></li>
         </ul></li>
-        <li>The names of the members of <code>_TfeAlert</code>, which
-        are <code>lb_title</code>, <code>lb_message</code>,
-        <code>btn_accept</code> and <code>btn_cancel</code>, must be the
-        same as the id attribute in the XML file
-        <code>tfealert.ui</code>.</li>
-        <li>The function <code>tfe_alert_class_init</code> initializes
-        the composite widget class.
-        <ul>
-        <li>The function
-        <code>gtk_widget_class_set_template_from_resource</code> sets
-        the template of the class. The template is built from the XML
-        resource “tfealert.ui”. At this moment no instance is created.
-        It just makes the class recognize the structure of the object.
-        That’s why the top level tag is not object but template in the
-        XML file.</li>
-        <li>The function macro
-        <code>gtk_widget_class_bind_template_child</code> connects the
-        member of TfeAlert and the object class in the template. So, for
-        example, you can access to <code>lb_title</code> GtkLabel
-        instance via <code>alert-&gt;lb_title</code> where
-        <code>alert</code> is an instance of TfeAlert class.</li>
-        <li>The function
-        <code>gtk_widget_class_bind_template_callback</code> connects
-        the callback function and the <code>handler</code> attribute of
-        the signal tag in the XML. For example, the “clicked” signal on
-        the cancel button has a handler named “cancel_cb” in the signal
-        tag. And the function <code>cancel_cb</code> exists in the C
-        file above. These two are connected so when the signal is
-        emitted the function <code>cancel_cb</code> is called. You can
-        add <code>static</code> storage class to the callback function
-        thanks to this connection.</li>
-        </ul></li>
-        <li>The function <code>tfe_alert_init</code> initializes the
-        newly created instance. You need to call
-        <code>gtk_widget_init_template</code> to create and initialize
-        the child widgets in the template.</li>
-        <li>The function <code>tfe_alert_dispose</code> releases
-        objects. The function <code>gtk_widget_dispose_template</code>
-        clears the template children.</li>
-        <li>The function <code>tfe_alert_new</code> creates the
-        composite widget TfeAlert instance. It creates not only TfeAlert
-        itself but also all the child widgets that the composite widget
-        has.</li>
         </ul>
-        <h3 id="other-functions">Other Functions</h3>
-        <p>The following is the full codes of
-        <code>tfealert.c</code>.</p>
-        <p>The function <code>tfe_alert_new_with_data</code> is used
-        more often than <code>tfe_alert_new</code> to create a new
-        instance. It creates the instance and sets three data at the
-        same time. The following is the common process when you use the
-        TfeAlert class.</p>
+        <p>These steps are the standard recipe for creating a subclass
+        in GObject. It’s a great pattern to memorize. If you want to
+        know exactly what these macros do behind the scenes, check out
+        the <a
+        href="https://toshiocp.github.io/Gobject-tutorial">GObject
+        tutorial</a>.</p>
+        <h2
+        id="initializing-the-instance-and-classinstance">Initializing
+        the Instance and ClassInstance</h2>
+        <h3 id="instance-initialization">Instance Initialization</h3>
+        <p>Right now, we don’t actually need to do any special setup
+        when a new instance is created. However, GTK expects an
+        initialization function to exist, so we still have to write one,
+        even if it’s completely empty inside.</p>
+        <h3 id="instance-disposal">Instance Disposal</h3>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>tfe_application_dispose <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="co">/* In the future version, settings will be disposed here */</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>object<span class="op">);</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="op">}</span></span></code></pre></div>
+        <p>We already covered how disposal works in detail back in
+        Section 11, so we’ll keep it brief here. For now, our
+        application doesn’t need to clean anything up. But later, when
+        we start using GSettings (which we’ll set up during the
+        application’s startup), we will need to free that memory here.
+        So, we’ve just left a comment as a reminder. The most important
+        thing to remember about your dispose function is to always call
+        the parent class’s dispose function at the end to chain up the
+        cleanup process.</p>
+        <h3 id="class-initialization">Class Initialization</h3>
+        <h4 id="overriding-the-dispose-method">Overriding the Dispose
+        Method</h4>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>tfe_application_class_init <span class="op">(</span>TfeApplicationClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_application_dispose<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>startup <span class="op">=</span> app_startup<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>activate <span class="op">=</span> app_activate<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>open <span class="op">=</span> app_open<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="op">}</span></span></code></pre></div>
+        <p>When the class is initialized, we can override class
+        methods.</p>
+        <p>First, we need to override the dispose method so GTK knows to
+        call our custom cleanup code. We did the exact same thing for
+        TfeTextView in Section 11, so feel free to look back at that if
+        you need a refresher.</p>
+        <h4
+        id="overriding-the-sstartup-activate-and-open-methods">Overriding
+        the Sstartup, Activate, and Open Methods</h4>
+        <p>Take a look at the family tree for our TfeApplication
+        class:</p>
+        <pre><code>GObject - GApplication - GtkApplication - TfeApplication</code></pre>
+        <p>It’s actually the GApplication class that defines the
+        “startup”, “activate”, and “open” signals. In GTK, there are
+        generally two ways to handle signals:</p>
         <ul>
-        <li>Call <code>tfe_alert_new_with_data</code> and create an
-        instance.</li>
-        <li>Call <code>gtk_window_set_transient_for</code> to set the
-        transient parent window.</li>
-        <li>Call <code>gtk_window_present</code> to show the TfeAlert
-        dialog.</li>
-        <li>Connect “response” signal and a handler.</li>
-        <li>The user clicks on the cancel or accept button. Then the
-        dialog emits the “response” signal and destroy itself.</li>
-        <li>The user catches the signal and do something.</li>
+        <li>Default signal handlers: These are built right into the
+        class that created the signal.</li>
+        <li>User-defined signal handlers: These are attached from the
+        outside using functions like <code>g_signal_connect</code>.</li>
         </ul>
-        <p>The rest of the program is:</p>
+        <p>Let’s look at the “startup” signal. The GApplication class
+        owns the default handler for it. Inside the class structure,
+        there is a member named <code>startup</code> that points to the
+        GApplication startup function. GTK uses this startup pointer to
+        run the code; it doesn’t call the function directly by its
+        name.</p>
+        <p>When you make a subclass, the beginning of its class
+        structure is an exact copy of the parent’s class structure. For
+        example, the start of the GtkApplication class structure looks
+        just like the GApplication class structure:</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _GtkApplicationClass</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  GApplicationClass parent_class<span class="op">;</span> <span class="co">/* This member has the same structure as GApplicationClass */</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>Because of this, the <code>startup</code> member is included
+        in this GApplicationClass area. As a subclass, we can write our
+        own custom startup function and change this <code>startup</code>
+        member so it points to our new function instead. This is called
+        overriding.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gtk_application_class_init <span class="op">(</span>GtkApplicationClass <span class="op">*</span>class<span class="op">)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  application_class<span class="op">-&gt;</span>startup <span class="op">=</span> gtk_application_startup<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>When we override the startup process, it’s crucial that we
+        still run the parent class’s startup code. We do this by calling
+        the parent’s startup function right at the beginning of our
+        custom function.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gtk_application_startup <span class="op">(</span>GApplication <span class="op">*</span>g_application<span class="op">)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>gtk_application_parent_class<span class="op">)-&gt;</span>startup <span class="op">(</span>g_application<span class="op">);</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>So, to set up our own startup process in TfeApplication, we
+        need to do two things:</p>
         <ul>
-        <li>14-19: An array for a signal id. You can use a variable
-        instead of an array because the class has only one signal. But
-        using an array is a common way.</li>
-        <li>21-31: Signal handlers. They emits the “response” signal and
-        destroy the instance itself.</li>
-        <li>33-61: Getters and setters.</li>
-        <li>85-95: Creates the “response” signal.</li>
-        <li>103-110: A convenience function
-        <code>tfe_alert_new_with_data</code> creates an instance and
-        sets labels.</li>
+        <li>Inside <code>tfe_application_class_init</code>, override the
+        startup member so it points to our custom function.</li>
+        <li>Inside our custom startup function, call the parent class’s
+        (GtkApplication) startup function first.</li>
         </ul>
-        <h2 id="an-example">An Example</h2>
-        <p>There’s an example in the <code>src/tfe6/example</code>
-        directory. It shows how to use TfeAlert. The program is
-        <code>src/example/ex_alert.c</code>.</p>
-        <p>The “activate” signal handler <code>app_activate</code>
-        initializes the alert dialog.</p>
-        <ul>
-        <li>A TfeAlert instance is created.</li>
-        <li>Its “response” signal is connected to the handler
-        <code>alert_response_cb</code>.</li>
-        <li>TfeAlert class is a sub class of GtkWindow so it can be a
-        top level window that is connected to an application instance.
-        The function <code>gtk_window_set_application</code> does
-        that.</li>
-        <li>The dialog is shown.</li>
-        </ul>
-        <p>A user clicks on either the cancel button or the accept
-        button. Then, the “response” signal is emitted and the dialog is
-        destroyed. The signal handler <code>alert_response_cb</code>
-        checks the response and prints “Accept” or “Cancel”. If an error
-        happens, it prints “Unexpected error”.</p>
-        <p>You can compile it with meson and ninja.</p>
-        <pre><code>$ cd src/tfe6/example
-$ meson setup _build
-$ ninja -C _build
-$ _build/ex_alert
-Accept #&lt;= if you clicked on the accept button</code></pre>
+        <p>We follow the exact same steps to override the “activate” and
+        “open” handlers.</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tfe_application_class_init <span class="op">(</span>TfeApplicationClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_application_dispose<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>startup <span class="op">=</span> app_startup<span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>activate <span class="op">=</span> app_activate<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>open <span class="op">=</span> app_open<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>startup <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <h4 id="looking-ahead-tfewindow">Looking Ahead: TfeWindow</h4>
+        <p>In the next section, we’ll build TfeWindow, a class
+        completely dedicated to managing our application’s window. Since
+        the “activate” and “open” handlers are the ones that actually
+        create the window, building TfeWindow will change how those
+        handlers are written. Once we have our window class ready, we’ll
+        come back to <code>tfeapplication.c</code> and show how they
+        connect.</p>
+        <h2 id="the-main-function">The Main Function</h2>
+        <p>Finally, let’s put our main function in its own file,
+        <code>main.c</code>. The only real difference from before is
+        that we are now creating and running our brand new
+        TfeApplication instead of a plain GtkApplication.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.tfe7&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="dt">int</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  TfeApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a></span>
+<span id="cb10-11"><a href="#cb10-11"></a>  app <span class="op">=</span> tfe_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="op">}</span></span></code></pre></div>
       </div>
     </div>
   </main>

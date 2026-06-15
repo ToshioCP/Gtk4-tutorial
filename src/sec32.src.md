@@ -1,437 +1,179 @@
-# GtkListView
+# Drag and Drop
 
-GTK 4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
-The new feature is described in [Gtk API Reference -- List Widget Overview](https://docs.gtk.org/gtk4/section-list-widget.html).
+## What is Drag and Drop?
 
-GTK 4 has other means to implement lists.
-They are GtkListBox and GtkTreeView which are took over from GTK 3.
-There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
-He described why GtkListView are developed to replace GtkTreeView.
-GtkTreeView is deprecated since version 4.10.
+Drag and drop is also written as "Drag-and-Drop", or "DND" in short.
+DND is like "copy and paste" or "cut and paste".
+If a user drags a UI element, which is a widget, selected part or other elements, data is transferred from the source to the destination.
 
-GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 29 to 33.
-
-## Outline
-
-A list is a sequential data structure.
-For example, an ordered string sequence "one", "two", "three", and "four" is a list.
-Each element is called an item.
-A list is like an array, but in many cases it is implemented with pointers which point to the next items of the list.
-And it has a start point.
-So, each item can be referred to by the index of the item (first item, second item, ..., nth item, ...).
-
-Gio provides GListModel interface.
-It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
-An object that implements GListModel is not a widget.
-So, the list is not displayed on the screen directly.
-There's another object GtkListView which is a widget to display the list.
-The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GtkListView.
+You probably have experience moving a file with DND.
 
 @@@if pdf
-![List](/images/list.png){width=10cm height=7.5cm}
+![DND on the GUI file manager](/images/dnd.png){width=4.6cm height=3cm}
 @@@else
-![List](/images/list.png)
+![DND on the GUI file manager](/images/dnd.png)
 @@@end
 
-## GListModel and GtkStringList
+When the DND starts, the file `sample_file.txt` is provided to the system.
+When it ends,  the system provides it to the `sample_folder` in the file manager.
+Therefore, it is like "cut and paste".
+The actual behavior may be different from the explanation here, but the concept is similar.
 
-If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
-Because GListModel is a list of GObject objects and strings aren't GObject objects.
-The word "GObject" here means GObject class or its derived class.
-So, you need a wrapper which is a GObject and contains a string.
-GtkStringObject is the wrapper object and GtkStringList, which implements GListModel, is a list of GtkStringObject.
+## Example for DND
 
-@@@if gfm
-~~~C
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@elif html
-~~~{.C}
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@elif latex
-~~~{.C}
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@else
-~~~
-char *array[] = {"one", "two", "three", "four", NULL};
-GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
-@@@end
-
-The function `gtk_string_list_new` creates a GtkStringList object.
-Its items are GtkStringObject objects which contain the strings "one", "two", "three" and "four".
-There are functions to add items to the list or remove items from the list.
-
-- `gtk_string_list_append` appends an item to the list
-- `gtk_string_list_remove` removes an item from the list
-- `gtk_string_list_get_string` gets a string in the list
-
-See [GTK 4 API Reference -- GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html) for further information.
-
-Other list objects will be explained later.
-
-## GtkSelectionModel
-
-GtkSelectionModel is an interface to support for selection.
-Thanks to this model, a user can select items by clicking on them.
-It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
-These three objects are usually enough to build an application.
-They are created with another GListModel.
-You can also create them alone and add a GListModel later.
-
-- GtkMultiSelection supports multiple selection.
-- GtkNoSelection supports no selection. This is a wrapper to GListModel when GtkSelectionModel is needed.
-- GtkSingleSelection supports single selection.
-
-## GtkListView
-
-GtkListView is a widget to show GListModel items.
-GtkListItem is used by GtkListView to represent items of a list model.
-But, GtkListItem is not a widget (not a descendant of GtkWidget), so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
-"item" property of GtkListItem points to an object that belongs to the list model.
+This tutorial provides a simple example in the `src/dnd` directory.
+It has three labels for the source and one label for the destination.
+The source labels have "red", "green" or "blue" labels.
+If a user drags the label to the destination label, the font color will be changed.
 
 @@@if pdf
-![GtkListItem](/images/gtklistitem.png){width=10cm height=7.5cm}
+![DND example](/images/dnd_canvas.png){width=13.5cm height=5.2cm}
 @@@else
-![GtkListItem](/images/gtklistitem.png)
+![DND example](/images/dnd_canvas.png)
 @@@end
 
-In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
-This recycle makes the number of GtkListItem objects fairly small, less than 200.
-This is very effective to restrain the growth of memory consumption so that GListModel can contain lots of items, for example, more than a million items.
+## UI File
 
-## GtkListItemFactory
-
-GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
-There are two child classes of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
-
-### GtkSignalListItemFactory
-
-GtkSignalListItemFactory provides signals for users to configure a GtkListItem object.
-There are four signals.
-
-1. "setup" is emitted to set up GtkListItem object.
-A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of the GtkListItem to it.
-This setting is kept even when the GtkListItem instance is recycled (to bind to another item of GListModel).
-2. "bind" is emitted to bind an item in the list model to the widget.
-For example, a user gets the item from "item" property of the GtkListItem instance.
-Then gets the string of the item and sets the label property of the GtkLabel instance with the string.
-This signal is emitted when the GtkListItem is newly created, recycled or some changes have happened to the item of the list.
-3. "unbind" is emitted to unbind an item.
-A user undoes everything done in step 2 in the signal handler.
-If some object are created in step 2, they must be destroyed.
-4. "teardown" is emitted to undo everything done in step 1.
-So, the widget created in step 1 must be destroyed.
-After this signal, the list item will be destroyed.
-
-The following program `list1.c` shows a list of strings "one", "two", "three" and "four".
-GtkNoSelection is used, so user can't select any item.
+The widgets are defined in the XML file `dnd.ui`.
 
 @@@include
-misc/list1.c
+dnd/dnd.ui
 @@@
 
-The file `list1.c` is located under the directory [/src/misc](misc/).
-Make a shell script below and save it to your bin directory, for example `$HOME/bin`.
-
-@@@if gfm
-~~~Shell
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@elif html
-~~~{.bash}
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@elif latex
-~~~{.bash}
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@else
-~~~
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
-@@@end
-
-Change the current directory to the directory includes `list1.c` and type as follows.
-
-~~~
-$ bash comp list1
-$ ./a.out
-~~~
-
-Then, the following window appears.
-
-@@@if pdf
-![list1](/images/list1.png){width=6.04cm height=4.40cm}
-@@@else
-![list1](/images/list1.png)
-@@@end
-
-The program is not so difficult.
-If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.
-
-### GtkBuilderListItemFactory
-
-GtkBuilderListItemFactory is another GtkListItemFactory.
-Its behavior is defined in a UI file.
-
-@@@if gfm
-~~~xml
-<interface>
-  <template class="GtkListItem">
-    <property name="child">
-      <object class="GtkLabel">
-        <binding name="label">
-          <lookup name="string" type="GtkStringObject">
-            <lookup name="item">GtkListItem</lookup>
-          </lookup>
-        </binding>
-      </object>
-    </property>
-  </template>
-</interface>
-~~~
-@@@else
-~~~{.xml}
-<interface>
-  <template class="GtkListItem">
-    <property name="child">
-      <object class="GtkLabel">
-        <binding name="label">
-          <lookup name="string" type="GtkStringObject">
-            <lookup name="item">GtkListItem</lookup>
-          </lookup>
-        </binding>
-      </object>
-    </property>
-  </template>
-</interface>
-~~~
-@@@end
-
-Template tag is used to define GtkListItem.
-And its child property is GtkLabel object.
-The factory sees this template and creates GtkLabel and sets the child property of GtkListItem.
-This is the same as what setup handler of GtkSignalListItemFactory did.
-
-Then, bind the label property of the GtkLabel to the string property of a GtkStringObject.
-The string object refers to the item property of the GtkListItem.
-So, the lookup tag is like this:
-
-~~~
-label <- string <- GtkStringObject <- item <- GtkListItem
-~~~
-
-The last lookup tag has a content `GtkListItem`.
-Usually, C type like `GtkListItem` doesn't appear in the content of tags.
-This is a special case.
-There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
-
-> Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
-
-Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in [Section 34](sec34.src.md).
-
-The C source code is as follows.
-Its name is `list2.c` and located under [/src/misc](misc/) directory.
+It is converted to a resource file by `glib-compile-resources`.
+The compiler uses an XML file `dnd.gresource.xml`.
 
 @@@include
-misc/list2.c
+dnd/dnd.gresource.xml
 @@@
 
-No signal handler is needed for GtkBuilderListItemFactory.
-GtkSingleSelection is used, so user can select one item at a time.
+## C File dnd.c
 
-Because this is a small program, the UI data is given as a string.
-
-## GtkDirectoryList
-
-GtkDirectoryList is a list model containing GFileInfo objects which are information of files under a certain directory.
-It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
-The list model is created by `gtk_directory_list_new` function.
-
-@@@if gfm
-~~~C
-GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
-~~~
-@@@else
-~~~{.C}
-GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
-~~~
-@@@end
-
-`attributes` is a comma separated list of file attributes.
-File attributes are key-value pairs.
-A key consists of a namespace and a name.
-For example, "standard::name" key is the name of a file.
-"standard" means general file information.
-"name" means filename.
-The following table shows some example.
-
-|key             |meaning                                                             |
-|:---------------|:-------------------------------------------------------------------|
-|standard::type  |file type. for example, regular file, directory, symbolic link, etc.|
-|standard::name  |filename                                                            |
-|standard::size  |file size in bytes                                                  |
-|access::can-read|read privilege if the user is able to read the file                 |
-|time::modified  |the time the file was last modified in seconds since the UNIX epoch |
-
-The current directory is ".".
-The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
-
-@@@if gfm
-~~~C
-GFile *file = g_file_new_for_path (".");
-GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
-g_object_unref (file);
-~~~
-@@@else
-~~~{.C}
-GFile *file = g_file_new_for_path (".");
-GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
-g_object_unref (file);
-~~~
-@@@end
-
-It is not so difficult to make a file listing program by changing `list2.c` in the previous subsection.
-One problem is that GFileInfo doesn't have properties.
-Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
-Instead, a closure tag is appropriate in this case.
-A closure tag specifies a function and the type of the return value of the function.
-
-@@@if gfm
-~~~C
-char *
-get_file_name (GtkListItem *item, GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
-}
-... ...
-... ...
-
-"<interface>"
-  "<template class=\"GtkListItem\">"
-    "<property name=\"child\">"
-      "<object class=\"GtkLabel\">"
-        "<binding name=\"label\">"
-          "<closure type=\"gchararray\" function=\"get_file_name\">"
-            "<lookup name=\"item\">GtkListItem</lookup>"
-          "</closure>"
-        "</binding>"
-      "</object>"
-    "</property>"
-  "</template>"
-"</interface>"
-~~~
-@@@else
-~~~{.C}
-char *
-get_file_name (GtkListItem *item, GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
-}
-... ...
-... ...
-
-"<interface>"
-  "<template class=\"GtkListItem\">"
-    "<property name=\"child\">"
-      "<object class=\"GtkLabel\">"
-        "<binding name=\"label\">"
-          "<closure type=\"gchararray\" function=\"get_file_name\">"
-            "<lookup name=\"item\">GtkListItem</lookup>"
-          "</closure>"
-        "</binding>"
-      "</object>"
-    "</property>"
-  "</template>"
-"</interface>"
-~~~
-@@@end
-
-- The string "gchararray" is a type name registered in the GObject type system.
-While the type "gchar" is the same as the C "char" type, "gchararray" specifically represents a NULL-terminated string (char *).
-In GtkBuilder XML files, you must use these registered type names instead of native C types to let the GValue system handle the data correctly.
-For example, common type names include gboolean, gchar, gint, gfloat, gdouble, and gchararray.
-See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue) for further information.
-- Closure tag has type attribute and function attribute.
-Function attribute specifies the function name and type attribute specifies the type of the return value of the function.
-The content of closure tag (it is between \<closure...\> and\</closure\>) consists of the parameters for the function.
-`<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
-This will be the second argument of the function.
-The first parameter is always the GListItem instance, which is a 'this' object.
-The 'this' object is explained in Section 31.
-- `get_file_name` function is the callback function for the closure tag.
-It first checks the `info` parameter.
-Because it can be NULL when GListItem `item` is unbounded.
-If it's GFileInfo, it returns the copied filename.
-Because the return value (filename) of `g_file_info_get_name` is owned by GFileInfo object.
-So, the the string needs to be duplicated to give the ownership to the caller.
-Binding tag binds the "label" property of the GtkLabel to the closure tag.
-
-The whole program (`list3.c`) is as follows.
-The program is located in [/src/misc](misc/) directory.
+The C file `dnd.c` isn't a big file.
+The number of the lines is less than a hundred.
+A GtkApplication object is created in the function `main`.
 
 @@@include
-misc/list3.c
+dnd/dnd.c main
 @@@
 
-The ui data (xml data above) is used to build the GListItem template at runtime.
-GtkBuilder refers to the symbol table to find the function `get_file_name`.
-
-Generally, a symbol table is used by a linker to link objects to an executable file.
-It includes function names and their location.
-A linker usually doesn't put a symbol table into the created executable file.
-But if `--export-dynamic` option is given, the linker adds the symbol table to the executable file.
-
-To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
-
-- `-Wl` is a C compiler option that passes the following option to the linker.
-- `--export-dynamic` is a linker option.
-The following is cited from the linker document.
-"When creating a dynamically linked executable, add all symbols to the dynamic symbol table.
-The dynamic symbol table is the set of symbols which are visible from dynamic objects at run time."
-
-Compile and execute it.
-
-~~~
-$ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`
-~~~
-
-You can also make a shell script to compile `list3.c`
+The application ID is defined as:
 
 @@@if gfm
-~~~bash
-gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+```C
+#define APPLICATION_ID "com.github.ToshioCP.dnd"
+```
 @@@else
-~~~{.bash}
-gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+```{.C}
+#define APPLICATION_ID "com.github.ToshioCP.dnd"
+```
 @@@end
 
-Save this one liner to a file `comp`.
-Then, copy it to `$HOME/bin` and give it executable permission.
+### Startup Signal Handler
 
-~~~
-$ cp comp $HOME/bin/comp
-$ chmod +x $HOME/bin/comp
-~~~
+Most of the work is done in the "startup" signal handler.
 
-You can compile `list3.c` and execute it, like this:
+Two objects GtkDragSource and GtkDropTarget are used for DND implementation.
 
-~~~
-$ comp list3
-$ ./a.out
-~~~
+- Drag source: A drag source (GtkDragSource instance) is an event controller.
+It initiates a DND operation when the user clicks and drags the widget.
+If data, in the form of GdkContentProvider, is set in advance, it gives the data to the system at the beginning of the drag.
+- Drop target: A drop target (GtkDropTarget) is also an event controller.
+You can get the data in the GtkDropTarget::drop signal handler.
 
-@@@if pdf
-![screenshot list3](/images/list3.png){width=10cm height=7.3cm}
+The example below uses these objects in a very simple way.
+You can use a number of features that the two objects have.
+See the following links for more information.
+
+- [Drag-and-Drop in GTK](https://docs.gtk.org/gtk4/drag-and-drop.html)
+- [GtkDragSource](https://docs.gtk.org/gtk4/class.DragSource.html)
+- [GtkDropTarget](https://docs.gtk.org/gtk4/class.DropTarget.html)
+
+@@@include
+dnd/dnd.c app_startup
+@@@
+
+- 15-22: Builds the widgets.
+The array `src_labels[]` points to the source labels red, green and blue in the UI file.
+The variable `canvas` points to the destination label.
+- 24-30: Sets the DND source widgets.
+The for-loop iterates through the array `src_labels[]` each of which points to the source widget,  red, green or blue label.
+- 25: Creates a new GtkDragSource instance.
+- 26: Creates a new GdkContentProvider instance with the string "red", "green" or "blue".
+They are the name of the widgets.
+These strings are the data to transfer through the DND operation.
+- 27: Sets the content of the drag source to the GdkContentProvider instance above.
+- 28: Content is useless so it is destroyed.
+- 29: Add the event controller, which is actually the drag source, to the widget.
+If a DND operation starts on the widget, the corresponding drag source works and the data is given to the system.
+- 32-34: Sets the DND drop target.
+- 32: Creates a new GtkDropTarget instance.
+The first parameter is the GType of the data.
+The second parameter is a GdkDragAction enumeration constant.
+The arguments here are string type and the constant for copy.
+- 33: Connects the "drop" signal and the handler `drop_cb`.
+- 34: Add the event controller, which is actually the drop target, to the widget.
+- 36-43: Sets CSS.
+- 37: A variable `format` is static and defined at the top of the program.
+Static variables are shown below.
+
+@@@if gfm
+```C
+static GtkCssProvider *provider = NULL;
+static const char *format = "label {padding: 20px;} label#red {background: red;} "
+  "label#green {background: green;} label#blue {background: blue;} "
+  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
+```
 @@@else
-![screenshot list3](/images/list3.png)
+```{.C}
+static GtkCssProvider *provider = NULL;
+static const char *format = "label {padding: 20px;} label#red {background: red;} "
+  "label#green {background: green;} label#blue {background: blue;} "
+  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
+```
 @@@end
+
+### Activate Signal Handler
+
+@@@include
+dnd/dnd.c app_activate
+@@@
+
+This handler just shows the window.
+
+### Drop Signal Handler
+
+@@@include
+dnd/dnd.c drop_cb
+@@@
+
+The "drop" signal handler has five parameters.
+
+- GtkDropTarget instance on which the signal has been emitted.
+- GValue that holds the data from the source.
+- The arguments `x` and `y` are the coordinate of the mouse when released.
+- User data was set when the signal and the handler were connected.
+
+The string from the GValue is "red", "green" or "blue".
+It replaces "%s" in the variable `format`.
+That means the font color of the label `canvas` will be updated to the color.
+
+## Meson.build
+
+The file `meson.build` controls the building process.
+
+@@@include
+dnd/meson.build
+@@@
+
+You can build it from the command line.
+
+```
+$ cd src/dnd
+$ meson setup _build
+$ ninja -C _build
+$ _build/dnd
+```
+
+The source files are under the directory `src/dnd` of the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+Download it and see the directory.

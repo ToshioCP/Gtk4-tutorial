@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>GtkGridView and Activate Signal</title>
+  <title>Custom Drawing</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,561 +93,368 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="gtkgridview-and-activate-signal">GtkGridView and
-        Activate Signal</h1>
-        <p>GtkGridView is similar to GtkListView. It displays a
-        GListModel as a grid, which is like a square tessellation.</p>
+        <h1 id="custom-drawing">Custom Drawing</h1>
+        <p>Custom drawing is to draw shapes dynamically. This section
+        shows an example of custom drawing. You can draw rectangles by
+        dragging the mouse.</p>
+        <p>Press down the button.</p>
         <figure>
-        <img src="/images/list4.png" alt="Grid" />
-        <figcaption aria-hidden="true">Grid</figcaption>
+        <img src="/images/cd0.png" alt="Press down the button" />
+        <figcaption aria-hidden="true">Press down the
+        button</figcaption>
         </figure>
-        <p>This is often seen when you use a file browser like GNOME
-        Files (Nautilus).</p>
-        <p>In this section, let’s make a very simple file browser
-        <code>list4</code>. It just shows the files in the current
-        directory. And a user can choose either list or grid layout by
-        clicking on buttons in the tool bar. Each item in the list or
-        grid has an icon and a filename. In addition, <code>list4</code>
-        provides the way to open the <code>tfe</code> text editor to
-        show a text file. A user can do that by double clicking on an
-        item or pressing enter key when an item is selected.</p>
-        <h2 id="gtkdirectorylist">GtkDirectoryList</h2>
-        <p>GtkDirectoryList implements GListModel and it contains
-        information of files in a certain directory. The items of the
-        list are GFileInfo objects.</p>
-        <p>In the <code>list4</code> source files, GtkDirectoryList is
-        described in a UI file and built by GtkBuilder. The
-        GtkDirectoryList instance is assigned to the “model” property of
-        a GtkSingleSelection instance. And the GtkSingleSelection
-        instance is assigned to the “model” property of a GListView or
-        GGridView instance.</p>
-        <pre><code>GtkListView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList
-GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; GtkDirectoryList</code></pre>
+        <p>Move the mouse.</p>
         <figure>
-        <img src="/images/directorylist.png" alt="DirectoryList" />
-        <figcaption aria-hidden="true">DirectoryList</figcaption>
+        <img src="/images/cd1.png" alt="Move the mouse" />
+        <figcaption aria-hidden="true">Move the mouse</figcaption>
         </figure>
-        <p>The following is a part of the UI file
-        <code>list4.ui</code>.</p>
+        <p>Release the button.</p>
+        <figure>
+        <img src="/images/cd2.png" alt="Release the button" />
+        <figcaption aria-hidden="true">Release the button</figcaption>
+        </figure>
+        <p>The programs are at <code>src/custom_drawing</code>
+        directory. Download the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>
+        and see the directory. There are four files.</p>
+        <ul>
+        <li>meson.build</li>
+        <li>rect.c</li>
+        <li>rect.gresource.xml</li>
+        <li>rect.ui</li>
+        </ul>
+        <h2 id="rect.gresource.xml">rect.gresource.xml</h2>
+        <p>This file describes a UI file to compile. The compiler
+        glib-compile-resources uses it.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/rect&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">file</span>&gt;rect.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
+        <p>The prefix is <code>/com/github/ToshioCP/rect</code> and the
+        file is <code>rect.ui</code>. Therefore, GtkBuilder reads the
+        resource from
+        <code>/com/github/ToshioCP/rect/rect.ui</code>.</p>
+        <h2 id="rect.ui">rect.ui</h2>
+        <p>The following is the UI file that defines the widgets. There
+        are two widgets which are GtkApplicationWindow and
+        GtkDrawingArea. The ids are <code>win</code> and <code>da</code>
+        respectively.</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkGridView&quot;</span><span class="ot"> id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
-        <p>GtkDirectoryList has an “attributes” property. They are
-        attributes of GFileInfo such as “standard::name”,
-        “standard::icon” and “standard::content-type”.</p>
-        <ul>
-        <li>standard::name is a filename.</li>
-        <li>standard::icon is an icon of the file. It is a GIcon
-        object.</li>
-        <li>standard::content-type is a content-type. Content-type is
-        the same as MIME type. For example, “text/plain” is a text file,
-        “text/x-csrc” is a C source code and so on. (“text/x-csrc”is not
-        registered to IANA media types. Such “x-” subtype is not a
-        standard mime type.) Content type is also used by desktop
-        systems.</li>
-        </ul>
-        <p>GtkGridView uses the same GtkSingleSelection instance
-        (<code>singleselection</code>). So, its model property is set to
-        it.</p>
-        <h2 id="ui-file-of-the-window">Ui File of the Window</h2>
-        <p>The window is built with the following UI file. (See the
-        screenshot at the beginning of this section).</p>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;800&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Custom drawing&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDrawingArea&quot;</span><span class="ot"> id=</span><span class="st">&quot;da&quot;</span>&gt;</span>
+<span id="cb2-10"><a href="#cb2-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-12"><a href="#cb2-12"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb2-15"><a href="#cb2-15"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+        <h2 id="rect.c">rect.c</h2>
+        <h3 id="gtkapplication">GtkApplication</h3>
+        <p>This program uses GtkApplication. The application ID is
+        <code>com.github.ToshioCP.rect</code>.</p>
         <div class="sourceCode" id="cb3"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
-<span id="cb3-4"><a href="#cb3-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;file list&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-5"><a href="#cb3-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-6"><a href="#cb3-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-7"><a href="#cb3-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-8"><a href="#cb3-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxv&quot;</span>&gt;</span>
-<span id="cb3-9"><a href="#cb3-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-10"><a href="#cb3-10"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-11"><a href="#cb3-11"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxh&quot;</span>&gt;</span>
-<span id="cb3-12"><a href="#cb3-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-13"><a href="#cb3-13"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-14"><a href="#cb3-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy1&quot;</span>&gt;</span>
-<span id="cb3-15"><a href="#cb3-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-16"><a href="#cb3-16"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-17"><a href="#cb3-17"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-18"><a href="#cb3-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-19"><a href="#cb3-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnlist&quot;</span>&gt;</span>
-<span id="cb3-20"><a href="#cb3-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;btnlist&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-21"><a href="#cb3-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.view&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-22"><a href="#cb3-22"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-target&quot;</span>&gt;<span class="dv">&amp;apos;</span>list<span class="dv">&amp;apos;</span>&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-23"><a href="#cb3-23"></a>                &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-24"><a href="#cb3-24"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb3-25"><a href="#cb3-25"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resource&quot;</span>&gt;/com/github/ToshioCP/list4/list.png&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-26"><a href="#cb3-26"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-27"><a href="#cb3-27"></a>                &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-28"><a href="#cb3-28"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-29"><a href="#cb3-29"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-30"><a href="#cb3-30"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-31"><a href="#cb3-31"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btngrid&quot;</span>&gt;</span>
-<span id="cb3-32"><a href="#cb3-32"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;btngrid&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-33"><a href="#cb3-33"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.view&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-34"><a href="#cb3-34"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-target&quot;</span>&gt;<span class="dv">&amp;apos;</span>grid<span class="dv">&amp;apos;</span>&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-35"><a href="#cb3-35"></a>                &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-36"><a href="#cb3-36"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb3-37"><a href="#cb3-37"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resource&quot;</span>&gt;/com/github/ToshioCP/list4/grid.png&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-38"><a href="#cb3-38"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-39"><a href="#cb3-39"></a>                &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-40"><a href="#cb3-40"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-41"><a href="#cb3-41"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-42"><a href="#cb3-42"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-43"><a href="#cb3-43"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy2&quot;</span>&gt;</span>
-<span id="cb3-44"><a href="#cb3-44"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-45"><a href="#cb3-45"></a>              &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-46"><a href="#cb3-46"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-47"><a href="#cb3-47"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-48"><a href="#cb3-48"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-49"><a href="#cb3-49"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-50"><a href="#cb3-50"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;scr&quot;</span>&gt;</span>
-<span id="cb3-51"><a href="#cb3-51"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-52"><a href="#cb3-52"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-53"><a href="#cb3-53"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-54"><a href="#cb3-54"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-55"><a href="#cb3-55"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-56"><a href="#cb3-56"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb3-57"><a href="#cb3-57"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-58"><a href="#cb3-58"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
-<span id="cb3-59"><a href="#cb3-59"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb3-60"><a href="#cb3-60"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
-<span id="cb3-61"><a href="#cb3-61"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb3-62"><a href="#cb3-62"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
-<span id="cb3-63"><a href="#cb3-63"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-64"><a href="#cb3-64"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-65"><a href="#cb3-65"></a>        &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-66"><a href="#cb3-66"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-67"><a href="#cb3-67"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-68"><a href="#cb3-68"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-69"><a href="#cb3-69"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkGridView&quot;</span><span class="ot"> id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
-<span id="cb3-70"><a href="#cb3-70"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-71"><a href="#cb3-71"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-72"><a href="#cb3-72"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p>The file consists of two parts. The first part begins at the
-        line 3 and ends at line 57. This part is the widgets from the
-        top level window to the scrolled window. It also includes two
-        buttons. The second part begins at line 58 and ends at line 71.
-        This is the part of GtkListView and GtkGridView.</p>
-        <ul>
-        <li>13-17, 42-46: Two labels are dummy labels. They just work as
-        a space to put the two buttons at the appropriate position.</li>
-        <li>18-41: GtkButton <code>btnlist</code> and
-        <code>btngrid</code>. These two buttons work as selection
-        buttons to switch from list to grid and vice versa. These two
-        buttons are connected to a stateful action
-        <code>win.view</code>. This action has a parameter. Such action
-        consists of prefix, action name and parameter. The prefix of the
-        action is <code>win</code>, which means the action belongs to
-        the top level window (GtkApplicationWindow). The prefix defines
-        the scope of the action. The action name is <code>view</code>.
-        The parameters are <code>list</code> or <code>grid</code>, which
-        show the state of the action. A parameter is also called a
-        target, because it is a target to which the action changes its
-        state. We often write the detailed action like “win.view::list”
-        or “win.view::grid”.</li>
-        <li>21-22: The properties “action-name” and “action-target”
-        belong to GtkActionable interface. The GtkButton class
-        implements the GtkActionable interface. The action name is
-        “win.view” and the target is “list”. Generally, a target is
-        GVariant, which can be string, integer, float and so on. You
-        need to use GVariant text format to write GVariant value in UI
-        files. If the type of the GVariant value is string, then the
-        value with GVariant text format is enclosed in single quotes or
-        double quotes. Because UI files are xml format text, single
-        quote cannot be written without escaping it. Its escape sequence
-        is &amp;apos;. Therefore, the target ‘list’ is written as
-        &amp;apos;list&amp;apos;. Because the button is connected to the
-        action, “clicked” signal handler isn’t needed.</li>
-        <li>23-27: The child widget of the button is GtkImage. GtkImage
-        has a “resource” property. It is a GResource and GtkImage reads
-        an image data from the resource and sets the image. This
-        resource is built from 24x24-sized png image data, which is an
-        original icon.</li>
-        <li>50-53: GtkScrolledWindow. Its child widget will be set with
-        GtkListView or GtkGridView.</li>
-        </ul>
-        <p>The action <code>view</code> is created, connected to the
-        “activate” signal handler and inserted to the window (action
-        map) as follows.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.rect&quot;</span></span></code></pre></div>
+        <p>See <a
+        href="https://developer.gnome.org/documentation/tutorials/application-id.html">GNOME
+        Developer Documentation</a> for further information.</p>
+        <p>The function <code>main</code> is called at the beginning of
+        the application.</p>
         <div class="sourceCode" id="cb4"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>act_view <span class="op">=</span> g_simple_action_new_stateful <span class="op">(</span><span class="st">&quot;view&quot;</span><span class="op">,</span> g_variant_type_new<span class="op">(</span><span class="st">&quot;s&quot;</span><span class="op">),</span> g_variant_new_string <span class="op">(</span><span class="st">&quot;list&quot;</span><span class="op">));</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>g_signal_connect <span class="op">(</span>act_view<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>view_activated<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> G_ACTION <span class="op">(</span>act_view<span class="op">));</span></span></code></pre></div>
-        <p>The signal handler <code>view_activated</code> will be
-        explained later.</p>
-        <h2 id="factories">Factories</h2>
-        <p>Each view (GtkListView and GtkGridView) has its own factory
-        because its items have different structure of widgets. The
-        factories are GtkBuilderListItemFactory objects. Their UI files
-        are as follows.</p>
-        <p>factory_list.ui</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">int</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a></span>
+<span id="cb4-6"><a href="#cb4-6"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="op">}</span></span></code></pre></div>
+        <p>It connects three signals and handlers.</p>
+        <ul>
+        <li>startup: It is emitted after the application is registered
+        to the system.</li>
+        <li>activate: It is emitted when the application is
+        activated.</li>
+        <li>shutdown: It is emitted just before the application
+        quits.</li>
+        </ul>
         <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb5-6"><a href="#cb5-6"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-7"><a href="#cb5-7"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;20&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-8"><a href="#cb5-8"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-9"><a href="#cb5-9"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb5-10"><a href="#cb5-10"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;gicon&quot;</span>&gt;</span>
-<span id="cb5-11"><a href="#cb5-11"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;GIcon&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_icon&quot;</span>&gt;</span>
-<span id="cb5-12"><a href="#cb5-12"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
-<span id="cb5-13"><a href="#cb5-13"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
-<span id="cb5-14"><a href="#cb5-14"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
-<span id="cb5-15"><a href="#cb5-15"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-16"><a href="#cb5-16"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-17"><a href="#cb5-17"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-18"><a href="#cb5-18"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb5-19"><a href="#cb5-19"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-20"><a href="#cb5-20"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;0&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-21"><a href="#cb5-21"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
-<span id="cb5-22"><a href="#cb5-22"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
-<span id="cb5-23"><a href="#cb5-23"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
-<span id="cb5-24"><a href="#cb5-24"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
-<span id="cb5-25"><a href="#cb5-25"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
-<span id="cb5-26"><a href="#cb5-26"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-27"><a href="#cb5-27"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb5-28"><a href="#cb5-28"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb5-29"><a href="#cb5-29"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-30"><a href="#cb5-30"></a>  &lt;/<span class="kw">template</span>&gt;</span>
-<span id="cb5-31"><a href="#cb5-31"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p>factory_grid.ui</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>  GtkDrawingArea <span class="op">*</span>da<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  GtkGesture <span class="op">*</span>drag<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/rect/rect.ui&quot;</span><span class="op">);</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>  win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a>  da <span class="op">=</span> GTK_DRAWING_AREA <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;da&quot;</span><span class="op">));</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>  gtk_window_set_application <span class="op">(</span>win<span class="op">,</span> app<span class="op">);</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>da<span class="op">,</span> draw_cb<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>  g_signal_connect_after <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a></span>
+<span id="cb5-18"><a href="#cb5-18"></a>  drag <span class="op">=</span> gtk_gesture_drag_new <span class="op">();</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a>  gtk_gesture_single_set_button <span class="op">(</span>GTK_GESTURE_SINGLE <span class="op">(</span>drag<span class="op">),</span> GDK_BUTTON_PRIMARY<span class="op">);</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb5-22"><a href="#cb5-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb5-23"><a href="#cb5-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb5-24"><a href="#cb5-24"></a><span class="op">}</span></span></code></pre></div>
+        <p>The startup handler performs the following three tasks:</p>
+        <ul>
+        <li>Builds the widgets.</li>
+        <li>Initializes the GtkDrawingArea instance.
+        <ul>
+        <li>Sets the drawing function</li>
+        <li>Connects the “resize” signal and the handler.</li>
+        </ul></li>
+        <li>Creates the GtkGestureDrag instance and initializes it.
+        Gestures will be explained in this section later.</li>
+        </ul>
         <div class="sourceCode" id="cb6"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
-<span id="cb6-4"><a href="#cb6-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
-<span id="cb6-5"><a href="#cb6-5"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb6-6"><a href="#cb6-6"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-7"><a href="#cb6-7"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;20&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-8"><a href="#cb6-8"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb6-9"><a href="#cb6-9"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb6-10"><a href="#cb6-10"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-size&quot;</span>&gt;GTK_ICON_SIZE_LARGE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-11"><a href="#cb6-11"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;gicon&quot;</span>&gt;</span>
-<span id="cb6-12"><a href="#cb6-12"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;GIcon&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_icon&quot;</span>&gt;</span>
-<span id="cb6-13"><a href="#cb6-13"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
-<span id="cb6-14"><a href="#cb6-14"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
-<span id="cb6-15"><a href="#cb6-15"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
-<span id="cb6-16"><a href="#cb6-16"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb6-17"><a href="#cb6-17"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb6-18"><a href="#cb6-18"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb6-19"><a href="#cb6-19"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb6-20"><a href="#cb6-20"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-21"><a href="#cb6-21"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;0.5&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-22"><a href="#cb6-22"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
-<span id="cb6-23"><a href="#cb6-23"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
-<span id="cb6-24"><a href="#cb6-24"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
-<span id="cb6-25"><a href="#cb6-25"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
-<span id="cb6-26"><a href="#cb6-26"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
-<span id="cb6-27"><a href="#cb6-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb6-28"><a href="#cb6-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb6-29"><a href="#cb6-29"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb6-30"><a href="#cb6-30"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-31"><a href="#cb6-31"></a>  &lt;/<span class="kw">template</span>&gt;</span>
-<span id="cb6-32"><a href="#cb6-32"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p>The two files above are almost same. The difference is:</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  win <span class="op">=</span> gtk_application_get_active_window <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>  gtk_window_present <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
+        <p>The activate handler just shows the window.</p>
+        <h3 id="gtkdrawingarea">GtkDrawingArea</h3>
+        <p>The program has two cairo surfaces and they are pointed to by
+        the global variables.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface_save <span class="op">=</span> NULL<span class="op">;</span></span></code></pre></div>
+        <p>The drawing process is as follows.</p>
         <ul>
-        <li>The orientation of the box</li>
-        <li>The icon size</li>
-        <li>The position of the text of the label</li>
+        <li>Creates an image on <code>surface</code>.</li>
+        <li>Copies <code>surface</code> to the cairo surface of the
+        GtkDrawingArea.</li>
+        <li>Calls <code>gtk_widget_queue_draw (da)</code> to draw it if
+        necessary.</li>
         </ul>
-        <pre><code>$ cd list4; diff factory_list.ui factory_grid.ui
-6c6
-&lt;         &lt;property name=&quot;orientation&quot;&gt;GTK_ORIENTATION_HORIZONTAL&lt;/property&gt;
----
-&gt;         &lt;property name=&quot;orientation&quot;&gt;GTK_ORIENTATION_VERTICAL&lt;/property&gt;
-9a10
-&gt;             &lt;property name=&quot;icon-size&quot;&gt;GTK_ICON_SIZE_LARGE&lt;/property&gt;
-20c21
-&lt;             &lt;property name=&quot;xalign&quot;&gt;0&lt;/property&gt;
----
-&gt;             &lt;property name=&quot;xalign&quot;&gt;0.5&lt;/property&gt;
-$</code></pre>
-        <p>Two properties “gicon” (property of GtkImage) and “label”
-        (property of GtkLabel) are in the UI files above. Because
-        GFileInfo doesn’t have properties correspond to icon or
-        filename, the factory uses closure tag to bind “gicon” and
-        “label” properties to GFileInfo information. A function
-        <code>get_icon</code> gets GIcon from the GFileInfo object. And
-        a function <code>get_file_name</code> gets a filename from the
-        GFileInfo object.</p>
+        <p>They are created in the “resize” signal handler.</p>
         <div class="sourceCode" id="cb8"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a>GIcon <span class="op">*</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>get_icon <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  GIcon <span class="op">*</span>icon<span class="op">;</span></span>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>resize_cb <span class="op">(</span>GtkWidget <span class="op">*</span>widget<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
 <span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>   <span class="co">/* g_file_info_get_icon can return NULL */</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>  icon <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_icon <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  <span class="cf">return</span> icon <span class="op">?</span> g_object_ref <span class="op">(</span>icon<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="op">}</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  <span class="cf">return</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_strdup <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">:</span> NULL<span class="op">;</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="op">}</span></span></code></pre></div>
-        <p>One important thing is the ownership of the return values.
-        The return value is owned by the caller. So,
-        <code>g_object_ref</code> or <code>g_strdup</code> is
-        necessary.</p>
-        <h2 id="an-activate-signal-handler-of-the-button-action">An
-        Activate Signal Handler of the Button Action</h2>
-        <p>An activate signal handler <code>view_activate</code>
-        switches the view. It does two things.</p>
-        <ul>
-        <li>Changes the child widget of GtkScrolledWindow.</li>
-        <li>Changes the CSS of buttons to show the current state.</li>
-        </ul>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>  surface_save <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>  <span class="co">/* Paint the surface white. It is the background color. */</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="op">}</span></span></code></pre></div>
+        <p>This callback is called when the GtkDrawingArea is shown.
+        This is called only once since the window is not resizable.</p>
+        <p>It creates image surfaces for <code>surface</code> and
+        <code>surface_save</code>. The <code>surface</code> surface is
+        painted white, which is the background color.</p>
+        <p>The drawing function copies <code>surface</code> to the
+        GtkDrawingArea surface.</p>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>view_activated<span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>view <span class="op">=</span> g_variant_get_string <span class="op">(</span>parameter<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>other<span class="op">;</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a>  <span class="dt">char</span> <span class="op">*</span>css<span class="op">;</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a></span>
-<span id="cb9-7"><a href="#cb9-7"></a>  <span class="cf">if</span> <span class="op">(</span>strcmp <span class="op">(</span>view<span class="op">,</span> <span class="st">&quot;list&quot;</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a>    other <span class="op">=</span> <span class="st">&quot;grid&quot;</span><span class="op">;</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a>    gtk_scrolled_window_set_child <span class="op">(</span>scr<span class="op">,</span> GTK_WIDGET <span class="op">(</span>list<span class="op">));</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a>  <span class="op">}</span><span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a>    other <span class="op">=</span> <span class="st">&quot;list&quot;</span><span class="op">;</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a>    gtk_scrolled_window_set_child <span class="op">(</span>scr<span class="op">,</span> GTK_WIDGET <span class="op">(</span>grid<span class="op">));</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a>  <span class="op">}</span></span>
-<span id="cb9-14"><a href="#cb9-14"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;button#btn</span><span class="sc">%s</span><span class="st"> {background: silver;} button#btn</span><span class="sc">%s</span><span class="st"> {background: white;}&quot;</span><span class="op">,</span> view<span class="op">,</span> other<span class="op">);</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider<span class="op">,</span> css<span class="op">);</span></span>
-<span id="cb9-16"><a href="#cb9-16"></a>  g_free <span class="op">(</span>css<span class="op">);</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a>  g_action_change_state <span class="op">(</span>G_ACTION <span class="op">(</span>action<span class="op">),</span> parameter<span class="op">);</span></span>
-<span id="cb9-18"><a href="#cb9-18"></a><span class="op">}</span></span></code></pre></div>
-        <p>The second parameter of this handler is the target value
-        associated with the clicked button. Its type is GVariant.</p>
-        <ul>
-        <li>If <code>btnlist</code> has been clicked, then
-        <code>parameter</code> is a GVariant of the string “list”.</li>
-        <li>If <code>btngrid</code> has been clicked, then
-        <code>parameter</code> is a GVariant of the string “grid”.</li>
-        </ul>
-        <p>The third parameter <code>user_data</code> points to NULL and
-        it is ignored here.</p>
-        <ul>
-        <li>3: <code>g_variant_get_string</code> gets the string from
-        the GVariant variable.</li>
-        <li>7-13: Sets the child of <code>scr</code>. The function
-        <code>gtk_scrolled_window_set_child</code> decreases the
-        reference count of the old child by one. And it increases the
-        reference count of the new child by one.</li>
-        <li>14-16: Sets the CSS for the buttons. The background of the
-        clicked button will be silver color and the other button will be
-        white.</li>
-        <li>17: Changes the state of the action.</li>
-        </ul>
-        <h2 id="activate-signal-on-gtklistview-and-gtkgridview">Activate
-        Signal on GtkListView and GtkGridView</h2>
-        <p>Views (GtkListView and GtkGridView) have an “activate”
-        signal. It is emitted when an item in the view is double clicked
-        or the enter key is pressed. You can do anything you like by
-        connecting the “activate” signal to the handler.</p>
-        <p>The example <code>list4</code> launches <code>tfe</code> text
-        file editor if the item of the list is a text file.</p>
+<span id="cb9-2"><a href="#cb9-2"></a>draw_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>da<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  <span class="op">}</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="op">}</span></span></code></pre></div>
+        <p>This function is called by the system when it needs to redraw
+        the drawing area.</p>
+        <p>Two surfaces <code>surface</code> and
+        <code>surface_save</code> are destroyed before the application
+        quits.</p>
         <div class="sourceCode" id="cb10"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>list_activate <span class="op">(</span>GtkListView <span class="op">*</span>list<span class="op">,</span> <span class="dt">int</span> position<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  GFileInfo <span class="op">*</span>info <span class="op">=</span> G_FILE_INFO <span class="op">(</span>g_list_model_get_item <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>gtk_list_view_get_model <span class="op">(</span>list<span class="op">)),</span> position<span class="op">));</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  launch_tfe_with_file <span class="op">(</span>info<span class="op">);</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>grid_activate <span class="op">(</span>GtkGridView <span class="op">*</span>grid<span class="op">,</span> <span class="dt">int</span> position<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  GFileInfo <span class="op">*</span>info <span class="op">=</span> G_FILE_INFO <span class="op">(</span>g_list_model_get_item <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>gtk_grid_view_get_model <span class="op">(</span>grid<span class="op">)),</span> position<span class="op">));</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  launch_tfe_with_file <span class="op">(</span>info<span class="op">);</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  g_signal_connect <span class="op">(</span>GTK_LIST_VIEW <span class="op">(</span>list<span class="op">),</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>list_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  g_signal_connect <span class="op">(</span>GTK_GRID_VIEW <span class="op">(</span>grid<span class="op">),</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>grid_activate<span class="op">),</span> NULL<span class="op">);</span></span></code></pre></div>
-        <p>The second parameter of each handler is the position of the
-        item (GFileInfo) of the GListModel. So you can get the item with
-        <code>g_list_model_get_item</code> function.</p>
-        <h3 id="content-type-and-application-launch">Content Type and
-        Application Launch</h3>
-        <p>The function <code>launch_tfe_with_file</code> gets a file
-        from the GFileInfo instance. If the file is a text file, it
-        launches <code>tfe</code> with the file.</p>
-        <p>GFileInfo has information about file type. The file type is
-        like “text/plain”, “text/x-csrc” and so on. This is referred to
-        as the content type. Content type can be got with
-        <code>g_file_info_get_content_type</code> function.</p>
-        <div class="sourceCode" id="cb11"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>launch_tfe_with_file <span class="op">(</span>GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>  GError <span class="op">*</span>err <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>  GFile <span class="op">*</span>file<span class="op">;</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a>  GList <span class="op">*</span>files <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>content_type<span class="op">;</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>text_type <span class="op">=</span> <span class="st">&quot;text/&quot;</span><span class="op">;</span></span>
-<span id="cb11-8"><a href="#cb11-8"></a>  GAppInfo <span class="op">*</span>appinfo<span class="op">;</span></span>
-<span id="cb11-9"><a href="#cb11-9"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
-<span id="cb11-10"><a href="#cb11-10"></a></span>
-<span id="cb11-11"><a href="#cb11-11"></a>  <span class="cf">if</span> <span class="op">(!</span> info<span class="op">)</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a>    <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb11-13"><a href="#cb11-13"></a>  content_type <span class="op">=</span> g_file_info_get_content_type <span class="op">(</span>info<span class="op">);</span></span>
-<span id="cb11-14"><a href="#cb11-14"></a><span class="pp">#ifdef debug</span></span>
-<span id="cb11-15"><a href="#cb11-15"></a>  g_print <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> content_type<span class="op">);</span></span>
-<span id="cb11-16"><a href="#cb11-16"></a><span class="pp">#endif</span></span>
-<span id="cb11-17"><a href="#cb11-17"></a>  <span class="cf">if</span> <span class="op">(!</span> content_type<span class="op">)</span></span>
-<span id="cb11-18"><a href="#cb11-18"></a>    <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb11-19"><a href="#cb11-19"></a>  <span class="cf">for</span> <span class="op">(</span>i<span class="op">=</span><span class="dv">0</span><span class="op">;</span>i<span class="op">&lt;</span><span class="dv">5</span><span class="op">;++</span>i<span class="op">)</span> <span class="op">{</span> <span class="co">/* compare the first 5 characters */</span></span>
-<span id="cb11-20"><a href="#cb11-20"></a>    <span class="cf">if</span> <span class="op">(</span>content_type<span class="op">[</span>i<span class="op">]</span> <span class="op">!=</span> text_type<span class="op">[</span>i<span class="op">])</span></span>
-<span id="cb11-21"><a href="#cb11-21"></a>      <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb11-22"><a href="#cb11-22"></a>  <span class="op">}</span></span>
-<span id="cb11-23"><a href="#cb11-23"></a>  appinfo <span class="op">=</span> g_app_info_create_from_commandline <span class="op">(</span><span class="st">&quot;tfe&quot;</span><span class="op">,</span> <span class="st">&quot;tfe&quot;</span><span class="op">,</span> G_APP_INFO_CREATE_NONE<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">);</span></span>
-<span id="cb11-24"><a href="#cb11-24"></a>  <span class="cf">if</span> <span class="op">(</span>err<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-25"><a href="#cb11-25"></a>    g_printerr <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
-<span id="cb11-26"><a href="#cb11-26"></a>    g_error_free <span class="op">(</span>err<span class="op">);</span></span>
-<span id="cb11-27"><a href="#cb11-27"></a>    <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb11-28"><a href="#cb11-28"></a>  <span class="op">}</span></span>
-<span id="cb11-29"><a href="#cb11-29"></a>  err <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb11-30"><a href="#cb11-30"></a>  file <span class="op">=</span> g_file_new_for_path <span class="op">(</span>g_file_info_get_name <span class="op">(</span>info<span class="op">));</span></span>
-<span id="cb11-31"><a href="#cb11-31"></a>  files <span class="op">=</span> g_list_append <span class="op">(</span>files<span class="op">,</span> file<span class="op">);</span></span>
-<span id="cb11-32"><a href="#cb11-32"></a>  <span class="cf">if</span> <span class="op">(!</span> <span class="op">(</span>g_app_info_launch <span class="op">(</span>appinfo<span class="op">,</span> files<span class="op">,</span> NULL<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">)))</span> <span class="op">{</span></span>
-<span id="cb11-33"><a href="#cb11-33"></a>    g_printerr <span class="op">(</span><span class="st">&quot;</span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
-<span id="cb11-34"><a href="#cb11-34"></a>    g_error_free <span class="op">(</span>err<span class="op">);</span></span>
-<span id="cb11-35"><a href="#cb11-35"></a>  <span class="op">}</span></span>
-<span id="cb11-36"><a href="#cb11-36"></a>  g_list_free_full <span class="op">(</span>files<span class="op">,</span> g_object_unref<span class="op">);</span></span>
-<span id="cb11-37"><a href="#cb11-37"></a>  g_object_unref <span class="op">(</span>appinfo<span class="op">);</span></span>
-<span id="cb11-38"><a href="#cb11-38"></a><span class="op">}</span></span></code></pre></div>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="op">}</span></span></code></pre></div>
+        <h3 id="gtkgesturedrag">GtkGestureDrag</h3>
+        <p>Gesture class is used to recognize human gestures such as
+        click, drag, pan, swipe and so on. It is a subclass of
+        GtkEventController. GtkGesture class is abstract and there are
+        several implementations.</p>
         <ul>
-        <li>13: Gets the content type of the file from GFileInfo.</li>
-        <li>14-16: Prints the content type if “debug” is defined. This
-        is only useful to know a content type of a file. If you don’t
-        want this, delete or uncomment the definition
-        <code>#define debug 1</code> at line 6 in the source file.</li>
-        <li>17-22: If there is no content type, or if it doesn’t begin
-        with “text/”, the function returns.</li>
-        <li>23: Creates GAppInfo object of <code>tfe</code> application.
-        GAppInfo is an interface and the variable <code>appinfo</code>
-        points to a GDesktopAppInfo instance. GAppInfo is a collection
-        of information of applications.</li>
-        <li>32: Launches the application (<code>tfe</code>) with an
-        argument <code>file</code>. <code>g_app_info_launch</code> has
-        four parameters. The first parameter is GAppInfo object. The
-        second parameter is a list of GFile objects. In this function,
-        only one GFile instance is given to <code>tfe</code>, but you
-        can give more arguments. The third parameter is
-        GAppLaunchContext, but this program gives NULL instead. The last
-        parameter is the pointer to the pointer to a GError.</li>
-        <li>36: <code>g_list_free_full</code> frees the memories used by
-        the list and items.</li>
+        <li>GtkGestureClick</li>
+        <li>GtkGestureDrag</li>
+        <li>GtkGesturePan</li>
+        <li>GtkGestureSwipe</li>
+        <li>And others</li>
         </ul>
-        <p>If your distribution supports GTK 4, using
-        <code>g_app_info_launch_default_for_uri</code> is convenient.
-        The function automatically determines the default application
-        from the file and launches it. For example, if the file is text,
-        then it launches GNOME text editor with the file. Such feature
-        comes from desktop.</p>
-        <h2 id="compilation-and-execution">Compilation and
-        Execution</h2>
-        <p>The source files are located in <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/list4/">/src/list4</a>
-        directory. To compile and execute list4, type as follows.</p>
-        <pre><code>$ cd list4 # or cd src/list4. It depends your current directory.
+        <p>The program <code>rect.c</code> uses GtkGestureDrag. It is
+        the implementation for drag gestures. The parent-child
+        relationship is as follows.</p>
+        <pre><code>GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag</code></pre>
+        <p>GtkGestureSingle is a subclass of GtkGesture and optimized
+        for single-touch and mouse interactions.</p>
+        <p>A GtkGestureDrag instance is created and initialized in the
+        startup signal handler in <code>rect.c</code>. See line 18 to 23
+        in the following.</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  GtkDrawingArea <span class="op">*</span>da<span class="op">;</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>  GtkGesture <span class="op">*</span>drag<span class="op">;</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/rect/rect.ui&quot;</span><span class="op">);</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>  da <span class="op">=</span> GTK_DRAWING_AREA <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;da&quot;</span><span class="op">));</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>  gtk_window_set_application <span class="op">(</span>win<span class="op">,</span> app<span class="op">);</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>da<span class="op">,</span> draw_cb<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>  g_signal_connect_after <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a></span>
+<span id="cb12-18"><a href="#cb12-18"></a>  drag <span class="op">=</span> gtk_gesture_drag_new <span class="op">();</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a>  gtk_gesture_single_set_button <span class="op">(</span>GTK_GESTURE_SINGLE <span class="op">(</span>drag<span class="op">),</span> GDK_BUTTON_PRIMARY<span class="op">);</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-22"><a href="#cb12-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>The function <code>gtk_gesture_drag_new</code> creates a new
+        GtkGestureDrag instance.</li>
+        <li>The function <code>gtk_gesture_single_set_button</code> sets
+        the button number to listen to. The constant
+        <code>GDK_BUTTON_PRIMARY</code> is the left button of a
+        mouse.</li>
+        <li>The function <code>gtk_widget_add_controller</code> adds an
+        event controller, which is a base class for gestures.</li>
+        <li>Three signals and handlers are connected.
+        <ul>
+        <li>drag-begin: Emitted when dragging starts.</li>
+        <li>drag-update: Emitted when the dragging pointer moves.</li>
+        <li>drag-end: Emitted when the dragging ends.</li>
+        </ul></li>
+        </ul>
+        <p>The process during the drag is as follows.</p>
+        <ul>
+        <li>start: save the surface and start points</li>
+        <li>update: restore the surface and draw a thin rectangle
+        between the start point and the current point of the mouse</li>
+        <li>end: restore the surface and draw a thick rectangle between
+        the start and end points.</li>
+        </ul>
+        <p>We need two global variables for the start point.</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_x<span class="op">;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_y<span class="op">;</span></span></code></pre></div>
+        <p>The following is the handler for the “drag-begin” signal.</p>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>copy_surface <span class="op">(</span>cairo_surface_t <span class="op">*</span>src<span class="op">,</span> cairo_surface_t <span class="op">*</span>dst<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="cf">if</span> <span class="op">(!</span>src <span class="op">||</span> <span class="op">!</span>dst<span class="op">)</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>  cairo_t <span class="op">*</span>cr <span class="op">=</span> cairo_create <span class="op">(</span>dst<span class="op">);</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>  cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> src<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="op">}</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a>drag_begin <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> x<span class="op">,</span> <span class="dt">double</span> y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a>  <span class="co">// save the surface and record (x, y)</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a>  copy_surface <span class="op">(</span>surface<span class="op">,</span> surface_save<span class="op">);</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a>  start_x <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a>  start_y <span class="op">=</span> y<span class="op">;</span></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>Copies <code>surface</code> to <code>surface_save</code>,
+        which is an image just before the dragging.</li>
+        <li>Stores the points to <code>start_x</code> and
+        <code>start_y</code>.</li>
+        </ul>
+        <div class="sourceCode" id="cb15"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a>drag_update  <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> offset_x<span class="op">,</span> <span class="dt">double</span> offset_y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>  </span>
+<span id="cb15-6"><a href="#cb15-6"></a>  copy_surface <span class="op">(</span>surface_save<span class="op">,</span> surface<span class="op">);</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span> start_x<span class="op">,</span> start_y<span class="op">,</span> offset_x<span class="op">,</span> offset_y<span class="op">);</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>Restores <code>surface</code> from
+        <code>surface_save</code>.</li>
+        <li>Draws a rectangle with thin lines.</li>
+        <li>Calls <code>gtk_widget_queue_draw</code> to add the
+        GtkDrawingArea to the queue to redraw.</li>
+        </ul>
+        <div class="sourceCode" id="cb16"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>drag_end  <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> offset_x<span class="op">,</span> <span class="dt">double</span> offset_y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a>  </span>
+<span id="cb16-6"><a href="#cb16-6"></a>  copy_surface <span class="op">(</span>surface_save<span class="op">,</span> surface<span class="op">);</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span> start_x<span class="op">,</span> start_y<span class="op">,</span> offset_x<span class="op">,</span> offset_y<span class="op">);</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">6.0</span><span class="op">);</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
+<span id="cb16-13"><a href="#cb16-13"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>Restores <code>surface</code> from
+        <code>surface_save</code>.</li>
+        <li>Draws a rectangle with thick lines.</li>
+        <li>Calls <code>gtk_widget_queue_draw</code> to add the
+        GtkDrawingArea to the queue to redraw.</li>
+        </ul>
+        <h2 id="build-and-run">Build and Run</h2>
+        <p>Download the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.
+        Change your current directory to
+        <code>src/custom_drawing</code>. Run meson and ninja to build
+        the program. Type <code>_build/rect</code> to run the program.
+        Try to draw rectangles.</p>
+        <pre><code>$ cd src/custom_drawing
 $ meson setup _build
 $ ninja -C _build
-$ _build/list4</code></pre>
-        <p>Then a file list appears as a list style. Click on a button
-        on the tool bar so that you can change the style to grid or back
-        to list. Double click “list4.c” item, then <code>tfe</code> text
-        editor runs with the argument “list4.c”. The following is the
-        screenshot.</p>
+$ _build/rect</code></pre>
         <figure>
-        <img src="/images/screenshot_list4.png" alt="Screenshot" />
-        <figcaption aria-hidden="true">Screenshot</figcaption>
+        <img src="/images/rect.png" alt="The screen of rect program" />
+        <figcaption aria-hidden="true">The screen of rect
+        program</figcaption>
         </figure>
-        <h2 id="gbytes-property-of-gtkbuilderlistitemfactory">“gbytes”
-        Property of GtkBuilderListItemFactory</h2>
-        <p>GtkBuilderListItemFactory has “gbytes” property. The property
-        contains a byte sequence of UI data. If you use this property,
-        you can put the contents of <code>factory_list.ui</code> and
-        <code>factory_grid.ui</code> into <code>list4.ui</code>. The
-        following shows a part of the new UI file
-        (<code>list5.ui</code>).</p>
-        <div class="sourceCode" id="cb13"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span>&gt;</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span>&gt;</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span>&gt;<span class="bn">&lt;![CDATA[</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>&lt;interface&gt;</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  &lt;template class=&quot;GtkListItem&quot;&gt;</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    &lt;property name=&quot;child&quot;&gt;</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>      &lt;object class=&quot;GtkBox&quot;&gt;</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        &lt;property name=&quot;orientation&quot;&gt;GTK_ORIENTATION_HORIZONTAL&lt;/property&gt;</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        &lt;property name=&quot;spacing&quot;&gt;20&lt;/property&gt;</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        &lt;child&gt;</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>          &lt;object class=&quot;GtkImage&quot;&gt;</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>            &lt;binding name=&quot;gicon&quot;&gt;</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>              &lt;closure type=&quot;GIcon&quot; function=&quot;get_icon&quot;&gt;</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                &lt;lookup name=&quot;item&quot;&gt;GtkListItem&lt;/lookup&gt;</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>              &lt;/closure&gt;</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>            &lt;/binding&gt;</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>          &lt;/object&gt;</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        &lt;/child&gt;</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>        &lt;child&gt;</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>          &lt;object class=&quot;GtkLabel&quot;&gt;</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>            &lt;property name=&quot;hexpand&quot;&gt;TRUE&lt;/property&gt;</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>            &lt;property name=&quot;xalign&quot;&gt;0&lt;/property&gt;</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>            &lt;binding name=&quot;label&quot;&gt;</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>              &lt;closure type=&quot;gchararray&quot; function=&quot;get_file_name&quot;&gt;</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>                &lt;lookup name=&quot;item&quot;&gt;GtkListItem&lt;/lookup&gt;</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>              &lt;/closure&gt;</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>            &lt;/binding&gt;</span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>          &lt;/object&gt;</span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>        &lt;/child&gt;</span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>      &lt;/object&gt;</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    &lt;/property&gt;</span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>  &lt;/template&gt;</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>&lt;/interface&gt;</span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>        <span class="bn">]]&gt;</span>&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
-        <p>CDATA section begins with “&lt;[CDATA[” and ends with
-        ”]]&gt;”. The contents of CDATA section is recognized as a
-        string. Any character, even if it is a key syntax marker such as
-        ‘&lt;’ or ‘&gt;’, is recognized literally. Therefore, the text
-        between “&lt;[CDATA[” and ”]]&gt;” is inserted to “bytes”
-        property as it is.</p>
-        <p>This approach reduces the number of UI files. But, the new UI
-        file is a bit complicated especially for the beginners. If you
-        feel some difficulty, it is better for you to separate the UI
-        file.</p>
-        <p>A directory <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/list5/">/src/list5</a>
-        includes the UI file above.</p>
       </div>
     </div>
   </main>

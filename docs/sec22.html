@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>TfeWindow</title>
+  <title>Handling Unsaved Text</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,321 +93,409 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="tfewindow">TfeWindow</h1>
-        <h2 id="the-tfe-window-and-xml-files">The Tfe Window and XML
-        Files</h2>
-        <p>The following is the window of Tfe.</p>
-        <figure>
-        <img src="/images/tfe6.png" alt="tfe6" />
-        <figcaption aria-hidden="true">tfe6</figcaption>
-        </figure>
-        <ul>
-        <li>Open, save and close buttons are placed on the toolbar. In
-        addition, GtkMenuButton is added to the toolbar. This button
-        shows a popup menu when clicked on. Here, popup means widely,
-        including pull-down menu.</li>
-        <li>New, save-as, preference and quit items are put into the
-        menu.</li>
-        </ul>
-        <p>This makes the most frequently used operation bound to the
-        tool bar buttons. And the others are stored behind the menus.
-        So, it is more practical.</p>
-        <p>The window is a composite widget. The definition is described
-        in the XML file <code>tfewindow.ui</code>.</p>
-        <ul>
-        <li>Three buttons “Open”, “Save” and “Close” are defined. You
-        can use two ways to catch the button click event. One is
-        “clicked” signal and the other is to register an action to the
-        button. The first way is simple. You can connects the signal and
-        your handler directly. The second way is like menu items. When
-        the button is clicked, the corresponding action is activated. It
-        is a bit complicated because you need to create an action and
-        its “activate” handler in advance. But one advantage is you can
-        connect two or more things to the action. For example, an
-        accelerator can be connected to the action. Accelerators are
-        keys that connect to actions. For example, Ctrl+O is often
-        connected to a file open action. So, both open button and Ctrl+O
-        activate an open action. The latter way is used in the XML file
-        above.</li>
-        <li>You can specify a theme icon to GtkMenuButton with
-        “icon-name” property. The “open-menu-symbolic” is an image that
-        is called hamburger menu.</li>
-        </ul>
-        <p>The <code>menu.ui</code> XML file defines the menu for
-        GtkMenuButton.</p>
+        <h1 id="handling-unsaved-text">Handling Unsaved Text</h1>
+        <p>Up to this point in TFE, pages could be closed or the
+        application quit even if there was unsaved text. This is a poor
+        design that risks discarding the user’s hard work and needs to
+        be improved. To fix this, we should check for unsaved text
+        beforehand and, if any exists, ask the user whether they want to
+        cancel the closing process.</p>
+        <h2 id="checking-for-text-modifications">Checking for Text
+        Modifications</h2>
+        <p>To check for unsaved text, we use the
+        <code>gtk_text_buffer_get_modified ()</code> function from
+        <code>GtkTextBuffer</code>. This returns <code>TRUE</code> if
+        the text buffer has been modified, and <code>FALSE</code>
+        otherwise.</p>
+        <p>However, since the buffer is internal to
+        <code>TfeTextView</code>, querying <code>GtkTextBuffer</code>
+        directly breaks the principle of encapsulation. Instead, we will
+        create a new instance method in <code>TfeTextView</code> to
+        serve as a public interface.</p>
+        <p>Public functions must be declared in the header file.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menu&quot;</span>&gt;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">section</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>      &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-6"><a href="#cb1-6"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-7"><a href="#cb1-7"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.new&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>      &lt;/<span class="kw">item</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>      &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save As…&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.saveas&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-12"><a href="#cb1-12"></a>      &lt;/<span class="kw">item</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>    &lt;/<span class="kw">section</span>&gt;</span>
-<span id="cb1-14"><a href="#cb1-14"></a>    &lt;<span class="kw">section</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>      &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-16"><a href="#cb1-16"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Preference&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.pref&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-18"><a href="#cb1-18"></a>      &lt;/<span class="kw">item</span>&gt;</span>
-<span id="cb1-19"><a href="#cb1-19"></a>    &lt;/<span class="kw">section</span>&gt;</span>
-<span id="cb1-20"><a href="#cb1-20"></a>    &lt;<span class="kw">section</span>&gt;</span>
-<span id="cb1-21"><a href="#cb1-21"></a>      &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-22"><a href="#cb1-22"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-23"><a href="#cb1-23"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-24"><a href="#cb1-24"></a>      &lt;/<span class="kw">item</span>&gt;</span>
-<span id="cb1-25"><a href="#cb1-25"></a>    &lt;/<span class="kw">section</span>&gt;</span>
-<span id="cb1-26"><a href="#cb1-26"></a>  &lt;/<span class="kw">menu</span>&gt;</span>
-<span id="cb1-27"><a href="#cb1-27"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <p>There are four menu items and they are connected to
-        actions.</p>
-        <h2 id="the-header-file">The Header File</h2>
-        <p>The following is the codes of <code>tfewindow.h</code>.</p>
-        <ul>
-        <li>5-6: <code>TFE_TYPE_WINDOW</code> definition and the
-        <code>G_DECLARE_FINAL_TYPE</code> macro.</li>
-        <li>8-15: Public functions. The first two functions create a
-        notebook page and the last function creates a window.</li>
-        </ul>
-        <h2 id="c-file">C File</h2>
-        <h3 id="composite-widget">Composite Widget</h3>
-        <p>The following codes are extracted from
-        <code>tfewindow.c</code>.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>gboolean</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tfe_text_view_get_modified <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">);</span></span></code></pre></div>
+        <p>This function queries the buffer, returning <code>TRUE</code>
+        if modified and <code>FALSE</code> if not. The corresponding
+        implementation in <code>tfetextview.c</code> is shown below.</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  gboolean is_quit<span class="op">;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> GTK_TYPE_APPLICATION_WINDOW<span class="op">);</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>tfe_window_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_WINDOW<span class="op">);</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_window_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  GMenuModel <span class="op">*</span>menu<span class="op">;</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe/menu.ui&quot;</span><span class="op">);</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  menu <span class="op">=</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;menu&quot;</span><span class="op">));</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  gtk_menu_button_set_menu_model <span class="op">(</span>win<span class="op">-&gt;</span>btnm<span class="op">,</span> menu<span class="op">);</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  g_object_unref<span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_window_dispose<span class="op">;</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfewindow.ui&quot;</span><span class="op">);</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <p>The program above is similar to <code>tfealert.c</code> and
-        <code>tfepref.c</code>. It uses the same way to build a
-        composite widget. But there’s one thing new. It is menu. The
-        menu is built from the XML resource <code>menu.ui</code> and
-        inserted into the menu button. It is done in the instance
-        initialization function <code>tfe_window_init</code>.</p>
-        <h3 id="actions">Actions</h3>
-        <p>Actions can belong to an application or window. Tfe only has
-        one top window and all the actions are registered in the window.
-        For example, “close-all” action destroys the top level window
-        and that brings the application to quit. You can make “app.quit”
-        action instead of “win.close-all”. It’s your choice. If your
-        application has two or more windows, both “app.quit” and
-        “win.close-all”, which closes all the notebook pages on the
-        window, may be necessary. Anyway, you need to consider that each
-        action should belong to the application or a window.</p>
-        <p>Actions are defined in the instance initialization
-        function.</p>
-        <div class="sourceCode" id="cb3"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">/* ----- action ----- */</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;close-all&quot;</span><span class="op">,</span> close_all_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">}</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-        <p>Two things are necessary, an array and the
-        <code>g_action_map_add_action_entries</code> function.</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a>gboolean</span>
+<span id="cb2-2"><a href="#cb2-2"></a>tfe_text_view_get_modified <span class="op">(</span>TfeTextView <span class="op">*</span>tv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  g_return_val_if_fail <span class="op">(</span>TFE_IS_TEXT_VIEW <span class="op">(</span>tv<span class="op">),</span> FALSE<span class="op">);</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a>  GtkTextBuffer <span class="op">*</span>tb <span class="op">=</span> gtk_text_view_get_buffer <span class="op">(</span>GTK_TEXT_VIEW <span class="op">(</span>tv<span class="op">));</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="cf">return</span> gtk_text_buffer_get_modified <span class="op">(</span>tb<span class="op">);</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="op">}</span></span></code></pre></div>
+        <h2 id="closing-a-page">Closing a Page</h2>
+        <p>The current page is closed when its close button is clicked.
+        Before closing, we check if the page has been modified. If it
+        has, we prompt the user with an alert dialog; if not, we simply
+        close it.</p>
+        <p>Because we are using an asynchronous dialog, we need to split
+        this process into two functions:</p>
         <ul>
-        <li>The element of the array is the GActionEntry structure. The
-        structure has the following members:
-        <ul>
-        <li>an action name</li>
-        <li>a handler for the activate signal</li>
-        <li>the type of the parameter or NULL for no parameter</li>
-        <li>the initial state for the action</li>
-        <li>a handler for the change-state signal</li>
-        </ul></li>
-        <li>The actions above are stateless and have no parameters. So,
-        the third parameter and after are all NULL.</li>
-        <li>The function <code>g_action_map_add_action_entries</code>
-        adds the actions in the <code>win_entries</code> array to the
-        action map <code>win</code>. The last argument <code>win</code>
-        is the user_data, which is the last argument of handlers.</li>
-        <li>All the handlers are in <code>tfewindow.c</code> program and
-        shown in the following subsections.</li>
+        <li>One for setting up and displaying the dialog.</li>
+        <li>Another for handling the steps after the user makes a
+        selection (the callback handler).</li>
         </ul>
-        <h3 id="the-handlers-of-the-actions">The Handlers of the
-        Actions</h3>
-        <h4 id="open_activated">open_activated</h4>
-        <p>The callback function <code>open_activated</code> is an
-        activate signal handler on “open” action.</p>
-        <p>It connects the “open-response” signal on the newly created
-        TfeTextView instance and just calls
-        <code>tfe_text_view_open</code>. It leaves the rest of the task
-        to the signal handler <code>open_response_cb</code>.</p>
-        <p>If the TfeTextView instance failed to read a file, it
-        destroys the instance with <code>g_object_ref_sink</code> and
-        <code>g_object_unref</code>. Since newly created widgets have a
-        floating reference, you need to convert the floating reference
-        to the normal reference before you release it. The conversion is
-        done with <code>g_object_ref_sink</code>.</p>
-        <p>If the instance successfully read the file, it calls
-        <code>notebook_page_build</code> to build a notebook page and
-        add it to the GtkNotebook object.</p>
-        <p>This function is a kind of library function and it is called
-        from the different three places.</p>
-        <p>This function creates a new GtkScrolledWindow instance and
-        sets its child to <code>tv</code>. Then it appends it to the
-        GtkNotebook instance <code>win-&gt;nb</code>. And it sets the
-        tab label to the filename.</p>
-        <p>After the building, it connects two signals and handlers.</p>
-        <ul>
-        <li>“change-file” signal and <code>file_changed_cb</code>
-        handler. If the TfeTextView instance changes the file, the
-        handler is called and the notebook page tab is updated.</li>
-        <li>“modified-changed” signal and
-        <code>modified_changed_cb</code> handler. If the text in the
-        buffer of TfeTextView instance is modified, an asterisk is added
-        at the beginning of the filename of the notebook page tab. If
-        the text is saved to the file, the asterisk is removed. The
-        asterisk tells the user that the text has been modified or
-        not.</li>
-        </ul>
-        <h4 id="save_activated">save_activated</h4>
-        <p>The callback function <code>save_activated</code> is an
-        activate signal handler on “save” action.</p>
-        <p>This function gets the current TfeTextView instance with the
-        function <code>get_current_textview</code>. And it just calls
-        <code>tfe_text_view_save</code>.</p>
-        <h4 id="close_activated">close_activated</h4>
-        <p>The callback function <code>close_activated</code> is an
-        activate signal handler on “close” action. It closes the current
-        notebook page.</p>
-        <p>If the text in the current page has been saved, it calls
-        <code>notebook_page_close</code> to close the page. Otherwise,
-        it sets <code>win-&gt;is_quit</code> to FALSE and show the alert
-        dialog. The “response” signal on the dialog is connected to the
-        handler <code>alert_response_cb</code>.</p>
-        <p>If the notebook has only one page, it destroys the window and
-        the application quits. Otherwise, it removes the current
-        page.</p>
-        <p>If the user clicked on the cancel button, it does nothing. If
-        the user clicked on the accept button, which is the same as
-        close button, it calls <code>notebook_page_close</code>. Note
-        that <code>win-&gt;is_quit</code> has been set to FALSE in the
-        <code>close_activated</code> function.</p>
-        <h4 id="new_activated">new_activated</h4>
-        <p>The callback function <code>new_activated</code> is an
-        activate signal handler on “new” action.</p>
-        <p>It just calls <code>tfe_window_notebook_page_new</code>,
-        which is a public method of TfeWindow.</p>
-        <p>This function creates a new TfeTextView instance, generates a
-        string like “Untitled”, and calls
-        <code>notebook_page_build</code>.</p>
-        <h4 id="saveas_activated">saveas_activated</h4>
-        <p>The callback function <code>saveas_activated</code> is an
-        activate signal handler on “saveas” action.</p>
-        <p>This function gets the current page TfeTextView instance and
-        calls <code>tfe_text_view_saveas</code>.</p>
-        <h4 id="pref_activated">pref_activated</h4>
-        <p>The callback function <code>pref_activated</code> is an
-        activate signal handler on “pref” action.</p>
-        <p>This function creates a TfePref instance, which is a dialog,
-        and sets the transient parent window to <code>win</code>. And it
-        shows the dialog.</p>
-        <h4 id="close_all_activated">close_all_activated</h4>
-        <p>The callback function <code>close_all_activated</code> is an
-        activate signal handler on “close_all” action.</p>
-        <p>It first calls the function <code>close_request_cb</code>. It
-        is a callback function for the “close-request” signal on the top
-        window. It returns FALSE if all the texts have been saved.
-        Otherwise it returns TRUE.</p>
-        <p>Therefore, function <code>close_all_activated</code> destroys
-        the top window if all the texts have been saved. Otherwise it
-        does nothing. But, the function <code>close_request_cb</code>
-        shows an alert dialog and if the user clicks on the accept
-        button, the window will be destroyed.</p>
-        <h3 id="window-close-request-signal">Window “close-request”
-        Signal</h3>
-        <p>GtkWindow has a “close-request” signal and it is emitted when
-        the close button, which is the x-shaped button at the top right
-        corner, is clicked on. And the user handler is called before the
-        default handler. If the user handler returns TRUE, the rest of
-        the close process is skipped. If it returns FALSE, the rest will
-        go on and the window will be destroyed.</p>
-        <p>First, it calls <code>is_saved_all</code> and checks if the
-        texts have been saved. If so, it returns FALSE and the close
-        process continues. Otherwise, it sets
-        <code>win-&gt;is_quit</code> to TRUE and shows an alert dialog.
-        When the user clicks on the accept or cancel button, the dialog
-        disappears and “response” signal is emitted. Then, the handler
-        <code>alert_response_cb</code> is called. It destroys the top
-        window if the user clicked on the accept button since
-        <code>win-&gt;is_quit</code> is TRUE. Otherwise it does
-        nothing.</p>
-        <h3 id="public-functions">Public Functions</h3>
-        <p>There are three public functions.</p>
-        <ul>
-        <li><code>void tfe_window_notebook_page_new (TfeWindow *win)</code></li>
-        <li><code>void tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files)</code></li>
-        <li><code>GtkWidget *tfe_window_new (GtkApplication *app)</code></li>
-        </ul>
-        <p>The first function is called when the application emits the
-        “activate” signal. The second is for “open” signal. It is given
-        three arguments and they are owned by the caller.</p>
-        <p>This function has a loop for the array <code>files</code>. It
-        creates TfeTextView instance with the text from each file. And
-        build a page with it.</p>
-        <p>If an error happens and no page is created, it creates a new
-        empty page.</p>
-        <h3 id="full-codes-of-tfewindow.c">Full Codes of
-        tfewindow.c</h3>
-        <p>The following is the full source codes of
+        <p>First, let’s look at the close action’s handler, located in
         <code>tfewindow.c</code>.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>close_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> gtk_notebook_get_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  GtkWidget <span class="op">*</span>tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  GtkAlertDialog <span class="op">*</span>dialog<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>buttons<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;Cancel&quot;</span><span class="op">,</span> <span class="st">&quot;Close Without Saving&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a>    <span class="cf">if</span> <span class="op">(!</span>tfe_text_view_get_modified <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">)))</span> <span class="op">{</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>      close_page <span class="op">(</span>win<span class="op">);</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>      <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="op">}</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>  </span>
+<span id="cb3-14"><a href="#cb3-14"></a>  dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;Unsaved changes&quot;</span><span class="op">);</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>  gtk_alert_dialog_set_detail <span class="op">(</span>dialog<span class="op">,</span> <span class="st">&quot;Are you sure to close this page without saving?&quot;</span><span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a></span>
+<span id="cb3-17"><a href="#cb3-17"></a>  gtk_alert_dialog_set_buttons <span class="op">(</span>dialog<span class="op">,</span> buttons<span class="op">);</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a>  gtk_alert_dialog_set_cancel_button <span class="op">(</span>dialog<span class="op">,</span> <span class="dv">0</span><span class="op">);</span> <span class="co">/* cancel button */</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>  gtk_alert_dialog_set_default_button <span class="op">(</span>dialog<span class="op">,</span> <span class="dv">0</span><span class="op">);</span> <span class="co">/* default focus */</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a></span>
+<span id="cb3-21"><a href="#cb3-21"></a>  gtk_alert_dialog_choose <span class="op">(</span>dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">,</span> page_close_alert_cb<span class="op">,</span> win<span class="op">);</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  g_object_unref <span class="op">(</span>dialog<span class="op">);</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>9-12: If the text is unmodified, call
+        <code>close_page ()</code> to close the page and return. (This
+        function will be explained later).</li>
+        <li>14-19: Create the alert dialog.
+        <ul>
+        <li>14: Create the dialog and set its title to “Unsaved
+        changes”.</li>
+        <li>15: Set the alert’s detailed description.</li>
+        <li>17: Set the two buttons using the string array prepared on
+        line 7. The final <code>NULL</code> serves as the termination
+        marker.</li>
+        <li>18: Assign the cancel button to index 0. This ensures that
+        pressing the <code>ESC</code> key acts exactly like clicking the
+        Cancel button.</li>
+        <li>19: Assign the default button to index 0. This ensures that
+        pressing the Return key also acts like clicking the Cancel
+        button.</li>
+        </ul></li>
+        <li>21: We use <code>gtk_alert_dialog_choose</code> to
+        asynchronously receive the user’s selection. The arguments are
+        as follows:
+        <ul>
+        <li><code>dialog</code>: The alert dialog instance.</li>
+        <li><code>GTK_WINDOW (win)</code>: The transient parent window.
+        The dialog will be displayed modally on top of this window.</li>
+        <li><code>NULL</code>: No <code>GCancellable</code> is set. If
+        provided, this would allow the dialog to be cancelled
+        programmatically from the outside.</li>
+        <li><code>page_close_alert_cb</code>: The callback function,
+        which is invoked after the user operation (dialog selection) is
+        completed or cancelled.</li>
+        <li><code>win</code>: The user data passed into the callback
+        function.</li>
+        </ul></li>
+        <li>22: Free the dialog instance, as it is no longer needed in
+        this function.</li>
+        </ul>
+        <p>Next, let’s look at the callback function.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>page_close_alert_cb <span class="op">(</span>GObject <span class="op">*</span>source_object<span class="op">,</span> GAsyncResult <span class="op">*</span>res<span class="op">,</span> gpointer user_data<span class="op">)</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  GtkAlertDialog <span class="op">*</span>dialog <span class="op">=</span> GTK_ALERT_DIALOG <span class="op">(</span>source_object<span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>  GError <span class="op">*</span>err <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  <span class="dt">int</span> response <span class="op">=</span> gtk_alert_dialog_choose_finish <span class="op">(</span>dialog<span class="op">,</span> res<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">);</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a>  <span class="cf">if</span> <span class="op">(</span>err <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>      g_warning <span class="op">(</span><span class="st">&quot;Alert Dialog Error: </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>      g_error_free <span class="op">(</span>err<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>      <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>  <span class="op">}</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>  </span>
+<span id="cb4-15"><a href="#cb4-15"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span> <span class="co">/* This assignment must be done after the error check */</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">==</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> <span class="co">/* Close Without Saving */</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>      close_page <span class="op">(</span>TFE_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>  <span class="op">}</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>  <span class="co">/* Cancel =&gt; do nothing*/</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>7: Use <code>gtk_alert_dialog_choose_finish ()</code> to
+        determine which button was pressed. The return value indicates
+        the index (starting from 0) of the selected button.</li>
+        <li>9-13: If an error occurs, print the message to standard
+        error and return.</li>
+        <li>16-17: If the button at index 1 is selected (which
+        corresponds to “Close Without Saving”), call
+        <code>close_page ()</code> to close the tab.</li>
+        </ul>
+        <p>The <code>close_page ()</code> function is implemented as
+        follows:</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>close_page <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">)</span> <span class="op">&gt;=</span> <span class="dv">2</span><span class="op">)</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    gtk_notebook_remove_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> gtk_notebook_get_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">));</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="cf">else</span> <span class="op">{</span>  <span class="co">/* If the page is the last one or no page exists */</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>    <span class="co">/*</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">    * Delay the window destruction until the main loop becomes idle.</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">    * This function must be called after all other pending operations are completed.</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">    * For example, we need to wait for the GtkAlertDialog&#39;s asynchronous</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">    * cleanup and internal signal disconnections to safely finish.</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">    * If the window is destroyed immediately here, it will cause </span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">    * a &quot;GLib-GObject-CRITICAL&quot; error.</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">    */</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>    g_idle_add_once <span class="op">((</span>GSourceOnceFunc<span class="op">)</span> gtk_window_destroy<span class="op">,</span> win<span class="op">);</span></span>
+<span id="cb5-15"><a href="#cb5-15"></a>  <span class="op">}</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>3-4: If two or more pages remain, the current page is
+        removed.</li>
+        <li>5-15: Otherwise (if only one page remains), destroy the
+        window and terminate the program.</li>
+        </ul>
+        <p>However, we must be careful about the order in which the
+        window is destroyed and the dialog is cleaned up. At the moment
+        the dialog button is pressed and the callback function is
+        invoked, GTK’s internal cleanup process for the dialog has not
+        completely finished. GTK performs this remaining cleanup (such
+        as disconnecting signals from the parent window) <em>after</em>
+        the callback function returns. If we destroy the window
+        immediately inside the callback, the dialog’s parent window will
+        no longer exist during GTK’s cleanup phase, triggering a
+        <code>GLib-GObject-CRITICAL</code> warning.</p>
+        <p>Therefore, we must wait for all of GTK’s internal processes
+        to finish before executing the main window’s termination
+        process. We achieve this using <code>g_idle_add_once ()</code>.
+        This function schedules our destroy operation to run on the main
+        loop once it becomes idle. By the time it executes, all
+        high-priority operations (like the dialog cleanup) are
+        guaranteed to be finished, allowing the window to be destroyed
+        safely.</p>
+        <h2 id="closing-the-window">Closing the Window</h2>
+        <p>The “x” button in the top right corner closes the window. If
+        there is unsaved text when this button is pressed, we must
+        notify the user and let them choose how to proceed, just as we
+        did for a single page.</p>
+        <p>Since there may be unsaved changes across multiple pages, we
+        will handle it as follows:</p>
+        <ol type="1">
+        <li>Intercept the “close-request” signal, which is emitted just
+        before the window closes.</li>
+        <li>Iterate through all pages to create a list of unsaved
+        documents.</li>
+        <li>If there are no unsaved pages, close the window
+        normally.</li>
+        <li>If there are unsaved pages, display the list in an alert
+        dialog and ask the user whether to proceed.</li>
+        <li>Handle the result in a callback function.</li>
+        </ol>
+        <h3 id="the-close-request-signal">The close-request Signal</h3>
+        <p>The <code>close-request</code> signal is defined in
+        <code>GtkWindow</code>, and its default handler is a class
+        method. The following code is an excerpt from
+        <code>gtkwindow.h</code>.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _GtkWindowClass</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  GtkWidgetClass parent_class<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">/**</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">   * GtkWindowClass::close_request:</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">   *</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">   * Class handler for the [signal</span><span class="an">@Window::close-request]</span><span class="co"> signal.</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">   *</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">   * Returns: Whether the window should be destroyed</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">   */</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  gboolean <span class="op">(*</span> close_request<span class="op">)</span>    <span class="op">(</span>GtkWindow <span class="op">*</span>window<span class="op">);</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>To use this signal in a subclass, we override the class
+        method rather than using <code>g_signal_connect</code> (which is
+        intended for connecting signals <strong>externally</strong>).
+        This override is performed in the class initialization
+        function.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>  GtkWindowClass <span class="op">*</span>window_class <span class="op">=</span> GTK_WINDOW_CLASS <span class="op">(</span>class<span class="op">);</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_window_dispose<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>  window_class<span class="op">-&gt;</span>close_request <span class="op">=</span> tfe_window_close_request<span class="op">;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe8/tfewindow.ui&quot;</span><span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>4: Since the defining class of the “close-request” signal is
+        <code>GtkWindow</code>, we cast it to a
+        <code>GtkWindowClass</code> pointer and assign it to the
+        <code>window_class</code> variable.</li>
+        <li>7: Override the handler.</li>
+        </ul>
+        <h3 id="the-close-request-signal-handler">The close-request
+        Signal Handler</h3>
+        <p>The code for the handler is as follows:</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> gboolean</span>
+<span id="cb8-2"><a href="#cb8-2"></a>tfe_window_close_request <span class="op">(</span>GtkWindow <span class="op">*</span>window<span class="op">)</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="op">{</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>window<span class="op">);</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>tab_label<span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="dt">int</span> n_pages <span class="op">=</span> gtk_notebook_get_n_pages <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  <span class="dt">int</span> unsaved_count <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a>  GString <span class="op">*</span>unsaved_list <span class="op">=</span> g_string_new <span class="op">(</span><span class="st">&quot;&quot;</span><span class="op">);</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>  GtkAlertDialog <span class="op">*</span>dialog<span class="op">;</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>buttons<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;Cancel&quot;</span><span class="op">,</span> <span class="st">&quot;Close Window Without Saving&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_pages<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>    scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>    tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a>    <span class="cf">if</span> <span class="op">(</span>tfe_text_view_get_modified <span class="op">(</span>TFE_TEXT_VIEW <span class="op">(</span>tv<span class="op">)))</span> <span class="op">{</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>      unsaved_count<span class="op">++;</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>      tab_label <span class="op">=</span> gtk_notebook_get_tab_label_text <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> scr<span class="op">);</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>      <span class="cf">if</span> <span class="op">(</span>tab_label <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a>        g_string_append_printf <span class="op">(</span>unsaved_list<span class="op">,</span> <span class="st">&quot;- </span><span class="sc">%s\n</span><span class="st">&quot;</span><span class="op">,</span> tab_label<span class="op">);</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a>      <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a>        g_string_append_printf <span class="op">(</span>unsaved_list<span class="op">,</span> <span class="st">&quot;- Page </span><span class="sc">%d\n</span><span class="st">&quot;</span><span class="op">,</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a>      <span class="op">}</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a>    <span class="op">}</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a>  <span class="op">}</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a></span>
+<span id="cb8-29"><a href="#cb8-29"></a>  <span class="cf">if</span> <span class="op">(</span>unsaved_count <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a>    g_string_free <span class="op">(</span>unsaved_list<span class="op">,</span> TRUE<span class="op">);</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a></span>
+<span id="cb8-32"><a href="#cb8-32"></a>    <span class="co">/* Chain up to the parent&#39;s close_request handler */</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a>    <span class="cf">return</span> GTK_WINDOW_CLASS <span class="op">(</span>tfe_window_parent_class<span class="op">)-&gt;</span>close_request <span class="op">(</span>window<span class="op">);</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a>  <span class="op">}</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a></span>
+<span id="cb8-36"><a href="#cb8-36"></a>  dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a>    unsaved_count <span class="op">==</span> <span class="dv">1</span> <span class="op">?</span> <span class="st">&quot;1 unsaved change&quot;</span> <span class="op">:</span> <span class="st">&quot;</span><span class="sc">%d</span><span class="st"> unsaved changes&quot;</span><span class="op">,</span> </span>
+<span id="cb8-38"><a href="#cb8-38"></a>    unsaved_count</span>
+<span id="cb8-39"><a href="#cb8-39"></a>  <span class="op">);</span></span>
+<span id="cb8-40"><a href="#cb8-40"></a>  gtk_alert_dialog_set_detail <span class="op">(</span>dialog<span class="op">,</span> unsaved_list<span class="op">-&gt;</span>str<span class="op">);</span></span>
+<span id="cb8-41"><a href="#cb8-41"></a>  gtk_alert_dialog_set_buttons <span class="op">(</span>dialog<span class="op">,</span> buttons<span class="op">);</span></span>
+<span id="cb8-42"><a href="#cb8-42"></a>  gtk_alert_dialog_set_cancel_button <span class="op">(</span>dialog<span class="op">,</span> <span class="dv">0</span><span class="op">);</span> </span>
+<span id="cb8-43"><a href="#cb8-43"></a>  gtk_alert_dialog_set_default_button <span class="op">(</span>dialog<span class="op">,</span> <span class="dv">0</span><span class="op">);</span> </span>
+<span id="cb8-44"><a href="#cb8-44"></a>  gtk_alert_dialog_choose <span class="op">(</span>dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">,</span> window_close_alert_cb<span class="op">,</span> win<span class="op">);</span></span>
+<span id="cb8-45"><a href="#cb8-45"></a></span>
+<span id="cb8-46"><a href="#cb8-46"></a>  g_string_free <span class="op">(</span>unsaved_list<span class="op">,</span> TRUE<span class="op">);</span></span>
+<span id="cb8-47"><a href="#cb8-47"></a>  g_object_unref <span class="op">(</span>dialog<span class="op">);</span></span>
+<span id="cb8-48"><a href="#cb8-48"></a></span>
+<span id="cb8-49"><a href="#cb8-49"></a>  <span class="co">/* Stop the close request */</span></span>
+<span id="cb8-50"><a href="#cb8-50"></a>  <span class="cf">return</span> TRUE<span class="op">;</span></span>
+<span id="cb8-51"><a href="#cb8-51"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>10: Use a <code>GString</code> to generate the description
+        for the alert dialog. A <code>GString</code> is a GLib structure
+        that automatically handles memory allocation as you append text.
+        It is initialized as an empty string and is perfect for safely
+        building dynamic strings.</li>
+        <li>14-27: Iterate through the pages. If any text is unsaved,
+        append the page’s tab name to <code>unsaved_list</code>. If the
+        page tab lacks a <code>GtkLabel</code>, it defaults to
+        displaying a placeholder like “Page 1”, so we construct that
+        string in place of a filename.</li>
+        <li>29-34: If there are no unsaved pages, free the
+        <code>GString</code>, chain up to the parent class’s
+        <code>close-request</code> signal handler, and finish. Since the
+        parent class’s handler returns a <code>gboolean</code>, we
+        simply return its value directly.</li>
+        <li>36-44: Construct the alert dialog and call
+        <code>gtk_alert_dialog_choose ()</code>. This process is nearly
+        identical to how we constructed the dialog for closing a single
+        page.</li>
+        <li>46-47: Free the <code>GString</code> and the dialog
+        instance.</li>
+        <li>50: By returning <code>TRUE</code>, we halt the closing
+        process. The actual window closure will be handled later in the
+        callback function, depending on the user’s selection.</li>
+        </ul>
+        <h3 id="the-callback-function">The callback function</h3>
+        <p>The callback function looks like this:</p>
+        <div class="sourceCode" id="cb9"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>window_close_alert_cb <span class="op">(</span>GObject <span class="op">*</span>source_object<span class="op">,</span> GAsyncResult <span class="op">*</span>res<span class="op">,</span> gpointer user_data<span class="op">)</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="op">{</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>  GtkAlertDialog <span class="op">*</span>dialog <span class="op">=</span> GTK_ALERT_DIALOG <span class="op">(</span>source_object<span class="op">);</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  GError <span class="op">*</span>err <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>  </span>
+<span id="cb9-8"><a href="#cb9-8"></a>  <span class="dt">int</span> response <span class="op">=</span> gtk_alert_dialog_choose_finish <span class="op">(</span>dialog<span class="op">,</span> res<span class="op">,</span> <span class="op">&amp;</span>err<span class="op">);</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a>  <span class="cf">if</span> <span class="op">(</span>err <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a>      g_warning <span class="op">(</span><span class="st">&quot;Alert Dialog Error: </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> err<span class="op">-&gt;</span>message<span class="op">);</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a>      g_error_free <span class="op">(</span>err<span class="op">);</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a>      <span class="cf">return</span><span class="op">;</span> </span>
+<span id="cb9-14"><a href="#cb9-14"></a>  <span class="op">}</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a></span>
+<span id="cb9-16"><a href="#cb9-16"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a>  <span class="cf">if</span> <span class="op">(</span>response <span class="op">==</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> <span class="co">/* Close Without Saving */</span></span>
+<span id="cb9-18"><a href="#cb9-18"></a>      g_idle_add_once <span class="op">((</span>GSourceOnceFunc<span class="op">)</span> gtk_window_destroy<span class="op">,</span> win<span class="op">);</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a>  <span class="op">}</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="op">}</span></span></code></pre></div>
+        <p>The logic here is almost identical to the
+        <code>page_close_alert_cb</code> explained in the previous
+        section, except that it destroys the entire window at the end
+        instead of closing a single page. As discussed earlier, we again
+        use <code>g_idle_add_once ()</code> to safely wait for the alert
+        dialog’s cleanup process to finish.</p>
+        <h2 id="application-quit-process">Application Quit Process</h2>
+        <p>Quitting the application is triggered by clicking the “quit”
+        menu item. The corresponding action is <code>app.quit</code>,
+        defined in <code>tfeapplication.c</code>.</p>
+        <p>Previously, its handler called the
+        <code>g_application_quit ()</code> function, but once invoked,
+        the application termination process cannot be aborted. To fix
+        this, we will replace it with a routine that closes the main
+        windows instead, allowing the <code>close-request</code> handler
+        to intercept the process if there is unsaved text.</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>  GList <span class="op">*</span>windows<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  </span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="cf">for</span> <span class="op">(</span>windows<span class="op">=</span> gtk_application_get_windows <span class="op">(</span>app<span class="op">);</span> windows<span class="op">;</span> windows <span class="op">=</span> windows<span class="op">-&gt;</span>next<span class="op">)</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a>    gtk_window_close <span class="op">(</span>GTK_WINDOW <span class="op">(</span>windows<span class="op">-&gt;</span>data<span class="op">));</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>6-7: Iterate through the list of top-level windows held by
+        <code>GtkApplication</code>, closing all of them with the
+        <code>gtk_window_close ()</code> function. Since this function
+        emits the “close-request” signal, any unsaved text will
+        automatically be caught and handled by our custom handler.
+        Because TFE only has one main window, iterating through a list
+        like this isn’t strictly necessary, but the code is written this
+        way to maintain generality.</li>
+        </ul>
+        <h2 id="compiling-and-running">Compiling and Running</h2>
+        <p>All the source files are in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe8/">src/tfe8</a>
+        directory. You can build and execute the program as follows.</p>
+        <p>First, change your current directory to
+        <code>src/tfe8</code>. Then, type below in your command
+        line.</p>
+        <pre><code>$ meson setup _build
+$ ninja -C _build
+$ _build/tfe</code></pre>
+        <p>Try modifying the page and clicking the close button. An
+        alert dialog will appear, prompting you to choose either Cancel
+        or Close.</p>
       </div>
     </div>
   </main>

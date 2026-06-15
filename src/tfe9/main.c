@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include "tfeapplication.h"
 
-#define APPLICATION_ID "com.github.ToshioCP.tfe"
+#define APPLICATION_ID "com.github.ToshioCP.tfe9"
 
 int
 main (int argc, char **argv) {

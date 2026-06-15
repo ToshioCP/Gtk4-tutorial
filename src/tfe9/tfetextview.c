@@ -57,6 +57,15 @@ tfe_text_view_set_file (TfeTextView *tv, GFile *file) {
 }
 
 gboolean
+tfe_text_view_get_modified (TfeTextView *tv) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), FALSE);
+
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+
+  return gtk_text_buffer_get_modified (tb);
+}
+
+gboolean
 tfe_text_view_read (TfeTextView *tv, GError **err) {
   g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), FALSE);
   g_return_val_if_fail (err == NULL || *err == NULL, FALSE);

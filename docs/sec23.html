@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Pango, CSS and Application</title>
+  <title>Accelerators</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,381 +93,149 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="pango-css-and-application">Pango, CSS and
-        Application</h1>
-        <h2 id="pangofontdescription">PangoFontDescription</h2>
-        <p>PangoFontDescription is a C structure for a font. You can get
-        font family, style, weight and size. You can also get a string
-        that includes font attributes. For example, suppose that the
-        PangoFontDescription has a font of “Noto Sans Mono”, “Bold”,
-        “Italic” and 12 points of size. Then the string converted from
-        the PangoFontDescription is “Noto Sans Mono Bold Italic 12”.</p>
-        <ul>
-        <li>Font family is “Noto Sans Mono”.</li>
-        <li>Font style is “Italic”.</li>
-        <li>Font weight is “Bold”, or 700.</li>
-        <li>Font size is 12 pt.</li>
-        </ul>
-        <p>The font in CSS is different from the string from
-        PangoFontDescription.</p>
-        <ul>
-        <li><code>font: bold italic 12pt "Noto Sans Mono"</code></li>
-        <li><code>Noto Sans Mono Bold Italic 12</code></li>
-        </ul>
-        <p>So, it may be easier to use each property, i.e. font-family,
-        font-style, font-weight and font-size, to convert a
-        PangoFontDescription data to CSS.</p>
-        <p>Refer to <a
-        href="https://docs.gtk.org/Pango/index.html">Pango document</a>
-        and <a href="https://www.w3.org/TR/css-fonts-3/">W3C CSS Fonts
-        Module Level 3</a> for further information.</p>
-        <h2 id="converter-from-pangofontdescription-to-css">Converter
-        from PangoFontDescription to CSS</h2>
-        <p>Two files <code>pfd2css.h</code> and <code>pfd2css.c</code>
-        include the converter from PangoFontDescription to CSS.</p>
-        <p>The five functions are public. The first function is a
-        convenient function to set other four CSS properties at
-        once.</p>
-        <ul>
-        <li>The function <code>pfd2css_family</code> returns font
-        family.</li>
-        <li>The function <code>pfd2css_style</code> returns font style
-        which is one of “normal”, “italic” or “oblique”.</li>
-        <li>The function <code>pfd2css_weight</code> returns font weight
-        in integer. See the list below.</li>
-        <li>The function <code>pfd2css_size</code> returns font size.
-        <ul>
-        <li>If the font description size is absolute, it returns the
-        size in device units, which is pixel. Otherwise the unit is
-        point.</li>
-        <li>The function <code>pango_font_description_get_size</code>
-        returns the integer of the size but it is multiplied by
-        <code>PANGO_SCALE</code>. So, you need to divide it by
-        <code>PANGO_SCALE</code>. The <code>PANGO_SCALE</code> is
-        currently 1024, but this might be changed in the future. If the
-        font size is 12pt, the size in pango is
-        <code>12*PANGO_SCALE=12*1024=12288</code>.</li>
-        </ul></li>
-        <li>The function <code>pfd2css</code> returns a string of the
-        font. For example, if a font “Noto Sans Mono Bold Italic 12” is
-        given, it returns “font-family: Noto Sans Mono; font-style:
-        italic; font-weight: 700; font-size: 12pt;”.</li>
-        </ul>
-        <p>The font weight number is one of:</p>
-        <ul>
-        <li>100 - Thin</li>
-        <li>200 - Extra Light (Ultra Light)</li>
-        <li>300 - Light</li>
-        <li>400 - Normal</li>
-        <li>500 - Medium</li>
-        <li>600 - Semi Bold (Demi Bold)</li>
-        <li>700 - Bold</li>
-        <li>800 - Extra Bold (Ultra Bold)</li>
-        <li>900 - Black (Heavy)</li>
-        </ul>
-        <h2 id="application-object">Application Object</h2>
-        <h3 id="tfeapplication-class">TfeApplication Class</h3>
-        <p>TfeApplication class is a child of GtkApplication. It has
-        some instance variables. The header file defines the type macro
-        and a public function.</p>
-        <p>The following code is extracted from
-        <code>tfeapplication.c</code>. It builds TfeApplication class
-        and instance.</p>
+        <h1 id="accelerators">Accelerators</h1>
+        <h2 id="accelerators-1">Accelerators</h2>
+        <p>Accelerators are the mechanism used to implement keyboard
+        shortcuts. For instance, <code>Ctrl+c</code> is a common
+        shortcut for copying text.</p>
+        <p>Because accelerators are incredibly convenient, you should
+        definitely implement them for frequently used features.
+        Especially in a keyboard-centric application like our Text File
+        Editor (TFE), allowing users to complete tasks without reaching
+        for the mouse is essential for a comfortable user
+        experience.</p>
+        <h2 id="accelerators-and-actions">Accelerators and Actions</h2>
+        <p>Accelerators are rarely used in isolation; they are usually
+        paired with buttons or menu items. For example, most text
+        editors have an “Open File” button or menu item, but you can
+        achieve the same result by pressing <code>Ctrl+o</code>.</p>
+        <p>In GTK, the UI elements that trigger events (like buttons,
+        menus, and shortcut keys) are separated from the “actions” that
+        perform the actual work. Thanks to this architecture, you can
+        connect multiple types of events to a single action, keeping
+        your code clean and straightforward. Without actions, you would
+        have to write the handling logic for every single event
+        individually, which would lead to messy and complicated
+        code.</p>
+        <p>Since accelerators function across the entire application,
+        they should be defined in the application source file (e.g.,
+        <code>tfeapplication.c</code>). To link an accelerator to an
+        action, we use the
+        <code>gtk_application_set_accels_for_action ()</code>
+        function.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfeapplication.h&quot;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeApplication <span class="op">{</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  GtkApplication parent<span class="op">;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  TfeWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  GSettings <span class="op">*</span>settings<span class="op">;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  GtkCssProvider <span class="op">*</span>provider<span class="op">;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeApplication<span class="op">,</span> tfe_application<span class="op">,</span> GTK_TYPE_APPLICATION<span class="op">)</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>tfe_application_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  TfeApplication <span class="op">*</span>app <span class="op">=</span> TFE_APPLICATION <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  g_clear_object <span class="op">(&amp;</span>app<span class="op">-&gt;</span>settings<span class="op">);</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  g_clear_object <span class="op">(&amp;</span>app<span class="op">-&gt;</span>provider<span class="op">);</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>tfe_application_init <span class="op">(</span>TfeApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  app<span class="op">-&gt;</span>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span><span class="op">);</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  g_signal_connect <span class="op">(</span>app<span class="op">-&gt;</span>settings<span class="op">,</span> <span class="st">&quot;changed::font-desc&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>changed_font_cb<span class="op">),</span> app<span class="op">);</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  app<span class="op">-&gt;</span>provider <span class="op">=</span> gtk_css_provider_new <span class="op">();</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>tfe_application_class_init <span class="op">(</span>TfeApplicationClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_application_dispose<span class="op">;</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>startup <span class="op">=</span> app_startup<span class="op">;</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>activate <span class="op">=</span> app_activate<span class="op">;</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  G_APPLICATION_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>open <span class="op">=</span> app_open<span class="op">;</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>TfeApplication <span class="op">*</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>tfe_application_new <span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>application_id<span class="op">,</span> GApplicationFlags flag<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> TFE_APPLICATION <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_APPLICATION<span class="op">,</span> <span class="st">&quot;application-id&quot;</span><span class="op">,</span> application_id<span class="op">,</span> <span class="st">&quot;flags&quot;</span><span class="op">,</span> flag<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gtk_application_set_accels_for_action <span class="op">(</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  GtkApplication<span class="op">*</span> application<span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> detailed_action_name<span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span><span class="op">*</span> <span class="dt">const</span><span class="op">*</span> accels</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
         <ul>
-        <li>The structure <code>_TfeApplication</code> is defined. It
-        has four members. One is its parents and the others are kinds of
-        instance variables. The members are usually initialized in the
-        instance initialization function. And they are released in the
-        disposal function or freed in the finalization function. The
-        members are:
-        <ul>
-        <li>win: main window instance</li>
-        <li>settings: GSettings instance.it is bound to “font-desc” item
-        in the GSettings</li>
-        <li>provider: a provider for the font of the textview.</li>
-        </ul></li>
-        <li>The macro <code>G_DEFINE_FINAL_TYPE</code> defines
-        <code>tfe_application_get_type</code> function and some other
-        useful things.</li>
-        <li>The function <code>tfe_application_class_init</code>
-        initializes the TfeApplication class. It overrides four class
-        methods. Three class methods <code>startup</code>,
-        <code>activate</code> and <code>open</code> point to the default
-        signal handlers. The overriding replaces the default handlers.
-        You can connect the handlers with <code>g_signal_connect</code>
-        macro but the result is different. The macro connects a user
-        handler to the signal. The default handler still exists and no
-        change is made to them.</li>
-        <li>The function <code>tfe_application_init</code> initializes
-        an instance.
-        <ul>
-        <li>Creates a new GSettings instance and make
-        <code>app-&gt;settings</code> point to it. Then connects the
-        handler <code>changed_font_cb</code> to the “changed::font-desc”
-        signal.</li>
-        <li>Creates a new GtkCssProvider instance and make
-        <code>app-&gt;provider</code> point to it.</li>
-        </ul></li>
-        <li>The function <code>tfe_application_dispose</code> releases
-        the GSettings and GtkCssProvider instances. Then, it calls the
-        parent’s dispose handler. It is called “chaining up”. See <a
-        href="https://docs.gtk.org/gobject/tutorial.html#chaining-up">GObject
-        document</a>.</li>
+        <li><code>application</code>: The application instance.</li>
+        <li><code>detailed_action_name</code>: The name of the action
+        (e.g., <code>"app.quit"</code>, <code>"win.save"</code>).</li>
+        <li><code>accels</code>: An array of strings representing the
+        shortcut keys (the syntax is explained in the next subsection).
+        This array must be <code>NULL</code>-terminated.</li>
         </ul>
-        <h3 id="startup-signal-handlers">Startup Signal Handlers</h3>
+        <h2 id="shortcut-key-strings">Shortcut Key Strings</h2>
+        <p>The GTK parser for shortcut keys can properly interpret
+        strings like <code>&lt;control&gt;o</code>,
+        <code>&lt;Shift&gt;&lt;Alt&gt;F2</code>, and
+        <code>&lt;Ctrl&gt;minus</code>. You can find detailed
+        information about these strings in the <a
+        href="https://docs.gtk.org/gtk4/func.accelerator_parse.html">documentation</a>
+        for the <code>gtk_accelerator_parse ()</code> function.</p>
+        <p>This syntax is divided into two parts: a modifier key and a
+        character key. For example, <code>&lt;control&gt;o</code> is
+        split into <code>&lt;control&gt;</code> and <code>o</code>.</p>
+        <ul>
+        <li>The syntax for modifier keys is quite flexible. It allows
+        both uppercase and lowercase letters, as well as abbreviations.
+        For instance, <code>&lt;control&gt;</code>,
+        <code>&lt;CONTROL&gt;</code>, <code>&lt;Ctrl&gt;</code>, and
+        <code>&lt;Ctl&gt;</code> all represent the Control key.</li>
+        <li>For the character part, the parser calls the
+        <code>gdk_keyval_from_name ()</code> function to translate the
+        “key name string” into a key code. This key name string
+        <strong>must be written in lowercase</strong>. This is because
+        typing an uppercase ‘O’ on a keyboard requires pressing the
+        Shift key and the ‘o’ key together, meaning an uppercase
+        <code>O</code> is treated as being equivalent to
+        <code>&lt;Shift&gt;o</code>. Therefore, if you write
+        <code>&lt;Ctrl&gt;O</code>, GTK will interpret it as
+        <code>&lt;Ctrl&gt;&lt;Shift&gt;o</code>.</li>
+        <li>Because the character part must be a lowercase alphabet
+        name, you cannot use symbols directly. To represent the minus
+        (<code>-</code>) key, for example, you must spell it out as
+        <code>minus</code>. This means <code>&lt;Ctrl&gt;-</code> will
+        not work; you must write <code>&lt;Ctrl&gt;minus</code>. The
+        underlying definitions for these names can be found in the GTK
+        source code within <a
+        href="https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gdk/gdkkeysyms.h">gdkkeysyms.h</a>.
+        The key string is based on the macro name defined there (such as
+        <code>GDK_KEY_minus</code>), simply with the
+        <code>GDK_KEY_</code> prefix removed.</li>
+        </ul>
+        <h2 id="implementation-in-the-tfe-program">Implementation in the
+        TFE Program</h2>
+        <p>Let’s incorporate accelerators into our TFE (Text File
+        Editor) C code. Since shortcuts should be registered when the
+        application initializes, we will add them to the
+        <code>"startup"</code> signal handler.</p>
+        <p>For example, to link <code>Ctrl+o</code> to the
+        <code>"win.open"</code> action, you would write:</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="dt">void</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>  GSimpleAction <span class="op">*</span>quit_action <span class="op">=</span> g_simple_action_new <span class="op">(</span><span class="st">&quot;quit&quot;</span><span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a></span>
-<span id="cb2-5"><a href="#cb2-5"></a>  g_signal_connect <span class="op">(</span>quit_action<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>quit_activated<span class="op">),</span> application<span class="op">);</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>  g_action_map_add_action <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>application<span class="op">),</span> G_ACTION <span class="op">(</span>quit_action<span class="op">));</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>  g_object_unref <span class="op">(</span>quit_action<span class="op">);</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="op">}</span></span></code></pre></div>
-        <p>The function <code>app_startup</code> replace the default
-        signal handlers. It does five things.</p>
-        <ul>
-        <li>Calls the parent’s startup handler. It is called “chaining
-        up”. The “startup” default handler runs before user handlers. So
-        the call for the parent’s handler must be done at the
-        beginning.</li>
-        <li>Creates the main window. This application has only one top
-        level window. In that case, it is a good way to create the
-        window in the startup handler, which is called only once.
-        Activate or open handlers can be called twice or more.
-        Therefore, if you create a window in the activate or open
-        handler, two or more windows can be created.</li>
-        <li>Sets the default display CSS to “textview {padding: 10px;}”.
-        It sets the GtkTextView, or TfeTextView, padding to 10px and
-        makes the text easier to read. This CSS is fixed and never
-        changed through the application life.</li>
-        <li>Adds another CSS provider, which is pointed to by
-        <code>app-&gt;provider</code>, to the default display. This CSS
-        depends on the GSettings “font-desc” value and it can be changed
-        during the application life time. And calls
-        <code>changed_font_cb</code> to update the font CSS
-        setting.</li>
-        <li>Sets application accelerator with the function
-        <code>gtk_application_set_accels_for_action</code>. Accelerators
-        are kinds of short cut key functions. For example,
-        <code>Ctrl+O</code> is an accelerator to activate “open” action.
-        Accelerators are written in the array
-        <code>action-accels[]</code>. Its element is a structure
-        <code>struct {const char *action; const char *accels[2];}</code>.
-        The member <code>action</code> is an action name. The member
-        <code>accels</code> is an array of two pointers. For example,
-        <code>{"win.open", { "&lt;Control&gt;o", NULL }}</code> tells
-        that the accelerator <code>Ctrl+O</code> is connected to the
-        “win.open” action. The second element of <code>accels</code> is
-        NULL which is the end mark. You can define more than one
-        accelerator keys and the list must end with NULL (zero). If you
-        want to do so, the array length needs to be three or more. For
-        example,
-        <code>{"win.open", { "&lt;Control&gt;o", "&lt;Alt&gt;o", NULL }}</code>
-        means two accelerators <code>Ctrl+O</code> and
-        <code>Alt+O</code> is connected to the “win.open” action. The
-        parser recognizes “&lt;control&gt;o”,
-        “&lt;Shift&gt;&lt;Alt&gt;F2”, “&lt;Ctrl&gt;minus” and so on. If
-        you want to use symbol key like “&lt;Ctrl&gt;-”, use
-        “&lt;Ctrl&gt;minus” instead. Such relation between lower case
-        and symbol (character code) is specified in <a
-        href="https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gdk/gdkkeysyms.h">gdkkeysyms.h</a>
-        in the GTK 4 source code.</li>
-        </ul>
-        <h3 id="activate-and-open-signal-handlers">Activate and Open
-        Signal Handlers</h3>
-        <p>Two functions <code>app_activate</code> and
-        <code>app_open</code> replace the default signal handlers.</p>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>open_accels<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">&quot;&lt;Ctrl&gt;o&quot;</span><span class="op">,</span> NULL<span class="op">};</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gtk_application_set_accels_for_action<span class="op">(</span>GTK_APPLICATION<span class="op">(</span>app<span class="op">),</span> <span class="st">&quot;win.open&quot;</span><span class="op">,</span> open_accels<span class="op">);</span></span></code></pre></div>
+        <p>When you have multiple shortcut keys, the best practice is to
+        define them in an array and register them using a loop.</p>
         <div class="sourceCode" id="cb3"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="dt">void</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  GtkWidget <span class="op">*</span>nb<span class="op">;</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  win <span class="op">=</span> get_main_window <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  nb <span class="op">=</span> tfe_get_notebook <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="co">/* No page exists */</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>    notebook_page_new_with_file <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a><span class="op">}</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="dt">void</span></span>
-<span id="cb3-14"><a href="#cb3-14"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">,</span> GFile <span class="op">**</span> files<span class="op">,</span> gint n_files<span class="op">,</span> <span class="dt">const</span> gchar <span class="op">*</span>hint<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb3-16"><a href="#cb3-16"></a>  GtkWidget <span class="op">*</span>nb<span class="op">;</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a></span>
-<span id="cb3-19"><a href="#cb3-19"></a>  win <span class="op">=</span> get_main_window <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb3-20"><a href="#cb3-20"></a></span>
-<span id="cb3-21"><a href="#cb3-21"></a>  nb <span class="op">=</span> tfe_get_notebook <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb3-23"><a href="#cb3-23"></a>    notebook_page_new_with_file <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> files<span class="op">[</span>i<span class="op">]);</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a>  <span class="op">}</span></span>
-<span id="cb3-25"><a href="#cb3-25"></a>  <span class="cf">if</span> <span class="op">(</span>gtk_notebook_get_n_pages <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">))</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="co">/* No files have been opened */</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>    notebook_page_new_with_file <span class="op">(</span>GTK_NOTEBOOK <span class="op">(</span>nb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a><span class="op">}</span></span></code></pre></div>
-        <p>The original default handlers don’t do useful works and you
-        don’t need to chain up to the parent’s default handlers. They
-        just create notebook pages and show the top level window.</p>
-        <h3 id="css-font-setting">CSS Font Setting</h3>
-        <div class="sourceCode" id="cb4"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"></code></pre></div>
-        <p>The function <code>changed_font_cb</code> is a handler for
-        “changed::font-desc” signal on the GSettings instance. The
-        signal name is “changed” and “font-desc” is a key name. This
-        signal is emitted when the value of the “font-desc” key is
-        changed. The value is bound to the “font-desc” property of the
-        GtkFontDialogButton instance. Therefore, the handler
-        <code>changed_font_cb</code> is called when the user selects and
-        updates a font through the font dialog.</p>
-        <p>A string is retrieved from the GSetting database and converts
-        it into a pango font description. And a CSS string is made by
-        the function <code>pfd2css</code> and
-        <code>g_strdup_printf</code>. Then the css provider is set to
-        the string. The provider has been inserted to the current
-        display in advance. So, the font is applied to the display.</p>
-        <h2 id="other-files">Other Files</h2>
-        <p>main.c</p>
-        <p>Resource XML file.</p>
-        <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe5&quot;</span>&gt;</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">file</span>&gt;tfe.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    &lt;<span class="kw">file</span>&gt;menu.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb5-6"><a href="#cb5-6"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
-<span id="cb5-7"><a href="#cb5-7"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-        <p>GSchema XML file</p>
-        <p>Meson.build</p>
-        <div class="sourceCode" id="cb6"><pre
-        class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
-<span id="cb6-4"><a href="#cb6-4"></a></span>
-<span id="cb6-5"><a href="#cb6-5"></a>gnome=import(&#39;gnome&#39;)</span>
-<span id="cb6-6"><a href="#cb6-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;tfe.gresource.xml&#39;)</span>
-<span id="cb6-7"><a href="#cb6-7"></a></span>
-<span id="cb6-8"><a href="#cb6-8"></a># Main application</span>
-<span id="cb6-9"><a href="#cb6-9"></a>sourcefiles=files(&#39;tfeapplication.c&#39;, &#39;tfetextview.c&#39;)</span>
-<span id="cb6-10"><a href="#cb6-10"></a>executable(&#39;tfe&#39;, sourcefiles, resources, dependencies: gtkdep)</span>
-<span id="cb6-11"><a href="#cb6-11"></a></span>
-<span id="cb6-12"><a href="#cb6-12"></a># Test executable for tfetextview</span>
-<span id="cb6-13"><a href="#cb6-13"></a>test_sourcefiles = files(&#39;test/test_tfetextview.c&#39;, &#39;tfetextview.c&#39;)</span>
-<span id="cb6-14"><a href="#cb6-14"></a>test_exe = executable(&#39;test_tfetextview&#39;, test_sourcefiles, dependencies: gtkdep)</span>
-<span id="cb6-15"><a href="#cb6-15"></a></span>
-<span id="cb6-16"><a href="#cb6-16"></a># Test registration</span>
-<span id="cb6-17"><a href="#cb6-17"></a>test(&#39;tfetextview_test&#39;, test_exe)</span></code></pre></div>
+        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>action<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>accels<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> action_accels<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;win.open&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;o&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;win.save&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;win.close&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;w&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;win.new&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;n&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;win.saveas&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Shift&gt;&lt;Control&gt;s&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> <span class="st">&quot;app.quit&quot;</span><span class="op">,</span> <span class="op">{</span> <span class="st">&quot;&lt;Control&gt;q&quot;</span><span class="op">,</span> NULL <span class="op">}</span> <span class="op">},</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> G_N_ELEMENTS<span class="op">(</span>action_accels<span class="op">);</span> i<span class="op">++)</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    gtk_application_set_accels_for_action<span class="op">(</span>GTK_APPLICATION<span class="op">(</span>app<span class="op">),</span> action_accels<span class="op">[</span>i<span class="op">].</span>action<span class="op">,</span> action_accels<span class="op">[</span>i<span class="op">].</span>accels<span class="op">);</span></span></code></pre></div>
         <ul>
-        <li>The function <code>project</code> defines project and
-        initialize meson. The first argument is the project name and the
-        second is the language name. The other arguments are keyword
-        arguments.</li>
-        <li>The function <code>dependency</code> defines the dependent
-        library. Tfe depends on GTK4. This is used to create
-        <code>pkg-config</code> option in the command line of C compiler
-        to include header files and link libraries. The returned object
-        <code>gtkdep</code> is used as an argument to the
-        <code>executable</code> function later.</li>
-        <li>The function <code>import</code> imports an extension
-        module. The GNOME module has some convenient methods like
-        <code>gnome.compile_resources</code> and
-        <code>gnome.compile_schemas</code>.</li>
-        <li>The method <code>gnome.compile_resources</code> compiles and
-        creates resource files. The first argument is the resource name
-        without extension and the second is the name of XML file. The
-        returned value is an array
-        <code>['resources,c', 'resources.h']</code>.</li>
-        <li>The function <code>gnome.compile_schemas</code> compiles the
-        schema files in the current directory. This just creates
-        <code>gschemas.compiled</code> in the build directory. It is
-        used to test the executable binary in the build directory. The
-        function doesn’t install the schema file.</li>
-        <li>The function <code>files</code> creates a File Object.</li>
-        <li>The function <code>executable</code> defines the compilation
-        elements such as target name, source files, dependencies and
-        installation. The target name is “tfe”. The source files are
-        elements of ‘sourcefiles’ and `resources’. It uses GTK4
-        libraries. It can be installed.</li>
-        <li>The last three lines are post install work. The variable
-        <code>schema_dir</code> is the directory stored the schema file.
-        If meson runs with <code>--prefix=$HOME/.local</code> argument,
-        it is <code>$HOME/.local/share/glib-2.9/schemas</code>. The
-        function <code>install_data</code> copies the file specified in
-        the first argument into the directory specified in the second
-        argument. The method <code>gnome.post_install</code> runs
-        <code>glib-compile-schemas</code> and updates
-        <code>gschemas_compiled</code> file.</li>
+        <li>1-4: This is the structure definition. It might look a bit
+        complex, but it becomes clearer when you look at the
+        initialization values starting on line 5. The first member is
+        the action name, like <code>"win.open"</code>. The second member
+        is an array of accelerators (shortcut strings), ending with a
+        <code>NULL</code> terminator. Since we are only registering one
+        shortcut per action here, an array size of 2 (the shortcut plus
+        <code>NULL</code>) is sufficient. If you wanted to assign two
+        shortcuts to a single action, you would need to increase the
+        array size to 3. The empty brackets <code>[]</code> after
+        <code>action_accels</code> tell the compiler to calculate the
+        array size automatically based on the initialization data, so we
+        can omit the number.</li>
+        <li>5-10: This is the actual list pairing each action with its
+        corresponding accelerator. Note that we will add a menu and
+        action for a Preferences dialog later on, but since that isn’t a
+        frequently used feature, we are omitting an accelerator for it
+        here.</li>
         </ul>
-        <h2 id="compilation-and-installation.">Compilation and
-        Installation.</h2>
-        <p>If you want to install it to your local area, use
-        <code>--prefix=$HOME/.local</code> or
-        <code>--prefix=$HOME</code> option. If you want to install it to
-        the system area, no option is needed. It will be installed under
-        <code>/user/local</code> directory.</p>
-        <pre><code>$ meson setup --prefix=$HOME/.local _build
-$ ninja -C _build
-$ ninja -C _build install</code></pre>
-        <p>You need root privilege to install it to the system
-        area..</p>
+        <h2 id="build-and-run">Build and Run</h2>
+        <p>The complete source code is located in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe9/">src/tfe9</a>
+        directory. Navigate into that directory and type the following
+        commands in your terminal to compile and run the
+        application:</p>
         <pre><code>$ meson setup _build
 $ ninja -C _build
-$ sudo ninja -C _build install</code></pre>
-        <p>Source files are in <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe6/">/src/tfe6</a>
-        directory.</p>
-        <p>We made a very small text editor. You can add features to
-        this editor. When you add a new feature, be careful about the
-        structure of the program. Maybe you need to divide a file into
-        several files. It isn’t good to put many things into one file.
-        And it is important to think about the relationship between
-        source files and widget structures.</p>
-        <p>The source files are in the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial">Gtk4 tutorial
-        GitHub repository</a>. Download it and see
-        <code>/src/tfe6</code> directory.</p>
+$ _build/tfe</code></pre>
+        <p>Try pressing shortcut keys like <code>Ctrl+o</code> to
+        confirm that they are working correctly.</p>
       </div>
     </div>
   </main>

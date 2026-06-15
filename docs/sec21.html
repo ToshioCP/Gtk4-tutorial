@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>GtkFontDialogButton and Gsettings</title>
+  <title>Creating TfeWindow</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,591 +93,414 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="gtkfontdialogbutton-and-gsettings">GtkFontDialogButton
-        and Gsettings</h1>
-        <h2 id="the-preference-dialog">The Preference Dialog</h2>
-        <p>If the user clicks on the preference menu, a preference
-        dialog appears.</p>
-        <figure>
-        <img src="/images/pref_dialog.png" alt="Preference dialog" />
-        <figcaption aria-hidden="true">Preference dialog</figcaption>
-        </figure>
-        <p>It has only one button, which is a GtkFontDialogButton
-        widget. You can add more widgets on the dialog but this simple
-        dialog isn’t so bad for the first example program.</p>
-        <p>If the button is clicked, a GtkFontDialog appears like
-        this.</p>
-        <figure>
-        <img src="/images/fontdialog.png" alt="Font dialog" />
-        <figcaption aria-hidden="true">Font dialog</figcaption>
-        </figure>
-        <p>If the user chooses a font and clicks on the select button,
-        the font is changed.</p>
-        <p>GtkFontDialogButton and GtkFontDialog are available since GTK
-        version 4.10. They replace GtkFontButton and
-        GtkFontChooserDialog, which are deprecated since 4.10.</p>
-        <h2 id="composite-widget">Composite Widget</h2>
-        <p>The preference dialog has GtkBox, GtkLabel and GtkFontButton
-        in it and is defined as a composite widget. The following is the
-        template UI file for <code>TfePref</code>.</p>
+        <h1 id="creating-tfewindow">Creating TfeWindow</h1>
+        <p>Restructuring the window not just as a separate file from the
+        application, but as a subclass of GtkApplicationWindow, has the
+        following advantages:</p>
         <ul>
-        <li>Template tag specifies a composite widget. The class
-        attribute specifies the class name, which is “TfePref”. The
-        parent attribute is <code>GtkWindow</code>. Therefore,
-        <code>TfePref</code> is a child class of <code>GtkWindow</code>.
-        A parent attribute is optional but it is recommended to write it
-        explicitly. You can make TfePref as a child of
-        <code>GtkDialog</code>, but <code>GtkDialog</code> is deprecated
-        since version 4.10.</li>
-        <li>There are three properties, title, resizable and modal.</li>
-        <li>TfePref has a child widget GtkBox which is horizontal. The
-        box has two children GtkLabel and GtkFontDialogButton.</li>
+        <li>Better encapsulation. It makes it easier to distinguish
+        between external interfaces and internal processing
+        functions.</li>
+        <li>Ability to have instance variables. TfeWindow often refers
+        to its internal GtkNotebook. Keeping its pointer in an instance
+        variable is quite useful.</li>
+        <li>By introducing composite widgets along with subclassing, you
+        can handle all widgets within the window together.</li>
         </ul>
-        <h2 id="the-header-file">The Header File</h2>
-        <p>The file <code>tfepref.h</code> defines types and declares a
-        public function.</p>
-        <ul>
-        <li>5: Defines the type <code>TFE_TYPE_PREF</code>, which is a
-        macro replaced by <code>tfe_pref_get_type ()</code>.</li>
-        <li>6: The macro <code>G_DECLARE_FINAL_TYPE</code> expands to:
-        <ul>
-        <li>The function <code>tfe_pref_get_type ()</code> is
-        declared.</li>
-        <li>TfePref type is defined as a typedef of
-        <code>struct _TfePref</code>.</li>
-        <li>TfePrefClass type is defined as a typedef of
-        <code>struct {GtkWindowClass *parent;}</code>.</li>
-        <li>Two functions <code>TFE_PREF ()</code> and
-        <code>TFE_IS_PREF ()</code> are defined.</li>
-        </ul></li>
-        <li>8-9:The function <code>tfe_pref_new</code> is declared. It
-        creates a new TfePref instance.</li>
-        </ul>
-        <h2 id="the-c-file-for-the-composite-widget">The C File for the
-        Composite Widget</h2>
-        <p>The following codes are extracted from the file
-        <code>tfepref.c</code>.</p>
+        <h2 id="defining-the-subclass">Defining the Subclass</h2>
+        <p>The method for defining a subclass of GtkApplicationWindow is
+        the same as for TfeTextView or TfeApplication.</p>
+        <h3 id="writing-the-header-file">Writing the Header File</h3>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfePref</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  GtkWindow parent<span class="op">;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  GtkFontDialogButton <span class="op">*</span>font_dialog_btn<span class="op">;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">),</span> TFE_TYPE_PREF<span class="op">);</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span><span class="op">);</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> font_dialog_btn<span class="op">);</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> NULL<span class="op">));</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1"></a><span class="pp">#pragma once</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="pp">#define TFE_TYPE_WINDOW tfe_window_get_type </span><span class="op">()</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> TFE<span class="op">,</span> WINDOW<span class="op">,</span> GtkApplicationWindow<span class="op">)</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="dt">void</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>tfe_window_append_page <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">,</span> GFile <span class="op">*</span>file<span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">);</span></span></code></pre></div>
         <ul>
-        <li>The structure <code>_TfePref</code> has
-        <code>font_dialog_btn</code> member. It points to the
-        GtkFontDialogButton object specified in the XML file
-        “tfepref.ui”. The member name <code>font_dialog_btn</code> must
-        be the same as the GtkFontDialogButton id attribute in the XML
-        file.</li>
-        <li><code>G_DEFINE_FINAL_TYPE</code> macro expands to:
+        <li>5-6: The macro definition of <code>TFE_TYPE_WINDOW</code>
+        and how to write the <code>G_DECLARE_FINAL_TYPE</code> macro are
+        the same as before.</li>
+        <li>8-12: This class only needs to be accessed from the
+        application (TfeApplication) through:
         <ul>
-        <li>The declaration of the functions <code>tfe_pref_init</code>
-        and <code>tfe_pref_class_init</code>. They are defined in the
-        following part of the program.</li>
-        <li>The definition of the variable
-        <code>tfe_pref_parent_class</code>.</li>
-        <li>The definition of the function
-        <code>tfe_pref_get_type</code>.</li>
-        </ul></li>
-        <li>The function <code>tfe_pref_class_init</code> initializes
-        the TfePref class. The function
-        <code>gtk_widget_class_set_template_from_resource</code>
-        initializes the composite widget template from the XML resource.
-        The function <code>gtk_widget_class_bind_template_child</code>
-        connects the TfePref structure member
-        <code>font_dialog_btn</code> and the GtkFontDialogButton in the
-        XML. The member name and the id attribute value must be the
-        same.</li>
-        <li>The function <code>tfe_pref_init</code> initializes a newly
-        created instance. The function
-        <code>gtk_widget_init_template</code> creates and initializes
-        child widgets.</li>
-        <li>The function <code>tfe_pref_dispose</code> releases objects.
-        The function <code>gtk_widget_dispose_template</code> releases
-        child widgets.</li>
-        </ul>
-        <h2 id="gtkfontdialogbutton-and-pango">GtkFontDialogButton and
-        Pango</h2>
-        <p>If the GtkFontDialogButton button is clicked, the
-        GtkFontDialog dialog appears. A user can choose a font on the
-        dialog. If the user clicks on the “select” button, the dialog
-        disappears. And the font information is given to the
-        GtkFontDialogButton instance. The font data is retrieved with
-        the method <code>gtk_font_dialog_button_get_font_desc</code>. It
-        returns a pointer to the PangoFontDescription structure.</p>
-        <p>Pango is a text layout engine. The <a
-        href="https://docs.gtk.org/Pango/index.html">documentation</a>
-        is on the internet.</p>
-        <p>PangoFontDescription is a C structure and it isn’t allowed to
-        be accessed directly. The document is <a
-        href="https://docs.gtk.org/Pango/struct.FontDescription.html">here</a>.
-        If you want to retrieve the font information, there are several
-        functions.</p>
-        <ul>
-        <li><code>pango_font_description_to_string</code> returns a
-        string like “Jamrul Bold Italic Semi-Expanded 12”.</li>
-        <li><code>pango_font_description_get_family</code> returns a
-        font family like “Jamrul”.</li>
-        <li><code>pango_font_description_get_weight</code> returns a
-        PangoWeight constant like <code>PANGO_WEIGHT_BOLD</code>.</li>
-        <li><code>pango_font_description_get_style</code> returns a
-        PangoStyle constant like <code>PANGO_STYLE_ITALIC</code>.</li>
-        <li><code>pango_font_description_get_stretch</code> returns a
-        PangoStretch constant like
-        <code>PANGO_STRETCH_SEMI_EXPANDED</code>.</li>
-        <li><code>pango_font_description_get_size</code> returns an
-        integer like <code>12</code>. Its unit is points or pixels
-        (device units). The function
-        <code>pango_font_description_get_size_is_absolute</code> returns
-        TRUE if the unit is an absolute device unit. Otherwise the unit
-        is point.</li>
-        </ul>
-        <h2 id="gsettings">GSettings</h2>
-        <p>We want to maintain the font data after the application
-        quits. There are some ways to implement.</p>
-        <ul>
-        <li>Make a configuration file. For example, a text file
-        “~/.config/tfe/font_desc.cfg” keeps font information.</li>
-        <li>Use GSettings object. The basic idea of GSettings are
-        similar to configuration file. Configuration information data is
-        put into a database file.</li>
-        </ul>
-        <p>GSettings is simple and easy to use but a bit hard to
-        understand the concept. This subsection describes the concept
-        first and then how to program it.</p>
-        <h3 id="gsettings-schema">GSettings Schema</h3>
-        <p>GSettings schema describes a set of keys, value types and
-        some other information. GSettings object uses this schema and it
-        writes/reads the value of a key to/from the right place in the
-        database.</p>
-        <ul>
-        <li>A schema has an id. The id must be unique. We often use the
-        same string as application id, but schema id and application id
-        are different. You can use different name from application id.
-        Schema id is a string delimited by periods. For example,
-        “com.github.ToshioCP.tfe” is a correct schema id.</li>
-        <li>A schema usually has a path. The path is a location in the
-        database. Each key is stored under the path. For example, if a
-        key <code>font-desc</code> is defined with a path
-        <code>/com/github/ToshioCP/tfe/</code>, the key’s location in
-        the database is <code>/com/github/ToshioCP/tfe/font-desc</code>.
-        A path is a string begins with and ends with a slash
-        (<code>/</code>). And it is delimited by slashes.</li>
-        <li>GSettings save information as key-value style. A key is a
-        string that begins with a lower case character followed by lower
-        case letters, digits or dashes (<code>-</code>) and ends with a
-        lower case letter or digit. No consecutive dashes are allowed.
-        Values can be any type. GSettings stores values as GVariant
-        type, which can be, for example, integer, double, boolean,
-        string or complex types like an array. The type of values needs
-        to be defined in the schema.</li>
-        <li>A default value needs to be set for each key.</li>
-        <li>A summary and description can be set for each key
-        optionally.</li>
-        </ul>
-        <p>Schemas are described in an XML format. For example,</p>
-        <ul>
-        <li>4: The type attribute is “s”. It is GVariant type string.
-        For GVariant type string, see <a
-        href="https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings">GLib
-        API Reference – GVariant Type Strings</a>. Other common types
-        are:
-        <ul>
-        <li>“b”: gboolean</li>
-        <li>“i”: gint32.</li>
-        <li>“d”: double.</li>
+        <li><code>tfe_window_new()</code>: Used when creating a
+        window.</li>
+        <li><code>tfe_window_append_page()</code>: Used within the
+        “open” handler to add the specified file to a page.</li>
         </ul></li>
         </ul>
-        <p>Further information is in:</p>
+        <h3 id="writing-the-c-file">Writing the C File</h3>
+        <p>First, in the C file, you need to write the object structure
+        and the <code>G_DEFINE_FINAL_TYPE</code> macro.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfewindow.h&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfetextview.h&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span> <span class="co">/* menu button */</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span> <span class="co">/* notebook */</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfeWindow<span class="op">,</span> tfe_window<span class="op">,</span> GTK_TYPE_APPLICATION_WINDOW<span class="op">)</span></span></code></pre></div>
         <ul>
-        <li><a
-        href="https://docs.gtk.org/glib/gvariant-format-strings.html">GLib
-        API Reference – GVariant Format Strings</a></li>
-        <li><a
-        href="https://docs.gtk.org/glib/gvariant-text-format.html">GLib
-        API Reference – GVariant Text Format</a></li>
-        <li><a href="https://docs.gtk.org/glib/struct.Variant.html">GLib
-        API Reference – GVariant</a></li>
-        <li><a
-        href="https://docs.gtk.org/glib/struct.VariantType.html">GLib
-        API Reference – VariantType</a></li>
+        <li>5-9: The first member of the object structure is the parent
+        object’s structure. If a pointer to a TfeWindow object
+        <code>win</code> is passed as an argument to functions in the
+        class, you can access the menu button with
+        <code>win-&gt;btnm</code> and the notebook with
+        <code>win-&gt;nb</code>.</li>
+        <li>11: Uses the <code>G_DEFINE_FINAL_TYPE</code> macro.</li>
         </ul>
-        <h3 id="gsettings-command">Gsettings Command</h3>
-        <p>First, let’s try <code>gsettings</code> application. It is a
-        configuration tool for GSettings.</p>
-        <pre><code>$ gsettings help
-Usage:
-  gsettings --version
-  gsettings [--schemadir SCHEMADIR] COMMAND [ARGS?]
-
-Commands:
-  help                      Show this information
-  list-schemas              List installed schemas
-  list-relocatable-schemas  List relocatable schemas
-  list-keys                 List keys in a schema
-  list-children             List children of a schema
-  list-recursively          List keys and values, recursively
-  range                     Queries the range of a key
-  describe                  Queries the description of a key
-  get                       Get the value of a key
-  set                       Set the value of a key
-  reset                     Reset the value of a key
-  reset-recursively         Reset all values in a given schema
-  writable                  Check if a key is writable
-  monitor                   Watch for changes
-
-Use &quot;gsettings help COMMAND&quot; to get detailed help.</code></pre>
-        <p>List schemas.</p>
-        <pre><code>$ gsettings list-schemas
-org.gnome.rhythmbox.podcast
-ca.desrt.dconf-editor.Demo.Empty
-org.gnome.gedit.preferences.ui
-org.gnome.evolution-data-server.calendar
-org.gnome.rhythmbox.plugins.generic-player
-
-... ...
-</code></pre>
-        <p>Each line is an id of a schema. Each schema has a key-value
-        configuration data. You can see them with list-recursively
-        command. Let’s look at the keys and values of
-        <code>org.gnome.calculator</code> schema.</p>
-        <pre><code>$ gsettings list-recursively org.gnome.calculator
-org.gnome.calculator accuracy 9
-org.gnome.calculator angle-units &#39;degrees&#39;
-org.gnome.calculator base 10
-org.gnome.calculator button-mode &#39;basic&#39;
-org.gnome.calculator number-format &#39;automatic&#39;
-org.gnome.calculator precision 2000
-org.gnome.calculator refresh-interval 604800
-org.gnome.calculator show-thousands false
-org.gnome.calculator show-zeroes false
-org.gnome.calculator source-currency &#39;&#39;
-org.gnome.calculator source-units &#39;degree&#39;
-org.gnome.calculator target-currency &#39;&#39;
-org.gnome.calculator target-units &#39;radian&#39;
-org.gnome.calculator window-position (-1, -1)
-org.gnome.calculator word-size 64</code></pre>
-        <p>This schema is used by GNOME Calculator. Run the calculator
-        and change the mode, then check the schema again.</p>
-        <pre><code>$ gnome-calculator</code></pre>
-        <figure>
-        <img src="/images/gnome_calculator_basic.png"
-        alt="gnome-calculator basic mode" />
-        <figcaption aria-hidden="true">gnome-calculator basic
-        mode</figcaption>
-        </figure>
-        <p>Change the mode to advanced and quit.</p>
-        <figure>
-        <img src="/images/gnome_calculator_advanced.png"
-        alt="gnome-calculator advanced mode" />
-        <figcaption aria-hidden="true">gnome-calculator advanced
-        mode</figcaption>
-        </figure>
-        <p>Run gsettings and check the value of
-        <code>button-mode</code>.</p>
-        <pre><code>$ gsettings list-recursively org.gnome.calculator
-
-... ...
-
-org.gnome.calculator button-mode &#39;advanced&#39;
-
-... ...
-</code></pre>
-        <p>Now we know that GNOME Calculator used gsettings and it has
-        set <code>button-mode</code> key to “advanced”. The value
-        remains even the calculator quits. So when the calculator runs
-        again, it will appear as an advanced mode.</p>
-        <h3 id="glib-compile-schemas-utility">Glib-compile-schemas
-        Utility</h3>
-        <p>GSettings schemas are specified with an XML format. The XML
-        schema files must have the filename extension
-        <code>.gschema.xml</code>. The following is the XML schema file
-        for the application <code>tfe</code>.</p>
-        <p>The filename is “com.github.ToshioCP.tfe.gschema.xml”. Schema
-        XML filenames are usually the schema id followed by
-        “.gschema.xml” suffix. You can use different name from schema
-        id, but it is not recommended.</p>
+        <h2 id="composite-widgets">Composite Widgets</h2>
+        <p>Until now, we have built windows by combining widgets like
+        buttons and notebooks, treating them as a single object. There
+        was no way to represent them as a cohesive unit. A composite
+        widget provides a way to represent this group; it is a single
+        widget made by combining multiple widgets.</p>
+        <p>With a composite widget, you create a template (blueprint)
+        for a “special window containing a button and a notebook.” This
+        template is similar to a class. When you instantiate a composite
+        widget, all its internal widgets are created and assembled based
+        on this template.</p>
+        <p>Note that existing widgets like GtkWindow cannot be converted
+        into composite widgets directly. Composite widgets must be
+        implemented programmatically as subclasses.</p>
+        <p>The template is created from UI data by GtkBuilder, which is
+        similar to how we’ve used the builder so far, but their roles
+        are clearly different:</p>
         <ul>
-        <li>2: The top level element is
-        <code>&lt;schemalist&gt;</code>.</li>
-        <li>3: schema tag has <code>path</code> and <code>id</code>
-        attributes. A path determines where the settings are stored in
-        the conceptual global tree of settings. An id identifies the
-        schema.</li>
-        <li>4: Key tag has two attributes. Name is the name of the key.
-        Type is the type of the value of the key and it is a GVariant
-        Format String.</li>
-        <li>5: default value of the key <code>font-desc</code> is
-        <code>Monospace 12</code>.</li>
-        <li>6: Summary and description elements describe the key. They
-        are optional, but it is recommended to add them in the XML
-        file.</li>
+        <li><strong>Creating objects with a builder:</strong> Creates
+        instances of widgets from an XML file and combines them. The
+        output is a set of instances.</li>
+        <li><strong>Creating a template with a builder:</strong>
+        Generates a template for the widget combination from an XML
+        file. The template is not a group of instances.</li>
         </ul>
-        <p>The XML file is compiled by glib-compile-schemas. When
-        compiling, <code>glib-compile-schemas</code> compiles all the
-        XML files which have “.gschema.xml” file extension in the
-        directory given as an argument. It converts the XML file into a
-        binary file <code>gschemas.compiled</code>. Suppose the XML file
-        above is under <code>tfe6</code> directory.</p>
-        <pre><code>$ glib-compile-schemas tfe6</code></pre>
-        <p>Then, <code>gschemas.compiled</code> is generated under
-        <code>tfe6</code>. When you test your application, set
-        <code>GSETTINGS_SCHEMA_DIR</code> environment variable so that
-        GSettings objet can find <code>gschemas.compiled</code>.</p>
-        <pre><code>$ GSETTINGS_SCHEMA_DIR=(the directory gschemas.compiled is located):$GSETTINGS_SCHEMA_DIR (your application name)</code></pre>
-        <p>GSettings object looks for this file by the following
-        process.</p>
+        <p>When a composite widget is instantiated, the individual
+        widgets it contains are created within its instance
+        initialization function (for example,
+        <code>tfe_window_init</code>). This is handled by the
+        <code>gtk_widget_init_template()</code> function.</p>
+        <p>The main advantage of this approach is encapsulation—keeping
+        multiple widgets contained within a single composite widget. For
+        example, if the application needs to open multiple editor
+        windows, you would normally have to create and manage individual
+        widgets for each window. With a composite widget, creating the
+        main widget automatically creates its child widgets. By letting
+        the composite widget manage its internal components, external
+        code doesn’t need to do anything extra.</p>
+        <p>This clarifies the division of responsibilities in the code,
+        leading to cleaner programs with fewer bugs.</p>
+        <p>In the following subsections, let’s see how to actually
+        create a composite window using TfeWindow as an example.</p>
+        <h3 id="structure-of-the-ui-file">Structure of the UI File</h3>
+        <p>The UI file <code>tfewindow.ui</code> for the composite
+        widget is almost the same as before. The only difference is
+        using the <code>&lt;template&gt;</code> tag instead of the usual
+        <code>&lt;object&gt;</code> tag for the top window.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfeWindow&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkApplicationWindow&quot;</span>&gt;</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  ... ... ...</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">template</span>&gt;</span></code></pre></div>
         <ul>
-        <li>It searches <code>glib-2.0/schemas</code> subdirectories of
-        all the directories specified in the environment variable
-        <code>XDG_DATA_DIRS</code>. Common directores are
-        <code>/usr/share/glib-2.0/schemas</code> and
-        <code>/usr/local/share/glib-2.0/schemas</code>.</li>
-        <li>If <code>$HOME/.local/share/glib-2.0/schemas</code> exists,
-        it is also searched.</li>
-        <li>If <code>GSETTINGS_SCHEMA_DIR</code> environment variable is
-        defined, it searches all the directories specified in the
-        variable. <code>GSETTINGS_SCHEMA_DIR</code> can specify multiple
-        directories delimited by colon (:).</li>
+        <li>The <code>class</code> attribute specifies TfeWindow, the
+        class name of the composite widget.</li>
+        <li>The <code>parent</code> attribute specifies
+        GtkApplicationWindow, the parent class of TfeWindow.</li>
         </ul>
-        <p>The directories above includes more than one
-        <code>.gschema.xml</code> file. Therefore, when you install your
-        application, follow the instruction below to install your
-        schemas.</p>
-        <ol type="1">
-        <li>Make <code>.gschema.xml</code> file.</li>
-        <li>Copy it to one of the directories above. For example,
-        <code>$HOME/.local/share/glib-2.0/schemas</code>.</li>
-        <li>Run <code>glib-compile-schemas</code> on the directory. It
-        compiles all the schema files in the directory and creates or
-        updates the database file <code>gschemas.compiled</code>.</li>
-        </ol>
-        <h3 id="gsettings-object-and-binding">GSettings Object and
-        Binding</h3>
-        <p>Now, we go on to the next topic, how to program
-        GSettings.</p>
-        <p>You need to compile your schema file in advance.</p>
-        <p>Suppose id, key, class name and a property name are:</p>
+        <h3 id="binding-the-template-in-the-c-file">Binding the Template
+        in the C File</h3>
+        <p>Next, we bind the template and child widgets defined in the
+        UI file to the TfeWindow class in the C file. This is done in
+        the class initialization function
+        (<code>tfe_window_class_init</code>).</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfeWindow <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  GtkApplicationWindow parent<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  GtkMenuButton <span class="op">*</span>btnm<span class="op">;</span> <span class="co">/* menu button */</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  GtkNotebook <span class="op">*</span>nb<span class="op">;</span> <span class="co">/* notebook */</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>tfe_window_class_init <span class="op">(</span>TfeWindowClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  GObjectClass <span class="op">*</span>object_class <span class="op">=</span> G_OBJECT_CLASS <span class="op">(</span>class<span class="op">);</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  object_class<span class="op">-&gt;</span>dispose <span class="op">=</span> tfe_window_dispose<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe7/tfewindow.ui&quot;</span><span class="op">);</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> btnm<span class="op">);</span> <span class="co">/* bind &quot;btnm&quot; in _TfeWindow to &quot;btnm&quot; in the UI resource */</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfeWindow<span class="op">,</span> nb<span class="op">);</span>  <span class="co">/* bind &quot;nb&quot; in _TfeWindow to &quot;nb&quot; in the UI resource */</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>
-        <li>GSettings id: com.github.ToshioCP.sample</li>
-        <li>GSettings key: sample_key</li>
-        <li>The class name: Sample</li>
-        <li>The property to bind: sample_property</li>
+        <li><code>gtk_widget_class_set_template_from_resource()</code>
+        loads the template from the UI data into the class.</li>
+        <li><code>gtk_widget_class_bind_template_child()</code> maps the
+        pointer to the widget with <code>id="btnm"</code> in the XML to
+        the <code>win-&gt;btnm</code> variable. Because of this binding,
+        when a composite widget instance is created,
+        <code>win-&gt;btnm</code> is automatically initialized to point
+        to that specific widget. The notebook (<code>nb</code>) is
+        handled in the same way.</li>
         </ul>
-        <p>The example below uses <code>g_settings_bind</code>. If you
-        use it, GSettings key and instance property must have the same
-        the type. In the example, it is assumed that the type of
-        “sample_key” and “sample_property” are the same.</p>
+        <p>This function is called only once when the TfeWindow class is
+        created, establishing the connection between the class and the
+        template.</p>
+        <h3 id="creating-an-instance">Creating an Instance</h3>
+        <p>When an instance is created, the initialization function
+        <code>tfe_window_init()</code> is called.</p>
+        <div class="sourceCode" id="cb5"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tfe_window_init <span class="op">(</span>TfeWindow <span class="op">*</span>win<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  GtkBuilder <span class="op">*</span>builder<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span> <span class="op">...</span> <span class="op">...</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p><code>gtk_widget_init_template()</code> instantiates the
+        widgets inside the window based on the template, setting up the
+        proper parent-child relationships.</p>
+        <h3 id="destroying-an-instance">Destroying an Instance</h3>
+        <p>The internal widgets of the window must be destroyed just
+        before the composite widget itself is destroyed. This is handled
+        in the <code>tfe_window_dispose()</code> function.</p>
+        <div class="sourceCode" id="cb6"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tfe_window_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>gobject<span class="op">),</span> TFE_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_window_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+        <p>The <code>gtk_widget_dispose_template()</code> function
+        destroys the widgets created from the template. It also sets the
+        instance variables bound by
+        <code>gtk_widget_class_bind_template_child()</code> to NULL.</p>
+        <p>To summarize the process of creating a composite widget:</p>
+        <ul>
+        <li>Use the <code>&lt;template&gt;</code> tag as the root tag in
+        your UI file.</li>
+        <li>Load the template into the class using
+        <code>gtk_widget_class_set_template_from_resource()</code>
+        during class initialization.</li>
+        <li>To link objects defined by IDs in the UI file to instance
+        variables in the object structure:
+        <ul>
+        <li>Use the same name for the UI ID and the instance
+        variable.</li>
+        <li>Bind them using
+        <code>gtk_widget_class_bind_template_child()</code> during class
+        initialization.</li>
+        </ul></li>
+        <li>Call <code>gtk_widget_init_template()</code> during object
+        instantiation to create the child widgets.</li>
+        <li>Call <code>gtk_widget_dispose_template()</code> during
+        object destruction to clean up the child widgets.</li>
+        </ul>
+        <h2 id="the-c-file-of-tfewindow">The C File of TfeWindow</h2>
+        <p>This subsection covers the changes made to TfeWindow that are
+        not directly related to composite widgets.</p>
+        <h3 id="setting-the-menu-to-the-menu-button">Setting the Menu to
+        the Menu Button</h3>
+        <p>The menu is set inside <code>tfe_window_init()</code>.</p>
+        <div class="sourceCode" id="cb7"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>builder <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/tfe7/menus.ui&quot;</span><span class="op">);</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gtk_menu_button_set_menu_model <span class="op">(</span>GTK_MENU_BUTTON <span class="op">(</span>win<span class="op">-&gt;</span>btnm<span class="op">),</span> G_MENU_MODEL <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>builder<span class="op">,</span> <span class="st">&quot;menu&quot;</span><span class="op">)));</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>g_object_unref <span class="op">(</span>builder<span class="op">);</span></span></code></pre></div>
+        <p>Here, we did not use GtkApplication’s Automatic resources
+        (which involves <code>gtk_application_get_menu_by_id()</code>).
+        This was done to avoid adding a dependency on GtkApplication.
+        Setting up the menu entirely within TfeWindow aligns better with
+        the concept of encapsulation.</p>
+        <h3 id="defining-actions">Defining Actions</h3>
+        <p>Actions are also defined inside
+        <code>tfe_window_init()</code>.</p>
+        <div class="sourceCode" id="cb8"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> GActionEntry win_entries<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;open&quot;</span><span class="op">,</span> open_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;save&quot;</span><span class="op">,</span> save_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
+        <p>This is the exact same code that was previously in the
+        <code>get_main_window()</code> function in version
+        <code>tfe6</code>. Since TfeWindow is now a standalone class,
+        the code was simply moved to TfeWindow’s initialization.</p>
+        <h3 id="constructor">Constructor</h3>
         <div class="sourceCode" id="cb9"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GSettings <span class="op">*</span>settings<span class="op">;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Sample <span class="op">*</span>sample_object<span class="op">;</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.sample&quot;</span><span class="op">);</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>sample_object <span class="op">=</span> sample_new <span class="op">();</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>g_settings_bind <span class="op">(</span>settings<span class="op">,</span> <span class="st">&quot;sample_key&quot;</span><span class="op">,</span> sample_object<span class="op">,</span> <span class="st">&quot;sample_property&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">);</span></span></code></pre></div>
-        <p>The function <code>g_settings_bind</code> binds the GSettings
-        value and the property of the instance. If the property value is
-        changed, the GSettings value is also changed, and vice versa.
-        The two values are always the same.</p>
-        <p>The function <code>g_settings_bind</code> is simple and easy
-        but it isn’t always possible. The type of GSettings are
-        restricted to the type GVariant has. Some property types are out
-        of GVariant. For example, GtkFontDialogButton has “font-desc”
-        property and its type is PangoFontDescription.
-        PangoFontDescription is a C structure and it is wrapped in a
-        boxed type GValue to store in the property. GVariant doesn’t
-        support boxed type.</p>
-        <p>In that case, another function
-        <code>g_settings_bind_with_mapping</code> is used. It binds
-        GSettings GVariant value and object property via GValue with
-        mapping functions. See <a
-        href="https://docs.gtk.org/gio/method.Settings.bind_with_mapping.html">GIO
-        documentation</a> for further details.</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  tfe_window_append_page <span class="op">(</span>TFE_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="cf">return</span> win<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="op">}</span></span></code></pre></div>
+        <p>In the constructor, the instance is created using
+        <code>g_object_new()</code>, just like with TfeTextView. The
+        “application” property is set to the application instance here.
+        We also added code to open an empty page by default. This mimics
+        the behavior of many text editors that start with a blank
+        document.</p>
+        <h3 id="instance-methods">Instance Methods</h3>
+        <p>The only instance method is
+        <code>tfe_window_append_page()</code>. This is a slightly
+        modified version of the old
+        <code>notebook_page_new_with_file()</code> function, keeping the
+        same core logic.</p>
+        <h3 id="saveas-action-handler">Saveas Action Handler</h3>
         <div class="sourceCode" id="cb10"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>g_settings_bind_with_mapping <span class="op">(</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  GSettings<span class="op">*</span> settings<span class="op">,</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> gchar<span class="op">*</span> key<span class="op">,</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> object<span class="op">,</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> gchar<span class="op">*</span> property<span class="op">,</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  GSettingsBindFlags flags<span class="op">,</span> <span class="co">// G_SETTINGS_BIND_DEFAULT is commonly used</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  GSettingsBindGetMapping get_mapping<span class="op">,</span> <span class="co">// GSettings =&gt; property, See the example below</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  GSettingsBindSetMapping set_mapping<span class="op">,</span> <span class="co">// property =&gt; GSettings, See the example below</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  gpointer user_data<span class="op">,</span> <span class="co">// NULL if unnecessary</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  GDestroyNotify destroy <span class="co">//NULL if unnecessary</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
-        <p>The mapping functions are defined like these:</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>saveas_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>  TfeWindow <span class="op">*</span>win <span class="op">=</span> TFE_WINDOW <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  GtkWidget <span class="op">*</span>scr<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  GtkWidget <span class="op">*</span>tv<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a>  GtkFileDialog <span class="op">*</span>dialog<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  GtkAlertDialog <span class="op">*</span>alert_dialog<span class="op">;</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  i <span class="op">=</span> gtk_notebook_get_current_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">);</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>  <span class="cf">if</span> <span class="op">(</span>i <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>    alert_dialog <span class="op">=</span> gtk_alert_dialog_new <span class="op">(</span><span class="st">&quot;No page to save.&quot;</span><span class="op">);</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a>    gtk_alert_dialog_show <span class="op">(</span>alert_dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a>    g_object_unref <span class="op">(</span>alert_dialog<span class="op">);</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  <span class="op">}</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a></span>
+<span id="cb10-19"><a href="#cb10-19"></a>  scr <span class="op">=</span> gtk_notebook_get_nth_page <span class="op">(</span>win<span class="op">-&gt;</span>nb<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a>  tv <span class="op">=</span> gtk_scrolled_window_get_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">));</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a></span>
+<span id="cb10-22"><a href="#cb10-22"></a>  dialog <span class="op">=</span> gtk_file_dialog_new <span class="op">();</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a>  gtk_file_dialog_save <span class="op">(</span>dialog<span class="op">,</span> GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">,</span> save_dialog_cb<span class="op">,</span> tv<span class="op">);</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a>  g_object_unref <span class="op">(</span>dialog<span class="op">);</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="op">}</span></span></code></pre></div>
+        <p>This handler is very similar to the Save action handler
+        (<code>save_activated()</code>). The main difference is that it
+        always opens a file dialog before saving. Since the code
+        overlaps significantly with the Save handler, we’ll skip a
+        detailed explanation here.</p>
+        <h2 id="the-c-file-of-tfeapplication">The C File of
+        TfeApplication</h2>
+        <p>With TfeWindow covered, let’s go over the remaining changes
+        in TfeApplication.</p>
+        <h3 id="function-to-get-the-window">Function to Get the
+        Window</h3>
+        <p>Both the “activate” and “open” handlers need to get a
+        reference to the main window first. This logic was extracted
+        into a separate <code>get_main_window()</code> function. Since
+        window initialization is now handled by TfeWindow, this function
+        has become much simpler.</p>
         <div class="sourceCode" id="cb11"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gboolean</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">(*</span> GSettingsBindGetMapping<span class="op">)</span> <span class="op">(</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  GValue<span class="op">*</span> value<span class="op">,</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  GVariant<span class="op">*</span> variant<span class="op">,</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>GVariant<span class="op">*</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="op">(*</span> GSettingsBindSetMapping<span class="op">)</span> <span class="op">(</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
-        <p>The following codes are extracted from
-        <code>tfepref.c</code>.</p>
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> GtkWidget <span class="op">*</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>get_main_window <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>  GList <span class="op">*</span>windows <span class="op">=</span> gtk_application_get_windows <span class="op">(</span>GTK_APPLICATION <span class="op">(</span>application<span class="op">));</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="cf">if</span> <span class="op">(</span>windows<span class="op">)</span></span>
+<span id="cb11-7"><a href="#cb11-7"></a>    win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>windows<span class="op">-&gt;</span>data<span class="op">);</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  <span class="cf">else</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>    win <span class="op">=</span> tfe_window_new<span class="op">(</span>GTK_APPLICATION <span class="op">(</span>application<span class="op">));</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>  <span class="cf">return</span> win<span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="op">}</span></span></code></pre></div>
+        <p>If the application already has a window (i.e., the list of
+        top windows is not empty), it retrieves it; otherwise, it
+        creates a new one. Notice that we don’t need to explicitly link
+        the window to the application here using
+        <code>gtk_window_set_application()</code>. This is because the
+        application is already passed to the “application” property when
+        <code>tfe_window_new()</code> is called, which establishes the
+        connection.</p>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>tfe_window_new <span class="op">(</span>GtkApplication <span class="op">*</span>app<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a>  win <span class="op">=</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_WINDOW<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> app<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  tfe_window_append_page <span class="op">(</span>TFE_WINDOW <span class="op">(</span>win<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="cf">return</span> win<span class="op">;</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="op">}</span></span></code></pre></div>
+        <h3 id="activate-and-open-functions">Activate and Open
+        Functions</h3>
+        <p>By moving some logic to <code>get_main_window()</code>, these
+        handlers are now shorter as well.</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a></span>
+<span id="cb13-5"><a href="#cb13-5"></a>  win <span class="op">=</span> get_main_window <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="op">}</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a>app_open <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">,</span> GFile <span class="op">**</span> files<span class="op">,</span> gint n_files<span class="op">,</span> <span class="dt">const</span> gchar <span class="op">*</span>hint<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>  GtkWidget <span class="op">*</span>win<span class="op">;</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a>  <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a></span>
+<span id="cb13-14"><a href="#cb13-14"></a>  win <span class="op">=</span> get_main_window <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a>  <span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n_files<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb13-16"><a href="#cb13-16"></a>    tfe_window_append_page <span class="op">(</span>TFE_WINDOW <span class="op">(</span>win<span class="op">),</span> files<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a>  <span class="op">}</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb13-19"><a href="#cb13-19"></a><span class="op">}</span></span></code></pre></div>
+        <p>You may notice that chaining up is omitted at the beginning
+        of both <code>app_activate ()</code> and
+        <code>app_open ()</code>.</p>
+        <p>To understand why, let’s look at what GApplication’s default
+        implementation of “activate” handler actually does. The source
+        code of <code>g_application_real_activate ()</code>
+        (GApplication’s “activate” handler) in GLib shows that it only
+        checks whether any handler is connected.</p>
         <ul>
-        <li>15-21: This function <code>tfe_pref_init</code> initializes
-        the new TfePref instance.</li>
-        <li>18: Creates a new GSettings instance. The id is
-        “com.github.ToshioCP.tfe”.</li>
-        <li>19-20: Binds the GSettings “font-desc” and the
-        GtkFontDialogButton property “font-desc”. The mapping functions
-        are <code>get_mapping</code> and <code>set_mapping</code>.</li>
-        <li>1-7: The mapping function from GSettings to the property.
-        The first argument <code>value</code> is a GValue to be stored
-        in the property. The second argument <code>variant</code> is a
-        GVariant structure that comes from the GSettings value.</li>
-        <li>3: Retrieves a string from the GVariant structure.</li>
-        <li>4: Build a PangoFontDescription structure from the string
-        and assigns its address to <code>font_desc</code>.</li>
-        <li>5: Puts <code>font_desc</code> into the GValue
-        <code>value</code>. The ownership of <code>font_desc</code>
-        moves to <code>value</code>.</li>
-        <li>6: Returns TRUE that means the mapping succeeds.</li>
-        <li>9-13: The mapping function from the property to GSettings.
-        The first argument <code>value</code> holds the property data.
-        The second argument <code>expected_type</code> is the type of
-        GVariant that the GSettings value has. It isn’t used in this
-        function.</li>
-        <li>11: Gets the PangoFontDescription structure from
-        <code>value</code> and converts it to string.</li>
-        <li>12: The string is inserted to a GVariant structure. The
-        ownership of the string <code>font_desc_string</code> moves to
-        the returned value.</li>
+        <li>Handlers are implemented using
+        <code>g_signal_connect</code>.</li>
+        <li>Subclasses implement handlers by overriding methods.</li>
         </ul>
-        <h2 id="c-file">C File</h2>
-        <p>The following is the full codes of <code>tfepref.c</code></p>
-        <h2 id="test-program">Test Program</h2>
-        <p>There’s a test program located at <code>src/tfe6/test</code>
-        directory.</p>
-        <p>This program sets its active window to TfePref instance,
-        which is a child object of GtkWindow.</p>
-        <p>It sets the “changed::font-desc” signal handler in the
-        startup function. The process from the user’s font selection to
-        the handler is:</p>
-        <ul>
-        <li>The user clicked on the GtkFontDialogButton and
-        GtkFontDialog appears.</li>
-        <li>He/she selects a new font.</li>
-        <li>The “font-desc” property of the GtkFontDialogButton instance
-        is changed.</li>
-        <li>The value of “font-desc” key on the GSettings database is
-        changed since it is bound to the property.</li>
-        <li>The “changed::font-desc” signal on the GSettings instance is
-        emitted.</li>
-        <li>The handler is called.</li>
-        </ul>
-        <p>The program building is divided into four steps.</p>
-        <ul>
-        <li>Compile the schema file</li>
-        <li>Compile the XML file to a resource (C source file)</li>
-        <li>Compile the C files</li>
-        <li>Run the executable file</li>
-        </ul>
-        <p>Commands are shown in the next four sub-subsections. You
-        don’t need to try them. The final sub-subsection shows the
-        meson-ninja way, which is the easiest.</p>
-        <h3 id="compile-the-schema-file">Compile the Schema File</h3>
-        <pre><code>$ cd src/tef6/test
-$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
-$ glib-compile-schemas .</code></pre>
-        <p>Be careful. The commands <code>glib-compile-schemas</code>
-        has an argument “.”, which means the current directory. This
-        results in creating <code>gschemas.compiled</code> file.</p>
-        <h3 id="compile-the-xml-file">Compile the XML File</h3>
-        <pre><code>$ glib-compile-resources --sourcedir=.. --generate-source --target=resource.c ../tfe.gresource.xml</code></pre>
-        <h3 id="compile-the-c-file">Compile the C File</h3>
-        <pre><code>$ gcc `pkg-config --cflags gtk4` test_pref.c ../tfepref.c resource.c `pkg-config --libs gtk4`</code></pre>
-        <h3 id="run-the-executable-file">Run the Executable File</h3>
-        <pre><code>$ GSETTINGS_SCHEMA_DIR=. ./a.out
-
-Jamrul Italic Semi-Expanded 12 # &lt;= select Jamrul Italic 12
-Monospace 12 #&lt;= select Monospace Regular 12</code></pre>
-        <h3 id="meson-ninja-way">Meson-Ninja Way</h3>
-        <p>Meson wraps up the commands above. Create the following text
-        and save it to <code>meson.build</code>.</p>
-        <p>Note: Gtk4-tutorial repository has meson.build file that
-        defines several tests. So you can try it instead of the
-        following text.</p>
-        <pre><code>project(&#39;tfe_pref_test&#39;, &#39;c&#39;)
-
-gtkdep = dependency(&#39;gtk4&#39;)
-
-gnome=import(&#39;gnome&#39;)
-resources = gnome.compile_resources(&#39;resources&#39;,&#39;../tfe.gresource.xml&#39;, source_dir: &#39;..&#39;)
-gnome.compile_schemas(build_by_default: true, depend_files: &#39;com.github.ToshioCP.tfe.gschema.xml&#39;)
-
-executable(&#39;test_pref&#39;, [&#39;test_pref.c&#39;, &#39;../tfepref.c&#39;], resources, dependencies: gtkdep, export_dynamic: true, install: false)</code></pre>
-        <ul>
-        <li>Project name is ‘tfe_pref_test’ and it is written in C
-        language.</li>
-        <li>It depends on GTK4 library.</li>
-        <li>It uses GNOME module. Modules are prepared by Meson.</li>
-        <li>GNOME module has <code>compile_resources</code> method. When
-        you call this method, you need the prefix “gnome.”.
-        <ul>
-        <li>The target filename is resources.</li>
-        <li>The definition XML file is ‘../tfe.gresource.xml’.</li>
-        <li>The source dir is ‘..’. All the UI files are located
-        there.</li>
-        </ul></li>
-        <li>GNOME module has <code>compile_schemas</code> method. It
-        compiles the schema file ‘com.github.ToshioCP.tfe.gschema.xml’.
-        You need to copy ‘../com.github.ToshioCP.tfe.gschema.xml’ to the
-        current directory in advance.</li>
-        <li>It creates an executable file ‘test_pref’. The source files
-        are ‘test_pref.c’, ‘../tfepref.c’ and <code>resources</code>,
-        which is made by <code>gnome.compile_resources</code>. It
-        depends on <code>gtkdep</code>, which is GTK4 library. The
-        symbols are exported and no installation support.</li>
-        </ul>
-        <p>Type like this to build and test the program.</p>
-        <pre><code>$ cd src/tef6/test
-$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
-$ meson setup _build
+        <p>And if not, it emits a warning.</p>
+        <p>In other words, GApplication itself provides no meaningful
+        implementation for “activate” or “open” handler. It simply
+        requires that the application developer implement them, either
+        externally with <code>g_signal_connect ()</code> or internally
+        by overriding the virtual function in a subclass. This design is
+        analogous to a pure virtual function in C++: the base class
+        declares the interface but intentionally leaves the
+        implementation to the derived class.</p>
+        <p>Since the default implementation is effectively empty,
+        chaining up would execute no meaningful code. For this reason,
+        we chose to omit chaining up in these specific functions.</p>
+        <p>However, chaining up is not always optional. The necessity
+        and timing depend on the parent class’s implementation. For
+        instance, chaining up is required for “startup” handler and must
+        be done at the beginning of the override. It is also required
+        for “dispose” handler, but must be done at the end. When
+        overriding virtual functions, always check the documentation or
+        source code to determine whether chaining up is necessary.</p>
+        <h2 id="compilation-and-execution">Compilation and
+        Execution</h2>
+        <p>All the files are located in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe7/">src/tfe7</a>
+        directory. Navigate to this directory in your terminal and run
+        the following commands to compile and start the application:</p>
+        <pre><code>$ meson setup _build
 $ ninja -C _build
-$ GSETTINGS_SCHEMA_DIR=_build _build/test_pref</code></pre>
-        <p>A window appears and you can choose a font via GtkFontDialog.
-        If you select a new font, the font string is output through the
-        standard output.</p>
+$ _build/tfe</code></pre>
+        <p>As noted earlier, menus does not work correctly in WSL
+        (Windows Subsystem for Linux). They will work as expected on a
+        native Linux environment.</p>
       </div>
     </div>
   </main>

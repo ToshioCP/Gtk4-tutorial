@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>Custom Drawing</title>
+  <title>GtkFontDialogButton and Gsettings</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -93,368 +93,591 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        <h1 id="custom-drawing">Custom Drawing</h1>
-        <p>Custom drawing is to draw shapes dynamically. This section
-        shows an example of custom drawing. You can draw rectangles by
-        dragging the mouse.</p>
-        <p>Press down the button.</p>
+        <h1 id="gtkfontdialogbutton-and-gsettings">GtkFontDialogButton
+        and Gsettings</h1>
+        <h2 id="the-preference-dialog">The Preference Dialog</h2>
+        <p>If the user clicks on the preference menu, a preference
+        dialog appears.</p>
         <figure>
-        <img src="/images/cd0.png" alt="Press down the button" />
-        <figcaption aria-hidden="true">Press down the
-        button</figcaption>
+        <img src="/images/pref_dialog.png" alt="Preference dialog" />
+        <figcaption aria-hidden="true">Preference dialog</figcaption>
         </figure>
-        <p>Move the mouse.</p>
+        <p>It has only one button, which is a GtkFontDialogButton
+        widget. You can add more widgets on the dialog but this simple
+        dialog isn’t so bad for the first example program.</p>
+        <p>If the button is clicked, a GtkFontDialog appears like
+        this.</p>
         <figure>
-        <img src="/images/cd1.png" alt="Move the mouse" />
-        <figcaption aria-hidden="true">Move the mouse</figcaption>
+        <img src="/images/fontdialog.png" alt="Font dialog" />
+        <figcaption aria-hidden="true">Font dialog</figcaption>
         </figure>
-        <p>Release the button.</p>
-        <figure>
-        <img src="/images/cd2.png" alt="Release the button" />
-        <figcaption aria-hidden="true">Release the button</figcaption>
-        </figure>
-        <p>The programs are at <code>src/custom_drawing</code>
-        directory. Download the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>
-        and see the directory. There are four files.</p>
+        <p>If the user chooses a font and clicks on the select button,
+        the font is changed.</p>
+        <p>GtkFontDialogButton and GtkFontDialog are available since GTK
+        version 4.10. They replace GtkFontButton and
+        GtkFontChooserDialog, which are deprecated since 4.10.</p>
+        <h2 id="composite-widget">Composite Widget</h2>
+        <p>The preference dialog has GtkBox, GtkLabel and GtkFontButton
+        in it and is defined as a composite widget. The following is the
+        template UI file for <code>TfePref</code>.</p>
         <ul>
-        <li>meson.build</li>
-        <li>rect.c</li>
-        <li>rect.gresource.xml</li>
-        <li>rect.ui</li>
+        <li>Template tag specifies a composite widget. The class
+        attribute specifies the class name, which is “TfePref”. The
+        parent attribute is <code>GtkWindow</code>. Therefore,
+        <code>TfePref</code> is a child class of <code>GtkWindow</code>.
+        A parent attribute is optional but it is recommended to write it
+        explicitly. You can make TfePref as a child of
+        <code>GtkDialog</code>, but <code>GtkDialog</code> is deprecated
+        since version 4.10.</li>
+        <li>There are three properties, title, resizable and modal.</li>
+        <li>TfePref has a child widget GtkBox which is horizontal. The
+        box has two children GtkLabel and GtkFontDialogButton.</li>
         </ul>
-        <h2 id="rect.gresource.xml">rect.gresource.xml</h2>
-        <p>This file describes a UI file to compile. The compiler
-        glib-compile-resources uses it.</p>
+        <h2 id="the-header-file">The Header File</h2>
+        <p>The file <code>tfepref.h</code> defines types and declares a
+        public function.</p>
+        <ul>
+        <li>5: Defines the type <code>TFE_TYPE_PREF</code>, which is a
+        macro replaced by <code>tfe_pref_get_type ()</code>.</li>
+        <li>6: The macro <code>G_DECLARE_FINAL_TYPE</code> expands to:
+        <ul>
+        <li>The function <code>tfe_pref_get_type ()</code> is
+        declared.</li>
+        <li>TfePref type is defined as a typedef of
+        <code>struct _TfePref</code>.</li>
+        <li>TfePrefClass type is defined as a typedef of
+        <code>struct {GtkWindowClass *parent;}</code>.</li>
+        <li>Two functions <code>TFE_PREF ()</code> and
+        <code>TFE_IS_PREF ()</code> are defined.</li>
+        </ul></li>
+        <li>8-9:The function <code>tfe_pref_new</code> is declared. It
+        creates a new TfePref instance.</li>
+        </ul>
+        <h2 id="the-c-file-for-the-composite-widget">The C File for the
+        Composite Widget</h2>
+        <p>The following codes are extracted from the file
+        <code>tfepref.c</code>.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/rect&quot;</span>&gt;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">file</span>&gt;rect.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
-<span id="cb1-6"><a href="#cb1-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
-        <p>The prefix is <code>/com/github/ToshioCP/rect</code> and the
-        file is <code>rect.ui</code>. Therefore, GtkBuilder reads the
-        resource from
-        <code>/com/github/ToshioCP/rect/rect.ui</code>.</p>
-        <h2 id="rect.ui">rect.ui</h2>
-        <p>The following is the UI file that defines the widgets. There
-        are two widgets which are GtkApplicationWindow and
-        GtkDrawingArea. The ids are <code>win</code> and <code>da</code>
-        respectively.</p>
-        <div class="sourceCode" id="cb2"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
-<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;800&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-5"><a href="#cb2-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-6"><a href="#cb2-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-7"><a href="#cb2-7"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Custom drawing&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-8"><a href="#cb2-8"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-9"><a href="#cb2-9"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDrawingArea&quot;</span><span class="ot"> id=</span><span class="st">&quot;da&quot;</span>&gt;</span>
-<span id="cb2-10"><a href="#cb2-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-11"><a href="#cb2-11"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-12"><a href="#cb2-12"></a>      &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb2-13"><a href="#cb2-13"></a>    &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb2-14"><a href="#cb2-14"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb2-15"><a href="#cb2-15"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
-        <h2 id="rect.c">rect.c</h2>
-        <h3 id="gtkapplication">GtkApplication</h3>
-        <p>This program uses GtkApplication. The application ID is
-        <code>com.github.ToshioCP.rect</code>.</p>
-        <div class="sourceCode" id="cb3"><pre
-        class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.rect&quot;</span></span></code></pre></div>
-        <p>See <a
-        href="https://developer.gnome.org/documentation/tutorials/application-id.html">GNOME
-        Developer Documentation</a> for further information.</p>
-        <p>The function <code>main</code> is called at the beginning of
-        the application.</p>
-        <div class="sourceCode" id="cb4"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">int</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb4-12"><a href="#cb4-12"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="op">}</span></span></code></pre></div>
-        <p>It connects three signals and handlers.</p>
+        class="sourceCode C"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> _TfePref</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  GtkWindow parent<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  GtkFontDialogButton <span class="op">*</span>font_dialog_btn<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">),</span> TFE_TYPE_PREF<span class="op">);</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe/tfepref.ui&quot;</span><span class="op">);</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> font_dialog_btn<span class="op">);</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>tfe_pref_new <span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <ul>
-        <li>startup: It is emitted after the application is registered
-        to the system.</li>
-        <li>activate: It is emitted when the application is
-        activated.</li>
-        <li>shutdown: It is emitted just before the application
-        quits.</li>
-        </ul>
-        <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-3"><a href="#cb5-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>  GtkDrawingArea <span class="op">*</span>da<span class="op">;</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>  GtkGesture <span class="op">*</span>drag<span class="op">;</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a></span>
-<span id="cb5-9"><a href="#cb5-9"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/rect/rect.ui&quot;</span><span class="op">);</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a>  win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  da <span class="op">=</span> GTK_DRAWING_AREA <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;da&quot;</span><span class="op">));</span></span>
-<span id="cb5-12"><a href="#cb5-12"></a>  gtk_window_set_application <span class="op">(</span>win<span class="op">,</span> app<span class="op">);</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>da<span class="op">,</span> draw_cb<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  g_signal_connect_after <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a></span>
-<span id="cb5-18"><a href="#cb5-18"></a>  drag <span class="op">=</span> gtk_gesture_drag_new <span class="op">();</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a>  gtk_gesture_single_set_button <span class="op">(</span>GTK_GESTURE_SINGLE <span class="op">(</span>drag<span class="op">),</span> GDK_BUTTON_PRIMARY<span class="op">);</span></span>
-<span id="cb5-20"><a href="#cb5-20"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
-<span id="cb5-21"><a href="#cb5-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-22"><a href="#cb5-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
-<span id="cb5-23"><a href="#cb5-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
-<span id="cb5-24"><a href="#cb5-24"></a><span class="op">}</span></span></code></pre></div>
-        <p>The startup handler performs the following three tasks:</p>
+        <li>The structure <code>_TfePref</code> has
+        <code>font_dialog_btn</code> member. It points to the
+        GtkFontDialogButton object specified in the XML file
+        “tfepref.ui”. The member name <code>font_dialog_btn</code> must
+        be the same as the GtkFontDialogButton id attribute in the XML
+        file.</li>
+        <li><code>G_DEFINE_FINAL_TYPE</code> macro expands to:
         <ul>
-        <li>Builds the widgets.</li>
-        <li>Initializes the GtkDrawingArea instance.
-        <ul>
-        <li>Sets the drawing function</li>
-        <li>Connects the “resize” signal and the handler.</li>
+        <li>The declaration of the functions <code>tfe_pref_init</code>
+        and <code>tfe_pref_class_init</code>. They are defined in the
+        following part of the program.</li>
+        <li>The definition of the variable
+        <code>tfe_pref_parent_class</code>.</li>
+        <li>The definition of the function
+        <code>tfe_pref_get_type</code>.</li>
         </ul></li>
-        <li>Creates the GtkGestureDrag instance and initializes it.
-        Gestures will be explained in this section later.</li>
+        <li>The function <code>tfe_pref_class_init</code> initializes
+        the TfePref class. The function
+        <code>gtk_widget_class_set_template_from_resource</code>
+        initializes the composite widget template from the XML resource.
+        The function <code>gtk_widget_class_bind_template_child</code>
+        connects the TfePref structure member
+        <code>font_dialog_btn</code> and the GtkFontDialogButton in the
+        XML. The member name and the id attribute value must be the
+        same.</li>
+        <li>The function <code>tfe_pref_init</code> initializes a newly
+        created instance. The function
+        <code>gtk_widget_init_template</code> creates and initializes
+        child widgets.</li>
+        <li>The function <code>tfe_pref_dispose</code> releases objects.
+        The function <code>gtk_widget_dispose_template</code> releases
+        child widgets.</li>
         </ul>
-        <div class="sourceCode" id="cb6"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a>  win <span class="op">=</span> gtk_application_get_active_window <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>  gtk_window_present <span class="op">(</span>win<span class="op">);</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="op">}</span></span></code></pre></div>
-        <p>The activate handler just shows the window.</p>
-        <h3 id="gtkdrawingarea">GtkDrawingArea</h3>
-        <p>The program has two cairo surfaces and they are pointed to by
-        the global variables.</p>
-        <div class="sourceCode" id="cb7"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_surface_t <span class="op">*</span>surface_save <span class="op">=</span> NULL<span class="op">;</span></span></code></pre></div>
-        <p>The drawing process is as follows.</p>
+        <h2 id="gtkfontdialogbutton-and-pango">GtkFontDialogButton and
+        Pango</h2>
+        <p>If the GtkFontDialogButton button is clicked, the
+        GtkFontDialog dialog appears. A user can choose a font on the
+        dialog. If the user clicks on the “select” button, the dialog
+        disappears. And the font information is given to the
+        GtkFontDialogButton instance. The font data is retrieved with
+        the method <code>gtk_font_dialog_button_get_font_desc</code>. It
+        returns a pointer to the PangoFontDescription structure.</p>
+        <p>Pango is a text layout engine. The <a
+        href="https://docs.gtk.org/Pango/index.html">documentation</a>
+        is on the internet.</p>
+        <p>PangoFontDescription is a C structure and it isn’t allowed to
+        be accessed directly. The document is <a
+        href="https://docs.gtk.org/Pango/struct.FontDescription.html">here</a>.
+        If you want to retrieve the font information, there are several
+        functions.</p>
         <ul>
-        <li>Creates an image on <code>surface</code>.</li>
-        <li>Copies <code>surface</code> to the cairo surface of the
-        GtkDrawingArea.</li>
-        <li>Calls <code>gtk_widget_queue_draw (da)</code> to draw it if
-        necessary.</li>
+        <li><code>pango_font_description_to_string</code> returns a
+        string like “Jamrul Bold Italic Semi-Expanded 12”.</li>
+        <li><code>pango_font_description_get_family</code> returns a
+        font family like “Jamrul”.</li>
+        <li><code>pango_font_description_get_weight</code> returns a
+        PangoWeight constant like <code>PANGO_WEIGHT_BOLD</code>.</li>
+        <li><code>pango_font_description_get_style</code> returns a
+        PangoStyle constant like <code>PANGO_STYLE_ITALIC</code>.</li>
+        <li><code>pango_font_description_get_stretch</code> returns a
+        PangoStretch constant like
+        <code>PANGO_STRETCH_SEMI_EXPANDED</code>.</li>
+        <li><code>pango_font_description_get_size</code> returns an
+        integer like <code>12</code>. Its unit is points or pixels
+        (device units). The function
+        <code>pango_font_description_get_size_is_absolute</code> returns
+        TRUE if the unit is an absolute device unit. Otherwise the unit
+        is point.</li>
         </ul>
-        <p>They are created in the “resize” signal handler.</p>
-        <div class="sourceCode" id="cb8"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>resize_cb <span class="op">(</span>GtkWidget <span class="op">*</span>widget<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>  surface_save <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a>  <span class="co">/* Paint the surface white. It is the background color. */</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a><span class="op">}</span></span></code></pre></div>
-        <p>This callback is called when the GtkDrawingArea is shown.
-        This is called only once since the window is not resizable.</p>
-        <p>It creates image surfaces for <code>surface</code> and
-        <code>surface_save</code>. The <code>surface</code> surface is
-        painted white, which is the background color.</p>
-        <p>The drawing function copies <code>surface</code> to the
-        GtkDrawingArea surface.</p>
+        <h2 id="gsettings">GSettings</h2>
+        <p>We want to maintain the font data after the application
+        quits. There are some ways to implement.</p>
+        <ul>
+        <li>Make a configuration file. For example, a text file
+        “~/.config/tfe/font_desc.cfg” keeps font information.</li>
+        <li>Use GSettings object. The basic idea of GSettings are
+        similar to configuration file. Configuration information data is
+        put into a database file.</li>
+        </ul>
+        <p>GSettings is simple and easy to use but a bit hard to
+        understand the concept. This subsection describes the concept
+        first and then how to program it.</p>
+        <h3 id="gsettings-schema">GSettings Schema</h3>
+        <p>GSettings schema describes a set of keys, value types and
+        some other information. GSettings object uses this schema and it
+        writes/reads the value of a key to/from the right place in the
+        database.</p>
+        <ul>
+        <li>A schema has an id. The id must be unique. We often use the
+        same string as application id, but schema id and application id
+        are different. You can use different name from application id.
+        Schema id is a string delimited by periods. For example,
+        “com.github.ToshioCP.tfe” is a correct schema id.</li>
+        <li>A schema usually has a path. The path is a location in the
+        database. Each key is stored under the path. For example, if a
+        key <code>font-desc</code> is defined with a path
+        <code>/com/github/ToshioCP/tfe/</code>, the key’s location in
+        the database is <code>/com/github/ToshioCP/tfe/font-desc</code>.
+        A path is a string begins with and ends with a slash
+        (<code>/</code>). And it is delimited by slashes.</li>
+        <li>GSettings save information as key-value style. A key is a
+        string that begins with a lower case character followed by lower
+        case letters, digits or dashes (<code>-</code>) and ends with a
+        lower case letter or digit. No consecutive dashes are allowed.
+        Values can be any type. GSettings stores values as GVariant
+        type, which can be, for example, integer, double, boolean,
+        string or complex types like an array. The type of values needs
+        to be defined in the schema.</li>
+        <li>A default value needs to be set for each key.</li>
+        <li>A summary and description can be set for each key
+        optionally.</li>
+        </ul>
+        <p>Schemas are described in an XML format. For example,</p>
+        <ul>
+        <li>4: The type attribute is “s”. It is GVariant type string.
+        For GVariant type string, see <a
+        href="https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings">GLib
+        API Reference – GVariant Type Strings</a>. Other common types
+        are:
+        <ul>
+        <li>“b”: gboolean</li>
+        <li>“i”: gint32.</li>
+        <li>“d”: double.</li>
+        </ul></li>
+        </ul>
+        <p>Further information is in:</p>
+        <ul>
+        <li><a
+        href="https://docs.gtk.org/glib/gvariant-format-strings.html">GLib
+        API Reference – GVariant Format Strings</a></li>
+        <li><a
+        href="https://docs.gtk.org/glib/gvariant-text-format.html">GLib
+        API Reference – GVariant Text Format</a></li>
+        <li><a href="https://docs.gtk.org/glib/struct.Variant.html">GLib
+        API Reference – GVariant</a></li>
+        <li><a
+        href="https://docs.gtk.org/glib/struct.VariantType.html">GLib
+        API Reference – VariantType</a></li>
+        </ul>
+        <h3 id="gsettings-command">Gsettings Command</h3>
+        <p>First, let’s try <code>gsettings</code> application. It is a
+        configuration tool for GSettings.</p>
+        <pre><code>$ gsettings help
+Usage:
+  gsettings --version
+  gsettings [--schemadir SCHEMADIR] COMMAND [ARGS?]
+
+Commands:
+  help                      Show this information
+  list-schemas              List installed schemas
+  list-relocatable-schemas  List relocatable schemas
+  list-keys                 List keys in a schema
+  list-children             List children of a schema
+  list-recursively          List keys and values, recursively
+  range                     Queries the range of a key
+  describe                  Queries the description of a key
+  get                       Get the value of a key
+  set                       Set the value of a key
+  reset                     Reset the value of a key
+  reset-recursively         Reset all values in a given schema
+  writable                  Check if a key is writable
+  monitor                   Watch for changes
+
+Use &quot;gsettings help COMMAND&quot; to get detailed help.</code></pre>
+        <p>List schemas.</p>
+        <pre><code>$ gsettings list-schemas
+org.gnome.rhythmbox.podcast
+ca.desrt.dconf-editor.Demo.Empty
+org.gnome.gedit.preferences.ui
+org.gnome.evolution-data-server.calendar
+org.gnome.rhythmbox.plugins.generic-player
+
+... ...
+</code></pre>
+        <p>Each line is an id of a schema. Each schema has a key-value
+        configuration data. You can see them with list-recursively
+        command. Let’s look at the keys and values of
+        <code>org.gnome.calculator</code> schema.</p>
+        <pre><code>$ gsettings list-recursively org.gnome.calculator
+org.gnome.calculator accuracy 9
+org.gnome.calculator angle-units &#39;degrees&#39;
+org.gnome.calculator base 10
+org.gnome.calculator button-mode &#39;basic&#39;
+org.gnome.calculator number-format &#39;automatic&#39;
+org.gnome.calculator precision 2000
+org.gnome.calculator refresh-interval 604800
+org.gnome.calculator show-thousands false
+org.gnome.calculator show-zeroes false
+org.gnome.calculator source-currency &#39;&#39;
+org.gnome.calculator source-units &#39;degree&#39;
+org.gnome.calculator target-currency &#39;&#39;
+org.gnome.calculator target-units &#39;radian&#39;
+org.gnome.calculator window-position (-1, -1)
+org.gnome.calculator word-size 64</code></pre>
+        <p>This schema is used by GNOME Calculator. Run the calculator
+        and change the mode, then check the schema again.</p>
+        <pre><code>$ gnome-calculator</code></pre>
+        <figure>
+        <img src="/images/gnome_calculator_basic.png"
+        alt="gnome-calculator basic mode" />
+        <figcaption aria-hidden="true">gnome-calculator basic
+        mode</figcaption>
+        </figure>
+        <p>Change the mode to advanced and quit.</p>
+        <figure>
+        <img src="/images/gnome_calculator_advanced.png"
+        alt="gnome-calculator advanced mode" />
+        <figcaption aria-hidden="true">gnome-calculator advanced
+        mode</figcaption>
+        </figure>
+        <p>Run gsettings and check the value of
+        <code>button-mode</code>.</p>
+        <pre><code>$ gsettings list-recursively org.gnome.calculator
+
+... ...
+
+org.gnome.calculator button-mode &#39;advanced&#39;
+
+... ...
+</code></pre>
+        <p>Now we know that GNOME Calculator used gsettings and it has
+        set <code>button-mode</code> key to “advanced”. The value
+        remains even the calculator quits. So when the calculator runs
+        again, it will appear as an advanced mode.</p>
+        <h3 id="glib-compile-schemas-utility">Glib-compile-schemas
+        Utility</h3>
+        <p>GSettings schemas are specified with an XML format. The XML
+        schema files must have the filename extension
+        <code>.gschema.xml</code>. The following is the XML schema file
+        for the application <code>tfe</code>.</p>
+        <p>The filename is “com.github.ToshioCP.tfe.gschema.xml”. Schema
+        XML filenames are usually the schema id followed by
+        “.gschema.xml” suffix. You can use different name from schema
+        id, but it is not recommended.</p>
+        <ul>
+        <li>2: The top level element is
+        <code>&lt;schemalist&gt;</code>.</li>
+        <li>3: schema tag has <code>path</code> and <code>id</code>
+        attributes. A path determines where the settings are stored in
+        the conceptual global tree of settings. An id identifies the
+        schema.</li>
+        <li>4: Key tag has two attributes. Name is the name of the key.
+        Type is the type of the value of the key and it is a GVariant
+        Format String.</li>
+        <li>5: default value of the key <code>font-desc</code> is
+        <code>Monospace 12</code>.</li>
+        <li>6: Summary and description elements describe the key. They
+        are optional, but it is recommended to add them in the XML
+        file.</li>
+        </ul>
+        <p>The XML file is compiled by glib-compile-schemas. When
+        compiling, <code>glib-compile-schemas</code> compiles all the
+        XML files which have “.gschema.xml” file extension in the
+        directory given as an argument. It converts the XML file into a
+        binary file <code>gschemas.compiled</code>. Suppose the XML file
+        above is under <code>tfe6</code> directory.</p>
+        <pre><code>$ glib-compile-schemas tfe6</code></pre>
+        <p>Then, <code>gschemas.compiled</code> is generated under
+        <code>tfe6</code>. When you test your application, set
+        <code>GSETTINGS_SCHEMA_DIR</code> environment variable so that
+        GSettings objet can find <code>gschemas.compiled</code>.</p>
+        <pre><code>$ GSETTINGS_SCHEMA_DIR=(the directory gschemas.compiled is located):$GSETTINGS_SCHEMA_DIR (your application name)</code></pre>
+        <p>GSettings object looks for this file by the following
+        process.</p>
+        <ul>
+        <li>It searches <code>glib-2.0/schemas</code> subdirectories of
+        all the directories specified in the environment variable
+        <code>XDG_DATA_DIRS</code>. Common directores are
+        <code>/usr/share/glib-2.0/schemas</code> and
+        <code>/usr/local/share/glib-2.0/schemas</code>.</li>
+        <li>If <code>$HOME/.local/share/glib-2.0/schemas</code> exists,
+        it is also searched.</li>
+        <li>If <code>GSETTINGS_SCHEMA_DIR</code> environment variable is
+        defined, it searches all the directories specified in the
+        variable. <code>GSETTINGS_SCHEMA_DIR</code> can specify multiple
+        directories delimited by colon (:).</li>
+        </ul>
+        <p>The directories above includes more than one
+        <code>.gschema.xml</code> file. Therefore, when you install your
+        application, follow the instruction below to install your
+        schemas.</p>
+        <ol type="1">
+        <li>Make <code>.gschema.xml</code> file.</li>
+        <li>Copy it to one of the directories above. For example,
+        <code>$HOME/.local/share/glib-2.0/schemas</code>.</li>
+        <li>Run <code>glib-compile-schemas</code> on the directory. It
+        compiles all the schema files in the directory and creates or
+        updates the database file <code>gschemas.compiled</code>.</li>
+        </ol>
+        <h3 id="gsettings-object-and-binding">GSettings Object and
+        Binding</h3>
+        <p>Now, we go on to the next topic, how to program
+        GSettings.</p>
+        <p>You need to compile your schema file in advance.</p>
+        <p>Suppose id, key, class name and a property name are:</p>
+        <ul>
+        <li>GSettings id: com.github.ToshioCP.sample</li>
+        <li>GSettings key: sample_key</li>
+        <li>The class name: Sample</li>
+        <li>The property to bind: sample_property</li>
+        </ul>
+        <p>The example below uses <code>g_settings_bind</code>. If you
+        use it, GSettings key and instance property must have the same
+        the type. In the example, it is assumed that the type of
+        “sample_key” and “sample_property” are the same.</p>
         <div class="sourceCode" id="cb9"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>draw_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>da<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>    cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> surface<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a>    cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a>  <span class="op">}</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="op">}</span></span></code></pre></div>
-        <p>This function is called by the system when it needs to redraw
-        the drawing area.</p>
-        <p>Two surfaces <code>surface</code> and
-        <code>surface_save</code> are destroyed before the application
-        quits.</p>
+        class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>GSettings <span class="op">*</span>settings<span class="op">;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Sample <span class="op">*</span>sample_object<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>settings <span class="op">=</span> g_settings_new <span class="op">(</span><span class="st">&quot;com.github.ToshioCP.sample&quot;</span><span class="op">);</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>sample_object <span class="op">=</span> sample_new <span class="op">();</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>g_settings_bind <span class="op">(</span>settings<span class="op">,</span> <span class="st">&quot;sample_key&quot;</span><span class="op">,</span> sample_object<span class="op">,</span> <span class="st">&quot;sample_property&quot;</span><span class="op">,</span> G_SETTINGS_BIND_DEFAULT<span class="op">);</span></span></code></pre></div>
+        <p>The function <code>g_settings_bind</code> binds the GSettings
+        value and the property of the instance. If the property value is
+        changed, the GSettings value is also changed, and vice versa.
+        The two values are always the same.</p>
+        <p>The function <code>g_settings_bind</code> is simple and easy
+        but it isn’t always possible. The type of GSettings are
+        restricted to the type GVariant has. Some property types are out
+        of GVariant. For example, GtkFontDialogButton has “font-desc”
+        property and its type is PangoFontDescription.
+        PangoFontDescription is a C structure and it is wrapped in a
+        boxed type GValue to store in the property. GVariant doesn’t
+        support boxed type.</p>
+        <p>In that case, another function
+        <code>g_settings_bind_with_mapping</code> is used. It binds
+        GSettings GVariant value and object property via GValue with
+        mapping functions. See <a
+        href="https://docs.gtk.org/gio/method.Settings.bind_with_mapping.html">GIO
+        documentation</a> for further details.</p>
         <div class="sourceCode" id="cb10"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="op">}</span></span></code></pre></div>
-        <h3 id="gtkgesturedrag">GtkGestureDrag</h3>
-        <p>Gesture class is used to recognize human gestures such as
-        click, drag, pan, swipe and so on. It is a subclass of
-        GtkEventController. GtkGesture class is abstract and there are
-        several implementations.</p>
+        class="sourceCode C"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>g_settings_bind_with_mapping <span class="op">(</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  GSettings<span class="op">*</span> settings<span class="op">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> gchar<span class="op">*</span> key<span class="op">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  GObject<span class="op">*</span> object<span class="op">,</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> gchar<span class="op">*</span> property<span class="op">,</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  GSettingsBindFlags flags<span class="op">,</span> <span class="co">// G_SETTINGS_BIND_DEFAULT is commonly used</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  GSettingsBindGetMapping get_mapping<span class="op">,</span> <span class="co">// GSettings =&gt; property, See the example below</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  GSettingsBindSetMapping set_mapping<span class="op">,</span> <span class="co">// property =&gt; GSettings, See the example below</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  gpointer user_data<span class="op">,</span> <span class="co">// NULL if unnecessary</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  GDestroyNotify destroy <span class="co">//NULL if unnecessary</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+        <p>The mapping functions are defined like these:</p>
+        <div class="sourceCode" id="cb11"><pre
+        class="sourceCode C"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gboolean</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">(*</span> GSettingsBindGetMapping<span class="op">)</span> <span class="op">(</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  GValue<span class="op">*</span> value<span class="op">,</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  GVariant<span class="op">*</span> variant<span class="op">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>GVariant<span class="op">*</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="op">(*</span> GSettingsBindSetMapping<span class="op">)</span> <span class="op">(</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GValue<span class="op">*</span> value<span class="op">,</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> GVariantType<span class="op">*</span> expected_type<span class="op">,</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  gpointer user_data</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
+        <p>The following codes are extracted from
+        <code>tfepref.c</code>.</p>
         <ul>
-        <li>GtkGestureClick</li>
-        <li>GtkGestureDrag</li>
-        <li>GtkGesturePan</li>
-        <li>GtkGestureSwipe</li>
-        <li>And others</li>
+        <li>15-21: This function <code>tfe_pref_init</code> initializes
+        the new TfePref instance.</li>
+        <li>18: Creates a new GSettings instance. The id is
+        “com.github.ToshioCP.tfe”.</li>
+        <li>19-20: Binds the GSettings “font-desc” and the
+        GtkFontDialogButton property “font-desc”. The mapping functions
+        are <code>get_mapping</code> and <code>set_mapping</code>.</li>
+        <li>1-7: The mapping function from GSettings to the property.
+        The first argument <code>value</code> is a GValue to be stored
+        in the property. The second argument <code>variant</code> is a
+        GVariant structure that comes from the GSettings value.</li>
+        <li>3: Retrieves a string from the GVariant structure.</li>
+        <li>4: Build a PangoFontDescription structure from the string
+        and assigns its address to <code>font_desc</code>.</li>
+        <li>5: Puts <code>font_desc</code> into the GValue
+        <code>value</code>. The ownership of <code>font_desc</code>
+        moves to <code>value</code>.</li>
+        <li>6: Returns TRUE that means the mapping succeeds.</li>
+        <li>9-13: The mapping function from the property to GSettings.
+        The first argument <code>value</code> holds the property data.
+        The second argument <code>expected_type</code> is the type of
+        GVariant that the GSettings value has. It isn’t used in this
+        function.</li>
+        <li>11: Gets the PangoFontDescription structure from
+        <code>value</code> and converts it to string.</li>
+        <li>12: The string is inserted to a GVariant structure. The
+        ownership of the string <code>font_desc_string</code> moves to
+        the returned value.</li>
         </ul>
-        <p>The program <code>rect.c</code> uses GtkGestureDrag. It is
-        the implementation for drag gestures. The parent-child
-        relationship is as follows.</p>
-        <pre><code>GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag</code></pre>
-        <p>GtkGestureSingle is a subclass of GtkGesture and optimized
-        for single-touch and mouse interactions.</p>
-        <p>A GtkGestureDrag instance is created and initialized in the
-        startup signal handler in <code>rect.c</code>. See line 18 to 23
-        in the following.</p>
-        <div class="sourceCode" id="cb12"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>app_startup <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a>  GtkBuilder <span class="op">*</span>build<span class="op">;</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a>  GtkWindow <span class="op">*</span>win<span class="op">;</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a>  GtkDrawingArea <span class="op">*</span>da<span class="op">;</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a>  GtkGesture <span class="op">*</span>drag<span class="op">;</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a></span>
-<span id="cb12-9"><a href="#cb12-9"></a>  build <span class="op">=</span> gtk_builder_new_from_resource <span class="op">(</span><span class="st">&quot;/com/github/ToshioCP/rect/rect.ui&quot;</span><span class="op">);</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a>  win <span class="op">=</span> GTK_WINDOW <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;win&quot;</span><span class="op">));</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a>  da <span class="op">=</span> GTK_DRAWING_AREA <span class="op">(</span>gtk_builder_get_object <span class="op">(</span>build<span class="op">,</span> <span class="st">&quot;da&quot;</span><span class="op">));</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a>  gtk_window_set_application <span class="op">(</span>win<span class="op">,</span> app<span class="op">);</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
-<span id="cb12-14"><a href="#cb12-14"></a></span>
-<span id="cb12-15"><a href="#cb12-15"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>da<span class="op">,</span> draw_cb<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb12-16"><a href="#cb12-16"></a>  g_signal_connect_after <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb12-17"><a href="#cb12-17"></a></span>
-<span id="cb12-18"><a href="#cb12-18"></a>  drag <span class="op">=</span> gtk_gesture_drag_new <span class="op">();</span></span>
-<span id="cb12-19"><a href="#cb12-19"></a>  gtk_gesture_single_set_button <span class="op">(</span>GTK_GESTURE_SINGLE <span class="op">(</span>drag<span class="op">),</span> GDK_BUTTON_PRIMARY<span class="op">);</span></span>
-<span id="cb12-20"><a href="#cb12-20"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
-<span id="cb12-21"><a href="#cb12-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb12-22"><a href="#cb12-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
-<span id="cb12-23"><a href="#cb12-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
-<span id="cb12-24"><a href="#cb12-24"></a><span class="op">}</span></span></code></pre></div>
+        <h2 id="c-file">C File</h2>
+        <p>The following is the full codes of <code>tfepref.c</code></p>
+        <h2 id="test-program">Test Program</h2>
+        <p>There’s a test program located at <code>src/tfe6/test</code>
+        directory.</p>
+        <p>This program sets its active window to TfePref instance,
+        which is a child object of GtkWindow.</p>
+        <p>It sets the “changed::font-desc” signal handler in the
+        startup function. The process from the user’s font selection to
+        the handler is:</p>
         <ul>
-        <li>The function <code>gtk_gesture_drag_new</code> creates a new
-        GtkGestureDrag instance.</li>
-        <li>The function <code>gtk_gesture_single_set_button</code> sets
-        the button number to listen to. The constant
-        <code>GDK_BUTTON_PRIMARY</code> is the left button of a
-        mouse.</li>
-        <li>The function <code>gtk_widget_add_controller</code> adds an
-        event controller, which is a base class for gestures.</li>
-        <li>Three signals and handlers are connected.
+        <li>The user clicked on the GtkFontDialogButton and
+        GtkFontDialog appears.</li>
+        <li>He/she selects a new font.</li>
+        <li>The “font-desc” property of the GtkFontDialogButton instance
+        is changed.</li>
+        <li>The value of “font-desc” key on the GSettings database is
+        changed since it is bound to the property.</li>
+        <li>The “changed::font-desc” signal on the GSettings instance is
+        emitted.</li>
+        <li>The handler is called.</li>
+        </ul>
+        <p>The program building is divided into four steps.</p>
         <ul>
-        <li>drag-begin: Emitted when dragging starts.</li>
-        <li>drag-update: Emitted when the dragging pointer moves.</li>
-        <li>drag-end: Emitted when the dragging ends.</li>
+        <li>Compile the schema file</li>
+        <li>Compile the XML file to a resource (C source file)</li>
+        <li>Compile the C files</li>
+        <li>Run the executable file</li>
+        </ul>
+        <p>Commands are shown in the next four sub-subsections. You
+        don’t need to try them. The final sub-subsection shows the
+        meson-ninja way, which is the easiest.</p>
+        <h3 id="compile-the-schema-file">Compile the Schema File</h3>
+        <pre><code>$ cd src/tef6/test
+$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
+$ glib-compile-schemas .</code></pre>
+        <p>Be careful. The commands <code>glib-compile-schemas</code>
+        has an argument “.”, which means the current directory. This
+        results in creating <code>gschemas.compiled</code> file.</p>
+        <h3 id="compile-the-xml-file">Compile the XML File</h3>
+        <pre><code>$ glib-compile-resources --sourcedir=.. --generate-source --target=resource.c ../tfe.gresource.xml</code></pre>
+        <h3 id="compile-the-c-file">Compile the C File</h3>
+        <pre><code>$ gcc `pkg-config --cflags gtk4` test_pref.c ../tfepref.c resource.c `pkg-config --libs gtk4`</code></pre>
+        <h3 id="run-the-executable-file">Run the Executable File</h3>
+        <pre><code>$ GSETTINGS_SCHEMA_DIR=. ./a.out
+
+Jamrul Italic Semi-Expanded 12 # &lt;= select Jamrul Italic 12
+Monospace 12 #&lt;= select Monospace Regular 12</code></pre>
+        <h3 id="meson-ninja-way">Meson-Ninja Way</h3>
+        <p>Meson wraps up the commands above. Create the following text
+        and save it to <code>meson.build</code>.</p>
+        <p>Note: Gtk4-tutorial repository has meson.build file that
+        defines several tests. So you can try it instead of the
+        following text.</p>
+        <pre><code>project(&#39;tfe_pref_test&#39;, &#39;c&#39;)
+
+gtkdep = dependency(&#39;gtk4&#39;)
+
+gnome=import(&#39;gnome&#39;)
+resources = gnome.compile_resources(&#39;resources&#39;,&#39;../tfe.gresource.xml&#39;, source_dir: &#39;..&#39;)
+gnome.compile_schemas(build_by_default: true, depend_files: &#39;com.github.ToshioCP.tfe.gschema.xml&#39;)
+
+executable(&#39;test_pref&#39;, [&#39;test_pref.c&#39;, &#39;../tfepref.c&#39;], resources, dependencies: gtkdep, export_dynamic: true, install: false)</code></pre>
+        <ul>
+        <li>Project name is ‘tfe_pref_test’ and it is written in C
+        language.</li>
+        <li>It depends on GTK4 library.</li>
+        <li>It uses GNOME module. Modules are prepared by Meson.</li>
+        <li>GNOME module has <code>compile_resources</code> method. When
+        you call this method, you need the prefix “gnome.”.
+        <ul>
+        <li>The target filename is resources.</li>
+        <li>The definition XML file is ‘../tfe.gresource.xml’.</li>
+        <li>The source dir is ‘..’. All the UI files are located
+        there.</li>
         </ul></li>
+        <li>GNOME module has <code>compile_schemas</code> method. It
+        compiles the schema file ‘com.github.ToshioCP.tfe.gschema.xml’.
+        You need to copy ‘../com.github.ToshioCP.tfe.gschema.xml’ to the
+        current directory in advance.</li>
+        <li>It creates an executable file ‘test_pref’. The source files
+        are ‘test_pref.c’, ‘../tfepref.c’ and <code>resources</code>,
+        which is made by <code>gnome.compile_resources</code>. It
+        depends on <code>gtkdep</code>, which is GTK4 library. The
+        symbols are exported and no installation support.</li>
         </ul>
-        <p>The process during the drag is as follows.</p>
-        <ul>
-        <li>start: save the surface and start points</li>
-        <li>update: restore the surface and draw a thin rectangle
-        between the start point and the current point of the mouse</li>
-        <li>end: restore the surface and draw a thick rectangle between
-        the start and end points.</li>
-        </ul>
-        <p>We need two global variables for the start point.</p>
-        <div class="sourceCode" id="cb13"><pre
-        class="sourceCode C"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_x<span class="op">;</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> start_y<span class="op">;</span></span></code></pre></div>
-        <p>The following is the handler for the “drag-begin” signal.</p>
-        <div class="sourceCode" id="cb14"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a>copy_surface <span class="op">(</span>cairo_surface_t <span class="op">*</span>src<span class="op">,</span> cairo_surface_t <span class="op">*</span>dst<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a>  <span class="cf">if</span> <span class="op">(!</span>src <span class="op">||</span> <span class="op">!</span>dst<span class="op">)</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a>    <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>  cairo_t <span class="op">*</span>cr <span class="op">=</span> cairo_create <span class="op">(</span>dst<span class="op">);</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a>  cairo_set_source_surface <span class="op">(</span>cr<span class="op">,</span> src<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="op">}</span></span>
-<span id="cb14-10"><a href="#cb14-10"></a></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb14-12"><a href="#cb14-12"></a>drag_begin <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> x<span class="op">,</span> <span class="dt">double</span> y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb14-13"><a href="#cb14-13"></a>  <span class="co">// save the surface and record (x, y)</span></span>
-<span id="cb14-14"><a href="#cb14-14"></a>  copy_surface <span class="op">(</span>surface<span class="op">,</span> surface_save<span class="op">);</span></span>
-<span id="cb14-15"><a href="#cb14-15"></a>  start_x <span class="op">=</span> x<span class="op">;</span></span>
-<span id="cb14-16"><a href="#cb14-16"></a>  start_y <span class="op">=</span> y<span class="op">;</span></span>
-<span id="cb14-17"><a href="#cb14-17"></a><span class="op">}</span></span></code></pre></div>
-        <ul>
-        <li>Copies <code>surface</code> to <code>surface_save</code>,
-        which is an image just before the dragging.</li>
-        <li>Stores the points to <code>start_x</code> and
-        <code>start_y</code>.</li>
-        </ul>
-        <div class="sourceCode" id="cb15"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>drag_update  <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> offset_x<span class="op">,</span> <span class="dt">double</span> offset_y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb15-4"><a href="#cb15-4"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a>  </span>
-<span id="cb15-6"><a href="#cb15-6"></a>  copy_surface <span class="op">(</span>surface_save<span class="op">,</span> surface<span class="op">);</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb15-8"><a href="#cb15-8"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span> start_x<span class="op">,</span> start_y<span class="op">,</span> offset_x<span class="op">,</span> offset_y<span class="op">);</span></span>
-<span id="cb15-9"><a href="#cb15-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
-<span id="cb15-10"><a href="#cb15-10"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb15-11"><a href="#cb15-11"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb15-12"><a href="#cb15-12"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
-<span id="cb15-13"><a href="#cb15-13"></a><span class="op">}</span></span></code></pre></div>
-        <ul>
-        <li>Restores <code>surface</code> from
-        <code>surface_save</code>.</li>
-        <li>Draws a rectangle with thin lines.</li>
-        <li>Calls <code>gtk_widget_queue_draw</code> to add the
-        GtkDrawingArea to the queue to redraw.</li>
-        </ul>
-        <div class="sourceCode" id="cb16"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a>drag_end  <span class="op">(</span>GtkGestureDrag <span class="op">*</span>gesture<span class="op">,</span> <span class="dt">double</span> offset_x<span class="op">,</span> <span class="dt">double</span> offset_y<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
-<span id="cb16-5"><a href="#cb16-5"></a>  </span>
-<span id="cb16-6"><a href="#cb16-6"></a>  copy_surface <span class="op">(</span>surface_save<span class="op">,</span> surface<span class="op">);</span></span>
-<span id="cb16-7"><a href="#cb16-7"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb16-8"><a href="#cb16-8"></a>  cairo_rectangle <span class="op">(</span>cr<span class="op">,</span> start_x<span class="op">,</span> start_y<span class="op">,</span> offset_x<span class="op">,</span> offset_y<span class="op">);</span></span>
-<span id="cb16-9"><a href="#cb16-9"></a>  cairo_set_line_width <span class="op">(</span>cr<span class="op">,</span> <span class="fl">6.0</span><span class="op">);</span></span>
-<span id="cb16-10"><a href="#cb16-10"></a>  cairo_stroke <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb16-11"><a href="#cb16-11"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb16-12"><a href="#cb16-12"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
-<span id="cb16-13"><a href="#cb16-13"></a><span class="op">}</span></span></code></pre></div>
-        <ul>
-        <li>Restores <code>surface</code> from
-        <code>surface_save</code>.</li>
-        <li>Draws a rectangle with thick lines.</li>
-        <li>Calls <code>gtk_widget_queue_draw</code> to add the
-        GtkDrawingArea to the queue to redraw.</li>
-        </ul>
-        <h2 id="build-and-run">Build and Run</h2>
-        <p>Download the <a
-        href="https://github.com/ToshioCP/Gtk4-tutorial">repository</a>.
-        Change your current directory to
-        <code>src/custom_drawing</code>. Run meson and ninja to build
-        the program. Type <code>_build/rect</code> to run the program.
-        Try to draw rectangles.</p>
-        <pre><code>$ cd src/custom_drawing
+        <p>Type like this to build and test the program.</p>
+        <pre><code>$ cd src/tef6/test
+$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
 $ meson setup _build
 $ ninja -C _build
-$ _build/rect</code></pre>
-        <figure>
-        <img src="/images/rect.png" alt="The screen of rect program" />
-        <figcaption aria-hidden="true">The screen of rect
-        program</figcaption>
-        </figure>
+$ GSETTINGS_SCHEMA_DIR=_build _build/test_pref</code></pre>
+        <p>A window appears and you can choose a font via GtkFontDialog.
+        If you select a new font, the font string is output through the
+        standard output.</p>
       </div>
     </div>
   </main>

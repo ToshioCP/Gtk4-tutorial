@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TfeWindow" parent="GtkApplicationWindow">
+    <property name="title">Text File Editor</property>
+    <property name="default-width">800</property>
+    <property name="default-height">6400</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="width-chars">10</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Open</property>
+                <property name="action-name">win.open</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Save</property>
+                <property name="action-name">win.save</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="hexpand">TRUE</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Close</property>
+                <property name="action-name">win.close</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="btnm">
+                <property name="direction">down</property>
+                <property name="icon-name">open-menu-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="width-chars">10</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkNotebook" id="nb">
+            <property name="scrollable">TRUE</property>
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
+

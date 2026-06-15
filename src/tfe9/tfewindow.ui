@@ -3,13 +3,13 @@
   <template class="TfeWindow" parent="GtkApplicationWindow">
     <property name="title">Text File Editor</property>
     <property name="default-width">800</property>
-    <property name="default-height">6400</property>
+    <property name="default-height">600</property>
     <child>
       <object class="GtkBox">
-        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox">
-            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="orientation">horizontal</property>
             <child>
               <object class="GtkLabel">
                 <property name="width-chars">10</property>
@@ -40,8 +40,7 @@
             </child>
             <child>
               <object class="GtkMenuButton" id="btnm">
-                <property name="direction">down</property>
-                <property name="icon-name">open-menu-symbolic</property>
+                <property name="direction">none</property>
               </object>
             </child>
             <child>

@@ -539,13 +539,23 @@ $</code></pre>
 <span id="cb7-5"><a href="#cb7-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb7-6"><a href="#cb7-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
         <ul>
-        <li>2: “gresources” tag can include multiple “gresource” tags.
-        However, this xml has only one “gresource” tag.</li>
-        <li>3: A “gresource” tag can haves a prefix attribute. This tag
-        defines that the prefix for <code>tfe3.ui</code> is
-        <code>/com/github/ToshioCP/tfe3</code>. A prefix works like a
-        namespace. Even if you have two same name resources, GTK can
-        distinguish them with their different prefixes.</li>
+        <li>2: <code>&lt;gresources&gt;</code> tag can include multiple
+        <code>&lt;gresource&gt;</code> tags. However, this xml has only
+        one <code>&lt;gresource&gt;</code> tag.</li>
+        <li>3: A <code>&lt;gresource&gt;</code> tag can have a prefix
+        attribute. This tag defines that the prefix for
+        <code>tfe3.ui</code> is <code>/com/github/ToshioCP/tfe3</code>.
+        A prefix works like a namespace. As a best practice, you should
+        always use your Application ID (with dots replaced by slashes)
+        as the prefix. In this program, the Application ID is
+        “com.github.ToshioCP.tfe3” and the prefix is
+        “/com/github/ToshioCP/tfe3”. While it is technically possible to
+        define multiple different prefixes within a single application
+        to distinguish resources with the same name, this is not
+        recommended. If you need to organize multiple resources, you
+        should keep a single Application ID prefix and distinguish your
+        files by giving them different filenames or placing them in
+        different subdirectories.</li>
         <li>4: The name of the GRresource is <code>tfe3.ui</code>. The
         resource will be referred to as
         “/com/github/ToshioCP/tfe3/tfe3.ui” by GtkBuilder. The pattern

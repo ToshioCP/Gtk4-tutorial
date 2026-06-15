@@ -1,119 +1,223 @@
-# GtkSignalListItemFactory
+# GtkColumnView
 
-## GtkSignalListItemFactory vs GtkBuilderListItemFactory
+## GtkColumnView
 
-GtkBuilderlistItemFactory is convenient when GtkListView just shows the contents of a list model.
-Its binding direction is always from an item of the list to a child of GtkListItem.
-
-However, it is insufficient for dynamic connections.
-For example, suppose you want to edit the contents of a list.
-You can set a GtkText widget as the child of a GtkListItem to allow users to edit text.
-You need to update the list item when the text in the GtkText is edited.
-The data flow is in the opposite direction compared to GtkBuilderListItemFactory—it goes from the GtkText widget back to the list item.
-You can achieve this using GtkSignalListItemFactory, which provides more flexibility.
-
-This section shows just some parts of the source file [listeditor.c](listeditor/listeditor.c).
-If you want to see the whole codes, see [src/listeditor](listeditor/) directory of the Gtk4 tutorial repository.
-
-## List Editor
-
-The sample program is a list editor and the data in the list are strings.
-It's similar to a line editor.
-It reads a text file line by line.
-Each line is an item of the list.
-The list is displayed with a GtkListView.
-The list view contains strings which are the contents of the corresponding items in the list model.
+GtkColumnView is like GtkListView, but it has multiple columns.
+Each column is GtkColumnViewColumn.
 
 @@@if pdf
-![List editor](/images/listeditor.png){width=12cm height=7.2cm}
+![Column View](/images/column_view.png){width=11.3cm height=9cm}
 @@@else
-![List editor](/images/listeditor.png)
+![Column View](/images/column_view.png)
 @@@end
 
-You can compile the source file and execute it as follows.
+- GtkColumnView has "model" property.
+The property points to a GtkSelectionModel object.
+- Each GtkColumnViewColumn has the "factory" property.
+The property points to a GtkListItemFactory (GtkSignalListItemFactory or GtkBuilderListItemFactory).
+- The factory connects GtkListItem and items of GtkSelectionModel.
+And the factory builds the descendant widgets of GtkColumnView to display the items on the screen.
+This process is the same as the one in GtkListView.
 
-- Download the program from the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-- Change your current directory to `src/listeditor`.
-- Type the following on your commandline.
+The following diagram shows how it works.
+
+@@@if pdf
+![ColumnView](/images/column.png){width=12cm height=9cm}
+@@@else
+![ColumnView](/images/column.png)
+@@@end
+
+The example in this section is a window that displays information of files in the current directory.
+The information is the name, size and last modified datetime of files.
+So, there are three columns.
+
+In addition, the example uses GtkSortListModel and GtkSorter to sort the information.
+
+## column.ui
+
+UI file specifies widgets and list item templates.
+
+@@@include
+column/column.ui
+@@@
+
+- 3-12: GtkApplicationWindow has a child widget GtkScrolledWindow.
+GtkScrolledWindow has a child widget GtkColumnView.
+- 12-18: GtkColumnView has "model" property.
+It points to GtkSelectionModel interface.
+GtkNoSelection class is used as GtkSelectionModel.
+Similarly, it also has a "model" property.
+It points to GtkSortListModel.
+This list model supports sorting the list.
+It will be explained in the later subsection.
+And it also has "model" property.
+It points to GtkDirectoryList.
+Therefore, the chain is: GtkColumnView => GtkNoSelection => GtkSortListModel => GtkDirectoryList.
+- 18-20: GtkDirectoryList.
+It is a list of GFileInfo, which holds information of files under a directory.
+It has "attributes" property.
+It specifies which attributes are kept in each GFileInfo.
+  - "standard::name" is the name of the file.
+  - "standard::icon" is the GIcon object of the file
+  - "standard::size" is the file size.
+  - "time::modified" is the date and time the file was last modified.
+- 29-79: The first GtkColumnViewColumn object.
+There are four properties, "title", "expand", factory" and "sorter".
+- 31: Sets the "title" property to "Name".
+This is the title on the header of the column.
+- 32: Sets the "expand" property to TRUE to allow the column to expand as much as possible.
+(See the image above).
+- 33- 69: Sets the "factory" property to GtkBuilderListItemFactory.
+The factory has "bytes" property which holds a UI string to define a template to extend GtkListItem class.
+The CDATA section (line 36-66) is the UI string to put into the "bytes" property.
+The contents are the same as the UI file `factory_list.ui` in Section 30.
+- 70-77: Sets the "sorter" property to GtkStringSorter object.
+This object provides a sorter that compares strings.
+It has "expression" property.
+A closure tag with a string type function `get_file_name` is used here.
+The function will be explained later.
+- 80-115: The second GtkColumnViewColumn object.
+Its sorter property is set to GtkNumericSorter.
+- 116-151: The third GtkColumnViewColumn object.
+Its sorter property is set to GtkNumericSorter.
+
+## GtkSortListModel and GtkSorter
+
+GtkSortListModel is a list model that sorts its elements according to a GtkSorter instance assigned to the "sorter" property.
+The property is bound to "sorter" property of GtkColumnView in line 22 to 24.
+
+~~~xml
+<object class="GtkSortListModel" id="sortlist">
+... ... ...
+  <binding name="sorter">
+    <lookup name="sorter">columnview</lookup>
+  </binding>
+~~~
+
+Therefore, `columnview` determines how to sort the list model.
+The "sorter" property of GtkColumnView is a read-only GtkSorter and it always refers to the current column's "sorter" property.
+When a user clicks a column header, GtkColumnView updates its own "sorter" property to point to that column's sorter.
+
+The binding above makes an indirect connection between the "sorter" property of GtkSortListModel and the "sorter" property of each column.
+
+GtkSorter compares two items (GObject or its descendant).
+GtkSorter has several child objects.
+
+- GtkStringSorter compares strings taken from the items.
+- GtkNumericSorter compares numbers taken from the items.
+- GtkCustomSorter uses a callback to compare.
+- GtkMultiSorter combines multiple sorters.
+
+The example uses GtkStringSorter and GtkNumericSorter.
+
+GtkStringSorter uses GtkExpression to get the strings from the items (objects).
+The GtkExpression is stored in the "expression" property of the GtkStringSorter.
+When GtkStringSorter compares two items, it evaluates the expression by calling `gtk_expression_evaluate` function.
+It assigns each item to the second argument ('this' object) of the function.
+
+In the UI file above, the GtkExpression is in the line 71 to 76.
+
+~~~xml
+<object class="GtkStringSorter">
+  <property name="expression">
+    <closure type="gchararray" function="get_file_name">
+    </closure>
+  </property>
+</object>
+~~~
+
+The GtkExpression calls `get_file_name` function when it is evaluated.
+
+@@@include
+column/column.c get_file_name
+@@@
+
+The function is given the item (GFileInfo) of the GtkSortListModel as an argument (`this` object).
+But you need to be careful that it can be NULL while the list item is being recycled.
+So, `G_IS_FILE_INFO (info)` is always necessary in callback functions.
+The function retrieves a filename from `info`.
+The string is owned by `info` so it is necessary to duplicate.
+And it returns the copied string.
+
+GtkNumericSorter compares numbers.
+It is used in the line 106 to 112 and line 142 to 148.
+The lines from 106 to 112 is:
+
+~~~xml
+<object class="GtkNumericSorter">
+  <property name="expression">
+    <closure type="gint64" function="get_file_size">
+    </closure>
+  </property>
+  <property name="sort-order">GTK_SORT_ASCENDING</property>
+</object>
+~~~
+
+The closure tag specifies a callback function `get_file_size`.
+
+@@@include
+column/column.c get_file_size
+@@@
+
+It just returns the size of `info`.
+The type of the size is `goffset`.
+The type `goffset` is the same as `gint64`.
+
+The lines from 142 to 148 is:
+
+~~~xml
+<object class="GtkNumericSorter" id="sorter_datetime_modified">
+  <property name="expression">
+    <closure type="gint64" function="get_file_unixtime_modified">
+    </closure>
+  </property>
+  <property name="sort-order">GTK_SORT_ASCENDING</property>
+</object>
+~~~
+
+The closure tag specifies a callback function `get_file_unixtime_modified`.
+
+@@@include
+column/column.c get_file_unixtime_modified
+@@@
+
+It gets the modification date and time (GDateTime type) of `info`.
+Then it gets a Unix time from `dt`.
+Unix time, sometimes called Unix epoch, is the number of seconds that have elapsed since 00:00:00 UTC on 1 January 1970.
+It returns the Unix time as a gint64.
+
+## column.c
+
+`column.c` is as follows.
+The code is simple and short thanks to `column.ui`.
+
+@@@include
+column/column.c
+@@@
+
+
+## Compilation and Execution.
+
+All the source files are in [src/column](column/) directory.
+Change your current directory to the directory and type the following.
 
 ~~~
+$ cd src/column
 $ meson setup _build
 $ ninja -C _build
-$ _build/listeditor
+$ _build/column
 ~~~
 
-The window has buttons:
+Then, a window appears.
 
-- **Append button:** appends a data after the current item, or at the end of the model if no current item exists.
-- **Insert button:** inserts a row before the current item, or at the top of the model if no current item exists.
-- **Remove button:** removes the current item.
-- **Read button:** reads a file.
-- **Write button:** Writes the contents to the file shown on the toolbar. If no filename is set, a file dialog opens to let you choose one.
-- **Close button:** remove all the items from the model.
-- **Quit button:** quits the application.
+@@@if pdf
+![Column View](/images/column_view.png){width=11.3cm height=9cm}
+@@@else
+![Column View](/images/column_view.png)
+@@@end
 
-You can click on the content area and select a row.
-The corresponding item to the row will be the current item.
-The current position (zero-based) is shown at the left of the tool bar.
+If you click the header of a column, then the entire list is sorted by the column.
+If you click the header of another column, then the list is sorted by the newly selected column.
 
-## Connect a GtkText Instance and an Item in the Model
-
-The ListView sets its factory property to GtkSignalListItemFactory.
-Its two signals "setup" and "bind" are connected to the handlers `setup_cb` and `bind_cb` respectively.
-The remaining two signals "unbind" and "teardown" aren't used in this program.
-The following shows the signal handlers.
-
-@@@include
-listeditor/listeditor.c setup_cb bind_cb
-@@@
-
-- 5-7: `setup_cb` creates the child widget of the list item.
-This widget will be a row of the GtkListView instance.
-- 9-10: `setup_cb` connects the "changed" signal on the GtkText instance to the handler `text_changed_cb`.
-This handler copies the text in the GtkText to the item when the GtkText is changed.
-`setup_cb` also connects the "notify::selected" signal on the GtkListItem to the handler `item_selected_cb`.
-The handler make the GtkText grab the keyboard focus to prepare keyboard input.
-- These instance and signals created by `setup_cb` will be automatically destroyed when the list item disposes itself.
-So, teardown signal handler is not necessary.
-- 83-86: `bind_cb` just copy the string in the item in the model to the GtkText.
-The macro function `g_signal_block_by_func` avoids unnecessary copy from GtkText to item at the update of the GtkText.
-No instances are created in this process, so "unbind" signal handler is not necessary.
-
-- 5-7: `setup_cb` creates the child widget for the list item, which serves as a row in the GtkListView.
-- 9-10: `setup_cb` connects the GtkText's "changed" signal to the `text_changed_cb` handler.
-This handler updates the item in the model with the new text whenever the GtkText is modified.
-Additionally, it connects the "notify::selected" signal of the GtkListItem to `item_selected_cb`, which makes the GtkText grab keyboard focus to prepare for immediate input.
-The "notify" signal is inherited from GObject class.
-- The instances and signal connections created in `setup_cb` are automatically cleaned up when the list item is disposed.
-Therefore, a "teardown" signal handler is unnecessary.
-- 19-22: `bind_cb` simply copies the string from the model's item to the GtkText.
-The `g_signal_handlers_block_by_func` macro prevents an unnecessary write-back from the GtkText to the item during this update.
-Since no new resources are allocated in this step, an "unbind" signal handler is not needed.
-
-The two signal handlers `text_changed_cb` and `item_selected_cb` are shown below.
-
-@@@include
-listeditor/listeditor.c text_changed_cb item_selected_cb
-@@@
-
-## GtkSingleSelection
-
-In the `liststore.ui` file, the GtkListView's model property is set to a GtkSingleSelection, which in turn wraps the underlying GListModel.
-
-Clicking a row in the list view selects and highlights it, automatically focusing the GtkText widget for immediate editing.
-Since GtkSingleSelection handles all the selection logic internally, no additional code is required for this behavior.
-
-## Another Possible Implementation
-
-Alternatively, you can use a GBinding object to bind the GtkText's "text" property to the LeData's "string" property.
-To do this, you first need to implement the "string" property in the LeData class.
-
-The code for this version is available in the [src/listeditor_binding/](listeditor_binding/) directory.
-The GBinding instance is created in the "bind" handler and unbound in the "unbind" handler.
-We use the `g_object_set_data` function to store the binding object within the list item.
-
-This is just one example, and other implementations are possible.
-For instance, you could subclass GtkText and store the binding instance directly inside the subclass.
-
-However, these alternatives require more code.
-Ultimately, using the "changed" signal remains the simplest and most straightforward approach.
+GtkColumnView is very useful and it can manage very big GListModel.
+It is possible to use it for file list, application list, database frontend and so on.

@@ -57,6 +57,8 @@
         ()</a></li>
         <li><a href="#tfe_text_view_set_file">tfe_text_view_set_file
         ()</a></li>
+        <li><a
+        href="#tfe_text_view_get_modified">tfe_text_view_get_modified</a></li>
         <li><a href="#tfe_text_view_read">tfe_text_view_read ()</a></li>
         <li><a href="#tfe_text_view_write">tfe_text_view_write
         ()</a></li>
@@ -136,6 +138,21 @@ tfe_text_view_set_file (TfeTextView *tv, GFile *file);</code></pre>
         exists. Then, it sets file in the object to the argument. If the
         argument is NULL, the function just releases the old file
         instance.</li>
+        </ul>
+        <h3
+        id="tfe_text_view_get_modified">tfe_text_view_get_modified()</h3>
+        <pre><code>gboolean
+tfe_text_view_get_modified (TfeTextView *tv);</code></pre>
+        <p>Indicates whether the buffer has been modified since the
+        modification flag was last set to FALSE.</p>
+        <p><strong>Parameters</strong></p>
+        <ul>
+        <li>tv: type: <code>*TfeTextView</code> The caller owns the
+        argument.</li>
+        </ul>
+        <p><strong>Return value</strong></p>
+        <ul>
+        <li>TRUE if the buffer has been modified, FALSE otherwise.</li>
         </ul>
         <h3 id="tfe_text_view_read">tfe_text_view_read()</h3>
         <pre><code>gboolean

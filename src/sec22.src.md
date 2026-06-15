@@ -137,7 +137,7 @@ To use this signal in a subclass, we override the class method rather than using
 This override is performed in the class initialization function.
 
 @@@include
-tfewindow.c tfe_window_class_init
+tfe8/tfewindow.c tfe_window_class_init
 @@@
 
 - 4: Since the defining class of the "close-request" signal is `GtkWindow`, we cast it to a `GtkWindowClass` pointer and assign it to the `window_class` variable.
@@ -148,7 +148,7 @@ tfewindow.c tfe_window_class_init
 The code for the handler is as follows:
 
 @@@include
-tfewindow.c tfe_window_close_request
+tfe8/tfewindow.c tfe_window_close_request
 @@@
 
 - 10: Use a `GString` to generate the description for the alert dialog.
@@ -170,7 +170,7 @@ The actual window closure will be handled later in the callback function, depend
 The callback function looks like this:
 
 @@@include
-tfewindow.c window_close_alert_cb
+tfe8/tfewindow.c window_close_alert_cb
 @@@
 
 The logic here is almost identical to the `page_close_alert_cb` explained in the previous section, except that it destroys the entire window at the end instead of closing a single page.
@@ -185,7 +185,7 @@ Previously, its handler called the `g_application_quit ()` function, but once in
 To fix this, we will replace it with a routine that closes the main windows instead, allowing the `close-request` handler to intercept the process if there is unsaved text.
 
 @@@include
-tfeapplication.c quit_activated
+tfe8/tfeapplication.c quit_activated
 @@@
 
 - 6-7: Iterate through the list of top-level windows held by `GtkApplication`, closing all of them with the `gtk_window_close ()` function.

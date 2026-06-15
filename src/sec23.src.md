@@ -1,338 +1,121 @@
-# Composite Widgets and Alert Dialog
+# Accelerators
 
-The source files are in the [Gtk4 tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
-Download it and see `src/tfe6` directory.
+## Accelerators
 
-## An Outline of New Tfe Text Editor
+Accelerators are the mechanism used to implement keyboard shortcuts.
+For instance, `Ctrl+c` is a common shortcut for copying text.
 
-Tfe text editor will be restructured.
-The program is divided into six parts.
+Because accelerators are incredibly convenient, you should definitely implement them for frequently used features.
+Especially in a keyboard-centric application like our Text File Editor (TFE), allowing users to complete tasks without reaching for the mouse is essential for a comfortable user experience.
 
-- Main program: the C main function.
-- TfeApplication object: It is like GtkApplication but keeps GSettings and CSS Provider.
-- TfeWindow object: It is a window with buttons and a notebook.
-- TfePref object: A preference dialog.
-- TfeAlert object: An alert dialog.
-- pdf2css.h and pdf2css.c: Font and CSS utility functions.
+## Accelerators and Actions
 
-This section describes TfeAlert.
-Others will be explained in the following sections.
+Accelerators are rarely used in isolation; they are usually paired with buttons or menu items.
+For example, most text editors have an "Open File" button or menu item, but you can achieve the same result by pressing `Ctrl+o`.
 
-## Composite Widgets
+In GTK, the UI elements that trigger events (like buttons, menus, and shortcut keys) are separated from the "actions" that perform the actual work.
+Thanks to this architecture, you can connect multiple types of events to a single action, keeping your code clean and straightforward.
+Without actions, you would have to write the handling logic for every single event individually, which would lead to messy and complicated code.
 
-The alert dialog is like this:
-
-@@@if pdf
-![Alert dialog](/images/alert.png){width=4.2cm height=1.7cm}
-@@@else
-![Alert dialog](/images/alert.png)
-@@@end
-
-Tfe uses it when a user quits the application or closes a notebook without saving data to files.
-
-The dialog has a title, buttons, an icon and a message.
-Therefore, it consists of several widgets.
-Such dialog is called a composite widget.
-
-Composite widgets are defined with template XMLs.
-The class is built in the class initialization function and the instances are built and disposed by the following functions.
-
-- gtk\_widget\_init\_template
-- gtk\_widget\_dispose\_template
-
-TfeAlert is a good example to know composite widgets.
-It is defined with the three files.
-
-- tfealert.ui: XML file
-- tfealert.h: Header file
-- tfealert.c: C program file
-
-## The XML File
-
-A template tag is used in a composite widget XML.
-
-@@@include
-tfe6/tfealert.ui
-@@@
-
-- 3: A template tag defines a composite widget.
-The class attribute tells the class name of the composite widget.
-The parent attribute tells the parent class of the composite widget.
-So, TfeAlert is a child class of GtkWindow.
-The parent attribute specifies the parent class of the composite widget.
-While it is technically optional in the XML, it is highly recommended to include it.
-Providing the parent class allows GtkBuilder to verify the class hierarchy at runtime and improves the readability of the UI file.
-- 4-6: Its three properties are defined.
-These properties are inherited from GtkWindow.
-The titlebar property has a widget for a custom title bar.
-The typical widget is GtkHeaderBar.
-- 8: If the property "show-title-buttons" is TRUE, the title buttons like close, minimize and maximize are shown.
-Otherwise it is not shown.
-The TfeAlert object is not resizable.
-It is closed when either of the two buttons, cancel or accept, is clicked.
-Therefore the title buttons are not necessary and this property is set to FALSE.
-- 9-14: The bar contains a title, implemented as a GtkLabel widget.
-The default title is "Are you sure?" but it can be replaced by an instance method.
-- 15-32: The bar has two buttons, cancel and accept.
-The cancel button is on the left so the child tag has `type="start"` attribute.
-The accept button is on the right so the child tag has `type="end"` attribute.
-The dialog is shown when the user clicked the close button or the quit menu without saving the data.
-Therefore, it is safer for the user to click on the cancel button of the alert dialog.
-So, the cancel button has a "suggested-action" CSS class.
-Ubuntu colors the button green but the color can be blue or other appropriate one defined by the system.
-In the same way the accept button has a "destructive-action" CSS class and is colored red.
-Two buttons have signals which are defined by the signal tags.
-By setting `swapped="TRUE"`, the instance emitting the signal and the user data are swapped.
-Consequently, the `cancel_cb` handler receives the `TfeAlert` object as its first parameter."
-- 35-54: A horizontal box has an image icon and a label.
-- 44-47: The GtkImage widget displays an image.
-The "icon-name" property is an icon name in the icon theme.
-The theme depends on your system.
-You can check it with an icon browser.
-
-~~~
-$ gtk4-icon-browser
-~~~
-
-The "dialog-warning" icon is something like this.
-
-@@@if pdf
-![dialog-warning icon is like ...](/images/dialog_warning.png){width=4.19cm height=1.62cm}
-@@@else
-![dialog-warning icon is like ...](/images/dialog_warning.png)
-@@@end
-
-These were created manually.
-The real image on the alert dialog is nicer.
-
-It is possible to define the alert widget as a child of GtkDialog.
-But GtkDialog is deprecated since GTK version 4.10.
-And users should use GtkWindow instead of GtkDialog.
-
-## The Header File
-
-The header file is similar to the one of TfeTextView.
-
-@@@include
-tfe6/tfealert.h
-@@@
-
-- 5-6: These two lines are always needed to define a new object.
-`TFE_TYPE_ALERT` is the type of TfeAlert object and it is a macro expanded into the call to `tfe_alert_get_type ()`.
-G\_DECLARE\_FINAL\_TYPE macro is expanded into:
-  - The declaration of the function `tfe_alert_get_type`
-  - `TfeAlert` is defined as a typedef of `struct _TfeAlert`, which is defined in the C file.
-  - `TFE_ALERT` and `TFE_IS_ALERT` macro is defined as a cast and type check function.
-  - `TfeAlertClass` structure is defined as a final class.
-- 8-13: The TfeAlert class has a "response" signal.
-It has a parameter and the parameter type is defined as a `TfeAlertResponseType` enumerative constant.
-- 15-31: Getter and setter methods.
-- 33-37: Functions to create an instance.
-The function `tfe_alert_new_with_data` is a convenience function, which creates an instance and sets data at once.
-
-## The C File
-
-### Functions for Composite Widgets
-
-The following codes are extracted from `tfealert.c`.
+Since accelerators function across the entire application, they should be defined in the application source file (e.g., `tfeapplication.c`).
+To link an accelerator to an action, we use the `gtk_application_set_accels_for_action ()` function.
 
 @@@if gfm
 ```C
-#include <gtk/gtk.h>
-#include "tfealert.h"
-
-struct _TfeAlert {
-  GtkWindow parent;
-  GtkLabel *lb_title;
-  GtkLabel *lb_message;
-  GtkButton *btn_accept;
-  GtkButton *btn_cancel;
-};
-
-G_DEFINE_FINAL_TYPE (TfeAlert, tfe_alert, GTK_TYPE_WINDOW);
-
-static void
-cancel_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-accept_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-tfe_alert_dispose (GObject *gobject) { // gobject is actually a TfeAlert instance.
-  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_ALERT);
-  G_OBJECT_CLASS (tfe_alert_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_alert_init (TfeAlert *alert) {
-  gtk_widget_init_template (GTK_WIDGET (alert));
-}
-
-static void
-tfe_alert_class_init (TfeAlertClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_alert_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfealert.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_title);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_message);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_cancel);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), cancel_cb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), accept_cb);
-  ... ... ...
-}
-
-GtkWidget *
-tfe_alert_new (void) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
-}
-```
 @@@else
-```{.C}
-#include <gtk/gtk.h>
-#include "tfealert.h"
-
-struct _TfeAlert {
-  GtkWindow parent;
-  GtkLabel *lb_title;
-  GtkLabel *lb_message;
-  GtkButton *btn_accept;
-  GtkButton *btn_cancel;
-};
-
-G_DEFINE_FINAL_TYPE (TfeAlert, tfe_alert, GTK_TYPE_WINDOW);
-
-static void
-cancel_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-accept_cb (TfeAlert *alert) {
-  ... ... ...
-}
-
-static void
-tfe_alert_dispose (GObject *gobject) { // gobject is actually a TfeAlert instance.
-  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_ALERT);
-  G_OBJECT_CLASS (tfe_alert_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_alert_init (TfeAlert *alert) {
-  gtk_widget_init_template (GTK_WIDGET (alert));
-}
-
-static void
-tfe_alert_class_init (TfeAlertClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_alert_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfealert.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_title);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, lb_message);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_accept);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeAlert, btn_cancel);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), cancel_cb);
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (class), accept_cb);
-  ... ... ...
-}
-
-GtkWidget *
-tfe_alert_new (void) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_ALERT, NULL));
-}
-```
+```{.c}
 @@@end
+void
+gtk_application_set_accels_for_action (
+  GtkApplication* application,
+  const char* detailed_action_name,
+  const char* const* accels
+)
+```
 
-- `G_DEFINE_FINAL_TYPE` was introduced in GLib 2.70 for final type classes.
-While `G_DEFINE_TYPE` still works, the new macro is preferred.
-It is expanded into:
-  - The declaration of the functions `tfe_alert_init` and `tfe_alert_class_init`.
-They are defined in the following part of the C program.
-  - The definition of the variable `tfe_alert_parent_class`.
-  - The definition of the function `tfe_alert_get_type`.
-- The names of the members of `_TfeAlert`, which are `lb_title`, `lb_message`, `btn_accept` and `btn_cancel`,
-must be the same as the id attribute in the XML file `tfealert.ui`.
-- The function `tfe_alert_class_init` initializes the composite widget class.
-  - The function `gtk_widget_class_set_template_from_resource` sets the template of the class.
-The template is built from the XML resource "tfealert.ui".
-At this moment no instance is created.
-It just makes the class recognize the structure of the object.
-That’s why the top level tag is not object but template in the XML file.
-  - The function macro `gtk_widget_class_bind_template_child` connects the member of TfeAlert and the object class in the template.
-So, for example, you can access to `lb_title` GtkLabel instance via `alert->lb_title` where `alert` is an instance of TfeAlert class.
-  - The function `gtk_widget_class_bind_template_callback` connects the callback function and the `handler` attribute of the signal tag in the XML.
-For example, the "clicked" signal on the cancel button has a handler named "cancel\_cb" in the signal tag.
-And the function `cancel_cb` exists in the C file above.
-These two are connected so when the signal is emitted the function `cancel_cb` is called.
-You can add `static` storage class to the callback function thanks to this connection.
-- The function `tfe_alert_init` initializes the newly created instance.
-You need to call `gtk_widget_init_template` to create and initialize the child widgets in the template.
-- The function `tfe_alert_dispose` releases objects.
-The function `gtk_widget_dispose_template` clears the template children.
-- The function `tfe_alert_new` creates the composite widget TfeAlert instance.
-It creates not only TfeAlert itself but also all the child widgets that the composite widget has.
+- `application`: The application instance.
+- `detailed_action_name`: The name of the action (e.g., `"app.quit"`, `"win.save"`).
+- `accels`: An array of strings representing the shortcut keys (the syntax is explained in the next subsection). This array must be `NULL`-terminated.
 
-### Other Functions
+## Shortcut Key Strings
 
-The following is the full codes of `tfealert.c`.
+The GTK parser for shortcut keys can properly interpret strings like `<control>o`, `<Shift><Alt>F2`, and `<Ctrl>minus`.
+You can find detailed information about these strings in the [documentation](https://docs.gtk.org/gtk4/func.accelerator_parse.html) for the `gtk_accelerator_parse ()` function.
 
-@@@include
-tfe6/tfealert.c
-@@@
+This syntax is divided into two parts: a modifier key and a character key.
+For example, `<control>o` is split into `<control>` and `o`.
 
-The function `tfe_alert_new_with_data` is used more often than `tfe_alert_new` to create a new instance.
-It creates the instance and sets three data at the same time.
-The following is the common process when you use the TfeAlert class.
+- The syntax for modifier keys is quite flexible.
+It allows both uppercase and lowercase letters, as well as abbreviations.
+For instance, `<control>`, `<CONTROL>`, `<Ctrl>`, and `<Ctl>` all represent the Control key.
+- For the character part, the parser calls the `gdk_keyval_from_name ()` function to translate the "key name string" into a key code.
+This key name string **must be written in lowercase**.
+This is because typing an uppercase 'O' on a keyboard requires pressing the Shift key and the 'o' key together, meaning an uppercase `O` is treated as being equivalent to `<Shift>o`.
+Therefore, if you write `<Ctrl>O`, GTK will interpret it as `<Ctrl><Shift>o`.
+- Because the character part must be a lowercase alphabet name, you cannot use symbols directly.
+To represent the minus (`-`) key, for example, you must spell it out as `minus`.
+This means `<Ctrl>-` will not work; you must write `<Ctrl>minus`.
+The underlying definitions for these names can be found in the GTK source code within [gdkkeysyms.h](https://gitlab.gnome.org/GNOME/gtk/-/blob/main/gdk/gdkkeysyms.h).
+The key string is based on the macro name defined there (such as `GDK_KEY_minus`), simply with the `GDK_KEY_` prefix removed.
 
-- Call `tfe_alert_new_with_data` and create an instance.
-- Call `gtk_window_set_transient_for` to set the transient parent window.
-- Call `gtk_window_present` to show the TfeAlert dialog.
-- Connect "response" signal and a handler.
-- The user clicks on the cancel or accept button.
-Then the dialog emits the "response" signal and destroy itself.
-- The user catches the signal and do something.
+## Implementation in the TFE Program
 
-The rest of the program is:
+Let's incorporate accelerators into our TFE (Text File Editor) C code.
+Since shortcuts should be registered when the application initializes, we will add them to the `"startup"` signal handler.
 
-- 14-19: An array for a signal id. You can use a variable instead of an array because the class has only one signal.
-But using an array is a common way.
-- 21-31: Signal handlers. They emits the "response" signal and destroy the instance itself.
-- 33-61: Getters and setters.
-- 85-95: Creates the "response" signal.
-- 103-110: A convenience function `tfe_alert_new_with_data` creates an instance and sets labels.
+For example, to link `Ctrl+o` to the `"win.open"` action, you would write:
 
-## An Example
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+const char *open_accels[] = {"<Ctrl>o", NULL};
+gtk_application_set_accels_for_action(GTK_APPLICATION(app), "win.open", open_accels);
+```
 
-There's an example in the `src/tfe6/example` directory.
-It shows how to use TfeAlert.
-The program is `src/example/ex_alert.c`.
+When you have multiple shortcut keys, the best practice is to define them in an array and register them using a loop.
 
-@@@include
-tfe6/example/ex_alert.c
-@@@
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+  struct {
+    const char *action;
+    const char *accels[2];
+  } action_accels[] = {
+    { "win.open", { "<Control>o", NULL } },
+    { "win.save", { "<Control>s", NULL } },
+    { "win.close", { "<Control>w", NULL } },
+    { "win.new", { "<Control>n", NULL } },
+    { "win.saveas", { "<Shift><Control>s", NULL } },
+    { "app.quit", { "<Control>q", NULL } },
+  };
 
-The "activate" signal handler `app_activate` initializes the alert dialog.
+  for (i = 0; i < G_N_ELEMENTS(action_accels); i++)
+    gtk_application_set_accels_for_action(GTK_APPLICATION(app), action_accels[i].action, action_accels[i].accels);
+```
 
-- A TfeAlert instance is created.
-- Its "response" signal is connected to the handler `alert_response_cb`.
-- TfeAlert class is a sub class of GtkWindow so it can be a top level window that is connected to an application instance.
-The function `gtk_window_set_application` does that.
-- The dialog is shown.
+- 1-4: This is the structure definition.
+It might look a bit complex, but it becomes clearer when you look at the initialization values starting on line 5.
+The first member is the action name, like `"win.open"`.
+The second member is an array of accelerators (shortcut strings), ending with a `NULL` terminator.
+Since we are only registering one shortcut per action here, an array size of 2 (the shortcut plus `NULL`) is sufficient.
+If you wanted to assign two shortcuts to a single action, you would need to increase the array size to 3.
+The empty brackets `[]` after `action_accels` tell the compiler to calculate the array size automatically based on the initialization data, so we can omit the number.
+- 5-10: This is the actual list pairing each action with its corresponding accelerator.
+Note that we will add a menu and action for a Preferences dialog later on, but since that isn't a frequently used feature, we are omitting an accelerator for it here.
 
-A user clicks on either the cancel button or the accept button.
-Then, the "response" signal is emitted and the dialog is destroyed.
-The signal handler `alert_response_cb` checks the response and prints "Accept" or "Cancel".
-If an error happens, it prints "Unexpected error".
+## Build and Run
 
-You can compile it with meson and ninja.
+The complete source code is located in the [src/tfe9](tfe9/) directory.
+Navigate into that directory and type the following commands in your terminal to compile and run the application:
 
 ```
-$ cd src/tfe6/example
 $ meson setup _build
 $ ninja -C _build
-$ _build/ex_alert
-Accept #<= if you clicked on the accept button
+$ _build/tfe
 ```
+
+Try pressing shortcut keys like `Ctrl+o` to confirm that they are working correctly.
