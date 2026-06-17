@@ -1,294 +1,412 @@
 Up: [README.md](../README.md),  Prev: [Section 27](sec27.md), Next: [Section 29](sec29.md)
 
-# Drag and Drop
+# Periodic Events
 
-## What is Drag and Drop?
+This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
 
-Drag and drop is also written as "Drag-and-Drop", or "DND" in short.
-DND is like "copy and paste" or "cut and paste".
-If a user drags a UI element, which is a widget, selected part or other elements, data is transferred from the source to the destination.
+## How do we create an animation?
 
-You probably have experience moving a file with DND.
+In this section we will continue to build on our previous work. We will create
+an analog clock application. By adding a function which periodically redraws
+GtkDrawingArea, the clock will be able to continuously display the time.
 
-![DND on the GUI file manager](/src/images/dnd.png)
+The application uses a compiled in 'resource' file, so if the GTK4 libraries and
+their dependencies are installed and available, the application will run from
+anywhere.
 
-When the DND starts, the file `sample_file.txt` is provided to the system.
-When it ends,  the system provides it to the `sample_folder` in the file manager.
-Therefore, it is like "cut and paste".
-The actual behavior may be different from the explanation here, but the concept is similar.
+The program also makes use of some standard mathematical and time handling
+functions.
 
-## Example for DND
+The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
+[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
 
-This tutorial provides a simple example in the `src/dnd` directory.
-It has three labels for the source and one label for the destination.
-The source labels have "red", "green" or "blue" labels.
-If a user drags the label to the destination label, the font color will be changed.
+The complete code is at the end.
 
-![DND example](/src/images/dnd_canvas.png)
+## Drawing the clock face, hour, minute and second hands
 
-## UI File
+The `draw_clock()` function does all the work. See the in-file comments for an
+explanation of how the Cairo drawing works.
 
-The widgets are defined in the XML file `dnd.ui`.
+For a detailed reference of what each of the Cairo functions does see the
+[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
+
+```c
+static void
+draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
+
+    // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
+    // the center of the window
+    cairo_scale(cr, width, height);
+    cairo_translate(cr, 0.5, 0.5);
+
+    // Set the line width and save the cairo drawing state.
+    cairo_set_line_width(cr, m_line_width);
+    cairo_save(cr);
+
+    // Set the background to a slightly transparent green.
+    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+    cairo_paint(cr);
+
+    // Resore back to precious drawing state and draw the circular path
+    // representing the clockface. Save this state (including the path) so we
+    // can reuse it.
+    cairo_restore(cr);
+    cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
+    cairo_save(cr);
+
+    // Fill the clockface with white
+    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
+    cairo_fill_preserve(cr);
+    // Restore the path, paint the outside of the clock face.
+    cairo_restore(cr);
+    cairo_stroke_preserve(cr);
+    // Set the 'clip region' to the inside of the path (fill region).
+    cairo_clip(cr);
+
+    // Clock ticks
+    for (int i = 0; i < 12; i++)
+    {
+        // Major tick size
+        double inset = 0.05;
+
+        // Save the graphics state, restore after drawing tick to maintain pen
+        // size
+        cairo_save(cr);
+        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+        // Minor ticks are shorter, and narrower.
+        if(i % 3 != 0)
+        {
+            inset *= 0.8;
+            cairo_set_line_width(cr, 0.03);
+        }
+
+        // Draw tick mark
+        cairo_move_to(
+            cr,
+            (m_radius - inset) * cos (i * M_PI / 6.0),
+            (m_radius - inset) * sin (i * M_PI / 6.0));
+        cairo_line_to(
+            cr,
+            m_radius * cos (i * M_PI / 6.0),
+            m_radius * sin (i * M_PI / 6.0));
+        cairo_stroke(cr);
+        cairo_restore(cr); /* stack-pen-size */
+    }
+
+    // Draw the analog hands
+
+    // Get the current Unix time, convert to the local time and break into time
+    // structure to read various time parts.
+    time_t rawtime;
+    time(&rawtime);
+    struct tm * timeinfo = localtime (&rawtime);
+
+    // Calculate the angles of the hands of our clock
+    double hours   = timeinfo->tm_hour * M_PI / 6.0;
+    double minutes = timeinfo->tm_min * M_PI / 30.0;
+    double seconds = timeinfo->tm_sec * M_PI / 30.0;
+
+    // Save the graphics state
+    cairo_save(cr);
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+    cairo_save(cr);
+
+    // Draw the seconds hand
+    cairo_set_line_width(cr, m_line_width / 3.0);
+    cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
+    cairo_move_to(cr, 0.0, 0.0);
+    cairo_line_to(cr,
+                  sin(seconds) * (m_radius * 0.9),
+                  -cos(seconds) * (m_radius * 0.9));
+    cairo_stroke(cr);
+    cairo_restore(cr);
+
+    // Draw the minutes hand
+    cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
+    cairo_move_to(cr, 0, 0);
+    cairo_line_to(cr,
+                  sin(minutes + seconds / 60) * (m_radius * 0.8),
+                  -cos(minutes + seconds / 60) * (m_radius * 0.8));
+    cairo_stroke(cr);
+
+    // draw the hours hand
+    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+    cairo_move_to(cr, 0.0, 0.0);
+    cairo_line_to(cr,
+                  sin(hours + minutes / 12.0) * (m_radius * 0.5),
+                  -cos(hours + minutes / 12.0) * (m_radius * 0.5));
+    cairo_stroke(cr);
+    cairo_restore(cr);
+
+    // Draw a little dot in the middle
+    cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
+    cairo_fill(cr);
+}
+```
+
+In order for the clock to be drawn, the drawing function `draw_clock()` needs
+to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
+
+Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
+
+There is still a problem though. In order to animate the clock we need to also
+tell the application that the clock needs to be redrawn every second. This
+process starts by registering (on the next line, line 15) a timeout function
+with `g_timeout_add()` that will wakeup and run another function `time_handler`,
+every second (or 1000ms).
+
+```c
+static void
+app_activate (GApplication *app, gpointer user_data) {
+    GtkWidget *win;
+    GtkWidget *clock;
+    GtkBuilder *build;
+
+    build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
+    win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+
+    clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
+    g_object_unref(build);
+
+    gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
+    g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
+    gtk_window_present(GTK_WINDOW (win));
+
+}
+```
+
+Our `time_handler()` function is very simple, as it just calls
+`gtk_widget_queue_draw()` which schedules a redraw of the widget.
+
+```c
+gboolean
+time_handler(GtkWidget* widget) {
+    gtk_widget_queue_draw(widget);
+
+    return TRUE;
+}
+```
+
+.. and that is all there is to it. If you compile and run the example you will
+get a ticking analog clock.
+
+If you get this working, you can try modifying some of the code in
+`draw_clock()` to tweak the application (such as change the color or size and
+length of the hands) or even add text, or create a digital clock.
+
+## The Complete code
+
+You can find the source files in the `tfc` directory. it can be compiled with `comp` shell script.
+
+`tfc.c`
+
+```c
+#include <gtk/gtk.h>
+#include <math.h>
+#include <time.h>
+
+float m_radius     = 0.42;
+float m_line_width = 0.05;
+
+static void
+draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
+
+    // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
+    // the center of the window
+    cairo_scale(cr, width, height);
+    cairo_translate(cr, 0.5, 0.5);
+
+    // Set the line width and save the cairo drawing state.
+    cairo_set_line_width(cr, m_line_width);
+    cairo_save(cr);
+
+    // Set the background to a slightly transparent green.
+    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+    cairo_paint(cr);
+
+    // Resore back to precious drawing state and draw the circular path
+    // representing the clockface. Save this state (including the path) so we
+    // can reuse it.
+    cairo_restore(cr);
+    cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
+    cairo_save(cr);
+
+    // Fill the clockface with white
+    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
+    cairo_fill_preserve(cr);
+    // Restore the path, paint the outside of the clock face.
+    cairo_restore(cr);
+    cairo_stroke_preserve(cr);
+    // Set the 'clip region' to the inside of the path (fill region).
+    cairo_clip(cr);
+
+    // Clock ticks
+    for (int i = 0; i < 12; i++)
+    {
+        // Major tick size
+        double inset = 0.05;
+
+        // Save the graphics state, restore after drawing tick to maintain pen
+        // size
+        cairo_save(cr);
+        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+        // Minor ticks are shorter, and narrower.
+        if(i % 3 != 0)
+        {
+            inset *= 0.8;
+            cairo_set_line_width(cr, 0.03);
+        }
+
+        // Draw tick mark
+        cairo_move_to(
+            cr,
+            (m_radius - inset) * cos (i * M_PI / 6.0),
+            (m_radius - inset) * sin (i * M_PI / 6.0));
+        cairo_line_to(
+            cr,
+            m_radius * cos (i * M_PI / 6.0),
+            m_radius * sin (i * M_PI / 6.0));
+        cairo_stroke(cr);
+        cairo_restore(cr); /* stack-pen-size */
+    }
+
+    // Draw the analog hands
+
+    // Get the current Unix time, convert to the local time and break into time
+    // structure to read various time parts.
+    time_t rawtime;
+    time(&rawtime);
+    struct tm * timeinfo = localtime (&rawtime);
+
+    // Calculate the angles of the hands of our clock
+    double hours   = timeinfo->tm_hour * M_PI / 6.0;
+    double minutes = timeinfo->tm_min * M_PI / 30.0;
+    double seconds = timeinfo->tm_sec * M_PI / 30.0;
+
+    // Save the graphics state
+    cairo_save(cr);
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+    cairo_save(cr);
+
+    // Draw the seconds hand
+    cairo_set_line_width(cr, m_line_width / 3.0);
+    cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
+    cairo_move_to(cr, 0.0, 0.0);
+    cairo_line_to(cr,
+                  sin(seconds) * (m_radius * 0.9),
+                  -cos(seconds) * (m_radius * 0.9));
+    cairo_stroke(cr);
+    cairo_restore(cr);
+
+    // Draw the minutes hand
+    cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
+    cairo_move_to(cr, 0, 0);
+    cairo_line_to(cr,
+                  sin(minutes + seconds / 60) * (m_radius * 0.8),
+                  -cos(minutes + seconds / 60) * (m_radius * 0.8));
+    cairo_stroke(cr);
+
+    // draw the hours hand
+    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
+    cairo_move_to(cr, 0.0, 0.0);
+    cairo_line_to(cr,
+                  sin(hours + minutes / 12.0) * (m_radius * 0.5),
+                  -cos(hours + minutes / 12.0) * (m_radius * 0.5));
+    cairo_stroke(cr);
+    cairo_restore(cr);
+
+    // Draw a little dot in the middle
+    cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
+    cairo_fill(cr);
+}
+
+
+gboolean
+time_handler(GtkWidget* widget) {
+    gtk_widget_queue_draw(widget);
+
+    return TRUE;
+}
+
+
+static void
+app_activate (GApplication *app, gpointer user_data) {
+    GtkWidget *win;
+    GtkWidget *clock;
+    GtkBuilder *build;
+
+    build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
+    win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
+    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
+
+    clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
+    g_object_unref(build);
+
+    gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
+    g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
+    gtk_window_present(GTK_WINDOW (win));
+
+}
+
+static void
+app_open (GApplication *app, GFile **files, gint n_files, gchar *hint, gpointer user_data) {
+    app_activate(app,user_data);
+}
+
+int
+main (int argc, char **argv) {
+    GtkApplication *app;
+    int stat;
+
+    app = gtk_application_new ("com.github.ToshioCP.tfc", G_APPLICATION_HANDLES_OPEN);
+    g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
+    g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
+    stat = g_application_run (G_APPLICATION (app), argc, argv);
+    g_object_unref (app);
+    return stat;
+}
+```
+
+`tfc.ui`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <object class="GtkApplicationWindow" id="win">
-    <property name="default-width">800</property>
-    <property name="default-height">600</property>
-    <property name="resizable">FALSE</property>
-    <property name="title">Drag and Drop</property>
+    <property name="title">Clock</property>
+    <property name="default-width">200</property>
+    <property name="default-height">200</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkDrawingArea" id="clock">
         <property name="hexpand">TRUE</property>
         <property name="vexpand">TRUE</property>
-        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-        <property name="spacing">5</property>
-        <child>
-          <object class="GtkBox">
-            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-            <property name="homogeneous">TRUE</property>
-            <child>
-              <object class="GtkLabel" id="red">
-                <property name="label">RED</property>
-                <property name="justify">GTK_JUSTIFY_CENTER</property>
-                <property name="name">red</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="green">
-                <property name="label">GREEN</property>
-                <property name="justify">GTK_JUSTIFY_CENTER</property>
-                <property name="name">green</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="blue">
-                <property name="label">BLUE</property>
-                <property name="justify">GTK_JUSTIFY_CENTER</property>
-                <property name="name">blue</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="canvas">
-            <property name="label">CANVAS</property>
-            <property name="justify">GTK_JUSTIFY_CENTER</property>
-            <property name="name">canvas</property>
-            <property name="hexpand">TRUE</property>
-            <property name="vexpand">TRUE</property>
-          </object>
-        </child>
       </object>
     </child>
   </object>
 </interface>
-
 ```
 
-It is converted to a resource file by `glib-compile-resources`.
-The compiler uses an XML file `dnd.gresource.xml`.
+`tfc.gresource.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/ToshioCP/dnd">
-    <file>dnd.ui</file>
+  <gresource prefix="/com/github/ToshioCP/tfc">
+    <file>tfc.ui</file>
   </gresource>
 </gresources>
 ```
 
-## C File dnd.c
-
-The C file `dnd.c` isn't a big file.
-The number of the lines is less than a hundred.
-A GtkApplication object is created in the function `main`.
-
-```c
-int
-main (int argc, char **argv) {
-  GtkApplication *app;
-  int stat;
-
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-  stat = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
-  return stat;
-}
-```
-
-The application ID is defined as:
-
-```C
-#define APPLICATION_ID "com.github.ToshioCP.dnd"
-```
-
-### Startup Signal Handler
-
-Most of the work is done in the "startup" signal handler.
-
-Two objects GtkDragSource and GtkDropTarget are used for DND implementation.
-
-- Drag source: A drag source (GtkDragSource instance) is an event controller.
-It initiates a DND operation when the user clicks and drags the widget.
-If data, in the form of GdkContentProvider, is set in advance, it gives the data to the system at the beginning of the drag.
-- Drop target: A drop target (GtkDropTarget) is also an event controller.
-You can get the data in the GtkDropTarget::drop signal handler.
-
-The example below uses these objects in a very simple way.
-You can use a number of features that the two objects have.
-See the following links for more information.
-
-- [Drag-and-Drop in GTK](https://docs.gtk.org/gtk4/drag-and-drop.html)
-- [GtkDragSource](https://docs.gtk.org/gtk4/class.DragSource.html)
-- [GtkDropTarget](https://docs.gtk.org/gtk4/class.DropTarget.html)
-
-```c
-static void
-app_startup (GApplication *application) {
-  GtkApplication *app = GTK_APPLICATION (application);
-  GtkBuilder *build;
-  GtkWindow *win;
-  GtkLabel *src_labels[3];
-  int i;
-  GtkLabel *canvas;
-  GtkDragSource *src;
-  GdkContentProvider *content;
-  GtkDropTarget *tgt;
-  GdkDisplay *display;
-  char *s;
-
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/dnd/dnd.ui");
-  win = GTK_WINDOW (gtk_builder_get_object (build, "win"));
-  src_labels[0] = GTK_LABEL (gtk_builder_get_object (build, "red"));
-  src_labels[1] = GTK_LABEL (gtk_builder_get_object (build, "green"));
-  src_labels[2] = GTK_LABEL (gtk_builder_get_object (build, "blue"));
-  canvas = GTK_LABEL (gtk_builder_get_object (build, "canvas"));
-  gtk_window_set_application (win, app);
-  g_object_unref (build);
-
-  for (i=0; i<3; ++i) {
-    src = gtk_drag_source_new ();
-    content = gdk_content_provider_new_typed (G_TYPE_STRING, gtk_widget_get_name (GTK_WIDGET (src_labels[i])));
-    gtk_drag_source_set_content (src, content);
-    g_object_unref (content);
-    gtk_widget_add_controller (GTK_WIDGET (src_labels[i]), GTK_EVENT_CONTROLLER (src)); // The ownership of src is taken by the instance.
-  }
-
-  tgt = gtk_drop_target_new (G_TYPE_STRING, GDK_ACTION_COPY);
-  g_signal_connect (tgt, "drop", G_CALLBACK (drop_cb), NULL);
-  gtk_widget_add_controller (GTK_WIDGET (canvas), GTK_EVENT_CONTROLLER (tgt)); // The ownership of tgt is taken by the instance.
-
-  provider = gtk_css_provider_new ();
-  s = g_strdup_printf (format, "black");
-  gtk_css_provider_load_from_string (provider, s);
-  g_free (s);
-  display = gdk_display_get_default ();
-  gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (provider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  g_object_unref (provider); // The provider is still alive because the display owns it.
-}
-```
-
-- 15-22: Builds the widgets.
-The array `src_labels[]` points to the source labels red, green and blue in the UI file.
-The variable `canvas` points to the destination label.
-- 24-30: Sets the DND source widgets.
-The for-loop iterates through the array `src_labels[]` each of which points to the source widget,  red, green or blue label.
-- 25: Creates a new GtkDragSource instance.
-- 26: Creates a new GdkContentProvider instance with the string "red", "green" or "blue".
-They are the name of the widgets.
-These strings are the data to transfer through the DND operation.
-- 27: Sets the content of the drag source to the GdkContentProvider instance above.
-- 28: Content is useless so it is destroyed.
-- 29: Add the event controller, which is actually the drag source, to the widget.
-If a DND operation starts on the widget, the corresponding drag source works and the data is given to the system.
-- 32-34: Sets the DND drop target.
-- 32: Creates a new GtkDropTarget instance.
-The first parameter is the GType of the data.
-The second parameter is a GdkDragAction enumeration constant.
-The arguments here are string type and the constant for copy.
-- 33: Connects the "drop" signal and the handler `drop_cb`.
-- 34: Add the event controller, which is actually the drop target, to the widget.
-- 36-43: Sets CSS.
-- 37: A variable `format` is static and defined at the top of the program.
-Static variables are shown below.
-
-```C
-static GtkCssProvider *provider = NULL;
-static const char *format = "label {padding: 20px;} label#red {background: red;} "
-  "label#green {background: green;} label#blue {background: blue;} "
-  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
-```
-
-### Activate Signal Handler
-
-```c
-static void
-app_activate (GApplication *application) {
-  GtkApplication *app = GTK_APPLICATION (application);
-  GtkWindow *win;
-
-  win = gtk_application_get_active_window (app);
-  gtk_window_present (win);
-}
-```
-
-This handler just shows the window.
-
-### Drop Signal Handler
-
-```c
-static gboolean
-drop_cb (GtkDropTarget *self, const GValue *value, gdouble x, gdouble y, gpointer user_data) {
-  char *s;
-
-  s = g_strdup_printf (format, g_value_get_string (value));
-  gtk_css_provider_load_from_string (provider, s);
-  g_free (s);
-  return TRUE;
-}
-```
-
-The "drop" signal handler has five parameters.
-
-- GtkDropTarget instance on which the signal has been emitted.
-- GValue that holds the data from the source.
-- The arguments `x` and `y` are the coordinate of the mouse when released.
-- User data was set when the signal and the handler were connected.
-
-The string from the GValue is "red", "green" or "blue".
-It replaces "%s" in the variable `format`.
-That means the font color of the label `canvas` will be updated to the color.
-
-## Meson.build
-
-The file `meson.build` controls the building process.
+`comp`
 
 ```
-project('dnd', 'c')
-
-gtkdep = dependency('gtk4')
-
-gnome = import('gnome')
-resources = gnome.compile_resources('resources','dnd.gresource.xml')
-
-executable(meson.project_name(), 'dnd.c', resources, dependencies: gtkdep, export_dynamic: true, install: false)
+glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source
+gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm
 ```
-
-You can build it from the command line.
-
-```
-$ cd src/dnd
-$ meson setup _build
-$ ninja -C _build
-$ _build/dnd
-```
-
-The source files are under the directory `src/dnd` of the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-Download it and see the directory.
 
 Up: [README.md](../README.md),  Prev: [Section 27](sec27.md), Next: [Section 29](sec29.md)

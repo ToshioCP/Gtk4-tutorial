@@ -1,412 +1,213 @@
 Up: [README.md](../README.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)
 
-# Periodic Events
+# GtkFontDialogButton and CSS Updates
 
-This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
+## The Preference Dialog
 
-## How do we create an animation?
+When you click "Preferences" menu on the new TFE application, the following preference dialog appears.
 
-In this section we will continue to build on our previous work. We will create
-an analog clock application. By adding a function which periodically redraws
-GtkDrawingArea, the clock will be able to continuously display the time.
+![Preference dialog](/src/images/pref_dialog.png)
 
-The application uses a compiled in 'resource' file, so if the GTK4 libraries and
-their dependencies are installed and available, the application will run from
-anywhere.
+A preference dialog allows users to customize settings, such as fonts.
+Nowadays, it is often called a "Settings" dialog.
 
-The program also makes use of some standard mathematical and time handling
-functions.
+This dialog contains only one bUtton: a `GtkFontDialogButton`.
+You can add more widgets to this dialog, but this simple layout is enough for our first version.
 
-The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
-[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
+Clicking this button opens `GtkFontDialog` to select a font.
 
-The complete code is at the end.
+![Font dialog](/src/images/fontdialog.png)
 
-## Drawing the clock face, hour, minute and second hands
+When the user selects a font and clicks the "Select" button, the application's font updates.
 
-The `draw_clock()` function does all the work. See the in-file comments for an
-explanation of how the Cairo drawing works.
+Note that `GtkFontDialogButton` and `GtkFontDialog` are new widgets introduced in GTK 4.10.
+They replace the older `GtkFontButton` and `GtkFontChooserDialog`, which were deprecated in version 4.10.
 
-For a detailed reference of what each of the Cairo functions does see the
-[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
+### The Composite Widget
 
-```c
-static void
-draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
-
-    // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
-    // the center of the window
-    cairo_scale(cr, width, height);
-    cairo_translate(cr, 0.5, 0.5);
-
-    // Set the line width and save the cairo drawing state.
-    cairo_set_line_width(cr, m_line_width);
-    cairo_save(cr);
-
-    // Set the background to a slightly transparent green.
-    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
-    cairo_paint(cr);
-
-    // Resore back to precious drawing state and draw the circular path
-    // representing the clockface. Save this state (including the path) so we
-    // can reuse it.
-    cairo_restore(cr);
-    cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
-    cairo_save(cr);
-
-    // Fill the clockface with white
-    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
-    cairo_fill_preserve(cr);
-    // Restore the path, paint the outside of the clock face.
-    cairo_restore(cr);
-    cairo_stroke_preserve(cr);
-    // Set the 'clip region' to the inside of the path (fill region).
-    cairo_clip(cr);
-
-    // Clock ticks
-    for (int i = 0; i < 12; i++)
-    {
-        // Major tick size
-        double inset = 0.05;
-
-        // Save the graphics state, restore after drawing tick to maintain pen
-        // size
-        cairo_save(cr);
-        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-
-        // Minor ticks are shorter, and narrower.
-        if(i % 3 != 0)
-        {
-            inset *= 0.8;
-            cairo_set_line_width(cr, 0.03);
-        }
-
-        // Draw tick mark
-        cairo_move_to(
-            cr,
-            (m_radius - inset) * cos (i * M_PI / 6.0),
-            (m_radius - inset) * sin (i * M_PI / 6.0));
-        cairo_line_to(
-            cr,
-            m_radius * cos (i * M_PI / 6.0),
-            m_radius * sin (i * M_PI / 6.0));
-        cairo_stroke(cr);
-        cairo_restore(cr); /* stack-pen-size */
-    }
-
-    // Draw the analog hands
-
-    // Get the current Unix time, convert to the local time and break into time
-    // structure to read various time parts.
-    time_t rawtime;
-    time(&rawtime);
-    struct tm * timeinfo = localtime (&rawtime);
-
-    // Calculate the angles of the hands of our clock
-    double hours   = timeinfo->tm_hour * M_PI / 6.0;
-    double minutes = timeinfo->tm_min * M_PI / 30.0;
-    double seconds = timeinfo->tm_sec * M_PI / 30.0;
-
-    // Save the graphics state
-    cairo_save(cr);
-    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-
-    cairo_save(cr);
-
-    // Draw the seconds hand
-    cairo_set_line_width(cr, m_line_width / 3.0);
-    cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
-    cairo_move_to(cr, 0.0, 0.0);
-    cairo_line_to(cr,
-                  sin(seconds) * (m_radius * 0.9),
-                  -cos(seconds) * (m_radius * 0.9));
-    cairo_stroke(cr);
-    cairo_restore(cr);
-
-    // Draw the minutes hand
-    cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
-    cairo_move_to(cr, 0, 0);
-    cairo_line_to(cr,
-                  sin(minutes + seconds / 60) * (m_radius * 0.8),
-                  -cos(minutes + seconds / 60) * (m_radius * 0.8));
-    cairo_stroke(cr);
-
-    // draw the hours hand
-    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
-    cairo_move_to(cr, 0.0, 0.0);
-    cairo_line_to(cr,
-                  sin(hours + minutes / 12.0) * (m_radius * 0.5),
-                  -cos(hours + minutes / 12.0) * (m_radius * 0.5));
-    cairo_stroke(cr);
-    cairo_restore(cr);
-
-    // Draw a little dot in the middle
-    cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
-    cairo_fill(cr);
-}
-```
-
-In order for the clock to be drawn, the drawing function `draw_clock()` needs
-to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
-
-Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
-
-There is still a problem though. In order to animate the clock we need to also
-tell the application that the clock needs to be redrawn every second. This
-process starts by registering (on the next line, line 15) a timeout function
-with `g_timeout_add()` that will wakeup and run another function `time_handler`,
-every second (or 1000ms).
-
-```c
-static void
-app_activate (GApplication *app, gpointer user_data) {
-    GtkWidget *win;
-    GtkWidget *clock;
-    GtkBuilder *build;
-
-    build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
-    win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-
-    clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
-    g_object_unref(build);
-
-    gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
-    g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-    gtk_window_present(GTK_WINDOW (win));
-
-}
-```
-
-Our `time_handler()` function is very simple, as it just calls
-`gtk_widget_queue_draw()` which schedules a redraw of the widget.
-
-```c
-gboolean
-time_handler(GtkWidget* widget) {
-    gtk_widget_queue_draw(widget);
-
-    return TRUE;
-}
-```
-
-.. and that is all there is to it. If you compile and run the example you will
-get a ticking analog clock.
-
-If you get this working, you can try modifying some of the code in
-`draw_clock()` to tweak the application (such as change the color or size and
-length of the hands) or even add text, or create a digital clock.
-
-## The Complete code
-
-You can find the source files in the `tfc` directory. it can be compiled with `./comp tfc`.
-
-`tfc.c`
-
-```c
-#include <gtk/gtk.h>
-#include <math.h>
-#include <time.h>
-
-float m_radius     = 0.42;
-float m_line_width = 0.05;
-
-static void
-draw_clock (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
-
-    // Scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
-    // the center of the window
-    cairo_scale(cr, width, height);
-    cairo_translate(cr, 0.5, 0.5);
-
-    // Set the line width and save the cairo drawing state.
-    cairo_set_line_width(cr, m_line_width);
-    cairo_save(cr);
-
-    // Set the background to a slightly transparent green.
-    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
-    cairo_paint(cr);
-
-    // Resore back to precious drawing state and draw the circular path
-    // representing the clockface. Save this state (including the path) so we
-    // can reuse it.
-    cairo_restore(cr);
-    cairo_arc(cr, 0.0, 0.0, m_radius, 0.0, 2.0 * M_PI);
-    cairo_save(cr);
-
-    // Fill the clockface with white
-    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.8);
-    cairo_fill_preserve(cr);
-    // Restore the path, paint the outside of the clock face.
-    cairo_restore(cr);
-    cairo_stroke_preserve(cr);
-    // Set the 'clip region' to the inside of the path (fill region).
-    cairo_clip(cr);
-
-    // Clock ticks
-    for (int i = 0; i < 12; i++)
-    {
-        // Major tick size
-        double inset = 0.05;
-
-        // Save the graphics state, restore after drawing tick to maintain pen
-        // size
-        cairo_save(cr);
-        cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-
-        // Minor ticks are shorter, and narrower.
-        if(i % 3 != 0)
-        {
-            inset *= 0.8;
-            cairo_set_line_width(cr, 0.03);
-        }
-
-        // Draw tick mark
-        cairo_move_to(
-            cr,
-            (m_radius - inset) * cos (i * M_PI / 6.0),
-            (m_radius - inset) * sin (i * M_PI / 6.0));
-        cairo_line_to(
-            cr,
-            m_radius * cos (i * M_PI / 6.0),
-            m_radius * sin (i * M_PI / 6.0));
-        cairo_stroke(cr);
-        cairo_restore(cr); /* stack-pen-size */
-    }
-
-    // Draw the analog hands
-
-    // Get the current Unix time, convert to the local time and break into time
-    // structure to read various time parts.
-    time_t rawtime;
-    time(&rawtime);
-    struct tm * timeinfo = localtime (&rawtime);
-
-    // Calculate the angles of the hands of our clock
-    double hours   = timeinfo->tm_hour * M_PI / 6.0;
-    double minutes = timeinfo->tm_min * M_PI / 30.0;
-    double seconds = timeinfo->tm_sec * M_PI / 30.0;
-
-    // Save the graphics state
-    cairo_save(cr);
-    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
-
-    cairo_save(cr);
-
-    // Draw the seconds hand
-    cairo_set_line_width(cr, m_line_width / 3.0);
-    cairo_set_source_rgba(cr, 0.7, 0.7, 0.7, 0.8);   // gray
-    cairo_move_to(cr, 0.0, 0.0);
-    cairo_line_to(cr,
-                  sin(seconds) * (m_radius * 0.9),
-                  -cos(seconds) * (m_radius * 0.9));
-    cairo_stroke(cr);
-    cairo_restore(cr);
-
-    // Draw the minutes hand
-    cairo_set_source_rgba(cr, 0.117, 0.337, 0.612, 0.9);   // blue
-    cairo_move_to(cr, 0, 0);
-    cairo_line_to(cr,
-                  sin(minutes + seconds / 60) * (m_radius * 0.8),
-                  -cos(minutes + seconds / 60) * (m_radius * 0.8));
-    cairo_stroke(cr);
-
-    // draw the hours hand
-    cairo_set_source_rgba(cr, 0.337, 0.612, 0.117, 0.9);   // green
-    cairo_move_to(cr, 0.0, 0.0);
-    cairo_line_to(cr,
-                  sin(hours + minutes / 12.0) * (m_radius * 0.5),
-                  -cos(hours + minutes / 12.0) * (m_radius * 0.5));
-    cairo_stroke(cr);
-    cairo_restore(cr);
-
-    // Draw a little dot in the middle
-    cairo_arc(cr, 0.0, 0.0, m_line_width / 3.0, 0.0, 2.0 * M_PI);
-    cairo_fill(cr);
-}
-
-
-gboolean
-time_handler(GtkWidget* widget) {
-    gtk_widget_queue_draw(widget);
-
-    return TRUE;
-}
-
-
-static void
-app_activate (GApplication *app, gpointer user_data) {
-    GtkWidget *win;
-    GtkWidget *clock;
-    GtkBuilder *build;
-
-    build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfc/tfc.ui");
-    win = GTK_WIDGET (gtk_builder_get_object (build, "win"));
-    gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app));
-
-    clock = GTK_WIDGET (gtk_builder_get_object (build, "clock"));
-    g_object_unref(build);
-
-    gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (clock), draw_clock, NULL, NULL);
-    g_timeout_add(1000, (GSourceFunc) time_handler, (gpointer) clock);
-    gtk_window_present(GTK_WINDOW (win));
-
-}
-
-static void
-app_open (GApplication *app, GFile **files, gint n_files, gchar *hint, gpointer user_data) {
-    app_activate(app,user_data);
-}
-
-int
-main (int argc, char **argv) {
-    GtkApplication *app;
-    int stat;
-
-    app = gtk_application_new ("com.github.ToshioCP.tfc", G_APPLICATION_HANDLES_OPEN);
-    g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-    g_signal_connect (app, "open", G_CALLBACK (app_open), NULL);
-    stat = g_application_run (G_APPLICATION (app), argc, argv);
-    g_object_unref (app);
-    return stat;
-}
-```
-
-`tfc.ui`
+This preference dialog contains a `GtkBox`, a `GtkLabel`, and a `GtkFontDialogButton`, and is defined as a composite widget.
+Here is the template UI file for `TfePref`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkApplicationWindow" id="win">
-    <property name="title">Clock</property>
-    <property name="default-width">200</property>
-    <property name="default-height">200</property>
+  <template class="TfePref" parent="GtkWindow">
+    <property name="title">Preferences</property>
+    <property name="resizable">FALSE</property>
+    <property name="modal">TRUE</property>
     <child>
-      <object class="GtkDrawingArea" id="clock">
-        <property name="hexpand">TRUE</property>
-        <property name="vexpand">TRUE</property>
+      <object class="GtkBox">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">12</property>
+        <property name="halign">center</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Font:</property>
+            <property name="xalign">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkFontDialogButton" id="font_dialog_btn">
+            <property name="dialog">
+              <object class="GtkFontDialog"/>
+            </property>
+          </object>
+        </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
 ```
 
-`tfc.gresource.xml`
+- The `<template>` tag specifies that this is a composite widget.
+- The `class` attribute is set to "TfePref" and the `parent` attribute to GtkWindow.
+This makes `TfePref` a child class of GtkWindow.
+- It sets three properties: `title`, `resizable`, and `modal`.
+When `modal` is set to `TRUE`, the user cannot interact with the parent window while this dialog is open.
+- Inside, there is a horizontal `GtkBox` containing a `GtkLabel` and a `GtkFontDialogButton`.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<gresources>
-  <gresource prefix="/com/github/ToshioCP/tfc">
-    <file>tfc.ui</file>
-  </gresource>
-</gresources>
+### The Header File
+
+The `tfepref.h` file defines the types and declares the public function.
+
+```c
+#pragma once
+
+#include <gtk/gtk.h>
+
+#define TFE_TYPE_PREF tfe_pref_get_type ()
+G_DECLARE_FINAL_TYPE (TfePref, tfe_pref, TFE, PREF, GtkWindow)
+
+GtkWidget *
+tfe_pref_new (GtkApplication *application);
 ```
 
-`comp`
+- 5: Defines the `TFE_TYPE_PREF` macro, which is replaced by `tfe_pref_get_type()`.
+- 6: Uses the `G_DECLARE_FINAL_TYPE` macro to automatically generate standard boilerplate code.
+- 8-9: Declares the public function `tfe_pref_new()`, which creates a new `TfePref` instance.
+It takes a GtkApplication argument, which will be assigned to "application" property.
+
+### The C Source File for the Composite Widget
+
+The following code is the `tfepref.c` file.
+
+```c
+#include <gtk/gtk.h>
+#include "tfestylemanager.h"
+#include "tfepref.h"
+
+struct _TfePref
+{
+  GtkWindow parent;
+  GtkFontDialogButton *font_dialog_btn;
+};
+
+G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
+
+static void
+font_dialog_btn_notify_cb (GtkFontDialogButton *btn, GParamSpec *pspec, gpointer user_data) {
+  PangoFontDescription *font_desc = gtk_font_dialog_button_get_font_desc (btn);
+
+  tfe_style_manager_set_font (font_desc);
+}
+
+static void
+tfe_pref_dispose (GObject *gobject) {
+  TfePref *pref = TFE_PREF (gobject);
+
+  gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
+  G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
+}
+
+static void
+tfe_pref_init (TfePref *pref) {
+  gtk_widget_init_template (GTK_WIDGET (pref));
+  g_signal_connect (pref->font_dialog_btn, "notify::font-desc", G_CALLBACK (font_dialog_btn_notify_cb), NULL);
+}
+
+static void
+tfe_pref_class_init (TfePrefClass *class) {
+  G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe11/tfepref.ui");
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
+}
+
+GtkWidget *
+tfe_pref_new (GtkApplication *application) {
+  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, "application", application, NULL));
+}
+```
+
+- 5-9: The `_TfePref` structure includes a `font_dialog_btn` member.
+This holds a pointer to the `GtkFontDialogButton` instance defined in the XML file (`tfepref.ui`).
+This member name must exactly match the `id` attribute in the XML.
+- 11: The `G_DEFINE_FINAL_TYPE` macro expands into standard boilerplate code.
+- 13-18: `font_dialog_btn_notify_cb()` is the notify signal handler for the font dialog button's `font-desc` property.
+This signal is emitted whenever the property changes.
+The handler retrieves the `font-desc` property (which is a `PangoFontDescription`) and passes it to our `tfe_style_manager_set_font()` style manager function.
+Because `tfe_style_manager_set_font()` not only converts this data into a CSS string but also applies it to the `GdkDisplay`, simply calling this function instantly updates the screen's style.
+- 20-26: The dispose handler uses `gtk_widget_dispose_template()` to destroy the instance built from the template.
+- 28-32: The instance initialization function uses `gtk_widget_init_template()` to build the instance from the template.
+It also connects the notify signal for the `font-desc` property to our callback handler.
+- 34-39: `tfe_pref_class_init()` loads the template and binds the `font_dialog_btn` instance variable to the UI file.
+- 41-44: The constructor `tfe_pref_new()` creates the new instance using `g_object_new()`.
+The argument `application` is assigned to the "application" property.
+
+### Handling it in the Application
+
+The preference dialog opens when the user clicks "Preferences" in the application menu.
+Therefore, we need to add code to generate and display the dialog inside the application's action handler.
+
+```c
+static void
+pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkApplication *app = GTK_APPLICATION (user_data);
+  GtkWindow *win = gtk_application_get_active_window (app);
+  GtkWidget *pref_dialog;
+
+  pref_dialog = tfe_pref_new (app);
+  gtk_window_set_transient_for (GTK_WINDOW (pref_dialog), win);
+  gtk_window_present (GTK_WINDOW (pref_dialog));
+}
+```
+
+The logic here is very simple:
+it creates the preference dialog, sets the main window as its transient parent window, and shows the dialog.
+The user closes the dialog by clicking the window's close (X) button.
+Once closed, the dialog instance is destroyed.
+
+## Compile and Run
+
+The source code is located in the [src/tfe11](../src/tfe11/) directory.
+
+Before compiling, you need to make a few changes:
+
+- Change the Application ID in `main.c` to "com.github.ToshioCP.tfe11".
+- Change the prefix in `tfe.gresource.xml` to "/com/github/ToshioCP/tfe11".
+Be sure to update the UI file loading prefix in `tfewindow.c` to match.
+- Add `tfepref.c` to the source files list in `meson.build`.
+
+Move your current directory to `src/tfe11` and type the following commands:
 
 ```
-glib-compile-resources $1.gresource.xml --target=$1.gresource.c --generate-source
-gcc `pkg-config --cflags gtk4` $1.gresource.c $1.c `pkg-config --libs gtk4` -lm
+$ meson setup _build
+$ ninja -C _build
+$ _build/tfe
 ```
+
+Select "Preferences" from the menu to open the dialog.
+Click the font button to open the font chooser, pick a font and size, and the chooser will close, returning you to the preference dialog.
+Now, click the close (X) button at the top right to close the preference dialog.
+You should see that the text view in the main window is now using your selected font.
+
+This setting remains active while the program is running, but once you exit the application, all settings are lost.
+The next time you launch the app, it will revert to the default font.
+
+To save these settings so they persist across restarts, the best practice in GTK is to use GSettings.
+In the next section, we will wrap up the TFE project by covering how to implement GSettings.
 
 Up: [README.md](../README.md),  Prev: [Section 24](sec24.md), Next: [Section 26](sec26.md)

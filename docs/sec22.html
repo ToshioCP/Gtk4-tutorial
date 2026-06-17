@@ -468,13 +468,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>quit_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-3"><a href="#cb10-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>  GList <span class="op">*</span>windows<span class="op">;</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>  </span>
-<span id="cb10-6"><a href="#cb10-6"></a>  <span class="cf">for</span> <span class="op">(</span>windows<span class="op">=</span> gtk_application_get_windows <span class="op">(</span>app<span class="op">);</span> windows<span class="op">;</span> windows <span class="op">=</span> windows<span class="op">-&gt;</span>next<span class="op">)</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a>    gtk_window_close <span class="op">(</span>GTK_WINDOW <span class="op">(</span>windows<span class="op">-&gt;</span>data<span class="op">));</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb10-4"><a href="#cb10-4"></a>  </span>
+<span id="cb10-5"><a href="#cb10-5"></a>  GList <span class="op">*</span>windows <span class="op">=</span> gtk_application_get_windows <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="co">/*</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">  * Closing a window removes it from the application&#39;s internal list.</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">  * To avoid mutating the list while iterating over it, we must use a copy.</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">  */</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  GList <span class="op">*</span>list_copy <span class="op">=</span> g_list_copy <span class="op">(</span>windows<span class="op">);</span> </span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>  <span class="cf">for</span> <span class="op">(</span>GList <span class="op">*</span>l <span class="op">=</span> list_copy<span class="op">;</span> l <span class="op">!=</span> NULL<span class="op">;</span> l <span class="op">=</span> l<span class="op">-&gt;</span>next<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a>    gtk_window_close <span class="op">(</span>GTK_WINDOW <span class="op">(</span>l<span class="op">-&gt;</span>data<span class="op">));</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a>  <span class="op">}</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a>  </span>
+<span id="cb10-16"><a href="#cb10-16"></a>  g_list_free <span class="op">(</span>list_copy<span class="op">);</span> </span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="op">}</span></span></code></pre></div>
         <ul>
-        <li>6-7: Iterate through the list of top-level windows held by
+        <li>5: Obtains the list of top-level windows of the
+        application.</li>
+        <li>10: Makes a shallow copy of the list. Because closing a
+        window removes it from the application’s internal list
+        (<code>windows</code>), the original list will change during the
+        loop. To safely iterate over the windows without the list
+        mutating under us, we must use a copy.</li>
+        <li>12-14: Iterate through the list of top-level windows held by
         <code>GtkApplication</code>, closing all of them with the
         <code>gtk_window_close ()</code> function. Since this function
         emits the “close-request” signal, any unsaved text will

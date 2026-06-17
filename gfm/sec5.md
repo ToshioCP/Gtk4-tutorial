@@ -77,7 +77,7 @@ If you've downloaded this repository, its pathname is `src/tfv/tfv1.c`.
 
 ```
 $ cd src/tfv
-$ comp tfv1
+$ bash comp tfv1
 $ ./a.out
 ```
 

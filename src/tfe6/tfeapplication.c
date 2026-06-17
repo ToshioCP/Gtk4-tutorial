@@ -235,7 +235,6 @@ get_main_window (GApplication *application) {
     { "close", close_activated, NULL, NULL, NULL },
     { "new", new_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
-    { "pref", pref_activated, NULL, NULL, NULL },
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
@@ -273,11 +272,11 @@ app_open (GApplication *application, GFile ** files, gint n_files, const gchar *
 
 void
 app_startup (GApplication *application) {
-  GSimpleAction *quit_action = g_simple_action_new ("quit", NULL);
-
-  g_signal_connect (quit_action, "activate", G_CALLBACK (quit_activated), application);
-  g_action_map_add_action (G_ACTION_MAP (application), G_ACTION (quit_action));
-  g_object_unref (quit_action);
+  const GActionEntry app_entries[] = {
+    { "pref", pref_activated, NULL, NULL, NULL },
+    { "quit", quit_activated, NULL, NULL, NULL }
+  };
+  g_action_map_add_action_entries (G_ACTION_MAP (application), app_entries, G_N_ELEMENTS (app_entries), application);
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.tfe6"

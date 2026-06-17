@@ -1,90 +1,256 @@
-# Periodic Events
+# Custom Drawing
 
-This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
+Custom drawing is to draw shapes dynamically.
+This section shows an example of custom drawing.
+You can draw rectangles by dragging the mouse.
 
-## How do we create an animation?
+Press down the button.
 
-In this section we will continue to build on our previous work. We will create
-an analog clock application. By adding a function which periodically redraws
-GtkDrawingArea, the clock will be able to continuously display the time.
+@@@if pdf
+![Press down the button](/images/cd0.png){width=6cm height=4.83cm}
+@@@else
+![Press down the button](/images/cd0.png)
+@@@end
 
-The application uses a compiled in 'resource' file, so if the GTK4 libraries and
-their dependencies are installed and available, the application will run from
-anywhere.
+Move the mouse.
 
-The program also makes use of some standard mathematical and time handling
-functions.
+@@@if pdf
+![Move the mouse](/images/cd1.png){width=6cm height=4.83cm}
+@@@else
+![Move the mouse](/images/cd1.png)
+@@@end
 
-The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
-[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
+Release the button.
 
-The complete code is at the end.
+@@@if pdf
+![Release the button](/images/cd2.png){width=6cm height=4.83cm}
+@@@else
+![Release the button](/images/cd2.png)
+@@@end
 
-## Drawing the clock face, hour, minute and second hands
+The programs are at `src/custom_drawing` directory.
+Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial) and see the directory.
+There are four files.
 
-The `draw_clock()` function does all the work. See the in-file comments for an
-explanation of how the Cairo drawing works.
+- meson.build
+- rect.c
+- rect.gresource.xml
+- rect.ui
 
-For a detailed reference of what each of the Cairo functions does see the
-[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
+## rect.gresource.xml
 
-@@@include
-tfc/tfc.c draw_clock
-@@@
-
-In order for the clock to be drawn, the drawing function `draw_clock()` needs
-to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
-
-Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
-
-There is still a problem though. In order to animate the clock we need to also
-tell the application that the clock needs to be redrawn every second. This
-process starts by registering (on the next line, line 15) a timeout function
-with `g_timeout_add()` that will wakeup and run another function `time_handler`,
-every second (or 1000ms).
-
-@@@include
-tfc/tfc.c app_activate
-@@@
-
-Our `time_handler()` function is very simple, as it just calls
-`gtk_widget_queue_draw()` which schedules a redraw of the widget.
+This file describes a UI file to compile.
+The compiler glib-compile-resources uses it.
 
 @@@include
-tfc/tfc.c time_handler
+custom_drawing/rect.gresource.xml
 @@@
 
-.. and that is all there is to it. If you compile and run the example you will
-get a ticking analog clock.
+The prefix is `/com/github/ToshioCP/rect` and the file is `rect.ui`.
+Therefore, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui`.
 
-If you get this working, you can try modifying some of the code in
-`draw_clock()` to tweak the application (such as change the color or size and
-length of the hands) or even add text, or create a digital clock.
+## rect.ui
 
-## The Complete code
-
-You can find the source files in the `tfc` directory. it can be compiled with `comp` shell script.
-
-`tfc.c`
+The following is the UI file that defines the widgets.
+There are two widgets which are GtkApplicationWindow and GtkDrawingArea.
+The ids are `win` and `da` respectively.
 
 @@@include
-tfc/tfc.c
+custom_drawing/rect.ui
 @@@
 
-`tfc.ui`
+## rect.c
+
+### GtkApplication
+
+This program uses GtkApplication.
+The application ID is `com.github.ToshioCP.rect`.
+
+```c
+#define APPLICATION_ID "com.github.ToshioCP.rect"
+```
+
+See [GNOME Developer Documentation](https://developer.gnome.org/documentation/tutorials/application-id.html) for further information.
+
+The function `main` is called at the beginning of the application.
 
 @@@include
-tfc/tfc.ui
+custom_drawing/rect.c main
 @@@
 
-`tfc.gresource.xml`
+It connects three signals and handlers.
+
+- startup: It is emitted after the application is registered to the system. 
+- activate: It is emitted when the application is activated.
+- shutdown: It is emitted just before the application quits.
 
 @@@include
-tfc/tfc.gresource.xml
+custom_drawing/rect.c app_startup
 @@@
 
-`comp`
+The startup handler performs the following three tasks:
+
+- Builds the widgets.
+- Initializes the GtkDrawingArea instance.
+  - Sets the drawing function
+  - Connects the "resize" signal and the handler.
+- Creates the GtkGestureDrag instance and initializes it.
+Gestures will be explained in this section later.
 
 @@@include
-tfc/comp
+custom_drawing/rect.c app_activate
 @@@
+
+The activate handler just shows the window.
+
+### GtkDrawingArea
+
+The program has two cairo surfaces and they are pointed to by the global variables.
+
+@@@if gfm
+```C
+static cairo_surface_t *surface = NULL;
+static cairo_surface_t *surface_save = NULL;
+```
+@@@else
+```{.C}
+static cairo_surface_t *surface = NULL;
+static cairo_surface_t *surface_save = NULL;
+```
+@@@end
+
+The drawing process is as follows.
+
+- Creates an image on `surface`.
+- Copies `surface` to the cairo surface of the GtkDrawingArea.
+- Calls ` gtk_widget_queue_draw (da)` to draw it if necessary.
+
+They are created in the "resize" signal handler.
+
+@@@include
+custom_drawing/rect.c resize_cb
+@@@
+
+This callback is called when the GtkDrawingArea is shown.
+This is called only once since the window is not resizable.
+
+It creates image surfaces for `surface` and `surface_save`.
+The `surface` surface is painted white, which is the background color.
+
+The drawing function copies `surface` to the GtkDrawingArea surface.
+
+@@@include
+custom_drawing/rect.c draw_cb
+@@@
+
+This function is called by the system when it needs to redraw the drawing area.
+
+Two surfaces `surface` and `surface_save` are destroyed before the application quits.
+
+@@@include
+custom_drawing/rect.c app_shutdown
+@@@
+
+### GtkGestureDrag
+
+Gesture class is used to recognize human gestures such as click, drag, pan, swipe and so on.
+It is a subclass of GtkEventController.
+GtkGesture class is abstract and there are several implementations.
+
+- GtkGestureClick
+- GtkGestureDrag
+- GtkGesturePan
+- GtkGestureSwipe
+- And others
+
+The program `rect.c` uses GtkGestureDrag.
+It is the implementation for drag gestures.
+The parent-child relationship is as follows.
+
+```
+GObject -- GtkEventController -- GtkGesture -- GtkGestureSingle -- GtkGestureDrag
+```
+
+GtkGestureSingle is a subclass of GtkGesture and optimized for single-touch and mouse interactions.
+
+A GtkGestureDrag instance is created and initialized in the startup signal handler in `rect.c`.
+See line 18 to 23 in the following.
+
+@@@include
+custom_drawing/rect.c app_startup
+@@@
+
+- The function `gtk_gesture_drag_new` creates a new GtkGestureDrag instance.
+- The function `gtk_gesture_single_set_button` sets the button number to listen to.
+The constant `GDK_BUTTON_PRIMARY` is the left button of a mouse.
+- The function `gtk_widget_add_controller` adds an event controller, which is a base class for gestures.
+- Three signals and handlers are connected.
+  - drag-begin: Emitted when dragging starts.
+  - drag-update: Emitted when the dragging pointer moves.
+  - drag-end: Emitted when the dragging ends.
+
+The process during the drag is as follows.
+
+- start: save the surface and start points
+- update: restore the surface and draw a thin rectangle between the start point and the current point of the mouse
+- end: restore the surface and draw a thick rectangle between the start and end points.
+
+We need two global variables for the start point.
+
+@@@if gfm
+```C
+static double start_x;
+static double start_y;
+```
+@@@else
+```{.C}
+static double start_x;
+static double start_y;
+```
+@@@end
+
+The following is the handler for the "drag-begin" signal.
+
+@@@include
+custom_drawing/rect.c copy_surface drag_begin
+@@@
+
+- Copies `surface` to `surface_save`, which is an image just before the dragging.
+- Stores the points to `start_x` and `start_y`.
+
+@@@include
+custom_drawing/rect.c drag_update
+@@@
+
+- Restores `surface` from `surface_save`.
+- Draws a rectangle with thin lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+@@@include
+custom_drawing/rect.c drag_end
+@@@
+
+- Restores `surface` from `surface_save`.
+- Draws a rectangle with thick lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+## Build and Run
+
+Download the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+Change your current directory to `src/custom_drawing`.
+Run meson and ninja to build the program.
+Type `_build/rect` to run the program.
+Try to draw rectangles.
+
+```
+$ cd src/custom_drawing
+$ meson setup _build
+$ ninja -C _build
+$ _build/rect
+```
+
+@@@if pdf
+![The screen of rect program](/images/rect.png){width=12.4cm height=10cm}
+@@@else
+![The screen of rect program](/images/rect.png)
+@@@end

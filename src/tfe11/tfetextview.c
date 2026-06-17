@@ -1,4 +1,5 @@
 #include <string.h>
+#include <gtk/gtk.h>
 #include "tfetextview.h"
 
 struct _TfeTextView {
@@ -54,6 +55,15 @@ tfe_text_view_set_file (TfeTextView *tv, GFile *file) {
   /* The instance gets the ownership of the new GFile by increment the reference count. */
   g_set_object (&tv->file, file);
   gtk_text_buffer_set_modified (tb, TRUE);
+}
+
+gboolean
+tfe_text_view_get_modified (TfeTextView *tv) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), FALSE);
+
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+
+  return gtk_text_buffer_get_modified (tb);
 }
 
 gboolean

@@ -383,7 +383,7 @@ Now it's time to compile and run.
 
 ~~~
 $ cd src/tfe
-$ comp tfe1
+$ bash comp tfe1
 $ ./a.out taketori.txt`.
 ~~~
 

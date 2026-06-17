@@ -154,7 +154,7 @@ The source code is located at [/src/tfv/tfv3.c](../src/tfv/tfv3.c) in the reposi
 Compile and run it.
 
 ~~~
-$ comp tfv3
+$ bash comp tfv3
 $ ./a.out tfv3.c
 ~~~
 

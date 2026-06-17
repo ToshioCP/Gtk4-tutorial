@@ -13,10 +13,10 @@ This tutorial illustrates how to write C programs with the GTK library.
 It is aimed at beginners, so the contents are limited to the basics.
 The table of contents is at the end of this README.md.
 
-- Section 3 to 23 describe the basics, with the example of a simple editor `tfe` (Text File Editor).
-- Section 24 to 27 describe GtkDrawingArea.
-- Section 28 describes Drag and Drop.
-- Section 29 to 33 describe the list model and the list view (GtkListView, GtkGridView, and GtkColumnView). It also describes GtkExpression.
+- Section 3 to 26 describe the basics, with the example of a simple editor `tfe` (Text File Editor).
+- Section 27 to 30 describe GtkDrawingArea.
+- Section 31 describes Drag and Drop.
+- Section 32 to 36 describe the list model and the list view (GtkListView, GtkGridView, and GtkColumnView). It also describes GtkExpression.
 
 The latest version of the tutorial is located at the [GTK4-tutorial GitHub repository](https://github.com/ToshioCP/Gtk4-tutorial).
 You can read it directly without downloading.
@@ -35,12 +35,12 @@ GObject is the base of GTK, so it is important for developers to understand it a
 ## Contribution
 
 This tutorial is still under development and unstable.
-Even though the example codes have been tested on GTK (version 4.10.1), bugs may still exist.
+Even though the example codes have been tested on GTK (version 4.14.5), bugs may still exist.
 If you find any bugs, errors, or mistakes in the tutorial and C examples, please let me know.
 You can post them to [GitHub issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
 You can also post updated files to [pull request](https://github.com/ToshioCP/Gtk4-tutorial/pulls).
 When submitting a pull request, please ensure that you only modify the files in the `src` directory.
-Don't modify the files under `gfm` or `html` directories.
+Don't modify the files under `gfm` or `html` directories directly.
 After modifying some source files, run `bundle exec rake` to create GFM (GitHub Flavoured Markdown) files and run `bundle exec rake html` to create HTML files.
 Please refer to the [Author Guide](gfm/author_guide.md) for further information.
 
@@ -77,24 +77,27 @@ In short:
 1. [Build System](gfm/sec10.md)
 1. [Instance Initialization and Destruction](gfm/sec11.md)
 1. [Error Handling in GLib](gfm/sec12.md)
-1. [Finalizing the custom object](gfm/sec13.md)
-1. [Functions in GtkNotebook](gfm/sec14.md)
-1. [Tfe Main Program](gfm/sec15.md)
-1. [How to Build tfe (Text File Editor)](gfm/sec16.md)
-1. [Menus and Actions](gfm/sec17.md)
-1. [Stateful Action](gfm/sec18.md)
-1. [Ui File for Menu and Action Entries](gfm/sec19.md)
-1. [Composite Widgets and Alert Dialog](gfm/sec20.md)
-1. [GtkFontDialogButton and Gsettings](gfm/sec21.md)
-1. [TfeWindow](gfm/sec22.md)
-1. [Pango, CSS and Application](gfm/sec23.md)
-1. [GtkDrawingArea and Cairo](gfm/sec24.md)
-1. [Periodic Events](gfm/sec25.md)
-1. [Custom Drawing](gfm/sec26.md)
-1. [Tiny Turtle Graphics Interpreter](gfm/sec27.md)
-1. [Drag and Drop](gfm/sec28.md)
-1. [GtkListView](gfm/sec29.md)
-1. [GtkGridView and Activate Signal](gfm/sec30.md)
-1. [GtkExpression](gfm/sec31.md)
-1. [GtkColumnView](gfm/sec32.md)
-1. [GtkSignalListItemFactory](gfm/sec33.md)
+1. [Completing the custom object implementation](gfm/sec13.md)
+1. [File Dialogs and the GIO Asynchronous Model](gfm/sec14.md)
+1. [Completing the Main Program](gfm/sec15.md)
+1. [Menus and Actions](gfm/sec16.md)
+1. [Stateful Actions](gfm/sec17.md)
+1. [Ui File for Menu and Action Entries](gfm/sec18.md)
+1. [GtkPopoverMenuBar and GtkMenuButton](gfm/sec19.md)
+1. [Managing the Application](gfm/sec20.md)
+1. [Creating TfeWindow](gfm/sec21.md)
+1. [Handling Unsaved Text](gfm/sec22.md)
+1. [Accelerators](gfm/sec23.md)
+1. [CSS and Pango](gfm/sec24.md)
+1. [GtkFontDialogButton and CSS Updates](gfm/sec25.md)
+1. [Gsettings](gfm/sec26.md)
+1. [GtkDrawingArea and Cairo](gfm/sec27.md)
+1. [Periodic Events](gfm/sec28.md)
+1. [Custom Drawing](gfm/sec29.md)
+1. [Tiny Turtle Graphics Interpreter](gfm/sec30.md)
+1. [Drag and Drop](gfm/sec31.md)
+1. [GtkListView](gfm/sec32.md)
+1. [GtkGridView and Activate Signal](gfm/sec33.md)
+1. [GtkExpression](gfm/sec34.md)
+1. [GtkColumnView](gfm/sec35.md)
+1. [GtkSignalListItemFactory](gfm/sec36.md)

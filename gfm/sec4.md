@@ -48,7 +48,7 @@ Save this program to a file `lb1.c`.
 Then compile and run it.
 
     $ cd src/misc
-    $ comp lb1
+    $ bash comp lb1
     $ ./a.out
 
 A window with a message "Hello." appears.

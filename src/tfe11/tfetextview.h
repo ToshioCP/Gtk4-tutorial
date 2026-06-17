@@ -20,6 +20,9 @@ void
 tfe_text_view_set_file (TfeTextView *tv, GFile *file);
 
 gboolean
+tfe_text_view_get_modified (TfeTextView *tv);
+
+gboolean
 tfe_text_view_read (TfeTextView *tv, GError **err);
 
 gboolean

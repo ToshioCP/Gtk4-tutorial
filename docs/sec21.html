@@ -167,11 +167,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         was no way to represent them as a cohesive unit. A composite
         widget provides a way to represent this group; it is a single
         widget made by combining multiple widgets.</p>
-        <p>With a composite widget, you create a template (blueprint)
-        for a “special window containing a button and a notebook.” This
-        template is similar to a class. When you instantiate a composite
-        widget, all its internal widgets are created and assembled based
-        on this template.</p>
+        <p>With a composite widget, you create a template for a “special
+        window containing a button and a notebook”. This template is
+        similar to a class. When you instantiate a composite widget, all
+        its internal widgets are created and assembled based on this
+        template.</p>
         <p>Note that existing widgets like GtkWindow cannot be converted
         into composite widgets directly. Composite widgets must be
         implemented programmatically as subclasses.</p>
@@ -332,10 +332,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;close&quot;</span><span class="op">,</span> close_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;new&quot;</span><span class="op">,</span> new_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;saveas&quot;</span><span class="op">,</span> saveas_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">{</span> <span class="st">&quot;pref&quot;</span><span class="op">,</span> pref_activated<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">,</span> NULL <span class="op">},</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
-        <p>This is the exact same code that was previously in the
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>g_action_map_add_action_entries <span class="op">(</span>G_ACTION_MAP <span class="op">(</span>win<span class="op">),</span> win_entries<span class="op">,</span> G_N_ELEMENTS <span class="op">(</span>win_entries<span class="op">),</span> win<span class="op">);</span></span></code></pre></div>
+        <p>This is the same code that was previously in the
         <code>get_main_window()</code> function in version
         <code>tfe6</code>. Since TfeWindow is now a standalone class,
         the code was simply moved to TfeWindow’s initialization.</p>

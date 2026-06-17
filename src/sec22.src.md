@@ -188,7 +188,11 @@ To fix this, we will replace it with a routine that closes the main windows inst
 tfe8/tfeapplication.c quit_activated
 @@@
 
-- 6-7: Iterate through the list of top-level windows held by `GtkApplication`, closing all of them with the `gtk_window_close ()` function.
+- 5: Obtains the list of top-level windows of the application.
+- 10: Makes a shallow copy of the list.
+Because closing a window removes it from the application's internal list (`windows`), the original list will change during the loop.
+To safely iterate over the windows without the list mutating under us, we must use a copy.
+- 12-14: Iterate through the list of top-level windows held by `GtkApplication`, closing all of them with the `gtk_window_close ()` function.
 Since this function emits the "close-request" signal, any unsaved text will automatically be caught and handled by our custom handler.
 Because TFE only has one main window, iterating through a list like this isn't strictly necessary, but the code is written this way to maintain generality.
 

@@ -55,7 +55,7 @@ Until now, we have built windows by combining widgets like buttons and notebooks
 There was no way to represent them as a cohesive unit.
 A composite widget provides a way to represent this group; it is a single widget made by combining multiple widgets.
 
-With a composite widget, you create a template (blueprint) for a "special window containing a button and a notebook."
+With a composite widget, you create a template for a "special window containing a button and a notebook".
 This template is similar to a class.
 When you instantiate a composite widget, all its internal widgets are created and assembled based on this template.
 
@@ -233,13 +233,12 @@ const GActionEntry win_entries[] = {
   { "close", close_activated, NULL, NULL, NULL },
   { "new", new_activated, NULL, NULL, NULL },
   { "saveas", saveas_activated, NULL, NULL, NULL },
-  { "pref", pref_activated, NULL, NULL, NULL },
 };
 g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 
 ````
 
-This is the exact same code that was previously in the `get_main_window()` function in version `tfe6`.
+This is the same code that was previously in the `get_main_window()` function in version `tfe6`.
 Since TfeWindow is now a standalone class, the code was simply moved to TfeWindow's initialization.
 
 ### Constructor

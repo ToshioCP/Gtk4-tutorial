@@ -1,1023 +1,368 @@
 Up: [README.md](../README.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)
 
-# TfeWindow
+# Handling Unsaved Text
 
-## The Tfe Window and XML Files
+Up to this point in TFE, pages could be closed or the application quit even if there was unsaved text.
+This is a poor design that risks discarding the user's hard work and needs to be improved.
+To fix this, we should check for unsaved text beforehand and, if any exists, ask the user whether they want to cancel the closing process.
 
-The following is the window of Tfe.
+## Checking for Text Modifications
 
-![tfe6](/src/images/tfe6.png)
+To check for unsaved text, we use the `gtk_text_buffer_get_modified ()` function from `GtkTextBuffer`.
+This returns `TRUE` if the text buffer has been modified, and `FALSE` otherwise.
 
-- Open, save and close buttons are placed on the toolbar.
-In addition, GtkMenuButton is added to the toolbar.
-This button shows a popup menu when clicked on.
-Here, popup means widely, including pull-down menu.
-- New, save-as, preference and quit items are put into the menu.
+However, since the buffer is internal to `TfeTextView`, querying `GtkTextBuffer` directly breaks the principle of encapsulation.
+Instead, we will create a new instance method in `TfeTextView` to serve as a public interface.
 
-This makes the most frequently used operation bound to the tool bar buttons.
-And the others are stored behind the menus.
-So, it is more practical.
-
-The window is a composite widget.
-The definition is described in the XML file `tfewindow.ui`.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<interface>
-  <template class="TfeWindow" parent="GtkApplicationWindow">
-    <property name="title">Text File Editor</property>
-    <property name="default-width">600</property>
-    <property name="default-height">400</property>
-    <child>
-      <object class="GtkBox" id="boxv">
-        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-        <child>
-          <object class="GtkBox" id="boxh">
-            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-chars">10</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label">Open</property>
-                <property name="action-name">win.open</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label">Save</property>
-                <property name="action-name">win.save</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="hexpand">TRUE</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label">Close</property>
-                <property name="action-name">win.close</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuButton" id="btnm">
-                <property name="direction">down</property>
-                <property name="icon-name">open-menu-symbolic</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="width-chars">10</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkNotebook" id="nb">
-            <property name="scrollable">TRUE</property>
-            <property name="hexpand">TRUE</property>
-            <property name="vexpand">TRUE</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </template>
-</interface>
-
-```
-
-- Three buttons "Open", "Save" and "Close" are defined.
-You can use two ways to catch the button click event.
-One is "clicked" signal and the other is to register an action to the button.
-The first way is simple.
-You can connects the signal and your handler directly.
-The second way is like menu items.
-When the button is clicked, the corresponding action is activated.
-It is a bit complicated because you need to create an action and its "activate" handler in advance.
-But one advantage is you can connect two or more things to the action.
-For example, an accelerator can be connected to the action.
-Accelerators are keys that connect to actions.
-For example, Ctrl+O is often connected to a file open action.
-So, both open button and Ctrl+O activate an open action.
-The latter way is used in the XML file above.
-- You can specify a theme icon to GtkMenuButton with "icon-name" property.
-The "open-menu-symbolic" is an image that is called hamburger menu.
-
-The `menu.ui` XML file defines the menu for GtkMenuButton.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<interface>
-  <menu id="menu">
-    <section>
-      <item>
-        <attribute name="label">New</attribute>
-        <attribute name="action">win.new</attribute>
-      </item>
-      <item>
-        <attribute name="label">Save As…</attribute>
-        <attribute name="action">win.saveas</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
-        <attribute name="label">Preference</attribute>
-        <attribute name="action">win.pref</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
-        <attribute name="label">Quit</attribute>
-        <attribute name="action">win.close-all</attribute>
-      </item>
-    </section>
-  </menu>
-</interface>
-```
-
-There are four menu items and they are connected to actions.
-
-## The Header File
-
-The following is the codes of `tfewindow.h`.
-
-```c
-#pragma once
-
-#include <gtk/gtk.h>
-
-#define TFE_TYPE_WINDOW tfe_window_get_type ()
-G_DECLARE_FINAL_TYPE (TfeWindow, tfe_window, TFE, WINDOW, GtkApplicationWindow)
-
-void
-tfe_window_notebook_page_new (TfeWindow *win);
-
-void
-tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files);
-
-GtkWidget *
-tfe_window_new (GtkApplication *app);
-```
-
-- 5-6: `TFE_TYPE_WINDOW` definition and the `G_DECLARE_FINAL_TYPE` macro.
-- 8-15: Public functions. The first two functions create a notebook page and the last function creates a window.
-
-## C File
-
-### Composite Widget
-
-The following codes are extracted from `tfewindow.c`.
+Public functions must be declared in the header file.
 
 ```C
-#include <gtk/gtk.h>
-#include "tfewindow.h"
-
-struct _TfeWindow {
-  GtkApplicationWindow parent;
-  GtkMenuButton *btnm;
-  GtkNotebook *nb;
-  gboolean is_quit;
-};
-
-G_DEFINE_FINAL_TYPE (TfeWindow, tfe_window, GTK_TYPE_APPLICATION_WINDOW);
-
-static void
-tfe_window_dispose (GObject *gobject) {
-  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_WINDOW);
-  G_OBJECT_CLASS (tfe_window_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_window_init (TfeWindow *win) {
-  GtkBuilder *build;
-  GMenuModel *menu;
-
-  gtk_widget_init_template (GTK_WIDGET (win));
-
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/menu.ui");
-  menu = G_MENU_MODEL (gtk_builder_get_object (build, "menu"));
-  gtk_menu_button_set_menu_model (win->btnm, menu);
-  g_object_unref(build);
-... ... ...
-}
-
-static void
-tfe_window_class_init (TfeWindowClass *class) {
-  GObjectClass *object_class = G_OBJECT_CLASS (class);
-
-  object_class->dispose = tfe_window_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfewindow.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);
-}
-
-GtkWidget *
-tfe_window_new (GtkApplication *app) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_WINDOW, "application", app, NULL));
-}
+gboolean
+tfe_text_view_get_modified (TfeTextView *tv);
 ```
 
-The program above is similar to `tfealert.c` and `tfepref.c`.
-It uses the same way to build a composite widget.
-But there's one thing new.
-It is menu.
-The menu is built from the XML resource `menu.ui` and inserted into the menu button.
-It is done in the instance initialization function `tfe_window_init`.
-
-### Actions
-
-Actions can belong to an application or window.
-Tfe only has one top window and all the actions are registered in the window.
-For example, "close-all" action destroys the top level window and that brings the application to quit.
-You can make "app.quit"  action instead of "win.close-all".
-It's your choice.
-If your application has two or more windows, both "app.quit" and "win.close-all", which closes all the notebook pages on the window, may be necessary.
-Anyway, you need to consider that each action should belong to the application or a window.
-
-Actions are defined in the instance initialization function.
-
-```C
-static void
-tfe_window_init (TfeWindow *win) {
-... ... ...
-/* ----- action ----- */
-  const GActionEntry win_entries[] = {
-    { "open", open_activated, NULL, NULL, NULL },
-    { "save", save_activated, NULL, NULL, NULL },
-    { "close", close_activated, NULL, NULL, NULL },
-    { "new", new_activated, NULL, NULL, NULL },
-    { "saveas", saveas_activated, NULL, NULL, NULL },
-    { "pref", pref_activated, NULL, NULL, NULL },
-    { "close-all", close_all_activated, NULL, NULL, NULL }
-  };
-  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
-... ... ...
-}
-```
-
-Two things are necessary, an array and the `g_action_map_add_action_entries` function.
-
-- The element of the array is the GActionEntry structure.
-The structure has the following members:
-  - an action name
-  - a handler for the activate signal
-  - the type of the parameter or NULL for no parameter
-  - the initial state for the action
-  - a handler for the change-state signal
-- The actions above are stateless and have no parameters.
-So, the third parameter and after are all NULL.
-- The function `g_action_map_add_action_entries` adds the actions in the `win_entries` array to the action map `win`.
-The last argument `win` is the user_data, which is the last argument of handlers.
-- All the handlers are in `tfewindow.c` program and shown in the following subsections.
-
-### The Handlers of the Actions
-
-#### open\_activated
-
-The callback function `open_activated` is an activate signal handler on "open" action.
+This function queries the buffer, returning `TRUE` if modified and `FALSE` if not.
+The corresponding implementation in `tfetextview.c` is shown below.
 
 ```c
-static void
-open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  GtkWidget *tv = tfe_text_view_new ();
+gboolean
+tfe_text_view_get_modified (TfeTextView *tv) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), FALSE);
 
-  g_signal_connect (tv, "open-response", G_CALLBACK (open_response_cb), win);
-  tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
-}
-```
-
-It connects the "open-response" signal on the newly created TfeTextView instance and just calls `tfe_text_view_open`.
-It leaves the rest of the task to the signal handler `open_response_cb`.
-
-```c
-static void
-open_response_cb (TfeTextView *tv, int response, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  GFile *file;
-  char *filename;
-
-  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  }else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  }else {
-    filename = g_file_get_basename (file);
-    g_object_unref (file);
-    notebook_page_build (win, GTK_WIDGET (tv), filename);
-    g_free (filename);
-  }
-}
-```
-
-If the TfeTextView instance failed to read a file, it destroys the instance with `g_object_ref_sink` and `g_object_unref`.
-Since newly created widgets have a floating reference, you need to convert the floating reference to the normal reference before you release it.
-The conversion is done with `g_object_ref_sink`.
-
-If the instance successfully read the file, it calls `notebook_page_build` to build a notebook page and add it to the GtkNotebook object.
-
-```c
-static void
-notebook_page_build (TfeWindow *win, GtkWidget *tv, char *filename) {
-  // The arguments win, tv and filename are owned by the caller.
-  // If tv has a floating reference, it is consumed by the function.
-  GtkWidget *scr = gtk_scrolled_window_new ();
   GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  GtkNotebookPage *nbp;
-  GtkWidget *lab;
-  int i;
 
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-  lab = gtk_label_new (filename);
-  i = gtk_notebook_append_page (win->nb, scr, lab);
-  nbp = gtk_notebook_get_page (win->nb, scr);
-  g_object_set (nbp, "tab-expand", TRUE, NULL);
-  gtk_notebook_set_current_page (win->nb, i);
-  g_signal_connect (tv, "change-file", G_CALLBACK (file_changed_cb), win->nb);
-  g_signal_connect (tb, "modified-changed", G_CALLBACK (modified_changed_cb), tv);
+  return gtk_text_buffer_get_modified (tb);
 }
 ```
 
-This function is a kind of library function and it is called from the different three places.
+## Closing a Page
 
-This function creates a new GtkScrolledWindow instance and sets its child to `tv`.
-Then it appends it to the GtkNotebook instance `win->nb`.
-And it sets the tab label to the filename.
+The current page is closed when its close button is clicked.
+Before closing, we check if the page has been modified.
+If it has, we prompt the user with an alert dialog; if not, we simply close it.
 
-After the building, it connects two signals and handlers.
+Because we are using an asynchronous dialog, we need to split this process into two functions:
 
-- "change-file" signal and `file_changed_cb` handler.
-If the TfeTextView instance changes the file, the handler is called and the notebook page tab is updated.
-- "modified-changed" signal and `modified_changed_cb` handler.
-If the text in the buffer of TfeTextView instance is modified, an asterisk is added at the beginning of the filename of the notebook page tab.
-If the text is saved to the file, the asterisk is removed.
-The asterisk tells the user that the text has been modified or not.
+- One for setting up and displaying the dialog.
+- Another for handling the steps after the user makes a selection (the callback handler).
 
-```c
-static void
-file_changed_cb (TfeTextView *tv, gpointer user_data) {
-  GtkNotebook *nb =  GTK_NOTEBOOK (user_data);
-  GtkWidget *scr;
-  GtkWidget *label;
-  GFile *file;
-  char *filename;
-
-  file = tfe_text_view_get_file (tv);
-  scr = gtk_widget_get_parent (GTK_WIDGET (tv));
-  if (G_IS_FILE (file)) {
-    filename = g_file_get_basename (file);
-    g_object_unref (file);
-  } else
-    filename = get_untitled ();
-  label = gtk_label_new (filename);
-  g_free (filename);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
-}
-
-static void
-modified_changed_cb (GtkTextBuffer *tb, gpointer user_data) {
-  TfeTextView *tv = TFE_TEXT_VIEW (user_data);
-  GtkWidget *scr = gtk_widget_get_parent (GTK_WIDGET (tv));
-  GtkWidget *nb =  gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_NOTEBOOK);
-  GtkWidget *label;
-  GFile *file;
-  char *filename;
-  char *text;
-
-  file = tfe_text_view_get_file (tv);
-  filename = g_file_get_basename (file);
-  if (gtk_text_buffer_get_modified (tb))
-    text = g_strdup_printf ("*%s", filename);
-  else
-    text = g_strdup (filename);
-  g_object_unref (file);
-  g_free (filename);
-  label = gtk_label_new (text);
-  g_free (text);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
-}
-```
-
-#### save\_activated
-
-The callback function `save_activated` is an activate signal handler on "save" action.
-
-```c
-static void
-save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  TfeTextView *tv = get_current_textview (win->nb);
-
-  tfe_text_view_save (TFE_TEXT_VIEW (tv));
-}
-```
-
-This function gets the current TfeTextView instance with the function `get_current_textview`.
-And it just calls `tfe_text_view_save`.
-
-```c
-static TfeTextView *
-get_current_textview (GtkNotebook *nb) {
-  int i;
-  GtkWidget *scr;
-  GtkWidget *tv;
-
-  i = gtk_notebook_get_current_page (nb);
-  scr = gtk_notebook_get_nth_page (nb, i);
-  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-  return TFE_TEXT_VIEW (tv);
-}
-```
-
-#### close\_activated
-
-The callback function `close_activated` is an activate signal handler on "close" action.
-It closes the current notebook page.
+First, let's look at the close action's handler, located in `tfewindow.c`.
 
 ```c
 static void
 close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
   TfeWindow *win = TFE_WINDOW (user_data);
-  TfeTextView *tv;
-  GtkTextBuffer *tb;
-  GtkWidget *alert;
+  GtkWidget *scr = gtk_notebook_get_nth_page (win->nb, gtk_notebook_get_current_page (win->nb));
+  GtkWidget *tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+  GtkAlertDialog *dialog;
+  const char *buttons[] = {"Cancel", "Close Without Saving", NULL};
 
-  tv = get_current_textview (win->nb);
-  tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  if (! gtk_text_buffer_get_modified (tb)) /* is saved? */
-    notebook_page_close (win);
-  else {
-    win->is_quit = FALSE;
-    alert = tfe_alert_new_with_data ("Are you sure?", "Contents aren't saved yet.\nAre you sure to close?", "Close");
-    gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
-    g_signal_connect (alert, "response", G_CALLBACK (alert_response_cb), win);
-    gtk_window_present (GTK_WINDOW (alert));
-  }
-}
-```
-
-If the text in the current page has been saved, it calls `notebook_page_close` to close the page.
-Otherwise, it sets `win->is_quit` to FALSE and show the alert dialog.
-The "response" signal on the dialog is connected to the handler `alert_response_cb`.
-
-```c
-static void
-notebook_page_close (TfeWindow *win){
-  int i;
-
-  if (gtk_notebook_get_n_pages (win->nb) == 1)
-    gtk_window_destroy (GTK_WINDOW (win));
-  else {
-    i = gtk_notebook_get_current_page (win->nb);
-    gtk_notebook_remove_page (win->nb, i);
-  }
-}
-```
-
-If the notebook has only one page, it destroys the window and the application quits.
-Otherwise, it removes the current page.
-
-```c
-static void
-alert_response_cb (TfeAlert *alert, int response_id, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  if (response_id == TFE_ALERT_RESPONSE_ACCEPT) {
-    if (win->is_quit)
-      gtk_window_destroy(GTK_WINDOW (win));
-    else
-      notebook_page_close (win);
-  }
-}
-```
-
-If the user clicked on the cancel button, it does nothing.
-If the user clicked on the accept button, which is the same as close button, it calls `notebook_page_close`.
-Note that `win->is_quit` has been set to FALSE in the `close_activated` function.
-
-#### new\_activated
-
-The callback function `new_activated` is an activate signal handler on "new" action.
-
-```c
-static void
-new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  tfe_window_notebook_page_new (win);
-}
-```
-
-It just calls `tfe_window_notebook_page_new`, which is a public method of TfeWindow.
-
-```c
-void
-tfe_window_notebook_page_new (TfeWindow *win) {
-  GtkWidget *tv;
-  char *filename;
-
-  tv = tfe_text_view_new ();
-  filename = get_untitled ();
-  notebook_page_build (win, tv, filename);
-  g_free (filename);
-}
-```
-
-This function creates a new TfeTextView instance, generates a string like "Untitled", and calls `notebook_page_build`.
-
-#### saveas\_activated
-
-The callback function `saveas_activated` is an activate signal handler on "saveas" action.
-
-```c
-static void
-saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  TfeTextView *tv = get_current_textview (win->nb);
-
-  tfe_text_view_saveas (TFE_TEXT_VIEW (tv));
-}
-```
-
-This function gets the current page TfeTextView instance and calls `tfe_text_view_saveas`.
-
-#### pref\_activated
-
-The callback function `pref_activated` is an activate signal handler on "pref" action.
-
-```c
-static void
-pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  GtkWidget *pref;
-
-  pref = tfe_pref_new ();
-  gtk_window_set_transient_for (GTK_WINDOW (pref), GTK_WINDOW (win));
-  gtk_window_present (GTK_WINDOW (pref));
-}
-```
-
-This function creates a TfePref instance, which is a dialog, and sets the transient parent window to `win`.
-And it shows the dialog.
-
-#### close\_all\_activated
-
-The callback function `close_all_activated` is an activate signal handler on "close_all" action.
-
-```c
-static void
-close_all_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  if (close_request_cb (win) == FALSE)
-    gtk_window_destroy (GTK_WINDOW (win));
-}
-```
-
-It first calls the function `close_request_cb`.
-It is a callback function for the "close-request" signal on the top window.
-It returns FALSE if all the texts have been saved.
-Otherwise it returns TRUE.
-
-Therefore, function `close_all_activated` destroys the top window if all the texts have been saved.
-Otherwise it does nothing.
-But, the function `close_request_cb` shows an alert dialog and if the user clicks on the accept button, the window will be destroyed.
-
-### Window "close-request" Signal
-
-GtkWindow has a "close-request" signal and it is emitted when the close button, which is the x-shaped button at the top right corner, is clicked on.
-And the user handler is called before the default handler.
-If the user handler returns TRUE, the rest of the close process is skipped.
-If it returns FALSE, the rest will go on and the window will be destroyed.
-
-```c
-static gboolean
-close_request_cb (TfeWindow *win) {
-  TfeAlert *alert;
-
-  if (is_saved_all (win->nb))
-    return FALSE;
-  else {
-    win->is_quit = TRUE;
-    alert = TFE_ALERT (tfe_alert_new_with_data ("Are you sure?", "Contents aren't saved yet.\nAre you sure to quit?", "Quit"));
-    gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
-    g_signal_connect (alert, "response", G_CALLBACK (alert_response_cb), win);
-    gtk_window_present (GTK_WINDOW (alert));
-    return TRUE;
-  }
-}
-```
-
-First, it calls `is_saved_all` and checks if the texts have been saved.
-If so, it returns FALSE and the close process continues.
-Otherwise, it sets `win->is_quit` to TRUE and shows an alert dialog.
-When the user clicks on the accept or cancel button, the dialog disappears and "response" signal is emitted.
-Then, the handler `alert_response_cb` is called.
-It destroys the top window if the user clicked on the accept button since `win->is_quit` is TRUE.
-Otherwise it does nothing.
-
-```c
-static gboolean
-is_saved_all (GtkNotebook *nb) {
-  int i, n;
-  GtkWidget *scr;
-  GtkWidget *tv;
-  GtkTextBuffer *tb;
-
-  n = gtk_notebook_get_n_pages (nb);
-  for (i = 0; i < n; ++i) {
-    scr = gtk_notebook_get_nth_page (nb, i);
-    tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-    tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-    if (gtk_text_buffer_get_modified (tb))
-      return FALSE;
-  }
-  return TRUE;
-}
-```
-
-### Public Functions
-
-There are three public functions.
-
-- `void tfe_window_notebook_page_new (TfeWindow *win)`
-- `void tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files)`
-- `GtkWidget *tfe_window_new (GtkApplication *app)`
-
-The first function is called when the application emits the "activate" signal.
-The second is for "open" signal.
-It is given three arguments and they are owned by the caller.
-
-```c
-void
-tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files) {
-  int i;
-  GtkWidget *tv;
-  char *filename;
-
-  for (i = 0; i < n_files; i++)
-    if ((tv = tfe_text_view_new_with_file (*(files+i))) != NULL) {
-      filename = g_file_get_basename (*(files+i));
-      notebook_page_build (win, tv, filename);
-      g_free (filename);
+    if (!tfe_text_view_get_modified (TFE_TEXT_VIEW (tv))) {
+      close_page (win);
+      return;
     }
-  if (gtk_notebook_get_n_pages (win->nb) == 0)
-    tfe_window_notebook_page_new (win);
+  
+  dialog = gtk_alert_dialog_new ("Unsaved changes");
+  gtk_alert_dialog_set_detail (dialog, "Are you sure to close this page without saving?");
+
+  gtk_alert_dialog_set_buttons (dialog, buttons);
+  gtk_alert_dialog_set_cancel_button (dialog, 0); /* cancel button */
+  gtk_alert_dialog_set_default_button (dialog, 0); /* default focus */
+
+  gtk_alert_dialog_choose (dialog, GTK_WINDOW (win), NULL, page_close_alert_cb, win);
+  g_object_unref (dialog);
 }
 ```
 
-This function has a loop for the array `files`.
-It creates TfeTextView instance with the text from each file.
-And build a page with it.
+- 9-12: If the text is unmodified, call `close_page ()` to close the page and return. (This function will be explained later).
+- 14-19: Create the alert dialog.
+  - 14: Create the dialog and set its title to "Unsaved changes".
+  - 15: Set the alert's detailed description.
+  - 17: Set the two buttons using the string array prepared on line 7. The final `NULL` serves as the termination marker.
+  - 18: Assign the cancel button to index 0. This ensures that pressing the `ESC` key acts exactly like clicking the Cancel button.
+  - 19: Assign the default button to index 0. This ensures that pressing the Return key also acts like clicking the Cancel button.
+- 21: We use `gtk_alert_dialog_choose` to asynchronously receive the user's selection. The arguments are as follows:
+  - `dialog`: The alert dialog instance.
+  - `GTK_WINDOW (win)`: The transient parent window. The dialog will be displayed modally on top of this window.
+  - `NULL`: No `GCancellable` is set. If provided, this would allow the dialog to be cancelled programmatically from the outside.
+  - `page_close_alert_cb`: The callback function, which is invoked after the user operation (dialog selection) is completed or cancelled.
+  - `win`: The user data passed into the callback function.
+- 22: Free the dialog instance, as it is no longer needed in this function.
 
-If an error happens and no page is created, it creates a new empty page.
-
-### Full Codes of tfewindow.c
-
-The following is the full source codes of `tfewindow.c`.
+Next, let's look at the callback function.
 
 ```c
-#include <gtk/gtk.h>
-#include "tfewindow.h"
-#include "tfepref.h"
-#include "tfealert.h"
-#include "../tfetextview/tfetextview.h"
-
-struct _TfeWindow {
-  GtkApplicationWindow parent;
-  GtkMenuButton *btnm;
-  GtkNotebook *nb;
-  gboolean is_quit;
-};
-
-G_DEFINE_FINAL_TYPE (TfeWindow, tfe_window, GTK_TYPE_APPLICATION_WINDOW);
-
-/* Low level functions */
-
-/* Create a new untitled string */
-/* The returned string should be freed with g_free() when no longer needed. */
-static char *
-get_untitled () {
-  static int c = -1;
-  if (++c == 0) 
-    return g_strdup_printf("Untitled");
-  else
-    return g_strdup_printf ("Untitled%u", c);
-}
-
-/* The returned object is owned by the scrolled window. */
-/* The caller won't get the ownership and mustn't release it. */
-static TfeTextView *
-get_current_textview (GtkNotebook *nb) {
-  int i;
-  GtkWidget *scr;
-  GtkWidget *tv;
-
-  i = gtk_notebook_get_current_page (nb);
-  scr = gtk_notebook_get_nth_page (nb, i);
-  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-  return TFE_TEXT_VIEW (tv);
-}
-
-/* This call back is called when a TfeTextView instance emits a "change-file" signal. */
 static void
-file_changed_cb (TfeTextView *tv, gpointer user_data) {
-  GtkNotebook *nb =  GTK_NOTEBOOK (user_data);
-  GtkWidget *scr;
-  GtkWidget *label;
-  GFile *file;
-  char *filename;
+page_close_alert_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+  GtkAlertDialog *dialog = GTK_ALERT_DIALOG (source_object);
+  GtkWidget *win;
+  GError *err = NULL;
+  int response = gtk_alert_dialog_choose_finish (dialog, res, &err);
 
-  file = tfe_text_view_get_file (tv);
-  scr = gtk_widget_get_parent (GTK_WIDGET (tv));
-  if (G_IS_FILE (file)) {
-    filename = g_file_get_basename (file);
-    g_object_unref (file);
-  } else
-    filename = get_untitled ();
-  label = gtk_label_new (filename);
-  g_free (filename);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
-}
-
-static void
-modified_changed_cb (GtkTextBuffer *tb, gpointer user_data) {
-  TfeTextView *tv = TFE_TEXT_VIEW (user_data);
-  GtkWidget *scr = gtk_widget_get_parent (GTK_WIDGET (tv));
-  GtkWidget *nb =  gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_NOTEBOOK);
-  GtkWidget *label;
-  GFile *file;
-  char *filename;
-  char *text;
-
-  file = tfe_text_view_get_file (tv);
-  filename = g_file_get_basename (file);
-  if (gtk_text_buffer_get_modified (tb))
-    text = g_strdup_printf ("*%s", filename);
-  else
-    text = g_strdup (filename);
-  g_object_unref (file);
-  g_free (filename);
-  label = gtk_label_new (text);
-  g_free (text);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, label);
-}
-
-static gboolean
-is_saved_all (GtkNotebook *nb) {
-  int i, n;
-  GtkWidget *scr;
-  GtkWidget *tv;
-  GtkTextBuffer *tb;
-
-  n = gtk_notebook_get_n_pages (nb);
-  for (i = 0; i < n; ++i) {
-    scr = gtk_notebook_get_nth_page (nb, i);
-    tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-    tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-    if (gtk_text_buffer_get_modified (tb))
-      return FALSE;
+  if (err != NULL) {
+      g_warning ("Alert Dialog Error: %s", err->message);
+      g_error_free (err);
+      return;
   }
-  return TRUE;
+  
+  win = GTK_WIDGET (user_data); /* This assignment must be done after the error check */
+  if (response == 1) { /* Close Without Saving */
+      close_page (TFE_WINDOW (win));
+  }
+  /* Cancel => do nothing*/
 }
+```
 
+- 7: Use `gtk_alert_dialog_choose_finish ()` to determine which button was pressed. The return value indicates the index (starting from 0) of the selected button.
+- 9-13: If an error occurs, print the message to standard error and return.
+- 16-17: If the button at index 1 is selected (which corresponds to "Close Without Saving"), call `close_page ()` to close the tab.
+
+The `close_page ()` function is implemented as follows:
+
+```c
 static void
-notebook_page_close (TfeWindow *win){
-  int i;
-
-  if (gtk_notebook_get_n_pages (win->nb) == 1)
-    gtk_window_destroy (GTK_WINDOW (win));
-  else {
-    i = gtk_notebook_get_current_page (win->nb);
-    gtk_notebook_remove_page (win->nb, i);
+close_page (TfeWindow *win) {
+  if (gtk_notebook_get_n_pages (win->nb) >= 2)
+    gtk_notebook_remove_page (win->nb, gtk_notebook_get_current_page (win->nb));
+  else {  /* If the page is the last one or no page exists */
+    /*
+    * Delay the window destruction until the main loop becomes idle.
+    * This function must be called after all other pending operations are completed.
+    * For example, we need to wait for the GtkAlertDialog's asynchronous
+    * cleanup and internal signal disconnections to safely finish.
+    * If the window is destroyed immediately here, it will cause 
+    * a "GLib-GObject-CRITICAL" error.
+    */
+    g_idle_add_once ((GSourceOnceFunc) gtk_window_destroy, win);
   }
 }
+```
 
-static void
-notebook_page_build (TfeWindow *win, GtkWidget *tv, char *filename) {
-  // The arguments win, tv and filename are owned by the caller.
-  // If tv has a floating reference, it is consumed by the function.
-  GtkWidget *scr = gtk_scrolled_window_new ();
-  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  GtkNotebookPage *nbp;
-  GtkWidget *lab;
-  int i;
+- 3-4: If two or more pages remain, the current page is removed.
+- 5-15: Otherwise (if only one page remains), destroy the window and terminate the program.
 
-  gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD_CHAR);
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), tv);
-  lab = gtk_label_new (filename);
-  i = gtk_notebook_append_page (win->nb, scr, lab);
-  nbp = gtk_notebook_get_page (win->nb, scr);
-  g_object_set (nbp, "tab-expand", TRUE, NULL);
-  gtk_notebook_set_current_page (win->nb, i);
-  g_signal_connect (tv, "change-file", G_CALLBACK (file_changed_cb), win->nb);
-  g_signal_connect (tb, "modified-changed", G_CALLBACK (modified_changed_cb), tv);
+However, we must be careful about the order in which the window is destroyed and the dialog is cleaned up.
+At the moment the dialog button is pressed and the callback function is invoked, GTK's internal cleanup process for the dialog has not completely finished.
+GTK performs this remaining cleanup (such as disconnecting signals from the parent window) *after* the callback function returns.
+If we destroy the window immediately inside the callback, the dialog's parent window will no longer exist during GTK's cleanup phase, triggering a `GLib-GObject-CRITICAL` warning.
+
+Therefore, we must wait for all of GTK's internal processes to finish before executing the main window's termination process.
+We achieve this using `g_idle_add_once ()`.
+This function schedules our destroy operation to run on the main loop once it becomes idle.
+By the time it executes, all high-priority operations (like the dialog cleanup) are guaranteed to be finished, allowing the window to be destroyed safely.
+
+## Closing the Window
+
+The "x" button in the top right corner closes the window.
+If there is unsaved text when this button is pressed, we must notify the user and let them choose how to proceed, just as we did for a single page.
+
+Since there may be unsaved changes across multiple pages, we will handle it as follows:
+
+1. Intercept the "close-request" signal, which is emitted just before the window closes.
+2. Iterate through all pages to create a list of unsaved documents.
+3. If there are no unsaved pages, close the window normally.
+4. If there are unsaved pages, display the list in an alert dialog and ask the user whether to proceed.
+5. Handle the result in a callback function.
+
+### The close-request Signal
+
+The `close-request` signal is defined in `GtkWindow`, and its default handler is a class method.
+The following code is an excerpt from `gtkwindow.h`.
+
+```C
+struct _GtkWindowClass
+{
+  GtkWidgetClass parent_class;
+
+  ... ... ...
+
+  /**
+   * GtkWindowClass::close_request:
+   *
+   * Class handler for the [signal@Window::close-request] signal.
+   *
+   * Returns: Whether the window should be destroyed
+   */
+  gboolean (* close_request)    (GtkWindow *window);
+
+  ... ... ...
 }
+```
 
-static void
-open_response_cb (TfeTextView *tv, int response, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  GFile *file;
-  char *filename;
+To use this signal in a subclass, we override the class method rather than using `g_signal_connect` (which is intended for connecting signals **externally**).
+This override is performed in the class initialization function.
 
-  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  }else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  }else {
-    filename = g_file_get_basename (file);
-    g_object_unref (file);
-    notebook_page_build (win, GTK_WIDGET (tv), filename);
-    g_free (filename);
-  }
-}
-
-/* alert response signal handler */
-static void
-alert_response_cb (TfeAlert *alert, int response_id, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  if (response_id == TFE_ALERT_RESPONSE_ACCEPT) {
-    if (win->is_quit)
-      gtk_window_destroy(GTK_WINDOW (win));
-    else
-      notebook_page_close (win);
-  }
-}
-
-/* ----- Close request on the top window ----- */
-/* ----- The signal is emitted when the close button is clicked. ----- */
-static gboolean
-close_request_cb (TfeWindow *win) {
-  TfeAlert *alert;
-
-  if (is_saved_all (win->nb))
-    return FALSE;
-  else {
-    win->is_quit = TRUE;
-    alert = TFE_ALERT (tfe_alert_new_with_data ("Are you sure?", "Contents aren't saved yet.\nAre you sure to quit?", "Quit"));
-    gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
-    g_signal_connect (alert, "response", G_CALLBACK (alert_response_cb), win);
-    gtk_window_present (GTK_WINDOW (alert));
-    return TRUE;
-  }
-}
-
-/* ----- action activated handlers ----- */
-static void
-open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  GtkWidget *tv = tfe_text_view_new ();
-
-  g_signal_connect (tv, "open-response", G_CALLBACK (open_response_cb), win);
-  tfe_text_view_open (TFE_TEXT_VIEW (tv), GTK_WINDOW (win));
-}
-
-static void
-save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  TfeTextView *tv = get_current_textview (win->nb);
-
-  tfe_text_view_save (TFE_TEXT_VIEW (tv));
-}
-
-static void
-close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  TfeTextView *tv;
-  GtkTextBuffer *tb;
-  GtkWidget *alert;
-
-  tv = get_current_textview (win->nb);
-  tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  if (! gtk_text_buffer_get_modified (tb)) /* is saved? */
-    notebook_page_close (win);
-  else {
-    win->is_quit = FALSE;
-    alert = tfe_alert_new_with_data ("Are you sure?", "Contents aren't saved yet.\nAre you sure to close?", "Close");
-    gtk_window_set_transient_for (GTK_WINDOW (alert), GTK_WINDOW (win));
-    g_signal_connect (alert, "response", G_CALLBACK (alert_response_cb), win);
-    gtk_window_present (GTK_WINDOW (alert));
-  }
-}
-
-static void
-new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  tfe_window_notebook_page_new (win);
-}
-
-static void
-saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  TfeTextView *tv = get_current_textview (win->nb);
-
-  tfe_text_view_saveas (TFE_TEXT_VIEW (tv));
-}
-
-static void
-pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-  GtkWidget *pref;
-
-  pref = tfe_pref_new ();
-  gtk_window_set_transient_for (GTK_WINDOW (pref), GTK_WINDOW (win));
-  gtk_window_present (GTK_WINDOW (pref));
-}
-
-static void
-close_all_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  TfeWindow *win = TFE_WINDOW (user_data);
-
-  if (close_request_cb (win) == FALSE)
-    gtk_window_destroy (GTK_WINDOW (win));
-}
-
-/* --- public functions --- */
-
-void
-tfe_window_notebook_page_new (TfeWindow *win) {
-  GtkWidget *tv;
-  char *filename;
-
-  tv = tfe_text_view_new ();
-  filename = get_untitled ();
-  notebook_page_build (win, tv, filename);
-  g_free (filename);
-}
-
-void
-tfe_window_notebook_page_new_with_files (TfeWindow *win, GFile **files, int n_files) {
-  int i;
-  GtkWidget *tv;
-  char *filename;
-
-  for (i = 0; i < n_files; i++)
-    if ((tv = tfe_text_view_new_with_file (*(files+i))) != NULL) {
-      filename = g_file_get_basename (*(files+i));
-      notebook_page_build (win, tv, filename);
-      g_free (filename);
-    }
-  if (gtk_notebook_get_n_pages (win->nb) == 0)
-    tfe_window_notebook_page_new (win);
-}
-
-static void
-tfe_window_dispose (GObject *gobject) {
-  gtk_widget_dispose_template (GTK_WIDGET (gobject), TFE_TYPE_WINDOW);
-  G_OBJECT_CLASS (tfe_window_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_window_init (TfeWindow *win) {
-  GtkBuilder *build;
-  GMenuModel *menu;
-
-  gtk_widget_init_template (GTK_WIDGET (win));
-
-  build = gtk_builder_new_from_resource ("/com/github/ToshioCP/tfe/menu.ui");
-  menu = G_MENU_MODEL (gtk_builder_get_object (build, "menu"));
-  gtk_menu_button_set_menu_model (win->btnm, menu);
-  g_object_unref(build);
-
-/* ----- action ----- */
-  const GActionEntry win_entries[] = {
-    { "open", open_activated, NULL, NULL, NULL },
-    { "save", save_activated, NULL, NULL, NULL },
-    { "close", close_activated, NULL, NULL, NULL },
-    { "new", new_activated, NULL, NULL, NULL },
-    { "saveas", saveas_activated, NULL, NULL, NULL },
-    { "pref", pref_activated, NULL, NULL, NULL },
-    { "close-all", close_all_activated, NULL, NULL, NULL }
-  };
-  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
-
-  g_signal_connect (win, "close-request", G_CALLBACK (close_request_cb), NULL);
-}
-
+```c
 static void
 tfe_window_class_init (TfeWindowClass *class) {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
+  GtkWindowClass *window_class = GTK_WINDOW_CLASS (class);
 
   object_class->dispose = tfe_window_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfewindow.ui");
+  window_class->close_request = tfe_window_close_request;
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe8/tfewindow.ui");
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, btnm);
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfeWindow, nb);
 }
+```
 
-GtkWidget *
-tfe_window_new (GtkApplication *app) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_WINDOW, "application", app, NULL));
+- 4: Since the defining class of the "close-request" signal is `GtkWindow`, we cast it to a `GtkWindowClass` pointer and assign it to the `window_class` variable.
+- 7: Override the handler.
+
+### The close-request Signal Handler
+
+The code for the handler is as follows:
+
+```c
+static gboolean
+tfe_window_close_request (GtkWindow *window)
+{
+  TfeWindow *win = TFE_WINDOW (window);
+  GtkWidget *scr;
+  GtkWidget *tv;
+  const char *tab_label;
+  int n_pages = gtk_notebook_get_n_pages (win->nb);
+  int unsaved_count = 0;
+  GString *unsaved_list = g_string_new ("");
+  GtkAlertDialog *dialog;
+  const char *buttons[] = {"Cancel", "Close Window Without Saving", NULL};
+
+  for (int i = 0; i < n_pages; i++) {
+    scr = gtk_notebook_get_nth_page (win->nb, i);
+    tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+
+    if (tfe_text_view_get_modified (TFE_TEXT_VIEW (tv))) {
+      unsaved_count++;
+      tab_label = gtk_notebook_get_tab_label_text (win->nb, scr);
+      if (tab_label != NULL) {
+        g_string_append_printf (unsaved_list, "- %s\n", tab_label);
+      } else {
+        g_string_append_printf (unsaved_list, "- Page %d\n", i + 1);
+      }
+    }
+  }
+
+  if (unsaved_count == 0) {
+    g_string_free (unsaved_list, TRUE);
+
+    /* Chain up to the parent's close_request handler */
+    return GTK_WINDOW_CLASS (tfe_window_parent_class)->close_request (window);
+  }
+
+  dialog = gtk_alert_dialog_new (
+    unsaved_count == 1 ? "1 unsaved change" : "%d unsaved changes", 
+    unsaved_count
+  );
+  gtk_alert_dialog_set_detail (dialog, unsaved_list->str);
+  gtk_alert_dialog_set_buttons (dialog, buttons);
+  gtk_alert_dialog_set_cancel_button (dialog, 0); 
+  gtk_alert_dialog_set_default_button (dialog, 0); 
+  gtk_alert_dialog_choose (dialog, GTK_WINDOW (win), NULL, window_close_alert_cb, win);
+
+  g_string_free (unsaved_list, TRUE);
+  g_object_unref (dialog);
+
+  /* Stop the close request */
+  return TRUE;
 }
 ```
+
+- 10: Use a `GString` to generate the description for the alert dialog.
+A `GString` is a GLib structure that automatically handles memory allocation as you append text.
+It is initialized as an empty string and is perfect for safely building dynamic strings.
+- 14-27: Iterate through the pages.
+If any text is unsaved, append the page's tab name to `unsaved_list`.
+If the page tab lacks a `GtkLabel`, it defaults to displaying a placeholder like "Page 1", so we construct that string in place of a filename.
+- 29-34: If there are no unsaved pages, free the `GString`, chain up to the parent class's `close-request` signal handler, and finish.
+Since the parent class's handler returns a `gboolean`, we simply return its value directly.
+- 36-44: Construct the alert dialog and call `gtk_alert_dialog_choose ()`.
+This process is nearly identical to how we constructed the dialog for closing a single page.
+- 46-47: Free the `GString` and the dialog instance.
+- 50: By returning `TRUE`, we halt the closing process.
+The actual window closure will be handled later in the callback function, depending on the user's selection.
+
+### The callback function
+
+The callback function looks like this:
+
+```c
+static void
+window_close_alert_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+  GtkAlertDialog *dialog = GTK_ALERT_DIALOG (source_object);
+  GtkWidget *win;
+  GError *err = NULL;
+  
+  int response = gtk_alert_dialog_choose_finish (dialog, res, &err);
+
+  if (err != NULL) {
+      g_warning ("Alert Dialog Error: %s", err->message);
+      g_error_free (err);
+      return; 
+  }
+
+  win = GTK_WIDGET (user_data);
+  if (response == 1) { /* Close Without Saving */
+      g_idle_add_once ((GSourceOnceFunc) gtk_window_destroy, win);
+  }
+}
+```
+
+The logic here is almost identical to the `page_close_alert_cb` explained in the previous section, except that it destroys the entire window at the end instead of closing a single page.
+As discussed earlier, we again use `g_idle_add_once ()` to safely wait for the alert dialog's cleanup process to finish.
+
+## Application Quit Process
+
+Quitting the application is triggered by clicking the "quit" menu item.
+The corresponding action is `app.quit`, defined in `tfeapplication.c`.
+
+Previously, its handler called the `g_application_quit ()` function, but once invoked, the application termination process cannot be aborted.
+To fix this, we will replace it with a routine that closes the main windows instead, allowing the `close-request` handler to intercept the process if there is unsaved text.
+
+```c
+static void
+quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  GtkApplication *app = GTK_APPLICATION (user_data);
+  
+  GList *windows = gtk_application_get_windows (app);
+  /*
+  * Closing a window removes it from the application's internal list.
+  * To avoid mutating the list while iterating over it, we must use a copy.
+  */
+  GList *list_copy = g_list_copy (windows); 
+
+  for (GList *l = list_copy; l != NULL; l = l->next) {
+    gtk_window_close (GTK_WINDOW (l->data));
+  }
+  
+  g_list_free (list_copy); 
+}
+```
+
+- 5: Obtains the list of top-level windows of the application.
+- 10: Makes a shallow copy of the list.
+Because closing a window removes it from the application's internal list (`windows`), the original list will change during the loop.
+To safely iterate over the windows without the list mutating under us, we must use a copy.
+- 12-14: Iterate through the list of top-level windows held by `GtkApplication`, closing all of them with the `gtk_window_close ()` function.
+Since this function emits the "close-request" signal, any unsaved text will automatically be caught and handled by our custom handler.
+Because TFE only has one main window, iterating through a list like this isn't strictly necessary, but the code is written this way to maintain generality.
+
+## Compiling and Running
+
+All the source files are in the [src/tfe8](../src/tfe8/) directory.
+You can build and execute the program as follows.
+
+First, change your current directory to `src/tfe8`.
+Then, type below in your command line.
+
+```
+$ meson setup _build
+$ ninja -C _build
+$ _build/tfe
+```
+
+Try modifying the page and clicking the close button.
+An alert dialog will appear, prompting you to choose either Cancel or Close.
 
 Up: [README.md](../README.md),  Prev: [Section 21](sec21.md), Next: [Section 23](sec23.md)

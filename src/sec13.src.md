@@ -256,7 +256,3 @@ This is because the content in the buffer is now safely saved and exactly matche
 We have successfully completed the `TfeTextView` class by implementing its header, constructors, and instance methods.
 We also learned essential GTK memory management concepts, such as floating references and data ownership.
 With our custom widget fully operational, we are now ready to integrate it into the main application.
-
-## The API Document of TfeTextView
-
-Here is [API document of TfeTextView](tfe5/tfetextview_doc.src.md).

@@ -14,7 +14,7 @@
     <section>
       <item>
         <attribute name="label">Preference</attribute>
-        <attribute name="action">win.pref</attribute>
+        <attribute name="action">app.pref</attribute>
       </item>
     </section>
     <section>

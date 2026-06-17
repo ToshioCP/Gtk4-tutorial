@@ -1,147 +1,90 @@
-# GtkDrawingArea and Cairo
+# Periodic Events
 
-If you want to draw shapes or paint images dynamically on the screen, use the GtkDrawingArea widget.
+This chapter was written by Paul Schulz <paul@mawsonlakes.org>.
 
-GtkDrawingArea provides a Cairo drawing context.
-You can draw images with Cairo library functions.
-This section describes:
+## How do we create an animation?
 
-1. A brief introduction to Cairo
-2. GtkDrawingArea, with a very simple example.
+In this section we will continue to build on our previous work. We will create
+an analog clock application. By adding a function which periodically redraws
+GtkDrawingArea, the clock will be able to continuously display the time.
 
-## Cairo
+The application uses a compiled in 'resource' file, so if the GTK4 libraries and
+their dependencies are installed and available, the application will run from
+anywhere.
 
-Cairo is a drawing library for two dimensional graphics.
-There are a lot of documents on [Cairo's website](https://www.cairographics.org/).
-If you aren't familiar with Cairo, it is worth reading the [tutorial](https://www.cairographics.org/tutorial/).
+The program also makes use of some standard mathematical and time handling
+functions.
 
-The following is an introduction to the Cairo library.
-First, you need to know surfaces, sources, masks, destinations, cairo context and transformations.
+The clocks mechanics were taken from a Cairo drawing example, using gtkmm4, which can be found
+[here](https://developer-old.gnome.org/gtkmm-tutorial/stable/sec-drawing-clock-example.html.en).
 
-- A surface represents an image.
-It is like a canvas.
-We can draw shapes and images with different colors on surfaces.
-- The source pattern, or simply source, is like paint, which will be transferred to destination surface by cairo functions.
-- The mask describes the area to be used in the copy;
-- The destination is a target surface;
-- The cairo context manages the transfer from source to destination, through mask with its functions;
-For example, `cairo_stroke` is a function to draw a path to the destination by the transfer.
-- A transformation can be applied before the transfer completes.
-The type of the transformation is called affine, which is a mathematical term meaning transformations
-that preserve straight lines.
-Scaling, rotating, reflecting, shearing and translating are examples of affine transformations.
-They are mathematically represented by matrix multiplication and vector addition.
-In this section we don't use it, instead we will only use the identity transformation.
-This means that the coordinates in the source and mask map directly to the same coordinates in the destination.
+The complete code is at the end.
 
-@@@if pdf
-![Stroke a rectangle](/images/cairo.png){width=9.0cm height=6.0cm}
-@@@else
-![Stroke a rectangle](/images/cairo.png)
-@@@end
+## Drawing the clock face, hour, minute and second hands
 
-The instruction is as follows:
+The `draw_clock()` function does all the work. See the in-file comments for an
+explanation of how the Cairo drawing works.
 
-1. Create a surface.
-This will be the destination.
-2. Create a cairo context with the surface. This surface will be the destination of the context.
-3. Create a source pattern within the context.
-4. Create paths, which are lines, rectangles, arcs, texts or more complicated shapes in the mask.
-5. Use a drawing operator such as `cairo_stroke` to transfer the paint in the source to the destination.
-6. Save the destination surface to a file if necessary.
-
-Here's a simple example program that draws a small square and saves it as a png file.
-The path of the file is `/src/misc/cairo.c`.
+For a detailed reference of what each of the Cairo functions does see the
+[cairo_t reference](https://www.cairographics.org/manual/cairo-cairo-t.html).
 
 @@@include
-misc/cairo.c
+tfc/tfc.c draw_clock
 @@@
 
-- 1: Includes the header file of Cairo.
-- 6: `cairo_surface_t` is the type of a surface.
-- 7: `cairo_t` is the type of a cairo context.
-- 8-10: `width` and `height` are the size of `surface`.
-`square_size` is the size of a square to be drawn on the surface.
-- 13: `cairo_image_surface_create` creates an image surface.
-`CAIRO_FORMAT_RGB24` is a constant that means each pixel has red, green, and blue components, and each component is an 8-bit number (24 bits in total).
-Modern displays have this type of color depth.
-Width and height are in pixels and given as integers.
-- 14: Creates cairo context.
-The surface given as an argument will be the destination of the context.
-- 18: `cairo_set_source_rgb` creates a source pattern, which is a solid white paint.
-The second to fourth arguments are red, green and blue color values respectively, and they are of type float.
-The values are between zero (0.0) and one (1.0).
-Black is (0.0,0.0,0.0) and white is (1.0,1.0,1.0).
-- 19: `cairo_paint` copies everywhere in the source to destination.
-The destination is filled with white pixels with this command.
-- 21: Sets the source color to black.
-- 22: `cairo_set_line_width` sets the width of lines.
-In this case, the line width is set to be two pixels and will result in that size.
-(It is because the transformation is identity.
-If the transformation isn't identity, for example scaling with the factor three, the actual width in destination will be six (2x3=6) pixels.)
-- 23: Draws a rectangle (square) on the mask.
-The square is located at the center.
-- 24: `cairo_stroke` transfers the source to destination through the rectangle in the mask.
-- 31: Outputs the image to a png file `rectangle.png`.
-- 32: Destroys the context. At the same time the source is destroyed.
-- 33: Destroys the surface.
+In order for the clock to be drawn, the drawing function `draw_clock()` needs
+to be registered with GTK4. This is done in the `app_activate()` function (on line 24).
 
-To compile this, change your current directory to `/src/misc` and type the following.
+Whenever the application needs to redraw the GtkDrawingArea, it will now call `draw_clock()`.
 
-```
-$ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
-```
-
-![rectangle.png](/images/rectangle.png)
-
-See the [Cairo's website](https://www.cairographics.org/) for further information.
-
-## GtkDrawingArea
-
-The following is a very simple example.
+There is still a problem though. In order to animate the clock we need to also
+tell the application that the clock needs to be redrawn every second. This
+process starts by registering (on the next line, line 15) a timeout function
+with `g_timeout_add()` that will wakeup and run another function `time_handler`,
+every second (or 1000ms).
 
 @@@include
-misc/da1.c
+tfc/tfc.c app_activate
 @@@
 
-The `main` function is almost the same as those in the previous sections.
-The two functions `app_activate` and `draw_function` are important in this example.
+Our `time_handler()` function is very simple, as it just calls
+`gtk_widget_queue_draw()` which schedules a redraw of the widget.
 
-- 22: Creates a GtkDrawingArea instance.
-- 25: Sets a drawing function of the widget.
-GtkDrawingArea widget uses the function `draw_function` to draw the contents of itself whenever it is necessary.
-For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
-Then, the whole window needs to be redrawn.
-For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference -- gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
+@@@include
+tfc/tfc.c time_handler
+@@@
 
-The drawing function has five parameters.
+.. and that is all there is to it. If you compile and run the example you will
+get a ticking analog clock.
 
-~~~C
-void drawing_function (GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height,
-                       gpointer user_data);
-~~~
+If you get this working, you can try modifying some of the code in
+`draw_clock()` to tweak the application (such as change the color or size and
+length of the hands) or even add text, or create a digital clock.
 
-The first parameter is the GtkDrawingArea widget.
-You can't change any properties, for example `content-width` or `content-height`, in this function.
-The second parameter is a cairo context given by the widget.
-The destination surface of the context is connected to the contents of the widget.
-What you draw to this surface will appear in the widget on the screen.
-The third and fourth parameters are the size of the destination surface.
-Now, look at the program again.
+## The Complete code
 
-- 3-17: The drawing function.
-- 7-8: Sets the source to be white and paint the destination white.
-- 9: Sets the line width to be 2.
-- 10: Sets the source to be black.
-- 11-15: Adds a rectangle to the mask.
-- 16: Draws the rectangle with black color to the destination.
+You can find the source files in the `tfc` directory. it can be compiled with `comp` shell script.
 
-The program is [/src/misc/da1.c](misc/da1.c).
-Compile and run it, then a window with a black rectangle (square) appears.
-When you resize the window, the square always appears at the center of the window because the drawing function is invoked each time the window is resized.
+`tfc.c`
 
-@@@if pdf
-![Square in the window](/images/da1.png){width=8cm height=3.4cm}
-@@@else
-![Square in the window](/images/da1.png)
-@@@end
+@@@include
+tfc/tfc.c
+@@@
+
+`tfc.ui`
+
+@@@include
+tfc/tfc.ui
+@@@
+
+`tfc.gresource.xml`
+
+@@@include
+tfc/tfc.gresource.xml
+@@@
+
+`comp`
+
+@@@include
+tfc/comp
+@@@

@@ -10,14 +10,27 @@ struct _TfeApplication {
 
 G_DEFINE_FINAL_TYPE (TfeApplication, tfe_application, GTK_TYPE_APPLICATION)
 
-
 static void
 quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
   GtkApplication *app = GTK_APPLICATION (user_data);
-  GList *windows;
   
-  for (windows= gtk_application_get_windows (app); windows; windows = windows->next)
-    gtk_window_close (GTK_WINDOW (windows->data));
+  GList *windows = gtk_application_get_windows (app);
+  /*
+  * Closing a window removes it from the application's internal list.
+  * To avoid mutating the list while iterating over it, we must use a copy.
+  */
+  GList *list_copy = g_list_copy (windows); 
+
+  for (GList *l = list_copy; l != NULL; l = l->next) {
+    gtk_window_close (GTK_WINDOW (l->data));
+  }
+  
+  g_list_free (list_copy); 
+}
+
+static void
+pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  /* not implemented yet */
 }
 
 /* helper function */
@@ -57,6 +70,13 @@ app_open (GApplication *application, GFile ** files, gint n_files, const gchar *
 }
 
 static void
+app_shutdown (GApplication *application) {
+  tfe_style_manager_terminate ();
+
+ G_APPLICATION_CLASS (tfe_application_parent_class)->shutdown (application);
+}
+
+static void
 app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   int i;
@@ -66,11 +86,11 @@ app_startup (GApplication *application) {
 
   tfe_style_manager_initialize (base_css);
 
-  GSimpleAction *quit_action = g_simple_action_new ("quit", NULL);
-
-  g_signal_connect (quit_action, "activate", G_CALLBACK (quit_activated), application);
-  g_action_map_add_action (G_ACTION_MAP (application), G_ACTION (quit_action));
-  g_object_unref (quit_action);
+  const GActionEntry app_entries[] = {
+    { "pref", pref_activated, NULL, NULL, NULL },
+    { "quit", quit_activated, NULL, NULL, NULL }
+  };
+  g_action_map_add_action_entries (G_ACTION_MAP (application), app_entries, G_N_ELEMENTS (app_entries), application);
 
   /* In the future version, settings will be initialized here */
 
@@ -96,9 +116,7 @@ static void
 tfe_application_dispose (GObject *object) {
   /* In the future version, settings will be disposed here */
 
-  tfe_style_manager_terminate ();
-
-  G_OBJECT_CLASS (tfe_application_parent_class)->dispose (object);
+   G_OBJECT_CLASS (tfe_application_parent_class)->dispose (object);
 }
 
 static void
@@ -109,6 +127,7 @@ static void
 tfe_application_class_init (TfeApplicationClass *class) {
   G_OBJECT_CLASS (class)->dispose = tfe_application_dispose;
   G_APPLICATION_CLASS (class)->startup = app_startup;
+  G_APPLICATION_CLASS (class)->shutdown = app_shutdown;
   G_APPLICATION_CLASS (class)->activate = app_activate;
   G_APPLICATION_CLASS (class)->open = app_open;
 }

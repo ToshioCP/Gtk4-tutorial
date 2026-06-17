@@ -113,16 +113,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <h3 id="css-syntax">CSS Syntax</h3>
         <p>CSS uses very simple rules. It combines three main elements:
         “Where” (Selector), “What” (Property), and “How” (Value).</p>
-        <div class="sourceCode" id="cb1"><pre
-        class="sourceCode css"><code class="sourceCode css"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Selector {</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  Property: Value<span class="op">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  Property: Value<span class="op">;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+        <pre><code>selector {
+  property: value;
+  another-property: another-value;
+}</code></pre>
         <ul>
-        <li>Selector: The target widget you want to style.</li>
-        <li>Property: The attribute you want to change (like color,
+        <li>selector: The target widget you want to style.</li>
+        <li>property: The attribute you want to change (like color,
         margin, or font).</li>
-        <li>Value: The specific setting for that property (like
+        <li>value: The specific setting for that property (like
         <code>red</code> or <code>10px</code>).</li>
         </ul>
         <div class="sourceCode" id="cb2"><pre
@@ -137,8 +136,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>Targets the widget type itself, applying the style to all
         widgets of that kind. You can find these node names in the CSS
         section of the official GTK documentation for each widget. For
-        example, “window” for GtkWindow, “button” for GtkButton, and
-        “textview” for GtkTextView.</p>
+        example, “window” is the node for GtkWindow, “button” for
+        GtkButton, and “textview” for GtkTextView.</p>
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode css"><code class="sourceCode css"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Makes the background of ALL text views light gray */</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>textview {</span>
@@ -203,7 +202,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         specific widget using C functions:</p>
         <ul>
         <li>Node: Fixed by the widget type (e.g., <code>GtkLabel</code>
-        is <code>label</code>). No function is needed.</li>
+        node is “label”). No function is needed.</li>
         <li>Class: Manage the widget classes with
         <code>gtk_widget_add_css_class()</code>,
         <code>gtk_widget_set_css_classes()</code>, or
@@ -225,7 +224,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>GTK_STYLE_PROVIDER_PRIORITY_APPLICATION</code> priority is
         appropriate for application style providers. (Tip: You can check
         the exact priority rankings in the
-        <code>gtkstyleprovider.h</code> source code).</li>
+        <code>gtkstyleprovider.h</code> in the <a
+        href="https://gitlab.gnome.org/GNOME/gtk">GTK source
+        files</a>).</li>
         </ul>
         <h2 id="tfe-example-applying-base-css">TFE Example: Applying
         Base CSS</h2>
@@ -237,7 +238,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Font CSS: Allows users to change fonts dynamically via a
         font button (we will build this in the next section).</li>
         </ul>
-        <p>Let’s implement the Base CSS in our startup handler.</p>
+        <p>Let’s apply the Base CSS in our startup handler.</p>
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;tfestylemanager.h&quot;</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -258,13 +259,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>tfe_application_dispose <span class="op">(</span>GObject <span class="op">*</span>object<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="co">/* Settings will be disposed here in a future version */</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>app_shutdown <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  tfe_style_manager_terminate <span class="op">();</span></span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  tfe_style_manager_terminate <span class="op">();</span> <span class="co">/* terminate the style manager helper functions */</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>object<span class="op">);</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a> G_APPLICATION_CLASS <span class="op">(</span>tfe_application_parent_class<span class="op">)-&gt;</span>shutdown <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
         <p>The files <code>tfestylemanager.h</code> and
         <code>tfestylemanager.c</code> contain our CSS helper
         functions.</p>
@@ -274,6 +273,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li><code>tfe_style_manager_terminate()</code> cleans it up
         during the application’s dispose phase.</li>
         </ul>
+        <p>The two functions are called in the startup and shutdown
+        handlers respectively.</p>
         <p>Here is the implementation from
         <code>tfestylemanager.c</code>:</p>
         <div class="sourceCode" id="cb9"><pre
@@ -329,6 +330,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </ol>
         <p>Add <code>tfestylemanager.c</code> to your
         <code>meson.build</code> file:</p>
+        <div class="sourceCode" id="cb10"><pre
+        class="sourceCode numberSource numberLines"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>project(&#39;tfe&#39;, &#39;c&#39;)</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a>gtkdep = dependency(&#39;gtk4&#39;)</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a>gnome=import(&#39;gnome&#39;)</span>
+<span id="cb10-6"><a href="#cb10-6"></a>resources = gnome.compile_resources(&#39;resources&#39;,&#39;tfe.gresource.xml&#39;)</span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a># Main application</span>
+<span id="cb10-9"><a href="#cb10-9"></a>sourcefiles=files(&#39;main.c&#39;, &#39;tfeapplication.c&#39;, &#39;tfewindow.c&#39;, &#39;tfetextview.c&#39;, &#39;tfestylemanager.c&#39;)</span>
+<span id="cb10-10"><a href="#cb10-10"></a>executable(&#39;tfe&#39;, sourcefiles, resources, dependencies: gtkdep)</span></code></pre></div>
         <p>THe source files are in the <a
         href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe10/">src/tfe10</a>
         directory.</p>
@@ -348,9 +360,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li><code>pango_font_description_get_family()</code>: Gets the
         font family (e.g., “sans-serif”).</li>
         <li><code>pango_font_description_get_size()</code>: Gets the
-        font size. <em>(Note: Divide this by the
-        <code>PANGO_SCALE</code> constant to get standard points or
-        pixels.)</em></li>
+        font size. (Note: Divide this by the <code>PANGO_SCALE</code>
+        constant to get standard points or pixels.)</li>
         <li><code>pango_font_description_get_size_is_absolute()</code>:
         Returns <code>TRUE</code> for pixels (px) and <code>FALSE</code>
         for points (pt).</li>
@@ -371,98 +382,101 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>To make our font button work, we need to bridge the gap
         between Pango and CSS. The helper function
         <code>font_desc_to_css()</code> does exactly this.</p>
-        <div class="sourceCode" id="cb11"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> <span class="dt">int</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>pango_weight2int <span class="op">(</span>PangoWeight pango_weight<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>  <span class="cf">switch</span> <span class="op">(</span>pango_weight<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>  <span class="cf">case</span> PANGO_WEIGHT_THIN<span class="op">:</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a>    <span class="cf">return</span> <span class="dv">100</span><span class="op">;</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRALIGHT<span class="op">:</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>    <span class="cf">return</span> <span class="dv">200</span><span class="op">;</span></span>
-<span id="cb11-8"><a href="#cb11-8"></a>  <span class="cf">case</span> PANGO_WEIGHT_LIGHT<span class="op">:</span></span>
-<span id="cb11-9"><a href="#cb11-9"></a>    <span class="cf">return</span> <span class="dv">300</span><span class="op">;</span></span>
-<span id="cb11-10"><a href="#cb11-10"></a>  <span class="cf">case</span> PANGO_WEIGHT_SEMILIGHT<span class="op">:</span></span>
-<span id="cb11-11"><a href="#cb11-11"></a>    <span class="cf">return</span> <span class="dv">350</span><span class="op">;</span></span>
-<span id="cb11-12"><a href="#cb11-12"></a>  <span class="cf">case</span> PANGO_WEIGHT_BOOK<span class="op">:</span></span>
-<span id="cb11-13"><a href="#cb11-13"></a>    <span class="cf">return</span> <span class="dv">380</span><span class="op">;</span></span>
-<span id="cb11-14"><a href="#cb11-14"></a>  <span class="cf">case</span> PANGO_WEIGHT_NORMAL<span class="op">:</span></span>
-<span id="cb11-15"><a href="#cb11-15"></a>    <span class="cf">return</span> <span class="dv">400</span><span class="op">;</span> <span class="co">/* or &quot;normal&quot; */</span></span>
-<span id="cb11-16"><a href="#cb11-16"></a>  <span class="cf">case</span> PANGO_WEIGHT_MEDIUM<span class="op">:</span></span>
-<span id="cb11-17"><a href="#cb11-17"></a>    <span class="cf">return</span> <span class="dv">500</span><span class="op">;</span></span>
-<span id="cb11-18"><a href="#cb11-18"></a>  <span class="cf">case</span> PANGO_WEIGHT_SEMIBOLD<span class="op">:</span></span>
-<span id="cb11-19"><a href="#cb11-19"></a>    <span class="cf">return</span> <span class="dv">600</span><span class="op">;</span></span>
-<span id="cb11-20"><a href="#cb11-20"></a>  <span class="cf">case</span> PANGO_WEIGHT_BOLD<span class="op">:</span></span>
-<span id="cb11-21"><a href="#cb11-21"></a>    <span class="cf">return</span> <span class="dv">700</span><span class="op">;</span> <span class="co">/* or &quot;bold&quot; */</span></span>
-<span id="cb11-22"><a href="#cb11-22"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRABOLD<span class="op">:</span></span>
-<span id="cb11-23"><a href="#cb11-23"></a>    <span class="cf">return</span> <span class="dv">800</span><span class="op">;</span></span>
-<span id="cb11-24"><a href="#cb11-24"></a>  <span class="cf">case</span> PANGO_WEIGHT_HEAVY<span class="op">:</span></span>
-<span id="cb11-25"><a href="#cb11-25"></a>    <span class="cf">return</span> <span class="dv">900</span><span class="op">;</span></span>
-<span id="cb11-26"><a href="#cb11-26"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRAHEAVY<span class="op">:</span></span>
-<span id="cb11-27"><a href="#cb11-27"></a>    <span class="co">/* CSS Fonts Level 4 defines 1000, but GTK only supports Level 3 (max 900). */</span></span>
-<span id="cb11-28"><a href="#cb11-28"></a>    <span class="cf">return</span> <span class="dv">900</span><span class="op">;</span></span>
-<span id="cb11-29"><a href="#cb11-29"></a>  <span class="cf">default</span><span class="op">:</span></span>
-<span id="cb11-30"><a href="#cb11-30"></a>    <span class="cf">return</span> <span class="dv">400</span><span class="op">;</span> <span class="co">/* &quot;normal&quot; */</span></span>
-<span id="cb11-31"><a href="#cb11-31"></a>  <span class="op">}</span></span>
-<span id="cb11-32"><a href="#cb11-32"></a><span class="op">}</span></span>
-<span id="cb11-33"><a href="#cb11-33"></a></span>
-<span id="cb11-34"><a href="#cb11-34"></a><span class="dt">static</span> <span class="dt">char</span> <span class="op">*</span></span>
-<span id="cb11-35"><a href="#cb11-35"></a>font_desc_to_css <span class="op">(</span><span class="dt">const</span> PangoFontDescription <span class="op">*</span>desc<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-36"><a href="#cb11-36"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>family<span class="op">;</span></span>
-<span id="cb11-37"><a href="#cb11-37"></a>  <span class="dt">double</span> size<span class="op">;</span></span>
-<span id="cb11-38"><a href="#cb11-38"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>size_unit<span class="op">;</span></span>
-<span id="cb11-39"><a href="#cb11-39"></a>  <span class="dt">int</span> weight<span class="op">;</span></span>
-<span id="cb11-40"><a href="#cb11-40"></a>  PangoStyle style<span class="op">;</span></span>
-<span id="cb11-41"><a href="#cb11-41"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>style_str<span class="op">;</span></span>
-<span id="cb11-42"><a href="#cb11-42"></a>  <span class="dt">char</span> <span class="op">*</span>css<span class="op">;</span></span>
-<span id="cb11-43"><a href="#cb11-43"></a></span>
-<span id="cb11-44"><a href="#cb11-44"></a>  family <span class="op">=</span> pango_font_description_get_family <span class="op">(</span>desc<span class="op">);</span> <span class="co">/* The return string is owned by the instance. */</span></span>
-<span id="cb11-45"><a href="#cb11-45"></a>  size <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> pango_font_description_get_size <span class="op">(</span>desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">;</span></span>
-<span id="cb11-46"><a href="#cb11-46"></a>  <span class="cf">if</span> <span class="op">(</span>size <span class="op">&lt;=</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb11-47"><a href="#cb11-47"></a>    size <span class="op">=</span> <span class="fl">11.0</span><span class="op">;</span> <span class="co">/* Default font size */</span></span>
-<span id="cb11-48"><a href="#cb11-48"></a>  size_unit <span class="op">=</span> pango_font_description_get_size_is_absolute <span class="op">(</span>desc<span class="op">)</span> <span class="op">?</span> <span class="st">&quot;px&quot;</span> <span class="op">:</span> <span class="st">&quot;pt&quot;</span><span class="op">;</span></span>
-<span id="cb11-49"><a href="#cb11-49"></a>  weight <span class="op">=</span> pango_weight2int <span class="op">(</span>pango_font_description_get_weight <span class="op">(</span>desc<span class="op">));</span></span>
-<span id="cb11-50"><a href="#cb11-50"></a>  style <span class="op">=</span> pango_font_description_get_style <span class="op">(</span>desc<span class="op">);</span></span>
-<span id="cb11-51"><a href="#cb11-51"></a></span>
-<span id="cb11-52"><a href="#cb11-52"></a>  <span class="cf">switch</span> <span class="op">(</span>style<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb11-53"><a href="#cb11-53"></a>    <span class="cf">case</span> PANGO_STYLE_ITALIC<span class="op">:</span></span>
-<span id="cb11-54"><a href="#cb11-54"></a>      style_str <span class="op">=</span> <span class="st">&quot;italic&quot;</span><span class="op">;</span></span>
-<span id="cb11-55"><a href="#cb11-55"></a>      <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb11-56"><a href="#cb11-56"></a>    <span class="cf">case</span> PANGO_STYLE_OBLIQUE<span class="op">:</span></span>
-<span id="cb11-57"><a href="#cb11-57"></a>      style_str <span class="op">=</span> <span class="st">&quot;oblique&quot;</span><span class="op">;</span></span>
-<span id="cb11-58"><a href="#cb11-58"></a>      <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb11-59"><a href="#cb11-59"></a>    <span class="cf">case</span> PANGO_STYLE_NORMAL<span class="op">:</span></span>
-<span id="cb11-60"><a href="#cb11-60"></a>    <span class="cf">default</span><span class="op">:</span></span>
-<span id="cb11-61"><a href="#cb11-61"></a>      style_str <span class="op">=</span> <span class="st">&quot;normal&quot;</span><span class="op">;</span></span>
-<span id="cb11-62"><a href="#cb11-62"></a>      <span class="cf">break</span><span class="op">;</span></span>
-<span id="cb11-63"><a href="#cb11-63"></a>  <span class="op">}</span></span>
-<span id="cb11-64"><a href="#cb11-64"></a></span>
-<span id="cb11-65"><a href="#cb11-65"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {font-family: </span><span class="sc">\&quot;%s\&quot;</span><span class="st">; font-size: </span><span class="sc">%.1f%s</span><span class="st">; font-weight: </span><span class="sc">%d</span><span class="st">; font-style: </span><span class="sc">%s</span><span class="st">;}</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span></span>
-<span id="cb11-66"><a href="#cb11-66"></a>                         family <span class="op">?</span> family <span class="op">:</span> <span class="st">&quot;sans-serif&quot;</span><span class="op">,</span> <span class="co">/* family can be NULL */</span></span>
-<span id="cb11-67"><a href="#cb11-67"></a>                         size<span class="op">,</span></span>
-<span id="cb11-68"><a href="#cb11-68"></a>                         size_unit<span class="op">,</span></span>
-<span id="cb11-69"><a href="#cb11-69"></a>                         weight<span class="op">,</span></span>
-<span id="cb11-70"><a href="#cb11-70"></a>                         style_str<span class="op">);</span></span>
-<span id="cb11-71"><a href="#cb11-71"></a></span>
-<span id="cb11-72"><a href="#cb11-72"></a>  <span class="cf">return</span> css<span class="op">;</span></span>
-<span id="cb11-73"><a href="#cb11-73"></a><span class="op">}</span></span></code></pre></div>
-        <p>This function turns a PangoFontDescription data (C structure)
-        like “sans-serif Bold 12” into proper CSS:</p>
-        <pre><code>textview {font-family: &quot;sans-serif&quot;; font-size: 12pt; font-weight: 700; font-style: normal;}</code></pre>
+        <div class="sourceCode" id="cb12"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">int</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>pango_weight2int <span class="op">(</span>PangoWeight pango_weight<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="cf">switch</span> <span class="op">(</span>pango_weight<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>  <span class="cf">case</span> PANGO_WEIGHT_THIN<span class="op">:</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>    <span class="cf">return</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRALIGHT<span class="op">:</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>    <span class="cf">return</span> <span class="dv">200</span><span class="op">;</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a>  <span class="cf">case</span> PANGO_WEIGHT_LIGHT<span class="op">:</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>    <span class="cf">return</span> <span class="dv">300</span><span class="op">;</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  <span class="cf">case</span> PANGO_WEIGHT_SEMILIGHT<span class="op">:</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>    <span class="cf">return</span> <span class="dv">350</span><span class="op">;</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="cf">case</span> PANGO_WEIGHT_BOOK<span class="op">:</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a>    <span class="cf">return</span> <span class="dv">380</span><span class="op">;</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a>  <span class="cf">case</span> PANGO_WEIGHT_NORMAL<span class="op">:</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a>    <span class="cf">return</span> <span class="dv">400</span><span class="op">;</span> <span class="co">/* or &quot;normal&quot; */</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>  <span class="cf">case</span> PANGO_WEIGHT_MEDIUM<span class="op">:</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>    <span class="cf">return</span> <span class="dv">500</span><span class="op">;</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a>  <span class="cf">case</span> PANGO_WEIGHT_SEMIBOLD<span class="op">:</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a>    <span class="cf">return</span> <span class="dv">600</span><span class="op">;</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>  <span class="cf">case</span> PANGO_WEIGHT_BOLD<span class="op">:</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a>    <span class="cf">return</span> <span class="dv">700</span><span class="op">;</span> <span class="co">/* or &quot;bold&quot; */</span></span>
+<span id="cb12-22"><a href="#cb12-22"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRABOLD<span class="op">:</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a>    <span class="cf">return</span> <span class="dv">800</span><span class="op">;</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a>  <span class="cf">case</span> PANGO_WEIGHT_HEAVY<span class="op">:</span></span>
+<span id="cb12-25"><a href="#cb12-25"></a>    <span class="cf">return</span> <span class="dv">900</span><span class="op">;</span></span>
+<span id="cb12-26"><a href="#cb12-26"></a>  <span class="cf">case</span> PANGO_WEIGHT_ULTRAHEAVY<span class="op">:</span></span>
+<span id="cb12-27"><a href="#cb12-27"></a>    <span class="co">/* CSS Fonts Level 4 defines 1000, but GTK only supports Level 3 (max 900). */</span></span>
+<span id="cb12-28"><a href="#cb12-28"></a>    <span class="cf">return</span> <span class="dv">900</span><span class="op">;</span></span>
+<span id="cb12-29"><a href="#cb12-29"></a>  <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb12-30"><a href="#cb12-30"></a>    <span class="cf">return</span> <span class="dv">400</span><span class="op">;</span> <span class="co">/* &quot;normal&quot; */</span></span>
+<span id="cb12-31"><a href="#cb12-31"></a>  <span class="op">}</span></span>
+<span id="cb12-32"><a href="#cb12-32"></a><span class="op">}</span></span>
+<span id="cb12-33"><a href="#cb12-33"></a></span>
+<span id="cb12-34"><a href="#cb12-34"></a><span class="dt">static</span> <span class="dt">char</span> <span class="op">*</span></span>
+<span id="cb12-35"><a href="#cb12-35"></a>font_desc_to_css <span class="op">(</span><span class="dt">const</span> PangoFontDescription <span class="op">*</span>desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-36"><a href="#cb12-36"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>family<span class="op">;</span></span>
+<span id="cb12-37"><a href="#cb12-37"></a>  <span class="dt">double</span> size<span class="op">;</span></span>
+<span id="cb12-38"><a href="#cb12-38"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>size_unit<span class="op">;</span></span>
+<span id="cb12-39"><a href="#cb12-39"></a>  <span class="dt">int</span> weight<span class="op">;</span></span>
+<span id="cb12-40"><a href="#cb12-40"></a>  PangoStyle style<span class="op">;</span></span>
+<span id="cb12-41"><a href="#cb12-41"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>style_str<span class="op">;</span></span>
+<span id="cb12-42"><a href="#cb12-42"></a>  <span class="dt">char</span> <span class="op">*</span>css<span class="op">;</span></span>
+<span id="cb12-43"><a href="#cb12-43"></a></span>
+<span id="cb12-44"><a href="#cb12-44"></a>  family <span class="op">=</span> pango_font_description_get_family <span class="op">(</span>desc<span class="op">);</span> <span class="co">/* The return string is owned by the instance. */</span></span>
+<span id="cb12-45"><a href="#cb12-45"></a>  size <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> pango_font_description_get_size <span class="op">(</span>desc<span class="op">)</span> <span class="op">/</span> PANGO_SCALE<span class="op">;</span></span>
+<span id="cb12-46"><a href="#cb12-46"></a>  <span class="cf">if</span> <span class="op">(</span>size <span class="op">&lt;=</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb12-47"><a href="#cb12-47"></a>    size <span class="op">=</span> <span class="fl">11.0</span><span class="op">;</span> <span class="co">/* Default font size */</span></span>
+<span id="cb12-48"><a href="#cb12-48"></a>  size_unit <span class="op">=</span> pango_font_description_get_size_is_absolute <span class="op">(</span>desc<span class="op">)</span> <span class="op">?</span> <span class="st">&quot;px&quot;</span> <span class="op">:</span> <span class="st">&quot;pt&quot;</span><span class="op">;</span></span>
+<span id="cb12-49"><a href="#cb12-49"></a>  weight <span class="op">=</span> pango_weight2int <span class="op">(</span>pango_font_description_get_weight <span class="op">(</span>desc<span class="op">));</span></span>
+<span id="cb12-50"><a href="#cb12-50"></a>  style <span class="op">=</span> pango_font_description_get_style <span class="op">(</span>desc<span class="op">);</span></span>
+<span id="cb12-51"><a href="#cb12-51"></a></span>
+<span id="cb12-52"><a href="#cb12-52"></a>  <span class="cf">switch</span> <span class="op">(</span>style<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-53"><a href="#cb12-53"></a>    <span class="cf">case</span> PANGO_STYLE_ITALIC<span class="op">:</span></span>
+<span id="cb12-54"><a href="#cb12-54"></a>      style_str <span class="op">=</span> <span class="st">&quot;italic&quot;</span><span class="op">;</span></span>
+<span id="cb12-55"><a href="#cb12-55"></a>      <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb12-56"><a href="#cb12-56"></a>    <span class="cf">case</span> PANGO_STYLE_OBLIQUE<span class="op">:</span></span>
+<span id="cb12-57"><a href="#cb12-57"></a>      style_str <span class="op">=</span> <span class="st">&quot;oblique&quot;</span><span class="op">;</span></span>
+<span id="cb12-58"><a href="#cb12-58"></a>      <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb12-59"><a href="#cb12-59"></a>    <span class="cf">case</span> PANGO_STYLE_NORMAL<span class="op">:</span></span>
+<span id="cb12-60"><a href="#cb12-60"></a>    <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb12-61"><a href="#cb12-61"></a>      style_str <span class="op">=</span> <span class="st">&quot;normal&quot;</span><span class="op">;</span></span>
+<span id="cb12-62"><a href="#cb12-62"></a>      <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb12-63"><a href="#cb12-63"></a>  <span class="op">}</span></span>
+<span id="cb12-64"><a href="#cb12-64"></a></span>
+<span id="cb12-65"><a href="#cb12-65"></a>  css <span class="op">=</span> g_strdup_printf <span class="op">(</span><span class="st">&quot;textview {font-family: </span><span class="sc">\&quot;%s\&quot;</span><span class="st">; font-size: </span><span class="sc">%.1f%s</span><span class="st">; font-weight: </span><span class="sc">%d</span><span class="st">; font-style: </span><span class="sc">%s</span><span class="st">;}</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span></span>
+<span id="cb12-66"><a href="#cb12-66"></a>                         family <span class="op">?</span> family <span class="op">:</span> <span class="st">&quot;sans-serif&quot;</span><span class="op">,</span> <span class="co">/* family can be NULL */</span></span>
+<span id="cb12-67"><a href="#cb12-67"></a>                         size<span class="op">,</span></span>
+<span id="cb12-68"><a href="#cb12-68"></a>                         size_unit<span class="op">,</span></span>
+<span id="cb12-69"><a href="#cb12-69"></a>                         weight<span class="op">,</span></span>
+<span id="cb12-70"><a href="#cb12-70"></a>                         style_str<span class="op">);</span></span>
+<span id="cb12-71"><a href="#cb12-71"></a></span>
+<span id="cb12-72"><a href="#cb12-72"></a>  <span class="cf">return</span> css<span class="op">;</span></span>
+<span id="cb12-73"><a href="#cb12-73"></a><span class="op">}</span></span></code></pre></div>
+        <p>This function turns a PangoFontDescription (which is a C
+        structure) into proper CSS. For example, if the description
+        contains “sans-serif”, “Bold”, and “12pt”, the CSS string will
+        be:</p>
+        <div class="sourceCode" id="cb13"><pre
+        class="sourceCode css"><code class="sourceCode css"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>textview {<span class="kw">font-family</span>: <span class="st">&quot;sans-serif&quot;</span><span class="op">;</span> <span class="kw">font-size</span>: <span class="dv">12</span><span class="dt">pt</span><span class="op">;</span> <span class="kw">font-weight</span>: <span class="dv">700</span><span class="op">;</span> <span class="kw">font-style</span>: <span class="dv">normal</span><span class="op">;</span>}</span></code></pre></div>
         <p>Finally, here is our public interface,
         <code>tfe_style_manager_set_font()</code>:</p>
-        <div class="sourceCode" id="cb13"><pre
-        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">void</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a>tfe_style_manager_set_font <span class="op">(</span><span class="dt">const</span> PangoFontDescription <span class="op">*</span>desc<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a>  g_return_if_fail <span class="op">(</span>initialized<span class="op">);</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a>  g_return_if_fail <span class="op">(</span>desc <span class="op">!=</span> NULL<span class="op">);</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a></span>
-<span id="cb13-6"><a href="#cb13-6"></a>  <span class="dt">char</span> <span class="op">*</span>css_string<span class="op">;</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a></span>
-<span id="cb13-8"><a href="#cb13-8"></a>  css_string <span class="op">=</span> font_desc_to_css <span class="op">(</span>desc<span class="op">);</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a></span>
-<span id="cb13-10"><a href="#cb13-10"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider_font<span class="op">,</span> css_string<span class="op">);</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a>  g_free <span class="op">(</span>css_string<span class="op">);</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="op">}</span></span></code></pre></div>
+        <div class="sourceCode" id="cb14"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">void</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>tfe_style_manager_set_font <span class="op">(</span><span class="dt">const</span> PangoFontDescription <span class="op">*</span>desc<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a>  g_return_if_fail <span class="op">(</span>initialized<span class="op">);</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>  g_return_if_fail <span class="op">(</span>desc <span class="op">!=</span> NULL<span class="op">);</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a></span>
+<span id="cb14-6"><a href="#cb14-6"></a>  <span class="dt">char</span> <span class="op">*</span>css_string<span class="op">;</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a>  css_string <span class="op">=</span> font_desc_to_css <span class="op">(</span>desc<span class="op">);</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a></span>
+<span id="cb14-10"><a href="#cb14-10"></a>  gtk_css_provider_load_from_string <span class="op">(</span>provider_font<span class="op">,</span> css_string<span class="op">);</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a>  g_free <span class="op">(</span>css_string<span class="op">);</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="op">}</span></span></code></pre></div>
         <p>This function creates the CSS string and feeds it directly
         into the <code>provider_font</code> (GtkCssProvider instance).
         Since the provider is already linked to the display, the screen

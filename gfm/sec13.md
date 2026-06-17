@@ -1,6 +1,6 @@
 Up: [README.md](../README.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)
 
-# Finalizing the custom object
+# Completing the custom object implementation
 
 The TfeTextView class will be finally completed in this section.
 
@@ -11,10 +11,10 @@ You can get them by downloading the [repository](https://github.com/ToshioCP/Gtk
 
 The header file `tfetextview.h` includes:
 
-- The type of TfeTextView, which is `TFE_TYPE_TEXT_VIEW`.
+- The macro definition for TfeTextView type (`TFE_TYPE_TEXT_VIEW`).
 - The macro `G_DECLARE_FINAL_TYPE`.
 - GError domain and code definition and declaration.
-- Public function declarations. They are constructors and instance methods.
+- Public function declarations. They are instance methods and constructors.
 
 ```c
 #pragma once
@@ -54,8 +54,8 @@ tfe_text_view_new_with_file (GFile *file, GError **err);
 - 1: The preprocessor directive `#pragma once` makes the header file be included only once.
 It is non-standard but widely used.
 - 3: Includes gtk4 header files.
-The header file `gtk4` also has the same mechanism to avoid being included multiple times.
-- 5-6: These two lines define TfeTextView type, its class structure and some useful definitions.
+- 5: Defines TfeTextView type (`TFE_TYPE_TEXT_VIEW`).
+- 6: The macro `G_DECLARE_FINAL_TYPE` defines the class structure and some useful functions.
   - `TfeTextView` and `TfeTextViewClass` are declared as typedef of C structures.
   - You need to define a structure `_TfeTextView` later.
   - The class structure `_TfeTextViewClass` is defined here. You don't need to define it by yourself.
@@ -80,448 +80,297 @@ tfe_text_view_new (void) {
 
 GtkWidget *
 tfe_text_view_new_with_file (GFile *file, GError **err) {
-  g_return_val_if_fail (G_IS_FILE (file), NULL);
+  g_return_val_if_fail (G_IS_FILE (file) || file == NULL, NULL);
   g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
   GtkWidget *tv;
 
   tv = tfe_text_view_new();
+  if (file == NULL)
+    return tv;
   tfe_text_view_set_file (TFE_TEXT_VIEW (tv), file);
   if (tfe_text_view_read (TFE_TEXT_VIEW (tv), err))
     return tv;
-  else {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-    return NULL;
-  }
+  /* An error occurs during the read operation */
+  g_object_ref_sink (tv);
+  g_object_unref (tv);
+  return NULL;
 }
 ```
 
-- 22-25: `tfe_text_view_new` function.
-Just returns the value from the function `g_object_new` but casts it to the pointer to GtkWidget.
+- 1-4: `tfe_text_view_new` function.
+It just returns the value from the function `g_object_new` and casts it to the pointer to GtkWidget.
+It is a GTK convention that constructors of GtkWidget subclasses return a `GtkWidget *`.
 The function `g_object_new` creates any instances of its descendant class.
 The arguments are the type of the class, property list and NULL, which is the end mark of the property list.
-TfeTextView "wrap-mode" property has GTK\_WRAP\_WORD\_CHAR as the default value.
-- 1-20: `tfe_text_view_new_with_file` function.
-- 3: `g_return_val_if_fail` is described in [GLib API Reference -- g\_return\_val\_if\_fail](https://docs.gtk.org/glib/func.return_val_if_fail.html).
-And also [GLib API Reference -- Message Logging](https://docs.gtk.org/glib/logging.html).
-It tests whether the argument `file` is a pointer to GFile.
+Here, the property "wrap-mode" is set to `GTK_WRAP_WORD_CHAR` for breaking lines in between words, or if that is not enough, also between characters (graphemes).
+The default value of the property "wrap-mode" in GtkTextView (not TfeTextView) is `GTK_WRAP_NONE` (no wrapping).
+- 6-23: `tfe_text_view_new_with_file` function.
+- 8: `g_return_val_if_fail` tests whether the argument `file` is a pointer to GFile.
 If it's true, the program goes on to the next line.
 If it's false, it returns NULL (the second argument) immediately.
-And at the same time it logs out the error message (usually the log is outputted to stderr or stdout).
-This function is used to check the programmer's error.
-If an error occurs, the solution is usually to change the (caller) program and fix the bug.
-You need to distinguish programmer's errors and runtime errors.
-You shouldn't use this function to find runtime errors.
-- 10-11: Reads the file. If an error occurs, NULL is returned.
-- 13: Calls the function `tfe_text_view_new`.
-The function creates TfeTextView instance and returns the pointer to the instance.
-- 14: Gets the pointer to the GtkTextBuffer instance corresponds to `tv`.
-The pointer is assigned to `tb`
-- 15: Assigns the contents read from the file to `tb`.
-- 16: Duplicates `file` and sets `tv->file` to point to it.
-GFile is *not* thread safe.
-The duplication makes sure that the GFile instance of `tv` keeps the file information even if the original one is changed by other thread.
-- 17: The function `gtk_text_buffer_set_modified (tb, FALSE)` sets the modification flag of `tb` to FALSE.
-The modification flag indicates that the contents have been modified.
-It is used when the contents are saved.
-If the modification flag is FALSE, it doesn't need to save the contents.
-- 18: Frees the memories pointed to by `contents`.
-- 19: Returns `tv`, which is a pointer to the newly created TfeTextView instance.
-If an error happens, NULL is returned.
+And at the same time it logs out the error message (usually the log is outputted to stderr).
+- 9: Another `g_return_val_if_fail` tests `err`.
+This can be NULL when the caller does not need detailed error information.
+Otherwise it must point to NULL (Note: Being NULL and pointing to NULL is totally different).
+- 13: Creates a TfeTextView instance.
+- 14-15: If `file` is NULL, just returns `tv`.
+- 16: sets the file of the TfeTextView instance to `file`.
+- 17-18: If the function `tfe_text_view_read` successfully reads the content of the file, returns the TfeTextView instance.
+- 20-22: If an error happens during the read process, Releases `tv` and returns NULL.
+The function `g_object_ref_sink` will be explained in the next subsection.
 
-## Save and Saveas Functions
+## Floating References
 
-Save and saveas functions write the contents in the GtkTextBuffer to a file.
+All widgets are derived from GInitiallyUnowned.
+While GObject and GInitiallyUnowned are very similar, they differ in their initial reference count behavior.
 
-~~~C
-void tfe_text_view_save (TfeTextView *tv)
-~~~
+When an instance of GInitiallyUnowned is created, it has a "floating reference", whereas a GObject instance has a "normal reference".
+The reference count of both the objects is one, but the type of the references is different. 
 
-The function `tfe_text_view_save` writes the contents in the GtkTextBuffer to a file specified by `tv->file`.
-If `tv->file` is NULL, then it shows file chooser dialog and prompts the user to choose a file to save.
-Then it saves the contents to the file and sets `tv->file` to point to the GFile instance for the file.
+The descendants of GInitiallyUnowned inherit this behavior, so every widget has a floating reference immediately after the creation.
+On the other hand, non-widget classes, such as GtkTextBuffer, are direct subclasses of GObject and do not have a floating reference.
 
-~~~C
-void tfe_text_view_saveas (TfeTextView *tv)
-~~~
+The function `g_object_ref_sink (object)` behaves:
 
-The function `saveas` shows a file chooser dialog and prompts the user to select an existing file or specify a new file to save.
-Then, the function changes `tv->file` and save the contents to the specified file.
-If an error occurs, it is shown to the user through the alert dialog.
-The error is managed only in the TfeTextView and no information is notified to the caller.
+- If the object has a floating reference, it converts the floating reference to the normal reference.
+The reference count will be one.
+- If the object does not have a floating reference, it increases the normal reference count by one.
+In this case, `g_object_ref_sink (object)` behaves the same as `g_object_ref (object)`.
 
-### save\_file Function
+The function is used when an widget is added to another widget as a child.
 
-```c
-static gboolean
-save_file (GFile *file, GtkTextBuffer *tb, GtkWindow *win) {
-  GtkTextIter start_iter;
-  GtkTextIter end_iter;
-  char *contents;
-  gboolean stat;
-  GtkAlertDialog *alert_dialog;
-  GError *err = NULL;
-
-  gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
-  contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
-  stat = g_file_replace_contents (file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, &err);
-  if (stat)
-    gtk_text_buffer_set_modified (tb, FALSE);
-  else {
-    alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-    gtk_alert_dialog_show (alert_dialog, win);
-    g_object_unref (alert_dialog);
-    g_error_free (err);
-  }
-  g_free (contents);
-  return stat;
-}
+```C
+GtkTextView *tv = gtk_text_view_new (); /* Floating reference */
+GtkScrolledWindow *scr = gtk_scrolled_window_new ();
+gtk_scrolled_window_set_child (scr, tv); /* Scrolled window sinks the tv's floating and tv's normal reference count becomes one. */
 ```
 
-- The function `save_file` is called from `saveas_dialog_response` and `tfe_text_view_save`.
-This function saves the contents of the buffer to the file given as an argument.
-If error happens, it displays an error message.
-So, a caller of this function don't need to take care of errors.
-The class of this function is `static`.
-Therefore, only functions in this file (`tfetextview.c`) call this function.
-Such static functions usually don't have `g_return_val_if_fail` functions.
-- 10-11: Gets the text contents from the buffer.
-- 12: The function `g_file_replace_contents` writes the contents to the file and returns the status (true = success/ false = fail).
-It has many parameters, but some of them are almost always given the same values.
-See the [GIO documentation](https://docs.gtk.org/gio/method.File.replace_contents.html) for details.
-  - GFile* file: GFile to which the contents are saved.
-  - const char* contents: contents to be saved. The string is owned by the caller.
-  - gsize length: the length of the contents
-  - const char* etag: entity tag. It is usually NULL.
-  - gboolean make_backup: true to make a backup if the file exists. false not to make it. the file will be overwritten.
-  - GFileCreateFlags flags: usually `G_FILE_CREATE_NONE` is fine.
-  - char** new_etag: new entity tag. It is usually NULL.
-  - GCancellable* cancellable: If a cancellable instance is set, the other thread can cancel this operation. it is usually NULL.
-  - GError** error: If error happens, GError will be set.
-- 13,14: If no error happens, set the modified flag to be FALSE.
-This means that the buffer is not modified since it has been saved.
-- 16-19: If it fails to save the contents, an error message will be displayed.
-- 16: Creates an alert dialog. The parameters are printf-like format string followed by values to insert into the string.
-GtkAlertDialog is available since version 4.10.
-If your version is older than 4.10, use GtkMessageDialog instead.
-GtkMessageDialog is deprecated since version 4.10.
-- 17: Show the alert dialog. The parameters are the dialog and the transient parent window.
-This allows window managers to keep the dialog on top of the parent window, or center the dialog over the parent window.
-It is possible to give no parent window to the dialog by giving NULL as the argument.
-However, it is encouraged to give parents to dialogs.
-- 18: Releases the dialog.
-- 19: Frees the GError struct pointed to by `err` with `g_error_free` function.
-- 21: Frees `contents`.
-- 22: Returns the status to the caller.
+This program works because `gtk_scrolled_window_set_child` uses `g_object_ref_sink` instead of `g_object_ref`.
+If `tv` does not have a floating reference, the program needs to decrement the `tv` reference count:
 
-### save\_dialog\_cb Function
-
-```c
-static void
-save_dialog_cb(GObject *source_object, GAsyncResult *res, gpointer data) {
-  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
-  TfeTextView *tv = TFE_TEXT_VIEW (data);
-  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  GFile *file;
-  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-  GError *err = NULL;
-  GtkAlertDialog *alert_dialog;
-
-  if (((file = gtk_file_dialog_save_finish (dialog, res, &err)) != NULL) && save_file(file, tb, GTK_WINDOW (win))) {
-    // The following is complicated. The comments here will help your understanding
-    // G_IS_FILE(tv->file) && tv->file == file  => nothing to do
-    // G_IS_FILE(tv->file) && tv->file != file  => unref(tv->file), tv->file=file, emit change_file signal
-    // tv->file==NULL                           =>                  tv->file=file, emit change_file signal
-    if (! (G_IS_FILE (tv->file) && g_file_equal (tv->file, file))) {
-      if (G_IS_FILE (tv->file))
-        g_object_unref (tv->file);
-      tv->file = file; // The ownership of 'file' moves to TfeTextView.
-      g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-    }
-  }
-  if (err && err->code != GTK_DIALOG_ERROR_DISMISSED) {
-    alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-    gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
-    g_object_unref (alert_dialog);
-    g_clear_error (&err);
-  }
-}
+```C
+GtkTextView *tv = gtk_text_view_new ();  /* Floating reference: tv is not owned by anyone */
+g_object_ref_sink (tv); /* Normal reference count == 1: this program owns tv. */
+GtkScrolledWindow *scr = gtk_scrolled_window_new ();
+gtk_scrolled_window_set_child (scr, tv); /* tv's reference count becomes 2. */
+/* At this moment, both of the caller of the function and GtkScrolledWindow instance refer to tv. */
+/* But the caller does not use tv any more. So, it releases tv using g_object_unref. */ 
+g_object_unref (tv); /* tv's reference count becomes 1 because the caller decrements tv's reference count. */
 ```
 
-- The function `save_dialog_cb` is a call back function that is given to the `gtk_file_dialog_save` function as an argument.
-The `gtk_file_dialog_save` shows a file chooser dialog to the user.
-The user chooses or types a filename and clicks on the `Save` button or just clicks on the `Cancel` button.
-Then the call back function is called with the result.
-This is the general way in GIO to manage asynchronous operations.
-A pair of functions `g_data_input_stream_read_line_async` and `g_data_input_stream_read_line_finish` are one example.
-These functions are thread-safe.
-The arguments of `save_dialog_cb` are:
-  - GObject *source_object: The GObject instance that the operation was started with.
-It is actually the GtkFileDialog instance that is shown to the user.
-However, the call back function is defined as `AsyncReadyCallback`, which is a general call back function for an asynchronous operation.
-So the type is GObject and you need to cast it to GtkFileDialog later.
-  - GAsyncResult *res: The result of the asynchronous operation.
-It will be given to the `gtk_dialog_save_finish` function.
-  - gpointer data: A user data set in the `gtk_dialog_save` function.
-- 11: Calls `gtk_dialog_save_finish`.
-It is given the result `res` as an argument and returns a pointer to a GFile object the user has chosen.
-If the user has canceled or an error happens, it returns NULL, creates a GError object and sets `err` to point to it.
-If `gtk_dialog_save_finish` returns a GFile, the function `save_file` is called.
-- 12-21: If the file is successfully saved, these lines are executed.
-See the comments, line 12-15, for the details.
-- 23-28: If an error happens, show the error message through the alert dialog.
+From the comparison of these two programs, we can say that floating reference makes the program simpler because we don't need to release `tv`.
 
-### tfe\_text\_view\_save Function
+Conversely, it gets more complicated to release an InitiallyUnowned instance just after the creation.
+Because we cannot use `g_object_unref` to floating object.
 
-```c
-void
-tfe_text_view_save (TfeTextView *tv) {
-  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
-
-  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-
-  if (! gtk_text_buffer_get_modified (tb))
-    return; /* no need to save it */
-  else if (tv->file == NULL)
-    tfe_text_view_saveas (tv);
-  else
-    save_file (tv->file, tb, GTK_WINDOW (win));
-}
+```C
+GtkTextView *tv = gtk_text_view_new (); /* Floating reference */
+/* We need to convert the floating reference to the normal reference before releasing it. */
+g_object_ref_sink (tv); /* Floating reference is converted to normal reference. The reference count is one. */
+g_object_unref (tv); /* Now reference count becomes zero and tv will be destroyed. */
 ```
 
-- The function `tfe_text_view_save` writes the contents to the `tv->file` file.
-It calls `tfe_text_view_saveas` or `save_file`.
-- 1-3: The function is public, i.e. it is open to the other objects.
-So, it doesn't have `static` class.
-Public functions should check the parameter type with `g_return_if_fail` function.
-If `tv` is not a pointer to a TfeTextView instance, then it logs an error message and immediately returns.
-This function is similar to `g_return_val_if_fail`, but no value is returned because `tfe_text_view_save` doesn't return a value (void).
-- 5-6: GtkTextBuffer `tb` and GtkWidget (GtkWindow) `win` are set.
-The function `gtk_widget_get_ancestor (widget, type)` returns the first ancestor of the widget with the type, which is a GType.
-The parent-child relationship here is the one for widgets, not classes.
-More precisely, the returned widget's type is the `type` or a descendant object type of the `type`.
-Be careful, the "descendant object" in the previous sentence is *not* "descendant widget".
-For example, the type of GtkWindow is `GTK_TYPE_WINDOW` and the one of TfeTextView is `TFE_TYPE_TEXT_VIEW`.
-The top level window may be a GtkApplicationWindow, but it is a descendant of GtkWindow.
-Therefore, `gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW)` possibly returns GtkWindow or GtkApplicationWindow.
-- 8-9: If the buffer hasn't modified, it doesn't need to be saved.
-- 10-11: If `tv->file` is NULL, which means no file has been given yet, it calls `tfe_text_view_saveas` to prompt a user to select a file and save the contents.
-- 12-13: Otherwise, it calls `save_file` to save the contents to the file `tv->file`.
+See [GObject API reference - g\_object\_ref\_sink](https://docs.gtk.org/gobject/method.Object.ref_sink.html) for further information.
 
-### tfe\_text\_view\_saveas Function
+## Instance Methods
 
-```c
-void
-tfe_text_view_saveas (TfeTextView *tv) {
-  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+### Getting and setting the GFile
 
-  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-  GtkFileDialog *dialog;
-
-  dialog = gtk_file_dialog_new ();
-  gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
-  g_object_unref (dialog);
-}
-```
-
-The function `tfe_text_view_saveas` shows a file chooser dialog and prompts the user to choose a file and save the contents.
-
-- 1-3: Check the type of `tv` because the function is public.
-- 6: GtkWidget `win` is set to the window which is an ancestor of `tv`.
-- 8: Creates a GtkFileDialog instance.
-GtkFileDialog is available since version 4.10.
-If your Gtk version is older than 4.10, use GtkFileChooserDialog instead.
-GtkFileChooserDialog is deprecated since version 4.10.
-- 9: Calls `gtk_file_dialog_save` function. The arguments are:
-  - dialog: GtkFileDialog.
-  - GTK_WINDOW (win): transient parent window.
-  - NULL: NULL means no cancellable object.
-If you put a cancellable object here, you can cancel the operation by other thread.
-In many cases, it is NULL.
-See [GCancellable](https://docs.gtk.org/gio/class.Cancellable.html) for further information.
-  - `save_dialog_cb`: A callback to call when the operation is complete.
-The type of the pointer to the callback function is [GAsyncReadyCallback](https://docs.gtk.org/gio/callback.AsyncReadyCallback.html).
-If a cancellable object is given and the operation is cancelled, the callback won't be called.
-  - `tv`: This is an optional user data which is gpointer type.
-It is used in the callback function.
-- 10: Releases the GtkFileDialog instance because it is useless anymore.
-
-This function just shows the file chooser dialog.
-The rest of the operation is done by the callback function.
-
-![Saveas process](/src/images/saveas.png)
-
-## Open Related Functions
-
-Open function shows a file chooser dialog to a user and prompts them to choose a file.
-Then it reads the file and puts the text into GtkTextBuffer.
-
-~~~C
-void tfe_text_view_open (TfeTextView *tv, GtkWindow *win);
-~~~
-
-The parameter `win` is the transient window.
-A file chooser dialog will be shown at the center of the window.
-
-This function may be called just after `tv` has been created.
-In that case, `tv` has not been incorporated into the widget hierarchy.
-Therefore it is impossible to get the top-level window from `tv`.
-That's why the function needs `win` parameter.
-
-This function is usually called when the buffer of `tv` is empty.
-However, even if the buffer is not empty, `tfe_text_view_open` doesn't treat it as an error.
-If you want to revert the buffer, calling this function is appropriate.
-
-Open and read process is divided into two phases.
-One is creating and showing a file chooser dialog and the other is the callback function.
-The former is `tfe_text_view_open` and the latter is `open_dialog_cb`.
-
-### open\_dialog\_cb Function
-
-```c
-static void
-open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
-  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
-  TfeTextView *tv = TFE_TEXT_VIEW (data);
-  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (tv), GTK_TYPE_WINDOW);
-  GFile *file;
-  char *contents;
-  gsize length;
-  gboolean file_changed;
-  GtkAlertDialog *alert_dialog;
-  GError *err = NULL;
-
-  if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) != NULL
-      && g_file_load_contents (file, NULL, &contents, &length, NULL, &err)) {
-    gtk_text_buffer_set_text (tb, contents, length);
-    g_free (contents);
-    gtk_text_buffer_set_modified (tb, FALSE);
-    // G_IS_FILE(tv->file) && tv->file == file => unref(tv->file), tv->file=file, emit response with SUCCESS
-    // G_IS_FILE(tv->file) && tv->file != file => unref(tv->file), tv->file=file, emit response with SUCCESS, emit change-file
-    // tv->file==NULL =>                                           tv->file=file, emit response with SUCCESS, emit change-file
-    // The order is important. If you unref tv->file first, you can't compare tv->file and file anymore.
-    // And the signals are emitted after new tv->file is set. Or the handler can't catch the new file.
-    file_changed = (G_IS_FILE (tv->file) && g_file_equal (tv->file, file)) ? FALSE : TRUE;
-    if (G_IS_FILE (tv->file))
-      g_object_unref (tv->file);
-    tv->file = file; // The ownership of 'file' moves to TfeTextView
-    if (file_changed)
-      g_signal_emit (tv, tfe_text_view_signals[CHANGE_FILE], 0);
-    g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_SUCCESS);
-  } else {
-    if (err->code == GTK_DIALOG_ERROR_DISMISSED) // The user canceled the file chooser dialog
-      g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_CANCEL);
-    else {
-      alert_dialog = gtk_alert_dialog_new ("%s", err->message);
-      gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
-      g_object_unref (alert_dialog);
-      g_signal_emit (tv, tfe_text_view_signals[OPEN_RESPONSE], 0, TFE_OPEN_RESPONSE_ERROR);
-    }
-    g_clear_error (&err);
-  }
-}
-```
-
-This function is similar to `save_dialog_cb`.
-Both are callback functions on a GtkFileDialog object.
-
-- 2: It has three parameters like `save_dialog_cb`.
-They are:
-  - GObject *source_object: The GObject instance that the operation was started with.
-It is actually the GtkFileDialog instance that is shown to the user.
-It will be cast to GtkFileDialog later.
-  - GAsyncResult *res: The result of the asynchronous operation.
-It will be given to the `gtk_dialog_open_finish` function.
-  - gpointer data: A user data set in the `gtk_dialog_open` function.
-It is actually a TfeTextView instance and it will be cast to TfeTextView later.
-- 14: The function `gtk_file_dialog_open_finish` returns a GFile object if the operation has succeeded.
-Otherwise it returns NULL.
-- 16-30: If the user selects a file and the file has successfully been read, the codes from 16 to 30 will be executed.
-- 16-18: Sets the buffer of `tv` with the text read from the file. And frees `contents`.
-Then sets the modified status to false.
-- 19-30: The codes are a bit complicated.
-See the comments.
-If the file (`tv->file`) is changed, "change-file" signal is emitted.
-The signal "open-response" is emitted with the parameter `TFE_OPEN_RESPONSE_SUCCESS`.
-- 31-41: If the operation failed, the codes from 31 to 41 will be executed.
-- 32-33: If the error code is `GTK_DIALOG_ERROR_DISMISSED`, it means that the user has clicked on the "Cancel" button or close button on the header bar.
-Then, "open-response" signal is emitted with the parameter `TFE_OPEN_RESPONSE_CANCEL`.
-The Dialog error is described [here](https://docs.gtk.org/gtk4/error.DialogError.html) in the GTK API reference.
-- 35-38: If another error occurs, it shows an alert dialog to report the error and emits "open-response" signal with the parameter `TFE_OPEN_RESPONSE_ERROR`.
-- 40: Clears the error structure.
-
-### tfe\_text\_view\_open Function
-
-```c
-void
-tfe_text_view_open (TfeTextView *tv, GtkWindow *win) {
-  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
-  // 'win' is used for a transient window of the GtkFileDialog.
-  // It can be NULL.
-  g_return_if_fail (GTK_IS_WINDOW (win) || win == NULL);
-
-  GtkFileDialog *dialog;
-
-  dialog = gtk_file_dialog_new ();
-  gtk_file_dialog_open (dialog, win, NULL, open_dialog_cb, tv);
-  g_object_unref (dialog);
-}
-```
-
-- 3-6: Check the type of the arguments `tv` and `win`.
-Public functions always need to check the arguments.
-- 10: Creates a GtkFileDialog instance.
-- 11: Calls `gtk_file_dialog_open`. The arguments are:
-  - `dialog`: the GtkFileDialog instance
-  - `win`: the transient window for the file chooser dialog
-  - `NULL`: NULL means no cancellable object
-  - `open_dialog_cb`: callback function
-  - `tv`: user data which is used in the callback function
-- 12: Releases the dialog instance because it is useless anymore.
-
-The whole process between the caller and TfeTextView is shown in the following diagram.
-It is really complicated.
-Because `gtk_file_dialog_open` can't return the status of the operation.
-
-![Caller and TfeTextView](/src/images/open.png)
-
-1. A caller gets a pointer `tv` to a TfeTextView instance by calling `tfe_text_view_new`.
-2. The caller connects the handler (left bottom in the diagram) and the signal "open-response".
-3. It calls `tfe_text_view_open` to prompt the user to select a file from the file chooser dialog.
-4. When the dialog is closed, the callback `open_dialog_cb` is called.
-5. The callback function reads the file and inserts the text into GtkTextBuffer and emits a signal to inform the status as a response code.
-6. The handler of the "open-response" signal is invoked and the operation status is given to it as an argument (signal parameter).
-
-## Getting GFile in TfeTextView
-
-You can get the GFile in a TfeTextView instance with `tfe_text_view_get_file`.
-It is very simple.
+A TfeTextView instance holds the GFile instance in it.
+External code can access the GFile with `tfe_text_view_get_file` and `tfe_text_view_set_file`.
 
 ```c
 GFile *
 tfe_text_view_get_file (TfeTextView *tv) {
   g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), NULL);
 
-  if (G_IS_FILE (tv->file))
-    return g_file_dup (tv->file);
-  else
-    return NULL;
+  /* The instance holds the ownership of the returned GFile. */
+  return tv->file;
+}
+
+void
+tfe_text_view_set_file (TfeTextView *tv, GFile *file) {
+  g_return_if_fail (TFE_IS_TEXT_VIEW (tv));
+  g_return_if_fail (G_IS_FILE (file) || file == NULL);
+
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+
+  /* The instance gets the ownership of the new GFile by increment the reference count. */
+  g_set_object (&tv->file, file);
+  gtk_text_buffer_set_modified (tb, TRUE);
 }
 ```
 
-The important thing is to duplicate `tv->file`.
-Otherwise, if the caller frees the GFile object, `tv->file` is no more guaranteed to point to the GFile.
-Another reason to use `g_file_dup` is that GFile isn't thread-safe.
-If you use GFile in the different thread, the duplication is necessary.
-See [Gio API Reference -- g\_file\_dup](https://docs.gtk.org/gio/method.File.dup.html).
+There are two new functions in the code.
 
-## The API Document and Source File of tfetextview.c
+- `g_set_object (&tv->file, file)`: Updates `tv->file` to refer to `file`.
+It increments the reference count of the new `file` (if non-NULL), decrements the reference count of the current `tv->file` (if non-NULL), and updates the pointer.
+This reference counting ensures that the instance releases the old `GFile` and assumes ownership of the new one.
+- `gtk_text_buffer_set_modified (tb, TRUE)`: Sets the "modified" flag to `TRUE`.
+`GtkTextBuffer` maintains an internal flag to track whether its content has been modified.
+A value of `TRUE` indicates that the buffer has been modified since it was last saved.
+When `tfe_text_view_set_file` changes the `GFile`, the content is considered unsaved, so the modified flag must be set to `TRUE`.
 
-Refer [API document of TfeTextView](tfetextview/tfetextview_doc.md).
+### Ownership of Data
 
-You can find all the TfeTextView source codes under [/src/tfetextview](../src/tfetextview) directories.
+When working with getter and setter functions, understanding data "ownership" is crucial.
+
+For "get" functions, there are two patterns for handling the ownership of the returned object:
+
+- **The caller gets ownership:** 
+  In this case, the documentation usually states something like, "The caller of the method takes ownership of the returned data, and is responsible for freeing it."
+  Example: `g_list_model_get_item`.
+- **The caller does NOT get ownership:** 
+  In this case, the documentation typically says, "The returned data is owned by the instance."
+  Example: `gtk_text_view_get_buffer`.
+
+If you are given ownership, you must free or unreference the data when you no longer need it.
+Conversely, if you are not given ownership, you must **never** free it.
+
+#### The `const` Qualifier as an Ownership Hint for Strings
+
+For string data, the `const` qualifier serves as a very helpful built-in hint for ownership in C:
+
+- **Get functions:** If a function returns a `const char *`, it means the caller does not get ownership. You must not free it.
+- **Set functions:** If a function argument is `const char *`, it means the instance will not take ownership of your string (it will usually make its own internal copy if it needs the ownership). 
+
+This convention is standard throughout the GTK and GLib documentation, and you should apply this same `const` rule when writing your own programs to make ownership clear.
+
+#### How to Acquire Ownership Manually
+
+But what if you aren't given ownership of the return value, yet you need to keep the data for a while?
+You must explicitly acquire ownership yourself:
+
+- For objects with a **normal reference**, use `g_object_ref` to increase the reference count by one.
+- For objects that might have a **floating reference**, use `g_object_ref_sink`.
+This converts a floating reference into a normal one, or simply increments the reference count if it's already a normal reference.
+- For data without reference counts, such as **strings** (especially those returned as `const char *`), you need to make a copy.
+Use `g_strdup` to duplicate the string, and later free it using `g_free`.
+- **Note:** In the method above, the caller and the instance share the object.
+Therefore, any modification made by one affects the other.
+In contrast, the string is duplicated rather than shared.
+Because the caller and the instance own their respective copies, changing one string will not affect the other.
+
+In the case of `tfe_text_view_get_file`, the function simply returns `tv->file` without increasing its reference count.
+It does not give you ownership.
+
+#### Ownership in "Set" Functions
+
+On the other hand, in "set" functions, the instance receiving the data usually claims its own ownership by calling `g_object_ref` or `g_object_ref_sink` internally. This means the caller's ownership remains unchanged before and after the function call.
+For example, `tfe_text_view_set_file (tv, file)` does not change the caller's ownership of the `file`.
+
+However, be aware that some GTK and GLib functions completely transfer ownership. 
+For example, `GValue` has a function called `g_value_take_object (GValue* value, gpointer v_object)`.
+In this case, the ownership of `v_object` moves entirely to `value`.
+The caller no longer owns it and must **not** free it after setting it.
+
+In short, always pay close attention to the ownership of arguments and return values to avoid memory bugs.
+
+### Reading the File Content
+
+The function `tfe_text_view_read` reads the file content into the buffer.
+
+```c
+gboolean
+tfe_text_view_read (TfeTextView *tv, GError **err) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), FALSE);
+  g_return_val_if_fail (err == NULL || *err == NULL, FALSE);
+
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  gboolean stat;
+  char *contents;
+  gsize length;
+
+  if (! G_IS_FILE (tv->file)) {
+    g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_NO_FILE, "No file is set in TfeTextView.");
+    return FALSE;
+  }
+  
+  stat = g_file_load_contents (tv->file, NULL, &contents, &length, NULL, err);
+  if (stat) {
+    if (length > G_MAXINT) { /* File is too large to put it in the buffer*/
+      g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_FAILED, "The file is too large.");
+      stat = FALSE;
+    }
+    else if (!g_utf8_validate (contents, length, NULL)) { /* Only valid UTF-8 strings are accepted */
+      g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_FAILED, "The file is not valid UTF-8.");
+      stat = FALSE;
+    }
+    else {
+      gtk_text_buffer_set_text (tb, contents, (int) length);
+      gtk_text_buffer_set_modified (tb, FALSE);
+    }
+    g_free (contents);
+  }
+  return stat;
+}
+```
+
+- 11-14: If `tv->file` is `NULL`, the function sets `err` and returns `FALSE`.
+`g_set_error_literal` creates a `GError` structure with the domain, code, and message.
+Then it sets `*err` to point to the `GError`.
+- 16: `g_file_load_contents` reads the file content into memory.
+If an error occurs, it returns `FALSE` and sets `err` to a newly created `GError`.
+See the [GIO documentation](https://docs.gtk.org/gio/method.File.load_contents.html) for details.
+- 17-31: After successfully loading the content, the function performs two checks before updating the GtkTextBuffer.
+First, it checks the file size.
+Since the maximum capacity of the buffer is `G_MAXINT` (the upper limit of the int type), if length exceeds this value, `err` is set and `stat` becomes FALSE.
+Second, it validates the UTF-8 encoding. The `g_utf8_validate` function ensures the content is a valid UTF-8 string.
+If it is not, `err` is set and `stat` becomes FALSE.
+If both checks pass, the function updates the buffer with the loaded text and sets the modified flag to FALSE, as the buffer now exactly matches the file.
+Finally, the memory for `contents` is freed.
+
+### Writing the buffer content
+
+The function `tfe_text_view_write` saves the content of the text buffer to the file.
+
+```c
+gboolean
+tfe_text_view_write (TfeTextView *tv, GError **err) {
+  g_return_val_if_fail (TFE_IS_TEXT_VIEW (tv), FALSE);
+  g_return_val_if_fail (err == NULL || *err == NULL, FALSE);
+
+  GtkTextBuffer *tb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+  GtkTextIter start_iter;
+  GtkTextIter end_iter;
+  char *contents;
+  gboolean stat;
+
+  if (! G_IS_FILE (tv->file)) {
+    g_set_error_literal (err, TFE_TEXT_VIEW_ERROR, TFE_TEXT_VIEW_ERROR_NO_FILE, "No file is set in TfeTextView.");
+    return FALSE;
+  }
+
+  gtk_text_buffer_get_bounds (tb, &start_iter, &end_iter);
+  contents = gtk_text_buffer_get_text (tb, &start_iter, &end_iter, FALSE);
+  stat = g_file_replace_contents (tv->file, contents, strlen (contents), NULL, TRUE, G_FILE_CREATE_NONE, NULL, NULL, err);
+  g_free (contents);
+  if (stat)
+    gtk_text_buffer_set_modified (tb, FALSE);
+  return stat;
+}
+```
+
+- 12-15: If `tv->file` is not set, it means there is no file to write to.
+The function sets `err` with a specific error message and returns `FALSE`.
+- 17: To extract text from a `GtkTextBuffer`, you need to specify a range using **iterators**.
+A `GtkTextIter` is a structure that represents a specific position between characters within a buffer.
+`gtk_text_buffer_get_bounds` initializes `start_iter` to the first position in the buffer, and `end_iter` to the end.
+- 18: `gtk_text_buffer_get_text` retrieves the text between the start and end iterators.
+Note that this function allocates memory for the returned string, meaning the caller takes ownership and is responsible for freeing it later.
+See the [GIO documentation](https://docs.gtk.org/gtk4/method.TextBuffer.get_text.html) for details.
+- 19: `g_file_replace_contents` writes the `contents` string to the file, replacing any existing data.
+It returns `TRUE` on success or `FALSE` on failure, and sets `err` appropriately if an error occurs.
+- 20: Since the text has been written to the file and is no longer needed in memory, the function frees the `contents` using `g_free`.
+- 21-22: If the write operation was successful (`stat` is `TRUE`), it sets the modified flag of the buffer to `FALSE`.
+This is because the content in the buffer is now safely saved and exactly matches the file.
+- 23: Finally, it returns the status of the write operation.
+
+## Summary
+
+We have successfully completed the `TfeTextView` class by implementing its header, constructors, and instance methods.
+We also learned essential GTK memory management concepts, such as floating references and data ownership.
+With our custom widget fully operational, we are now ready to integrate it into the main application.
 
 Up: [README.md](../README.md),  Prev: [Section 12](sec12.md), Next: [Section 14](sec14.md)

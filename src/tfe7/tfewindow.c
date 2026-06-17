@@ -179,11 +179,6 @@ saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data
   g_object_unref (dialog);
 }
 
-static void
-pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  /* not implemented yet */
-}
-
 /* end of action handlers */
 
 /* instance method */
@@ -239,7 +234,6 @@ tfe_window_init (TfeWindow *win) {
     { "close", close_activated, NULL, NULL, NULL },
     { "new", new_activated, NULL, NULL, NULL },
     { "saveas", saveas_activated, NULL, NULL, NULL },
-    { "pref", pref_activated, NULL, NULL, NULL },
   };
   g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
 }

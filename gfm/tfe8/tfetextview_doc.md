@@ -28,6 +28,7 @@ GObject -- GInitiallyUnowned -- GtkWidget -- GtkTextView -- TfeTextView
 
 - [tfe_text_view_get_file ()](#tfe_text_view_get_file)
 - [tfe_text_view_set_file ()](#tfe_text_view_set_file)
+- [tfe_text_view_get_modified](#tfe_text_view_get_modified)
 - [tfe_text_view_read ()](#tfe_text_view_read)
 - [tfe_text_view_write ()](#tfe_text_view_write)
 
@@ -58,13 +59,15 @@ GtkWidget *
 tfe_text_view_new_with_file (GFile *file, GError **err);
 ```
 
-Creates a new TfeTextView, reads the contents of the `file` and set it into the GtkTextBuffer associated with the newly created TfeTextView.
+If `file` is NULL, just returns a new TfeTextView instance as GtkWidget. 
+If `file` is not NULL, creates a new TfeTextView, reads the contents of the `file` and set it into the GtkTextBuffer associated with the newly created TfeTextView.
 Then returns the pointer to the TfeTextView as GtkWidget.
-If an error happens, it returns `NULL` and set `err`.
+If an error happens during the read process, it returns `NULL` and set `err`.
 
 **Parameters**
 
-- file: type: `*GFile`
+- file: type: `*GFile`.
+The caller owns the argument. 
 - err: type: `**GError`.
 It can be NULL and if it is NULL the function ignores this argument.
 If it is not NULL, `*err` must be NULL.
@@ -93,11 +96,12 @@ If no file is set, i.e. GFile is NULL, NULL will be returned.
 **Parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 
 **Return value**
 
 - the pointer to the GFile or NULL.
-The caller takes the ownership and is responsible for freeing it.
+The returned data is owned by The instance.
 
 ### tfe_text_view_set_file()
 
@@ -111,11 +115,30 @@ Set the file associated with the TfeTextView instance.
 **Parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 - file: type: `*GFile`
 The argument can be NULL.
 The function releases the GFile instance in the object if it exists.
 Then, it sets file in the object to the argument.
 If the argument is NULL, the function just releases the old file instance.
+
+### tfe_text_view_get_modified()
+
+```
+gboolean
+tfe_text_view_get_modified (TfeTextView *tv);
+```
+
+Indicates whether the buffer has been modified since the modification flag was last set to FALSE.
+
+**Parameters**
+
+- tv: type: `*TfeTextView`
+The caller owns the argument. 
+
+**Return value**
+
+- TRUE if the buffer has been modified, FALSE otherwise.
 
 ### tfe_text_view_read()
 
@@ -130,6 +153,7 @@ If the GFile is NULL or an error happens during the read process, it returns FAL
 **parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 - err: type: `**GError`
 It can be NULL and if it is NULL the function ignores this argument.
 If it is not NULL, `*err` must be NULL.
@@ -154,6 +178,7 @@ If the GFile is NULL or an error happens during the write process, it returns FA
 **Parameters**
 
 - tv: type: `*TfeTextView`
+The caller owns the argument. 
 - err: type: `**GError`
 It can be NULL and if it is NULL the function ignores this argument.
 If it is not NULL, `*err` must be NULL.

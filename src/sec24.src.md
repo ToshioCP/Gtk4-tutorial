@@ -17,16 +17,16 @@ Now, let's look closer at how CSS itself works in GTK.
 CSS uses very simple rules.
 It combines three main elements: "Where" (Selector), "What" (Property), and "How" (Value).
 
-```css
-Selector {
-  Property: Value;
-  Property: Value;
+```
+selector {
+  property: value;
+  another-property: another-value;
 }
 ```
 
-- Selector: The target widget you want to style.
-- Property: The attribute you want to change (like color, margin, or font).
-- Value: The specific setting for that property (like `red` or `10px`).
+- selector: The target widget you want to style.
+- property: The attribute you want to change (like color, margin, or font).
+- value: The specific setting for that property (like `red` or `10px`).
 
 ```css
 button {
@@ -44,7 +44,7 @@ GTK CSS uses three main selectors to target widgets:
 
 Targets the widget type itself, applying the style to all widgets of that kind.
 You can find these node names in the CSS section of the official GTK documentation for each widget.
-For example, "window" for GtkWindow, "button" for GtkButton, and "textview" for GtkTextView.
+For example, "window" is the node for GtkWindow, "button" for GtkButton, and "textview" for GtkTextView.
 
 ```css
 /* Makes the background of ALL text views light gray */
@@ -117,7 +117,7 @@ button {
 
 To apply styles, you must assign a node, class, or ID to a specific widget using C functions:
 
-- Node: Fixed by the widget type (e.g., `GtkLabel` is `label`). No function is needed.
+- Node: Fixed by the widget type (e.g., `GtkLabel` node is "label"). No function is needed.
 - Class: Manage the widget classes with `gtk_widget_add_css_class()`, `gtk_widget_set_css_classes()`, or `gtk_widget_remove_css_class()`.
 - ID: Corresponds to the widget's name, which you set using `gtk_widget_set_name()`.
 
@@ -130,7 +130,7 @@ We covered applying CSS in Section 17, but here is a quick recap:
 - A display can have multiple providers.
 If styles conflict, the provider with the higher priority wins.
 The `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` priority is appropriate for application style providers.
-(Tip: You can check the exact priority rankings in the `gtkstyleprovider.h` source code).
+(Tip: You can check the exact priority rankings in the `gtkstyleprovider.h` in the [GTK source files](https://gitlab.gnome.org/GNOME/gtk)).
 
 ## TFE Example: Applying Base CSS
 
@@ -140,7 +140,7 @@ Let's look at how TFE (Text File Editor) applies CSS. TFE uses two separate prov
 Right now, it just adds a 10px padding to the GtkTextView to make it look better.
 - Font CSS: Allows users to change fonts dynamically via a font button (we will build this in the next section).
 
-Let's implement the Base CSS in our startup handler.
+Let's apply the Base CSS in our startup handler.
 
 @@@if gfm
 ```C
@@ -166,12 +166,10 @@ app_startup (GApplication *application) {
 }
 
 static void
-tfe_application_dispose (GObject *object) {
-  /* Settings will be disposed here in a future version */
+app_shutdown (GApplication *application) {
+  tfe_style_manager_terminate ();
 
-  tfe_style_manager_terminate (); /* terminate the style manager helper functions */
-
-  G_OBJECT_CLASS (tfe_application_parent_class)->dispose (object);
+ G_APPLICATION_CLASS (tfe_application_parent_class)->shutdown (application);
 }
 
 ```
@@ -180,6 +178,8 @@ The files `tfestylemanager.h` and `tfestylemanager.c` contain our CSS helper fun
 
 - `tfe_style_manager_initialize()` initializes the library and loads the Base CSS at startup.
 - `tfe_style_manager_terminate()` cleans it up during the application's dispose phase.
+
+The two functions are called in the startup and shutdown handlers respectively.
 
 Here is the implementation from `tfestylemanager.c`:
 
@@ -240,7 +240,7 @@ We can safely attach this empty provider now and inject the Font CSS into it lat
 Add `tfestylemanager.c` to your `meson.build` file:
 
 @@@include
-meson.build
+tfe10/meson.build
 @@@
 
 THe source files are in the [src/tfe10](tfe10/) directory.
@@ -258,7 +258,7 @@ We need to convert this Pango format into CSS, which requires a bit of manual wo
 Here are the key functions to extract font data from Pango:
 
 - `pango_font_description_get_family()`: Gets the font family (e.g., "sans-serif").
-- `pango_font_description_get_size()`: Gets the font size. *(Note: Divide this by the `PANGO_SCALE` constant to get standard points or pixels.)*
+- `pango_font_description_get_size()`: Gets the font size. (Note: Divide this by the `PANGO_SCALE` constant to get standard points or pixels.)
 - `pango_font_description_get_size_is_absolute()`: Returns `TRUE` for pixels (px) and `FALSE` for points (pt).
 - `pango_font_description_get_weight()`: Returns the weight (e.g., `PANGO_WEIGHT_NORMAL`).
 - `pango_font_description_get_style()`: Returns the style (e.g., `PANGO_STYLE_ITALIC`).
@@ -283,9 +283,14 @@ The helper function `font_desc_to_css()` does exactly this.
 tfe10/tfestylemanager.c pango_weight2int font_desc_to_css
 @@@
 
-This function turns a PangoFontDescription data (C structure) like "sans-serif Bold 12" into proper CSS:
+This function turns a PangoFontDescription (which is a C structure) into proper CSS.
+For example, if the description contains "sans-serif", "Bold", and "12pt", the CSS string will be:
 
-```
+@@@if gfm
+```CSS
+@@@else
+```{.css}
+@@@end
 textview {font-family: "sans-serif"; font-size: 12pt; font-weight: 700; font-style: normal;}
 ```
 

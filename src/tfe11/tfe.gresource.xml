@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/ToshioCP/tfe">
+  <gresource prefix="/com/github/ToshioCP/tfe11">
     <file>tfewindow.ui</file>
+    <file>menus.ui</file>
     <file>tfepref.ui</file>
-    <file>tfealert.ui</file>
-    <file>menu.ui</file>
   </gresource>
 </gresources>

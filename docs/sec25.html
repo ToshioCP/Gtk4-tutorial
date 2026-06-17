@@ -4,11 +4,73 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="pandoc">
-  <title>sec25.html</title>
+  <title>GtkFontDialogButton and CSS Updates</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
-
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 </head>
 <body style="padding-top: 70px;">
@@ -31,7 +93,247 @@
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
-        
+        <h1 id="gtkfontdialogbutton-and-css-updates">GtkFontDialogButton
+        and CSS Updates</h1>
+        <h2 id="the-preference-dialog">The Preference Dialog</h2>
+        <p>When you click “Preferences” menu on the new TFE application,
+        the following preference dialog appears.</p>
+        <figure>
+        <img src="/Gtk4-tutorial/images/pref_dialog.png"
+        alt="Preference dialog" />
+        <figcaption aria-hidden="true">Preference dialog</figcaption>
+        </figure>
+        <p>A preference dialog allows users to customize settings, such
+        as fonts. Nowadays, it is often called a “Settings” dialog.</p>
+        <p>This dialog contains only one bUtton: a
+        <code>GtkFontDialogButton</code>. You can add more widgets to
+        this dialog, but this simple layout is enough for our first
+        version.</p>
+        <p>Clicking this button opens <code>GtkFontDialog</code> to
+        select a font.</p>
+        <figure>
+        <img src="/Gtk4-tutorial/images/fontdialog.png"
+        alt="Font dialog" />
+        <figcaption aria-hidden="true">Font dialog</figcaption>
+        </figure>
+        <p>When the user selects a font and clicks the “Select” button,
+        the application’s font updates.</p>
+        <p>Note that <code>GtkFontDialogButton</code> and
+        <code>GtkFontDialog</code> are new widgets introduced in GTK
+        4.10. They replace the older <code>GtkFontButton</code> and
+        <code>GtkFontChooserDialog</code>, which were deprecated in
+        version 4.10.</p>
+        <h3 id="the-composite-widget">The Composite Widget</h3>
+        <p>This preference dialog contains a <code>GtkBox</code>, a
+        <code>GtkLabel</code>, and a <code>GtkFontDialogButton</code>,
+        and is defined as a composite widget. Here is the template UI
+        file for <code>TfePref</code>:</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfePref&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Preferences&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;horizontal&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;halign&quot;</span>&gt;center&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Font:&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;1&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-20"><a href="#cb1-20"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-22"><a href="#cb1-22"></a>        &lt;<span class="kw">child</span>&gt;</span>
+<span id="cb1-23"><a href="#cb1-23"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontDialogButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;font_dialog_btn&quot;</span>&gt;</span>
+<span id="cb1-24"><a href="#cb1-24"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;dialog&quot;</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontDialog&quot;</span>/&gt;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>            &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-28"><a href="#cb1-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-29"><a href="#cb1-29"></a>      &lt;/<span class="kw">object</span>&gt;</span>
+<span id="cb1-30"><a href="#cb1-30"></a>    &lt;/<span class="kw">child</span>&gt;</span>
+<span id="cb1-31"><a href="#cb1-31"></a>  &lt;/<span class="kw">template</span>&gt;</span>
+<span id="cb1-32"><a href="#cb1-32"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
+        <ul>
+        <li>The <code>&lt;template&gt;</code> tag specifies that this is
+        a composite widget.</li>
+        <li>The <code>class</code> attribute is set to “TfePref” and the
+        <code>parent</code> attribute to GtkWindow. This makes
+        <code>TfePref</code> a child class of GtkWindow.</li>
+        <li>It sets three properties: <code>title</code>,
+        <code>resizable</code>, and <code>modal</code>. When
+        <code>modal</code> is set to <code>TRUE</code>, the user cannot
+        interact with the parent window while this dialog is open.</li>
+        <li>Inside, there is a horizontal <code>GtkBox</code> containing
+        a <code>GtkLabel</code> and a
+        <code>GtkFontDialogButton</code>.</li>
+        </ul>
+        <h3 id="the-header-file">The Header File</h3>
+        <p>The <code>tfepref.h</code> file defines the types and
+        declares the public function.</p>
+        <div class="sourceCode" id="cb2"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#pragma once</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="pp">#define TFE_TYPE_PREF tfe_pref_get_type </span><span class="op">()</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>G_DECLARE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> TFE<span class="op">,</span> PREF<span class="op">,</span> GtkWindow<span class="op">)</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a></span>
+<span id="cb2-8"><a href="#cb2-8"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>tfe_pref_new <span class="op">(</span>GtkApplication <span class="op">*</span>application<span class="op">);</span></span></code></pre></div>
+        <ul>
+        <li>5: Defines the <code>TFE_TYPE_PREF</code> macro, which is
+        replaced by <code>tfe_pref_get_type()</code>.</li>
+        <li>6: Uses the <code>G_DECLARE_FINAL_TYPE</code> macro to
+        automatically generate standard boilerplate code.</li>
+        <li>8-9: Declares the public function
+        <code>tfe_pref_new()</code>, which creates a new
+        <code>TfePref</code> instance. It takes a GtkApplication
+        argument, which will be assigned to “application” property.</li>
+        </ul>
+        <h3 id="the-c-source-file-for-the-composite-widget">The C Source
+        File for the Composite Widget</h3>
+        <p>The following code is the <code>tfepref.c</code> file.</p>
+        <div class="sourceCode" id="cb3"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;gtk/gtk.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="pp">#include </span><span class="im">&quot;tfestylemanager.h&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="pp">#include </span><span class="im">&quot;tfepref.h&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">struct</span> _TfePref</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="op">{</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  GtkWindow parent<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  GtkFontDialogButton <span class="op">*</span>font_dialog_btn<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="op">};</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a>G_DEFINE_FINAL_TYPE <span class="op">(</span>TfePref<span class="op">,</span> tfe_pref<span class="op">,</span> GTK_TYPE_WINDOW<span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>font_dialog_btn_notify_cb <span class="op">(</span>GtkFontDialogButton <span class="op">*</span>btn<span class="op">,</span> GParamSpec <span class="op">*</span>pspec<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a>  PangoFontDescription <span class="op">*</span>font_desc <span class="op">=</span> gtk_font_dialog_button_get_font_desc <span class="op">(</span>btn<span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a></span>
+<span id="cb3-17"><a href="#cb3-17"></a>  tfe_style_manager_set_font <span class="op">(</span>font_desc<span class="op">);</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="op">}</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>tfe_pref_dispose <span class="op">(</span>GObject <span class="op">*</span>gobject<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  TfePref <span class="op">*</span>pref <span class="op">=</span> TFE_PREF <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a></span>
+<span id="cb3-24"><a href="#cb3-24"></a>  gtk_widget_dispose_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">),</span> TFE_TYPE_PREF<span class="op">);</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>  G_OBJECT_CLASS <span class="op">(</span>tfe_pref_parent_class<span class="op">)-&gt;</span>dispose <span class="op">(</span>gobject<span class="op">);</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="op">}</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>tfe_pref_init <span class="op">(</span>TfePref <span class="op">*</span>pref<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a>  gtk_widget_init_template <span class="op">(</span>GTK_WIDGET <span class="op">(</span>pref<span class="op">));</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a>  g_signal_connect <span class="op">(</span>pref<span class="op">-&gt;</span>font_dialog_btn<span class="op">,</span> <span class="st">&quot;notify::font-desc&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>font_dialog_btn_notify_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb3-32"><a href="#cb3-32"></a><span class="op">}</span></span>
+<span id="cb3-33"><a href="#cb3-33"></a></span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>tfe_pref_class_init <span class="op">(</span>TfePrefClass <span class="op">*</span>class<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-36"><a href="#cb3-36"></a>  G_OBJECT_CLASS <span class="op">(</span>class<span class="op">)-&gt;</span>dispose <span class="op">=</span> tfe_pref_dispose<span class="op">;</span></span>
+<span id="cb3-37"><a href="#cb3-37"></a>  gtk_widget_class_set_template_from_resource <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> <span class="st">&quot;/com/github/ToshioCP/tfe11/tfepref.ui&quot;</span><span class="op">);</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a>  gtk_widget_class_bind_template_child <span class="op">(</span>GTK_WIDGET_CLASS <span class="op">(</span>class<span class="op">),</span> TfePref<span class="op">,</span> font_dialog_btn<span class="op">);</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a><span class="op">}</span></span>
+<span id="cb3-40"><a href="#cb3-40"></a></span>
+<span id="cb3-41"><a href="#cb3-41"></a>GtkWidget <span class="op">*</span></span>
+<span id="cb3-42"><a href="#cb3-42"></a>tfe_pref_new <span class="op">(</span>GtkApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-43"><a href="#cb3-43"></a>  <span class="cf">return</span> GTK_WIDGET <span class="op">(</span>g_object_new <span class="op">(</span>TFE_TYPE_PREF<span class="op">,</span> <span class="st">&quot;application&quot;</span><span class="op">,</span> application<span class="op">,</span> NULL<span class="op">));</span></span>
+<span id="cb3-44"><a href="#cb3-44"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>5-9: The <code>_TfePref</code> structure includes a
+        <code>font_dialog_btn</code> member. This holds a pointer to the
+        <code>GtkFontDialogButton</code> instance defined in the XML
+        file (<code>tfepref.ui</code>). This member name must exactly
+        match the <code>id</code> attribute in the XML.</li>
+        <li>11: The <code>G_DEFINE_FINAL_TYPE</code> macro expands into
+        standard boilerplate code.</li>
+        <li>13-18: <code>font_dialog_btn_notify_cb()</code> is the
+        notify signal handler for the font dialog button’s
+        <code>font-desc</code> property. This signal is emitted whenever
+        the property changes. The handler retrieves the
+        <code>font-desc</code> property (which is a
+        <code>PangoFontDescription</code>) and passes it to our
+        <code>tfe_style_manager_set_font()</code> style manager
+        function. Because <code>tfe_style_manager_set_font()</code> not
+        only converts this data into a CSS string but also applies it to
+        the <code>GdkDisplay</code>, simply calling this function
+        instantly updates the screen’s style.</li>
+        <li>20-26: The dispose handler uses
+        <code>gtk_widget_dispose_template()</code> to destroy the
+        instance built from the template.</li>
+        <li>28-32: The instance initialization function uses
+        <code>gtk_widget_init_template()</code> to build the instance
+        from the template. It also connects the notify signal for the
+        <code>font-desc</code> property to our callback handler.</li>
+        <li>34-39: <code>tfe_pref_class_init()</code> loads the template
+        and binds the <code>font_dialog_btn</code> instance variable to
+        the UI file.</li>
+        <li>41-44: The constructor <code>tfe_pref_new()</code> creates
+        the new instance using <code>g_object_new()</code>. The argument
+        <code>application</code> is assigned to the “application”
+        property.</li>
+        </ul>
+        <h3 id="handling-it-in-the-application">Handling it in the
+        Application</h3>
+        <p>The preference dialog opens when the user clicks
+        “Preferences” in the application menu. Therefore, we need to add
+        code to generate and display the dialog inside the application’s
+        action handler.</p>
+        <div class="sourceCode" id="cb4"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>pref_activated <span class="op">(</span>GSimpleAction <span class="op">*</span>action<span class="op">,</span> GVariant <span class="op">*</span>parameter<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  GtkWindow <span class="op">*</span>win <span class="op">=</span> gtk_application_get_active_window <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>  GtkWidget <span class="op">*</span>pref_dialog<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  pref_dialog <span class="op">=</span> tfe_pref_new <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>  gtk_window_set_transient_for <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref_dialog<span class="op">),</span> win<span class="op">);</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>pref_dialog<span class="op">));</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="op">}</span></span></code></pre></div>
+        <p>The logic here is very simple: it creates the preference
+        dialog, sets the main window as its transient parent window, and
+        shows the dialog. The user closes the dialog by clicking the
+        window’s close (X) button. Once closed, the dialog instance is
+        destroyed.</p>
+        <h2 id="compile-and-run">Compile and Run</h2>
+        <p>The source code is located in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/src/tfe11/">src/tfe11</a>
+        directory.</p>
+        <p>Before compiling, you need to make a few changes:</p>
+        <ul>
+        <li>Change the Application ID in <code>main.c</code> to
+        “com.github.ToshioCP.tfe11”.</li>
+        <li>Change the prefix in <code>tfe.gresource.xml</code> to
+        “/com/github/ToshioCP/tfe11”. Be sure to update the UI file
+        loading prefix in <code>tfewindow.c</code> to match.</li>
+        <li>Add <code>tfepref.c</code> to the source files list in
+        <code>meson.build</code>.</li>
+        </ul>
+        <p>Move your current directory to <code>src/tfe11</code> and
+        type the following commands:</p>
+        <pre><code>$ meson setup _build
+$ ninja -C _build
+$ _build/tfe</code></pre>
+        <p>Select “Preferences” from the menu to open the dialog. Click
+        the font button to open the font chooser, pick a font and size,
+        and the chooser will close, returning you to the preference
+        dialog. Now, click the close (X) button at the top right to
+        close the preference dialog. You should see that the text view
+        in the main window is now using your selected font.</p>
+        <p>This setting remains active while the program is running, but
+        once you exit the application, all settings are lost. The next
+        time you launch the app, it will revert to the default font.</p>
+        <p>To save these settings so they persist across restarts, the
+        best practice in GTK is to use GSettings. In the next section,
+        we will wrap up the TFE project by covering how to implement
+        GSettings.</p>
       </div>
     </div>
   </main>

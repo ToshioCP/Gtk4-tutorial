@@ -3,13 +3,13 @@
   to: 2
 - header: "GTK Basics"
   from: 3
-  to: 23
+  to: 26
 - header: "GtkDrawingArea"
-  from: 24
-  to: 27
+  from: 27
+  to: 30
 - header: "Drag and Drop"
-  from: 28
-  to: 28 
+  from: 31
+  to: 31 
 - header: "List Widgets"
-  from: 29
-  to: 33
+  from: 32
+  to: 36

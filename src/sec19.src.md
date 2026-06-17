@@ -9,7 +9,7 @@ In earlier examples, the widget assembly was handled automatically in the backgr
 However, you can explicitly build and place this menu within your program using `GtkPopoverMenuBar`.
 The `menu4.c` source file demonstrates how to display a menu bar equivalent to `menu3.c` using this manual approach.
 
-Because this method is more complex than simply using `gtk_application_window_set_show_menubar`, it is generally not recommended unless you specifically need to customize the placement of the menu bar (e.g., placing it somewhere other than the top of the window).
+Because this method is more complex than using `gtk_application_window_set_show_menubar`, it is generally not recommended unless you specifically need to customize the placement of the menu bar (e.g., placing it somewhere other than the top of the window).
 For this reason, we will skip a detailed explanation of `GtkPopoverMenuBar` here, but interested readers are encouraged to examine the [menu4.c](menu/menu4.c) code.
 
 ## GtkMenuButton
@@ -138,7 +138,7 @@ Its default value is `GTK_ARROW_DOWN` ("down" in UI file), which automatically d
 This triangle adapts depending on the chosen direction (up, down, left, or right).
 
 By setting the direction property to "none" (`GTK_ARROW_NONE`), the menu still pops up downward, but the button's icon changes to "open-menu-symbolic", the standard "hamburger" menu icon.
-You can also explicitly change the icon by setting the icon-name property.
+You can also explicitly change the icon by setting the "icon-name" property.
 Some common alternatives include:
 
 - **view-more-symbolic:** The "three dots" (kebab) menu icon.

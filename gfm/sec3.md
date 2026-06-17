@@ -222,31 +222,18 @@ However, you may have noticed that it's painful to type such a long line to comp
 It is a good idea to use shell script to solve this problem.
 Make a text file which contains the following line.
 
-~~~
+```
 gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+```
 
-Then, save it under the directory $HOME/bin, which is usually /home/(username)/bin.
-(If your user name is James, then the directory is /home/james/bin).
-And turn on the execute bit of the file.
-If the filename is `comp`, do like this:
+Then, save it in your current directory and name it "comp".
 
-~~~
-$ chmod 755 $HOME/bin/comp
-$ ls -log $HOME/bin
-    ...  ...  ...
--rwxr-xr-x 1   62 May 23 08:21 comp
-    ...  ...  ...
-~~~
-
-If this is the first time that you make a $HOME/bin directory and save a file in it, then you need to logout and login again.
-
-~~~
-$ comp pr2
+```
+$ bash comp pr2
 $ ./a.out
 GtkApplication is activated.
 $
-~~~
+```
 
 ## GtkWindow and GtkApplicationWindow
 
@@ -353,10 +340,10 @@ You should use `gtk_widget_set_visible` instead.
 
 Save the program as `pr3.c`, then compile and run it.
 
-~~~
-$ comp pr3
+```
+$ bash comp pr3
 $ ./a.out
-~~~
+```
 
 A small window appears.
 

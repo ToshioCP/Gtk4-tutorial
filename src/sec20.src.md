@@ -44,7 +44,7 @@ tfe7/tfeapplication.h
 There are strict naming rules here:
   - The macro name must be ALL CAPS like this: `PREFIX_TYPE_OBJECT_NAME`.
   - The function name must be all lowercase like this: `prefix_object_name_get_type ()`.
-- 6: We use the `G_DECLARE_FINAL_TYP`E macro to set up our class.
+- 6: We use the `G_DECLARE_FINAL_TYPE` macro to set up our class.
   - 1st argument: CamelCase (`PrefixObjectname`) like: `TfeApplication`
   - 2nd argument: lowercase (`prefix_objectname`) like: `tfe_application`
   - 3rd argument: ALL CAPS (`PREFIX`) like: `TFE`
@@ -85,7 +85,6 @@ We're adding a pointer for GSettings here because we plan to use it later.
   - 3rd argument: ALL CAPS (The parent's type macro). `GTK_TYPE_APPLICATION`
 
 These steps are the standard recipe for creating a subclass in GObject.
-It's a great pattern to memorize.
 If you want to know exactly what these macros do behind the scenes, check out the [GObject tutorial](https://toshiocp.github.io/Gobject-tutorial).
 
 ## Initializing the Instance and ClassInstance
@@ -120,7 +119,7 @@ When the class is initialized, we can override class methods.
 First, we need to override the dispose method so GTK knows to call our custom cleanup code.
 We did the exact same thing for TfeTextView in Section 11, so feel free to look back at that if you need a refresher.
 
-#### Overriding the Sstartup, Activate, and Open Methods
+#### Overriding the Startup, Activate, and Open Methods
 
 Take a look at the family tree for our TfeApplication class:
 

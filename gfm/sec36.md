@@ -1,3 +1,5 @@
+Up: [README.md](../README.md),  Prev: [Section 35](sec35.md)
+
 # GtkSignalListItemFactory
 
 ## GtkSignalListItemFactory vs GtkBuilderListItemFactory
@@ -12,8 +14,8 @@ You need to update the list item when the text in the GtkText is edited.
 The data flow is in the opposite direction compared to GtkBuilderListItemFactory—it goes from the GtkText widget back to the list item.
 You can achieve this using GtkSignalListItemFactory, which provides more flexibility.
 
-This section shows just some parts of the source file [listeditor.c](listeditor/listeditor.c).
-If you want to see the whole codes, see [src/listeditor](listeditor/) directory of the Gtk4 tutorial repository.
+This section shows just some parts of the source file [listeditor.c](../src/listeditor/listeditor.c).
+If you want to see the whole codes, see [src/listeditor](../src/listeditor/) directory of the Gtk4 tutorial repository.
 
 ## List Editor
 
@@ -24,11 +26,7 @@ Each line is an item of the list.
 The list is displayed with a GtkListView.
 The list view contains strings which are the contents of the corresponding items in the list model.
 
-@@@if pdf
-![List editor](/images/listeditor.png){width=12cm height=7.2cm}
-@@@else
-![List editor](/images/listeditor.png)
-@@@end
+![List editor](/src/images/listeditor.png)
 
 You can compile the source file and execute it as follows.
 
@@ -63,9 +61,32 @@ Its two signals "setup" and "bind" are connected to the handlers `setup_cb` and 
 The remaining two signals "unbind" and "teardown" aren't used in this program.
 The following shows the signal handlers.
 
-@@@include
-listeditor/listeditor.c setup_cb bind_cb
-@@@
+```c
+static void
+setup_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GtkWidget *text = gtk_text_new ();
+
+  gtk_list_item_set_child (listitem, GTK_WIDGET (text));
+  gtk_editable_set_alignment (GTK_EDITABLE (text), 0.0);
+  gtk_widget_set_can_target (GTK_WIDGET (text), FALSE);
+
+  g_signal_connect (text, "changed", G_CALLBACK (text_changed_cb), listitem);
+  g_signal_connect (listitem, "notify::selected", G_CALLBACK (item_selected_cb), text);
+}
+
+static void
+bind_cb (GtkListItemFactory *factory, GtkListItem *listitem) {
+  GtkWidget *text = gtk_list_item_get_child (listitem);
+  LeData *data = LE_DATA (gtk_list_item_get_item(listitem));
+
+  if (data) {
+    g_signal_handlers_block_by_func (text, (gpointer) text_changed_cb, listitem);
+    gtk_editable_set_text (GTK_EDITABLE (text), le_data_look_string (data));
+    gtk_editable_set_position (GTK_EDITABLE (text), -1);
+    g_signal_handlers_unblock_by_func (text, (gpointer) text_changed_cb, listitem);
+  }
+}
+```
 
 - 5-7: `setup_cb` creates the child widget of the list item.
 This widget will be a row of the GtkListView instance.
@@ -92,9 +113,28 @@ Since no new resources are allocated in this step, an "unbind" signal handler is
 
 The two signal handlers `text_changed_cb` and `item_selected_cb` are shown below.
 
-@@@include
-listeditor/listeditor.c text_changed_cb item_selected_cb
-@@@
+```c
+static void
+text_changed_cb (GtkEditable *self, gpointer user_data) {
+  GtkListItem *listitem = GTK_LIST_ITEM (user_data);
+  LeData *data = LE_DATA (gtk_list_item_get_item(listitem));
+  const char *s;
+
+  if (data) {
+    s = gtk_editable_get_text (self);
+    le_data_set_string (data, s);
+  }
+}
+
+static void
+item_selected_cb (GtkListItem *listitem, GParamSpec *pspec, gpointer user_data) {
+  GtkWidget *text = GTK_WIDGET (user_data);
+
+  if (gtk_list_item_get_selected (listitem)) {
+    gtk_widget_grab_focus (text);
+  } 
+}
+```
 
 ## GtkSingleSelection
 
@@ -108,7 +148,7 @@ Since GtkSingleSelection handles all the selection logic internally, no addition
 Alternatively, you can use a GBinding object to bind the GtkText's "text" property to the LeData's "string" property.
 To do this, you first need to implement the "string" property in the LeData class.
 
-The code for this version is available in the [src/listeditor_binding/](listeditor_binding/) directory.
+The code for this version is available in the [src/listeditor_binding/](../src/listeditor_binding/) directory.
 The GBinding instance is created in the "bind" handler and unbound in the "unbind" handler.
 We use the `g_object_set_data` function to store the binding object within the list item.
 
@@ -117,3 +157,5 @@ For instance, you could subclass GtkText and store the binding instance directly
 
 However, these alternatives require more code.
 Ultimately, using the "changed" signal remains the simplest and most straightforward approach.
+
+Up: [README.md](../README.md),  Prev: [Section 35](sec35.md)

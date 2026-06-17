@@ -1,182 +1,327 @@
 Up: [README.md](../README.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)
 
-# Functions in GtkNotebook
+# File Dialogs and the GIO Asynchronous Model
 
-GtkNotebook is a very important object in the text file editor `tfe`.
-It connects the application and TfeTextView objects.
-A set of public functions are declared in `tfenotebook.h`.
-The name "tfenotebook" is used only for filenames; no "TfeNotebook" object type is defined.
-There's no "TfeNotebook" object.
+## What is Asynchronous Operation?
 
-The source files are in the directory `src/tfe5`.
-You can get them by downloading the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
+GUI applications, like those built with GTK, run in a continuous loop called the **main loop**.
+This loop constantly waits for user events—such as mouse clicks or key presses—and redraws the screen as needed. 
+
+Because the main loop must keep running quickly to keep the application responsive, you should never perform heavy or time-consuming tasks (like reading a large file or downloading data from the network) **directly inside it**. 
+If you use a **synchronous** function for a slow I/O operation, the main loop will block and wait for the operation to finish.
+During this time, your application will freeze, and the user will not be able to click or type anything.
+
+To solve this problem, we use **asynchronous** operations. 
+When you call an asynchronous function, it immediately requests the slow operation to start in the background and instantly returns control to the main loop.
+The application remains responsive.
+Once the background operation is complete, the application is notified so it can handle the result.
+
+## The GIO Asynchronous Model
+
+GIO is the underlying I/O library used by GTK.
+It provides a consistent, powerful model for handling asynchronous operations using a **Callback** mechanism.
+
+![Async-Finish Pattern](../src/images/Async_pattern.png)
+
+The GIO asynchronous model always follows a strict pattern using a pair of functions: `_async` and `_finish`.
+
+1. Start the operation (`_async`):
+You call a function ending in `_async` (e.g., `do_something_async`).
+You pass your parameters, along with a pointer to a callback function that you have written.
+2. Wait in the background:
+The `_async` function returns immediately.
+The main loop continues running smoothly while GIO does the hard work in the background.
+3. Execute the callback:
+When the operation completes (either successfully or with an error), GIO automatically calls your callback function.
+4. Get the result (`_finish`):
+Inside your callback function, you must call the corresponding `_finish` function (e.g., `do_something_finish`).
+This function collects the actual result (like a `GFile`) or any `GError` that occurred during the process.
+
+## Getting a File Name with GtkFileDialog
+
+In GTK4, `GtkFileDialog` is the modern way to ask the user to choose a file.
+It uses the native file chooser dialog of the user's operating system or desktop environment and is designed entirely around the GIO asynchronous model.
+
+There are two main operations when dealing with files:
+
+- Opening a file: Uses `gtk_file_dialog_open_async` and `gtk_file_dialog_open_finish`.
+- Saving a file: Uses `gtk_file_dialog_save_async` and `gtk_file_dialog_save_finish`.
+
+Here is a practical code example of how to show an "Open" file dialog and handle the user's selection using the `_async` and `_finish` pattern.
+
+### The Callback Function
+
+First, we define the callback function that will run when the user selects a file or cancels the dialog.
+
+```C
+static void
+open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
+  /* The source_object is the GtkFileDialog that started the operation */
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  GError *err = NULL;
+  GFile *file;
+
+  /* Call the _finish function to get the result of the async operation */
+  /* If an error occurs during the interaction process, the function returns NULL. */
+  file = gtk_file_dialog_open_finish (dialog, res, &err);
+
+  if (file != NULL) {
+    /* The user selected a file successfully */
+    g_print ("File selected: %s\n", g_file_get_path (file));
+    
+    /* We own the GFile, so we must unreference it when done */
+    g_object_unref (file);
+  } else {
+    /* The user cancelled the dialog or an error occurred */
+    g_print ("Dialog cancelled or error: %s\n", err->message);
+    g_error_free (err);
+  }
+}
+```
+
+### Setting up and showing the dialog
+
+Next, we write the function that creates the dialog and starts the asynchronous operation.
+
+```C
+static void
+show_open_dialog (GtkWindow *parent_window) {
+  /* Create a new GtkFileDialog instance */
+  GtkFileDialog *dialog = gtk_file_dialog_new ();
+
+  /* Start the asynchronous open operation.
+   * We pass 'open_dialog_cb' as the callback function. */
+  gtk_file_dialog_open_async (dialog, 
+                              parent_window, 
+                              NULL,           /* GCancellable (NULL means we won't cancel it programmatically) */
+                              open_dialog_cb, /* The callback function to run when done */
+                              NULL);          /* User data to pass to the callback (NULL here) */
+}
+```
+
+If you wanted to implement a "Save As" feature instead, the structure would be exactly the same.
+You would simply change `gtk_file_dialog_open_async` to `gtk_file_dialog_save_async`, and inside the callback, you would use `gtk_file_dialog_save_finish`.
+
+With this pattern, your application remains fully responsive while the user browses their folders, and you safely receive the selected GFile once they are ready.
+
+Keep in mind that GIO uses this exact same asynchronous pattern for almost all input and output operations, such as reading and writing files.
+Therefore, mastering this `_async` and `_finish` pattern is an absolutely essential skill for whenever you write any I/O-related code in the future.
+
+## Clicked Signal Handler on Open Button
+
+Now, we will look at the TFE (Text File Editor) main program `tfeapplication.c`.
+First, we will focus on the "clicked" signal handler on "Open" button.
+The handler shows the file dialog then reads the file to the newly created TfeTextView instance.
+
+```c
+static void
+open_cb (GtkNotebook *nb) {
+  GtkFileDialog *dialog;
+  GtkWidget *win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+
+  dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_open (dialog, GTK_WINDOW (win), NULL, open_dialog_cb, nb);
+  g_object_unref (dialog);
+}
+```
+
+The `open_cb` function is called when the "Open" button is clicked.
+It creates a file dialog and calls `gtk_file_dialog_open`, passing `open_dialog_cb` as the callback function.
+This starts a background operation that displays the dialog and waits for user input, while the function itself returns immediately to the caller.
+Once the user interaction is complete, the background operation invokes the callback.
+
+```c
+static void
+open_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  GtkNotebook *nb = GTK_NOTEBOOK (data);
+  GtkWidget *win;
+  GFile *file;
+  GError *err = NULL;
+
+  if ((file = gtk_file_dialog_open_finish (dialog, res, &err)) == NULL) {
+    if (!g_error_matches (err, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED)) {
+      win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+      tfe_error_alert (GTK_WINDOW (win), err);
+    }
+    g_clear_error (&err);
+    return;
+  }
+  notebook_page_new_with_file (nb, file);
+  g_object_unref (file);
+}
+```
+
+- 9-15: Calls `gtk_file_dialog_open_finish` to retrieve the selected GFile.
+A NULL return value indicates that the operation failed or the dialog was dismissed by the user.
+If the error was not caused by cancellation, it displays an alert using `tfe_error_alert`.
+The function then clears the error and returns.
+- 17: Calls `notebook_page_new_with_file` to create a new TfeTextView instance and build a new notebook page with it.
+- 18: Frees `file`
+
+The function `tfe_error_alert` is as follows.
+This is a private helper function.
+
+```c
+static void
+tfe_error_alert (GtkWindow *win, GError *err) {
+  GtkAlertDialog *alert_dialog;
+  GtkWindow *parent;
+
+  if (win != NULL && gtk_widget_get_mapped (GTK_WIDGET (win)))
+    parent = win;
+  else
+    parent = NULL;
+  alert_dialog = gtk_alert_dialog_new ("%s", err->message);
+  gtk_alert_dialog_show (alert_dialog, parent);
+  g_object_unref (alert_dialog);
+}
+```
+
+- 6-9: The argument `win` can be NULL.
+Otherwise it must be the main window instance and also mapped (drawn on the screen).
+If it is not mapped, an error possibly occurs even if the window instance actually exists.
+- 10: Creates an alert dialog.
+- 11: Shows the dialog.
+The second argument specifies the "transient parent window."
+While passing NULL is generally discouraged, it is mandatory here.
+Since `tfe_error_alert` can be called from the "open" handler before the main window is mapped, passing NULL is the only safe way to display the dialog.
+See [GTK documentation](https://docs.gtk.org/gtk4/method.Window.set_transient_for.html) for further information about transient parent.
+- 12: releases the alert dialog.
+
+### Page build Utility
+
+A private function `notebook_page_new_with_file` creates a new TfeTextView instance and builds a new page in the GtkNotebook.
+
+```c
+static void
+notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
+  g_return_if_fail (GTK_IS_NOTEBOOK (nb));
+  g_return_if_fail (G_IS_FILE (file) || file == NULL);
+
+  GtkWidget *win;
+  GtkNotebookPage *nbp;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GtkWidget *lab;
+  int i;
+  GError *err = NULL;
+
+  if ((tv = tfe_text_view_new_with_file (file, &err)) == NULL) {
+    win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+    tfe_error_alert (GTK_WINDOW (win), err);
+    g_clear_error (&err);
+    return;
+  }
+  lab = tfe_label_from_file (file); /* lab is floating. lab can be NULL */
+  scr = gtk_scrolled_window_new ();
+  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), GTK_WIDGET (tv));
+  i = gtk_notebook_append_page (nb, scr, lab);
+  nbp = gtk_notebook_get_page (nb, scr);
+  g_object_set (nbp, "tab-expand", TRUE, NULL);
+  gtk_notebook_set_current_page (nb, i);
+}
+```
+
+- 14-19: Calls `tfe_text_view_new_with_file` to create a new TfeTextView with the GFile `file`.
+The argument `file` can be NULL and the function returns an empty TfeTextView instance.
+If an error occurs, it calls `tfe_error_alert` to show the error message and returns.
+- 20: Calls `tfe_label_from_file`.
+This function creates a GtkLabel instance with the filename obtained from the GFile.
+If the argument (GFile) is NULL, the function returns NULL.
+-21-22: Creates a scrolled window instance and sets the child to `tv`.
+- 23: Appends the scroll window and label to the notebook as the child and tab respectively.
+- 24-25: Sets the "tab-expand" property of the notebook page to TRUE using `g_object_set`
+- 26: Sets the current page to the new page.
+
+## Clicked Signal Handler on Save Button
+
+Next, we will go on to the "clicked" signal handler on the "Save" button.
+
+```c
+static void
+save_cb (GtkNotebook *nb) {
+  int i;
+  GtkWidget *win;
+  GtkWidget *scr;
+  GtkWidget *tv;
+  GError *err = NULL;
+  GtkFileDialog *dialog;
+  GtkAlertDialog *alert_dialog;
+
+  i = gtk_notebook_get_current_page (nb);
+  win = gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW);
+
+  if (i == -1) {
+    alert_dialog = gtk_alert_dialog_new ("No page to save.");
+    gtk_alert_dialog_show (alert_dialog, GTK_WINDOW (win));
+    g_object_unref (alert_dialog);
+    return;
+  }
+
+  scr = gtk_notebook_get_nth_page (nb, i);
+  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+
+  if (tfe_text_view_get_file (TFE_TEXT_VIEW (tv))) { /* File is already set */
+    if (!tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+      tfe_error_alert (GTK_WINDOW (win), err);
+      g_clear_error (&err);
+    }
+  } else {
+    dialog = gtk_file_dialog_new ();
+    gtk_file_dialog_save (dialog, GTK_WINDOW (win), NULL, save_dialog_cb, tv);
+    g_object_unref (dialog);
+  }
+}
+```
 
 
+- 11-19: If the GtkNotebook has no page, it shows the alert dialog with "No page to save." and returns.
+- 24-28: If the TfeTextView holds a GFile, it just writes the content of the buffer to the file.
+- 30-32: If the TfeTextView does not hold a GFile, it shows a Filedialog. The callback function is `save_dialog_cb`.
 
-This header file describes the public functions in `tfenotebook.c`.
+The `save_dialog_cb` function is shown below.
 
-- 1-2: `notebook_page_save` saves the current page to the file with the name specified in the tab."
-If the name is `untitled` or `untitled` followed by digits, a file chooser dialog appears and a user can choose or specify a filename.
-- 4-5: `notebook_page_close` closes the current page.
-- 7-8: `notebook_page_open` shows a file chooser dialog and a user can choose a file. The contents of the file is inserted to a new page.
-- 10-11: `notebook_page_new_with_file` creates a new page and a file given as an argument is read and inserted into the page.
-- 13-14: `notebook_page_new` creates a new empty page.
+```c
+static void
+save_dialog_cb (GObject *source_object, GAsyncResult *res, gpointer data) {
+  GtkFileDialog *dialog = GTK_FILE_DIALOG (source_object);
+  GtkWidget *tv = GTK_WIDGET (data);
+  GtkWidget *win;
+  GtkWidget *scr;
+  GtkWidget *nb;
+  GtkWidget *lab;
+  GFile *file;
+  GError *err = NULL;
 
-You probably find that the functions except `notebook_page_close` are higher level functions of
+  win = gtk_widget_get_ancestor (tv, GTK_TYPE_WINDOW);
+  if ((file = gtk_file_dialog_save_finish (dialog, res, &err)) == NULL) {
+    if (!g_error_matches (err, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED)) {
+      tfe_error_alert (GTK_WINDOW (win), err);
+    }
+    g_clear_error (&err);
+    return;
+  }
+  tfe_text_view_set_file (TFE_TEXT_VIEW (tv), file);
+  lab = tfe_label_from_file (file); /* lab is floating. lab can be NULL */
+  nb = gtk_widget_get_ancestor (tv, GTK_TYPE_NOTEBOOK);
+  scr = gtk_widget_get_parent (tv);
+  gtk_notebook_set_tab_label (GTK_NOTEBOOK (nb), scr, lab);
+  g_object_unref (file);
 
-- `tfe_text_view_save`
-- `tef_text_view_open`
-- `tfe_text_view_new_with_file`
-- `tfe_text_view_new`
+  if (!tfe_text_view_write (TFE_TEXT_VIEW (tv), &err)) {
+    tfe_error_alert (GTK_WINDOW (win), err);
+    g_clear_error (&err);
+  }
+}
+```
 
-respectively.
-
-There are two layers.
-One of them is `tfe_text_view ...`, which is the lower level layer.
-The other is `notebook ...`, which is the higher level layer.
-
-Now let's look at the program of each function.
-
-## notebook\_page\_new
-
-
-
-- 26-37: The function `notebook_page_new`.
-- 28: The function `g_return_if_fail` checks the argument. It's necessary because the function is public.
-- 33: Creates TfeTextView object.
-- 34: Creates filename, which is "Untitled", "Untitled1", ... .
-- 1-8: The function `get_untitled`.
-- 3: Static variable `c` is initialized at the first call of this function. After that `c` keeps its value unless it is changed explicitly.
-- 4-7: Increases `c` by one and if it is zero, it returns "Untitled". If it is a positive integer, it returns "Untitled\<the integer\>", for example, "Untitled1", "Untitled2", and so on.
-The function `g_strdup_printf` creates a string and it should be freed by `g_free` when it becomes useless.
-The caller of `get_untitled` is in charge of freeing the string.
-- 36: Calls `notebook_page_build` to build a new page.
-- 37: Frees `filename`.
-- 10- 24: The function `notebook_page_build`.
-A parameter with the `const` qualifier cannot be modified within the function.
-It means that the argument `filename` is owned by the caller.
-The caller is responsible for freeing it when it is no longer needed.
-- 12: Creates GtkScrolledWindow.
-- 17: Inserts `tv` to GtkScrolledWindow as a child.
-- 18-19: Creates GtkLabel, then appends `scr` and `lab` to the GtkNotebook instance `nb`.
-- 20-21: Sets "tab-expand" property to TRUE.
-The function `g_object_set` sets properties on an object.
-The object can be any object derived from GObject.
-In many cases, an object has its own function to set its properties, but sometimes does not.
-In that case, use `g_object_set` to set the property.
-- 22: Sets the current page to the newly created page.
-- 23: Connects "change-file" signal and the handler `file_changed_cb`.
-
-## notebook\_page\_new\_with\_file
-
-
-
-- 9-10: Calls `tfe_text_view_new_with_file`.
-If the function returns NULL, an error has happened.
-Then, it does nothing and returns.
-- 11-13: Gets the filename, builds a new page and frees `filename`.
-
-## notebook\_page\_open
-
-
-
-- 18-27: The function `notebook_page_open`.
-- 24: Creates TfeTextView object.
-- 25: Connects the signal "open-response" and the handler `open_response_cb`.
-- 26: Calls `tfe_text_view_open`.
-The "open-response" signal will be emitted later in this function to inform the result.
-- 1-16: The handler `open_response_cb`.
-- 6-8: If the response code is not `TFE_OPEN_RESPONSE_SUCCESS`, the instance `tv` will be destroyed.
-It has floating reference, which will be explained later.
-A floating reference needs to be converted into an ordinary reference before releasing it.
-The function `g_object_ref_sink` does that.
-After that, the function `g_object_unref` releases `tv` and decreases the reference count by one.
-Finally the reference count becomes zero and `tv` is destroyed.
-- 9-15: Otherwise, it builds a new page with `tv`.
-
-## Floating Reference
-
-All the widgets are derived from GInitiallyUnowned.
-GObject and GInitiallyUnowned are almost the same.
-The difference is like this.
-When an instance of GInitiallyUnowned is created, the instance has a "floating reference".
-On the other hand, when an instance of GObject (not GInitiallyUnowned) is created, it has "normal reference".
-Their descendants inherits them, so every widget has a floating reference just after the creation.
-Non-widget class, for example, GtkTextBuffer is a direct sub class of GObject and it has normal reference.
-
-The function `g_object_ref_sink` converts the floating reference into a normal reference.
-If the instance does not have a floating reference, `g_object_ref_sink` simply increases the reference count by one.
-It is used when an widget is added to another widget as a child.
-
-~~~
-GtkTextView *tv = gtk_text_view_new (); // Floating reference
-GtkScrolledWindow *scr = gtk_scrolled_window_new ();
-gtk_scrolled_window_set_child (scr, tv); // Scrolled window sinks the tv's floating reference and tv's reference count becomes one.
-~~~
-
-When `tv` is added to `scr` as a child, `g_object_ref_sink` is used.
-
-~~~
-g_object_ref_sink (tv);
-~~~
-
-So, the floating reference is converted into an ordinary reference.
-That is to say, floating reference is removed, and the normal reference count is one.
-Thanks to this, the caller does not need to decrease tv's reference count.
-If an Object\_A were not a descendant of GInitiallyUnowned, the program would be like this:
-
-~~~
-Object_A *obj_a = object_a_new (); // reference count is one
-GtkScrolledWindow *scr = gtk_scrolled_window_new ();
-gtk_scrolled_window_set_child (scr, obj_a); // obj_a's reference count is two
-// obj_a is referred by the caller (this program) and scrolled window
-g_object_unref (obj_a); // obj_a's reference count is one because the caller no longer refers obj_a.
-~~~
-
-This example tells us that the caller needs to unref `obj_a`.
-
-If you use `g_object_unref` to an instance that has a floating reference, you need to convert the floating reference to a normal reference in advance.
-See [GObject API reference](https://docs.gtk.org/gobject/floating-refs.html) for further information.
-
-## notebook\_page\_close
-
-
-
-This function closes the current page.
-If the page is the only page the notebook has, then the function destroys the top-level window and quits the application.
-
-- 8-10: If the page is the only page the notebook has, it calls `gtk_window_destroy` to destroy the top-level window.
-- 11-13: Otherwise, removes the current page.
-The child widget (TfeTextView) is also destroyed.
-
-## notebook\_page\_save
-
-
-
-- 13-21: `notebook_page_save`.
-- 19: Gets the TfeTextView instance belongs to the current page.
-The caller does not have the ownership of `tv` so you don't need to care about the reference count of `tv`.
-- 20: Calls `tfe_text_view_save`.
-- 1-11: `get_current_textview`.
-This function gets the TfeTextView object belongs to the current page.
-- 7: Gets the page number of the current page.
-- 8: Gets the child widget `scr`, which is a GtkScrolledWindow instance, of the current page. The object `scr` is owned by the notebook `nb`.
-- 9-10: Gets the child widget of `scr`, which is a TfeTextView instance, and returns it.
-The returned instance is owned by `scr`.
-
-## file\_changed\_cb Handler
-
-The function `file_changed_cb` is a handler connected to "change-file" signal.
-If a file in a TfeTextView instance is changed, the instance emits this signal.
-This handler changes the label of the GtkNotebookPage.
-
-
-
-- 8: Gets the GFile instance from `tv`.
-- 9: Gets the GkScrolledWindow instance which is the parent widget of `tv`.
-- 10-12: If `file` points to a GFile instance, the filename of the GFile is assigned to `filename`.
-Then, unref the GFile object `file`.
-- 13-14: Otherwise (file is NULL), a string `Untitled(number)` is assigned to `filename`.
-- 15-17: Creates a GtkLabel instance `label` with the filename and set the label of the GtkNotebookPage with `label`.
+- 13-19: Calls `gtk_file_dialog_save_finish` to get a GFile.
+If the return value is NULL and the user did not cancel the operation (`GTK_DIALOG_ERROR_DISMISSED`), it calls `tfe_error_alert` to show the error dialog.
+- 20: Sets the file of `tv` to the GFile that is returned by `gtk_file_dialog_save_finish`.
+- 21-25: Sets the tab of the notebook page to the new filename. The Gfile instance is released.
+- 27-30: Calls `tfe_text_view_write` to write the content of the buffer to the file.
+If an error occurs, it calls `tfe_error_alert` to show the error dialog.
+Then, it frees GError.
 
 Up: [README.md](../README.md),  Prev: [Section 13](sec13.md), Next: [Section 15](sec15.md)

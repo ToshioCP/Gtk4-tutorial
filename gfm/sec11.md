@@ -6,7 +6,7 @@ Up: [README.md](../README.md),  Prev: [Section 10](sec10.md), Next: [Section 12]
 
 We've divided C source file into two parts.
 
-- `tfetextview.h` and `tfetextview.c` for the TfeTextView object.
+- `tfetextview.h` and `tfetextview.c`
 - `tfeapplication.c`
 
 The TfeTextView object manages a GFile instance internally.
@@ -35,9 +35,9 @@ When the instance `tv` is created using `tv = tfe_text_view_new ();`, memory for
 Multiple instances can exist simultaneously.
 Since each instance has its own memory area, it can hold its own unique state.
 
-On the other hand, the functions used for creating or destroying instances are stored as "function pointers" in a separate structure called a "class".
+On the other hand, some functions used for managing the instances are stored as "function pointers" in a separate structure called a "class".
 Because these functions perform common operations for all instances, every instance shares a single class structure.
-In short, while multiple instances can be created, there is only ever one class (structure) in memory.
+In short, while multiple instances can be created, there is only one class in memory.
 
 ## Inheritance
 
@@ -54,8 +54,8 @@ GObject - GInitiallyUnowned - GtkWidget - GtkTextView - TfeTextView
 ```
 
 A child object inherits all the features of its parent object.
-As we will explain in detail in a later subsection, object inheritance is based on the inheritance of both the class structure and the object structure.
-For instance, the GObject class holds function pointers required for object creation and destruction, and the TfeTextView class inherits these pointers.
+As we will explain in detail in the later subsection, object inheritance is based on the inheritance of both the class structure and the object structure.
+For instance, the GObject class holds function pointers required for object destruction, and the TfeTextView class inherits these pointers.
 Furthermore, instead of simply inheriting them, a child class can rewrite these functions to suit its own needs.
 This is called "overriding."
 
@@ -382,11 +382,12 @@ For TfeTextView, this function is `tfe_text_view_init`.
 ```c
 static void
 tfe_text_view_init (TfeTextView *tv) {
-  tv->file = NULL;
+  /* The allocated memory is set to zero by the system.*/
+  /* Therefore, "tv->file" is automatically initialized to NULL; setting it explicitly is unnecessary here. */
 }
 ```
 
-In this function, the pointer to a GFile is set to be NULL.
+The pointer to a GFile must be initialized to be NULL.
 
 **Note:** When the system allocates memory for an instance, it automatically clears all variables to 0 or NULL.
 Therefore, explicitly writing `tv->file = NULL;` is actually unnecessary.
@@ -417,14 +418,14 @@ When the reference count drops to zero, the object starts its destruction proces
 ## Instance Destruction Process
 
 The destruction process is split into two phases: disposing and finalizing.
-In the disposing process, the object invokes the function pointed to by `dispose` in its class to release all references to other instances.
-After that, it invokes the function pointed to by `finalize` in its class to complete the destruction process.
+In the disposing process, the object calls the function pointed to by `dispose` in its class to release all references to other instances.
+After that, it calls the function pointed to by `finalize` in its class to free memory used by the instance and complete the destruction process.
 
-At the beginning of the creation of the instance, these class member points to the dispose of finalize functions for GObject.
-You need to override these to the functions for TfeTextView in the class initialize function.
+At the beginning of the creation of the instance, these class member points to the dispose and finalize functions **for GObject**.
+You need to override these functions **for TfeTextView** in the class initialization.
 
-- Disposing function releases objects with `g_clear_object()`. The function decreases the reference count by one and clear the pointer to the objects.
-- Finalizing function free memory with `g_free()` that has allocated in the initialization process.
+- Dispose functions release objects with `g_clear_object()`. The functions decrease the reference count by one and clear the pointer to the objects.
+- Finalize functions free memory with `g_free()` that has allocated in the initialization process.
 
 ```c
 static void
@@ -445,19 +446,18 @@ tfe_text_view_class_init (TfeTextViewClass *class) {
 
 In the destruction process, TfeTextView needs to unref the GFile pointed to by `tv->file` and clear the pointer.
 
-- 5: If `tv->file` points to a GFile, it decreases the reference count of the GFile instance.
-The function `g_clear_object` decreases the reference count and assigns NULL to `tv->file`.
+- 5: The function `g_clear_object` do nothing if `tv->file == NULL` (not `&tv->file == NULL`).
+If `tv->file` points to a GFile, it decreases the reference count of the GFile and assigns NULL to `tv->file`.
 In dispose handlers, we usually use `g_clear_object` rather than `g_object_unref`.
 - 6: calls parent's dispose handler.
-- The disposing function `tfe_text_view_dispose` needs to be registered in the class when the TfeTextView class is initialized.
+- The dispose method needs to be overridden by `tfe_text_view_dispose` when the TfeTextView class is initialized.
 The function `tfe_text_view_class_init` first cast the variable `class` to point the GObjectclass.
-Because `dispose` is a member of GObjectclass, not of TfeTextViewClass.
-Then assign the function `tfe_text_view_dispose` to the `dispose` member of the class.
+Because `dispose` is defined as a member of GObjectclass.
 
-Each ancestors' class has been created before TfeTextViewClass is created.
+Each ancestors' class has been created before the TfeTextView class is created.
 Therefore, there are four classes and each class has a pointer to each dispose handler.
 Look at the following diagram.
-There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass and TfeTextViewClass.
+There are four classes -- GObjectClass (GInitiallyUnownedClass), GtkWidgetClass, GtkTextViewClass, and TfeTextViewClass.
 Each class has its own dispose handler -- `dh1`, `dh2`, `dh3` and `tfe_text_view_dispose`.
 
 ![dispose handlers](/src/images/dispose_handler.png)
@@ -476,5 +476,7 @@ Therefore, `G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose` points to the 
 The statement `G_OBJECT_CLASS (tfe_text_view_parent_class)->dispose (gobject)` is the same as `dh3 (gobject)`, which means it releases all the reference to the other instances in the GtkTextViewPrivate in the TfeTextView instance.
 After that, `dh3` calls `dh2`, and `dh2` calls `dh1`.
 Finally all the references are released.
+
+This process is called "chaining up".
 
 Up: [README.md](../README.md),  Prev: [Section 10](sec10.md), Next: [Section 12](sec12.md)

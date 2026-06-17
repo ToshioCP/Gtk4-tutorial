@@ -155,7 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>The function name must be all lowercase like this:
         <code>prefix_object_name_get_type ()</code>.</li>
         </ul></li>
-        <li>6: We use the <code>G_DECLARE_FINAL_TYP</code>E macro to set
+        <li>6: We use the <code>G_DECLARE_FINAL_TYPE</code> macro to set
         up our class.
         <ul>
         <li>1st argument: CamelCase (<code>PrefixObjectname</code>)
@@ -204,9 +204,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </ul></li>
         </ul>
         <p>These steps are the standard recipe for creating a subclass
-        in GObject. It’s a great pattern to memorize. If you want to
-        know exactly what these macros do behind the scenes, check out
-        the <a
+        in GObject. If you want to know exactly what these macros do
+        behind the scenes, check out the <a
         href="https://toshiocp.github.io/Gobject-tutorial">GObject
         tutorial</a>.</p>
         <h2
@@ -252,8 +251,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         TfeTextView in Section 11, so feel free to look back at that if
         you need a refresher.</p>
         <h4
-        id="overriding-the-sstartup-activate-and-open-methods">Overriding
-        the Sstartup, Activate, and Open Methods</h4>
+        id="overriding-the-startup-activate-and-open-methods">Overriding
+        the Startup, Activate, and Open Methods</h4>
         <p>Take a look at the family tree for our TfeApplication
         class:</p>
         <pre><code>GObject - GApplication - GtkApplication - TfeApplication</code></pre>

@@ -18,6 +18,11 @@ quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) 
   g_application_quit (application);
 }
 
+static void
+pref_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+  /* not implemented yet */
+}
+
 /* helper function */
 
 static GtkWidget *
@@ -56,11 +61,11 @@ static void
 app_startup (GApplication *application) {
   G_APPLICATION_CLASS (tfe_application_parent_class)->startup (application);
 
-  GSimpleAction *quit_action = g_simple_action_new ("quit", NULL);
-
-  g_signal_connect (quit_action, "activate", G_CALLBACK (quit_activated), application);
-  g_action_map_add_action (G_ACTION_MAP (application), G_ACTION (quit_action));
-  g_object_unref (quit_action);
+  const GActionEntry app_entries[] = {
+    { "pref", pref_activated, NULL, NULL, NULL },
+    { "quit", quit_activated, NULL, NULL, NULL }
+  };
+  g_action_map_add_action_entries (G_ACTION_MAP (application), app_entries, G_N_ELEMENTS (app_entries), application);
 
   /* In the future version, settings will be initialized here */
 }

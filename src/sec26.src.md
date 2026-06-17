@@ -1,244 +1,59 @@
-# GtkFontDialogButton and Gsettings
+# Gsettings
 
-## The Preference Dialog
-
-If the user clicks on the preference menu, a preference dialog appears.
-
-@@@if pdf
-![Preference dialog](/images/pref_dialog.png){width=4cm height=1.6cm}
-@@@else
-![Preference dialog](/images/pref_dialog.png)
-@@@end
-
-It has only one button, which is a GtkFontDialogButton widget.
-You can add more widgets on the dialog but this simple dialog isn't so bad for the first example program.
-
-If the button is clicked, a GtkFontDialog appears like this.
-
-@@@if pdf
-![Font dialog](/images/fontdialog.png){width=6.27cm height=7.38cm}
-@@@else
-![Font dialog](/images/fontdialog.png)
-@@@end
-
-If the user chooses a font and clicks on the select button, the font is changed.
-
-GtkFontDialogButton and GtkFontDialog are available since GTK version 4.10.
-They replace GtkFontButton and GtkFontChooserDialog, which are deprecated since 4.10.
-
-## Composite Widget
-
-The preference dialog has GtkBox, GtkLabel and GtkFontButton in it and is defined as a composite widget.
-The following is the template UI file for `TfePref`.
-
-@@@include
-tfe6/tfepref.ui
-@@@
-
-- Template tag specifies a composite widget.
-The class attribute specifies the class name, which is "TfePref".
-The parent attribute is `GtkWindow`.
-Therefore, `TfePref` is a child class of `GtkWindow`.
-A parent attribute is optional but it is recommended to write it explicitly.
-You can make TfePref as a child of `GtkDialog`, but `GtkDialog` is deprecated since version 4.10.
-- There are three properties, title, resizable and modal.
-- TfePref has a child widget GtkBox which is horizontal.
-The box has two children GtkLabel and GtkFontDialogButton.
-
-## The Header File
-
-The file `tfepref.h` defines types and declares a public function.
-
-@@@include
-tfe6/tfepref.h
-@@@
-
-- 5: Defines the type `TFE_TYPE_PREF`, which is a macro replaced by `tfe_pref_get_type ()`.
-- 6: The macro `G_DECLARE_FINAL_TYPE` expands to:
-  - The function `tfe_pref_get_type ()` is declared.
-  - TfePref type is defined as a typedef of `struct _TfePref`.
-  - TfePrefClass type is defined as a typedef of `struct {GtkWindowClass *parent;}`.
-  - Two functions `TFE_PREF ()` and `TFE_IS_PREF ()` are defined.
-- 8-9:The function `tfe_pref_new` is declared. It creates a new TfePref instance.
-
-## The C File for the Composite Widget
-
-The following codes are extracted from the file `tfepref.c`.
-
-@@@if gfm
-```C
-#include <gtk/gtk.h>
-#include "tfepref.h"
-
-struct _TfePref
-{
-  GtkWindow parent;
-  GtkFontDialogButton *font_dialog_btn;
-};
-
-G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
-
-static void
-tfe_pref_dispose (GObject *gobject) {
-  TfePref *pref = TFE_PREF (gobject);
-  gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
-  G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_pref_init (TfePref *pref) {
-  gtk_widget_init_template (GTK_WIDGET (pref));
-}
-
-static void
-tfe_pref_class_init (TfePrefClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfepref.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
-}
-
-GtkWidget *
-tfe_pref_new (void) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
-}
-```
-@@@else
-```{.C}
-#include <gtk/gtk.h>
-#include "tfepref.h"
-
-struct _TfePref
-{
-  GtkWindow parent;
-  GtkFontDialogButton *font_dialog_btn;
-};
-
-G_DEFINE_FINAL_TYPE (TfePref, tfe_pref, GTK_TYPE_WINDOW);
-
-static void
-tfe_pref_dispose (GObject *gobject) {
-  TfePref *pref = TFE_PREF (gobject);
-  gtk_widget_dispose_template (GTK_WIDGET (pref), TFE_TYPE_PREF);
-  G_OBJECT_CLASS (tfe_pref_parent_class)->dispose (gobject);
-}
-
-static void
-tfe_pref_init (TfePref *pref) {
-  gtk_widget_init_template (GTK_WIDGET (pref));
-}
-
-static void
-tfe_pref_class_init (TfePrefClass *class) {
-  G_OBJECT_CLASS (class)->dispose = tfe_pref_dispose;
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class), "/com/github/ToshioCP/tfe/tfepref.ui");
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), TfePref, font_dialog_btn);
-}
-
-GtkWidget *
-tfe_pref_new (void) {
-  return GTK_WIDGET (g_object_new (TFE_TYPE_PREF, NULL));
-}
-```
-@@@end
-
-- The structure `_TfePref` has `font_dialog_btn` member.
-It points to the GtkFontDialogButton object specified in the XML file "tfepref.ui".
-The member name `font_dialog_btn` must be the same as the GtkFontDialogButton id attribute in the XML file.
-- `G_DEFINE_FINAL_TYPE` macro expands to:
-  - The declaration of the functions `tfe_pref_init` and `tfe_pref_class_init`.
-They are defined in the following part of the program.
-  - The definition of the variable `tfe_pref_parent_class`.
-  - The definition of the function `tfe_pref_get_type`.
-- The function `tfe_pref_class_init` initializes the TfePref class.
-The function `gtk_widget_class_set_template_from_resource` initializes the composite widget template from the XML resource.
-The function `gtk_widget_class_bind_template_child` connects the TfePref structure member `font_dialog_btn` and the GtkFontDialogButton in the XML.
-The member name and the id attribute value must be the same.
-- The function `tfe_pref_init` initializes a newly created instance. The function `gtk_widget_init_template` creates and initializes child widgets.
-- The function `tfe_pref_dispose` releases objects. The function `gtk_widget_dispose_template` releases child widgets.
-
-## GtkFontDialogButton and Pango
-
-If the GtkFontDialogButton button is clicked, the GtkFontDialog dialog appears.
-A user can choose a font on the dialog.
-If the user clicks on the "select" button, the dialog disappears.
-And the font information is given to the GtkFontDialogButton instance.
-The font data is retrieved with the method `gtk_font_dialog_button_get_font_desc`.
-It returns a pointer to the PangoFontDescription structure.
-
-Pango is a text layout engine.
-The [documentation](https://docs.gtk.org/Pango/index.html) is on the internet.
-
-PangoFontDescription is a C structure and it isn't allowed to be accessed directly.
-The document is [here](https://docs.gtk.org/Pango/struct.FontDescription.html).
-If you want to retrieve the font information, there are several functions.
-
-- `pango_font_description_to_string` returns a string like "Jamrul Bold Italic Semi-Expanded 12".
-- `pango_font_description_get_family` returns a font family like "Jamrul".
-- `pango_font_description_get_weight` returns a PangoWeight constant like `PANGO_WEIGHT_BOLD`.
-- `pango_font_description_get_style` returns a PangoStyle constant like `PANGO_STYLE_ITALIC`.
-- `pango_font_description_get_stretch` returns a PangoStretch constant like `PANGO_STRETCH_SEMI_EXPANDED`.
-- `pango_font_description_get_size` returns an integer like `12`.
-Its unit is points or pixels (device units).
-The function `pango_font_description_get_size_is_absolute` returns TRUE if the unit is an absolute device unit.
-Otherwise the unit is point.
+This section introduces GSettings, a convenient API that allows applications to save and retrieve settings persistently.
 
 ## GSettings
 
-We want to maintain the font data after the application quits.
-There are some ways to implement.
+We want to save the user's font preferences so they persist even after the application quits.
+There are a few ways to achieve this:
 
-- Make a configuration file.
-For example, a text file "~/.config/tfe/font_desc.cfg" keeps font information.
-- Use GSettings object.
-The basic idea of GSettings are similar to configuration file.
-Configuration information data is put into a database file.
+- Create a custom configuration file:
+For example, we could manually read and write font information to a simple text file like `~/.config/tfe/font_desc.cfg`.
+- Use the GSettings API:
+While the basic concept is similar to a configuration file, GSettings handles all the heavy lifting.
+It safely stores the configuration data in a system-specific backend database (such as dconf on Linux).
+This means we don't have to write our own text parsers or worry about file I/O errors.
 
-GSettings is simple and easy to use but a bit hard to understand the concept.
-This subsection describes the concept first and then how to program it.
+Using GSettings in your code is simple and highly effective, but its underlying architecture can be a bit tricky to grasp at first.
+This subsection will explain the core concepts of GSettings before diving into the actual programming.
 
 ### GSettings Schema
 
-GSettings schema describes a set of keys, value types and some other information.
-GSettings object uses this schema and it writes/reads the value of a key to/from the right place in the database.
+A GSettings schema defines a set of keys, their data types, and other metadata.
+The `GSettings` object uses this schema to correctly read and write key values to the backend database.
 
-- A schema has an id.
-The id must be unique.
-We often use the same string as application id, but schema id and application id are different.
-You can use different name from application id.
-Schema id is a string delimited by periods.
-For example, "com.github.ToshioCP.tfe" is a correct schema id.
-- A schema usually has a path.
-The path is a location in the database.
-Each key is stored under the path.
-For example, if a key `font-desc` is defined with a path `/com/github/ToshioCP/tfe/`,
-the key's location in the database is `/com/github/ToshioCP/tfe/font-desc`.
-A path is a string begins with and ends with a slash (`/`).
-And it is delimited by slashes.
-- GSettings save information as key-value style.
-A key is a string that begins with a lower case character followed by lower case letters, digits or dashes (`-`) and ends with a lower case letter or digit.
-No consecutive dashes are allowed.
-Values can be any type.
-GSettings stores values as GVariant type, which can be, for example, integer, double, boolean, string or complex types like an array.
-The type of values needs to be defined in the schema.
-- A default value needs to be set for each key.
-- A summary and description can be set for each key optionally.
+- Schema ID: Every schema must have a unique identifier.
+It is formatted as a reverse-DNS string delimited by periods (e.g., `com.github.ToshioCP.tfe`).
+While the schema ID and the application ID are technically distinct, it is a common and highly recommended convention to use the exact same string for both.
+- Path: A schema typically has a path, which acts as its location directory in the database.
+A path must start and end with a slash (`/`), and its internal segments are delimited by slashes.
+For example, if a key `font-desc` is defined under the path `/com/github/ToshioCP/tfe/`, its absolute location in the database becomes `/com/github/ToshioCP/tfe/font-desc`.
+- Keys and Values: GSettings stores information as key-value pairs.
+  - Keys: A key name must begin with a lowercase letter, followed by lowercase letters, digits, or dashes (`-`), and end with a lowercase letter or digit.
+  Consecutive dashes are not allowed.
+  - Values: Values are stored as `GVariant` types, meaning they can be simple types (integers, doubles, booleans, strings) or complex types (like arrays).
+  The exact type for each key must be explicitly defined in the schema.
+- Default Value: Every key must have a mandatory default value.
+- Summary and Description: You can optionally provide a short summary and a detailed description for each key to document its purpose.
 
-Schemas are described in an XML format.
-For example,
+Schemas are written in XML format.
+For example:
 
 @@@include
-tfe6/com.github.ToshioCP.tfe.gschema.xml
+tfe12/com.github.ToshioCP.tfe.gschema.xml
 @@@
 
-- 4: The type attribute is "s".
-It is GVariant type string.
-For GVariant type string, see [GLib API Reference -- GVariant Type Strings](https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings).
-Other common types are:
-  - "b": gboolean
-  - "i": gint32.
-  - "d": double.
+- 4: The `type` attribute is `"s"`, which represents a `GVariant` string.
 
-Further information is in:
+For more details on GVariant type strings, see the [GLib API Reference -- GVariant Type Strings](https://docs.gtk.org/glib/struct.VariantType.html#gvariant-type-strings).
+
+Other common type strings include:
+
+- `"b"`: boolean (`gboolean`)
+- `"i"`: 32-bit integer (`gint32`)
+- `"d"`: double-precision floating point (`double`)
+
+For further information, refer to the official documentation:
 
 - [GLib API Reference -- GVariant Format Strings](https://docs.gtk.org/glib/gvariant-format-strings.html)
 - [GLib API Reference -- GVariant Text Format](https://docs.gtk.org/glib/gvariant-text-format.html)
@@ -247,10 +62,12 @@ Further information is in:
 
 ### Gsettings Command
 
-First, let's try `gsettings` application.
-It is a configuration tool for GSettings.
+### The gsettings Command
 
-~~~
+First, let's try the `gsettings` command-line utility.
+It is a useful tool for inspecting and modifying GSettings configurations directly from the terminal.
+
+```
 $ gsettings help
 Usage:
   gsettings --version
@@ -273,11 +90,11 @@ Commands:
   monitor                   Watch for changes
 
 Use "gsettings help COMMAND" to get detailed help.
-~~~
+```
 
-List schemas.
+To see all available schemas on your system, use the `list-schemas` command:
 
-~~~
+```
 $ gsettings list-schemas
 org.gnome.rhythmbox.podcast
 ca.desrt.dconf-editor.Demo.Empty
@@ -287,14 +104,13 @@ org.gnome.rhythmbox.plugins.generic-player
 
 ... ...
 
-~~~
+```
 
-Each line is an id of a schema.
-Each schema has a key-value configuration data.
-You can see them with list-recursively command.
-Let's look at the keys and values of `org.gnome.calculator` schema.
+Each line represents a unique schema ID.
+Since schemas contain key-value configuration data, you can inspect their contents using the `list-recursively` command.
+Let's look at the keys and values for the `org.gnome.calculator` schema:
 
-~~~
+```
 $ gsettings list-recursively org.gnome.calculator
 org.gnome.calculator accuracy 9
 org.gnome.calculator angle-units 'degrees'
@@ -311,14 +127,14 @@ org.gnome.calculator target-currency ''
 org.gnome.calculator target-units 'radian'
 org.gnome.calculator window-position (-1, -1)
 org.gnome.calculator word-size 64
-~~~
+```
 
-This schema is used by GNOME Calculator.
-Run the calculator and change the mode, then check the schema again.
+This schema is used by the GNOME Calculator application.
+Let's run the calculator, change its mode, and see how the schema updates.
 
-~~~
+```
 $ gnome-calculator
-~~~
+```
 
 @@@if pdf
 ![gnome-calculator basic mode](/images/gnome_calculator_basic.png){width=5.34cm height=5.97cm}
@@ -326,7 +142,7 @@ $ gnome-calculator
 ![gnome-calculator basic mode](/images/gnome_calculator_basic.png)
 @@@end
 
-Change the mode to advanced and quit.
+Change the calculator mode to "Advanced" and quit the application.
 
 @@@if pdf
 ![gnome-calculator advanced mode](/images/gnome_calculator_advanced.png){width=10.74cm height=7.14cm}
@@ -334,9 +150,9 @@ Change the mode to advanced and quit.
 ![gnome-calculator advanced mode](/images/gnome_calculator_advanced.png)
 @@@end
 
-Run gsettings and check the value of `button-mode`.
+Run `gsettings` again and check the value of the `button-mode` key:
 
-~~~
+```
 $ gsettings list-recursively org.gnome.calculator
 
 ... ...
@@ -345,88 +161,92 @@ org.gnome.calculator button-mode 'advanced'
 
 ... ...
 
-~~~
+```
 
-Now we know that GNOME Calculator used gsettings and it has set `button-mode` key to "advanced".
-The value remains even the calculator quits.
-So when the calculator runs again, it will appear as an advanced mode.
+This demonstrates that GNOME Calculator uses GSettings.
+It updated the `button-mode` key to `'advanced'`, and this value persists even after the application is closed.
+Consequently, the next time you launch the calculator, it will read this setting and automatically open in Advanced mode.
 
-### Glib-compile-schemas Utility
+### The glib-compile-schemas Utility
 
-GSettings schemas are specified with an XML format.
-The XML schema files must have the filename extension `.gschema.xml`.
-The following is the XML schema file for the application `tfe`.
+GSettings schemas are specified in an XML format.
+The schema files must have the `.gschema.xml` extension.
+The following is the XML schema file for the `tfe` application:
 
 @@@include
-tfe6/com.github.ToshioCP.tfe.gschema.xml
+tfe12/com.github.ToshioCP.tfe.gschema.xml
 @@@
 
-The filename is "com.github.ToshioCP.tfe.gschema.xml".
-Schema XML filenames are usually the schema id followed by ".gschema.xml" suffix.
-You can use different name from schema id, but it is not recommended.
+The filename is `com.github.ToshioCP.tfe.gschema.xml`.
+Schema XML filenames typically consist of the schema ID followed by the `.gschema.xml` extension.
+While you can use a name different from the schema ID, it is unconventional and not recommended.
 
-- 2: The top level element is `<schemalist>`.
-- 3: schema tag has `path` and `id` attributes.
-A path determines where the settings are stored in the conceptual global tree of settings.
-An id identifies the schema.
-- 4: Key tag has two attributes.
-Name is the name of the key.
-Type is the type of the value of the key and it is a GVariant Format String.
-- 5: default value of the key `font-desc` is `Monospace 12`.
-- 6: Summary and description elements describe the key.
-They are optional, but it is recommended to add them in the XML file.
+- 2: The top-level element is `<schemalist>`.
+- 3: The `<schema>` tag has `path` and `id` attributes.
+The `path` determines where the settings are stored in the conceptual global tree of settings, while the `id` uniquely identifies the schema.
+- 4: The `<key>` tag has `name` and `type` attributes.
+The `name` is the identifier of the key, and the `type` specifies the data type of the key's value using a GVariant Format String.
+- 5: The `<default>` tag sets the initial value of the `font-desc` key to `Sans Regular 12`.
+Note that the value must be enclosed in quotes because it is a GVariant string.
+- 6-7: The `<summary>` and `<description>` elements describe the key.
+Although they are optional, it is recommended to include them in your XML file to document the settings.
 
-The XML file is compiled by glib-compile-schemas.
-When compiling, `glib-compile-schemas` compiles all the XML files which have ".gschema.xml" file extension in the directory given as an argument.
-It converts the XML file into a binary file `gschemas.compiled`.
-Suppose the XML file above is under `tfe6` directory.
+These XML files must be compiled using the `glib-compile-schemas` utility.
+When executed, it compiles all files with the `.gschema.xml` extension in the specified directory and converts them into a single binary file named `gschemas.compiled`. 
 
-~~~
-$ glib-compile-schemas tfe6
-~~~
+For example, suppose the XML file above is located in the `tfe12` directory:
 
-Then, `gschemas.compiled` is generated under `tfe6`.
-When you test your application, set `GSETTINGS_SCHEMA_DIR` environment variable so that GSettings objet can find `gschemas.compiled`.
+```
+$ glib-compile-schemas tfe12
+```
 
-~~~
-$ GSETTINGS_SCHEMA_DIR=(the directory gschemas.compiled is located):$GSETTINGS_SCHEMA_DIR (your application name)
-~~~
+This command generates the `gschemas.compiled` file inside the `tfe12` directory.
+When testing your application locally, you must set the `GSETTINGS_SCHEMA_DIR` environment variable so the `GSettings` object can find your newly compiled schema:
 
-GSettings object looks for this file by the following process.
+```
+$ GSETTINGS_SCHEMA_DIR=(path_to_directory_with_gschemas.compiled)
+```
 
-- It searches `glib-2.0/schemas` subdirectories of all the directories specified in the environment variable `XDG_DATA_DIRS`.
-Common directores are `/usr/share/glib-2.0/schemas` and `/usr/local/share/glib-2.0/schemas`.
+At runtime, the `GSettings` object looks for the compiled schema using the following process:
+
+- It searches the `glib-2.0/schemas` subdirectories of all the directories specified in the `XDG_DATA_DIRS` environment variable.
+Common directories are `/usr/share/glib-2.0/schemas` and `/usr/local/share/glib-2.0/schemas`.
 - If `$HOME/.local/share/glib-2.0/schemas` exists, it is also searched.
-- If `GSETTINGS_SCHEMA_DIR` environment variable is defined, it searches all the directories specified in the variable.
-`GSETTINGS_SCHEMA_DIR` can specify multiple directories delimited by colon (:).
+- If the `GSETTINGS_SCHEMA_DIR` environment variable is defined, it searches all the directories specified within it.
+`GSETTINGS_SCHEMA_DIR` can specify multiple directories delimited by a colon (`:`).
 
-The directories above includes more than one `.gschema.xml` file.
-Therefore, when you install your application, follow the instruction below to install your schemas.
+System schema directories typically contain many `.gschema.xml` files.
+Therefore, when installing your application, follow these steps to properly install your schemas:
 
-1. Make `.gschema.xml` file.
-2. Copy it to one of the directories above. For example, `$HOME/.local/share/glib-2.0/schemas`.
-3. Run `glib-compile-schemas` on the directory.
-It compiles all the schema files in the directory and creates or updates the database file `gschemas.compiled`.
+1. Create your `.gschema.xml` file.
+2. Copy it to one of the system schema directories mentioned above (for example, `$HOME/.local/share/glib-2.0/schemas`).
+3. Run `glib-compile-schemas` on that directory.
+This compiles all the schema files in the directory and creates or updates the `gschemas.compiled` binary file.
+This binary file acts as a fast index for the schema definitions (such as data types and default values).
+Note that this file is not the database itself.
+On Linux systems, the database that contains the actual preferences is usually dconf.
 
 ### GSettings Object and Binding
 
-Now, we go on to the next topic, how to program GSettings.
+Now, let's move on to the next topic: how to use GSettings in your C code.
 
-You need to compile your schema file in advance.
+Before writing the code, ensure your schema file is compiled.
+Let's assume the following identifiers for our example:
 
-Suppose id, key, class name and a property name are:
-
-- GSettings id: com.github.ToshioCP.sample
-- GSettings key: sample_key
-- The class name: Sample
-- The property to bind: sample_property
+- GSettings ID: `com.github.ToshioCP.sample`
+- GSettings key: `sample_key`
+- Class name: `Sample`
+- Property to bind: `sample_property`
 
 The example below uses `g_settings_bind`.
-If you use it, GSettings key and instance property must have the same the type.
-In the example, it is assumed that the type of "sample_key" and "sample_property" are the same.
+To use this function, the GSettings key and the instance property must have the exact same data type.
+For this example, we assume `sample_key` and `sample_property` share the same type.
 
 @@@if gfm
 ```C
+@@@else
+```{.c}
+@@@end
 GSettings *settings;
 Sample *sample_object;
 
@@ -434,34 +254,28 @@ settings = g_settings_new ("com.github.ToshioCP.sample");
 sample_object = sample_new ();
 g_settings_bind (settings, "sample_key", sample_object, "sample_property", G_SETTINGS_BIND_DEFAULT);
 ```
-@@@else
-```{.C}
-GSettings *settings;
-Sample *sample_object;
 
-settings = g_settings_new ("com.github.ToshioCP.sample");
-sample_object = sample_new ();
-g_settings_bind (settings, "sample_key", sample_object, "sample_property", G_SETTINGS_BIND_DEFAULT);
-```
-@@@end
+The `g_settings_bind` function creates a bidirectional binding between the GSettings key and the object's property.
+If the property value changes, the GSettings database updates automatically, and vice versa.
+They are always kept in sync.  
 
-The function `g_settings_bind` binds the GSettings value and the property of the instance.
-If the property value is changed, the GSettings value is also changed, and vice versa.
-The two values are always the same.
+While `g_settings_bind` is simple and convenient, it cannot be used in every situation.
+GSettings keys are restricted to GVariant data types.
+However, some object properties use complex types that cannot be directly mapped to a GVariant.  
 
-The function `g_settings_bind` is simple and easy but it isn't always possible.
-The type of GSettings are restricted to the type GVariant has.
-Some property types are out of GVariant.
-For example, GtkFontDialogButton has "font-desc" property and its type is PangoFontDescription.
-PangoFontDescription is a C structure and it is wrapped in a boxed type GValue to store in the property.
-GVariant doesn't support boxed type.
+For example, GtkFontDialogButton has a "font-desc" property of type PangoFontDescription.
+Since PangoFontDescription is a C structure, it is wrapped in a boxed GValue for the object property system.
+GVariant does not natively support these boxed types.
 
-In that case, another function `g_settings_bind_with_mapping` is used.
-It binds GSettings GVariant value and object property via GValue with mapping functions.
-See [GIO documentation](https://docs.gtk.org/gio/method.Settings.bind_with_mapping.html) for further details.
+In these cases, you must use `g_settings_bind_with_mapping`.
+This function allows you to bind a GVariant-based GSettings key to an object property by providing custom mapping functions that translate the data back and forth.
+See the [GIO documentation](https://docs.gtk.org/gio/method.Settings.bind_with_mapping.html) for further details.
 
 @@@if gfm
 ```C
+@@@else
+```{.c}
+@@@end
 void
 g_settings_bind_with_mapping (
   GSettings* settings,
@@ -469,33 +283,20 @@ g_settings_bind_with_mapping (
   GObject* object,
   const gchar* property,
   GSettingsBindFlags flags, // G_SETTINGS_BIND_DEFAULT is commonly used
-  GSettingsBindGetMapping get_mapping, // GSettings => property, See the example below
-  GSettingsBindSetMapping set_mapping, // property => GSettings, See the example below
-  gpointer user_data, // NULL if unnecessary
-  GDestroyNotify destroy //NULL if unnecessary
+  GSettingsBindGetMapping get_mapping, // GSettings => property. See the example below.
+  GSettingsBindSetMapping set_mapping, // property => GSettings. See the example below.
+  gpointer user_data, // NULL if not needed
+  GDestroyNotify destroy // NULL if not needed
 )
 ```
-@@@else
-```{.C}
-void
-g_settings_bind_with_mapping (
-  GSettings* settings,
-  const gchar* key,
-  GObject* object,
-  const gchar* property,
-  GSettingsBindFlags flags, // G_SETTINGS_BIND_DEFAULT is commonly used
-  GSettingsBindGetMapping get_mapping, // GSettings => property, See the example below
-  GSettingsBindSetMapping set_mapping, // property => GSettings, See the example below
-  gpointer user_data, // NULL if unnecessary
-  GDestroyNotify destroy //NULL if unnecessary
-)
-```
-@@@end
 
-The mapping functions are defined like these:
+The mapping functions are defined as follows:
 
 @@@if gfm
 ```C
+@@@else
+```{.c}
+@@@end
 gboolean
 (* GSettingsBindGetMapping) (
   GValue* value,
@@ -510,165 +311,151 @@ GVariant*
   gpointer user_data
 )
 ```
-@@@else
-```{.C}
-gboolean
-(* GSettingsBindGetMapping) (
-  GValue* value,
-  GVariant* variant,
-  gpointer user_data
-)
 
-GVariant*
-(* GSettingsBindSetMapping) (
-  const GValue* value,
-  const GVariantType* expected_type,
-  gpointer user_data
-)
-```
-@@@end
-
-The following codes are extracted from `tfepref.c`.
+The following code is extracted from `tfepref.c`:
 
 @@@include
-tfe6/tfepref.c get_mapping set_mapping tfe_pref_init
+tfe12/tfepref.c get_mapping set_mapping tfe_pref_new
 @@@
 
-- 15-21: This function `tfe_pref_init` initializes the new TfePref instance.
-- 18: Creates a new GSettings instance. The id is "com.github.ToshioCP.tfe".
-- 19-20: Binds the GSettings "font-desc" and the GtkFontDialogButton property "font-desc". The mapping functions are `get_mapping` and `set_mapping`.
-- 1-7: The mapping function from GSettings to the property.
-The first argument `value` is a GValue to be stored in the property.
-The second argument `variant` is a GVariant structure that comes from the GSettings value.
-- 3: Retrieves a string from the GVariant structure.
-- 4: Build a PangoFontDescription structure from the string and assigns its address to `font_desc`.
-- 5: Puts `font_desc` into the GValue `value`.
-The ownership of `font_desc` moves to `value`.
-- 6: Returns TRUE that means the mapping succeeds.
-- 9-13: The mapping function from the property to GSettings.
-The first argument `value` holds the property data.
-The second argument `expected_type` is the type of GVariant that the GSettings value has.
-It isn't used in this function.
-- 11: Gets the PangoFontDescription structure from `value` and converts it to string.
-- 12: The string is inserted to a GVariant structure.
-The ownership of the string `font_desc_string` moves to the returned value.
+- 1-7: These lines define the mapping function from GSettings to the object property.
+The first argument, `value`, is an empty `GValue` where the property data will be stored.
+The second argument, `variant`, is the `GVariant` structure retrieved from GSettings.
+- 3: Retrieves the string from the `GVariant` structure.
+- 4: Builds a `PangoFontDescription` structure from the string and assigns its address to `font_desc`.
+- 5: Places `font_desc` into the `GValue` using `g_value_take_boxed`.
+Notice that this function transfers the ownership of `font_desc` to the `GValue`, meaning we do not need to free it manually.
+- 6: Returns `TRUE` to indicate that the mapping was successful.
+- 9-16: These lines define the mapping function from the object property back to GSettings.
+The first argument, `value`, holds the current property data.
+The second argument, `expected_type`, specifies the expected `GVariant` type for GSettings.
+It is unused in this specific function.
+- 11: Retrieves the `PangoFontDescription` structure from the `GValue`.
+- 12-13: If the font description is `NULL`, the function returns `NULL`.
+This safely cancels the binding operation, meaning the corresponding GSettings value will not be updated.
+- 14: Converts the font description back into a string.
+- 15: Creates a new `GVariant` from the string using `g_variant_new_take_string`.
+This function transfers the ownership of the newly allocated `font_desc_string` to the `GVariant`, which is then returned.
+- 18-32: The `tfe_pref_new ()` function creates a new `TfePref` instance and initializes the GSettings binding.
+- 25: Obtains the `GSettings` instance from the application.
+- 26: Increments the reference count of the `GSettings` instance using `g_object_ref ()` to ensure the `TfePref` instance safely takes its ownership.
+- 28-29: Binds the GSettings `"font-desc"` key to the `GtkFontDialogButton`'s `"font-desc"` property, utilizing our custom `get_mapping` and `set_mapping` functions.
 
-## C File
+## TfeApplication and GSettings
 
-The following is the full codes of `tfepref.c`
+When the application starts, it needs to read the font data from GSettings and apply it to the CSS.
+This should be handled inside the `startup` handler.
 
-@@@include
-tfe6/tfepref.c
-@@@
+While the program is running, if the user changes the font in the preference dialog, there are two ways to reflect that change in the CSS:
 
-## Test Program
+1. In `tfepref.c`, catch the `notify` signal of the font button's "font-desc" property and call `tfe_style_manager_set_font ()`.
+2. In `tfeapplication.c`, catch the "changed::font-desc" signal from GSettings and call `tfe_style_manager_set_font ()`.
+The "changed" signal on a GSettings object is emitted when a key has potentially changed, but this signal does not guarantee that the value has actually changed.
+You should call one of the g_settings_get() calls to check the new value.
+This signal supports detailed connections.
+You can connect to the detailed signal "changed::font-desc" in order to only receive callbacks when key "font-desc" changes.
+**Note that settings only emits this signal if you have read key at least once while a signal handler was already connected for key.**
 
-There's a test program located at `src/tfe6/test` directory.
+We will choose approach 2.
+This ensures a consistent rule across our application: "The CSS always reflects GSettings."
 
-@@@include
-tfe6/test/test_pref.c
-@@@
+The process from clicking the font button to updating the CSS is slightly complex.
+Let's review the exact steps:
 
-This program sets its active window to TfePref instance, which is a child object of GtkWindow.
-
-It sets the "changed::font-desc" signal handler in the startup function.
-The process from the user's font selection to the handler is:
-
-- The user clicked on the GtkFontDialogButton and GtkFontDialog appears.
-- He/she selects a new font.
-- The "font-desc" property of the GtkFontDialogButton instance is changed.
-- The value of "font-desc" key on the GSettings database is changed since it is bound to the property.
+- The user clicks the `GtkFontDialogButton` and the `GtkFontDialog` appears.
+- The user selects a new font.
+- The "font-desc" property of the `GtkFontDialogButton` instance changes.
+- The value of the "font-desc" key in the GSettings database changes because it is bound to the property.
 - The "changed::font-desc" signal on the GSettings instance is emitted.
-- The handler is called.
+- The signal handler is called, and the CSS is updated.
 
-The program building is divided into four steps.
+In the `startup` handler of `tfeapplication.c`, we will first initialize the style manager, then create the GSettings instance, connect the signal, and finally apply the initial font to the CSS.
 
-- Compile the schema file
-- Compile the XML file to a resource (C source file)
-- Compile the C files
-- Run the executable file
+@@@if gfm
+```C
+@@@else
+```{.c}
+@@@end
+  tfe_style_manager_initialize (base_css);
 
-Commands are shown in the next four sub-subsections.
-You don't need to try them.
-The final sub-subsection shows the meson-ninja way, which is the easiest.
-
-### Compile the Schema File
-
-```
-$ cd src/tef6/test
-$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
-$ glib-compile-schemas .
+  tfe_app->settings = g_settings_new ("com.github.ToshioCP.tfe");
+  g_signal_connect (tfe_app->settings, "changed::font-desc", G_CALLBACK (changed_font_cb), tfe_app);
+  changed_font_cb (tfe_app->settings, "font-desc", tfe_app); /* set the initial font */
 ```
 
-Be careful. The commands `glib-compile-schemas` has an argument ".", which means the current directory.
-This results in creating `gschemas.compiled` file.
+Since the callback function `changed_font_cb` relies on the style manager, it is important that the style manager is initialized beforehand.
 
-### Compile the XML File
+The callback function is implemented as follows:
 
-```
-$ glib-compile-resources --sourcedir=.. --generate-source --target=resource.c ../tfe.gresource.xml
-```
+@@@include
+tfe12/tfeapplication.c changed_font_cb
+@@@
 
-### Compile the C File
+This callback is first called from the startup handler.
+At that time, it calls `g_settings_get_string ()` to get the value of the "font-desc" key.
+This ensures that the "changed::font-desc" signal will be emitted for future changes. 
 
-```
-$ gcc `pkg-config --cflags gtk4` test_pref.c ../tfepref.c resource.c `pkg-config --libs gtk4`
-```
+Up until now, we assumed that the cleanup for GSettings would be written in the dispose handler.
+However, we are going to change this and put the cleanup code in the shutdown handler instead.
+Here are the simplified reasons why:
 
-### Run the Executable File
+- Symmetry: As a general rule, objects created in the startup handler should be cleaned up in the shutdown handler.
+- Application Lifecycle: startup and shutdown run only once during the lifetime of the primary application instance.
+Secondary instances do not run them.
+Since our GSettings initialization only happens in startup, the cleanup must logically happen in shutdown.
+- Execution Order: The GSettings signal handler uses the style manager.
+Therefore, we must clean up GSettings (which disconnects the handler) before terminating the style manager.
+If we put the cleanup in dispose, this order gets reversed and causes issues.
 
-```
-$ GSETTINGS_SCHEMA_DIR=. ./a.out
+The shutdown handler now looks like this:
 
-Jamrul Italic Semi-Expanded 12 # <= select Jamrul Italic 12
-Monospace 12 #<= select Monospace Regular 12
-```
+@@@include
+tfe12/tfeapplication.c app_shutdown
+@@@
 
-### Meson-Ninja Way
+At this point, the following parts are no longer needed, so you can delete them from your code:
 
-Meson wraps up the commands above.
-Create the following text and save it to `meson.build`.
+- The dispose handler.
+- The dispose handler override inside the class initialization function.
 
-Note: Gtk4-tutorial repository has meson.build file that defines several tests.
-So you can try it instead of the following text.
+## Building the Program
 
-```
-project('tfe_pref_test', 'c')
+Building the program involves several steps:
 
-gtkdep = dependency('gtk4')
+- Compile the schema file.
+- Compile the XML file into a C resource file.
+- Compile the C source files.
+- Run the executable file.
+- (Optional:) If you install the program, copy the executable binary to a directory like `/usr/local/bin`, copy the schema file to a schema directory like `/usr/local/share/glib-2.0/schemas`, and run `glib-compile-schemas` in that directory.
 
-gnome=import('gnome')
-resources = gnome.compile_resources('resources','../tfe.gresource.xml', source_dir: '..')
-gnome.compile_schemas(build_by_default: true, depend_files: 'com.github.ToshioCP.tfe.gschema.xml')
+Meson wraps all these commands up for us.
+Create the following text and save it as `meson.build`:
 
-executable('test_pref', ['test_pref.c', '../tfepref.c'], resources, dependencies: gtkdep, export_dynamic: true, install: false)
-```
+@@@include
+tfe12/meson.build
+@@@
 
-- Project name is 'tfe\_pref\_test' and it is written in C language.
-- It depends on GTK4 library.
-- It uses GNOME module. Modules are prepared by Meson.
-- GNOME module has `compile_resources` method.
-When you call this method, you need the prefix "gnome.".
-  - The target filename is resources.
-  - The definition XML file is '../tfe.gresource.xml'.
-  - The source dir is '..'. All the UI files are located there.
-- GNOME module has `compile_schemas` method.
-It compiles the schema file 'com.github.ToshioCP.tfe.gschema.xml'.
-You need to copy '../com.github.ToshioCP.tfe.gschema.xml' to the current directory in advance.
-- It creates an executable file 'test_pref'.
-The source files are 'test_pref.c', '../tfepref.c' and `resources`, which is made by `gnome.compile_resources`.
-It depends on `gtkdep`, which is GTK4 library.
-The symbols are exported and no installation support.
-
-Type like this to build and test the program.
+To build and run the program, change your current directory to [src/tfe12](tfe12/) and type the following commands in your terminal:
 
 ```
-$ cd src/tef6/test
-$ cp ../com.github.ToshioCP.tfe.gschema.xml com.github.ToshioCP.tfe.gschema.xml
 $ meson setup _build
 $ ninja -C _build
-$ GSETTINGS_SCHEMA_DIR=_build _build/test_pref
+$ GSETTINGS_SCHEMA_DIR=_build _build/tfe
 ```
 
-A window appears and you can choose a font via GtkFontDialog.
-If you select a new font, the font string is output through the standard output.
+In the last line, the `GSETTINGS_SCHEMA_DIR` environment variable points to the directory where the compiled schema file is located.
+
+Our `meson.build` also supports installing the application to your system.
+The executable will be installed in `/usr/local/bin` and the schema file in `/usr/local/share/glib-2.0/schemas`.
+Keep in mind that you need administrator privileges to install it:
+
+```
+$ sudo ninja -C _build install
+```
+
+Once installed, you no longer need to set `GSETTINGS_SCHEMA_DIR`.
+You can run the program from anywhere simply by typing its name:
+
+```
+$ tfe
+```

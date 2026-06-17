@@ -1,431 +1,198 @@
 Up: [README.md](../README.md),  Prev: [Section 18](sec18.md), Next: [Section 20](sec20.md)
 
-# Ui File for Menu and Action Entries
+# GtkPopoverMenuBar and GtkMenuButton
 
-## Ui File for Menu
+## GtkPopoverMenuBar
 
-You may have thought that building menus was really bothersome.
-Yes, the program was complicated and it needs lots of time to code them.
-The situation is similar to building widgets.
-When we built widgets, using UI files was a good way to avoid such complication.
-The same goes for menus.
+As explained in the previous sections, `GMenuModel` is strictly a model, not a widget.
+This means it cannot be displayed on the screen by itself.
+In earlier examples, the widget assembly was handled automatically in the background by `gtk_application_window_set_show_menubar`.
 
-The UI file for menus has interface and `<menu>` tags.
-The file starts and ends with interface tags.
+However, you can explicitly build and place this menu within your program using `GtkPopoverMenuBar`.
+The `menu4.c` source file demonstrates how to display a menu bar equivalent to `menu3.c` using this manual approach.
 
-~~~xml
-<interface>
-  <menu id="menubar">
-  </menu>
-</interface>
-~~~
+Because this method is more complex than using `gtk_application_window_set_show_menubar`, it is generally not recommended unless you specifically need to customize the placement of the menu bar (e.g., placing it somewhere other than the top of the window).
+For this reason, we will skip a detailed explanation of `GtkPopoverMenuBar` here, but interested readers are encouraged to examine the [menu4.c](../src/menu/menu4.c) code.
 
-The `<menu>` tag corresponds to a GMenu object.
-The `id` attribute defines the name of the object.
-It will be referred by GtkBuilder.
+## GtkMenuButton
 
-~~~xml
-<submenu>
-  <attribute name="label">File</attribute>
-    <item>
-      <attribute name="label">New</attribute>
-      <attribute name="action">win.new</attribute>
-    </item>
-</submenu>
-~~~
+This section introduces the modern approach to displaying menus: using a menu button that reveals a popup menu when clicked.
+This is the recommended design pattern in modern GTK applications.
 
-The `<item>` tag corresponds to an item in the GMenu which has the same structure as GMenuItem.
-The item above has a label attribute.
-Its value is "New".
-The item also has an action attribute and its value is "win.new".
-"win" is a prefix and "new" is an action name.
-The `<submenu>` tag corresponds to both GMenuItem and GMenu.
-The GMenuItem has a link to GMenu.
+We will demonstrate this by adding a menu button to our Text File Editor (TFE) program.
 
-The UI file above can be described as follows.
+![tfe6](/src/images/tfe6.png)
 
-~~~xml
-<item>
-  <attribute name="label">File</attribute>
-    <link name="submenu">
-      <item>
-        <attribute name="label">New</attribute>
-        <attribute name="action">win.new</attribute>
-      </item>
-    </link>
-</item>
-~~~
+As shown in the image, the toolbar contains four buttons:
 
-The `<link>` tag expresses the link to submenu.
-And at the same time it also expresses the submenu itself.
-This file illustrates the relationship between the menus and items better than the prior UI file.
-But `<submenu>` tags are simple and easy to understand.
-So, we usually prefer the former UI style.
+- Open
+- Save
+- Close
+- Menu (with a downward-pointing triangle icon)
 
-For further information, see [GTK 4 API reference -- PopoverMenu](https://docs.gtk.org/gtk4/class.PopoverMenu.html#menu-models).
+The rightmost button is the menu button.
+Clicking it reveals a dropdown menu with the following items:
 
-The following is a screenshot of the sample program `menu3`.
-It is located in the directory [/src/menu3](../src/menu3/).
+- New
+- Save as
+- Preference
+- Quit
 
-![menu3](/src/images/menu3.png)
+In modern UI design, frequently used functions are placed as standard buttons, while less common features are tucked away in menus.
+This is because accessing a menu requires a two-step operation: (1) clicking the menu button, and (2) clicking the menu item.
+Traditional menu bars also require two steps (e.g., clicking "Edit", then "Copy"). 
 
-The following is the UI file for `menu3`.
+In contrast, standard buttons require only a single click.
+Eliminating just one step might seem trivial, but it makes quite a big difference in user experience.
+Modern applications favor this approach to keep the interface clean and efficient.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<interface>
-  <menu id="menubar">
-    <submenu>
-      <attribute name="label">File</attribute>
-      <section>
-        <item>
-          <attribute name="label">New</attribute>
-          <attribute name="action">app.new</attribute>
-        </item>
-        <item>
-          <attribute name="label">Open</attribute>
-          <attribute name="action">app.open</attribute>
-        </item>
-      </section>
-      <section>
-        <item>
-          <attribute name="label">Save</attribute>
-          <attribute name="action">win.save</attribute>
-        </item>
-        <item>
-          <attribute name="label">Save As…</attribute>
-          <attribute name="action">win.saveas</attribute>
-        </item>
-      </section>
-      <section>
-        <item>
-          <attribute name="label">Close</attribute>
-          <attribute name="action">win.close</attribute>
-        </item>
-      </section>
-      <section>
-        <item>
-          <attribute name="label">Quit</attribute>
-          <attribute name="action">app.quit</attribute>
-        </item>
-      </section>
-    </submenu>
-    <submenu>
-      <attribute name="label">Edit</attribute>
-      <section>
-        <item>
-          <attribute name="label">Cut</attribute>
-          <attribute name="action">app.cut</attribute>
-        </item>
-        <item>
-          <attribute name="label">Copy</attribute>
-          <attribute name="action">app.copy</attribute>
-        </item>
-        <item>
-          <attribute name="label">Paste</attribute>
-          <attribute name="action">app.paste</attribute>
-        </item>
-      </section>
-      <section>
-        <item>
-          <attribute name="label">Select All</attribute>
-          <attribute name="action">app.selectall</attribute>
-        </item>
-      </section>
-    </submenu>
-    <submenu>
-      <attribute name="label">View</attribute>
-      <section>
-        <item>
-          <attribute name="label">Maximized</attribute>
-          <attribute name="action">win.maximize</attribute>
-        </item>
-      </section>
-    </submenu>
-  </menu>
-</interface>
-```
+## Implementing the Menu in TFE
 
-The UI file is converted to the resource by the resource compiler `glib-compile-resouces` with xml file.
+### UI Files
+
+It is good practice to separate the UI file for the menu from the UI file for the main widgets.
+Because our popup menu is quite simple and introduces no new concepts, we will skip the explanation of its XML structure.
+Please refer to [src/tfe6/gtk/menus.ui](../src/tfe6/gtk/menus.ui) for the code.
+
+### Automatic Resources
+
+In previous examples, you might have used GtkBuilder to manually load UI files and extract the objects.
+However, GtkApplication provides a very convenient feature called "Automatic Resources" for your menu UI resources.
+
+If you place your menu definition file at exactly `gtk/menus.ui` relative to your application's resource base path, GtkApplication will automatically load it for you in the background and you don't need to write any GtkBuilder code.
+The application's resource base path is normally created from the application ID.
+For example, if the application ID is "com.github.ToshioCP.tfe6", the application's resource base path is "/com/github/ToshioCP/tfe6".
+Therefore, the menu definition UI resource path is "/com/github/ToshioCP/tfe6/gtk/menus.ui".
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/ToshioCP/menu3">
-    <file>menu3.ui</file>
+  <gresource prefix="/com/github/ToshioCP/tfe6">
+    <file>tfe.ui</file>
+    <file alias="gtk/menus.ui">menus.ui</file>
   </gresource>
 </gresources>
 ```
 
-GtkBuilder builds menus from the resource.
+The file path in the project source is `menus.ui` but the resource path is `gtk/menus.ui`.
+We use an alias to resolve this in the `tfe.gresource.xml` file.
 
-~~~C
-GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
-GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
-
-gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
-g_object_unref (builder);
-~~~
-
-The builder instance is freed after the GMenuModel `menubar` is inserted to the application.
-If you do it before the insertion, bad thing will happen -- your computer might freeze.
-It is because you don't own the `menubar` instance.
-The function `gtk_builder_get_object` just returns the pointer to `menubar` and doesn't increase the reference count of `menubar`.
-So, if you released `bulder` before `gtk_application_set_menubar`, `builder` would be destroyed and `menubar` as well.
-
-## Action Entry
-
-The coding for building actions and signal handlers is complex work as well.
-Therefore, it should be automated.
-You can implement them easily with GActionEntry structure and `g_action_map_add_action_entries` function.
-
-GActionEntry contains action name, signal handlers, parameter and state.
-
-~~~C
-typedef struct _GActionEntry GActionEntry;
-
-struct _GActionEntry
-{
-  /* action name */
-  const char *name;
-  /* activate handler */
-  void (* activate) (GSimpleAction *action, GVariant *parameter, gpointer user_data);
-  /* the type of the parameter given as a single GVariant type string */
-  const char *parameter_type;
-  /* initial state given in GVariant text format */
-  const char *state;
-  /* change-state handler */
-  void (* change_state) (GSimpleAction *action, GVariant *value, gpointer user_data);
-  /*< private >*/
-  gsize padding[3];
-};
-~~~
-For example, the actions in the previous section are:
-
-~~~C
-{ "maximize", NULL, NULL, "false", maximize_state_changed }
-{ "color", color_activated, "s", "'red'", NULL }
-{ "quit", quit_activated, NULL, NULL, NULL },
-~~~
-
-- The "maximize" action is stateful, but doesn't have parameters.
-So, the third element (parameter type) is NULL.
-[GVariant text format](https://docs.gtk.org/glib/gvariant-text-format.html) provides "true" and "false" as boolean GVariant values.
-The initial state of the action is false (the fourth element).
-It doesn't have activate handler, so the second element is NULL.
-Instead, it has change-state handler.
-The fifth element `maximize_state_changed` is the handler.
-- THe "color" action is stateful and has a parameter.
-The parameter type is string.
-[GVariant format strings](https://docs.gtk.org/glib/gvariant-format-strings.html) provides string formats to represent GVariant types.
-The third element "s" means GVariant string type.
-GVariant text format defines that strings are surrounded by single or double quotes.
-So, the string red is 'red' or "red".
-The fourth element is `"'red'"`, which is a C string format and the string is 'red'.
-You can write `"\"red\""` instead.
-The second element `color_activated` is the activate handler.
-The action doesn't have change-state handler, so the fifth element is NULL.
-- The "quit" action is non-stateful and has no parameter.
-So, the third and fourth elements are NULL.
-The second element `quit_activated` is the activate handler.
-The action doesn't have change-state handler, so the fifth element is NULL.
-
-The function `g_action_map_add_action_entries` does everything
-to create GSimpleAction instances and add them to a GActionMap (an application or window).
-
-~~~C
-const GActionEntry app_entries[] = {
-  { "color", color_activated, "s", "'red'", NULL },
-  { "quit", quit_activated, NULL, NULL, NULL }
-};
-g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries,
-                                 G_N_ELEMENTS (app_entries), app);
-~~~
-
-The code above does:
-
-- Builds the "color" and the "quit" actions
-- Connects the action and the "activate" signal handlers (`color_activated` and `quit_activated`).
-- Adds the actions to the action map `app`.
-
-The same goes for the other action.
-
-~~~C
-const GActionEntry win_entries[] = {
-  { "maximize", NULL, NULL, "false", maximize_state_changed }
-};
-g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries,
-                                 G_N_ELEMENTS (win_entries), win);
-~~~
-The code above performs the following:
-
-- Builds the "maximize" action.
-- Connects the action and the signal handler `maximize_state_changed`
-- Its initial state is set to false.
-- Adds the action to the action map `win`.
-
-## Example
-
-Source files are `menu3.c`, `menu3.ui`, `menu3.gresource.xml` and `meson.build`.
-They are in the directory [/src/menu3](../src/menu3/).
-The following are `menu3.c` and `meson.build`.
-
-```c
-#include <gtk/gtk.h>
-
-static void
-new_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-open_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-save_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-saveas_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-close_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
-
-  gtk_window_destroy (win);
-}
-
-static void
-cut_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-copy_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-paste_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-selectall_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-}
-
-static void
-maximize_state_changed (GSimpleAction *action, GVariant *state, gpointer user_data) {
-  GtkWindow *win = GTK_WINDOW (user_data);
-
-  if (g_variant_get_boolean (state))
-    gtk_window_maximize (win);
-  else
-    gtk_window_unmaximize (win);
-  g_simple_action_set_state (action, state);
-}
-
-static void
-quit_activated (GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-  GApplication *app = G_APPLICATION (user_data);
-
-  g_application_quit (app);
-}
-
-static void
-app_activate (GApplication *app) {
-  GtkWidget *win = gtk_application_window_new (GTK_APPLICATION (app));
-
-  const GActionEntry win_entries[] = {
-    { "save", save_activated, NULL, NULL, NULL },
-    { "saveas", saveas_activated, NULL, NULL, NULL },
-    { "close", close_activated, NULL, NULL, NULL },
-    { "maximize", NULL, NULL, "false", maximize_state_changed }
-  };
-  g_action_map_add_action_entries (G_ACTION_MAP (win), win_entries, G_N_ELEMENTS (win_entries), win);
-
-  gtk_application_window_set_show_menubar (GTK_APPLICATION_WINDOW (win), TRUE);
-
-  gtk_window_set_title (GTK_WINDOW (win), "menu3");
-  gtk_window_set_default_size (GTK_WINDOW (win), 400, 300);
-  gtk_window_present (GTK_WINDOW (win));
-}
-
-static void
-app_startup (GApplication *app) {
-  GtkBuilder *builder = gtk_builder_new_from_resource ("/com/github/ToshioCP/menu3/menu3.ui");
-  GMenuModel *menubar = G_MENU_MODEL (gtk_builder_get_object (builder, "menubar"));
-
-  gtk_application_set_menubar (GTK_APPLICATION (app), menubar);
-  g_object_unref (builder);
-
-  const GActionEntry app_entries[] = {
-    { "new", new_activated, NULL, NULL, NULL },
-    { "open", open_activated, NULL, NULL, NULL },
-    { "cut", cut_activated, NULL, NULL, NULL },
-    { "copy", copy_activated, NULL, NULL, NULL },
-    { "paste", paste_activated, NULL, NULL, NULL },
-    { "selectall", selectall_activated, NULL, NULL, NULL },
-    { "quit", quit_activated, NULL, NULL, NULL }
-  };
-  g_action_map_add_action_entries (G_ACTION_MAP (app), app_entries, G_N_ELEMENTS (app_entries), app);
-}
-
-#define APPLICATION_ID "com.github.ToshioCP.menu3"
-
-int
-main (int argc, char **argv) {
-  GtkApplication *app;
-  int stat;
-
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
-  g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
-
-  stat = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
-  return stat;
-}
-
+```xml
+<file alias="gtk/menus.ui">menus.ui</file>
 ```
 
-meson.build
+Inside this `menus.ui`, you can define multiple menus and assign them unique IDs.
+When you need a specific menu in your C code, you simply call `gtk_application_get_menu_by_id()` with the desired ID.
 
-```
-project('menu3', 'c')
+In the following code, the menu model is retrieved using `gtk_application_get_menu_by_id()`.
+The argument "menu" is the ID of the menu tag in the UI resource.
 
-gtkdep = dependency('gtk4')
-
-gnome=import('gnome')
-resources = gnome.compile_resources('resources','menu3.gresource.xml')
-
-sourcefiles=files('menu3.c')
-
-executable('menu3', sourcefiles, resources, dependencies: gtkdep)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="menu">
+  ... ... ...
 ```
 
-Action handlers need to follow the following format.
+You don't need to write any GtkBuilder boilerplate code.
 
-~~~C
-static void
-handler (GSimpleAction *action_name, GVariant *parameter, gpointer user_data) { ... ... ... }
-~~~
+```C
+GMenuModel *menu = G_MENU_MODEL (gtk_application_get_menu_by_id (app, "menu"));
+```
 
-You can't write, for example, "GApplication *app" instead of "gpointer user_data".
-Because `g_action_map_add_action_entries` expects that handlers follow the format above.
+### The Menu Button
 
-There are `menu2_ui.c` and `menu2.ui` under the `menu` directory.
-They are other examples to show a menu UI file and `g_action_map_add_action_entries`.
-It includes a stateful action with parameters.
+Connecting a menu to a menu button is easy and straightforward.
+Once you have built your menu model, you simply attach it using the `gtk_menu_button_set_menu_model` function:
 
-~~~xml
-<item>
-  <attribute name="label">Red</attribute>
-  <attribute name="action">app.color</attribute>
-  <attribute name="target">red</attribute>
-</item>
-~~~
+```C
+gtk_menu_button_set_menu_model (GtkMenuButton *menu_button, G_MENU_MODEL *menu_model);
+```
 
-Action name and target are separated like this.
-Action attribute includes prefix and name only.
-You can't write like `<attribute name="action">app.color::red</attribute>`.
+In the widget UI file, we configure the property of the menu button:
+
+```xml
+<object class="GtkMenuButton" id="btnm">
+  <property name="direction">none</property>
+</object>
+```
+
+The direction property dictates which way the menu pops up relative to the button.
+Its default value is `GTK_ARROW_DOWN` ("down" in UI file), which automatically displays a downward-pointing triangle icon, as seen in the image at the beginning of this section.
+This triangle adapts depending on the chosen direction (up, down, left, or right).
+
+By setting the direction property to "none" (`GTK_ARROW_NONE`), the menu still pops up downward, but the button's icon changes to "open-menu-symbolic", the standard "hamburger" menu icon.
+You can also explicitly change the icon by setting the "icon-name" property.
+Some common alternatives include:
+
+- **view-more-symbolic:** The "three dots" (kebab) menu icon.
+- **emblem-system-symbolic:** The gear icon, typically used for settings.
+
+For example, to create a "three-dot" menu button, your XML would look like this:
+
+```xml
+<object class="GtkMenuButton" id="btnm">
+  <property name="direction">none</property>
+  <property name="icon-name">view-more-symbolic</property>
+</object>
+```
+
+To explore the available icons, you can use the `gtk4-icon-browser` tool.
+Run the following command in your terminal:
+
+```
+$ gtk4-icon-browser
+```
+
+Once the window opens, click the "Symbolic" tab at the top to find icons suited for UI elements.
+
+### GtkActionable
+
+Unlike in previous examples, the buttons in this widget UI file are directly bound to actions.
+These buttons implement the GtkActionable interface, which provides the functionality to link a widget to a specific action.
+
+We have three standard buttons: "Open", "Save", and "Close".
+There are two ways to handle a button click event.
+
+- Connect the "clicked" signal directly to your handler. This is a simpler way.
+- Register an action to the button, making it behave similarly to a menu item.
+When the button is clicked, its corresponding action is activated.
+This approach is slightly more complex because it requires creating the action and its activate handler in advance.
+However, it offers a big advantage: **you can connect multiple triggers to a single action**.
+
+For instance, you can link a keyboard accelerator to the action.
+Accelerators are keystrokes (like Ctrl+O) mapped to specific actions.
+By using this method, clicking the "Open" button or pressing Ctrl+O will activate the same file-opening action.
+This is the primary reason why actions are designed to be independent of specific buttons or menus.
+
+For example, the UI definition for the "Open" button looks like this:
+
+```xml
+<object class="GtkButton">
+  <property name="label">Open</property>
+  <property name="action-name">win.open</property>
+</object>
+```
+
+By setting the "action-name" property to "win.open", the "open" action is activated whenever the button is clicked.
+You simply need to write the file-opening logic inside the action's activate signal handler.
+The workflow is identical to using actions within a menu.
+
+## A Note for WSL Users
+
+When running GTK applications on WSL (Windows Subsystem for Linux), you may notice that the menu button fails to display the menu on the second and subsequent clicks.
+Because this bug does not occur in native Linux environments, it is likely an issue specific to WSL's rendering system.
+Currently, developing and testing GTK applications that rely heavily on popup menus can be problematic under WSL.
+
+## Source files
+
+The source files are under the [src/tfe6](../src/tfe6/) directory.
+You can build and run the program by changing your current directory to `src/tfe6` and typing:
+
+```
+$ meson setup _build
+$ ninja -C _build
+$ _build/tfe
+```
 
 Up: [README.md](../README.md),  Prev: [Section 18](sec18.md), Next: [Section 20](sec20.md)
