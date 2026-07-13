@@ -8,8 +8,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -314,7 +315,7 @@ fd distance*2</code></pre>
         </ul>
         <table>
         <thead>
-        <tr class="header">
+        <tr>
         <th style="text-align: center;"></th>
         <th style="text-align: center;">token kind</th>
         <th style="text-align: center;">yylval.ID</th>
@@ -322,43 +323,43 @@ fd distance*2</code></pre>
         </tr>
         </thead>
         <tbody>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">1</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">distance</td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">2</td>
         <td style="text-align: center;">=</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">3</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;">100</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">4</td>
         <td style="text-align: center;">FD</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">5</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">distance</td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">6</td>
         <td style="text-align: center;">*</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">7</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
@@ -780,7 +781,7 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         calls <code>yylex</code>.</p>
         <table>
         <thead>
-        <tr class="header">
+        <tr>
         <th style="text-align: center;"></th>
         <th style="text-align: center;">token kind</th>
         <th style="text-align: center;">yylval.ID</th>
@@ -788,115 +789,115 @@ tr angle     # Turn right by angle (90) degrees.</code></pre>
         </tr>
         </thead>
         <tbody>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">1</td>
         <td style="text-align: center;">FC</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">2</td>
         <td style="text-align: center;">(</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">3</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;">1.0</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">4</td>
         <td style="text-align: center;">,</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">5</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;">0.0</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">6</td>
         <td style="text-align: center;">,</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">7</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;">0.0</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">8</td>
         <td style="text-align: center;">)</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">9</td>
         <td style="text-align: center;">PD</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">10</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">distance</td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">11</td>
         <td style="text-align: center;">=</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">12</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;">100.0</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">13</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">angle</td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">14</td>
         <td style="text-align: center;">=</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">15</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;">90.0</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">16</td>
         <td style="text-align: center;">FD</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">17</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">distance</td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">18</td>
         <td style="text-align: center;">TR</td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">19</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">angle</td>
@@ -1024,7 +1025,7 @@ expression:
         <col style="width: 4%" />
         </colgroup>
         <thead>
-        <tr class="header">
+        <tr>
         <th style="text-align: center;"></th>
         <th style="text-align: center;">token kind</th>
         <th style="text-align: center;">yylval.ID</th>
@@ -1034,7 +1035,7 @@ expression:
         </tr>
         </thead>
         <tbody>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">1</td>
         <td style="text-align: center;">FC</td>
         <td style="text-align: center;"></td>
@@ -1042,7 +1043,7 @@ expression:
         <td style="text-align: left;">FC</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">2</td>
         <td style="text-align: center;">(</td>
         <td style="text-align: center;"></td>
@@ -1050,7 +1051,7 @@ expression:
         <td style="text-align: left;">FC(</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">3</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
@@ -1058,7 +1059,7 @@ expression:
         <td style="text-align: left;">FC(NUM</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1066,7 +1067,7 @@ expression:
         <td style="text-align: left;">FC(expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">4</td>
         <td style="text-align: center;">,</td>
         <td style="text-align: center;"></td>
@@ -1074,7 +1075,7 @@ expression:
         <td style="text-align: left;">FC(expression,</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">5</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
@@ -1082,7 +1083,7 @@ expression:
         <td style="text-align: left;">FC(expression,NUM</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1090,7 +1091,7 @@ expression:
         <td style="text-align: left;">FC(expression,expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">6</td>
         <td style="text-align: center;">,</td>
         <td style="text-align: center;"></td>
@@ -1098,7 +1099,7 @@ expression:
         <td style="text-align: left;">FC(expression,expression,</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">7</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
@@ -1106,7 +1107,7 @@ expression:
         <td style="text-align: left;">FC(expression,expression,NUM</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1115,7 +1116,7 @@ expression:
         style="text-align: left;">FC(expression,expression,expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">8</td>
         <td style="text-align: center;">)</td>
         <td style="text-align: center;"></td>
@@ -1124,7 +1125,7 @@ expression:
         style="text-align: left;">FC(expression,expression,expression)</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1132,7 +1133,7 @@ expression:
         <td style="text-align: left;">primary_procedure</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1140,7 +1141,7 @@ expression:
         <td style="text-align: left;">statement</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1148,7 +1149,7 @@ expression:
         <td style="text-align: left;">program</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">9</td>
         <td style="text-align: center;">PD</td>
         <td style="text-align: center;"></td>
@@ -1156,7 +1157,7 @@ expression:
         <td style="text-align: left;">program PD</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1164,7 +1165,7 @@ expression:
         <td style="text-align: left;">program primary_procedure</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1172,7 +1173,7 @@ expression:
         <td style="text-align: left;">program statement</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1180,7 +1181,7 @@ expression:
         <td style="text-align: left;">program</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">10</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">distance</td>
@@ -1188,7 +1189,7 @@ expression:
         <td style="text-align: left;">program ID</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">11</td>
         <td style="text-align: center;">=</td>
         <td style="text-align: center;"></td>
@@ -1196,7 +1197,7 @@ expression:
         <td style="text-align: left;">program ID=</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">12</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
@@ -1204,7 +1205,7 @@ expression:
         <td style="text-align: left;">program ID=NUM</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1212,7 +1213,7 @@ expression:
         <td style="text-align: left;">program ID=expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1220,7 +1221,7 @@ expression:
         <td style="text-align: left;">program primary_procedure</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1228,7 +1229,7 @@ expression:
         <td style="text-align: left;">program statement</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1236,7 +1237,7 @@ expression:
         <td style="text-align: left;">program</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">13</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">angle</td>
@@ -1244,7 +1245,7 @@ expression:
         <td style="text-align: left;">program ID</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">14</td>
         <td style="text-align: center;">=</td>
         <td style="text-align: center;"></td>
@@ -1252,7 +1253,7 @@ expression:
         <td style="text-align: left;">program ID=</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">15</td>
         <td style="text-align: center;">NUM</td>
         <td style="text-align: center;"></td>
@@ -1260,7 +1261,7 @@ expression:
         <td style="text-align: left;">program ID=NUM</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1268,7 +1269,7 @@ expression:
         <td style="text-align: left;">program ID=expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1276,7 +1277,7 @@ expression:
         <td style="text-align: left;">program primary_procedure</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1284,7 +1285,7 @@ expression:
         <td style="text-align: left;">program statement</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1292,7 +1293,7 @@ expression:
         <td style="text-align: left;">program</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">16</td>
         <td style="text-align: center;">FD</td>
         <td style="text-align: center;"></td>
@@ -1300,7 +1301,7 @@ expression:
         <td style="text-align: left;">program FD</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">17</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">distance</td>
@@ -1308,7 +1309,7 @@ expression:
         <td style="text-align: left;">program FD ID</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1316,7 +1317,7 @@ expression:
         <td style="text-align: left;">program FD expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1324,7 +1325,7 @@ expression:
         <td style="text-align: left;">program primary_procedure</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1332,7 +1333,7 @@ expression:
         <td style="text-align: left;">program statement</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1340,7 +1341,7 @@ expression:
         <td style="text-align: left;">program</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;">18</td>
         <td style="text-align: center;">TR</td>
         <td style="text-align: center;"></td>
@@ -1348,7 +1349,7 @@ expression:
         <td style="text-align: left;">program TR</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;">19</td>
         <td style="text-align: center;">ID</td>
         <td style="text-align: center;">angle</td>
@@ -1356,7 +1357,7 @@ expression:
         <td style="text-align: left;">program TR ID</td>
         <td style="text-align: center;">S</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1364,7 +1365,7 @@ expression:
         <td style="text-align: left;">program TR expression</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1372,7 +1373,7 @@ expression:
         <td style="text-align: left;">program primary_procedure</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1380,7 +1381,7 @@ expression:
         <td style="text-align: left;">program statement</td>
         <td style="text-align: center;">R</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
         <td style="text-align: center;"></td>
@@ -1960,7 +1961,7 @@ expression:
 <span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
 <span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>proc_install <span class="op">(</span><span class="dt">char</span> <span class="op">*</span>name<span class="op">,</span> node_t <span class="op">*</span>node<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>  tbl_install <span class="op">(</span>PROC<span class="op">,</span> name<span class="op">,</span> node<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>  tbl_install <span class="op">(</span>PROC<span class="op">,</span> name<span class="op">,</span> node<span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
 <span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span></span>
@@ -2211,8 +2212,8 @@ drawline (90, 100)</code></pre>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> gboolean pen <span class="op">=</span> TRUE<span class="op">;</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> angle <span class="op">=</span> <span class="fl">90.0</span><span class="op">;</span> <span class="co">/* angle starts from x axis and measured counterclockwise */</span></span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                   <span class="co">/* Initially facing to the north */</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> cur_x <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> cur_y <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> cur_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> cur_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">double</span> line_width <span class="op">=</span> <span class="fl">2.0</span><span class="op">;</span></span>
 <span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> color <span class="op">{</span></span>
@@ -2220,8 +2221,8 @@ drawline (90, 100)</code></pre>
 <span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> green<span class="op">;</span></span>
 <span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> blue<span class="op">;</span></span>
 <span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> color bc <span class="op">=</span> <span class="op">{</span><span class="dv">0</span><span class="er">.95</span><span class="op">,</span> <span class="dv">0</span><span class="er">.95</span><span class="op">,</span> <span class="dv">0</span><span class="er">.95</span><span class="op">};</span> <span class="co">/* white */</span></span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> color fc <span class="op">=</span> <span class="op">{</span><span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">};</span> <span class="co">/* black */</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> color bc <span class="op">=</span> <span class="op">{</span><span class="fl">0.95</span><span class="op">,</span> <span class="fl">0.95</span><span class="op">,</span> <span class="fl">0.95</span><span class="op">};</span> <span class="co">/* white */</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">struct</span> color fc <span class="op">=</span> <span class="op">{</span><span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">};</span> <span class="co">/* black */</span></span>
 <span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a><span class="co">/* cairo */</span></span>
 <span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
@@ -2232,17 +2233,17 @@ drawline (90, 100)</code></pre>
 <span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>  pen <span class="op">=</span> TRUE<span class="op">;</span></span>
 <span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>  angle <span class="op">=</span> <span class="fl">90.0</span><span class="op">;</span></span>
-<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>  cur_x <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
-<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>  cur_y <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>  cur_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>  cur_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>  line_width <span class="op">=</span> <span class="fl">2.0</span><span class="op">;</span></span>
-<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>  bc<span class="op">.</span>red <span class="op">=</span> <span class="dv">0</span><span class="er">.95</span><span class="op">;</span> bc<span class="op">.</span>green <span class="op">=</span> <span class="dv">0</span><span class="er">.95</span><span class="op">;</span> bc<span class="op">.</span>blue <span class="op">=</span> <span class="dv">0</span><span class="er">.95</span><span class="op">;</span></span>
-<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>  fc<span class="op">.</span>red <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span> fc<span class="op">.</span>green <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span> fc<span class="op">.</span>blue <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>  bc<span class="op">.</span>red <span class="op">=</span> <span class="fl">0.95</span><span class="op">;</span> bc<span class="op">.</span>green <span class="op">=</span> <span class="fl">0.95</span><span class="op">;</span> bc<span class="op">.</span>blue <span class="op">=</span> <span class="fl">0.95</span><span class="op">;</span></span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>  fc<span class="op">.</span>red <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> fc<span class="op">.</span>green <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> fc<span class="op">.</span>blue <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> cairo_image_surface_get_width <span class="op">(</span>surface<span class="op">);</span></span>
 <span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> cairo_image_surface_get_height <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>    matrix<span class="op">.</span>xx <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span> matrix<span class="op">.</span>xy <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span> matrix<span class="op">.</span>x0 <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> width <span class="op">/</span> <span class="fl">2.0</span><span class="op">;</span></span>
-<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>    matrix<span class="op">.</span>yx <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span> matrix<span class="op">.</span>yy <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span><span class="op">;</span> matrix<span class="op">.</span>y0 <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> height <span class="op">/</span> <span class="fl">2.0</span><span class="op">;</span></span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>    matrix<span class="op">.</span>xx <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span> matrix<span class="op">.</span>xy <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> matrix<span class="op">.</span>x0 <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> width <span class="op">/</span> <span class="fl">2.0</span><span class="op">;</span></span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>    matrix<span class="op">.</span>yx <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> matrix<span class="op">.</span>yy <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span><span class="op">;</span> matrix<span class="op">.</span>y0 <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">)</span> height <span class="op">/</span> <span class="fl">2.0</span><span class="op">;</span></span>
 <span id="cb38-37"><a href="#cb38-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-38"><a href="#cb38-38" aria-hidden="true" tabindex="-1"></a>    cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
 <span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a>    cairo_transform <span class="op">(</span>cr<span class="op">,</span> <span class="op">&amp;</span>matrix<span class="op">);</span></span>
@@ -2274,7 +2275,7 @@ drawline (90, 100)</code></pre>
         <div class="sourceCode" id="cb39"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>eval <span class="op">(</span>node_t <span class="op">*</span>node<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> value <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> value <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>node <span class="op">==</span> NULL<span class="op">)</span></span>
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    runtime_error <span class="op">(</span><span class="st">&quot;No expression to evaluate.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define calc</span><span class="op">(</span><span class="pp">op</span><span class="op">)</span><span class="pp"> eval </span><span class="op">(</span><span class="pp">child1</span><span class="op">(</span><span class="pp">node</span><span class="op">))</span><span class="pp"> op eval </span><span class="op">(</span><span class="pp">child2</span><span class="op">(</span><span class="pp">node</span><span class="op">))</span></span>
@@ -2298,7 +2299,7 @@ drawline (90, 100)</code></pre>
 <span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>      value <span class="op">=</span> calc<span class="op">(*);</span></span>
 <span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>      <span class="cf">break</span><span class="op">;</span></span>
 <span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> N_DIV<span class="op">:</span></span>
-<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>eval <span class="op">(</span>child2<span class="op">(</span>node<span class="op">))</span> <span class="op">==</span> <span class="dv">0</span><span class="er">.0</span><span class="op">)</span></span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>eval <span class="op">(</span>child2<span class="op">(</span>node<span class="op">))</span> <span class="op">==</span> <span class="fl">0.0</span><span class="op">)</span></span>
 <span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a>        runtime_error <span class="op">(</span><span class="st">&quot;Division by zerp.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span></span>
 <span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>        value <span class="op">=</span> calc<span class="op">(/);</span></span>
@@ -2412,10 +2413,10 @@ drawline (90, 100)</code></pre>
 <span id="cb40-83"><a href="#cb40-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> N_RS<span class="op">:</span></span>
 <span id="cb40-84"><a href="#cb40-84" aria-hidden="true" tabindex="-1"></a>      pen <span class="op">=</span> TRUE<span class="op">;</span></span>
 <span id="cb40-85"><a href="#cb40-85" aria-hidden="true" tabindex="-1"></a>      angle <span class="op">=</span> <span class="fl">90.0</span><span class="op">;</span></span>
-<span id="cb40-86"><a href="#cb40-86" aria-hidden="true" tabindex="-1"></a>      cur_x <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
-<span id="cb40-87"><a href="#cb40-87" aria-hidden="true" tabindex="-1"></a>      cur_y <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
+<span id="cb40-86"><a href="#cb40-86" aria-hidden="true" tabindex="-1"></a>      cur_x <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb40-87"><a href="#cb40-87" aria-hidden="true" tabindex="-1"></a>      cur_y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb40-88"><a href="#cb40-88" aria-hidden="true" tabindex="-1"></a>      line_width <span class="op">=</span> <span class="fl">2.0</span><span class="op">;</span></span>
-<span id="cb40-89"><a href="#cb40-89" aria-hidden="true" tabindex="-1"></a>      fc<span class="op">.</span>red <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span> fc<span class="op">.</span>green <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span> fc<span class="op">.</span>blue <span class="op">=</span> <span class="dv">0</span><span class="er">.0</span><span class="op">;</span></span>
+<span id="cb40-89"><a href="#cb40-89" aria-hidden="true" tabindex="-1"></a>      fc<span class="op">.</span>red <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> fc<span class="op">.</span>green <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> fc<span class="op">.</span>blue <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
 <span id="cb40-90"><a href="#cb40-90" aria-hidden="true" tabindex="-1"></a>      <span class="co">/* To change background color, use bc. */</span></span>
 <span id="cb40-91"><a href="#cb40-91" aria-hidden="true" tabindex="-1"></a>      <span class="cf">break</span><span class="op">;</span></span>
 <span id="cb40-92"><a href="#cb40-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> N_procedure_call<span class="op">:</span></span>
@@ -2432,7 +2433,7 @@ drawline (90, 100)</code></pre>
 <span id="cb40-103"><a href="#cb40-103" aria-hidden="true" tabindex="-1"></a>      arg_list <span class="op">=</span> child2<span class="op">(</span>node<span class="op">);</span></span>
 <span id="cb40-104"><a href="#cb40-104" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>param_list <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb40-105"><a href="#cb40-105" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>arg_list <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb40-106"><a href="#cb40-106" aria-hidden="true" tabindex="-1"></a>          stack_push <span class="op">(</span>NULL<span class="op">,</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span> <span class="co">/* number of argument == 0 */</span></span>
+<span id="cb40-106"><a href="#cb40-106" aria-hidden="true" tabindex="-1"></a>          stack_push <span class="op">(</span>NULL<span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span> <span class="co">/* number of argument == 0 */</span></span>
 <span id="cb40-107"><a href="#cb40-107" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span> <span class="cf">else</span></span>
 <span id="cb40-108"><a href="#cb40-108" aria-hidden="true" tabindex="-1"></a>          runtime_error <span class="op">(</span><span class="st">&quot;Procedure </span><span class="sc">%s</span><span class="st"> has different number of argument and parameter.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> name<span class="op">);</span></span>
 <span id="cb40-109"><a href="#cb40-109" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span><span class="cf">else</span> <span class="op">{</span></span>

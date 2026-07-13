@@ -8,8 +8,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -178,11 +179,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         the menu definition UI resource path is
         “/com/github/ToshioCP/tfe6/gtk/menus.ui”.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe6&quot;</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">gresource</span> <span class="ot">prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe6&quot;</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">file</span>&gt;tfe.ui&lt;/<span class="kw">file</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">file</span><span class="ot"> alias=</span><span class="st">&quot;gtk/menus.ui&quot;</span>&gt;menus.ui&lt;/<span class="kw">file</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">file</span> <span class="ot">alias=</span><span class="st">&quot;gtk/menus.ui&quot;</span>&gt;menus.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb1-6"><a href="#cb1-6"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb1-7"><a href="#cb1-7"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
         <p>The file path in the project source is <code>menus.ui</code>
@@ -190,7 +191,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         alias to resolve this in the <code>tfe.gresource.xml</code>
         file.</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">file</span><span class="ot"> alias=</span><span class="st">&quot;gtk/menus.ui&quot;</span>&gt;menus.ui&lt;/<span class="kw">file</span>&gt;</span></code></pre></div>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">file</span> <span class="ot">alias=</span><span class="st">&quot;gtk/menus.ui&quot;</span>&gt;menus.ui&lt;/<span class="kw">file</span>&gt;</span></code></pre></div>
         <p>Inside this <code>menus.ui</code>, you can define multiple
         menus and assign them unique IDs. When you need a specific menu
         in your C code, you simply call
@@ -200,9 +201,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <code>gtk_application_get_menu_by_id()</code>. The argument
         “menu” is the ID of the menu tag in the UI resource.</p>
         <div class="sourceCode" id="cb3"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menu&quot;</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">menu</span> <span class="ot">id=</span><span class="st">&quot;menu&quot;</span>&gt;</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  ... ... ...</span></code></pre></div>
         <p>You don’t need to write any GtkBuilder boilerplate code.</p>
         <div class="sourceCode" id="cb4"><pre
@@ -217,8 +218,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>In the widget UI file, we configure the property of the menu
         button:</p>
         <div class="sourceCode" id="cb6"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;none&lt;/<span class="kw">property</span>&gt;</span>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkMenuButton&quot;</span> <span class="ot">id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;direction&quot;</span>&gt;none&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
         <p>The direction property dictates which way the menu pops up
         relative to the button. Its default value is
@@ -242,9 +243,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>For example, to create a “three-dot” menu button, your XML
         would look like this:</p>
         <div class="sourceCode" id="cb7"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkMenuButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;direction&quot;</span>&gt;none&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-name&quot;</span>&gt;view-more-symbolic&lt;/<span class="kw">property</span>&gt;</span>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkMenuButton&quot;</span> <span class="ot">id=</span><span class="st">&quot;btnm&quot;</span>&gt;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;direction&quot;</span>&gt;none&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;icon-name&quot;</span>&gt;view-more-symbolic&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
         <p>To explore the available icons, you can use the
         <code>gtk4-icon-browser</code> tool. Run the following command
@@ -278,9 +279,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>For example, the UI definition for the “Open” button looks
         like this:</p>
         <div class="sourceCode" id="cb9"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.open&lt;/<span class="kw">property</span>&gt;</span>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.open&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
         <p>By setting the “action-name” property to “win.open”, the
         “open” action is activated whenever the button is clicked. You

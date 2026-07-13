@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '4.0.1'
+ruby '4.0.5'
 
 gem 'minitest', '~> 6.0.1'
 gem 'minitest-mock', '~> 5.27.0'

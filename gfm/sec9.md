@@ -424,31 +424,31 @@ The GResource compiler `glib-compile-resources` shows its usage with the argumen
 
 ```
 $ glib-compile-resources --help
-Usage:
-  glib-compile-resources [OPTION…] FILE
+用法:
+  glib-compile-resources [オプション…] ファイル
 
-Compile a resource specification into a resource file.
-Resource specification files have the extension .gresource.xml,
-and the resource file have the extension called .gresource.
+リソース仕様をコンパイルして、リソースファイルを生成します。
+リソース仕様ファイルの拡張子は .gresource.xml、
+リソースファイルの拡張子は .gresource です。
 
-Help Options:
-  -h, --help                   Show help options
+ヘルプのオプション:
+  -h, --help                     ヘルプのオプションを表示する
 
-Application Options:
-  --version                    Show program version and exit
-  --target=FILE                Name of the output file
-  --sourcedir=DIRECTORY        The directories to load files referenced in FILE from (default: current directory)
-  --generate                   Generate output in the format selected for by the target filename extension
-  --generate-header            Generate source header
-  --generate-source            Generate source code used to link in the resource file into your code
-  --generate-dependencies      Generate dependency list
-  --dependency-file=FILE       Name of the dependency file to generate
-  --generate-phony-targets     Include phony targets in the generated dependency file
-  --manual-register            Don’t automatically create and register resource
-  --internal                   Don’t export functions; declare them G_GNUC_INTERNAL
-  --external-data              Don’t embed resource data in the C file; assume it's linked externally instead
-  --c-name=IDENTIFIER          C identifier name used for the generated source code
-  -C, --compiler=COMMAND       The target C compiler (default: the CC environment variable)
+アプリケーションのオプション:
+  --version                      プログラムのバージョンを表示して終了する
+  --target=ファイル              出力ファイル名
+  --sourcedir=DIRECTORY          対象のファイル (FILE) を読み込むディレクトリ (デフォルト: 現在のディレクトリ)
+  --generate                     ターゲットファイル名拡張子で選択された形式で出力生成
+  --generate-header              ソースヘッダーを生成する
+  --generate-source              リソースファイルをコードにリンクするためのソースコードを生成する
+  --generate-dependencies        依存関係リストを生成する
+  --dependency-file=ファイル     生成する依存関係ファイルの名前
+  --generate-phony-targets       生成される依存関係ファイルに PHONY ターゲットを含める
+  --manual-register              リソースを自動的に作成および登録しない
+  --internal                     関数をエクスポートしない (G_GNUC_INTERNAL を使用してください)
+  --external-data                リソースデータを C ファイルに埋め込まない (代わりに外部からリンクされると仮定する)
+  --c-name=IDENTIFIER            生成されるソースコードで使用される C 識別子名
+  -C, --compiler=コマンド        ターゲット C コンパイラ (既定: CC 環境変数)
 
 $
 ```

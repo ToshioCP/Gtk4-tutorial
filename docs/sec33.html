@@ -8,8 +8,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -131,19 +132,19 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
         <p>The following is a part of the UI file
         <code>list4.ui</code>.</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkListView&quot;</span> <span class="ot">id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkSingleSelection&quot;</span> <span class="ot">id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkDirectoryList&quot;</span> <span class="ot">id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkGridView&quot;</span><span class="ot"> id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkGridView&quot;</span> <span class="ot">id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
         <p>GtkDirectoryList has an “attributes” property. They are
         attributes of GFileInfo such as “standard::name”,
@@ -166,76 +167,76 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
         <p>The window is built with the following UI file. (See the
         screenshot at the beginning of this section).</p>
         <div class="sourceCode" id="cb3"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
-<span id="cb3-4"><a href="#cb3-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;file list&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-5"><a href="#cb3-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-6"><a href="#cb3-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span> <span class="ot">id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;title&quot;</span>&gt;file list&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-5"><a href="#cb3-5"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-7"><a href="#cb3-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-8"><a href="#cb3-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxv&quot;</span>&gt;</span>
-<span id="cb3-9"><a href="#cb3-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-8"><a href="#cb3-8"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span> <span class="ot">id=</span><span class="st">&quot;boxv&quot;</span>&gt;</span>
+<span id="cb3-9"><a href="#cb3-9"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-10"><a href="#cb3-10"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-11"><a href="#cb3-11"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span><span class="ot"> id=</span><span class="st">&quot;boxh&quot;</span>&gt;</span>
-<span id="cb3-12"><a href="#cb3-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-11"><a href="#cb3-11"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span> <span class="ot">id=</span><span class="st">&quot;boxh&quot;</span>&gt;</span>
+<span id="cb3-12"><a href="#cb3-12"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-13"><a href="#cb3-13"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-14"><a href="#cb3-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy1&quot;</span>&gt;</span>
-<span id="cb3-15"><a href="#cb3-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-14"><a href="#cb3-14"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span> <span class="ot">id=</span><span class="st">&quot;dmy1&quot;</span>&gt;</span>
+<span id="cb3-15"><a href="#cb3-15"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-16"><a href="#cb3-16"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-17"><a href="#cb3-17"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-18"><a href="#cb3-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-19"><a href="#cb3-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btnlist&quot;</span>&gt;</span>
-<span id="cb3-20"><a href="#cb3-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;btnlist&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-21"><a href="#cb3-21"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.view&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-22"><a href="#cb3-22"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-target&quot;</span>&gt;<span class="dv">&amp;apos;</span>list<span class="dv">&amp;apos;</span>&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-19"><a href="#cb3-19"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span> <span class="ot">id=</span><span class="st">&quot;btnlist&quot;</span>&gt;</span>
+<span id="cb3-20"><a href="#cb3-20"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;name&quot;</span>&gt;btnlist&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-21"><a href="#cb3-21"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.view&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-22"><a href="#cb3-22"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;action-target&quot;</span>&gt;<span class="dv">&amp;apos;</span>list<span class="dv">&amp;apos;</span>&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-23"><a href="#cb3-23"></a>                &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-24"><a href="#cb3-24"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb3-25"><a href="#cb3-25"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resource&quot;</span>&gt;/com/github/ToshioCP/list4/list.png&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-24"><a href="#cb3-24"></a>                  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
+<span id="cb3-25"><a href="#cb3-25"></a>                    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;resource&quot;</span>&gt;/com/github/ToshioCP/list4/list.png&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-26"><a href="#cb3-26"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-27"><a href="#cb3-27"></a>                &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-28"><a href="#cb3-28"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-29"><a href="#cb3-29"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-30"><a href="#cb3-30"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-31"><a href="#cb3-31"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;btngrid&quot;</span>&gt;</span>
-<span id="cb3-32"><a href="#cb3-32"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;name&quot;</span>&gt;btngrid&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-33"><a href="#cb3-33"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.view&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-34"><a href="#cb3-34"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;action-target&quot;</span>&gt;<span class="dv">&amp;apos;</span>grid<span class="dv">&amp;apos;</span>&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-31"><a href="#cb3-31"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span> <span class="ot">id=</span><span class="st">&quot;btngrid&quot;</span>&gt;</span>
+<span id="cb3-32"><a href="#cb3-32"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;name&quot;</span>&gt;btngrid&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-33"><a href="#cb3-33"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;action-name&quot;</span>&gt;win.view&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-34"><a href="#cb3-34"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;action-target&quot;</span>&gt;<span class="dv">&amp;apos;</span>grid<span class="dv">&amp;apos;</span>&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-35"><a href="#cb3-35"></a>                &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-36"><a href="#cb3-36"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb3-37"><a href="#cb3-37"></a>                    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resource&quot;</span>&gt;/com/github/ToshioCP/list4/grid.png&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-36"><a href="#cb3-36"></a>                  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
+<span id="cb3-37"><a href="#cb3-37"></a>                    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;resource&quot;</span>&gt;/com/github/ToshioCP/list4/grid.png&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-38"><a href="#cb3-38"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-39"><a href="#cb3-39"></a>                &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-40"><a href="#cb3-40"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-41"><a href="#cb3-41"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-42"><a href="#cb3-42"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-43"><a href="#cb3-43"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span><span class="ot"> id=</span><span class="st">&quot;dmy2&quot;</span>&gt;</span>
-<span id="cb3-44"><a href="#cb3-44"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-43"><a href="#cb3-43"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span> <span class="ot">id=</span><span class="st">&quot;dmy2&quot;</span>&gt;</span>
+<span id="cb3-44"><a href="#cb3-44"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-45"><a href="#cb3-45"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-46"><a href="#cb3-46"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-47"><a href="#cb3-47"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-48"><a href="#cb3-48"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-49"><a href="#cb3-49"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb3-50"><a href="#cb3-50"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;scr&quot;</span>&gt;</span>
-<span id="cb3-51"><a href="#cb3-51"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb3-52"><a href="#cb3-52"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-50"><a href="#cb3-50"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span> <span class="ot">id=</span><span class="st">&quot;scr&quot;</span>&gt;</span>
+<span id="cb3-51"><a href="#cb3-51"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-52"><a href="#cb3-52"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-53"><a href="#cb3-53"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-54"><a href="#cb3-54"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-55"><a href="#cb3-55"></a>      &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-56"><a href="#cb3-56"></a>    &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb3-57"><a href="#cb3-57"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-58"><a href="#cb3-58"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
-<span id="cb3-59"><a href="#cb3-59"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb3-60"><a href="#cb3-60"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
-<span id="cb3-61"><a href="#cb3-61"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb3-62"><a href="#cb3-62"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
-<span id="cb3-63"><a href="#cb3-63"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-58"><a href="#cb3-58"></a>  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkListView&quot;</span> <span class="ot">id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
+<span id="cb3-59"><a href="#cb3-59"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb3-60"><a href="#cb3-60"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkSingleSelection&quot;</span> <span class="ot">id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
+<span id="cb3-61"><a href="#cb3-61"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb3-62"><a href="#cb3-62"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkDirectoryList&quot;</span> <span class="ot">id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
+<span id="cb3-63"><a href="#cb3-63"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-64"><a href="#cb3-64"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-65"><a href="#cb3-65"></a>        &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-66"><a href="#cb3-66"></a>      &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-67"><a href="#cb3-67"></a>    &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-68"><a href="#cb3-68"></a>  &lt;/<span class="kw">object</span>&gt;</span>
-<span id="cb3-69"><a href="#cb3-69"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkGridView&quot;</span><span class="ot"> id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
-<span id="cb3-70"><a href="#cb3-70"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb3-69"><a href="#cb3-69"></a>  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkGridView&quot;</span> <span class="ot">id=</span><span class="st">&quot;grid&quot;</span>&gt;</span>
+<span id="cb3-70"><a href="#cb3-70"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;singleselection&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb3-71"><a href="#cb3-71"></a>  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb3-72"><a href="#cb3-72"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
         <p>The file consists of two parts. The first part begins at the
@@ -297,29 +298,29 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
         are as follows.</p>
         <p>factory_list.ui</p>
         <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb5-6"><a href="#cb5-6"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-7"><a href="#cb5-7"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;20&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">template</span> <span class="ot">class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-7"><a href="#cb5-7"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;spacing&quot;</span>&gt;20&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb5-8"><a href="#cb5-8"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-9"><a href="#cb5-9"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb5-10"><a href="#cb5-10"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;gicon&quot;</span>&gt;</span>
-<span id="cb5-11"><a href="#cb5-11"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;GIcon&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_icon&quot;</span>&gt;</span>
-<span id="cb5-12"><a href="#cb5-12"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb5-9"><a href="#cb5-9"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
+<span id="cb5-10"><a href="#cb5-10"></a>            &lt;<span class="kw">binding</span> <span class="ot">name=</span><span class="st">&quot;gicon&quot;</span>&gt;</span>
+<span id="cb5-11"><a href="#cb5-11"></a>              &lt;<span class="kw">closure</span> <span class="ot">type=</span><span class="st">&quot;GIcon&quot;</span> <span class="ot">function=</span><span class="st">&quot;get_icon&quot;</span>&gt;</span>
+<span id="cb5-12"><a href="#cb5-12"></a>                &lt;<span class="kw">lookup</span> <span class="ot">name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb5-13"><a href="#cb5-13"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
 <span id="cb5-14"><a href="#cb5-14"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
 <span id="cb5-15"><a href="#cb5-15"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb5-16"><a href="#cb5-16"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb5-17"><a href="#cb5-17"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb5-18"><a href="#cb5-18"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb5-19"><a href="#cb5-19"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-20"><a href="#cb5-20"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;0&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb5-21"><a href="#cb5-21"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
-<span id="cb5-22"><a href="#cb5-22"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
-<span id="cb5-23"><a href="#cb5-23"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb5-18"><a href="#cb5-18"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb5-19"><a href="#cb5-19"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-20"><a href="#cb5-20"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;xalign&quot;</span>&gt;0&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb5-21"><a href="#cb5-21"></a>            &lt;<span class="kw">binding</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb5-22"><a href="#cb5-22"></a>              &lt;<span class="kw">closure</span> <span class="ot">type=</span><span class="st">&quot;gchararray&quot;</span> <span class="ot">function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
+<span id="cb5-23"><a href="#cb5-23"></a>                &lt;<span class="kw">lookup</span> <span class="ot">name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb5-24"><a href="#cb5-24"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
 <span id="cb5-25"><a href="#cb5-25"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
 <span id="cb5-26"><a href="#cb5-26"></a>          &lt;/<span class="kw">object</span>&gt;</span>
@@ -330,30 +331,30 @@ GtkGridView (model property) =&gt; GtkSingleSelection (model property) =&gt; Gtk
 <span id="cb5-31"><a href="#cb5-31"></a>&lt;/<span class="kw">interface</span>&gt;</span></code></pre></div>
         <p>factory_grid.ui</p>
         <div class="sourceCode" id="cb6"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb6-3"><a href="#cb6-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
-<span id="cb6-4"><a href="#cb6-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
-<span id="cb6-5"><a href="#cb6-5"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb6-6"><a href="#cb6-6"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-7"><a href="#cb6-7"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;20&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  &lt;<span class="kw">template</span> <span class="ot">class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
+<span id="cb6-5"><a href="#cb6-5"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb6-6"><a href="#cb6-6"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-7"><a href="#cb6-7"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;spacing&quot;</span>&gt;20&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb6-8"><a href="#cb6-8"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb6-9"><a href="#cb6-9"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
-<span id="cb6-10"><a href="#cb6-10"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;icon-size&quot;</span>&gt;GTK_ICON_SIZE_LARGE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-11"><a href="#cb6-11"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;gicon&quot;</span>&gt;</span>
-<span id="cb6-12"><a href="#cb6-12"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;GIcon&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_icon&quot;</span>&gt;</span>
-<span id="cb6-13"><a href="#cb6-13"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb6-9"><a href="#cb6-9"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkImage&quot;</span>&gt;</span>
+<span id="cb6-10"><a href="#cb6-10"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;icon-size&quot;</span>&gt;GTK_ICON_SIZE_LARGE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-11"><a href="#cb6-11"></a>            &lt;<span class="kw">binding</span> <span class="ot">name=</span><span class="st">&quot;gicon&quot;</span>&gt;</span>
+<span id="cb6-12"><a href="#cb6-12"></a>              &lt;<span class="kw">closure</span> <span class="ot">type=</span><span class="st">&quot;GIcon&quot;</span> <span class="ot">function=</span><span class="st">&quot;get_icon&quot;</span>&gt;</span>
+<span id="cb6-13"><a href="#cb6-13"></a>                &lt;<span class="kw">lookup</span> <span class="ot">name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb6-14"><a href="#cb6-14"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
 <span id="cb6-15"><a href="#cb6-15"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
 <span id="cb6-16"><a href="#cb6-16"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb6-17"><a href="#cb6-17"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb6-18"><a href="#cb6-18"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb6-19"><a href="#cb6-19"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb6-20"><a href="#cb6-20"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-21"><a href="#cb6-21"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;0.5&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb6-22"><a href="#cb6-22"></a>            &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
-<span id="cb6-23"><a href="#cb6-23"></a>              &lt;<span class="kw">closure</span><span class="ot"> type=</span><span class="st">&quot;gchararray&quot;</span><span class="ot"> function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
-<span id="cb6-24"><a href="#cb6-24"></a>                &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb6-19"><a href="#cb6-19"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb6-20"><a href="#cb6-20"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-21"><a href="#cb6-21"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;xalign&quot;</span>&gt;0.5&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb6-22"><a href="#cb6-22"></a>            &lt;<span class="kw">binding</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb6-23"><a href="#cb6-23"></a>              &lt;<span class="kw">closure</span> <span class="ot">type=</span><span class="st">&quot;gchararray&quot;</span> <span class="ot">function=</span><span class="st">&quot;get_file_name&quot;</span>&gt;</span>
+<span id="cb6-24"><a href="#cb6-24"></a>                &lt;<span class="kw">lookup</span> <span class="ot">name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb6-25"><a href="#cb6-25"></a>              &lt;/<span class="kw">closure</span>&gt;</span>
 <span id="cb6-26"><a href="#cb6-26"></a>            &lt;/<span class="kw">binding</span>&gt;</span>
 <span id="cb6-27"><a href="#cb6-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
@@ -589,19 +590,19 @@ $ _build/list4</code></pre>
         following shows a part of the new UI file
         (<code>list5.ui</code>).</p>
         <div class="sourceCode" id="cb13"><pre
-        class="sourceCode xml"><code class="sourceCode xml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkListView&quot;</span><span class="ot"> id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkSingleSelection&quot;</span><span class="ot"> id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkDirectoryList&quot;</span><span class="ot"> id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
+        class="sourceCode xml"><code class="sourceCode xml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkListView&quot;</span> <span class="ot">id=</span><span class="st">&quot;list&quot;</span>&gt;</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkSingleSelection&quot;</span> <span class="ot">id=</span><span class="st">&quot;singleselection&quot;</span>&gt;</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;model&quot;</span>&gt;</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkDirectoryList&quot;</span> <span class="ot">id=</span><span class="st">&quot;directory_list&quot;</span>&gt;</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;attributes&quot;</span>&gt;standard::name,standard::icon,standard::content-type&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;factory&quot;</span>&gt;</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span>&gt;</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;bytes&quot;</span>&gt;<span class="bn">&lt;![CDATA[</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;factory&quot;</span>&gt;</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBuilderListItemFactory&quot;</span>&gt;</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;bytes&quot;</span>&gt;<span class="bn">&lt;![CDATA[</span></span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>&lt;interface&gt;</span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  &lt;template class=&quot;GtkListItem&quot;&gt;</span>
@@ -637,11 +638,11 @@ $ _build/list4</code></pre>
 <span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">object</span>&gt;</span></code></pre></div>
-        <p>CDATA section begins with “&lt;[CDATA[” and ends with
+        <p>CDATA section begins with “&lt;![CDATA[” and ends with
         ”]]&gt;”. The contents of CDATA section is recognized as a
         string. Any character, even if it is a key syntax marker such as
         ‘&lt;’ or ‘&gt;’, is recognized literally. Therefore, the text
-        between “&lt;[CDATA[” and ”]]&gt;” is inserted to “bytes”
+        between “&lt;![CDATA[” and ”]]&gt;” is inserted to “bytes”
         property as it is.</p>
         <p>This approach reduces the number of UI files. But, the new UI
         file is a bit complicated especially for the beginners. If you

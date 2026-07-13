@@ -4,7 +4,7 @@
 
 This section describes the steps to view the GTK 4 Tutorial on your local machine.
 
-1. You will need a Linux operating system (or a Linux environment like WSL on Windows), Ruby (ver 4.0.1), Rake, Pandoc, and a LaTeX system.
+1. You will need a Linux operating system (or a Linux environment like WSL on Windows), Ruby (ver 4.0.5), Rake, Pandoc, and a LaTeX system (TexLive2026 is recommended).
 2. Download this repository and extract its contents. See the next section for instructions on how to download the repository.
 3. Change your current directory to the root directory of the source files.
 4. Run `bundle install` to install the required Gems. `bundle` is a command from Bundler, a Ruby library management tool included with Ruby.
@@ -20,11 +20,12 @@ This section describes the steps to view the GTK 4 Tutorial on your local machin
 To generate the tutorial documents in your local repository, the following environment and software are required.
 I have also included the versions used in my own environment for reference.
 
-- Linux Operating System: The programs in this repository were tested on Ubuntu 24.04.3 LTS running via WSL (Windows Subsystem for Linux).
+- Linux Operating System: The programs in this repository were tested on Ubuntu 26.04 LTS.
 - Ruby, Rake, Pandoc, and LaTeX: These are used to generate the documentation.
-  - Ruby: Version 4.0.1 is used. Ruby version 3 or later may work, but you may need to modify the Gemfile, .ruby-version, and mise.toml.
-  - Pandoc: Version 3.1.3 was used, but the version provided by your Linux distribution's package manager is likely sufficient. Pandoc converts Markdown (Pandoc's Markdown) into HTML or PDF.
-  - LaTeX: When Pandoc converts Markdown to PDF, it generates LaTeX as an intermediate step. A LaTeX system then converts that into a PDF. For this tutorial, TeXLive 2025 with LuaLaTeX (LuaHBTex 1.22.0 engine) was used.
+  - Ruby: Version 4.0.5 is used. Ruby version 3 or later may work, but you may need to modify the Gemfile, .ruby-version, and mise.toml.
+  - Pandoc: Version 3.7.0.2 was used, but the version provided by your Linux distribution's package manager is likely sufficient. Pandoc converts Markdown (Pandoc's Markdown) into HTML or PDF.
+  - LaTeX: When Pandoc converts Markdown to PDF, it generates LaTeX as an intermediate step. A LaTeX system then converts that into a PDF. For this tutorial, TeXLive 2026 with LuaLaTeX (LuaHBTex 1.24.0 engine) was used.
+  - If you want to use other versions of the programs mentioned above, the [issue "PDF Build Failures on Ubuntu 24.04 with Ruby 4.0.5, XeLaTeX and pandoc #65"](https://github.com/ToshioCP/Gtk4-tutorial/issues/65) might be useful for you.
 
 There are two ways to download the repository to your local PC:
 - Using Git: Run `git clone https://github.com/ToshioCP/Gtk4-tutorial.git` in your terminal.

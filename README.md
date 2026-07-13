@@ -35,13 +35,13 @@ GObject is the base of GTK, so it is important for developers to understand it a
 ## Contribution
 
 This tutorial is still under development and unstable.
-Even though the example codes have been tested on GTK (version 4.14.5), bugs may still exist.
+Even though the example codes have been tested on GTK (version 4.22.4), bugs may still exist.
 If you find any bugs, errors, or mistakes in the tutorial and C examples, please let me know.
 You can post them to [GitHub issues](https://github.com/ToshioCP/Gtk4-tutorial/issues).
 You can also post updated files to [pull request](https://github.com/ToshioCP/Gtk4-tutorial/pulls).
 When submitting a pull request, please ensure that you only modify the files in the `src` directory.
 Don't modify the files under `gfm` or `html` directories directly.
-After modifying some source files, run `bundle exec rake` to create GFM (GitHub Flavoured Markdown) files and run `bundle exec rake html` to create HTML files.
+After modifying some source files, run `bundle exec rake` to create GFM (GitHub Flavoured Markdown) files and run `G4T_ENV=production bundle exec rake html` to create HTML files.
 Please refer to the [Author Guide](gfm/author_guide.md) for further information.
 
 If you have a question, feel free to post it to `issue` of this repository.
@@ -49,9 +49,12 @@ Your questions and feedback are welcome and invaluable for improving this tutori
 
 ## How to Get Gtk 4 Tutorial in HTML or PDF Format
 
-If you want to get the tutorial in HTML or PDF format, build them with `rake` command, which is a ruby version of make.
-Type `bundle exec rake html` for HTML.
+There is the PDF file in the [pdf directory](https://github.com/ToshioCP/Gtk4-tutorial/tree/main/pdf).
+If you want to build the tutorial in HTML or PDF format, build them with `rake` command, which is a ruby version of make.
+Type `bundle exec rake html` or `G4T_ENV=developmnt bundle exec rake html` for HTML for local serve.
 Type `bundle exec rake pdf` for PDF.
+For further information, see the [Autho Guide](gfm/author_guide.md).
+
 The [Author Guide](gfm/author_guide.md) describes how to write source files.
 
 ## License

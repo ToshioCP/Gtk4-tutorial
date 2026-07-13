@@ -14,8 +14,8 @@ If you want to try the examples in the tutorial, you need:
 - GCC.
 - GTK 4 (version 4.10.1 or later).
 
-The stable version of GTK is 4.22.4 at present (June 17, 2026).
-The examples in this tutorial have been tested with GTK version 4.14.5.
+The stable version of GTK is 4.22.4 at present (July 13, 2026).
+The examples in this tutorial have been tested with GTK version 4.22.4.
 Version 4.10 added some new classes and functions and deprecated some old ones.
 Some example programs in this tutorial don't work on older versions.
 
@@ -36,7 +36,7 @@ They are used to make GFM (GitHub Flavored Markdown), HTML, and PDF files.
 You need:
 
 - Linux OS (including WSL)
-- Ruby 3.0 or later (tested on 4.0.1) 
+- Ruby 3.0 or later (tested on 4.0.5) 
 - Rake
 
 There are two ways to install Ruby.
@@ -44,7 +44,7 @@ There are two ways to install Ruby.
 - Install your distribution's package.
 - Use a Ruby version manager such as rbenv or mise.
 
-**Note:** If you choose to use a Ruby version other than 4.0.1, you must update the version settings in `Gemfile`.
+**Note:** If you choose to use a Ruby version other than 4.0.5, you must update the version settings in `Gemfile`.
 Additionally, depending on your version manager, you may need to modify `.ruby-version` or `mise.toml` as well.
 
 ## License

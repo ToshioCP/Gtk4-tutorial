@@ -8,8 +8,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -173,7 +174,7 @@ $ _build/listeditor</code></pre>
 <span id="cb2-3"><a href="#cb2-3"></a>  GtkWidget <span class="op">*</span>text <span class="op">=</span> gtk_text_new <span class="op">();</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a></span>
 <span id="cb2-5"><a href="#cb2-5"></a>  gtk_list_item_set_child <span class="op">(</span>listitem<span class="op">,</span> GTK_WIDGET <span class="op">(</span>text<span class="op">));</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>  gtk_editable_set_alignment <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> <span class="dv">0</span><span class="er">.0</span><span class="op">);</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>  gtk_editable_set_alignment <span class="op">(</span>GTK_EDITABLE <span class="op">(</span>text<span class="op">),</span> <span class="fl">0.0</span><span class="op">);</span></span>
 <span id="cb2-7"><a href="#cb2-7"></a>  gtk_widget_set_can_target <span class="op">(</span>GTK_WIDGET <span class="op">(</span>text<span class="op">),</span> FALSE<span class="op">);</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a></span>
 <span id="cb2-9"><a href="#cb2-9"></a>  g_signal_connect <span class="op">(</span>text<span class="op">,</span> <span class="st">&quot;changed&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>text_changed_cb<span class="op">),</span> listitem<span class="op">);</span></span>

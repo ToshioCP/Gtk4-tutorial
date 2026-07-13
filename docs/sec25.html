@@ -8,8 +8,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -129,31 +130,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         and is defined as a composite widget. Here is the template UI
         file for <code>TfePref</code>:</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;TfePref&quot;</span><span class="ot"> parent=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;Preferences&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">template</span> <span class="ot">class=</span><span class="st">&quot;TfePref&quot;</span> <span class="ot">parent=</span><span class="st">&quot;GtkWindow&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;title&quot;</span>&gt;Preferences&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;resizable&quot;</span>&gt;FALSE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;modal&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-7"><a href="#cb1-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;horizontal&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;halign&quot;</span>&gt;center&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-12"><a href="#cb1-12"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;horizontal&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;spacing&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;halign&quot;</span>&gt;center&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;margin-start&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;margin-end&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;margin-top&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;margin-bottom&quot;</span>&gt;12&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-16"><a href="#cb1-16"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Font:&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb1-19"><a href="#cb1-19"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;xalign&quot;</span>&gt;1&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Font:&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;xalign&quot;</span>&gt;1&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-20"><a href="#cb1-20"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb1-21"><a href="#cb1-21"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb1-22"><a href="#cb1-22"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb1-23"><a href="#cb1-23"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontDialogButton&quot;</span><span class="ot"> id=</span><span class="st">&quot;font_dialog_btn&quot;</span>&gt;</span>
-<span id="cb1-24"><a href="#cb1-24"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;dialog&quot;</span>&gt;</span>
-<span id="cb1-25"><a href="#cb1-25"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkFontDialog&quot;</span>/&gt;</span>
+<span id="cb1-23"><a href="#cb1-23"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkFontDialogButton&quot;</span> <span class="ot">id=</span><span class="st">&quot;font_dialog_btn&quot;</span>&gt;</span>
+<span id="cb1-24"><a href="#cb1-24"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;dialog&quot;</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkFontDialog&quot;</span>/&gt;</span>
 <span id="cb1-26"><a href="#cb1-26"></a>            &lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb1-27"><a href="#cb1-27"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb1-28"><a href="#cb1-28"></a>        &lt;/<span class="kw">child</span>&gt;</span>

@@ -68,7 +68,7 @@
         <h2 id="contribution">Contribution</h2>
         <p>This tutorial is still under development and unstable. Even
         though the example codes have been tested on GTK (version
-        4.14.5), bugs may still exist. If you find any bugs, errors, or
+        4.22.4), bugs may still exist. If you find any bugs, errors, or
         mistakes in the tutorial and C examples, please let me know. You
         can post them to <a
         href="https://github.com/ToshioCP/Gtk4-tutorial/issues">GitHub
@@ -80,21 +80,27 @@
         <code>html</code> directories directly. After modifying some
         source files, run <code>bundle exec rake</code> to create GFM
         (GitHub Flavoured Markdown) files and run
-        <code>bundle exec rake html</code> to create HTML files. Please
-        refer to the <a href="author_guide.html">Author Guide</a> for
-        further information.</p>
+        <code>G4T_ENV=production bundle exec rake html</code> to create
+        HTML files. Please refer to the <a
+        href="author_guide.html">Author Guide</a> for further
+        information.</p>
         <p>If you have a question, feel free to post it to
         <code>issue</code> of this repository. Your questions and
         feedback are welcome and invaluable for improving this
         tutorial.</p>
         <h2 id="how-to-get-gtk-4-tutorial-in-html-or-pdf-format">How to
         Get Gtk 4 Tutorial in HTML or PDF Format</h2>
-        <p>If you want to get the tutorial in HTML or PDF format, build
-        them with <code>rake</code> command, which is a ruby version of
-        make. Type <code>bundle exec rake html</code> for HTML. Type
-        <code>bundle exec rake pdf</code> for PDF. The <a
-        href="author_guide.html">Author Guide</a> describes how to write
-        source files.</p>
+        <p>There is the PDF file in the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/tree/main/pdf">pdf
+        directory</a>. If you want to build the tutorial in HTML or PDF
+        format, build them with <code>rake</code> command, which is a
+        ruby version of make. Type <code>bundle exec rake html</code> or
+        <code>G4T_ENV=developmnt bundle exec rake html</code> for HTML
+        for local serve. Type <code>bundle exec rake pdf</code> for PDF.
+        For further information, see the <a
+        href="author_guide.html">Autho Guide</a>.</p>
+        <p>The <a href="author_guide.html">Author Guide</a> describes
+        how to write source files.</p>
         <h2 id="license">License</h2>
         <p>The license of this repository is written in <a
         href="sec1.html">Section1</a>.</p>

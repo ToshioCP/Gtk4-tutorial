@@ -35,8 +35,8 @@
         on your local machine.</p>
         <ol type="1">
         <li>You will need a Linux operating system (or a Linux
-        environment like WSL on Windows), Ruby (ver 4.0.1), Rake,
-        Pandoc, and a LaTeX system.</li>
+        environment like WSL on Windows), Ruby (ver 4.0.5), Rake,
+        Pandoc, and a LaTeX system (TexLive2026 is recommended).</li>
         <li>Download this repository and extract its contents. See the
         next section for instructions on how to download the
         repository.</li>
@@ -71,22 +71,26 @@
         reference.</p>
         <ul>
         <li>Linux Operating System: The programs in this repository were
-        tested on Ubuntu 24.04.3 LTS running via WSL (Windows Subsystem
-        for Linux).</li>
+        tested on Ubuntu 26.04 LTS.</li>
         <li>Ruby, Rake, Pandoc, and LaTeX: These are used to generate
         the documentation.
         <ul>
-        <li>Ruby: Version 4.0.1 is used. Ruby version 3 or later may
+        <li>Ruby: Version 4.0.5 is used. Ruby version 3 or later may
         work, but you may need to modify the Gemfile, .ruby-version, and
         mise.toml.</li>
-        <li>Pandoc: Version 3.1.3 was used, but the version provided by
-        your Linux distribution’s package manager is likely sufficient.
-        Pandoc converts Markdown (Pandoc’s Markdown) into HTML or
-        PDF.</li>
+        <li>Pandoc: Version 3.7.0.2 was used, but the version provided
+        by your Linux distribution’s package manager is likely
+        sufficient. Pandoc converts Markdown (Pandoc’s Markdown) into
+        HTML or PDF.</li>
         <li>LaTeX: When Pandoc converts Markdown to PDF, it generates
         LaTeX as an intermediate step. A LaTeX system then converts that
-        into a PDF. For this tutorial, TeXLive 2025 with LuaLaTeX
-        (LuaHBTex 1.22.0 engine) was used.</li>
+        into a PDF. For this tutorial, TeXLive 2026 with LuaLaTeX
+        (LuaHBTex 1.24.0 engine) was used.</li>
+        <li>If you want to use other versions of the programs mentioned
+        above, the <a
+        href="https://github.com/ToshioCP/Gtk4-tutorial/issues/65">issue
+        “PDF Build Failures on Ubuntu 24.04 with Ruby 4.0.5, XeLaTeX and
+        pandoc #65”</a> might be useful for you.</li>
         </ul></li>
         </ul>
         <p>There are two ways to download the repository to your local

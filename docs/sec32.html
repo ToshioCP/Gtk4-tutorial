@@ -8,8 +8,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 <style>
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -323,12 +324,12 @@ $ ./a.out</code></pre>
         behavior is defined in a UI file.</p>
         <div class="sourceCode" id="cb5"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">template</span><span class="ot"> class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">binding</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;string&quot;</span><span class="ot"> type=</span><span class="st">&quot;GtkStringObject&quot;</span>&gt;</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">lookup</span><span class="ot"> name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">template</span> <span class="ot">class=</span><span class="st">&quot;GtkListItem&quot;</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;child&quot;</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">binding</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">lookup</span> <span class="ot">name=</span><span class="st">&quot;string&quot;</span> <span class="ot">type=</span><span class="st">&quot;GtkStringObject&quot;</span>&gt;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">lookup</span> <span class="ot">name=</span><span class="st">&quot;item&quot;</span>&gt;GtkListItem&lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>          &lt;/<span class="kw">lookup</span>&gt;</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">binding</span>&gt;</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">object</span>&gt;</span>
@@ -451,31 +452,31 @@ $ ./a.out</code></pre>
         <col style="width: 80%" />
         </colgroup>
         <thead>
-        <tr class="header">
+        <tr>
         <th style="text-align: left;">key</th>
         <th style="text-align: left;">meaning</th>
         </tr>
         </thead>
         <tbody>
-        <tr class="odd">
+        <tr>
         <td style="text-align: left;">standard::type</td>
         <td style="text-align: left;">file type. for example, regular
         file, directory, symbolic link, etc.</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: left;">standard::name</td>
         <td style="text-align: left;">filename</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: left;">standard::size</td>
         <td style="text-align: left;">file size in bytes</td>
         </tr>
-        <tr class="even">
+        <tr>
         <td style="text-align: left;">access::can-read</td>
         <td style="text-align: left;">read privilege if the user is able
         to read the file</td>
         </tr>
-        <tr class="odd">
+        <tr>
         <td style="text-align: left;">time::modified</td>
         <td style="text-align: left;">the time the file was last
         modified in seconds since the UNIX epoch</td>
