@@ -1,21 +1,21 @@
 # GtkDrawingArea and Cairo
 
-If you want to draw shapes or paint images dynamically on the screen, use the GtkDrawingArea widget.
+To dynamically draw shapes or images on the screen, use the GtkDrawingArea widget.
 
-GtkDrawingArea provides a Cairo drawing context.
-You can draw images with Cairo library functions.
-This section describes:
+GtkDrawingArea provides a Cairo drawing context, allowing you to render graphics using Cairo library functions. 
+This section covers:
 
 1. A brief introduction to Cairo
-2. GtkDrawingArea, with a very simple example.
+2. A simple example of using GtkDrawingArea
 
 ## Cairo
 
-Cairo is a drawing library for two dimensional graphics.
-There are a lot of documents on [Cairo's website](https://www.cairographics.org/).
-If you aren't familiar with Cairo, it is worth reading the [tutorial](https://www.cairographics.org/tutorial/).
+Cairo is a 2D graphics library.
+You can find extensive documentation on the [Cairo website](https://www.cairographics.org/).
+If you are new to Cairo, we highly recommend reading the [tutorial](https://www.cairographics.org/tutorial/).
 
-The following is an introduction to the Cairo library.
+Below is a brief introduction to the Cairo library.
+
 First, you need to know surfaces, sources, masks, destinations, cairo context and transformations.
 
 - A surface represents an image.
@@ -24,14 +24,14 @@ We can draw shapes and images with different colors on surfaces.
 - The source pattern, or simply source, is like paint, which will be transferred to destination surface by cairo functions.
 - The mask describes the area to be used in the copy;
 - The destination is a target surface;
-- The cairo context manages the transfer from source to destination, through mask with its functions;
-For example, `cairo_stroke` is a function to draw a path to the destination by the transfer.
+- The cairo context manages the transfer from source to destination through the mask, using its functions;
+For example, `cairo_stroke` is a function that transfers the paint to the destination along a path.
 - A transformation can be applied before the transfer completes.
-The type of the transformation is called affine, which is a mathematical term meaning transformations
+This kind of transformation is called an affine transformation, which is a mathematical term meaning transformations
 that preserve straight lines.
 Scaling, rotating, reflecting, shearing and translating are examples of affine transformations.
 They are mathematically represented by matrix multiplication and vector addition.
-In this section we don't use it, instead we will only use the identity transformation.
+In this section we don't use it: instead we will only use the identity transformation.
 This means that the coordinates in the source and mask map directly to the same coordinates in the destination.
 
 @@@if pdf
@@ -40,13 +40,13 @@ This means that the coordinates in the source and mask map directly to the same 
 ![Stroke a rectangle](/images/cairo.png)
 @@@end
 
-The instruction is as follows:
+The instructions is as follows:
 
 1. Create a surface.
 This will be the destination.
 2. Create a cairo context with the surface. This surface will be the destination of the context.
 3. Create a source pattern within the context.
-4. Create paths, which are lines, rectangles, arcs, texts or more complicated shapes in the mask.
+4. Create paths, which are lines, rectangles, arcs, text or more complicated shapes in the mask.
 5. Use a drawing operator such as `cairo_stroke` to transfer the paint in the source to the destination.
 6. Save the destination surface to a file if necessary.
 
@@ -64,24 +64,24 @@ misc/cairo.c
 `square_size` is the size of a square to be drawn on the surface.
 - 13: `cairo_image_surface_create` creates an image surface.
 `CAIRO_FORMAT_RGB24` is a constant that means each pixel has red, green, and blue components, and each component is an 8-bit number (24 bits in total).
-Modern displays have this type of color depth.
+This is the typical color depth of modern displays.
 Width and height are in pixels and given as integers.
-- 14: Creates cairo context.
+- 14: Creates a cairo context.
 The surface given as an argument will be the destination of the context.
 - 18: `cairo_set_source_rgb` creates a source pattern, which is a solid white paint.
-The second to fourth arguments are red, green and blue color values respectively, and they are of type float.
+The second to fourth arguments are red, green and blue color values respectively, and they are of type double.
 The values are between zero (0.0) and one (1.0).
 Black is (0.0,0.0,0.0) and white is (1.0,1.0,1.0).
-- 19: `cairo_paint` copies everywhere in the source to destination.
+- 19: `cairo_paint` copies the entire source to the destination.
 The destination is filled with white pixels with this command.
 - 21: Sets the source color to black.
 - 22: `cairo_set_line_width` sets the width of lines.
-In this case, the line width is set to be two pixels and will result in that size.
+In this case, the line width is set to two pixels, and it actually appears as that width because the transformation is the identity transformation.
 (It is because the transformation is identity.
 If the transformation isn't identity, for example scaling with the factor three, the actual width in destination will be six (2x3=6) pixels.)
 - 23: Draws a rectangle (square) on the mask.
 The square is located at the center.
-- 24: `cairo_stroke` transfers the source to destination through the rectangle in the mask.
+- 28: `cairo_stroke` transfers the source to destination through the rectangle in the mask.
 - 31: Outputs the image to a png file `rectangle.png`.
 - 32: Destroys the context. At the same time the source is destroyed.
 - 33: Destroys the surface.
@@ -94,7 +94,7 @@ $ gcc `pkg-config --cflags cairo` cairo.c `pkg-config --libs cairo`
 
 ![rectangle.png](/images/rectangle.png)
 
-See the [Cairo's website](https://www.cairographics.org/) for further information.
+See [Cairo's website](https://www.cairographics.org/) for further information.
 
 ## GtkDrawingArea
 
@@ -110,9 +110,9 @@ The two functions `app_activate` and `draw_function` are important in this examp
 - 22: Creates a GtkDrawingArea instance.
 - 25: Sets a drawing function of the widget.
 GtkDrawingArea widget uses the function `draw_function` to draw the contents of itself whenever it is necessary.
-For example, when a user drag a mouse pointer and resize a top-level window, GtkDrawingArea also changes the size.
+For example, when a user drags a mouse pointer and resizees a top-level window, GtkDrawingArea also changes the size.
 Then, the whole window needs to be redrawn.
-For the information of `gtk_drawing_area_set_draw_func`, see [Gtk API Reference -- gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
+For more information on `gtk_drawing_area_set_draw_func`, see [Gtk API Reference -- gtk\_drawing\_area\_set\_draw\_func](https://docs.gtk.org/gtk4/method.DrawingArea.set_draw_func.html).
 
 The drawing function has five parameters.
 
@@ -126,18 +126,18 @@ You can't change any properties, for example `content-width` or `content-height`
 The second parameter is a cairo context given by the widget.
 The destination surface of the context is connected to the contents of the widget.
 What you draw to this surface will appear in the widget on the screen.
-The third and fourth parameters are the size of the destination surface.
+The third and fourth parameters give the width and height of the destination surface.
 Now, look at the program again.
 
 - 3-17: The drawing function.
-- 7-8: Sets the source to be white and paint the destination white.
+- 7-8: Sets the source to be white and paints the destination white.
 - 9: Sets the line width to be 2.
 - 10: Sets the source to be black.
 - 11-15: Adds a rectangle to the mask.
-- 16: Draws the rectangle with black color to the destination.
+- 16: Draws the rectangle in black on the destination.
 
 The program is [/src/misc/da1.c](misc/da1.c).
-Compile and run it, then a window with a black rectangle (square) appears.
+Compile and run it, and a window with a black rectangle (square) will appear.
 When you resize the window, the square always appears at the center of the window because the drawing function is invoked each time the window is resized.
 
 @@@if pdf

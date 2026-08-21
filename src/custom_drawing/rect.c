@@ -20,13 +20,18 @@ copy_surface (cairo_surface_t *src, cairo_surface_t *dst) {
 static void
 resize_cb (GtkWidget *widget, int width, int height, gpointer user_data) {
   cairo_t *cr;
-
+  int scale = gtk_widget_get_scale_factor (widget);
+  
   if (surface)
     cairo_surface_destroy (surface);
-  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width*scale, height*scale);
+  cairo_surface_set_device_scale (surface, scale, scale);
+
   if (surface_save)
     cairo_surface_destroy (surface_save);
-  surface_save = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+  surface_save = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width*scale, height*scale);
+  cairo_surface_set_device_scale (surface_save, scale, scale);
+
   /* Paint the surface white. It is the background color. */
   cr = cairo_create (surface);
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
@@ -79,6 +84,14 @@ drag_end  (GtkGestureDrag *gesture, double offset_x, double offset_y, gpointer u
 }
 
 static void
+drag_cancel (GtkGesture *gesture, GdkEventSequence *sequence, gpointer user_data) {
+  GtkWidget *da = GTK_WIDGET (user_data);
+
+  copy_surface (surface_save, surface);
+  gtk_widget_queue_draw (da);
+}
+
+static void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWindow *win;
@@ -110,14 +123,14 @@ app_startup (GApplication *application) {
   g_object_unref (build);
 
   gtk_drawing_area_set_draw_func (da, draw_cb, NULL, NULL);
-  g_signal_connect_after (da, "resize", G_CALLBACK (resize_cb), NULL);
+  g_signal_connect (da, "resize", G_CALLBACK (resize_cb), NULL);
 
   drag = gtk_gesture_drag_new ();
-  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (drag), GDK_BUTTON_PRIMARY);
   gtk_widget_add_controller (GTK_WIDGET (da), GTK_EVENT_CONTROLLER (drag));
   g_signal_connect (drag, "drag-begin", G_CALLBACK (drag_begin), NULL);
   g_signal_connect (drag, "drag-update", G_CALLBACK (drag_update), da);
   g_signal_connect (drag, "drag-end", G_CALLBACK (drag_end), da);
+  g_signal_connect (drag, "cancel", G_CALLBACK (drag_cancel), da); 
 }
 
 #define APPLICATION_ID "com.github.ToshioCP.rect"
@@ -127,7 +140,7 @@ main (int argc, char **argv) {
   GtkApplication *app;
   int stat;
 
-  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_HANDLES_OPEN);
+  app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (app_shutdown), NULL);

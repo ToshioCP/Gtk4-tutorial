@@ -7,7 +7,7 @@ main (int argc, char **argv)
   cairo_t *cr;
   int width = 100;
   int height = 100;
-  int square_size = 40.0;
+  double square_size = 40.0;
 
   /* Create surface and cairo */
   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);

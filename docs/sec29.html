@@ -95,9 +95,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div class="row justify-content-center">
       <div class="col-xl-10 col-xxl-9">
         <h1 id="custom-drawing">Custom Drawing</h1>
-        <p>Custom drawing is to draw shapes dynamically. This section
-        shows an example of custom drawing. You can draw rectangles by
-        dragging the mouse.</p>
+        <p>Custom drawing refers to drawing shapes dynamically. This
+        section shows a custom drawing example that allows you to draw
+        rectangles by dragging the mouse. Here is how to draw a
+        rectangle with the example program.</p>
         <p>Press down the button.</p>
         <figure>
         <img src="/Gtk4-tutorial/images/cd0.png"
@@ -127,8 +128,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>rect.ui</li>
         </ul>
         <h2 id="rect.gresource.xml">rect.gresource.xml</h2>
-        <p>This file describes a UI file to compile. The compiler
-        glib-compile-resources uses it.</p>
+        <p>This file is a resource manifest used by the
+        glib-compile-resources compiler.</p>
         <div class="sourceCode" id="cb1"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
@@ -137,14 +138,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="#cb1-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb1-6"><a href="#cb1-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
         <p>The prefix is <code>/com/github/ToshioCP/rect</code> and the
-        file is <code>rect.ui</code>. Therefore, GtkBuilder reads the
-        resource from
+        file is <code>rect.ui</code>. Therefore, the resource compiler
+        compiles and stores the resource at
+        <code>/com/github/ToshioCP/rect/rect.ui</code>. Later,
+        GtkBuilder reads the resource from
         <code>/com/github/ToshioCP/rect/rect.ui</code>.</p>
         <h2 id="rect.ui">rect.ui</h2>
-        <p>The following is the UI file that defines the widgets. There
-        are two widgets which are GtkApplicationWindow and
-        GtkDrawingArea. The ids are <code>win</code> and <code>da</code>
-        respectively.</p>
+        <p>The following is the UI file that defines the widgets which
+        are GtkApplicationWindow and GtkDrawingArea. The ids are
+        <code>win</code> and <code>da</code> respectively.</p>
         <div class="sourceCode" id="cb2"><pre
         class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
@@ -178,7 +180,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-3"><a href="#cb4-3"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
 <span id="cb4-5"><a href="#cb4-5"></a></span>
-<span id="cb4-6"><a href="#cb4-6"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_HANDLES_OPEN<span class="op">);</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
 <span id="cb4-7"><a href="#cb4-7"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;startup&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_startup<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-8"><a href="#cb4-8"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb4-9"><a href="#cb4-9"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;shutdown&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_shutdown<span class="op">),</span> NULL<span class="op">);</span></span>
@@ -188,12 +190,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-13"><a href="#cb4-13"></a><span class="op">}</span></span></code></pre></div>
         <p>It connects three signals and handlers.</p>
         <ul>
-        <li>startup: It is emitted after the application is registered
-        to the system.</li>
-        <li>activate: It is emitted when the application is
-        activated.</li>
-        <li>shutdown: It is emitted just before the application
-        quits.</li>
+        <li>startup: Emitted after the application is registered to the
+        system.</li>
+        <li>activate: Emitted when the application is activated.</li>
+        <li>shutdown: Emitted just before the application quits.</li>
         </ul>
         <div class="sourceCode" id="cb5"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -211,14 +211,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-13"><a href="#cb5-13"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
 <span id="cb5-14"><a href="#cb5-14"></a></span>
 <span id="cb5-15"><a href="#cb5-15"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>da<span class="op">,</span> draw_cb<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  g_signal_connect_after <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>  g_signal_connect <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb5-17"><a href="#cb5-17"></a></span>
 <span id="cb5-18"><a href="#cb5-18"></a>  drag <span class="op">=</span> gtk_gesture_drag_new <span class="op">();</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a>  gtk_gesture_single_set_button <span class="op">(</span>GTK_GESTURE_SINGLE <span class="op">(</span>drag<span class="op">),</span> GDK_BUTTON_PRIMARY<span class="op">);</span></span>
-<span id="cb5-20"><a href="#cb5-20"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
-<span id="cb5-21"><a href="#cb5-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb5-22"><a href="#cb5-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
-<span id="cb5-23"><a href="#cb5-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb5-19"><a href="#cb5-19"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb5-22"><a href="#cb5-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb5-23"><a href="#cb5-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;cancel&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_cancel<span class="op">),</span> da<span class="op">);</span> </span>
 <span id="cb5-24"><a href="#cb5-24"></a><span class="op">}</span></span></code></pre></div>
         <p>The startup handler performs the following three tasks:</p>
         <ul>
@@ -228,8 +228,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Sets the drawing function</li>
         <li>Connects the “resize” signal and the handler.</li>
         </ul></li>
-        <li>Creates the GtkGestureDrag instance and initializes it.
-        Gestures will be explained in this section later.</li>
+        <li>Creates the GtkGestureDrag instance and connects it to the
+        drawing area object. Gestures will be explained in this section
+        later.</li>
         </ul>
         <div class="sourceCode" id="cb6"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
@@ -252,34 +253,59 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Creates an image on <code>surface</code>.</li>
         <li>Copies <code>surface</code> to the cairo surface of the
         GtkDrawingArea.</li>
-        <li>Calls <code>gtk_widget_queue_draw (da)</code> to draw it if
-        necessary.</li>
+        <li>Calls <code>gtk_widget_queue_draw (da)</code>.</li>
         </ul>
         <p>They are created in the “resize” signal handler.</p>
         <div class="sourceCode" id="cb8"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>resize_cb <span class="op">(</span>GtkWidget <span class="op">*</span>widget<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>  cairo_t <span class="op">*</span>cr<span class="op">;</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a>  surface_save <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">,</span> height<span class="op">);</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a>  <span class="co">/* Paint the surface white. It is the background color. */</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb8-4"><a href="#cb8-4"></a>  <span class="dt">int</span> scale <span class="op">=</span> gtk_widget_get_scale_factor <span class="op">(</span>widget<span class="op">);</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>  </span>
+<span id="cb8-6"><a href="#cb8-6"></a>  <span class="cf">if</span> <span class="op">(</span>surface<span class="op">)</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>    cairo_surface_destroy <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  surface <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">*</span>scale<span class="op">,</span> height<span class="op">*</span>scale<span class="op">);</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>  cairo_surface_set_device_scale <span class="op">(</span>surface<span class="op">,</span> scale<span class="op">,</span> scale<span class="op">);</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a>  <span class="cf">if</span> <span class="op">(</span>surface_save<span class="op">)</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>    cairo_surface_destroy <span class="op">(</span>surface_save<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>  surface_save <span class="op">=</span> cairo_image_surface_create <span class="op">(</span>CAIRO_FORMAT_RGB24<span class="op">,</span> width<span class="op">*</span>scale<span class="op">,</span> height<span class="op">*</span>scale<span class="op">);</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  cairo_surface_set_device_scale <span class="op">(</span>surface_save<span class="op">,</span> scale<span class="op">,</span> scale<span class="op">);</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a>  <span class="co">/* Paint the surface white. It is the background color. */</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a>  cr <span class="op">=</span> cairo_create <span class="op">(</span>surface<span class="op">);</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a>  cairo_set_source_rgb <span class="op">(</span>cr<span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  cairo_paint <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>  cairo_destroy <span class="op">(</span>cr<span class="op">);</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="op">}</span></span></code></pre></div>
         <p>This callback is called when the GtkDrawingArea is shown.
-        This is called only once since the window is not resizable.</p>
-        <p>It creates image surfaces for <code>surface</code> and
+        This is called only once since the window is not resizable. It
+        creates image surfaces for <code>surface</code> and
         <code>surface_save</code>. The <code>surface</code> surface is
         painted white, which is the background color.</p>
         <p>The drawing function copies <code>surface</code> to the
         GtkDrawingArea surface.</p>
+        <h4 id="scale-factor">Scale factor</h4>
+        <p>Modern displays, especially HiDPI (or “Retina”) displays,
+        render more physical pixels per logical pixel than traditional
+        displays. GTK reports this ratio as the scale factor of a
+        widget, obtained with
+        <code>gtk_widget_get_scale_factor()</code>. A scale factor of 1
+        means one logical pixel equals one physical pixel, while a scale
+        factor of 2 means one logical pixel is rendered using a 2x2
+        block of physical pixels.</p>
+        <p>The <code>surface</code> surface must have the same scale
+        factor and the same physical pixel dimensions as the drawing
+        area’s cairo destination surface, since the former is copied
+        onto the latter in the draawing function. If
+        <code>surface</code> is created using only the logical width and
+        height passed to the “resize” signal, the surface will contain
+        far fewer physical pixels than the display can actually show on
+        a HiDPI screen. As a result, the drawn image will look blurry
+        when it is scaled up to fill the display.</p>
+        <p>The physical pixel sizes can be obtained by multiplying
+        logical pixel sizes by the scale factor. The surface scale is
+        set with <code>cairo_surface_set_device_scale</code>.</p>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>draw_cb <span class="op">(</span>GtkDrawingArea <span class="op">*</span>da<span class="op">,</span> cairo_t <span class="op">*</span>cr<span class="op">,</span> <span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
@@ -338,29 +364,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-13"><a href="#cb12-13"></a>  g_object_unref <span class="op">(</span>build<span class="op">);</span></span>
 <span id="cb12-14"><a href="#cb12-14"></a></span>
 <span id="cb12-15"><a href="#cb12-15"></a>  gtk_drawing_area_set_draw_func <span class="op">(</span>da<span class="op">,</span> draw_cb<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span></span>
-<span id="cb12-16"><a href="#cb12-16"></a>  g_signal_connect_after <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a>  g_signal_connect <span class="op">(</span>da<span class="op">,</span> <span class="st">&quot;resize&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>resize_cb<span class="op">),</span> NULL<span class="op">);</span></span>
 <span id="cb12-17"><a href="#cb12-17"></a></span>
 <span id="cb12-18"><a href="#cb12-18"></a>  drag <span class="op">=</span> gtk_gesture_drag_new <span class="op">();</span></span>
-<span id="cb12-19"><a href="#cb12-19"></a>  gtk_gesture_single_set_button <span class="op">(</span>GTK_GESTURE_SINGLE <span class="op">(</span>drag<span class="op">),</span> GDK_BUTTON_PRIMARY<span class="op">);</span></span>
-<span id="cb12-20"><a href="#cb12-20"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
-<span id="cb12-21"><a href="#cb12-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb12-22"><a href="#cb12-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
-<span id="cb12-23"><a href="#cb12-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a>  gtk_widget_add_controller <span class="op">(</span>GTK_WIDGET <span class="op">(</span>da<span class="op">),</span> GTK_EVENT_CONTROLLER <span class="op">(</span>drag<span class="op">));</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-begin&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_begin<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-update&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_update<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb12-22"><a href="#cb12-22"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;drag-end&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_end<span class="op">),</span> da<span class="op">);</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a>  g_signal_connect <span class="op">(</span>drag<span class="op">,</span> <span class="st">&quot;cancel&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>drag_cancel<span class="op">),</span> da<span class="op">);</span> </span>
 <span id="cb12-24"><a href="#cb12-24"></a><span class="op">}</span></span></code></pre></div>
         <ul>
         <li>The function <code>gtk_gesture_drag_new</code> creates a new
-        GtkGestureDrag instance.</li>
-        <li>The function <code>gtk_gesture_single_set_button</code> sets
-        the button number to listen to. The constant
-        <code>GDK_BUTTON_PRIMARY</code> is the left button of a
-        mouse.</li>
+        GtkGestureDrag instance. The default button number is 1
+        (<code>GDK_BUTTON_PRIMARY</code>), which is the left button of a
+        mouse or touch events.</li>
         <li>The function <code>gtk_widget_add_controller</code> adds an
         event controller, which is a base class for gestures.</li>
-        <li>Three signals and handlers are connected.
+        <li>Four signals and handlers are connected.
         <ul>
         <li>drag-begin: Emitted when dragging starts.</li>
         <li>drag-update: Emitted when the dragging pointer moves.</li>
         <li>drag-end: Emitted when the dragging ends.</li>
+        <li>cancel: Emitted when the dragging was canceled. This signal
+        belongs to GtkGesture.</li>
         </ul></li>
         </ul>
         <p>The process during the drag is as follows.</p>
@@ -369,7 +395,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>update: restore the surface and draw a thin rectangle
         between the start point and the current point of the mouse</li>
         <li>end: restore the surface and draw a thick rectangle between
-        the start and end points.</li>
+        the start and end points</li>
+        <li>cancel: restore the surface</li>
         </ul>
         <p>We need two global variables for the start point.</p>
         <div class="sourceCode" id="cb13"><pre
@@ -439,6 +466,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>Restores <code>surface</code> from
         <code>surface_save</code>.</li>
         <li>Draws a rectangle with thick lines.</li>
+        <li>Calls <code>gtk_widget_queue_draw</code> to add the
+        GtkDrawingArea to the queue to redraw.</li>
+        </ul>
+        <div class="sourceCode" id="cb17"><pre
+        class="sourceCode numberSource c numberLines"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a>drag_cancel <span class="op">(</span>GtkGesture <span class="op">*</span>gesture<span class="op">,</span> GdkEventSequence <span class="op">*</span>sequence<span class="op">,</span> gpointer user_data<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>  GtkWidget <span class="op">*</span>da <span class="op">=</span> GTK_WIDGET <span class="op">(</span>user_data<span class="op">);</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a></span>
+<span id="cb17-5"><a href="#cb17-5"></a>  copy_surface <span class="op">(</span>surface_save<span class="op">,</span> surface<span class="op">);</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>  gtk_widget_queue_draw <span class="op">(</span>da<span class="op">);</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="op">}</span></span></code></pre></div>
+        <ul>
+        <li>Restores <code>surface</code> from
+        <code>surface_save</code>.</li>
         <li>Calls <code>gtk_widget_queue_draw</code> to add the
         GtkDrawingArea to the queue to redraw.</li>
         </ul>

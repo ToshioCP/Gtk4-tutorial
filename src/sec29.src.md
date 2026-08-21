@@ -1,8 +1,8 @@
 # Custom Drawing
 
-Custom drawing is to draw shapes dynamically.
-This section shows an example of custom drawing.
-You can draw rectangles by dragging the mouse.
+Custom drawing refers to drawing shapes dynamically.
+This section shows a custom drawing example that allows you to draw rectangles by dragging the mouse.
+Here is how to draw a rectangle with the example program.
 
 Press down the button.
 
@@ -39,20 +39,19 @@ There are four files.
 
 ## rect.gresource.xml
 
-This file describes a UI file to compile.
-The compiler glib-compile-resources uses it.
+This file is a resource manifest used by the glib-compile-resources compiler.
 
 @@@include
 custom_drawing/rect.gresource.xml
 @@@
 
 The prefix is `/com/github/ToshioCP/rect` and the file is `rect.ui`.
-Therefore, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui`.
+Therefore, the resource compiler compiles and stores the resource at `/com/github/ToshioCP/rect/rect.ui`.
+Later, GtkBuilder reads the resource from `/com/github/ToshioCP/rect/rect.ui`.
 
 ## rect.ui
 
-The following is the UI file that defines the widgets.
-There are two widgets which are GtkApplicationWindow and GtkDrawingArea.
+The following is the UI file that defines the widgets which are GtkApplicationWindow and GtkDrawingArea.
 The ids are `win` and `da` respectively.
 
 @@@include
@@ -80,9 +79,9 @@ custom_drawing/rect.c main
 
 It connects three signals and handlers.
 
-- startup: It is emitted after the application is registered to the system. 
-- activate: It is emitted when the application is activated.
-- shutdown: It is emitted just before the application quits.
+- startup: Emitted after the application is registered to the system. 
+- activate: Emitted when the application is activated.
+- shutdown: Emitted just before the application quits.
 
 @@@include
 custom_drawing/rect.c app_startup
@@ -94,7 +93,7 @@ The startup handler performs the following three tasks:
 - Initializes the GtkDrawingArea instance.
   - Sets the drawing function
   - Connects the "resize" signal and the handler.
-- Creates the GtkGestureDrag instance and initializes it.
+- Creates the GtkGestureDrag instance and connects it to the drawing area object.
 Gestures will be explained in this section later.
 
 @@@include
@@ -123,7 +122,7 @@ The drawing process is as follows.
 
 - Creates an image on `surface`.
 - Copies `surface` to the cairo surface of the GtkDrawingArea.
-- Calls ` gtk_widget_queue_draw (da)` to draw it if necessary.
+- Calls ` gtk_widget_queue_draw (da)`.
 
 They are created in the "resize" signal handler.
 
@@ -133,11 +132,23 @@ custom_drawing/rect.c resize_cb
 
 This callback is called when the GtkDrawingArea is shown.
 This is called only once since the window is not resizable.
-
 It creates image surfaces for `surface` and `surface_save`.
 The `surface` surface is painted white, which is the background color.
 
 The drawing function copies `surface` to the GtkDrawingArea surface.
+
+#### Scale factor
+
+Modern displays, especially HiDPI (or "Retina") displays, render more physical pixels per logical pixel than traditional displays.
+GTK reports this ratio as the scale factor of a widget, obtained with `gtk_widget_get_scale_factor()`.
+A scale factor of 1 means one logical pixel equals one physical pixel, while a scale factor of 2 means one logical pixel is rendered using a 2x2 block of physical pixels.
+
+The `surface` surface must have the same scale factor and the same physical pixel dimensions as the drawing area's cairo destination surface, since the former is copied onto the latter in the draawing function.
+If `surface` is created using only the logical width and height passed to the "resize" signal, the surface will contain far fewer physical pixels than the display can actually show on a HiDPI screen.
+As a result, the drawn image will look blurry when it is scaled up to fill the display.
+
+The physical pixel sizes can be obtained by multiplying logical pixel sizes by the scale factor.
+The surface scale is set with `cairo_surface_set_device_scale`.
 
 @@@include
 custom_drawing/rect.c draw_cb
@@ -181,19 +192,20 @@ custom_drawing/rect.c app_startup
 @@@
 
 - The function `gtk_gesture_drag_new` creates a new GtkGestureDrag instance.
-- The function `gtk_gesture_single_set_button` sets the button number to listen to.
-The constant `GDK_BUTTON_PRIMARY` is the left button of a mouse.
+The default button number is 1 (`GDK_BUTTON_PRIMARY`), which is the left button of a mouse or touch events.
 - The function `gtk_widget_add_controller` adds an event controller, which is a base class for gestures.
-- Three signals and handlers are connected.
+- Four signals and handlers are connected.
   - drag-begin: Emitted when dragging starts.
   - drag-update: Emitted when the dragging pointer moves.
   - drag-end: Emitted when the dragging ends.
+  - cancel: Emitted when the dragging was canceled. This signal belongs to GtkGesture.
 
 The process during the drag is as follows.
 
 - start: save the surface and start points
 - update: restore the surface and draw a thin rectangle between the start point and the current point of the mouse
-- end: restore the surface and draw a thick rectangle between the start and end points.
+- end: restore the surface and draw a thick rectangle between the start and end points
+- cancel: restore the surface
 
 We need two global variables for the start point.
 
@@ -232,6 +244,13 @@ custom_drawing/rect.c drag_end
 
 - Restores `surface` from `surface_save`.
 - Draws a rectangle with thick lines.
+- Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
+
+@@@include
+custom_drawing/rect.c drag_cancel
+@@@
+
+- Restores `surface` from `surface_save`.
 - Calls `gtk_widget_queue_draw` to add the GtkDrawingArea to the queue to redraw.
 
 ## Build and Run
