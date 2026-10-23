@@ -5,7 +5,7 @@ Up: [README.md](../README.md),  Prev: [Section 13](sec13.md), Next: [Section 15]
 ## What is Asynchronous Operation?
 
 GUI applications, like those built with GTK, run in a continuous loop called the **main loop**.
-This loop constantly waits for user events—such as mouse clicks or key presses—and redraws the screen as needed. 
+This loop constantly waits for user events --- such as mouse clicks or key presses --- and redraws the screen as needed. 
 
 Because the main loop must keep running quickly to keep the application responsive, you should never perform heavy or time-consuming tasks (like reading a large file or downloading data from the network) **directly inside it**. 
 If you use a **synchronous** function for a slow I/O operation, the main loop will block and wait for the operation to finish.

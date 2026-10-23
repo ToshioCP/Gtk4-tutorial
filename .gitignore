@@ -1,19 +1,19 @@
 # .gitignore
 
-# temporary directory
+# Temporary directory
 src/temp/
 
-# build directory
+# All build directories
 _build/
 
-# a.out
+# All a.out files
 a.out
 
-# configuration file
-*.vscode
+# The VSCode configuration directory
+/.vscode/
 
-# backup file
+# Backup files
 *~
 
-# drafts directory
+# All drafts directories
 drafts/

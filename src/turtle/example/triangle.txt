@@ -1,0 +1,8 @@
+# Equilateral Triangle
+
+fd 100
+tr 120
+fd 100
+tr 120
+fd 100
+tr 120

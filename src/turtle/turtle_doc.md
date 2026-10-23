@@ -83,7 +83,7 @@ fd 100
 The command `tr` is "Turn Right".
 The argument is angle with degrees.
 Therefore, `tr 90` means "Turn right by 90 degrees".
-If you click on `run`button, then two line segment appears.
+If you click on `run` button, then two line segment appears.
 One is vertical and the other is horizontal.
 
 ![Two line segments on the surface](image/turtle2.png)
@@ -155,7 +155,7 @@ Variable begins alphabet followed by alphabet or digit except key words like `fd
 Variable names are case sensitive.
 Variables keep real numbers.
 Their type is the same as `double` in C language.
-Integers are casted to real numbers automatically.
+Integers are cast to real numbers automatically.
 So 1 and 1.0 are the same value.
 Numbers begins digits, not signs (`+` or `-`).
 

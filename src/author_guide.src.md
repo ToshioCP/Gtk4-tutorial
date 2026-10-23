@@ -40,7 +40,7 @@ From here on, these will be referred to as ".src.md files."
 
 Three types of documents are generated and stored in the `gfm`, `docs`, and `pdf` directories, corresponding to GFM (GitHub Flavored Markdown), HTML, and PDF formats.
 
-These three output formats—`gfm`, `html`, and `pdf`—are referred to as targets.
+These three output formats—`gfm`, `html`, and `pdf` --- are referred to as targets.
 Note that for the `html` target, the output directory is named `docs` instead of `html`.
 This is to align with the directory name used for hosting files on GitHub Pages.
 

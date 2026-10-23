@@ -1,58 +1,60 @@
-# Turtle manual
+# Turtle Manual
 
 Turtle is a simple interpreter for turtle graphics.
 
-## Prerequisite and compiling
+## Requirements and Installation
 
 Turtle is written in C language.
 You need:
 
-- Linux. Turtle is tested on ubuntu 22.10
+- Linux. Turtle is tested on ubuntu 26.04 LTS
 - gcc, meson and ninja
-- gtk4
+- gtk4. Turtle is tested on GTK 4.22.4
 
-It is easy to compile the source file of turtle.
-If you want tp install it in your local area, put an option `--prefix=$HOME/.local` to your meson command line.
+It is easy to compile Turtle's source files and install it.
+
+For a user-area installation, put an option `--prefix=$HOME/.local` to your meson command line.
 Then, it will be installed under `$HOME/.local/bin`.
 The instruction is:
 
-~~~
+```
 $ meson setup --prefix=$HOME/.local _build
 $ ninja -C _build
 $ ninja -C _build install
-~~~
+```
 
-If you want to install it in the system area, no option is necessary.
-It will be installed under `/usr/local/bin`.
+For a system-wide installation (under `/usr/local/bin`), just run it without any options.
+You'll need root privileges for the install step, so don't forget to add 'sudo' to the last command.
 
-~~~
+```
 $ meson setup _build
 $ ninja -C _build
 $ sudo ninja -C _build install
-~~~
+```
 
-Type the following command then turtle shows the following window.
+Type the following command, and the following window appears.
 
-~~~
+```
 $ turtle
-~~~
+```
 
 ![Screenshot just after it's executed](../../src/turtle/images/turtle1.png)
 
 The left half is a text editor and the right half is a surface.
 Surface is like a canvas to draw shapes.
 
-Write turtle language in the text editor and click on `run` button, then the program will be executed and it draws shapes on the surface.
+Write Turtle language in the text editor and click the `run` button.
+Then, the program will be executed and it draws shapes on the surface.
 
 ![Tree](../../src/turtle/images/turtle_tree.png)
 
-If you uncomment the following line in `turtle.y`, then codes for debug will also be compiled.
+If you uncomment the following line in `turtle.y`, the codes for debugging will also be compiled.
 Turtle shows the status to the standard output, but the speed is quite slow.
 It is not recommended except you are developing the program.
 
-~~~
+```
 /* # define debug 1 */
-~~~
+```
 
 ## Example
 
@@ -61,247 +63,247 @@ The turtle has a pen and initially it is at the center of the screen, facing to 
 You can let the turtle down the pen or up the pen.
 You can order the turtle to move forward.
 
-~~~
+```
 pd
 fd 100
-~~~
+```
 
 - pd: Pen Down. The turtle put the pen down so that the turtle will draw a line if it moves.
-- fd 100: move ForwarD 100. The turtle goes forward 100 pixels.
+- fd 100: ForwarD 100. The turtle goes forward 100 pixels.
 
-If you click on `run` button, then a line segment appears on the screen.
-One of the endpoints of the line segment is at the center of the surface and the other is at 100 pixels up from the center.
-The point at the center is the start point of the turtle and the other endpoint is the end point of the movement.
+If you click the `run` button, a line segment appears on the screen.
+One of the endpoints of the line segment is at the center of the surface and the other is 100 pixels above the center.
+The point at the center is the start position of the turtle and the other endpoint is its final position.
 
-If the turtle picks the pen up, then no line segment appears.
+If the turtle picks the pen up, no line segment appears.
 
-~~~
+```
 pu
 fd 100
-~~~
+```
 
 The command `pu` means "Pen Up".
 
-The turtle can change the direction.
+The turtle can change its direction.
 
-~~~
+```
 pd
 fd 100
 tr 90
 fd 100
-~~~
+```
 
 The command `tr` is "Turn Right".
-The argument is angle with degrees.
+The argument is an angle in degrees.
 Therefore, `tr 90` means "Turn right by 90 degrees".
-If you click on the `run`button, then two line segments appears.
+If you click the `run` button, two line segments appear.
 One is vertical and the other is horizontal.
 
 ![Two line segments on the surface](../../src/turtle/images/turtle2.png)
 
-You can use `tl` (Turn Left) as well.
+You can use `tl` (Turn Left) to change the turtle's direction as well.
 
-## Background and foreground color
+## Background and Foreground Colors
 
-Colors are specified with RGB.
-A vector (r, g, b) denotes RGB color.
-Each of the elements is a real number between 0 and 1.
+Colors are specified using RGB and are represented by an (r, g, b) value.
+Each component is a real number between 0 and 1.
 
 - Red is (1.0, 0.0, 0.0).
-You can write (1, 0, 0) instead.
+You can also write (1, 0, 0).
 - Green is (0.0, 1.0, 0.0)
 - Blue is (0.0, 0.0, 1.0)
 - Black is (0.0, 0.0, 0.0)
 - White is (1.0, 1.0, 1.0)
 
-You can express a variety of colors by changing each element.
+You can create a variety of colors by changing the values of the three components.
 
 There are two commands to change colors.
 
 - bc: Background Color. `bc (1,0,0)` changes the background color to red.
-This command clear the surface and change the background color.
-So, the shapes on the surface disappears.
+This command clears the surface and changes its background color.
+Any shapes on the surface disappear.
 - fc: Foreground Color. `fc (0,1,0)` changes the foreground color to green.
 This command changes the pen color.
-The prior shapes on the surface aren't affected.
-After this command, the turtle draws lines with the new color.
+Existing shapes on the surface are not affected.
+After this command, the turtle draws lines in the new color.
 
 ![Change the foreground color](../../src/turtle/images/turtle3.png)
 
-## Other simple commands
+## Other Commands
 
 - pw: Pen Width. This is the same as pen size or line width.
-For example, `pw 5` makes lines thick and `pw 1` makes it thin.
+For example, if the current line width is 3, `pw 5` makes newly drawn lines thicker, while `pw 1` makes them thinner.
 - rs: ReSet. The turtle moves back to the initial position and direction.
 In addition, The command initialize the pen, line width (pen size), and foreground color.
 The pen is down, the line width is 2 and the foreground color is black.
 
-An order such as `fd 100`, `pd` and so on is a statement.
-Statements are executed in the order from the top to the end in the program.
+An instruction such as `fd 100`or `pd` is called a statement.
+Statements are executed in order, from the beginning to the end of the program.
 
-## Comment and spaces
+## Comments and Spaces
 
-Characters between `#` (hash mark) and `\n` (new line) are comment.
-If the comment is at the end of the file, the trailing new line can be left out.
-Comments are ignored.
+Text following a `#` (hash mark) to the next `\n` (new line) is treated as a  comment.
+It includes the beginning hash mark but doesn't include the new line.
+If a comment appears on the last line of a file, the trailing new line can be omitted.
+The program ignores all comments.
 
-~~~
+```
 # draw a triangle<NEW LINE>
 fd 100 # forward 100 pixels<NEW LINE>
-tr 120 # turn right by 90 degrees<NEW LINE>
+tr 120 # turn right by 120 degrees<NEW LINE>
 fd 100<NEW LINE>
 tr 120<NEW LINE>
 fd 100 # Now a triangle appears.<EOF>
-~~~
+```
 
-\<NEW LINE\> and \<EOF\> indicate newline code and end of file respectively.
-The comments in the line 1, 2, 3 and 6 are correct syntactically.
+Here, `<NEW LINE>` and `<EOF>` represent a newline character and the end of te file respectively.
+The comments on lines 1, 2, 3 and 6 are all syntactically correct.
 
-Spaces (white space, tab and new line) are ignored.
-They are used only as delimiters.
-Tabs are recognized as eight spaces to calculate the column number.
+Whitespace characters (spaces, tabs and newlines) are ignored and serve only as delimiters between commands and values.
+When calculating column numbers, each tab is treated as eight spaces.
 
-## Variables and expressions
+## Variables and Expressions
 
-Variables begin alphabet followed by alphabet or digit.
-Key words like `fd` or `tr` can't be variables.
-`Distance` and `angle5` are variables, but `1step` isn't a variable because the first character isn't alphabet.
-Variable names are case sensitive.
-Variables keep real numbers.
-Their type is the same as `double` in C language.
-Integers are casted to real numbers automatically.
-So 1 and 1.0 are the same value.
-Numbers begin digits, not signs (`+` or `-`).
+Variable names begin with a letter, followed by any comnibnation of letters and digits.
+Keywords like `fd` or `tr` can't be used as variable names.
+`Distance` and `angle5` are variables, but `1step` is not, because it starts with a number instead of a letter.
 
-- 100, 20.34 and 0.01 are numbers
-- +100 isn't a number. It causes syntax error. Use 100 instead.
-- -100 isn't a number. But turtle recognizes it unary minus and a number 100.
-So turtle calculate it and the result is -100.
-- 100 + -20: This is recognized 100 + (- 20).
-However, using bracket, 100 + (-20), is better for easy reading.
+Variable names are case-sensitive.
 
-~~~
+All variables store real numbers and function identically to the `double` type in C language.
+Integers are automatically cast to real numbers, meaning 1 and 1.0 represent the same value.
+
+When writing numeric numbers, they must begin with a digit rather than a sign (`+` or `-`).
+
+- `100`, `20.34` and `0.01` are valid numbers
+- `+100` is not a valid number and will cause a syntax error. You should simply use `100` instead.
+- `-100` is technically not a single number. However, turtle recognizes the `-` as a unary minus operaor and applies it to the number `100`,
+so the calculated result is still `-100`.
+- `100 + -20` is a valid expression and will be recognized as `100 + (- 20)` since unary minus has higher precedence than addition.
+However, using parentheses --- written as `100 + (-20)` --- is recommended to make your code easier to read.
+
+```
 distance = 100
 fd distance
-~~~
+```
 
-A value 100 is assigned to the variable `distance` in the first line.
-Assignment is a statement.
-Most of statements begin with commands like `fd`.
-Assignment is the only exception.
+In the first line, the value `100` is assigned to the variable `distance`.
+An assignment is a type of statement.
+While most statements must begin with a command like `fd`, assignments are the only exception to this rule.
 
-The example above draws a line segment of 100 pixels long.
+The example above draws a line segment 100 pixels long.
 
 You can use variables in expressions.
-There are 8 kinds of calculations available.
+There are 8 types of operations available.
 
-- addition: x + y
-- subtraction: x - y
-- multiplication: x * y
-- division: x / y
-- unary minus: - x
-- logical equal: x = y. This symbol `=` works as `==` in C language.
-- greater than: x > y
-- less than: x < y
+- Addition: `x + y`
+- Subtraction: `x - y`
+- Multiplication: `x * y`
+- Division: `x / y`
+- Unary minus: `- x`
+- Logical equality: `x == y`
+- Greater than: `x > y`
+- Less than: `x < y`
 
-The last three symbols are mainly used in the condition of if statement.
+The last three operators are primarily used as conditions in `if` statements.
 
-Variables are registered to a symbol table when it is assigned a value for the first time.
-Evaluating a variable before the registration isn't allowed and occurs an error.
+A variable is registered in the symbol table the first time it is assigned a value.
+Evaluating a variable before it has been registered is not allowed and will cause an error.
 
-## If statement
+## The if Statement
 
-Turtle language has very simple if statement.
+The Turtle language has a very simple `if` statement.
 
-~~~
+```
 if (x > 50) {
   fd x
 }
-~~~
+```
 
-There is no else part.
+There is no else clause.
 
-## Loop
+## The loop Statement
 
-Turtle has very simple loop statement.
-It is `rp` (RePeat) statement.
+The Turtle language has a very simple loop construct: `rp` (RePeat) statement.
 
-~~~
+```
 rp (4) {
   fd 100
   tr 90
 }
-~~~
+```
 
-The program repeats the statements in the brace four times.
+The code repeats the statements enclosed the curly braces four times.
 
 ## Procedures
 
-Procedures are similar to functions in C language.
-The difference is that procedures don't have return values.
+Procedures are similar to functions in the C language.
+The main difference is that procedures do not return a value.
 
-~~~
+```
 dp triangle (side) {
   fd side
   tr 120
   fd side
   tr 120
   fd side
+  tr 120
 }
 
 triangle (100)
-~~~
+```
 
-`dp` (Define Procedure) is a key word followed by procedure name, parameters, and body.
-Procedure names start alphabet followed by alphabet or digit.
-Parameters are a list of variables.
-For example
+The `dp` (Define Procedure) keyword is followed by a procedure name, a list of parameters, and the procedure's body.
+Procedure names must begin with a letter, followed by letters or digits.
+Parameters are provided as a comma-separated list of variables inside parentheses.
 
-~~~
+For example:
+
+```
 dp abc (a) { ... ... }
 dp abc (a, b) { ... ... }
 dp abc (a, b, c) { ... ... }
-~~~
+```
 
-Body is a sequence of statements.
-The statements aren't executed when the procedure is defined.
-They will be executed when the procedure is called later.
+The body is a sequence of statements.
+These statements are not executed when the procedure is defined.
+Instead, they are executed later when the procedure is called.
 
-Procedures are called by the name followed by arguments.
+Procedures are called by their names followed by arguments.
 
-~~~
+```
 dp proc (a, b, c) { ... ... }
 
 proc (100, 0, -20*3)
-~~~
+```
 
-The number of parameters and arguments must be the same.
-Arguments can be any expressions.
-When you call a procedure, brackets following the procedure name must exist even if the procedure has no argument.
+The number of arguments must match the number of parameters.
+An argument can be any valid expression.
+When calling a procedure, you must include parentheses after the procedure name,even if there are no arguments.
 
-Procedure names and variable names don't conflict.
+Procedure names and variable names do not conflict.
 
-~~~
+```
 dp a () {fd a}
 a=100
 a ()
-~~~
+```
 
-This is a correct program.
+This is a valid program.
 
-- 1: Defines a procedure `a`.
-A variable `a` is in its body.
-- 2: Assigns 100 to a variable `a`.
-- 3: Procedure `a` is called.
+- 1: Defines a procedure name `a`.
+A variable name `a` is used in its body.
+- 2: Assigns the value `100` to the variable `a`.
+- 3: Calls the Procedure `a`.
 
-However, using the same name to a procedure and variable makes confusion.
-You should avoid that.
+However, using the same name for a procedure and a variable causes confusion.
+You should avoid doing this.
 
-## Recursive call
+## Recursive Calls
 
 Procedures can be called recursively.
 
-~~~
+```
 dp repeat (n) {
   n = n - 1
   if (n < 0) {
@@ -313,105 +315,114 @@ dp repeat (n) {
 }
 
 repeat (4)
-~~~
+```
 
-Repeat is called in the body of repeat.
-The call to itself is a recursive call.
-Parameters are created and set each time the procedure is called.
-So, parameter `n` is 4 at the first call but it is 3 at the second call.
-Every time the procedure is called, the parameter `n` decreases by one.
-Finally, it becomes less than zero, then the procedures return.
+In this example, `repeat` is called from within its own body.
+A procedure calling itself is known as a recursive call.
+
+New parameters are created and set each time the procedure is called.
+Therefore, the parameter `n` is 4 during the first call, but it is 3 during the second call.
+Each time the procedure is called, `n` decreases by one.
+Finally, when `n` becomes less than zero, the procedure returns.
+
+Notice that the condition uses `< 0` rather than `== 0`.
+Because all numbers in the Turtle language are floating-point values (`double`), they are subject to tiny precision errors (rounding errors) during calculations.
+Checking for exact equality with `==` might fail due to these microscopic errors, which would cause an infinite loop.
+Using `<` ensures the recursion terminates safely.
 
 The program above draws a square.
+This demonstrates that we can program loops using recursive calls.
 
-It shows that we can program loop with a recursive call.
+## Fractal Curves
 
-## Fractal curves
-
-Recursive call can be applied to draw fractal curves.
-Fractal curves appear when a procedure is applied to it repeatedly.
-The procedure replaces a part of the curve with the contracted curve.
+A fractal is a special pattern that looks exactly the same even as you zoom in.
+To draw one, you start with a basic shape and apply a simple rule repeatedly.
+With every step, you add a smaller version of the shape, scaling it down at a constant rate (like exactly half the size of the previous one).
 
 ![Tree](../../src/turtle/images/turtle_tree.png)
 
-This shape is called tree.
-The basic pattern of this shape is a line segment.
-It is the first stage.
-The second stage adds two shorter line segments at the endpoint of the original segment.
-The new segment has 70 percent length to the original segment and the orientation is +30 or -30 degrees different.
-The third stage adds two shorter line segments to the second stage line segments.
-And repeats it several times.
+This shape is called a fractal tree, or simply 'tree'.
+The base pattern is a single line segment, which represents the first stage.
+In the second stage, two shorter line segments are added to the endpoint of the original segment.
+Each new segment is 70% of the original length and is rotated by +30 or -30 degrees.
+The third stage applies this same rule, adding two even shorter segments to the ends of the second-stage segments.
+This process is then repeated several times to generate the complete tree.
 
-This repeating is programmed by recursive call.
-Two more examples are shown here.
-They are Koch curve and Square Koch curve.
+This repetition is implemented using recursive calls.
+Two additional examples are shown below: the Koch curve and the Square Koch curve.
 
 ![Koch curve](../../src/turtle/images/turtle_koch.png)
 
 ![Square Koch curve](../../src/turtle/images/turtle_square_koch.png)
 
-## Tokens and punctuations
+The `src/turtle/example` folder contains some example Turtle code including the shapes above.
 
-The following is the list of tokens.
+## Tokens and Punctuation
+
+Below is a list of the available tokens.
 
 Keywords:
 
-- pu: pen up
-- pd: pen down
-- pw: pen width = line width
-- fd: forward
-- tr: turn right
-- tl: turn left
-- bc: background color
-- fc: foreground color
-- if: if statement
-- rt: return
-- rs: reset
-- rp: repeat
-- dp: define procedure
+- `pu`: Pen up
+- `pd`: Pen down
+- `pw`: Pen width (line width)
+- `fd`: Forward
+- `tr`: Turn right
+- `tl`: Turn left
+- `bc`: Background color
+- `fc`: Foreground color
+- `if`: If statement
+- `rt`: Return
+- `rs`: Reset
+- `rp`: Repeat
+- `dp`: Define procedure
 
-identifiers and numbers:
+Identifiers and Numbers:
 
-- identifier: This is used for the name of variables, parameters and procedures.
-It is expressed ` [a-zA-Z][a-zA-Z0-9]*` in regular expression.
-- number: This is expressed `(0|[1-9][0-9]*)(\.[0-9]+)?` in regular expression.
-It doesn't have `+` or `-` sign because they bring some syntactic confusion.
-However negative number such as `-10` can be recognized as unary minus and a number.
+- Identifier: Used for the names of variables, parameters and procedures.
+It is denoted by the regular expression `[a-zA-Z][a-zA-Z0-9]*`.
+- Number: Defined by the expression `(0|[1-9][0-9]*)(\.[0-9]+)?`.
+Numbers do not include a `+` or `-` sign to avoind syntactic ambiguity.
+However, a negative value such as `-10` is evaluated as a unary minus operator followed by a number.
 
-Symbols for expression
+Assignment:
 
-- `=`
-- `>`
-- `<`
-- `+`
-- `-`
-- `*`
-- `/`
-- `(`
-- `)`
+- `=`: Assignment
 
-Delimiters
+Expression Symbols:
 
-- `(`
-- `)`
-- `{`
-- `}`
-- `,`
+- `==`: Equality
+- `>`: Greater than
+- `<`: Less than
+- `+`: Addition
+- `-`: Subtraction or Unary Minus
+- `*`: Multiplication
+- `/`: Division
+- `(`: Left parenthesis (Opening parenthesis)
+- `)`: Right parenthesis (Closing parenthesis)
 
-Comments and spaces:
+Delimiters:
 
-- comment: This is characters between `#` and new line.
-If a comment is at the end of the file, the trailing new line can be left out.
-- white space:
-- horizontal tab: tab is recognized as eight spaces.
-- new line: This is the end of a line.
+- `(`: Left parenthesis (used to open parameter and argument lists, as well as conditions or values for statements such as `if`, `rp`, `bc`, and `fc`)
+- `)`: Right parenthesis (used to close parameter and argument lists, as well as conditions or values for statements such as `if`, `rp`, `bc`, and `fc`)
+- `{`: Left curly brace (used to open a block of statements, such as a procedure body)
+- `}`: Right curly brace (used to close a block of statements)
+- `,`: Comma (used to separate parameters or arguments)
 
-These characters are used to separate tokens explicitly.
-They doesn't have any syntactic meaning and are ignored by the parser.
+Comments and Whitespace:
+
+- Comment: A comment begins with a `#` symbol and continues until the next newline character.
+If a comment is placed at the very end of a file, the trailing newline may be omitted.
+- Space: The standard space character.
+- Horizontal tab: Recognized as eight spaces.
+- Newline: Marks the end of a line.
+
+Comments and whitespace are used to explicitly separate tokens.
+They do not have any syntactic meaning and are ignored by the parser.
 
 ## Grammar
 
-~~~
+```
 program:
   statement
 | program statement
@@ -461,7 +472,7 @@ primary_procedure_list:
 ;
 
 expression:
-  expression '=' expression
+  expression '==' expression
 | expression '>' expression
 | expression '<' expression
 | expression '+' expression
@@ -473,4 +484,4 @@ expression:
 | ID
 | NUM    /* NUM is a number */
 ;
-~~~
+```

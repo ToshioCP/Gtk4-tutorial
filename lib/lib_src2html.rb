@@ -30,7 +30,6 @@ module G4T
       sec_files = src_files[:sections].to_a
       other_src_md_files = src_files[:src_md_files].to_a.reject{|file| file == index_src_md || sec_files.include?(file)}
       image_files = src_files[:images].to_a
-      style_file = File.join(src_dir, "style.css")
 
       docs_dir = PathManager.get_path(:docs) # Output target for HTML
       template_path = File.join(PathManager.get_path(:data), "template.html")
@@ -101,9 +100,7 @@ module G4T
         pandoc_convert_html(content, target_path, template_path, title, home_link: "index.html")
       end
 
-      # 4. Copy assets (the style file and the images)
-      target_style_path = File.join(docs_dir, "style.css")
-      write_with_directory(target_style_path, File.read(style_file))
+      # 4. Copy assets (the images)
       image_files.each do |image|
         image_rel = Pathname(image).relative_path_from(pn_src_dir)
         target_image_path = File.join(docs_dir, image_rel.to_s)

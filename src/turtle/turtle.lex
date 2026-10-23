@@ -20,7 +20,7 @@ IDENTIFIER [a-zA-Z][a-zA-Z0-9]*
   /* rules */
 #.*               ; /* comment. Be careful. Dot symbol (.) matches any character but new line. */
 [ ]               ncolumn++; /* white space. [ and ] is a "character class". */
-\t                ncolumn += 8; /* assume that tab is 8 spaces. */
+\t                ncolumn += 8; /* assume that a tab is 8 spaces. */
 \n                nline++; ncolumn = 1;
   /* reserved keywords */
 pu                get_location (yytext); return PU; /* pen up */
@@ -43,11 +43,12 @@ rp                get_location (yytext); return RP; /* repeat, since ver 0.5 */
                     list = g_slist_prepend (list, yylval.ID);
                     return ID;
                   }
-"="               get_location (yytext); return '=';
+"=="              get_location (yytext); return EQ; /* equality operator */
+"="               get_location (yytext); return '='; /* assignment operator */
 ">"               get_location (yytext); return '>';
 "<"               get_location (yytext); return '<';
 "+"               get_location (yytext); return '+';
-"-"               get_location (yytext); return '-';
+"-"               get_location (yytext); return '-'; /* subtraction or unary minus */
 "*"               get_location (yytext); return '*';
 "/"               get_location (yytext); return '/';
 "("               get_location (yytext); return '(';
@@ -70,6 +71,7 @@ static YY_BUFFER_STATE state;
 void
 init_flex (const char *text) {
   state = yy_scan_string (text);
+  nline = ncolumn = 1;
 }
 
 void

@@ -157,7 +157,7 @@ Since the C code for extracting the menu from the builder is identical to `menu2
 In the previous examples, we created actions, connected their signals, and added them to an action map one by one.
 While this works, it requires a lot of repetitive boilerplate code.
 To automate and simplify this process, GTK provides the GActionEntry structure and the `g_action_map_add_action_entries` function.
-GActionEntry allows you to define all the properties of an action --- its name, signal handlers, parameter type, and initial state—in a single array element.
+GActionEntry allows you to define all the properties of an action --- its name, signal handlers, parameter type, and initial state --- in a single array element.
 
 @@@if gfm
 ```C

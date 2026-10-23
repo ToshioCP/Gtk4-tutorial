@@ -9,7 +9,7 @@ However, it is insufficient for dynamic connections.
 For example, suppose you want to edit the contents of a list.
 You can set a GtkText widget as the child of a GtkListItem to allow users to edit text.
 You need to update the list item when the text in the GtkText is edited.
-The data flow is in the opposite direction compared to GtkBuilderListItemFactory—it goes from the GtkText widget back to the list item.
+The data flow is in the opposite direction compared to GtkBuilderListItemFactory --- it goes from the GtkText widget back to the list item.
 You can achieve this using GtkSignalListItemFactory, which provides more flexibility.
 
 This section shows just some parts of the source file [listeditor.c](listeditor/listeditor.c).

@@ -79,7 +79,7 @@ The template is created from UI data by GtkBuilder, which is similar to how we'v
 When a composite widget is instantiated, the individual widgets it contains are created within its instance initialization function (for example, `tfe_window_init`).
 This is handled by the `gtk_widget_init_template()` function.
 
-The main advantage of this approach is encapsulation—keeping multiple widgets contained within a single composite widget.
+The main advantage of this approach is encapsulation --- keeping multiple widgets contained within a single composite widget.
 For example, if the application needs to open multiple editor windows, you would normally have to create and manage individual widgets for each window.
 With a composite widget, creating the main widget automatically creates its child widgets.
 By letting the composite widget manage its internal components, external code doesn't need to do anything extra.

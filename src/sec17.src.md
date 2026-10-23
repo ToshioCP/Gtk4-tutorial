@@ -24,7 +24,7 @@ This function just emits the "change-state" signal.
 ### Menus and Shortcuts Always Go Through Activate
 
 Menu items and keyboard shortcuts work by calling `g_action_activate()` internally.
-This means the starting point is always the `"activate"` signal — even for stateful actions.
+This means the starting point is always the `"activate"` signal --- even for stateful actions.
 Menu items do **not** call `g_action_change_state()` directly.
 
 ### Aciivate and Change-state Default Behavior
@@ -49,7 +49,7 @@ If **no handler is connected** to the "activate" signal, `GSimpleAction` will au
 #### change-state's Default Behavior
 
 When "change-state" signal is emitted and no handler is connected, GSimpleAction will automatically call `g_simple_action_set_state()` to apply the requested value.
-This means that for simple use cases where no validation is needed, you don't have to write any handler at all — the state just updates itself.
+This means that for simple use cases where no validation is needed, you don't have to write any handler at all --- the state just updates itself.
 
 ### A Recommended Pattern: Put Your Logic in change-state
 
@@ -79,7 +79,7 @@ You become responsible for handling the state update yourself.
 - **If you connect your own `"change-state"` handler:**
 The default behavior of automatically calling `g_simple_action_set_state()` is also disabled.
 If you want the state to actually change, you must call `g_simple_action_set_state()` explicitly from within your handler.
-If you don't, the state will remain unchanged — which is intentional, as it allows you to validate or reject requests before applying them.
+If you don't, the state will remain unchanged --- which is intentional, as it allows you to validate or reject requests before applying them.
 
 ## Stateful Action without Parameters
 

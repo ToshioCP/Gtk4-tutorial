@@ -1,11 +1,13 @@
- /*
- There are two phases to run the program.
-
-  1. parsing and generate a tree.
-       Node is a joint to connect children's node to itself.
-       There are two types of nodes, non-terminal and terminal.
-       Some terminal nodes have their values. Others, keywords or symbols, don't have any values.
-  2. Execute the program represented by the tree.
+/*
+ * Program execution consists of two phases:
+ *
+ * 1. Parsing and AST Generation
+ *    The input is parsed into a tree structure composed of nodes.
+ *    There are two types of nodes: terminal and non-terminal.
+ *    Some terminal nodes contain values, whereas others (such as keywords or symbols) do not.
+ * 
+ * 2. Execution
+ *    The program is executed by evaluating the generated tree.
  */
 
 %code top{
@@ -154,6 +156,7 @@
 %token RT
 %token RS
 %token RP /* ver 0.5 */
+%token EQ /* equality operator added on 2026/08/10 */
  /* constant */
 %token <double> NUM
  /* identifier */
@@ -238,7 +241,7 @@ primary_procedure_list:
 ;
 
 expression:
-  expression '=' expression { $$ = tree1 (N_EQ, $1, $3, NULL); }
+  expression EQ expression { $$ = tree1 (N_EQ, $1, $3, NULL); }
 | expression '>' expression { $$ = tree1 (N_GT, $1, $3, NULL); }
 | expression '<' expression { $$ = tree1 (N_LT, $1, $3, NULL); }
 | expression '+' expression { $$ = tree1 (N_ADD, $1, $3, NULL); }
@@ -565,13 +568,16 @@ destroy_cairo () {
 /* Eval analyzes an expression node and returns a value of the expression. */
 double
 eval (node_t *node) {
-double value = 0.0;
+  double value = 0.0;
+
   if (node == NULL)
     runtime_error ("No expression to evaluate.\n");
+
 #ifdef debug
 g_printerr ("eval: node type is %s.\n", node_type_table[node->type]);
 #endif
 #define calc(op) eval (child1(node)) op eval (child2(node))
+
   switch (node->type) {
     case N_EQ:
       value = (double) calc (==);
@@ -629,6 +635,7 @@ execute (node_t *node) {
 
   if (node == NULL)
     runtime_error ("Node is NULL.\n");
+
 #ifdef debug
 g_printerr ("execute: node type is %s.\n", node_type_table[node->type]);
 g_printerr ("----- Current status -----\n");
@@ -645,6 +652,7 @@ g_printerr ("    Foreground color is (%f, %f, %f).\n", fc.red, fc.green, fc.blue
 show_symbol_table();
 show_stack();
 #endif
+
   if (proc_level > ret_level)
     return;
   switch (node->type) {
@@ -669,6 +677,7 @@ show_stack();
       cairo_move_to (cr, cur_x, cur_y);
       cur_x += x;
       cur_y += y;
+
 #ifdef debug
 g_printerr ("fd: Distance is %f.\n", d);
 g_printerr ("fd: X-distance is %f.\n", x);
@@ -676,6 +685,7 @@ g_printerr ("fd: Y-distance is %f.\n", y);
 g_printerr ("fd: New X coordinate is %f.\n", cur_x);
 g_printerr ("fd: New Y coordinate is %f.\n", cur_y);
 #endif
+
       cairo_set_line_width (cr, line_width);
       cairo_set_source_rgb (cr, fc.red, fc.green, fc.blue);
       if (pen)
@@ -698,7 +708,9 @@ g_printerr ("fd: New Y coordinate is %f.\n", cur_y);
       bc.red = eval (child1(node));
       bc.green = eval (child2(node));
       bc.blue = eval (child3(node));
+
 #define fixcolor(c)  c = c < 0 ? 0 : (c > 1 ? 1 : c)
+
       fixcolor (bc.red);
       fixcolor (bc.green);
       fixcolor (bc.blue);
@@ -713,9 +725,11 @@ g_printerr ("fd: New Y coordinate is %f.\n", cur_y);
       fixcolor (fc.red);
       fixcolor (fc.green);
       fixcolor (fc.blue);
+
 #ifdef debug
 g_printerr ("fc:  Foreground color is (%f, %f, %f).\n", fc.red, fc.green, fc.blue);
 #endif
+
       break;
     case N_ASSIGN:
       name = name(child1(node));
@@ -750,14 +764,16 @@ g_printerr ("fc:  Foreground color is (%f, %f, %f).\n", fc.red, fc.green, fc.blu
       break;
     case N_procedure_call:
       name = name(child1(node));
-node_t *proc = proc_lookup (name);
+
+      node_t *proc = proc_lookup (name);
       if (! proc)
         runtime_error ("Procedure %s not defined.\n", name);
       if (strcmp (name, name(child1(proc))) != 0)
         runtime_error ("Unexpected error. Procedure %s is called, but invoked procedure is %s.\n", name, name(child1(proc)));
 /* make tuples (parameter (name), argument (value)) and push them to the stack */
-node_t *param_list;
-node_t *arg_list;
+
+      node_t *param_list;
+      node_t *arg_list;
       param_list = child2(proc);
       arg_list = child2(node);
       if (param_list == NULL) {
@@ -766,8 +782,10 @@ node_t *arg_list;
         } else
           runtime_error ("Procedure %s has different number of argument and parameter.\n", name);
       }else {
+
 /* Don't change the stack until finish evaluating the arguments. */
 #define TEMP_STACK_SIZE 20
+
         char *temp_param[TEMP_STACK_SIZE];
         double temp_arg[TEMP_STACK_SIZE];
         n = 0;
