@@ -2,11 +2,10 @@
 
 ## What is Drag and Drop?
 
-Drag and drop is also written as "Drag-and-Drop", or "DND" in short.
-DND is like "copy and paste" or "cut and paste".
-If a user drags a UI element, which is a widget, selected part or other elements, data is transferred from the source to the destination.
+Drag and drop (often hyphenated as "drag-and-drop", or shortened to "DnD") works much like copying and pasting.
+When a user drags a UI element --- such as a widget or a selected piece of content --- and drops it onto another area, underlying data is transferred from the source to the target.
 
-You probably have experience moving a file with DND.
+You are probably already familiar with this action from everyday tasks like dragging files between folders.
 
 @@@if pdf
 ![DND on the GUI file manager](/images/dnd.png){width=4.6cm height=3cm}
@@ -14,17 +13,16 @@ You probably have experience moving a file with DND.
 ![DND on the GUI file manager](/images/dnd.png)
 @@@end
 
-When the DND starts, the file `sample_file.txt` is provided to the system.
-When it ends,  the system provides it to the `sample_folder` in the file manager.
-Therefore, it is like "cut and paste".
-The actual behavior may be different from the explanation here, but the concept is similar.
+When a drag operation begins, the file `sample_file.txt` is handed over to the system.
+When the operation ends with a drop, the system transfers the file to `sample_folder` in the file manager.
+In this scenario, it acts much like a "cut and paste" action.
+While the actual technical implementation differs, the underlying concept is similar.
 
-## Example for DND
+## DND Example
 
 This tutorial provides a simple example in the `src/dnd` directory.
-It has three labels for the source and one label for the destination.
-The source labels have "red", "green" or "blue" labels.
-If a user drags the label to the destination label, the font color will be changed.
+The UI consists of three colored source labels ("red", "green", and "blue") at the top and a large target label below them.
+When you drag one of the colored labels and drop it onto the target, the target's text color changes accordingly.
 
 @@@if pdf
 ![DND example](/images/dnd_canvas.png){width=13.5cm height=5.2cm}
@@ -34,24 +32,23 @@ If a user drags the label to the destination label, the font color will be chang
 
 ## UI File
 
-The widgets are defined in the XML file `dnd.ui`.
+The application's widgets are defined in a `dnd.ui` XML file.
 
 @@@include
 dnd/dnd.ui
 @@@
 
-It is converted to a resource file by `glib-compile-resources`.
-The compiler uses an XML file `dnd.gresource.xml`.
+This UI file is compiled into a resource file using the `glib-compile-resources` utility.
+To do this, the compiler requires a resource description file, `dnd.gresource.xml`.
 
 @@@include
 dnd/dnd.gresource.xml
 @@@
 
-## C File dnd.c
+## The `dnd.c` Source File
 
-The C file `dnd.c` isn't a big file.
-The number of the lines is less than a hundred.
-A GtkApplication object is created in the function `main`.
+The `dnd.c` source file is relatively short, containing fewer than a hundred lines of code.
+Inside this file, the `main` function creates a GtkApplication object.
 
 @@@include
 dnd/dnd.c main
@@ -61,29 +58,27 @@ The application ID is defined as:
 
 @@@if gfm
 ```C
-#define APPLICATION_ID "com.github.ToshioCP.dnd"
-```
 @@@else
 ```{.C}
+@@@end
 #define APPLICATION_ID "com.github.ToshioCP.dnd"
 ```
-@@@end
 
 ### Startup Signal Handler
 
-Most of the work is done in the "startup" signal handler.
+Most of the work in this application is done inside the `startup` signal handler.
 
-Two objects GtkDragSource and GtkDropTarget are used for DND implementation.
+To implement drag-and-drop, we use two main objects: `GtkDragSource` and `GtkDropTarget`.
 
-- Drag source: A drag source (GtkDragSource instance) is an event controller.
-It initiates a DND operation when the user clicks and drags the widget.
-If data, in the form of GdkContentProvider, is set in advance, it gives the data to the system at the beginning of the drag.
-- Drop target: A drop target (GtkDropTarget) is also an event controller.
-You can get the data in the GtkDropTarget::drop signal handler.
+- Drag source: GtkDragSource is an event controller.
+It initiates a DnD operation when the user clicks and drags a widget.
+If you prepare data in advance using a GdkContentProvider, the drag source hands this data over to the system as soon as the drag begins.
+- Drop target: GtkDropTarget is also an event controller.
+When the dragged data is dropped onto the target widget, you can retrieve that data inside its drop signal handler (`GtkDrpTarget::drop`).
 
-The example below uses these objects in a very simple way.
-You can use a number of features that the two objects have.
-See the following links for more information.
+The example below demonstrates a very simple way to use these objects.
+
+For more information, refer to the official documentation:
 
 - [Drag-and-Drop in GTK](https://docs.gtk.org/gtk4/drag-and-drop.html)
 - [GtkDragSource](https://docs.gtk.org/gtk4/class.DragSource.html)
@@ -93,45 +88,37 @@ See the following links for more information.
 dnd/dnd.c app_startup
 @@@
 
-- 15-22: Builds the widgets.
-The array `src_labels[]` points to the source labels red, green and blue in the UI file.
-The variable `canvas` points to the destination label.
-- 24-30: Sets the DND source widgets.
-The for-loop iterates through the array `src_labels[]` each of which points to the source widget,  red, green or blue label.
+- 15–22: Builds the widgets from the UI file.
+The `src_labels[]` array holds references to the red, green, and blue source labels, while the `canvas` variable points to the destination label.
+- 24–30: Configures the drag source widgets.
+The `for` loop iterates through each of the three colored source labels.
 - 25: Creates a new GtkDragSource instance.
-- 26: Creates a new GdkContentProvider instance with the string "red", "green" or "blue".
-They are the name of the widgets.
-These strings are the data to transfer through the DND operation.
-- 27: Sets the content of the drag source to the GdkContentProvider instance above.
-- 28: Content is useless so it is destroyed.
-- 29: Add the event controller, which is actually the drag source, to the widget.
-If a DND operation starts on the widget, the corresponding drag source works and the data is given to the system.
-- 32-34: Sets the DND drop target.
-- 32: Creates a new GtkDropTarget instance.
-The first parameter is the GType of the data.
-The second parameter is a GdkDragAction enumeration constant.
-The arguments here are string type and the constant for copy.
-- 33: Connects the "drop" signal and the handler `drop_cb`.
-- 34: Add the event controller, which is actually the drop target, to the widget.
-- 36-43: Sets CSS.
-- 37: A variable `format` is static and defined at the top of the program.
-Static variables are shown below.
+- 26: Creates a GdkContentProvider containing the widget's name ("red", "green", or "blue").
+This string is the payload transferred during the drag operation.
+- 27: Assigns the content provider to the drag source.
+- 28: Releases the local reference to the content provider using `g_object_unref()`.
+The drag source now holds its own reference, so the local one is no longer needed.
+- 29: Adds the drag source (which is an event controller) to the widget.
+When a user drags this widget, the drag source activates and provides the data to the system.
+- 32–34: Configures the drop target.
+- 32: Creates a new GtkDropTarget.
+The parameters specify that it accepts string data (`G_TYPE_STRING`) and allows copy operations (`GDK_ACTION_COPY`).
+`GDK_ACTION_COPY` is a GdkDragAction enumeration constant.
+- 33: Connects the drop signal to the `drop_cb` callback function.
+- 34: Adds the drop target event controller to the `canvas` widget.
+- 36–43: Applies CSS styling to the application.
+- 37: Formats the CSS string using a static variable named `format`, which is defined at the top of the program (shown below).
 
 @@@if gfm
 ```C
-static GtkCssProvider *provider = NULL;
-static const char *format = "label {padding: 20px;} label#red {background: red;} "
-  "label#green {background: green;} label#blue {background: blue;} "
-  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
-```
 @@@else
 ```{.C}
+@@@end
 static GtkCssProvider *provider = NULL;
 static const char *format = "label {padding: 20px;} label#red {background: red;} "
   "label#green {background: green;} label#blue {background: blue;} "
   "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
 ```
-@@@end
 
 ### Activate Signal Handler
 
@@ -147,26 +134,27 @@ This handler just shows the window.
 dnd/dnd.c drop_cb
 @@@
 
-The "drop" signal handler has five parameters.
+The "drop" signal handler takes five parameters:
 
-- GtkDropTarget instance on which the signal has been emitted.
-- GValue that holds the data from the source.
-- The arguments `x` and `y` are the coordinate of the mouse when released.
-- User data was set when the signal and the handler were connected.
+- `self`: The GtkDropTarget instance that emitted the signal.
+- `value`: A GValue containing the data transferred from the drag source.
+- `x` and `y`: The coordinates of the mouse pointer when the drop occurred.
+- `user_data`: The user data pointer provided when the signal was connected.
+In `dnd.c` the `user_data` pointer was set to `NULL`.
 
-The string from the GValue is "red", "green" or "blue".
-It replaces "%s" in the variable `format`.
-That means the font color of the label `canvas` will be updated to the color.
+The `value` parameter holds the payload string ("red", "green", or "blue").
+This string replaces the `%s` placeholder in the format variable to generate a new CSS string.
+As a result, the text color of the `canvas` label is updated to match the dropped color.
 
-## Meson.build
+## Building with Meson
 
-The file `meson.build` controls the building process.
+The `meson.build` file controls the build process.
 
 @@@include
 dnd/meson.build
 @@@
 
-You can build it from the command line.
+You can build and run the `dnd` application from the command line using the following commands:
 
 ```
 $ cd src/dnd
@@ -175,5 +163,5 @@ $ ninja -C _build
 $ _build/dnd
 ```
 
-The source files are under the directory `src/dnd` of the [repository](https://github.com/ToshioCP/Gtk4-tutorial).
-Download it and see the directory.
+The complete source files are located in the [`src/dnd`](/dnd/) directory of the tutorial repository.
+Feel free to download it and explore the code yourself.

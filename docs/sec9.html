@@ -91,9 +91,8 @@
   }
 </style>
 <style>
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -318,87 +317,87 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>Look at the UI file <code>tfe3.ui</code> that defines the
         widget structure.</p>
         <div class="sourceCode" id="cb2"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span> <span class="ot">id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
-<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;title&quot;</span>&gt;file editor&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-5"><a href="#cb2-5"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-6"><a href="#cb2-6"></a>    &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkApplicationWindow&quot;</span><span class="ot"> id=</span><span class="st">&quot;win&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span>&gt;file editor&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-width&quot;</span>&gt;600&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;default-height&quot;</span>&gt;400&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-7"><a href="#cb2-7"></a>    &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-8"><a href="#cb2-8"></a>      &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb2-9"><a href="#cb2-9"></a>        &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8"></a>      &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9"></a>        &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_VERTICAL&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-10"><a href="#cb2-10"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-11"><a href="#cb2-11"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
-<span id="cb2-12"><a href="#cb2-12"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkBox&quot;</span>&gt;</span>
+<span id="cb2-12"><a href="#cb2-12"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;orientation&quot;</span>&gt;GTK_ORIENTATION_HORIZONTAL&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-13"><a href="#cb2-13"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-14"><a href="#cb2-14"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb2-15"><a href="#cb2-15"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-14"><a href="#cb2-14"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb2-15"><a href="#cb2-15"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-16"><a href="#cb2-16"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-17"><a href="#cb2-17"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-18"><a href="#cb2-18"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-19"><a href="#cb2-19"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
-<span id="cb2-20"><a href="#cb2-20"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-19"><a href="#cb2-19"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb2-20"><a href="#cb2-20"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-21"><a href="#cb2-21"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-22"><a href="#cb2-22"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-23"><a href="#cb2-23"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-24"><a href="#cb2-24"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
-<span id="cb2-25"><a href="#cb2-25"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-24"><a href="#cb2-24"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb2-25"><a href="#cb2-25"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-26"><a href="#cb2-26"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-27"><a href="#cb2-27"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-28"><a href="#cb2-28"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-29"><a href="#cb2-29"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb2-30"><a href="#cb2-30"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-29"><a href="#cb2-29"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb2-30"><a href="#cb2-30"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-31"><a href="#cb2-31"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-32"><a href="#cb2-32"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-33"><a href="#cb2-33"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-34"><a href="#cb2-34"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
-<span id="cb2-35"><a href="#cb2-35"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-34"><a href="#cb2-34"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb2-35"><a href="#cb2-35"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-36"><a href="#cb2-36"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-37"><a href="#cb2-37"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-38"><a href="#cb2-38"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-39"><a href="#cb2-39"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
-<span id="cb2-40"><a href="#cb2-40"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-39"><a href="#cb2-39"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkButton&quot;</span>&gt;</span>
+<span id="cb2-40"><a href="#cb2-40"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-41"><a href="#cb2-41"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-42"><a href="#cb2-42"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-43"><a href="#cb2-43"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-44"><a href="#cb2-44"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb2-45"><a href="#cb2-45"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-44"><a href="#cb2-44"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb2-45"><a href="#cb2-45"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;width-chars&quot;</span>&gt;10&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-46"><a href="#cb2-46"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-47"><a href="#cb2-47"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-48"><a href="#cb2-48"></a>          &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-49"><a href="#cb2-49"></a>        &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-50"><a href="#cb2-50"></a>        &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-51"><a href="#cb2-51"></a>          &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkNotebook&quot;</span> <span class="ot">id=</span><span class="st">&quot;nb&quot;</span>&gt;</span>
-<span id="cb2-52"><a href="#cb2-52"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-53"><a href="#cb2-53"></a>            &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-51"><a href="#cb2-51"></a>          &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkNotebook&quot;</span><span class="ot"> id=</span><span class="st">&quot;nb&quot;</span>&gt;</span>
+<span id="cb2-52"><a href="#cb2-52"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-53"><a href="#cb2-53"></a>            &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vexpand&quot;</span>&gt;TRUE&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-54"><a href="#cb2-54"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-55"><a href="#cb2-55"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
-<span id="cb2-56"><a href="#cb2-56"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-57"><a href="#cb2-57"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;vscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-55"><a href="#cb2-55"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
+<span id="cb2-56"><a href="#cb2-56"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-57"><a href="#cb2-57"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-58"><a href="#cb2-58"></a>                &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-59"><a href="#cb2-59"></a>                  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkTextView&quot;</span>&gt;</span>
+<span id="cb2-59"><a href="#cb2-59"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkTextView&quot;</span>&gt;</span>
 <span id="cb2-60"><a href="#cb2-60"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-61"><a href="#cb2-61"></a>                &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-62"><a href="#cb2-62"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-63"><a href="#cb2-63"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb2-64"><a href="#cb2-64"></a>            &lt;<span class="kw">child</span> <span class="ot">type=</span><span class="st">&quot;tab&quot;</span>&gt;</span>
-<span id="cb2-65"><a href="#cb2-65"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb2-66"><a href="#cb2-66"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;file-1&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-64"><a href="#cb2-64"></a>            &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;tab&quot;</span>&gt;</span>
+<span id="cb2-65"><a href="#cb2-65"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb2-66"><a href="#cb2-66"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;file-1&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-67"><a href="#cb2-67"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-68"><a href="#cb2-68"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-69"><a href="#cb2-69"></a>            &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-70"><a href="#cb2-70"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
-<span id="cb2-71"><a href="#cb2-71"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;hscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
-<span id="cb2-72"><a href="#cb2-72"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;vscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-70"><a href="#cb2-70"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkScrolledWindow&quot;</span>&gt;</span>
+<span id="cb2-71"><a href="#cb2-71"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;hscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-72"><a href="#cb2-72"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;vscrollbar-policy&quot;</span>&gt;automatic&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-73"><a href="#cb2-73"></a>                &lt;<span class="kw">child</span>&gt;</span>
-<span id="cb2-74"><a href="#cb2-74"></a>                  &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkTextView&quot;</span>&gt;</span>
+<span id="cb2-74"><a href="#cb2-74"></a>                  &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkTextView&quot;</span>&gt;</span>
 <span id="cb2-75"><a href="#cb2-75"></a>                  &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-76"><a href="#cb2-76"></a>                &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-77"><a href="#cb2-77"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-78"><a href="#cb2-78"></a>            &lt;/<span class="kw">child</span>&gt;</span>
-<span id="cb2-79"><a href="#cb2-79"></a>            &lt;<span class="kw">child</span> <span class="ot">type=</span><span class="st">&quot;tab&quot;</span>&gt;</span>
-<span id="cb2-80"><a href="#cb2-80"></a>              &lt;<span class="kw">object</span> <span class="ot">class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
-<span id="cb2-81"><a href="#cb2-81"></a>                &lt;<span class="kw">property</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;file-2&lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb2-79"><a href="#cb2-79"></a>            &lt;<span class="kw">child</span><span class="ot"> type=</span><span class="st">&quot;tab&quot;</span>&gt;</span>
+<span id="cb2-80"><a href="#cb2-80"></a>              &lt;<span class="kw">object</span><span class="ot"> class=</span><span class="st">&quot;GtkLabel&quot;</span>&gt;</span>
+<span id="cb2-81"><a href="#cb2-81"></a>                &lt;<span class="kw">property</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;file-2&lt;/<span class="kw">property</span>&gt;</span>
 <span id="cb2-82"><a href="#cb2-82"></a>              &lt;/<span class="kw">object</span>&gt;</span>
 <span id="cb2-83"><a href="#cb2-83"></a>            &lt;/<span class="kw">child</span>&gt;</span>
 <span id="cb2-84"><a href="#cb2-84"></a>          &lt;/<span class="kw">object</span>&gt;</span>
@@ -616,9 +615,9 @@ $</code></pre>
         <code>glib-compile-resources</code>. It describes resource
         files.</p>
         <div class="sourceCode" id="cb7"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>&lt;<span class="kw">gresources</span>&gt;</span>
-<span id="cb7-3"><a href="#cb7-3"></a>  &lt;<span class="kw">gresource</span> <span class="ot">prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe3&quot;</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  &lt;<span class="kw">gresource</span><span class="ot"> prefix=</span><span class="st">&quot;/com/github/ToshioCP/tfe3&quot;</span>&gt;</span>
 <span id="cb7-4"><a href="#cb7-4"></a>    &lt;<span class="kw">file</span>&gt;tfe3.ui&lt;/<span class="kw">file</span>&gt;</span>
 <span id="cb7-5"><a href="#cb7-5"></a>  &lt;/<span class="kw">gresource</span>&gt;</span>
 <span id="cb7-6"><a href="#cb7-6"></a>&lt;/<span class="kw">gresources</span>&gt;</span></code></pre></div>
@@ -650,31 +649,31 @@ $</code></pre>
         GResource compiler <code>glib-compile-resources</code> shows its
         usage with the argument <code>--help</code>.</p>
         <pre><code>$ glib-compile-resources --help
-用法:
-  glib-compile-resources [オプション…] ファイル
+Usage:
+  glib-compile-resources [OPTION…] FILE
 
-リソース仕様をコンパイルして、リソースファイルを生成します。
-リソース仕様ファイルの拡張子は .gresource.xml、
-リソースファイルの拡張子は .gresource です。
+Compile a resource specification into a resource file.
+Resource specification files have the extension .gresource.xml,
+and the resource file have the extension called .gresource.
 
-ヘルプのオプション:
-  -h, --help                     ヘルプのオプションを表示する
+Help Options:
+  -h, --help                   Show help options
 
-アプリケーションのオプション:
-  --version                      プログラムのバージョンを表示して終了する
-  --target=ファイル              出力ファイル名
-  --sourcedir=DIRECTORY          対象のファイル (FILE) を読み込むディレクトリ (デフォルト: 現在のディレクトリ)
-  --generate                     ターゲットファイル名拡張子で選択された形式で出力生成
-  --generate-header              ソースヘッダーを生成する
-  --generate-source              リソースファイルをコードにリンクするためのソースコードを生成する
-  --generate-dependencies        依存関係リストを生成する
-  --dependency-file=ファイル     生成する依存関係ファイルの名前
-  --generate-phony-targets       生成される依存関係ファイルに PHONY ターゲットを含める
-  --manual-register              リソースを自動的に作成および登録しない
-  --internal                     関数をエクスポートしない (G_GNUC_INTERNAL を使用してください)
-  --external-data                リソースデータを C ファイルに埋め込まない (代わりに外部からリンクされると仮定する)
-  --c-name=IDENTIFIER            生成されるソースコードで使用される C 識別子名
-  -C, --compiler=コマンド        ターゲット C コンパイラ (既定: CC 環境変数)
+Application Options:
+  --version                    Show program version and exit
+  --target=FILE                Name of the output file
+  --sourcedir=DIRECTORY        The directories to load files referenced in FILE from (default: current directory)
+  --generate                   Generate output in the format selected for by the target filename extension
+  --generate-header            Generate source header
+  --generate-source            Generate source code used to link in the resource file into your code
+  --generate-dependencies      Generate dependency list
+  --dependency-file=FILE       Name of the dependency file to generate
+  --generate-phony-targets     Include phony targets in the generated dependency file
+  --manual-register            Don’t automatically create and register resource
+  --internal                   Don’t export functions; declare them G_GNUC_INTERNAL
+  --external-data              Don’t embed resource data in the C file; assume it&#39;s linked externally instead
+  --c-name=IDENTIFIER          C identifier name used for the generated source code
+  -C, --compiler=COMMAND       The target C compiler (default: the CC environment variable)
 
 $</code></pre>
         <p>Usually, the resources are converted to a C source file. Two

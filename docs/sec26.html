@@ -91,9 +91,8 @@
   }
 </style>
 <style>
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -240,10 +239,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </ul>
         <p>Schemas are written in XML format. For example:</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">schema</span> <span class="ot">path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span> <span class="ot">id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">key</span> <span class="ot">name=</span><span class="st">&quot;font-desc&quot;</span> <span class="ot">type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font-desc&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
 <span id="cb1-5"><a href="#cb1-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Sans Regular 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
 <span id="cb1-6"><a href="#cb1-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
 <span id="cb1-7"><a href="#cb1-7"></a>      &lt;<span class="kw">description</span>&gt;A font for textview.&lt;/<span class="kw">description</span>&gt;</span>
@@ -379,10 +378,10 @@ org.gnome.calculator button-mode &#39;advanced&#39;
         following is the XML schema file for the <code>tfe</code>
         application:</p>
         <div class="sourceCode" id="cb7"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a>&lt;<span class="kw">schemalist</span>&gt;</span>
-<span id="cb7-3"><a href="#cb7-3"></a>  &lt;<span class="kw">schema</span> <span class="ot">path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span> <span class="ot">id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
-<span id="cb7-4"><a href="#cb7-4"></a>    &lt;<span class="kw">key</span> <span class="ot">name=</span><span class="st">&quot;font-desc&quot;</span> <span class="ot">type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  &lt;<span class="kw">schema</span><span class="ot"> path=</span><span class="st">&quot;/com/github/ToshioCP/tfe/&quot;</span><span class="ot"> id=</span><span class="st">&quot;com.github.ToshioCP.tfe&quot;</span>&gt;</span>
+<span id="cb7-4"><a href="#cb7-4"></a>    &lt;<span class="kw">key</span><span class="ot"> name=</span><span class="st">&quot;font-desc&quot;</span><span class="ot"> type=</span><span class="st">&quot;s&quot;</span>&gt;</span>
 <span id="cb7-5"><a href="#cb7-5"></a>      &lt;<span class="kw">default</span>&gt;&#39;Sans Regular 12&#39;&lt;/<span class="kw">default</span>&gt;</span>
 <span id="cb7-6"><a href="#cb7-6"></a>      &lt;<span class="kw">summary</span>&gt;Font&lt;/<span class="kw">summary</span>&gt;</span>
 <span id="cb7-7"><a href="#cb7-7"></a>      &lt;<span class="kw">description</span>&gt;A font for textview.&lt;/<span class="kw">description</span>&gt;</span>

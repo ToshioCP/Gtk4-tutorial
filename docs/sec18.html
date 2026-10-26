@@ -91,9 +91,8 @@
   }
 </style>
 <style>
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -223,39 +222,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>Here is the UI file <code>menu2.ui</code> that mirrors the
         menu structure we built purely in C in the previous section.</p>
         <div class="sourceCode" id="cb1"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">menu</span> <span class="ot">id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5"></a>      &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Menu&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Menu&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-6"><a href="#cb1-6"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb1-7"><a href="#cb1-7"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Toggle Switch&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.toggle-switch&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Toggle Switch&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.toggle-switch&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-10"><a href="#cb1-10"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb1-11"><a href="#cb1-11"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb1-12"><a href="#cb1-12"></a>      &lt;<span class="kw">section</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13"></a>        &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Color&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-14"><a href="#cb1-14"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Red&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-16"><a href="#cb1-16"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;target&quot;</span>&gt;red&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Red&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-17"><a href="#cb1-17"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;red&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-18"><a href="#cb1-18"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb1-19"><a href="#cb1-19"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-20"><a href="#cb1-20"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Green&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-21"><a href="#cb1-21"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-22"><a href="#cb1-22"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;target&quot;</span>&gt;green&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-20"><a href="#cb1-20"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Green&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-22"><a href="#cb1-22"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;green&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-23"><a href="#cb1-23"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb1-24"><a href="#cb1-24"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-25"><a href="#cb1-25"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Blue&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-26"><a href="#cb1-26"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-27"><a href="#cb1-27"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;target&quot;</span>&gt;blue&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-25"><a href="#cb1-25"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Blue&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-26"><a href="#cb1-26"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.color&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-27"><a href="#cb1-27"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;target&quot;</span>&gt;blue&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-28"><a href="#cb1-28"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb1-29"><a href="#cb1-29"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb1-30"><a href="#cb1-30"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb1-31"><a href="#cb1-31"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb1-32"><a href="#cb1-32"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb1-33"><a href="#cb1-33"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-32"><a href="#cb1-32"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb1-33"><a href="#cb1-33"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb1-34"><a href="#cb1-34"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb1-35"><a href="#cb1-35"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb1-36"><a href="#cb1-36"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
@@ -332,22 +331,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <div class="sourceCode" id="cb3"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">section</span>&gt;</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">section</span>&gt;</span></code></pre></div>
         <p><strong>Example 2:</strong> The actual internal structure
         using <code>&lt;link&gt;</code></p>
         <div class="sourceCode" id="cb4"><pre
         class="sourceCode xml"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">item</span>&gt;</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">link</span> <span class="ot">name=</span><span class="st">&quot;section&quot;</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">link</span><span class="ot"> name=</span><span class="st">&quot;section&quot;</span>&gt;</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">link</span>&gt;</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">item</span>&gt;</span></code></pre></div>
@@ -367,73 +366,73 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <p>The <code>menu3.ui</code> file implements this familiar
         structure.</p>
         <div class="sourceCode" id="cb5"><pre
-        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+        class="sourceCode numberSource xml numberLines"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>&lt;<span class="kw">interface</span>&gt;</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">menu</span> <span class="ot">id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  &lt;<span class="kw">menu</span><span class="ot"> id=</span><span class="st">&quot;menubar&quot;</span>&gt;</span>
 <span id="cb5-4"><a href="#cb5-4"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
-<span id="cb5-5"><a href="#cb5-5"></a>      &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;File&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-6"><a href="#cb5-6"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-7"><a href="#cb5-7"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-8"><a href="#cb5-8"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-9"><a href="#cb5-9"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.new&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-8"><a href="#cb5-8"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;New&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-9"><a href="#cb5-9"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.new&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-10"><a href="#cb5-10"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-11"><a href="#cb5-11"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-12"><a href="#cb5-12"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-13"><a href="#cb5-13"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.open&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-12"><a href="#cb5-12"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Open&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-13"><a href="#cb5-13"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.open&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-14"><a href="#cb5-14"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-15"><a href="#cb5-15"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-16"><a href="#cb5-16"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-17"><a href="#cb5-17"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-18"><a href="#cb5-18"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-19"><a href="#cb5-19"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.save&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-18"><a href="#cb5-18"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-19"><a href="#cb5-19"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.save&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-20"><a href="#cb5-20"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-21"><a href="#cb5-21"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-22"><a href="#cb5-22"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Save As…&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-23"><a href="#cb5-23"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.saveas&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-22"><a href="#cb5-22"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Save As…&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-23"><a href="#cb5-23"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.saveas&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-24"><a href="#cb5-24"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-25"><a href="#cb5-25"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-26"><a href="#cb5-26"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-27"><a href="#cb5-27"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-28"><a href="#cb5-28"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-29"><a href="#cb5-29"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.close&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-28"><a href="#cb5-28"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Close&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-29"><a href="#cb5-29"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.close&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-30"><a href="#cb5-30"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-31"><a href="#cb5-31"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-32"><a href="#cb5-32"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-33"><a href="#cb5-33"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-34"><a href="#cb5-34"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-35"><a href="#cb5-35"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-34"><a href="#cb5-34"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Quit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-35"><a href="#cb5-35"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;app.quit&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-36"><a href="#cb5-36"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-37"><a href="#cb5-37"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-38"><a href="#cb5-38"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
 <span id="cb5-39"><a href="#cb5-39"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
-<span id="cb5-40"><a href="#cb5-40"></a>      &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Edit&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-40"><a href="#cb5-40"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Edit&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-41"><a href="#cb5-41"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-42"><a href="#cb5-42"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-43"><a href="#cb5-43"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Cut&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-44"><a href="#cb5-44"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.cut&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-43"><a href="#cb5-43"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Cut&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-44"><a href="#cb5-44"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.cut&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-45"><a href="#cb5-45"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-46"><a href="#cb5-46"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-47"><a href="#cb5-47"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-48"><a href="#cb5-48"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-47"><a href="#cb5-47"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Copy&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-48"><a href="#cb5-48"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.copy&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-49"><a href="#cb5-49"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-50"><a href="#cb5-50"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-51"><a href="#cb5-51"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-52"><a href="#cb5-52"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-51"><a href="#cb5-51"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Paste&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-52"><a href="#cb5-52"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.paste&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-53"><a href="#cb5-53"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-54"><a href="#cb5-54"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-55"><a href="#cb5-55"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-56"><a href="#cb5-56"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-57"><a href="#cb5-57"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Select All&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-58"><a href="#cb5-58"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.selectall&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-57"><a href="#cb5-57"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Select All&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-58"><a href="#cb5-58"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.selectall&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-59"><a href="#cb5-59"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-60"><a href="#cb5-60"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-61"><a href="#cb5-61"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
 <span id="cb5-62"><a href="#cb5-62"></a>    &lt;<span class="kw">submenu</span>&gt;</span>
-<span id="cb5-63"><a href="#cb5-63"></a>      &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;View&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-63"><a href="#cb5-63"></a>      &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;View&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-64"><a href="#cb5-64"></a>      &lt;<span class="kw">section</span>&gt;</span>
 <span id="cb5-65"><a href="#cb5-65"></a>        &lt;<span class="kw">item</span>&gt;</span>
-<span id="cb5-66"><a href="#cb5-66"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;label&quot;</span>&gt;Fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
-<span id="cb5-67"><a href="#cb5-67"></a>          &lt;<span class="kw">attribute</span> <span class="ot">name=</span><span class="st">&quot;action&quot;</span>&gt;win.fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-66"><a href="#cb5-66"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;label&quot;</span>&gt;Fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
+<span id="cb5-67"><a href="#cb5-67"></a>          &lt;<span class="kw">attribute</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span>&gt;win.fullscreen&lt;/<span class="kw">attribute</span>&gt;</span>
 <span id="cb5-68"><a href="#cb5-68"></a>        &lt;/<span class="kw">item</span>&gt;</span>
 <span id="cb5-69"><a href="#cb5-69"></a>      &lt;/<span class="kw">section</span>&gt;</span>
 <span id="cb5-70"><a href="#cb5-70"></a>    &lt;/<span class="kw">submenu</span>&gt;</span>
