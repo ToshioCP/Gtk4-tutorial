@@ -3,7 +3,7 @@
 static GtkCssProvider *provider = NULL;
 static const char *format = "label {padding: 20px;} label#red {background: red;} "
   "label#green {background: green;} label#blue {background: blue;} "
-  "label#canvas {color: %s; font-weight: bold; font-size: 72pt;}";
+  "label#canvas {color: %s; background: #f2f2f2; font-weight: bold; font-size: 72pt;}";
 
 static gboolean
 drop_cb (GtkDropTarget *self, const GValue *value, gdouble x, gdouble y, gpointer user_data) {
