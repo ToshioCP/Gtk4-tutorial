@@ -2,141 +2,154 @@ Up: [README.md](../README.md),  Prev: [Section 31](sec31.md), Next: [Section 33]
 
 # GtkListView
 
-GTK 4 has added new list objects GtkListView, GtkGridView and GtkColumnView.
-The new feature is described in [Gtk API Reference -- List Widget Overview](https://docs.gtk.org/gtk4/section-list-widget.html).
+GTK 4 introduces a modern set of list widgets:
 
-GTK 4 has other means to implement lists.
-They are GtkListBox and GtkTreeView which are took over from GTK 3.
-There's an article in [Gtk Development blog](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/) about list widgets by Matthias Clasen.
-He described why GtkListView are developed to replace GtkTreeView.
-GtkTreeView is deprecated since version 4.10.
+- GtkListView
+- GtkGridView
+- GtkColumnView
 
-GtkListView, GtkGridView, GtkColumnView and related objects are described in Section 29 to 33.
+For an official introduction, see the [GTK API Reference — List Widget Overview](https://docs.gtk.org/gtk4/section-list-widget.html).
+
+Prior to these widgets, lists and tables were typically built using GtkTreeView, carried over from GTK 3.
+In [a GTK Development Blog article](https://blog.gtk.org/2020/06/07/scalable-lists-in-gtk-4/),
+Matthias Clasen discusses why GtkListView was developed as a modern replacement for GtkTreeView, which has been deprecated since version 4.10.
+
+Sections 32 through 36 cover GtkListView, GtkGridView, GtkColumnView, and their associated objects.
 
 ## Outline
 
 A list is a sequential data structure.
-For example, an ordered string sequence "one", "two", "three", and "four" is a list.
+For example, the ordered sequence of strings "one", "two", "three", and "four" forms a list.
 Each element is called an item.
-A list is like an array, but in many cases it is implemented with pointers which point to the next items of the list.
-And it has a start point.
-So, each item can be referred to by the index of the item (first item, second item, ..., nth item, ...).
+Like an array, a list is an ordered collection where each item can be accessed by its index (0th, 1st, ..., n-th).
 
-Gio provides GListModel interface.
-It is a zero-based list and its items are the same type of GObject descendants, or objects that implement the same interface.
-An object that implements GListModel is not a widget.
-So, the list is not displayed on the screen directly.
-There's another object GtkListView which is a widget to display the list.
-The items in the list need to be connected to the items in GtkListView.
-GtkListItemFactory instance maps items in the list to GtkListView.
+GIO provides the GListModel interface.
+It represents a zero-based list whose items all share the same GObject base type or implement the same interface.
+Because an object implementing GListModel is strictly a data model rather than a widget, it cannot be rendered on the screen on its own.
+To display the data, GTK 4 provides the GtkListView widget.
+The data items in the model must be connected to GtkListItem objects inside GtkListView.
+A GtkListItemFactory creates and connects a GtkListItem for each data item in the list.
 
 ![List](/src/images/list.png)
 
 ## GListModel and GtkStringList
 
-If you want to make a list of strings with GListModel, for example, "one", "two", "three", "four", note that strings can't be items of the list.
-Because GListModel is a list of GObject objects and strings aren't GObject objects.
-The word "GObject" here means GObject class or its derived class.
-So, you need a wrapper which is a GObject and contains a string.
-GtkStringObject is the wrapper object and GtkStringList, which implements GListModel, is a list of GtkStringObject.
+If you want to create a list of strings such as "one", "two", "three", and "four", keep in mind that you cannot put plain strings directly into a GListModel.
+This is because GListModel only holds GObject instances (either the base GObject class or any class derived from it), and plain C strings are not GObjects.
+GtkStringList solves this problem.
+It implements GListModel and holds GtkStringObject instances to wrap each string
+GtkStringObject is derived from GObject.
 
-~~~C
+```C
 char *array[] = {"one", "two", "three", "four", NULL};
 GtkStringList *stringlist = gtk_string_list_new ((const char * const *) array);
-~~~
+```
 
-The function `gtk_string_list_new` creates a GtkStringList object.
-Its items are GtkStringObject objects which contain the strings "one", "two", "three" and "four".
-There are functions to add items to the list or remove items from the list.
+In this snippet, the function `gtk_string_list_new()` creates a GtkStringList containing four GtkStringObject instances that wrap "one", "two", "three", and "four".
+You can modify and read the list using functions such as:
 
-- `gtk_string_list_append` appends an item to the list
-- `gtk_string_list_remove` removes an item from the list
-- `gtk_string_list_get_string` gets a string in the list
+- `gtk_string_list_append()`: Appends a string to the end of the list.
+- `gtk_string_list_remove()`: Removes an item at a given position.
+- `gtk_string_list_get_string()`: Retrieves the string at a given position.
 
-See [GTK 4 API Reference -- GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html) for further information.
+For more details, see the [GTK 4 API Reference -- GtkStringList](https://docs.gtk.org/gtk4/class.StringList.html).
 
-Other list objects will be explained later.
+We will cover other list models later in this tutorial.
 
 ## GtkSelectionModel
 
-GtkSelectionModel is an interface to support for selection.
-Thanks to this model, a user can select items by clicking on them.
-It is implemented by GtkMultiSelection, GtkNoSelection and GtkSingleSelection objects.
-These three objects are usually enough to build an application.
-They are created with another GListModel.
-You can also create them alone and add a GListModel later.
+GtkSelectionModel is an interface that handles item selection, allowing users to select items by clicking on them.
+It is implemented by three classes:
 
-- GtkMultiSelection supports multiple selection.
-- GtkNoSelection supports no selection. This is a wrapper to GListModel when GtkSelectionModel is needed.
-- GtkSingleSelection supports single selection.
+- GtkSingleSelection: allows selecting only one item at a time.
+- GtkMultiSelection: allows selecting multiple items (e.g., using Ctrl or Shift while clicking).
+- GtkNoSelection: disables selection entirely.
+
+These classes are usually placed between a GtkListView and a GListModel.
+How to connect them will be shown later.
 
 ## GtkListView
 
-GtkListView is a widget to show GListModel items.
-GtkListItem is used by GtkListView to represent items of a list model.
-But, GtkListItem is not a widget (not a descendant of GtkWidget), so a user needs to set a widget, for example GtkLabel, as a child of GtkListItem to display an item of the list model.
-"item" property of GtkListItem points to an object that belongs to the list model.
+GtkListView is a widget that displays items from a GListModel.
+Internally, GtkListView uses GtkListItem objects to represent each item from the list model.
+However, GtkListItem itself is not a widget (it does not inherit from GtkWidget).
+Therefore, you cannot display it directly on the screen.
+Instead, you need to set an actual widget --- such as a GtkLabel --- as the child of the GtkListItem.
 
 ![GtkListItem](/src/images/gtklistitem.png)
 
-In case the number of items is very big, for example more than a thousand, GtkListItem is recycled and connected to another item which is newly displayed.
-This recycle makes the number of GtkListItem objects fairly small, less than 200.
-This is very effective to restrain the growth of memory consumption so that GListModel can contain lots of items, for example, more than a million items.
+As shown in the diagram above:
+
+- The "item" property of GtkListItem points to the object in the GListModel. For example, the object is a GtkStringObject containing "one".
+- The "child" property holds the widget (such as GtkLabel) used for display.
+- This connection allows GtkListView to display the item on the screen.
+
+When a list contains a very large number of items --- such as thousands or even millions --- creating a widget for every single item would consume too much memory.
+To solve this, GtkListView recycles GtkListItem instances.
+Only enough items are created to fill the visible area (usually fewer than 200).
+As the user scrolls, off-screen GtkListItem objects are reused and rebound to newly visible items from the model.
+This recycling mechanism keeps memory consumption very low, allowing GtkListView to smoothly handle lists with millions of items.
 
 ## GtkListItemFactory
 
-GtkListItemFactory creates or recycles GtkListItem and connects it with an item of the list model.
-There are two child classes of this factory, GtkSignalListItemFactory and GtkBuilderListItemFactory.
+GtkListItemFactory is responsible for creating, recycling, and binding GtkListItem objects to the items in a list model.
+GTK provides two subclasses of this factory:
+
+- GtkSignalListItemFactory: uses C callback functions to set up and bind list items.
+- GtkBuilderListItemFactory: uses UI definition files (XML) to build and bind list items.
 
 ### GtkSignalListItemFactory
 
-GtkSignalListItemFactory provides signals for users to configure a GtkListItem object.
-There are four signals.
+GtkSignalListItemFactory provides signals to configure a GtkListItem.
+There are four signals:
 
-1. "setup" is emitted to set up GtkListItem object.
-A user sets its child widget in the handler.
-For example, creates a GtkLabel widget and sets the child property of the GtkListItem to it.
-This setting is kept even when the GtkListItem instance is recycled (to bind to another item of GListModel).
-2. "bind" is emitted to bind an item in the list model to the widget.
-For example, a user gets the item from "item" property of the GtkListItem instance.
-Then gets the string of the item and sets the label property of the GtkLabel instance with the string.
-This signal is emitted when the GtkListItem is newly created, recycled or some changes have happened to the item of the list.
-3. "unbind" is emitted to unbind an item.
-A user undoes everything done in step 2 in the signal handler.
-If some object are created in step 2, they must be destroyed.
-4. "teardown" is emitted to undo everything done in step 1.
-So, the widget created in step 1 must be destroyed.
-After this signal, the list item will be destroyed.
+- **setup**: Emitted to set up a newly created GtkListItem.
+The settings made here are kept throughout the entire life of the GtkListItem instance.
+Mainly, the "setup" handler creates a widget (such as a GtkLabel) to display an item, and sets it as the child of the GtkListItem.
+- **bind**: Emitted when an item in the list model is about to be displayed on the screen.
+The handler binds this item to the widget created in the setup step.
+Usually, it retrieves the item from the "item" property of the GtkListItem and updates the widget's display (for example, setting the text of a GtkLabel).
+- **unbind**: Emitted when the GtkListItem is no longer used for its current item (for example, when it scrolls out of view).
+The handler must undo everything done in the bind step.
+In simple cases, such as just setting text on a GtkLabel, you don't need to do anything here.
+(See the code snippet of `list1.c` below.)
+- **teardown**: Emitted right before the GtkListItem is permanently destroyed.
+The handler must undo everything done in the setup step.
+However, when GTK destroys the GtkListItem, it also destroys its child widget.
+So in simple cases, you don't need to do anything here. (See `list1.c`.)
+After this, the GtkListItem instance will not be used again.
 
-The following program `list1.c` shows a list of strings "one", "two", "three" and "four".
-GtkNoSelection is used, so user can't select any item.
+The following program, `list1.c`, displays the list of strings: "one", "two", "three", and "four".
+Because it uses GtkNoSelection, items cannot be selected.
 
 ```c
 #include <gtk/gtk.h>
 
 static void
-setup_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+setup_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
+  GtkListItem *listitem = GTK_LIST_ITEM (object);
   GtkWidget *lb = gtk_label_new (NULL);
   gtk_list_item_set_child (listitem, lb);
   /* Because gtk_list_item_set_child sunk the floating reference of lb, releasing (unref) isn't necessary for lb. */
 }
 
 static void
-bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+bind_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
+  GtkListItem *listitem = GTK_LIST_ITEM (object);
   GtkWidget *lb = gtk_list_item_get_child (listitem);
   /* Strobj is owned by the instance. Caller mustn't change or destroy it. */
-  GtkStringObject *strobj = gtk_list_item_get_item (listitem);
+  GtkStringObject *strobj = GTK_STRING_OBJECT (gtk_list_item_get_item (listitem));
   /* The string returned by gtk_string_object_get_string is owned by the instance. */
   gtk_label_set_text (GTK_LABEL (lb), gtk_string_object_get_string (strobj));
 }
 
 static void
-unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+unbind_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
   /* There's nothing to do here. */
 }
 
 static void
-teardown_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+teardown_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
   /* There's nothing to do here. */
   /* GtkListItem instance will be destroyed soon. You don't need to set the child to NULL. */
 }
@@ -149,13 +162,13 @@ app_activate (GApplication *application) {
   GtkWidget *scr = gtk_scrolled_window_new ();
   gtk_window_set_child (GTK_WINDOW (win), scr);
 
-  char *array[] = {
+  const char * const array[] = {
     "one", "two", "three", "four", NULL
   };
   /* sl is owned by ns */
   /* ns and factory are owned by lv. */
   /* Therefore, you don't need to care about their destruction. */
-  GtkStringList *sl =  gtk_string_list_new ((const char * const *) array);
+  GtkStringList *sl =  gtk_string_list_new (array);
   GtkNoSelection *ns =  gtk_no_selection_new (G_LIST_MODEL (sl));
 
   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
@@ -188,33 +201,28 @@ main (int argc, char **argv) {
 }
 ```
 
-The file `list1.c` is located under the directory [/src/misc](../src/misc/).
-Make a shell script below and save it to your bin directory, for example `$HOME/bin`.
+The file `list1.c` is located in the [`src/misc` directory](../src/misc/).
 
-~~~Shell
-gcc `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+Change to the directory containing `list1.c` and run:
 
-Change the current directory to the directory includes `list1.c` and type as follows.
-
-~~~
+```
 $ bash comp list1
 $ ./a.out
-~~~
+```
 
-Then, the following window appears.
+The following window will appear.
 
 ![list1](/src/images/list1.png)
 
-The program is not so difficult.
-If you feel some difficulty, read this section again, especially GtkSignalListItemFactory subsubsection.
+The program is fairly straightforward.
+If anything is unclear, review this section --- especially the GtkSignalListItemFactory subsection.
 
 ### GtkBuilderListItemFactory
 
 GtkBuilderListItemFactory is another GtkListItemFactory.
 Its behavior is defined in a UI file.
 
-~~~xml
+```xml
 <interface>
   <template class="GtkListItem">
     <property name="child">
@@ -228,77 +236,79 @@ Its behavior is defined in a UI file.
     </property>
   </template>
 </interface>
-~~~
+```
 
-Template tag is used to define GtkListItem.
-And its child property is GtkLabel object.
-The factory sees this template and creates GtkLabel and sets the child property of GtkListItem.
-This is the same as what setup handler of GtkSignalListItemFactory did.
+The `<template>` tag is used to define a GtkListItem, and its "child" property is set to a `GtkLabel` object.
+The factory reads this template, creates a GtkLabel instance, and sets it as the "child" property of the `GtkListItem`.
+This is the same as what the `setup` handler of `GtkSignalListItemFactory` did.
 
-Then, bind the label property of the GtkLabel to the string property of a GtkStringObject.
-The string object refers to the item property of the GtkListItem.
-So, the lookup tag is like this:
+Next, the `<binding>` tag binds the "label" property of the GtkLabel to the `string` property of a GtkStringObject.
+The GtkStringObject is obtained from the "item" property of the GtkListItem (this corresponds to what the `bind` handler did).
+So, the data flow of the `<lookup>` tags is like this:
 
-~~~
+```
 label <- string <- GtkStringObject <- item <- GtkListItem
-~~~
+```
 
-The last lookup tag has a content `GtkListItem`.
-Usually, C type like `GtkListItem` doesn't appear in the content of tags.
+The inner `<lookup>` tag has the content `GtkListItem`.
+Usually, a C type name like `GtkListItem` doesn't appear as the content of a tag.
 This is a special case.
-There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen.
+There is an explanation in the [GTK Development Blog](https://blog.gtk.org/2020/09/05/a-primer-on-gtklistview/) by Matthias Clasen:
 
 > Remember that the classname (GtkListItem) in a ui template is used as the “this” pointer referring to the object that is being instantiated.
 
-Therefore, GtkListItem instance is used as the `this` object of the lookup tag when it is evaluated.
-`this` object will be explained in [Section 34](sec34.md).
+Therefore, the GtkListItem instance is used as the "this" object of the `<lookup>` tag when it is evaluated.
+The `this` object will be explained in [Section 34](sec34.md).
 
 The C source code is as follows.
-Its name is `list2.c` and located under [/src/misc](../src/misc/) directory.
+Its name is `list2.c`, and it is located in the [/src/misc](../src/misc/) directory.
 
 ```c
 #include <gtk/gtk.h>
+#include <string.h>
 
 static void
 app_activate (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
-  gtk_window_present (gtk_application_get_active_window(app));
-}
+  GtkWindow *win = gtk_application_get_active_window (app);
 
-static void
-app_startup (GApplication *application) {
-  GtkApplication *app = GTK_APPLICATION (application);
-  GtkWidget *win = gtk_application_window_new (app);
-  gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
-  GtkWidget *scr = gtk_scrolled_window_new ();
-  gtk_window_set_child (GTK_WINDOW (win), scr);
+  if (win == NULL) {
+    win = GTK_WINDOW (gtk_application_window_new (app));
+    gtk_window_set_default_size (win, 600, 400);
+    GtkWidget *scr = gtk_scrolled_window_new ();
+    gtk_window_set_child (win, scr);
 
-  char *array[] = {
-    "one", "two", "three", "four", NULL
-  };
-  GtkStringList *sl = gtk_string_list_new ((const char * const *) array);
-  GtkSingleSelection *ss = gtk_single_selection_new (G_LIST_MODEL (sl));
+    const char * const array[] = {
+      "one", "two", "three", "four", NULL
+    };
+    GtkStringList *sl = gtk_string_list_new (array);
+    GtkSingleSelection *ss = gtk_single_selection_new (G_LIST_MODEL (sl));
 
-  const char *ui_string =
-"<interface>"
-  "<template class=\"GtkListItem\">"
-    "<property name=\"child\">"
-      "<object class=\"GtkLabel\">"
-        "<binding name=\"label\">"
-          "<lookup name=\"string\" type=\"GtkStringObject\">"
-            "<lookup name=\"item\">GtkListItem</lookup>"
-          "</lookup>"
-        "</binding>"
-      "</object>"
-    "</property>"
-  "</template>"
-"</interface>"
-;
-  GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
-  GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+    const char *ui_string =
+      "<interface>"
+        "<template class=\"GtkListItem\">"
+          "<property name=\"child\">"
+            "<object class=\"GtkLabel\">"
+              "<binding name=\"label\">"
+                "<lookup name=\"string\" type=\"GtkStringObject\">"
+                  "<lookup name=\"item\">GtkListItem</lookup>"
+                "</lookup>"
+              "</binding>"
+            "</object>"
+          "</property>"
+        "</template>"
+      "</interface>"
+      ;
 
-  GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+    GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
+    GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+    g_bytes_unref (gbytes);
+
+    GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ss), factory);
+    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+  }
+  
+  gtk_window_present (win);
 }
 
 /* ----- main ----- */
@@ -311,66 +321,66 @@ main (int argc, char **argv) {
 
   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
   return stat;
 }
-
 ```
 
-No signal handler is needed for GtkBuilderListItemFactory.
-GtkSingleSelection is used, so user can select one item at a time.
+No signal handlers are needed for GtkBuilderListItemFactory.
+GtkSingleSelection is used, so the user can select one item at a time.
 
 Because this is a small program, the UI data is given as a string.
 
 ## GtkDirectoryList
 
-GtkDirectoryList is a list model containing GFileInfo objects which are information of files under a certain directory.
+## GtkDirectoryList
+
+GtkDirectoryList is a list model containing GFileInfo objects, which hold information about files in a certain directory.
 It uses `g_file_enumerate_children_async()` to get the GFileInfo objects.
-The list model is created by `gtk_directory_list_new` function.
+The list model is created by the `gtk_directory_list_new()` function.
 
-~~~C
+```C
 GtkDirectoryList *gtk_directory_list_new (const char *attributes, GFile *file);
-~~~
+```
 
-`attributes` is a comma separated list of file attributes.
+`attributes` is a comma-separated list of file attributes.
 File attributes are key-value pairs.
 A key consists of a namespace and a name.
-For example, "standard::name" key is the name of a file.
-"standard" means general file information.
-"name" means filename.
-The following table shows some example.
+For example, the "standard::name" key represents the name of a file.
+"standard" means general file information, and "name" means the filename.
+The following table shows some examples.
 
-|key             |meaning                                                             |
-|:---------------|:-------------------------------------------------------------------|
-|standard::type  |file type. for example, regular file, directory, symbolic link, etc.|
-|standard::name  |filename                                                            |
-|standard::size  |file size in bytes                                                  |
-|access::can-read|read privilege if the user is able to read the file                 |
-|time::modified  |the time the file was last modified in seconds since the UNIX epoch |
+|key              |meaning                                                             |
+|:----------------|:-------------------------------------------------------------------|
+|standard::type   |file type (for example, regular file, directory, symbolic link, etc.)|
+|standard::name   |filename                                                            |
+|standard::size   |file size in bytes                                                  |
+|access::can-read |read privilege (whether the user is able to read the file)          |
+|time::modified   |the time the file was last modified in seconds since the UNIX epoch |
 
 The current directory is ".".
-The following program makes GtkDirectoryList `dl` and its contents are GFileInfo objects under the current directory.
+The following code creates a GtkDirectoryList `dl`, and its contents are GFileInfo objects for the files under the current directory.
 
-~~~C
+```C
 GFile *file = g_file_new_for_path (".");
 GtkDirectoryList *dl = gtk_directory_list_new ("standard::name", file);
 g_object_unref (file);
-~~~
+```
 
-It is not so difficult to make a file listing program by changing `list2.c` in the previous subsection.
+It is not so difficult to make a file listing program by changing `list2.c` from the previous subsection.
 One problem is that GFileInfo doesn't have properties.
-Lookup tag look for a property, so it is useless for looking for a filename from a GFileInfo object.
-Instead, a closure tag is appropriate in this case.
-A closure tag specifies a function and the type of the return value of the function.
+A `<lookup>` tag looks for a property, so it cannot be used for getting a filename from a GFileInfo object.
+Instead, a `<closure>` tag is appropriate in this case.
+A `<closure>` tag specifies a function and the type of its return value.
 
-~~~C
+```C
 char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+  const char *name = G_IS_FILE_INFO (info) ? g_file_info_get_name (info) : NULL;
+  return g_strdup (name ? name : "");
 }
 ... ...
 ... ...
@@ -388,47 +398,43 @@ get_file_name (GtkListItem *item, GFileInfo *info) {
     "</property>"
   "</template>"
 "</interface>"
-~~~
+```
 
 - The string "gchararray" is a type name registered in the GObject type system.
-While the type "gchar" is the same as the C "char" type, "gchararray" specifically represents a NULL-terminated string (char *).
+While the type "gchar" is the same as the C `char` type, "gchararray" specifically represents a NULL-terminated string (`char *`).
 In GtkBuilder XML files, you must use these registered type names instead of native C types to let the GValue system handle the data correctly.
-For example, common type names include gboolean, gchar, gint, gfloat, gdouble, and gchararray.
-See [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue) for further information.
-- Closure tag has type attribute and function attribute.
-Function attribute specifies the function name and type attribute specifies the type of the return value of the function.
-The content of closure tag (it is between \<closure...\> and\</closure\>) consists of the parameters for the function.
-`<lookup name="item">GtkListItem</lookup>` gives the value of the item property of the GtkListItem.
+For example, common type names include `gboolean`, `gchar`, `gint`, `gfloat`, `gdouble`, and `gchararray`.
+See the [GObject tutorial](https://github.com/ToshioCP/Gobject-tutorial/blob/main/gfm/sec5.md#gvalue) for further information.
+- The `<closure>` tag has a `type` attribute and a `function` attribute.
+The `function` attribute specifies the function name, and the `type` attribute specifies the type of the return value of the function.
+The content of the `<closure>` tag (between `<closure...>` and `</closure>`) consists of the parameters for the function.
+`<lookup name="item">GtkListItem</lookup>` returns the value of the `item` property of the `GtkListItem`.
 This will be the second argument of the function.
-The first parameter is always the GListItem instance, which is a 'this' object.
-The 'this' object is explained in Section 31.
-- `get_file_name` function is the callback function for the closure tag.
-It first checks the `info` parameter.
-Because it can be NULL when GListItem `item` is unbounded.
-If it's GFileInfo, it returns the copied filename.
-Because the return value (filename) of `g_file_info_get_name` is owned by GFileInfo object.
-So, the the string needs to be duplicated to give the ownership to the caller.
-Binding tag binds the "label" property of the GtkLabel to the closure tag.
+The first parameter is always the `GtkListItem` instance, which is the `this` object.
+The `this` object is explained in Section 34.
+- The `get_file_name` function is the callback function for the `<closure>` tag.
+It first checks the `info` parameter because it can be `NULL` when the GtkListItem is not bound to an item in the GListModel.
+If it is a GFileInfo instance, it returns a copied filename.
+This is because the return value (filename) of `g_file_info_get_name` is owned by the `GFileInfo` object, so the string needs to be duplicated to give ownership to the caller.
+If `info` is not a GFileInfo instance, the `get_file_name` function returns a duplicated empty string.
+Finally, the `<binding name="label">` tag binds the "label" property of the GtkLabel object to the value produced by the `<closure>` tag.
+When the binding is established, GTK automatically monitors the expression and updates the "label" property of the GtkLabel whenever the underlying item or its data changes, keeping the view and the data synchronized.
 
 The whole program (`list3.c`) is as follows.
 The program is located in [/src/misc](../src/misc/) directory.
 
 ```c
 #include <gtk/gtk.h>
+#include <string.h>
 
 char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  return G_IS_FILE_INFO (info) ? g_strdup (g_file_info_get_name (info)) : NULL;
+  const char *name = G_IS_FILE_INFO (info) ? g_file_info_get_name (info) : NULL;
+  return g_strdup (name ? name : "");
 }
 
 static void
 app_activate (GApplication *application) {
-  GtkApplication *app = GTK_APPLICATION (application);
-  gtk_window_present (gtk_application_get_active_window(app));
-}
-
-static void
-app_startup (GApplication *application) {
   GtkApplication *app = GTK_APPLICATION (application);
   GtkWidget *win = gtk_application_window_new (app);
   gtk_window_set_default_size (GTK_WINDOW (win), 600, 400);
@@ -441,25 +447,28 @@ app_startup (GApplication *application) {
   GtkNoSelection *ns = gtk_no_selection_new (G_LIST_MODEL (dl));
 
   const char *ui_string =
-"<interface>"
-  "<template class=\"GtkListItem\">"
-    "<property name=\"child\">"
-      "<object class=\"GtkLabel\">"
-        "<binding name=\"label\">"
-          "<closure type=\"gchararray\" function=\"get_file_name\">"
-            "<lookup name=\"item\">GtkListItem</lookup>"
-          "</closure>"
-        "</binding>"
-      "</object>"
-    "</property>"
-  "</template>"
-"</interface>"
-;
+    "<interface>"
+      "<template class=\"GtkListItem\">"
+        "<property name=\"child\">"
+          "<object class=\"GtkLabel\">"
+            "<binding name=\"label\">"
+              "<closure type=\"gchararray\" function=\"get_file_name\">"
+                "<lookup name=\"item\">GtkListItem</lookup>"
+              "</closure>"
+            "</binding>"
+          "</object>"
+        "</property>"
+      "</template>"
+    "</interface>"
+    ;
+
   GBytes *gbytes = g_bytes_new_static (ui_string, strlen (ui_string));
   GtkListItemFactory *factory = gtk_builder_list_item_factory_new_from_bytes (NULL, gbytes);
+  g_bytes_unref (gbytes);
 
   GtkWidget *lv = gtk_list_view_new (GTK_SELECTION_MODEL (ns), factory);
   gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scr), lv);
+  gtk_window_present (GTK_WINDOW (win));
 }
 
 /* ----- main ----- */
@@ -472,7 +481,6 @@ main (int argc, char **argv) {
 
   app = gtk_application_new (APPLICATION_ID, G_APPLICATION_DEFAULT_FLAGS);
 
-  g_signal_connect (app, "startup", G_CALLBACK (app_startup), NULL);
   g_signal_connect (app, "activate", G_CALLBACK (app_activate), NULL);
 
   stat = g_application_run (G_APPLICATION (app), argc, argv);
@@ -481,48 +489,43 @@ main (int argc, char **argv) {
 }
 ```
 
-The ui data (xml data above) is used to build the GListItem template at runtime.
-GtkBuilder refers to the symbol table to find the function `get_file_name`.
+The UI data (the XML data above) is used to build the GtkListItem template at runtime.
+GtkBuilder refers to the symbol table to find the `get_file_name` function.
 
-Generally, a symbol table is used by a linker to link objects to an executable file.
-It includes function names and their location.
-A linker usually doesn't put a symbol table into the created executable file.
-But if `--export-dynamic` option is given, the linker adds the symbol table to the executable file.
+Generally, a symbol table is used by a linker to link object files into an executable file.
+It includes function names and their locations.
+A linker usually doesn't include the full symbol table in the final executable file.
+However, if the `--export-dynamic` option is given, the linker includes all symbols in the dynamic symbol table of the executable file.
 
-To accomplish it, an option `-Wl,--export-dynamic` is given to the C compiler.
+To achieve this, the `-Wl,--export-dynamic` option is passed to the C compiler.
 
 - `-Wl` is a C compiler option that passes the following option to the linker.
 - `--export-dynamic` is a linker option.
-The following is cited from the linker document.
-"When creating a dynamically linked executable, add all symbols to the dynamic symbol table.
-The dynamic symbol table is the set of symbols which are visible from dynamic objects at run time."
+The following description is quoted from the linker documentation:
+
+> "When creating a dynamically linked executable, add all symbols to the dynamic symbol table.
+> The dynamic symbol table is the set of symbols which are visible from dynamic objects at run time."
 
 Compile and execute it.
 
-~~~
+```
 $ gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` list3.c `pkg-config --libs gtk4`
-~~~
+```
 
-You can also make a shell script to compile `list3.c`
+You can also create a shell script to compile `list3.c`.
 
-~~~bash
+```bash
 gcc -Wl,--export-dynamic `pkg-config --cflags gtk4` $1.c `pkg-config --libs gtk4`
-~~~
+```
 
-Save this one liner to a file `comp`.
-Then, copy it to `$HOME/bin` and give it executable permission.
-
-~~~
-$ cp comp $HOME/bin/comp
-$ chmod +x $HOME/bin/comp
-~~~
+Save this one-liner to a file named `comp` under the current directory.
 
 You can compile `list3.c` and execute it, like this:
 
-~~~
-$ comp list3
+```
+$ bash comp list3
 $ ./a.out
-~~~
+```
 
 ![screenshot list3](/src/images/list3.png)
 

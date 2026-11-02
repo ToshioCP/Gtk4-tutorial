@@ -8,7 +8,7 @@ When a user drags a UI element --- such as a widget or a selected piece of conte
 You are probably already familiar with this action from everyday tasks like dragging files between folders.
 
 @@@if pdf
-![DND on the GUI file manager](/images/dnd.png){width=4.6cm height=3cm}
+![DND on the GUI file manager](/images/dnd.png){width=9.2cm height=6cm}
 @@@else
 ![DND on the GUI file manager](/images/dnd.png)
 @@@end

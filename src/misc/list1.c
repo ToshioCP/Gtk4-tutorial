@@ -1,28 +1,30 @@
 #include <gtk/gtk.h>
 
 static void
-setup_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+setup_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
+  GtkListItem *listitem = GTK_LIST_ITEM (object);
   GtkWidget *lb = gtk_label_new (NULL);
   gtk_list_item_set_child (listitem, lb);
   /* Because gtk_list_item_set_child sunk the floating reference of lb, releasing (unref) isn't necessary for lb. */
 }
 
 static void
-bind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+bind_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
+  GtkListItem *listitem = GTK_LIST_ITEM (object);
   GtkWidget *lb = gtk_list_item_get_child (listitem);
   /* Strobj is owned by the instance. Caller mustn't change or destroy it. */
-  GtkStringObject *strobj = gtk_list_item_get_item (listitem);
+  GtkStringObject *strobj = GTK_STRING_OBJECT (gtk_list_item_get_item (listitem));
   /* The string returned by gtk_string_object_get_string is owned by the instance. */
   gtk_label_set_text (GTK_LABEL (lb), gtk_string_object_get_string (strobj));
 }
 
 static void
-unbind_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+unbind_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
   /* There's nothing to do here. */
 }
 
 static void
-teardown_cb (GtkSignalListItemFactory *self, GtkListItem *listitem, gpointer user_data) {
+teardown_cb (GtkSignalListItemFactory *self, GObject *object, gpointer user_data) {
   /* There's nothing to do here. */
   /* GtkListItem instance will be destroyed soon. You don't need to set the child to NULL. */
 }
@@ -35,13 +37,13 @@ app_activate (GApplication *application) {
   GtkWidget *scr = gtk_scrolled_window_new ();
   gtk_window_set_child (GTK_WINDOW (win), scr);
 
-  char *array[] = {
+  const char * const array[] = {
     "one", "two", "three", "four", NULL
   };
   /* sl is owned by ns */
   /* ns and factory are owned by lv. */
   /* Therefore, you don't need to care about their destruction. */
-  GtkStringList *sl =  gtk_string_list_new ((const char * const *) array);
+  GtkStringList *sl =  gtk_string_list_new (array);
   GtkNoSelection *ns =  gtk_no_selection_new (G_LIST_MODEL (sl));
 
   GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
