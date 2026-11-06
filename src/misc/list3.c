@@ -3,8 +3,13 @@
 
 char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  const char *name = G_IS_FILE_INFO (info) ? g_file_info_get_name (info) : NULL;
-  return g_strdup (name ? name : "");
+  const char *filename_bin;
+
+  if (G_IS_FILE_INFO (info) && (filename_bin = g_file_info_get_name (info)) ) {
+    return g_filename_display_name (filename_bin);
+  } else {
+    return g_strdup ("");
+  }
 }
 
 static void

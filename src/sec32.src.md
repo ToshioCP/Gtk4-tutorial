@@ -272,8 +272,13 @@ A `<closure>` tag specifies a function and the type of its return value.
 @@@end
 char *
 get_file_name (GtkListItem *item, GFileInfo *info) {
-  const char *name = G_IS_FILE_INFO (info) ? g_file_info_get_name (info) : NULL;
-  return g_strdup (name ? name : "");
+  const char *filename_bin;
+
+  if (G_IS_FILE_INFO (info) && (filename_bin = g_file_info_get_name (info)) ) {
+    return g_filename_display_name (filename_bin);
+  } else {
+    return g_strdup ("");
+  }
 }
 ... ...
 ... ...
@@ -306,10 +311,10 @@ This will be the second argument of the function.
 The first parameter is always the `GtkListItem` instance, which is the `this` object.
 The `this` object is explained in Section 34.
 - The `get_file_name` function is the callback function for the `<closure>` tag.
-It first checks the `info` parameter because it can be `NULL` when the GtkListItem is not bound to an item in the GListModel.
-If it is a GFileInfo instance, it returns a copied filename.
-This is because the return value (filename) of `g_file_info_get_name` is owned by the `GFileInfo` object, so the string needs to be duplicated to give ownership to the caller.
-If `info` is not a GFileInfo instance, the `get_file_name` function returns a duplicated empty string.
+It first checks the `info` parameter because it can be `NULL` when the GtkListItem instance is not bound to an item in the GListModel.
+If `info` is a GFileInfo instance, it retrieves the filename and assigns it to the `filename_bin` variable.
+If `filename_bin` is also non-`NULL`, it is converted to a UTF-8 string and returned.
+Otherwise, the `get_file_name` function returns a newly allocated empty string (or: a duplicated empty string).
 Finally, the `<binding name="label">` tag binds the "label" property of the GtkLabel object to the value produced by the `<closure>` tag.
 When the binding is established, GTK automatically monitors the expression and updates the "label" property of the GtkLabel whenever the underlying item or its data changes, keeping the view and the data synchronized.
 

@@ -613,25 +613,30 @@ $ ./a.out</code></pre>
         <div class="sourceCode" id="cb9"><pre
         class="sourceCode C"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>name <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_name <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> g_strdup <span class="op">(</span>name <span class="op">?</span> name <span class="op">:</span> <span class="st">&quot;&quot;</span><span class="op">);</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;interface&gt;&quot;</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;template class=</span><span class="sc">\&quot;</span><span class="st">GtkListItem</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">child</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;&lt;object class=</span><span class="sc">\&quot;</span><span class="st">GtkLabel</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;&lt;binding name=</span><span class="sc">\&quot;</span><span class="st">label</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;&lt;closure type=</span><span class="sc">\&quot;</span><span class="st">gchararray</span><span class="sc">\&quot;</span><span class="st"> function=</span><span class="sc">\&quot;</span><span class="st">get_file_name</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;&lt;lookup name=</span><span class="sc">\&quot;</span><span class="st">item</span><span class="sc">\&quot;</span><span class="st">&gt;GtkListItem&lt;/lookup&gt;&quot;</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;&lt;/closure&gt;&quot;</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;&lt;/binding&gt;&quot;</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;&lt;/object&gt;&quot;</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;/property&gt;&quot;</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;/template&gt;&quot;</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;/interface&gt;&quot;</span></span></code></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>filename_bin<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>filename_bin <span class="op">=</span> g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> g_filename_display_name <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> g_strdup <span class="op">(</span><span class="st">&quot;&quot;</span><span class="op">);</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="op">...</span> <span class="op">...</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;interface&gt;&quot;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;template class=</span><span class="sc">\&quot;</span><span class="st">GtkListItem</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">child</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;&lt;object class=</span><span class="sc">\&quot;</span><span class="st">GtkLabel</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;&lt;binding name=</span><span class="sc">\&quot;</span><span class="st">label</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;&lt;closure type=</span><span class="sc">\&quot;</span><span class="st">gchararray</span><span class="sc">\&quot;</span><span class="st"> function=</span><span class="sc">\&quot;</span><span class="st">get_file_name</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;&lt;lookup name=</span><span class="sc">\&quot;</span><span class="st">item</span><span class="sc">\&quot;</span><span class="st">&gt;GtkListItem&lt;/lookup&gt;&quot;</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;&lt;/closure&gt;&quot;</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;&lt;/binding&gt;&quot;</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;&lt;/object&gt;&quot;</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;&lt;/property&gt;&quot;</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;&lt;/template&gt;&quot;</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;&lt;/interface&gt;&quot;</span></span></code></pre></div>
         <ul>
         <li>The string “gchararray” is a type name registered in the
         GObject type system. While the type “gchar” is the same as the C
@@ -664,21 +669,20 @@ $ ./a.out</code></pre>
         <li>The <code>get_file_name</code> function is the callback
         function for the <code>&lt;closure&gt;</code> tag. It first
         checks the <code>info</code> parameter because it can be
-        <code>NULL</code> when the GtkListItem is not bound to an item
-        in the GListModel. If it is a GFileInfo instance, it returns a
-        copied filename. This is because the return value (filename) of
-        <code>g_file_info_get_name</code> is owned by the
-        <code>GFileInfo</code> object, so the string needs to be
-        duplicated to give ownership to the caller. If <code>info</code>
-        is not a GFileInfo instance, the <code>get_file_name</code>
-        function returns a duplicated empty string. Finally, the
-        <code>&lt;binding name="label"&gt;</code> tag binds the “label”
-        property of the GtkLabel object to the value produced by the
-        <code>&lt;closure&gt;</code> tag. When the binding is
-        established, GTK automatically monitors the expression and
-        updates the “label” property of the GtkLabel whenever the
-        underlying item or its data changes, keeping the view and the
-        data synchronized.</li>
+        <code>NULL</code> when the GtkListItem instance is not bound to
+        an item in the GListModel. If <code>info</code> is a GFileInfo
+        instance, it retrieves the filename and assigns it to the
+        <code>filename_bin</code> variable. If <code>filename_bin</code>
+        is also non-<code>NULL</code>, it is converted to a UTF-8 string
+        and returned. Otherwise, the <code>get_file_name</code> function
+        returns a newly allocated empty string (or: a duplicated empty
+        string). Finally, the <code>&lt;binding name="label"&gt;</code>
+        tag binds the “label” property of the GtkLabel object to the
+        value produced by the <code>&lt;closure&gt;</code> tag. When the
+        binding is established, GTK automatically monitors the
+        expression and updates the “label” property of the GtkLabel
+        whenever the underlying item or its data changes, keeping the
+        view and the data synchronized.</li>
         </ul>
         <p>The whole program (<code>list3.c</code>) is as follows. The
         program is located in <a
@@ -690,64 +694,69 @@ $ ./a.out</code></pre>
 <span id="cb10-3"><a href="#cb10-3"></a></span>
 <span id="cb10-4"><a href="#cb10-4"></a><span class="dt">char</span> <span class="op">*</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a>get_file_name <span class="op">(</span>GtkListItem <span class="op">*</span>item<span class="op">,</span> GFileInfo <span class="op">*</span>info<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>name <span class="op">=</span> G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">?</span> g_file_info_get_name <span class="op">(</span>info<span class="op">)</span> <span class="op">:</span> NULL<span class="op">;</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a>  <span class="cf">return</span> g_strdup <span class="op">(</span>name <span class="op">?</span> name <span class="op">:</span> <span class="st">&quot;&quot;</span><span class="op">);</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a><span class="op">}</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a></span>
-<span id="cb10-10"><a href="#cb10-10"></a><span class="dt">static</span> <span class="dt">void</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb10-14"><a href="#cb10-14"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">600</span><span class="op">,</span> <span class="dv">400</span><span class="op">);</span></span>
-<span id="cb10-15"><a href="#cb10-15"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
-<span id="cb10-16"><a href="#cb10-16"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> scr<span class="op">);</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a></span>
-<span id="cb10-18"><a href="#cb10-18"></a>  GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
-<span id="cb10-19"><a href="#cb10-19"></a>  GtkDirectoryList <span class="op">*</span>dl <span class="op">=</span> gtk_directory_list_new <span class="op">(</span><span class="st">&quot;standard::name&quot;</span><span class="op">,</span> file<span class="op">);</span></span>
-<span id="cb10-20"><a href="#cb10-20"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
-<span id="cb10-21"><a href="#cb10-21"></a>  GtkNoSelection <span class="op">*</span>ns <span class="op">=</span> gtk_no_selection_new <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>dl<span class="op">));</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>filename_bin<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  <span class="cf">if</span> <span class="op">(</span>G_IS_FILE_INFO <span class="op">(</span>info<span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>filename_bin <span class="op">=</span> g_file_info_get_name <span class="op">(</span>info<span class="op">))</span> <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>    <span class="cf">return</span> g_filename_display_name <span class="op">(</span>filename_bin<span class="op">);</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a>    <span class="cf">return</span> g_strdup <span class="op">(</span><span class="st">&quot;&quot;</span><span class="op">);</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a>  <span class="op">}</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="op">}</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="dt">static</span> <span class="dt">void</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a>app_activate <span class="op">(</span>GApplication <span class="op">*</span>application<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  GtkApplication <span class="op">*</span>app <span class="op">=</span> GTK_APPLICATION <span class="op">(</span>application<span class="op">);</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a>  GtkWidget <span class="op">*</span>win <span class="op">=</span> gtk_application_window_new <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a>  gtk_window_set_default_size <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> <span class="dv">600</span><span class="op">,</span> <span class="dv">400</span><span class="op">);</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a>  GtkWidget <span class="op">*</span>scr <span class="op">=</span> gtk_scrolled_window_new <span class="op">();</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a>  gtk_window_set_child <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">),</span> scr<span class="op">);</span></span>
 <span id="cb10-22"><a href="#cb10-22"></a></span>
-<span id="cb10-23"><a href="#cb10-23"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>ui_string <span class="op">=</span></span>
-<span id="cb10-24"><a href="#cb10-24"></a>    <span class="st">&quot;&lt;interface&gt;&quot;</span></span>
-<span id="cb10-25"><a href="#cb10-25"></a>      <span class="st">&quot;&lt;template class=</span><span class="sc">\&quot;</span><span class="st">GtkListItem</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb10-26"><a href="#cb10-26"></a>        <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">child</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb10-27"><a href="#cb10-27"></a>          <span class="st">&quot;&lt;object class=</span><span class="sc">\&quot;</span><span class="st">GtkLabel</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb10-28"><a href="#cb10-28"></a>            <span class="st">&quot;&lt;binding name=</span><span class="sc">\&quot;</span><span class="st">label</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb10-29"><a href="#cb10-29"></a>              <span class="st">&quot;&lt;closure type=</span><span class="sc">\&quot;</span><span class="st">gchararray</span><span class="sc">\&quot;</span><span class="st"> function=</span><span class="sc">\&quot;</span><span class="st">get_file_name</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
-<span id="cb10-30"><a href="#cb10-30"></a>                <span class="st">&quot;&lt;lookup name=</span><span class="sc">\&quot;</span><span class="st">item</span><span class="sc">\&quot;</span><span class="st">&gt;GtkListItem&lt;/lookup&gt;&quot;</span></span>
-<span id="cb10-31"><a href="#cb10-31"></a>              <span class="st">&quot;&lt;/closure&gt;&quot;</span></span>
-<span id="cb10-32"><a href="#cb10-32"></a>            <span class="st">&quot;&lt;/binding&gt;&quot;</span></span>
-<span id="cb10-33"><a href="#cb10-33"></a>          <span class="st">&quot;&lt;/object&gt;&quot;</span></span>
-<span id="cb10-34"><a href="#cb10-34"></a>        <span class="st">&quot;&lt;/property&gt;&quot;</span></span>
-<span id="cb10-35"><a href="#cb10-35"></a>      <span class="st">&quot;&lt;/template&gt;&quot;</span></span>
-<span id="cb10-36"><a href="#cb10-36"></a>    <span class="st">&quot;&lt;/interface&gt;&quot;</span></span>
-<span id="cb10-37"><a href="#cb10-37"></a>    <span class="op">;</span></span>
-<span id="cb10-38"><a href="#cb10-38"></a></span>
-<span id="cb10-39"><a href="#cb10-39"></a>  GBytes <span class="op">*</span>gbytes <span class="op">=</span> g_bytes_new_static <span class="op">(</span>ui_string<span class="op">,</span> strlen <span class="op">(</span>ui_string<span class="op">));</span></span>
-<span id="cb10-40"><a href="#cb10-40"></a>  GtkListItemFactory <span class="op">*</span>factory <span class="op">=</span> gtk_builder_list_item_factory_new_from_bytes <span class="op">(</span>NULL<span class="op">,</span> gbytes<span class="op">);</span></span>
-<span id="cb10-41"><a href="#cb10-41"></a>  g_bytes_unref <span class="op">(</span>gbytes<span class="op">);</span></span>
-<span id="cb10-42"><a href="#cb10-42"></a></span>
-<span id="cb10-43"><a href="#cb10-43"></a>  GtkWidget <span class="op">*</span>lv <span class="op">=</span> gtk_list_view_new <span class="op">(</span>GTK_SELECTION_MODEL <span class="op">(</span>ns<span class="op">),</span> factory<span class="op">);</span></span>
-<span id="cb10-44"><a href="#cb10-44"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> lv<span class="op">);</span></span>
-<span id="cb10-45"><a href="#cb10-45"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
-<span id="cb10-46"><a href="#cb10-46"></a><span class="op">}</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a>  GFile <span class="op">*</span>file <span class="op">=</span> g_file_new_for_path <span class="op">(</span><span class="st">&quot;.&quot;</span><span class="op">);</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a>  GtkDirectoryList <span class="op">*</span>dl <span class="op">=</span> gtk_directory_list_new <span class="op">(</span><span class="st">&quot;standard::name&quot;</span><span class="op">,</span> file<span class="op">);</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a>  g_object_unref <span class="op">(</span>file<span class="op">);</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a>  GtkNoSelection <span class="op">*</span>ns <span class="op">=</span> gtk_no_selection_new <span class="op">(</span>G_LIST_MODEL <span class="op">(</span>dl<span class="op">));</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a></span>
+<span id="cb10-28"><a href="#cb10-28"></a>  <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>ui_string <span class="op">=</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a>    <span class="st">&quot;&lt;interface&gt;&quot;</span></span>
+<span id="cb10-30"><a href="#cb10-30"></a>      <span class="st">&quot;&lt;template class=</span><span class="sc">\&quot;</span><span class="st">GtkListItem</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a>        <span class="st">&quot;&lt;property name=</span><span class="sc">\&quot;</span><span class="st">child</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a>          <span class="st">&quot;&lt;object class=</span><span class="sc">\&quot;</span><span class="st">GtkLabel</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb10-33"><a href="#cb10-33"></a>            <span class="st">&quot;&lt;binding name=</span><span class="sc">\&quot;</span><span class="st">label</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb10-34"><a href="#cb10-34"></a>              <span class="st">&quot;&lt;closure type=</span><span class="sc">\&quot;</span><span class="st">gchararray</span><span class="sc">\&quot;</span><span class="st"> function=</span><span class="sc">\&quot;</span><span class="st">get_file_name</span><span class="sc">\&quot;</span><span class="st">&gt;&quot;</span></span>
+<span id="cb10-35"><a href="#cb10-35"></a>                <span class="st">&quot;&lt;lookup name=</span><span class="sc">\&quot;</span><span class="st">item</span><span class="sc">\&quot;</span><span class="st">&gt;GtkListItem&lt;/lookup&gt;&quot;</span></span>
+<span id="cb10-36"><a href="#cb10-36"></a>              <span class="st">&quot;&lt;/closure&gt;&quot;</span></span>
+<span id="cb10-37"><a href="#cb10-37"></a>            <span class="st">&quot;&lt;/binding&gt;&quot;</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a>          <span class="st">&quot;&lt;/object&gt;&quot;</span></span>
+<span id="cb10-39"><a href="#cb10-39"></a>        <span class="st">&quot;&lt;/property&gt;&quot;</span></span>
+<span id="cb10-40"><a href="#cb10-40"></a>      <span class="st">&quot;&lt;/template&gt;&quot;</span></span>
+<span id="cb10-41"><a href="#cb10-41"></a>    <span class="st">&quot;&lt;/interface&gt;&quot;</span></span>
+<span id="cb10-42"><a href="#cb10-42"></a>    <span class="op">;</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a></span>
+<span id="cb10-44"><a href="#cb10-44"></a>  GBytes <span class="op">*</span>gbytes <span class="op">=</span> g_bytes_new_static <span class="op">(</span>ui_string<span class="op">,</span> strlen <span class="op">(</span>ui_string<span class="op">));</span></span>
+<span id="cb10-45"><a href="#cb10-45"></a>  GtkListItemFactory <span class="op">*</span>factory <span class="op">=</span> gtk_builder_list_item_factory_new_from_bytes <span class="op">(</span>NULL<span class="op">,</span> gbytes<span class="op">);</span></span>
+<span id="cb10-46"><a href="#cb10-46"></a>  g_bytes_unref <span class="op">(</span>gbytes<span class="op">);</span></span>
 <span id="cb10-47"><a href="#cb10-47"></a></span>
-<span id="cb10-48"><a href="#cb10-48"></a><span class="co">/* ----- main ----- */</span></span>
-<span id="cb10-49"><a href="#cb10-49"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.list3&quot;</span></span>
-<span id="cb10-50"><a href="#cb10-50"></a></span>
-<span id="cb10-51"><a href="#cb10-51"></a><span class="dt">int</span></span>
-<span id="cb10-52"><a href="#cb10-52"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb10-53"><a href="#cb10-53"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
-<span id="cb10-54"><a href="#cb10-54"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb10-48"><a href="#cb10-48"></a>  GtkWidget <span class="op">*</span>lv <span class="op">=</span> gtk_list_view_new <span class="op">(</span>GTK_SELECTION_MODEL <span class="op">(</span>ns<span class="op">),</span> factory<span class="op">);</span></span>
+<span id="cb10-49"><a href="#cb10-49"></a>  gtk_scrolled_window_set_child <span class="op">(</span>GTK_SCROLLED_WINDOW <span class="op">(</span>scr<span class="op">),</span> lv<span class="op">);</span></span>
+<span id="cb10-50"><a href="#cb10-50"></a>  gtk_window_present <span class="op">(</span>GTK_WINDOW <span class="op">(</span>win<span class="op">));</span></span>
+<span id="cb10-51"><a href="#cb10-51"></a><span class="op">}</span></span>
+<span id="cb10-52"><a href="#cb10-52"></a></span>
+<span id="cb10-53"><a href="#cb10-53"></a><span class="co">/* ----- main ----- */</span></span>
+<span id="cb10-54"><a href="#cb10-54"></a><span class="pp">#define APPLICATION_ID </span><span class="st">&quot;com.github.ToshioCP.list3&quot;</span></span>
 <span id="cb10-55"><a href="#cb10-55"></a></span>
-<span id="cb10-56"><a href="#cb10-56"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
-<span id="cb10-57"><a href="#cb10-57"></a></span>
-<span id="cb10-58"><a href="#cb10-58"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
-<span id="cb10-59"><a href="#cb10-59"></a></span>
-<span id="cb10-60"><a href="#cb10-60"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
-<span id="cb10-61"><a href="#cb10-61"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
-<span id="cb10-62"><a href="#cb10-62"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
-<span id="cb10-63"><a href="#cb10-63"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb10-56"><a href="#cb10-56"></a><span class="dt">int</span></span>
+<span id="cb10-57"><a href="#cb10-57"></a>main <span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-58"><a href="#cb10-58"></a>  GtkApplication <span class="op">*</span>app<span class="op">;</span></span>
+<span id="cb10-59"><a href="#cb10-59"></a>  <span class="dt">int</span> stat<span class="op">;</span></span>
+<span id="cb10-60"><a href="#cb10-60"></a></span>
+<span id="cb10-61"><a href="#cb10-61"></a>  app <span class="op">=</span> gtk_application_new <span class="op">(</span>APPLICATION_ID<span class="op">,</span> G_APPLICATION_DEFAULT_FLAGS<span class="op">);</span></span>
+<span id="cb10-62"><a href="#cb10-62"></a></span>
+<span id="cb10-63"><a href="#cb10-63"></a>  g_signal_connect <span class="op">(</span>app<span class="op">,</span> <span class="st">&quot;activate&quot;</span><span class="op">,</span> G_CALLBACK <span class="op">(</span>app_activate<span class="op">),</span> NULL<span class="op">);</span></span>
+<span id="cb10-64"><a href="#cb10-64"></a></span>
+<span id="cb10-65"><a href="#cb10-65"></a>  stat <span class="op">=</span> g_application_run <span class="op">(</span>G_APPLICATION <span class="op">(</span>app<span class="op">),</span> argc<span class="op">,</span> argv<span class="op">);</span></span>
+<span id="cb10-66"><a href="#cb10-66"></a>  g_object_unref <span class="op">(</span>app<span class="op">);</span></span>
+<span id="cb10-67"><a href="#cb10-67"></a>  <span class="cf">return</span> stat<span class="op">;</span></span>
+<span id="cb10-68"><a href="#cb10-68"></a><span class="op">}</span></span></code></pre></div>
         <p>The UI data (the XML data above) is used to build the
         GtkListItem template at runtime. GtkBuilder refers to the symbol
         table to find the <code>get_file_name</code> function.</p>

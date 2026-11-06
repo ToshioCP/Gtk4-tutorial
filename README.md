@@ -100,7 +100,7 @@ In short:
 1. [Tiny Turtle Graphics Interpreter](gfm/sec30.md)
 1. [Drag and Drop](gfm/sec31.md)
 1. [GtkListView](gfm/sec32.md)
-1. [GtkGridView and Activate Signal](gfm/sec33.md)
+1. [GtkGridView and the Activate Signal](gfm/sec33.md)
 1. [GtkExpression](gfm/sec34.md)
 1. [GtkColumnView](gfm/sec35.md)
 1. [GtkSignalListItemFactory](gfm/sec36.md)

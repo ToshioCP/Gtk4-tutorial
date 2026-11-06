@@ -2,22 +2,21 @@
 <interface>
   <object class="GtkApplicationWindow" id="win">
     <property name="title">file list</property>
-    <property name="default-width">600</property>
-    <property name="default-height">400</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
     <child>
-      <object class="GtkBox" id="boxv">
+      <object class="GtkBox">
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <child>
-          <object class="GtkBox" id="boxh">
+          <object class="GtkBox">
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
-              <object class="GtkLabel" id="dmy1">
+              <object class="GtkLabel">
                 <property name="hexpand">TRUE</property>
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="btnlist">
-                <property name="name">btnlist</property>
+              <object class="GtkToggleButton">
                 <property name="action-name">win.view</property>
                 <property name="action-target">&apos;list&apos;</property>
                 <child>
@@ -28,8 +27,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton" id="btngrid">
-                <property name="name">btngrid</property>
+              <object class="GtkToggleButton">
                 <property name="action-name">win.view</property>
                 <property name="action-target">&apos;grid&apos;</property>
                 <child>
@@ -40,34 +38,35 @@
               </object>
             </child>
             <child>
-              <object class="GtkLabel" id="dmy2">
+              <object class="GtkLabel">
                 <property name="width-chars">10</property>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="scr">
+          <object class="GtkStack" id="stack">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkListView" id="list">
-    <property name="model">
-      <object class="GtkSingleSelection" id="singleselection">
-        <property name="model">
-          <object class="GtkDirectoryList" id="directory_list">
-            <property name="attributes">standard::name,standard::icon,standard::content-type</property>
-          </object>
-        </property>
-      </object>
-    </property>
-    <property name="factory">
-      <object class="GtkBuilderListItemFactory">
-        <property name="bytes"><![CDATA[
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">list</property>
+                <property name="child">
+                  <object class="GtkScrolledWindow">
+                    <property name="child">
+                      <object class="GtkListView" id="list">
+                        <property name="model">
+                          <object class="GtkSingleSelection" id="singleselection">
+                            <property name="model">
+                              <object class="GtkDirectoryList" id="directory_list">
+                                <property name="attributes">standard::name,standard::icon,standard::content-type</property>
+                              </object>
+                            </property>
+                          </object>
+                        </property>
+                        <property name="factory">
+                          <object class="GtkBuilderListItemFactory">
+                            <property name="bytes"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="GtkListItem">
@@ -99,15 +98,27 @@
     </property>
   </template>
 </interface>
-        ]]></property>
-      </object>
-    </property>
-  </object>
-  <object class="GtkGridView" id="grid">
-    <property name="model">singleselection</property>
-    <property name="factory">
-      <object class="GtkBuilderListItemFactory">
-        <property name="bytes"><![CDATA[
+]]>
+                            </property>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">grid</property>
+                <property name="child">
+                  <object class="GtkScrolledWindow">
+                    <property name="child">
+                      <object class="GtkGridView" id="grid">
+                        <property name="model">singleselection</property>
+                        <property name="factory">
+                          <object class="GtkBuilderListItemFactory">
+                            <property name="bytes"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="GtkListItem">
@@ -140,9 +151,19 @@
     </property>
   </template>
 </interface>
-        ]]></property>
+]]>
+                            </property>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
-    </property>
+    </child>
   </object>
 </interface>
-
